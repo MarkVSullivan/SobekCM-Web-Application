@@ -514,6 +514,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
         {
             Body_Attributes.Clear();
+            Body_Attributes.Add(new Tuple<string, string>("onload", "initMapEditor();"));
             Body_Attributes.Add(new Tuple<string, string>("onresize", "MAPEDITOR.UTILITIES.resizeView();"));
         }
 

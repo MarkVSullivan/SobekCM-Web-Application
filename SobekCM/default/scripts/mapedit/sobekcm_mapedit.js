@@ -2,21 +2,10 @@
 This file loads all of the custom javascript libraries needed to run the mapedit portion of sobek.
 */
 
-//Declarations
+var MAPEDITOR;                //TEMP must remain at top for now (for C# js vars)
 
-var MAPEDITOR;                      //TEMP must remain at top  for now (for C# js vars)
-
-initMapEditor();              //TEMP
-MAPEDITOR.run();
 function initMapEditor() {
-    
-    //other global vars
-    //todo move these into init object (it gets dicey)
-    var geocoder;               //must define before use
-    var KmlLayer;               //TEMP
-    var label = [];             //used as label of poi
-    var infoWindow = [];        //poi infowindow
-    
+    //declare the namespace
     MAPEDITOR = function () {
         return {
             TRACER: function () {
@@ -89,7 +78,7 @@ function initMapEditor() {
                         }
                     }
                 };
-            }(),
+            }(),          //tracer support
             GLOBAL: function () {
                 return {
                     DEFINES: function () {
@@ -102,6 +91,10 @@ function initMapEditor() {
                             copyrightNode: null,                                        //holds custom copyright
                             drawingManager: new google.maps.drawing.DrawingManager(),   //init default dm
                             gmapOptions: null,                                          //holds MAPEDITOR.GLOBAL.DEFINES.gmapOptions
+                            infoWindow: [],                                             //poi infoWindow
+                            label: [],                                                  //used for the label of the poi
+                            geocoder: null,                                             //gmap geocoder object
+                            kmlLayer: null,                                             //gmap kmllayer object
 
                             //defaults (read from config file )
                             helpPageURL: "http://cms.uflib.ufl.edu/webservices/StAugustineProject/MapEditorHelper.aspx", //defines help page (TEMP)
@@ -232,7 +225,6 @@ function initMapEditor() {
                             incomingPolygonRadius: [],                  //defined in c# to js on page
 
                             //gmap related
-                            kmlLayer: null,                             //holds kml layer from server
                             ghosting: {
                                 strokeOpacity: 0.0,                     //make border invisible
                                 fillOpacity: 0.0,                       //make fill transparent
@@ -405,7 +397,7 @@ function initMapEditor() {
                                             MAPEDITOR.TRACER.addTracer("[INFO]: incoming center: " + marker.getPosition());
                                             MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                             MAPEDITOR.GLOBAL.DEFINES.poi_i++;
-                                            label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
+                                            MAPEDITOR.GLOBAL.DEFINES.label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
                                                 position: marker.getPosition(), //position of real marker
                                                 map: map,
                                                 zIndex: 2,
@@ -422,12 +414,12 @@ function initMapEditor() {
                                             document.getElementById("poiList").innerHTML += MAPEDITOR.UTILITIES.writeHTML("poiListItemIncoming", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiId, poiDescTemp);
                                             MAPEDITOR.GLOBAL.DEFINES.poiDesc[MAPEDITOR.GLOBAL.DEFINES.poi_i] = poiDescTemp;
                                             var contentString = MAPEDITOR.UTILITIES.writeHTML("poiDescIncoming", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiDescTemp, "");
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
                                                 content: contentString,
                                                 position: marker.getPosition()
                                             });
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setMap(map);
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map, MAPEDITOR.GLOBAL.DEFINES.poiObj[MAPEDITOR.GLOBAL.DEFINES.poi_i]);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setMap(map);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map, MAPEDITOR.GLOBAL.DEFINES.poiObj[MAPEDITOR.GLOBAL.DEFINES.poi_i]);
                                             MAPEDITOR.GLOBAL.DEFINES.poiCount++;
                                             google.maps.event.addListener(marker, 'dragstart', function () {
                                                 MAPEDITOR.GLOBAL.DEFINES.userMayLoseData = true;
@@ -435,8 +427,8 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setMap(null);
-                                                        label[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                                     }
                                                 }
                                             });
@@ -445,10 +437,10 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setOptions({ position: this.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
-                                                        infoWindow[i].open(null);
-                                                        label[i].setPosition(this.getPosition());
-                                                        label[i].setMap(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setOptions({ position: this.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(this.getPosition());
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                                     }
                                                 }
                                             });
@@ -458,8 +450,8 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setOptions({ position: this.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
-                                                        infoWindow[i].open(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setOptions({ position: this.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(map);
                                                     }
                                                 }
                                             });
@@ -489,9 +481,9 @@ function initMapEditor() {
                                     MAPEDITOR.ACTIONS.toggleVis("pois");
                                     MAPEDITOR.ACTIONS.toggleVis("pois");
                                     MAPEDITOR.GLOBAL.DEFINES.RIBMode = false;
-                                    //this hides the infowindows at startup
+                                    //this hides the MAPEDITOR.GLOBAL.DEFINES.infoWindows at startup
                                     for (var j = 0; j < MAPEDITOR.GLOBAL.DEFINES.poiCount; j++) {
-                                        infoWindow[j].setMap(null);
+                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[j].setMap(null);
                                     }
                                 }, 1000);
                             }
@@ -525,7 +517,7 @@ function initMapEditor() {
                                             MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                             MAPEDITOR.GLOBAL.DEFINES.poi_i++;
 
-                                            label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
+                                            MAPEDITOR.GLOBAL.DEFINES.label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
                                                 position: circle.getCenter(), //position of real marker
                                                 zIndex: 2,
                                                 map: map,
@@ -543,11 +535,11 @@ function initMapEditor() {
                                             document.getElementById("poiList").innerHTML += MAPEDITOR.UTILITIES.writeHTML("poiListItemIncoming", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiId, poiDescTemp);
                                             MAPEDITOR.GLOBAL.DEFINES.poiDesc[MAPEDITOR.GLOBAL.DEFINES.poi_i] = poiDescTemp;
                                             var contentString = MAPEDITOR.UTILITIES.writeHTML("poiDescIncoming", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiDescTemp, "");
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
                                                 content: contentString
                                             });
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(circle.getCenter());
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(circle.getCenter());
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
                                             MAPEDITOR.GLOBAL.DEFINES.poiCount++;
 
                                             google.maps.event.addListener(circle, 'dragstart', function () {
@@ -556,8 +548,8 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setMap(null);
-                                                        label[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                                     }
                                                 }
                                             });
@@ -587,10 +579,10 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setPosition(this.getCenter());
-                                                        infoWindow[i].open(null);
-                                                        label[i].setPosition(this.getCenter());
-                                                        label[i].setMap(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(this.getCenter());
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(this.getCenter());
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                                     }
                                                 }
                                             });
@@ -600,8 +592,8 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setPosition(this.getCenter());
-                                                        infoWindow[i].open(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(this.getCenter());
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(map);
                                                     }
                                                 }
                                             });
@@ -612,10 +604,10 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setPosition(circle.getCenter());
-                                                        infoWindow[i].open(null);
-                                                        label[i].setPosition(circle.getCenter());
-                                                        label[i].setMap(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(circle.getCenter());
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(circle.getCenter());
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                                     }
                                                 }
                                             });
@@ -645,9 +637,9 @@ function initMapEditor() {
                                     MAPEDITOR.ACTIONS.toggleVis("pois");
                                     MAPEDITOR.ACTIONS.toggleVis("pois");
                                     MAPEDITOR.GLOBAL.DEFINES.RIBMode = false;
-                                    //this hides the infowindows at startup
+                                    //this hides the MAPEDITOR.GLOBAL.DEFINES.infoWindows at startup
                                     for (var j = 0; j < MAPEDITOR.GLOBAL.DEFINES.poiCount; j++) {
-                                        infoWindow[j].setMap(null);
+                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[j].setMap(null);
                                     }
                                 }, 1000);
                             }
@@ -685,7 +677,7 @@ function initMapEditor() {
                                             document.getElementById("poiList").innerHTML += MAPEDITOR.UTILITIES.writeHTML("poiListItemIncoming", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiId, poiDescTemp);
                                             MAPEDITOR.GLOBAL.DEFINES.poiDesc[MAPEDITOR.GLOBAL.DEFINES.poi_i] = poiDescTemp;
                                             var contentString = MAPEDITOR.UTILITIES.writeHTML("poiDescIncoming", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiDescTemp, "");
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
                                                 content: contentString
                                             });
                                             var polylinePoints = [];
@@ -702,19 +694,19 @@ function initMapEditor() {
                                             MAPEDITOR.TRACER.addTracer("[INFO]: polylineCenterPoint: " + polylineCenterPoint);
                                             var polylineStartPoint = polylinePoints[0];
                                             MAPEDITOR.TRACER.addTracer("[INFO]: polylineStartPoint: " + polylineStartPoint);
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(polylineStartPoint);
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(polylineStartPoint);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
 
                                             //best fix so far
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiCount == 0) {
                                                 setTimeout(function () {
-                                                    infoWindow[0].setMap(null);
-                                                    infoWindow[0].setMap(map);
+                                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(null);
+                                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(map);
                                                 }, 800);
                                             }
 
                                             MAPEDITOR.GLOBAL.DEFINES.poiCount++;
-                                            label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
+                                            MAPEDITOR.GLOBAL.DEFINES.label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
                                                 position: polylineStartPoint, //position at start of polyline
                                                 zIndex: 2,
                                                 map: map,
@@ -740,8 +732,8 @@ function initMapEditor() {
                                                         MAPEDITOR.TRACER.addTracer("[INFO]: here2");
                                                         var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
                                                         var polylineStartPoint = polylinePoints[0];
-                                                        infoWindow[i].setPosition(polylineStartPoint);
-                                                        label[i].setPosition(polylineStartPoint);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(polylineStartPoint);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(polylineStartPoint);
                                                         MAPEDITOR.TRACER.addTracer("[INFO]: here3");
                                                     }
                                                 }
@@ -753,8 +745,8 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setMap(null);
-                                                        label[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                                     }
                                                 }
                                             });
@@ -799,10 +791,10 @@ function initMapEditor() {
                                                         });
                                                         var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
                                                         var polylineStartPoint = polylinePoints[0];
-                                                        infoWindow[i].setPosition(polylineStartPoint);
-                                                        infoWindow[i].open(null);
-                                                        label[i].setPosition(polylineStartPoint);
-                                                        label[i].setMap(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(polylineStartPoint);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(polylineStartPoint);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                                     }
                                                 }
                                             });
@@ -824,8 +816,8 @@ function initMapEditor() {
                                                         });
                                                         var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
                                                         var polylineStartPoint = polylinePoints[0];
-                                                        infoWindow[i].setPosition(polylineStartPoint);
-                                                        infoWindow[i].open(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(polylineStartPoint);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(map);
                                                     }
                                                 }
                                             });
@@ -851,10 +843,10 @@ function initMapEditor() {
                                                         MAPEDITOR.TRACER.addTracer("[INFO]: here2");
                                                         var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
                                                         var polylineStartPoint = polylinePoints[0];
-                                                        infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(polylineStartPoint);
-                                                        infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(null);
-                                                        label[i].setPosition(polylineStartPoint);
-                                                        label[i].setMap(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(polylineStartPoint);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(polylineStartPoint);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                                         MAPEDITOR.TRACER.addTracer("[INFO]: here3");
                                                     }
                                                 }
@@ -881,9 +873,9 @@ function initMapEditor() {
                                     MAPEDITOR.ACTIONS.toggleVis("pois");
                                     MAPEDITOR.ACTIONS.toggleVis("pois");
                                     MAPEDITOR.GLOBAL.DEFINES.RIBMode = false;
-                                    //this hides the infowindows at startup
+                                    //this hides the MAPEDITOR.GLOBAL.DEFINES.infoWindows at startup
                                     for (var j = 0; j < MAPEDITOR.GLOBAL.DEFINES.poiCount; j++) {
-                                        infoWindow[j].setMap(null);
+                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[j].setMap(null);
                                     }
                                 }, 1000);
                             }
@@ -985,7 +977,7 @@ function initMapEditor() {
                                             rectangle.setOptions(MAPEDITOR.GLOBAL.DEFINES.rectangleOptionsPOI);
                                             MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                             MAPEDITOR.GLOBAL.DEFINES.poi_i++;
-                                            label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
+                                            MAPEDITOR.GLOBAL.DEFINES.label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
                                                 position: rectangle.getBounds().getCenter(), //position of real marker
                                                 zIndex: 2,
                                                 map: map,
@@ -1003,17 +995,17 @@ function initMapEditor() {
                                             document.getElementById("poiList").innerHTML += MAPEDITOR.UTILITIES.writeHTML("poiListItemIncoming", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiId, poiDescTemp);
                                             MAPEDITOR.GLOBAL.DEFINES.poiDesc[MAPEDITOR.GLOBAL.DEFINES.poi_i] = poiDescTemp;
                                             var contentString = MAPEDITOR.UTILITIES.writeHTML("poiDescIncoming", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiDescTemp, "");
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
                                                 content: contentString
                                             });
 
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(rectangle.getBounds().getCenter());
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(rectangle.getBounds().getCenter());
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
                                             //best fix so far
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiCount == 0) {
                                                 setTimeout(function () {
-                                                    infoWindow[0].setMap(null);
-                                                    infoWindow[0].setMap(map);
+                                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(null);
+                                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(map);
                                                 }, 800);
                                             }
 
@@ -1025,10 +1017,10 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setPosition(this.getBounds().getCenter());
-                                                        infoWindow[i].setMap(null);
-                                                        label[i].setPosition(this.getBounds().getCenter());
-                                                        label[i].setMap(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(this.getBounds().getCenter());
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(this.getBounds().getCenter());
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                                     }
                                                 }
                                             });
@@ -1039,8 +1031,8 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setMap(null);
-                                                        label[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                                     }
                                                 }
                                             });
@@ -1050,8 +1042,8 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setMap(null);
-                                                        label[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                                     }
                                                 }
                                                 //used to get center point for lat/long tool
@@ -1077,10 +1069,10 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setPosition(this.getBounds().getCenter());
-                                                        infoWindow[i].open(null);
-                                                        label[i].setPosition(this.getBounds().getCenter());
-                                                        label[i].setMap(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(this.getBounds().getCenter());
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(this.getBounds().getCenter());
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                                     }
                                                 }
                                             });
@@ -1091,8 +1083,8 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setPosition(this.getBounds().getCenter());
-                                                        infoWindow[i].open(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(this.getBounds().getCenter());
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(map);
                                                     }
                                                 }
                                             });
@@ -1115,7 +1107,7 @@ function initMapEditor() {
 
                                             MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                             MAPEDITOR.GLOBAL.DEFINES.poi_i++;
-                                            label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
+                                            MAPEDITOR.GLOBAL.DEFINES.label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
                                                 position: MAPEDITOR.UTILITIES.polygonCenter(polygon), //position of real marker
                                                 zIndex: 2,
                                                 map: map,
@@ -1133,18 +1125,18 @@ function initMapEditor() {
                                             document.getElementById("poiList").innerHTML += MAPEDITOR.UTILITIES.writeHTML("poiListItemIncoming", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiId, poiDescTemp);
                                             MAPEDITOR.GLOBAL.DEFINES.poiDesc[MAPEDITOR.GLOBAL.DEFINES.poi_i] = poiDescTemp;
                                             var contentString = MAPEDITOR.UTILITIES.writeHTML("poiDescIncoming", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiDescTemp, "");
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
                                                 content: contentString
                                             });
 
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
-                                            infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
 
                                             //best fix so far
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiCount == 0) {
                                                 setTimeout(function () {
-                                                    infoWindow[0].setMap(null);
-                                                    infoWindow[0].setMap(map);
+                                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(null);
+                                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(map);
                                                 }, 800);
                                             }
 
@@ -1155,8 +1147,8 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(this));
-                                                        label[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(this));
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(this));
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(this));
                                                     }
                                                 }
                                             });
@@ -1167,10 +1159,10 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setPosition(this.getBounds().getCenter());
-                                                        infoWindow[i].setMap(null);
-                                                        label[i].setPosition(this.getBounds().getCenter());
-                                                        label[i].setMap(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(this.getBounds().getCenter());
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(this.getBounds().getCenter());
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                                     }
                                                 }
                                             });
@@ -1181,8 +1173,8 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setMap(null);
-                                                        label[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                                     }
                                                 }
                                             });
@@ -1192,8 +1184,8 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setMap(null);
-                                                        label[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                                     }
                                                 }
                                                 //used for lat/long tool
@@ -1219,10 +1211,10 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(this));
-                                                        infoWindow[i].open(null);
-                                                        label[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(this));
-                                                        label[i].setMap(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(this));
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(this));
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                                     }
                                                 }
                                             });
@@ -1233,8 +1225,8 @@ function initMapEditor() {
                                                 MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                                 for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                        infoWindow[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(this));
-                                                        infoWindow[i].open(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(this));
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(map);
                                                     }
                                                 }
                                             });
@@ -1260,10 +1252,10 @@ function initMapEditor() {
                                                         MAPEDITOR.TRACER.addTracer("[INFO]: here2");
                                                         var polygonCenterPoint = polygonPoints[(polygonPoints.length / 2)];
                                                         var polygonStartPoint = polygonPoints[0];
-                                                        infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(polygonCenterPoint);
-                                                        infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(null);
-                                                        label[i].setPosition(polygonCenterPoint);
-                                                        label[i].setMap(map);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(polygonCenterPoint);
+                                                        MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(null);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(polygonCenterPoint);
+                                                        MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                                         MAPEDITOR.TRACER.addTracer("[INFO]: here3");
                                                     }
                                                 }
@@ -1285,9 +1277,9 @@ function initMapEditor() {
                                                 MAPEDITOR.ACTIONS.toggleVis("pois");
                                                 MAPEDITOR.ACTIONS.toggleVis("pois");
                                                 MAPEDITOR.GLOBAL.DEFINES.RIBMode = false;
-                                                //this hides the infowindows at startup
+                                                //this hides the MAPEDITOR.GLOBAL.DEFINES.infoWindows at startup
                                                 for (var j = 0; j < MAPEDITOR.GLOBAL.DEFINES.poiCount; j++) {
-                                                    infoWindow[j].setMap(null);
+                                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[j].setMap(null);
                                                 }
                                             }, 1000);
                                         }
@@ -1829,7 +1821,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
                                     MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-                                    KmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParel_v6.kmz");  //must be pingable by google
+                                    MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParel_v6.kmz");  //must be pingable by google
                                     MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 13;                                                  //zoom level, starting
                                     MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -1853,7 +1845,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
                                     MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-                                    KmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParcel_v6.kmz");  //must be pingable by google
+                                    MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParcel_v6.kmz");  //must be pingable by google
                                     MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 14;                                                  //zoom level, starting
                                     MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -1880,7 +1872,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
                                     MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-                                    KmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml"); //must be pingable by google
+                                    MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml"); //must be pingable by google
                                     MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 13;                                                  //zoom level, starting
                                     MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 1;                                                       //max zoom out, default (21=lowest level, 1=highest level)
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -1917,7 +1909,6 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.knobRotationValue = 0;                                                  //rotation to display by default 
                                     MAPEDITOR.GLOBAL.DEFINES.preservedOpacity = 0.35;                                                 //opacity, default value (0-1,1=opaque)
                                     MAPEDITOR.GLOBAL.DEFINES.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
-                                    KmlLayer = MAPEDITOR.GLOBAL.DEFINES.kmlLayer;
                                     break;
                             }
 
@@ -1999,7 +1990,7 @@ function initMapEditor() {
                             document.getElementById("mapedit_blanket_loading").style.display = "none";
 
                             //moved here to fix issue where assignment before init
-                            KmlLayer.setOptions({ suppressinfowindows: true });
+                            MAPEDITOR.GLOBAL.DEFINES.kmlLayer.setOptions({ suppressinfoWindows: true });
 
                             MAPEDITOR.TRACER.addTracer("[INFO]: initOptions completed...");
                         } catch (err) {
@@ -2142,7 +2133,7 @@ function initMapEditor() {
                             map.controls[google.maps.ControlPosition.TOP_RIGHT].push(MAPEDITOR.GLOBAL.DEFINES.toolbarBufferZone2);                               //intialize spacer
                             MAPEDITOR.GLOBAL.DEFINES.drawingManager.setMap(map);                                                                                 //initialize drawing manager
                             MAPEDITOR.GLOBAL.DEFINES.drawingManager.setMap(null);                                                                                //initialize drawing manager (hide)
-                            geocoder = new google.maps.Geocoder();                                                                      //initialize geocoder
+                            MAPEDITOR.GLOBAL.DEFINES.geocoder = new google.maps.Geocoder();                                                                      //initialize MAPEDITOR.GLOBAL.DEFINES.geocoder
                             
                             //#region Google Specific Listeners  
 
@@ -2180,7 +2171,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                     MAPEDITOR.GLOBAL.DEFINES.poi_i++;
 
-                                    label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
+                                    MAPEDITOR.GLOBAL.DEFINES.label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
                                         position: marker.getPosition(), //position of real marker
                                         map: map,
                                         zIndex: 2,
@@ -2197,20 +2188,20 @@ function initMapEditor() {
                                     var poiDescTemp = MAPEDITOR.LOCALIZATION.DEFINES.L_Marker;
                                     document.getElementById("poiList").innerHTML += MAPEDITOR.UTILITIES.writeHTML("poiListItem", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiId, poiDescTemp);
                                     var contentString = MAPEDITOR.UTILITIES.writeHTML("poiDesc", MAPEDITOR.GLOBAL.DEFINES.poi_i, "", "");
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
                                         content: contentString,
                                         position: marker.getPosition()
                                     });
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setMap(map);
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map, MAPEDITOR.GLOBAL.DEFINES.poiObj[MAPEDITOR.GLOBAL.DEFINES.poi_i]);
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setMap(map);
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map, MAPEDITOR.GLOBAL.DEFINES.poiObj[MAPEDITOR.GLOBAL.DEFINES.poi_i]);
                                     MAPEDITOR.TRACER.addTracer("[INFO]: poiCount: " + MAPEDITOR.GLOBAL.DEFINES.poiCount);
 
                                     //best fix so far
                                     if (MAPEDITOR.GLOBAL.DEFINES.poiCount == 0) {
                                         setTimeout(function () {
-                                            infoWindow[0].setMap(null);
-                                            infoWindow[0].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
-                                            infoWindow[0].setMap(map);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(null);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(map);
                                         }, 800);
                                     }
 
@@ -2222,8 +2213,8 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setMap(null);
-                                                label[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                             }
                                         }
 
@@ -2234,10 +2225,10 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setOptions({ position: marker.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
-                                                infoWindow[i].open(null);
-                                                label[i].setPosition(marker.getPosition());
-                                                label[i].setMap(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setOptions({ position: marker.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(marker.getPosition());
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                             }
                                         }
 
@@ -2248,8 +2239,8 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setOptions({ position: marker.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
-                                                infoWindow[i].open(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setOptions({ position: marker.getPosition(), pixelOffset: new google.maps.Size(0, -40) });
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(map);
                                             }
                                         }
 
@@ -2270,7 +2261,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                     MAPEDITOR.GLOBAL.DEFINES.poi_i++;
 
-                                    label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
+                                    MAPEDITOR.GLOBAL.DEFINES.label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
                                         position: circle.getCenter(), //position of real marker
                                         zIndex: 2,
                                         map: map,
@@ -2287,16 +2278,16 @@ function initMapEditor() {
                                     var poiDescTemp = MAPEDITOR.LOCALIZATION.DEFINES.L_Circle;
                                     document.getElementById("poiList").innerHTML += MAPEDITOR.UTILITIES.writeHTML("poiListItem", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiId, poiDescTemp);
                                     var contentString = MAPEDITOR.UTILITIES.writeHTML("poiDesc", MAPEDITOR.GLOBAL.DEFINES.poi_i, "", "");
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
                                         content: contentString
                                     });
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(circle.getCenter());
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(circle.getCenter());
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
                                     //best fix so far
                                     if (MAPEDITOR.GLOBAL.DEFINES.poiCount == 0) {
                                         setTimeout(function () {
-                                            infoWindow[0].setMap(null);
-                                            infoWindow[0].setMap(map);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(null);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(map);
                                         }, 800);
                                     }
                                     MAPEDITOR.GLOBAL.DEFINES.poiCount++;
@@ -2307,8 +2298,8 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setMap(null);
-                                                label[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                             }
                                         }
 
@@ -2319,10 +2310,10 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setPosition(circle.getCenter());
-                                                infoWindow[i].open(null);
-                                                label[i].setPosition(circle.getCenter());
-                                                label[i].setMap(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(circle.getCenter());
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(circle.getCenter());
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                             }
                                         }
 
@@ -2333,8 +2324,8 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setPosition(circle.getCenter());
-                                                infoWindow[i].open(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(circle.getCenter());
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(map);
                                             }
                                         }
 
@@ -2345,10 +2336,10 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setPosition(circle.getCenter());
-                                                infoWindow[i].open(null);
-                                                label[i].setPosition(circle.getCenter());
-                                                label[i].setMap(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(circle.getCenter());
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(circle.getCenter());
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                             }
                                         }
 
@@ -2359,10 +2350,10 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setPosition(circle.getCenter());
-                                                infoWindow[i].open(null);
-                                                label[i].setPosition(circle.getCenter());
-                                                label[i].setMap(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(circle.getCenter());
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(circle.getCenter());
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                             }
                                         }
                                     });
@@ -2453,7 +2444,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                     MAPEDITOR.GLOBAL.DEFINES.poi_i++;
 
-                                    label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
+                                    MAPEDITOR.GLOBAL.DEFINES.label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
                                         position: rectangle.getBounds().getCenter(), //position of real marker
                                         zIndex: 2,
                                         map: map,
@@ -2470,16 +2461,16 @@ function initMapEditor() {
                                     var poiDescTemp = MAPEDITOR.LOCALIZATION.DEFINES.L_Rectangle;
                                     document.getElementById("poiList").innerHTML += MAPEDITOR.UTILITIES.writeHTML("poiListItem", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiId, poiDescTemp);
                                     var contentString = MAPEDITOR.UTILITIES.writeHTML("poiDesc", MAPEDITOR.GLOBAL.DEFINES.poi_i, "", "");
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
                                         content: contentString
                                     });
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(rectangle.getBounds().getCenter());
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(rectangle.getBounds().getCenter());
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
                                     //best fix so far
                                     if (MAPEDITOR.GLOBAL.DEFINES.poiCount == 0) {
                                         setTimeout(function () {
-                                            infoWindow[0].setMap(null);
-                                            infoWindow[0].setMap(map);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(null);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(map);
                                         }, 800);
                                     }
                                     MAPEDITOR.GLOBAL.DEFINES.poiCount++;
@@ -2491,10 +2482,10 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setPosition(rectangle.getBounds().getCenter());
-                                                infoWindow[i].setMap(null);
-                                                label[i].setPosition(rectangle.getBounds().getCenter());
-                                                label[i].setMap(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(rectangle.getBounds().getCenter());
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(rectangle.getBounds().getCenter());
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                             }
                                         }
 
@@ -2505,8 +2496,8 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setMap(null);
-                                                label[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                             }
                                         }
 
@@ -2517,8 +2508,8 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setMap(null);
-                                                label[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                             }
                                         }
 
@@ -2530,10 +2521,10 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setPosition(rectangle.getBounds().getCenter());
-                                                infoWindow[i].open(null);
-                                                label[i].setPosition(rectangle.getBounds().getCenter());
-                                                label[i].setMap(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(rectangle.getBounds().getCenter());
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(rectangle.getBounds().getCenter());
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                             }
                                         }
 
@@ -2544,8 +2535,8 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setPosition(rectangle.getBounds().getCenter());
-                                                infoWindow[i].open(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(rectangle.getBounds().getCenter());
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(map);
                                             }
                                         }
 
@@ -2583,7 +2574,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                     MAPEDITOR.GLOBAL.DEFINES.poi_i++;
 
-                                    label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
+                                    MAPEDITOR.GLOBAL.DEFINES.label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
                                         position: MAPEDITOR.UTILITIES.polygonCenter(polygon), //position of real marker
                                         zIndex: 2,
                                         map: map,
@@ -2600,16 +2591,16 @@ function initMapEditor() {
                                     var poiDescTemp = MAPEDITOR.LOCALIZATION.DEFINES.L_Polygon;
                                     document.getElementById("poiList").innerHTML += MAPEDITOR.UTILITIES.writeHTML("poiListItem", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiId, poiDescTemp);
                                     var contentString = MAPEDITOR.UTILITIES.writeHTML("poiDesc", MAPEDITOR.GLOBAL.DEFINES.poi_i, "", "");
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({
                                         content: contentString
                                     });
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
                                     //best fix so far
                                     if (MAPEDITOR.GLOBAL.DEFINES.poiCount == 0) {
                                         setTimeout(function () {
-                                            infoWindow[0].setMap(null);
-                                            infoWindow[0].setMap(map);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(null);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(map);
                                         }, 800);
                                     }
                                     MAPEDITOR.GLOBAL.DEFINES.poiCount++;
@@ -2620,10 +2611,10 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
-                                                infoWindow[i].setMap(null);
-                                                label[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
-                                                label[i].setMap(map); //does not redisplay
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map); //does not redisplay
                                             }
                                         }
                                     });
@@ -2633,8 +2624,8 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setMap(null);
-                                                label[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                             }
                                         }
 
@@ -2645,8 +2636,8 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setMap(null);
-                                                label[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                             }
                                         }
 
@@ -2657,10 +2648,10 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
-                                                infoWindow[i].open(null);
-                                                label[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
-                                                label[i].setMap(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                             }
                                         }
 
@@ -2671,8 +2662,8 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
-                                                infoWindow[i].open(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(MAPEDITOR.UTILITIES.polygonCenter(polygon));
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(map);
                                             }
                                         }
 
@@ -2717,7 +2708,7 @@ function initMapEditor() {
                                     var poiDescTemp = MAPEDITOR.LOCALIZATION.DEFINES.L_Line;
                                     document.getElementById("poiList").innerHTML += MAPEDITOR.UTILITIES.writeHTML("poiListItem", MAPEDITOR.GLOBAL.DEFINES.poi_i, poiId, poiDescTemp);
                                     var contentString = MAPEDITOR.UTILITIES.writeHTML("poiDesc", MAPEDITOR.GLOBAL.DEFINES.poi_i, "", "");
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({ content: contentString });
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new google.maps.InfoWindow({ content: contentString });
                                     var polylinePoints = [];
                                     var polylinePointCount = 0;
                                     polyline.getPath().forEach(function (latLng) {
@@ -2732,19 +2723,19 @@ function initMapEditor() {
                                     MAPEDITOR.TRACER.addTracer("[INFO]: polylineCenterPoint: " + polylineCenterPoint);
                                     var polylineStartPoint = polylinePoints[0];
                                     MAPEDITOR.TRACER.addTracer("[INFO]: polylineStartPoint: " + polylineStartPoint);
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(polylineStartPoint);
-                                    infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(polylineStartPoint);
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(map);
 
                                     //best fix so far
                                     if (MAPEDITOR.GLOBAL.DEFINES.poiCount == 0) {
                                         setTimeout(function () {
-                                            infoWindow[0].setMap(null);
-                                            infoWindow[0].setMap(map);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(null);
+                                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[0].setMap(map);
                                         }, 800);
                                     }
                                     MAPEDITOR.GLOBAL.DEFINES.poiCount++;
                                     //create the label
-                                    label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
+                                    MAPEDITOR.GLOBAL.DEFINES.label[MAPEDITOR.GLOBAL.DEFINES.poi_i] = new MarkerWithLabel({
                                         position: polylineStartPoint, //position at start of polyline
                                         zIndex: 2,
                                         map: map,
@@ -2773,10 +2764,10 @@ function initMapEditor() {
                                                 MAPEDITOR.TRACER.addTracer("[INFO]: here2");
                                                 var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
                                                 var polylineStartPoint = polylinePoints[0];
-                                                infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(polylineStartPoint);
-                                                infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(null);
-                                                label[i].setPosition(polylineStartPoint);
-                                                label[i].setMap(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].setPosition(polylineStartPoint);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[MAPEDITOR.GLOBAL.DEFINES.poi_i].open(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(polylineStartPoint);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                                 MAPEDITOR.TRACER.addTracer("[INFO]: here3");
                                             }
                                         }
@@ -2787,8 +2778,8 @@ function initMapEditor() {
                                         MAPEDITOR.GLOBAL.DEFINES.firstSavePOI = true;
                                         for (var i = 0; i < MAPEDITOR.GLOBAL.DEFINES.poiObj.length; i++) {
                                             if (MAPEDITOR.GLOBAL.DEFINES.poiObj[i] == this) {
-                                                infoWindow[i].setMap(null);
-                                                label[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
                                             }
                                         }
                                     });
@@ -2806,8 +2797,8 @@ function initMapEditor() {
                                                 });
                                                 var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
                                                 var polylineStartPoint = polylinePoints[0];
-                                                infoWindow[i].setPosition(polylineStartPoint);
-                                                infoWindow[i].open(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(polylineStartPoint);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(map);
                                             }
                                         }
                                     });
@@ -2825,10 +2816,10 @@ function initMapEditor() {
                                                 });
                                                 var polylineCenterPoint = polylinePoints[(polylinePoints.length / 2)];
                                                 var polylineStartPoint = polylinePoints[0];
-                                                infoWindow[i].setPosition(polylineStartPoint);
-                                                infoWindow[i].open(null);
-                                                label[i].setPosition(polylineStartPoint);
-                                                label[i].setMap(map);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setPosition(polylineStartPoint);
+                                                MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].open(null);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setPosition(polylineStartPoint);
+                                                MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(map);
                                             }
                                         }
                                     });
@@ -2904,7 +2895,7 @@ function initMapEditor() {
                                 MAPEDITOR.UTILITIES.checkZoomLevel();
                             });
                             //when kml layer is clicked, get feature that was clicked
-                            google.maps.event.addListener(KmlLayer, 'click', function (kmlEvent) {
+                            google.maps.event.addListener(MAPEDITOR.GLOBAL.DEFINES.kmlLayer, 'click', function (kmlEvent) {
                                 var name = kmlEvent.featureData.name;
                                 MAPEDITOR.UTILITIES.displayMessage("ParcelID: " + name); //temp
                             });
@@ -3113,7 +3104,7 @@ function initMapEditor() {
                         }
                     }
                 };
-            }(),
+            }(),          //global vars and inits
             LOCALIZATION: function () {
                 return {
                     DEFINES: function () {
@@ -3401,7 +3392,7 @@ function initMapEditor() {
                         }
                     }
                 };
-            }(),
+            }(),    //localization support
             ACTIONS: function () {
                 return {
                     resetAll: function () {
@@ -3471,10 +3462,10 @@ function initMapEditor() {
 
                                 case "kml":
                                     if (MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed == true) {
-                                        KmlLayer.setMap(null);
+                                        MAPEDITOR.GLOBAL.DEFINES.kmlLayer.setMap(null);
                                         MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;
                                     } else {
-                                        KmlLayer.setMap(map);
+                                        MAPEDITOR.GLOBAL.DEFINES.kmlLayer.setMap(map);
                                         MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = true;
                                     }
                                     MAPEDITOR.UTILITIES.buttonActive("kml"); //set the is active glow for button
@@ -4083,10 +4074,10 @@ function initMapEditor() {
                                                     if (MAPEDITOR.GLOBAL.DEFINES.poiKML[i] != null) {
                                                         MAPEDITOR.GLOBAL.DEFINES.poiKML[i] = null;
                                                     }
-                                                    infoWindow[i].setMap(null);
-                                                    infoWindow[i] = null;
-                                                    label[i].setMap(null);
-                                                    label[i] = null;
+                                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[i].setMap(null);
+                                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[i] = null;
+                                                    MAPEDITOR.GLOBAL.DEFINES.label[i].setMap(null);
+                                                    MAPEDITOR.GLOBAL.DEFINES.label[i] = null;
                                                     var strg = "#poi" + i; //create <li> poi string
                                                     $(strg).remove(); //remove <li>
                                                 }
@@ -4172,7 +4163,7 @@ function initMapEditor() {
                                 } else {
 
                                     //get and hold heldPosistion
-                                    var heldPosition = infoWindow[id].position;
+                                    var heldPosition = MAPEDITOR.GLOBAL.DEFINES.infoWindow[id].position;
 
                                     MAPEDITOR.TRACER.addTracer("[INFO]: poiDesc[id]: " + MAPEDITOR.GLOBAL.DEFINES.poiDesc[id]);
                                     MAPEDITOR.TRACER.addTracer("[INFO]: temp: " + temp);
@@ -4191,11 +4182,11 @@ function initMapEditor() {
                                     document.getElementById("poiList").innerHTML = tempHTMLHolder2;
 
                                     MAPEDITOR.TRACER.addTracer("[INFO]: tempHTMLHolder2: " + tempHTMLHolder2);
-                                    MAPEDITOR.TRACER.addTracer("[INFO]: label[id]" + label[id]);
+                                    MAPEDITOR.TRACER.addTracer("[INFO]: MAPEDITOR.GLOBAL.DEFINES.label[id]" + MAPEDITOR.GLOBAL.DEFINES.label[id]);
                                     MAPEDITOR.TRACER.addTracer("[INFO]: temp.substring(0, 20): " + temp.substring(0, 20));
 
                                     //replace the object label
-                                    label[id].set("labelContent", temp.substring(0, 20));
+                                    MAPEDITOR.GLOBAL.DEFINES.label[id].set("labelContent", temp.substring(0, 20));
 
                                     MAPEDITOR.TRACER.addTracer("[INFO]: MAPEDITOR.GLOBAL.DEFINES.poiDesc[id]: " + MAPEDITOR.GLOBAL.DEFINES.poiDesc[id]);
                                     MAPEDITOR.TRACER.addTracer("[INFO]: temp: " + temp);
@@ -4204,19 +4195,19 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.poiDesc[id] = temp;
 
                                     //close old info window (this negates bug where desc box would no longer be tied to point)
-                                    infoWindow[id].setMap(null);
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[id].setMap(null);
 
                                     //visually reset desc
-                                    //infoWindow[id].setOptions({ content: MAPEDITOR.UTILITIES.writeHTML("poiDesc", id, "", "") });
+                                    //MAPEDITOR.GLOBAL.DEFINES.infoWindow[id].setOptions({ content: MAPEDITOR.UTILITIES.writeHTML("poiDesc", id, "", "") });
 
-                                    infoWindow[id] = new google.maps.InfoWindow({
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[id] = new google.maps.InfoWindow({
                                         content: MAPEDITOR.UTILITIES.writeHTML("poiDescIncoming", id, temp, ""),
                                         position: heldPosition,
                                         pixelOffset: new google.maps.Size(0, -40)
                                     });
 
                                     //close the poi desc box
-                                    infoWindow[id].setMap(null);
+                                    MAPEDITOR.GLOBAL.DEFINES.infoWindow[id].setMap(null);
                                 }
                             }
                             MAPEDITOR.TRACER.addTracer("[INFO]: MAPEDITOR.ACTIONS.poiGetDesc(" + id + "); finished...");
@@ -4233,8 +4224,8 @@ function initMapEditor() {
                             MAPEDITOR.GLOBAL.DEFINES.poiType[id] = "deleted";
                             var strg = "#poi" + id; //create <li> poi string
                             $(strg).remove(); //remove <li>
-                            infoWindow[id].setMap(null);
-                            label[id].setMap(null);
+                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[id].setMap(null);
+                            MAPEDITOR.GLOBAL.DEFINES.label[id].setMap(null);
                             MAPEDITOR.TRACER.addTracer("[INFO]: poiDeleteMe completed...");
                         } catch (err) {
                             MAPEDITOR.TRACER.addTracer("[ERROR]: " + err + " at line " +err.lineNumber );
@@ -4244,10 +4235,10 @@ function initMapEditor() {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: poiShowMe started...");
                             MAPEDITOR.GLOBAL.DEFINES.poiObj[id].setMap(map);
-                            //explicitly declar position of infowindow (fixes issue of first poi desc posit on load)
-                            //infoWindow[id].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
-                            infoWindow[id].setMap(map);
-                            label[id].setMap(map);
+                            //explicitly declar position of MAPEDITOR.GLOBAL.DEFINES.infoWindow (fixes issue of first poi desc posit on load)
+                            //MAPEDITOR.GLOBAL.DEFINES.infoWindow[id].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
+                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[id].setMap(map);
+                            MAPEDITOR.GLOBAL.DEFINES.label[id].setMap(map);
                             //document.getElementById("poi" + id).style.background = MAPEDITOR.GLOBAL.DEFINES.listItemHighlightColor;
                             document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + MAPEDITOR.GLOBAL.DEFINES.baseURL + MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL + "sub.png\" onclick=\"MAPEDITOR.ACTIONS.poiHideMe(" + id + ");\" />";
                             MAPEDITOR.TRACER.addTracer("[INFO]: poiShowMe completed...");
@@ -4259,8 +4250,8 @@ function initMapEditor() {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: poihideme started...");
                             MAPEDITOR.GLOBAL.DEFINES.poiObj[id].setMap(null);
-                            infoWindow[id].setMap(null);
-                            label[id].setMap(null);
+                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[id].setMap(null);
+                            MAPEDITOR.GLOBAL.DEFINES.label[id].setMap(null);
                             document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + MAPEDITOR.GLOBAL.DEFINES.baseURL + MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL + "add.png\" onclick=\"MAPEDITOR.ACTIONS.poiShowMe(" + id + ");\" />";
                             MAPEDITOR.TRACER.addTracer("[INFO]: poihideme completed...");
                         } catch (err) {
@@ -4271,10 +4262,10 @@ function initMapEditor() {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: poiEditMe started...");
                             MAPEDITOR.GLOBAL.DEFINES.poiObj[id].setMap(map);
-                            //explicitly declar position of infowindow (fixes issue of first poi desc posit on load)
-                            //infoWindow[id].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
-                            infoWindow[id].setMap(map);
-                            label[id].setMap(map);
+                            //explicitly declar position of MAPEDITOR.GLOBAL.DEFINES.infoWindow (fixes issue of first poi desc posit on load)
+                            //MAPEDITOR.GLOBAL.DEFINES.infoWindow[id].setOptions({ pixelOffset: new google.maps.Size(0, -40) });
+                            MAPEDITOR.GLOBAL.DEFINES.infoWindow[id].setMap(map);
+                            MAPEDITOR.GLOBAL.DEFINES.label[id].setMap(map);
                             //document.getElementById("poi" + id).style.background = MAPEDITOR.GLOBAL.DEFINES.listItemHighlightColor;
                             document.getElementById("poiToggle" + id).innerHTML = "<img src=\"" + MAPEDITOR.GLOBAL.DEFINES.baseURL + MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL + "sub.png\" onclick=\"MAPEDITOR.ACTIONS.poiHideMe(" + id + ");\" />";
                             MAPEDITOR.TRACER.addTracer("[INFO]: poiEditMe completed...");
@@ -4872,7 +4863,7 @@ function initMapEditor() {
                         }
                     }
                 };
-            }(),                                            //called by user direct interaction
+            }(),         //called by user direct interaction
             UTILITIES: function () {
                 return {
                     cycleOverlayHighlight: function (id) {
@@ -5459,8 +5450,8 @@ function initMapEditor() {
                     codeLatLng: function (latlng) {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: codeLatLng started...");
-                            if (geocoder) {
-                                geocoder.geocode({ 'latLng': latlng }, function (results, status) {
+                            if (MAPEDITOR.GLOBAL.DEFINES.geocoder) {
+                                MAPEDITOR.GLOBAL.DEFINES.geocoder.geocode({ 'latLng': latlng }, function (results, status) {
                                     if (status == google.maps.GeocoderStatus.OK) {
                                         if (results[1]) {
                                             document.getElementById("content_toolbox_rgItem").value = results[0].formatted_address;
@@ -5481,7 +5472,7 @@ function initMapEditor() {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: codeAddress started...");
                             var bounds = map.getBounds(); //get the current map bounds (should not be greater than the bounding box)
-                            geocoder.geocode({ 'address': geo, 'bounds': bounds }, function (results, status) { //geocode the lat/long of incoming with a bias towards the bounds
+                            MAPEDITOR.GLOBAL.DEFINES.geocoder.geocode({ 'address': geo, 'bounds': bounds }, function (results, status) { //geocode the lat/long of incoming with a bias towards the bounds
                                 if (status == google.maps.GeocoderStatus.OK) { //if it worked
                                     map.setCenter(results[0].geometry.location); //set the center of map to the results
                                     MAPEDITOR.UTILITIES.testBounds(); //test to make sure we are indeed in the bounds (have to do this because gmaps only allows for a BIAS of bounds and is not strict)
@@ -6093,7 +6084,7 @@ function initMapEditor() {
                         }
                     }
                 };
-            }(),
+            }(),       //indirectly used fcns
             run: function () {
                 try {
                     MAPEDITOR.TRACER.addTracer("[INFO]: MapEditor.run started...");
@@ -6112,7 +6103,9 @@ function initMapEditor() {
                 } catch(e) {
                     MAPEDITOR.TRACER.addTracer("[ERROR]: MapEditor.run failed...");
                 } 
-            }
+            }                //init all fcn
         };
     }();
+    //once it has been declared, run it
+    MAPEDITOR.run();
 }
