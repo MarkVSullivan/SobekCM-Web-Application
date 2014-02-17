@@ -42,6 +42,7 @@ namespace SobekCM.Library.MySobekViewer
 
         private DataTable tracking_users;
         private DataTable open_workflows_from_DB;
+        private DataTable previous_workflows_this_user;
 
         private Dictionary<string, Tracking_Workflow> current_workflows;
         private Dictionary<string, Tracking_Workflow> current_workflows_no_durations;
@@ -164,6 +165,9 @@ namespace SobekCM.Library.MySobekViewer
 
                 HttpContext.Current.Session["Selected_User"] = current_selected_user;
             }
+
+            //Get the table of all previous entries created by this user, for display in the third edit tab
+            previous_workflows_this_user = Database.SobekCM_Database.Tracking_Get_All_Entries_By_User(current_selected_user.UserName);
 
             //Fetch the dictionaries of current work from the session
             current_workflows = (HttpContext.Current.Session["Tracking_Current_Workflows"]) as Dictionary<string, Tracking_Workflow>;
@@ -923,11 +927,13 @@ namespace SobekCM.Library.MySobekViewer
 
             const string DURATION = "Track with Duration";
             const string SINGLE_POINT = "Track without Duration";
+            const string EDIT_SCREEN = "Edit Previous Entries";
 
             //Draw all the page tabs for this form
 
             builder.AppendLine("    <li id=\"tabHeader_1\" onclick=\"save_item_tracking('1');\">" + DURATION + "</li>");
             builder.AppendLine("     <li id=\"tabHeader_2\" onclick=\"save_item_tracking('2');\">" + SINGLE_POINT + "</li>");
+            builder.AppendLine("     <li id=\"tabHeader_3\" onclick=\"save_item_tracking('3');\">" + EDIT_SCREEN + "</li>");
 
             builder.AppendLine("</ul>");
             builder.AppendLine("</div>");
@@ -936,7 +942,7 @@ namespace SobekCM.Library.MySobekViewer
             //Start the divs for the content of the tabs
             builder.AppendLine("    <div class=\"tabscontent\">");
 
-            #region Content of Tab1 - Tracking with duration
+            #region First tab - Tracking with duration
 
             builder.AppendLine("            <div class=\"tabpage\" id=\"tabpage_1\">");
             //Start the item information table
@@ -1275,10 +1281,8 @@ namespace SobekCM.Library.MySobekViewer
 
 
             #endregion
-
-
-
-            #region Second tab - tracking without duration
+            
+            #region Second tab - Tracking without duration
 
 
             builder.AppendLine("            <div class=\"tabpage\" id=\"tabpage_2\">");
@@ -1507,7 +1511,29 @@ namespace SobekCM.Library.MySobekViewer
 
             #endregion
 
+            #region Third tab - Editing previous entries
+            builder.AppendLine("            <div class=\"tabpage\" id=\"tabpage_3\">");
+            if (previous_workflows_this_user.Rows.Count > 0)
+            {  
+                //Start the table for displaying the workflow entries
+                builder.AppendLine("<table id=\"sbkTracking_Workflows_Table\">");
+                
+                foreach (DataRow thisRow in previous_workflows_this_user.Rows)
+                {
+                    builder.AppendLine("<tr>");
+                    builder.AppendLine("<td>" + thisRow["ItemID"] + "</td>");
+                    builder.AppendLine("<td>" + thisRow["WorkFlowName"] + "</td>");
+                    builder.AppendLine("<td>" + thisRow["DateStarted"] + "</td>");
+                    builder.AppendLine("<td>" + thisRow["DateCompleted"] + "</td>");
+                    builder.AppendLine("<td>" + thisRow["RelatedEquipment"] + "</td>");
+                    builder.AppendLine("<td>" + thisRow["WorkPerformedBy"] + "</td>");
+                    builder.AppendLine("</tr>");
+                }
+                builder.AppendLine("</table>");
 
+            }
+            builder.AppendLine("</div>");
+            #endregion
 
             builder.AppendLine("</div>");
 
