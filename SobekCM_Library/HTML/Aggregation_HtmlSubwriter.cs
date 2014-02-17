@@ -622,7 +622,7 @@ namespace SobekCM.Library.HTML
 		        {
 			        Output.WriteLine("<br />");
 		        }
-		        else
+				else if (collectionViewer.Type != Item_Aggregation.CollectionViewsAndSearchesEnum.DataSet_Browse)
 		        {
 			        // Add the main aggrgeation menu here
 			        MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(Output, currentMode, currentUser, Current_Aggregation, translator, codeManager);
@@ -631,6 +631,14 @@ namespace SobekCM.Library.HTML
 					Output.WriteLine("<div id=\"pagecontainer\">");
 					Output.WriteLine("<br />");
 		        }
+				else
+				{
+					// Add the main aggrgeation menu here
+					MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, currentMode, currentUser, Current_Aggregation, translator, codeManager, false);
+
+					// Start the (optional) page container
+					Output.WriteLine("<div id=\"sbkAhs_ResultsPageContainer\">");
+				}
 	        }
 
 
@@ -2157,11 +2165,11 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("<!-- Close the pagecontainer div -->");
-            Output.WriteLine("</div>");
-            Output.WriteLine();
+		        Output.WriteLine("<!-- Close the pagecontainer div -->");
+		        Output.WriteLine("</div>");
+		        Output.WriteLine();
 
-			// Add the scripts needed
+	        // Add the scripts needed
 #if DEBUG
 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.js\"></script>");
 #else

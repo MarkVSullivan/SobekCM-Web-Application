@@ -364,16 +364,6 @@ GO
 GRANT EXECUTE ON [dbo].[SobekCM_Set_User_Setting_Value] to sobek_user;
 GO
 
-USE [SobekDB]
-GO
-
-/****** Object:  StoredProcedure [dbo].[mySobek_Update_User]    Script Date: 02/03/2014 11:17:27 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
 
 -- Procedure allows an admin to edit permissions flags for this user
 ALTER PROCEDURE [dbo].[mySobek_Update_User]
