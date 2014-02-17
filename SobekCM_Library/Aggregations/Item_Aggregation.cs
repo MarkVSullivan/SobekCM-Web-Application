@@ -1418,7 +1418,11 @@ namespace SobekCM.Library.Aggregations
 	            {
 		            foreach (Item_Aggregation_Child_Page browseObject in childPages)
 		            {
-			            browseObject.Write_In_Configuration_XML_File(writer, Default_BrowseBy);
+						// Don't add ALL or NEW here
+						if ((String.Compare(browseObject.Code, "all", StringComparison.InvariantCultureIgnoreCase) != 0) && (String.Compare(browseObject.Code, "new", StringComparison.InvariantCultureIgnoreCase) != 0))
+			            {
+				            browseObject.Write_In_Configuration_XML_File(writer, Default_BrowseBy);
+			            }
 		            }
 		            writer.WriteLine();
 	            }

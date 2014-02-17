@@ -414,7 +414,7 @@ namespace SobekCM.Library.MySobekViewer
                     // If this goes from step 1 to step 2, write the permissions first
                     if ((currentProcessStep == 1) && (next_phase == "2") && ( template.Permissions_Agreement.Length > 0 ))
                     {
-                        // Store this agreement in the session state
+						// Store this agreement in the session state
                         DateTime agreement_date = DateTime.Now;
                         HttpContext.Current.Session["agreement_date"] = agreement_date;
 
@@ -429,6 +429,15 @@ namespace SobekCM.Library.MySobekViewer
                         writer.WriteLine(template.Permissions_Agreement);
                         writer.Flush();
                         writer.Close();
+
+						if (HttpContext.Current.Request.Form["setNewDefaultCheckBox"] != null )
+						{
+							string prefProject = HttpContext.Current.Request.Form["prefProject"];
+							string prefTemplate = HttpContext.Current.Request.Form["prefTemplate"];
+							user.Set_Default_Template(prefTemplate.Trim());
+							user.Set_Current_Default_Metadata(prefProject.Trim());
+							Database.SobekCM_Database.Save_User(user, String.Empty, Tracer);
+						}
                     }
 
                     // If this is going from a step that includes the metadata entry portion, save this to the item
@@ -1179,6 +1188,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     if (user.Default_Metadata_Sets.Count > 1)
                     {
+						Output.WriteLine("  <tr>");
 						Output.WriteLine("    <td style=\"width:" + COL1_WIDTH + "; padding: 5px;\">&nbsp;</td>");
 						Output.WriteLine("    <td style=\"width:" + COL2_WIDTH + ";padding:5px;text-weight:bold;\">" + projectLabel + ":</td>");
 						Output.WriteLine("    <td style=\"width:" + COL3_WIDTH + ";padding:5px;\">");
@@ -1198,6 +1208,11 @@ namespace SobekCM.Library.MySobekViewer
                         Output.WriteLine("    </td>");
                         Output.WriteLine("  </tr>");
                     }
+
+					Output.WriteLine("  <tr>");
+	                Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
+					Output.WriteLine("    <td><input type=\"checkbox\" name=\"setNewDefaultCheckBox\" id=\"setNewDefaultCheckBox\" /><label for=\"setNewDefaultCheckBox\">Save as my new defaults</label></td>");
+					Output.WriteLine("  </tr>");
 
                     Output.WriteLine("</table>");
                     Output.WriteLine("To change your default " + changeable + ", select <a href=\"" + currentMode.Base_URL + "my/preferences\">My Account</a> above.<br /><br />");

@@ -195,7 +195,9 @@ namespace SobekCM.Library.MySobekViewer
 	                    saveItem.METS_Header.Creator_Software = "SobekCM Web - Online add a volume (derived from VID " + vid + ")";
 						saveItem.METS_Header.Clear_Creator_Individual_Notes();
 	                    saveItem.METS_Header.Creator_Individual = user.Full_Name;
-
+	                    saveItem.Bib_Info.Location.Other_URL = String.Empty;
+						saveItem.Bib_Info.Location.Other_URL_Display_Label = String.Empty;
+						saveItem.Bib_Info.Location.Other_URL_Note = String.Empty;
 
                         // Save the template changes to this item
                         template.Save_To_Bib(saveItem, user, 1);
@@ -247,8 +249,12 @@ namespace SobekCM.Library.MySobekViewer
                                 message = message + "<span style=\"color: blue\"><strong>Saved new volume ( " + saveItem.BibID + " : " + saveItem.VID + ")</strong></span>";
                                 break;
 
-                            //case "save_addfiles":
-                            //    break;
+                            case "save_addfiles":
+								currentMode.Mode = Display_Mode_Enum.My_Sobek;
+								currentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+                                currentMode.VID = saveItem.VID;
+                                currentMode.Redirect();
+                                break;
 
                             default:
                                 currentMode.Mode = Display_Mode_Enum.Item_Display;
