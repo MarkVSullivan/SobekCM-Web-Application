@@ -2090,7 +2090,6 @@ function initMapEditor() {
                                     }
                                 }
                             }
-
                             MAPEDITOR.TRACER.addTracer("[INFO]: initOverlayList completed...");
                         } catch (err) {
                             MAPEDITOR.TRACER.addTracer("[ERROR]: " + err + " at line " +err.lineNumber );
@@ -4866,6 +4865,15 @@ function initMapEditor() {
             }(),         //called by user direct interaction
             UTILITIES: function () {
                 return {
+                    addOverlayListItemThumbnailTooltip: function (id) {
+                        try {
+                            MAPEDITOR.TRACER.addTracer("[INFO]: addOverlayListItemThumbnailTooltip started...");
+                            $("#overlayListItemText" + MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPageId[id-1]).tooltip({ content: "<img src=\"" + MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[id-1] + "\" style=\"max-height:200px;\"/>" });
+                            MAPEDITOR.TRACER.addTracer("[INFO]: addOverlayListItemThumbnailTooltip completed...");
+                        } catch (err) {
+                            MAPEDITOR.TRACER.addTracer("[ERROR]: " + err + " at line " + err.lineNumber);
+                        }
+                    },
                     cycleOverlayHighlight: function (id) {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: cycleOverlayHighlight started...");
@@ -5684,7 +5692,7 @@ function initMapEditor() {
                                     break;
                                 case "overlayListItem":
                                     MAPEDITOR.TRACER.addTracer("[INFO]: Creating html String");
-                                    htmlString = "<div id=\"overlayListItem" + param1 + "\" class=\"overlayListItem\" title=\"" + param2 + "\"> " + param2.substring(0, 20) + " <div class=\"overlayActionButton\"><a title=\"" + MAPEDITOR.LOCALIZATION.DEFINES.L60 + "\" href=\"#\"><img src=\"" + MAPEDITOR.GLOBAL.DEFINES.baseURL + MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL + "edit.png\" onclick=\"MAPEDITOR.ACTIONS.overlayEditMe(" + param1 + ");\"/></a> <a id=\"overlayToggle" + param1 + "\" href=\"#\" title=\"" + MAPEDITOR.LOCALIZATION.DEFINES.L61 + "\" ><img src=\"" + MAPEDITOR.GLOBAL.DEFINES.baseURL + MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL + "sub.png\" onclick=\"MAPEDITOR.ACTIONS.overlayHideMe(" + param1 + ");\" /></a> <a title=\"" + MAPEDITOR.LOCALIZATION.DEFINES.L64 + "\" href=\"#\" ><img src=\"" + MAPEDITOR.GLOBAL.DEFINES.baseURL + MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL + "delete.png\" onclick=\"MAPEDITOR.ACTIONS.overlayDeleteMe(" + param1 + ");\"/></a> </div></div>";
+                                    htmlString = "<div id=\"overlayListItem" + param1 + "\" class=\"overlayListItem\" > <div id=\"overlayListItemText" + param1 + "\" class=\"overlayListItemText\" title=\"" + param2 + "\" onmouseover=\"MAPEDITOR.UTILITIES.addOverlayListItemThumbnailTooltip(" + param1 + ");\" >" + param2.substring(0, 20) + "</div> <div class=\"overlayActionButton\"><a title=\"" + MAPEDITOR.LOCALIZATION.DEFINES.L60 + "\" href=\"#\"><img src=\"" + MAPEDITOR.GLOBAL.DEFINES.baseURL + MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL + "edit.png\" onclick=\"MAPEDITOR.ACTIONS.overlayEditMe(" + param1 + ");\"/></a> <a id=\"overlayToggle" + param1 + "\" href=\"#\" title=\"" + MAPEDITOR.LOCALIZATION.DEFINES.L61 + "\" ><img src=\"" + MAPEDITOR.GLOBAL.DEFINES.baseURL + MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL + "sub.png\" onclick=\"MAPEDITOR.ACTIONS.overlayHideMe(" + param1 + ");\" /></a> <a title=\"" + MAPEDITOR.LOCALIZATION.DEFINES.L64 + "\" href=\"#\" ><img src=\"" + MAPEDITOR.GLOBAL.DEFINES.baseURL + MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL + "delete.png\" onclick=\"MAPEDITOR.ACTIONS.overlayDeleteMe(" + param1 + ");\"/></a> </div></div>";
                                     break;
                                 case "searchResultListItem":
                                     MAPEDITOR.TRACER.addTracer("[INFO]: Creating search html String");
@@ -6090,11 +6098,11 @@ function initMapEditor() {
                     MAPEDITOR.TRACER.addTracer("[INFO]: MapEditor.run started...");
                     //google.maps.event.addDomListener(window, 'load', MAPEDITOR.GLOBAL.initGMap); //TEMP, when does this get fired?
                     MAPEDITOR.UTILITIES.CustomOverlay.prototype = new google.maps.OverlayView(); //used to display custom overlay
+                    MAPEDITOR.GLOBAL.initJqueryElements();
                     MAPEDITOR.GLOBAL.initDeclarations();
                     MAPEDITOR.GLOBAL.initListOfTextAreaIds();
                     MAPEDITOR.GLOBAL.initLocalization();
                     MAPEDITOR.GLOBAL.initListeners();
-                    MAPEDITOR.GLOBAL.initJqueryElements();
                     initConfigSettings(); //c# to js
                     MAPEDITOR.GLOBAL.initInterface(MAPEDITOR.GLOBAL.DEFINES.collectionLoadType); //defines interface
                     MAPEDITOR.GLOBAL.initGMap();
