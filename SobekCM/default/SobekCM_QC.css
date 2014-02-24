@@ -135,6 +135,7 @@
 
 .qcmove_popup_div { position:fixed; background-color:#eeeeee; height:600px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;color: #222222; } 
 .qcError_popup_div { position:fixed; background-color:#eeeeee; height:300px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small;  -moz-border-radius: 7px;color: #222222; } 
+.sbkMySobek_PopupForm { height:300px;color: #222222;}
 
 .qcFormDivFieldset{ border: 1px #d2d2d2 solid;}
 .qcErrorForm_LeftDiv{ float: left;margin-left: 25px;margin-right: 10px;}
