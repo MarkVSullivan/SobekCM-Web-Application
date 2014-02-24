@@ -1822,7 +1822,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParel_v6.kmz");  //must be pingable by google
-                                    MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 13;                                                  //zoom level, starting
+                                    MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 3;                                                  //zoom level, starting
                                     MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
@@ -1873,7 +1873,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml"); //must be pingable by google
-                                    MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 13;                                                  //zoom level, starting
+                                    MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 10;                                                  //zoom level, starting
                                     MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 1;                                                       //max zoom out, default (21=lowest level, 1=highest level)
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
@@ -1898,7 +1898,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
                                     MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-                                    MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 14;                                                  //zoom level, starting
+                                    MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 3;                                                  //zoom level, starting
                                     MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
