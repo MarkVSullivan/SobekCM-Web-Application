@@ -1725,3 +1725,9 @@ a img
 #debugVersionNumber{
     display:inline-block;
 }
+.overlayListItemText{
+    display:inline-block;
+}
+.overlayListItemText:hover{
+    cursor:pointer;
+}
