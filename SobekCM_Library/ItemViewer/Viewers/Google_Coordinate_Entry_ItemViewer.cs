@@ -655,10 +655,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //read collectionIds from config.xml file
             try
             {
-                string configFilePath = SobekCM_Library_Settings.Application_Server_Network + "/config/sobekcm_mapedit.config";
-#if DEBUG
-                configFilePath = @"C:\Users\cadetpeters89\Documents\CUSTOM\projects\git\SobekCM-Web-Application\SobekCM\config\sobekcm_mapedit.config"; //2do make this dynamic
-#endif
+                //get config file
+                string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/sobekcm_mapedit.config";
+
                 //read through and get all the ids
                 using (XmlReader reader = XmlReader.Create(configFilePath))
                 {
