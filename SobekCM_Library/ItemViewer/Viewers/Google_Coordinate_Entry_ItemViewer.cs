@@ -514,6 +514,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
         {
             Body_Attributes.Clear();
+            Body_Attributes.Add(new Tuple<string, string>("onload", "initMapEditor();"));
             Body_Attributes.Add(new Tuple<string, string>("onresize", "MAPEDITOR.UTILITIES.resizeView();"));
         }
 
@@ -654,10 +655,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //read collectionIds from config.xml file
             try
             {
-                string configFilePath = SobekCM_Library_Settings.Application_Server_Network + "/config/sobekcm_mapedit.config";
-#if DEBUG
-                configFilePath = @"C:\Users\cadetpeters89\Documents\CUSTOM\projects\git\SobekCM-Web-Application\SobekCM\config\sobekcm_mapedit.config"; //2do make this dynamic
-#endif
+                //get config file
+                string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/sobekcm_mapedit.config";
+
                 //read through and get all the ids
                 using (XmlReader reader = XmlReader.Create(configFilePath))
                 {

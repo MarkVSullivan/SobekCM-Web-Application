@@ -42,6 +42,7 @@ namespace SobekCM.Library.MySobekViewer
 
         private DataTable tracking_users;
         private DataTable open_workflows_from_DB;
+        private DataTable previous_workflows_this_user;
 
         private Dictionary<string, Tracking_Workflow> current_workflows;
         private Dictionary<string, Tracking_Workflow> current_workflows_no_durations;
@@ -125,20 +126,23 @@ namespace SobekCM.Library.MySobekViewer
 
 
             //Get the equipment value
-            if (HttpContext.Current.Session["Equipment"] != null && !String.IsNullOrEmpty(HttpContext.Current.Session["Equipment"].ToString()))
-                equipment = HttpContext.Current.Session["Equipment"].ToString();
+            //if (HttpContext.Current.Session["Equipment"] != null && !String.IsNullOrEmpty(HttpContext.Current.Session["Equipment"].ToString()))
+            //    equipment = HttpContext.Current.Session["Equipment"].ToString();
+            if (User.Get_Setting("Track_Item_MySobekViewer:Equipment") != null && !String.IsNullOrEmpty(User.Get_Setting("Track_Item_MySobekViewer:Equipment").ToString()))
+                equipment = User.Get_Setting("Track_Item_MySobekViewer:Equipment").ToString();
 
             else
             {
                 equipment = scanners_list[0];
-                HttpContext.Current.Session["Equipment"] = equipment;
+              //  HttpContext.Current.Session["Equipment"] = equipment;
             }
 
             //Check the hidden value to see if equipment was previously changed
             if (!String.IsNullOrEmpty(HttpContext.Current.Request.Form["hidden_equipment"]))
             {
                 equipment = HttpContext.Current.Request.Form["hidden_equipment"];
-                HttpContext.Current.Session["equipment"] = equipment;
+             //   HttpContext.Current.Session["equipment"] = equipment;
+                User.Add_Setting("Track_Item_MySobekViewer:Equipment", equipment);
             }
 
 
@@ -161,6 +165,9 @@ namespace SobekCM.Library.MySobekViewer
 
                 HttpContext.Current.Session["Selected_User"] = current_selected_user;
             }
+
+            //Get the table of all previous entries created by this user, for display in the third edit tab
+            previous_workflows_this_user = Database.SobekCM_Database.Tracking_Get_All_Entries_By_User(current_selected_user.UserName);
 
             //Fetch the dictionaries of current work from the session
             current_workflows = (HttpContext.Current.Session["Tracking_Current_Workflows"]) as Dictionary<string, Tracking_Workflow>;
@@ -920,11 +927,13 @@ namespace SobekCM.Library.MySobekViewer
 
             const string DURATION = "Track with Duration";
             const string SINGLE_POINT = "Track without Duration";
+            const string EDIT_SCREEN = "Edit Previous Entries";
 
             //Draw all the page tabs for this form
 
             builder.AppendLine("    <li id=\"tabHeader_1\" onclick=\"save_item_tracking('1');\">" + DURATION + "</li>");
             builder.AppendLine("     <li id=\"tabHeader_2\" onclick=\"save_item_tracking('2');\">" + SINGLE_POINT + "</li>");
+            builder.AppendLine("     <li id=\"tabHeader_3\" onclick=\"save_item_tracking('3');\">" + EDIT_SCREEN + "</li>");
 
             builder.AppendLine("</ul>");
             builder.AppendLine("</div>");
@@ -933,7 +942,7 @@ namespace SobekCM.Library.MySobekViewer
             //Start the divs for the content of the tabs
             builder.AppendLine("    <div class=\"tabscontent\">");
 
-            #region Content of Tab1 - Tracking with duration
+            #region First tab - Tracking with duration
 
             builder.AppendLine("            <div class=\"tabpage\" id=\"tabpage_1\">");
             //Start the item information table
@@ -949,6 +958,7 @@ namespace SobekCM.Library.MySobekViewer
             //Add the item info section
             if (hidden_request == "read_manual_entry")
             {
+                //Add the option for barcode entry
                 builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType\" id=\"rb_barcode\" value=0 onclick=\"rbEntryTypeChanged(this.value);\">Barcode Entry</td></tr>");
                 barcode_row_style = "style=\"margin-left:200px;\"";
 
@@ -959,9 +969,18 @@ namespace SobekCM.Library.MySobekViewer
                 builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode(); return false;\">ADD</button>");
                 builder.AppendLine("</div></td></tr>");
 
+                //Add the option for manual entry
                 builder.AppendLine("<td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType\" id=\"rb_manual\" value=1 checked onclick=\"rbEntryTypeChanged(this.value);\">Manual Entry</td></tr>");
-                builder.AppendLine("<tr id=\"tblrow_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID\" value=\"" + bibid + "\" /></td>");
-                builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID\" value=\"" + vid + "\" /></td>");
+                if (page == 1)
+                {
+                    builder.AppendLine("<tr id=\"tblrow_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID\" value=\"" + bibid + "\" /></td>");
+                    builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID\" value=\"" + vid + "\" /></td>");
+                }
+                else
+                {
+                    builder.AppendLine("<tr id=\"tblrow_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID\" value=\"\" /></td>");
+                    builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID\" value=\"\" /></td>");
+                }
                 builder.AppendLine("</tr>");
                 builder.AppendLine("<tr id=\"tblrow_Manual2\" " + manual_row_style + ">");
                 builder.AppendLine("<td></td><td>Event:</td><td><select id=\"ddlManualEvent\" name=\"ddlManualEvent\">");
@@ -989,9 +1008,18 @@ namespace SobekCM.Library.MySobekViewer
                 builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode(); return false;\">ADD</button>");
                 builder.AppendLine("</div></td></tr>");
 
-                builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType\" id=\"rb_manual\" value=1 onclick=\"rbEntryTypeChanged(this.value);\">Manual Entry</td></tr>");
-                builder.AppendLine("<tr id=\"tblrow_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID\" value=\"" + bibid + "\" /></td>");
-                builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID\" value=\"" + vid + "\" /></td>");
+                if (page == 1)
+                {
+                    builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType\" id=\"rb_manual\" value=1 onclick=\"rbEntryTypeChanged(this.value);\">Manual Entry</td></tr>");
+                    builder.AppendLine("<tr id=\"tblrow_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID\" value=\"" + bibid + "\" /></td>");
+                    builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID\" value=\"" + vid + "\" /></td>");
+                }
+                else
+                {
+                    builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType\" id=\"rb_manual\" value=1 onclick=\"rbEntryTypeChanged(this.value);\">Manual Entry</td></tr>");
+                    builder.AppendLine("<tr id=\"tblrow_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID\" value=\"\" /></td>");
+                    builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID\" value=\"\" /></td>");
+                }
                 builder.AppendLine("</tr>");
                 builder.AppendLine("<tr id=\"tblrow_Manual2\" " + manual_row_style + ">");
                 builder.AppendLine("<td></td><td>Event:</td><td><select id=\"ddlManualEvent\" name=\"ddlManualEvent\">");
@@ -1253,13 +1281,12 @@ namespace SobekCM.Library.MySobekViewer
 
 
             #endregion
-
-
-
-            #region Second tab - tracking without duration
+            
+            #region Second tab - Tracking without duration
 
 
             builder.AppendLine("            <div class=\"tabpage\" id=\"tabpage_2\">");
+           
             //Start the item information table
             //Display errors if any
             if (error_message.Length > 0 && page == 2)
@@ -1273,6 +1300,7 @@ namespace SobekCM.Library.MySobekViewer
             //Add the item info section
             if (hidden_request == "read_manual_entry")
             {
+                //Add the option for barcode entry
                 builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType2\" id=\"rb_barcode\" value=0  onclick=\"rbEntryType2Changed(this.value);\">Barcode Entry</td></tr>");
                 barcode_row_style = "style=\"margin-left:200px\";";
 
@@ -1283,8 +1311,19 @@ namespace SobekCM.Library.MySobekViewer
                 builder.AppendLine("    <button title=\"Add new tracking entry\" class=\"sbkMySobek_RoundButton\" onclick=\"Add_new_entry_barcode2(); return false;\">ADD</button>");
                 builder.AppendLine("</div></td></tr>");
 
+                //Add the option for manual entry
                 builder.AppendLine("<td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType2\" id=\"rb_manual\" value=1 checked onclick=\"rbEntryType2Changed(this.value);\">Manual Entry</td></tr>");
-                builder.AppendLine("<tr id=\"tblrow2_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID2\"  value=\"" + bibid + "\" /></td>");
+               
+                if (page == 2)
+                {
+                    builder.AppendLine("<tr id=\"tblrow2_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID2\"  value=\"" + bibid + "\" /></td>");
+                    builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID2\" value=\"" + vid + "\" /></td>");
+                }
+                else
+                {
+                    builder.AppendLine("<tr id=\"tblrow2_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID2\"  value=\"\" /></td>");
+                    builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID2\" value=\"\" /></td>");
+                }
                 builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID2\" value=\"" + vid + "\" /></td>");
                 builder.AppendLine("</tr>");
                 builder.AppendLine("<tr id=\"tblrow2_Manual2\" " + manual_row_style + ">");
@@ -1314,8 +1353,16 @@ namespace SobekCM.Library.MySobekViewer
                 builder.AppendLine("</div></td></tr>");
 
                 builder.AppendLine("<tr><td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType2\" id=\"rb_manual\" value=1 onclick=\"rbEntryType2Changed(this.value);\"/>Manual Entry</td></tr>");
-                builder.AppendLine("<tr id=\"tblrow2_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID2\" value=\"" + bibid + "\" /></td>");
-                builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID2\" value=\"" + vid + "\" /></td>");
+                if (page == 2)
+                {
+                    builder.AppendLine("<tr id=\"tblrow2_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID2\" value=\"" + bibid + "\" /></td>");
+                    builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID2\" value=\"" + vid + "\" /></td>");
+                }
+                else
+                {
+                    builder.AppendLine("<tr id=\"tblrow2_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID2\" value=\"\" /></td>");
+                    builder.AppendLine("         <td>VID:</td><td><input type=\"text\" id=\"txtVID2\" value=\"\" /></td>");
+                }
                 builder.AppendLine("</tr>");
                 builder.AppendLine("<tr id=\"tblrow2_Manual2\" " + manual_row_style + ">");
                 builder.AppendLine("<td></td><td>Event:</td><td><select id=\"ddlManualEvent2\" name=\"ddlManualEvent2\">");
@@ -1464,7 +1511,29 @@ namespace SobekCM.Library.MySobekViewer
 
             #endregion
 
+            #region Third tab - Editing previous entries
+            builder.AppendLine("            <div class=\"tabpage\" id=\"tabpage_3\">");
+            if (previous_workflows_this_user.Rows.Count > 0)
+            {  
+                //Start the table for displaying the workflow entries
+                builder.AppendLine("<table id=\"sbkTracking_Workflows_Table\">");
+                
+                foreach (DataRow thisRow in previous_workflows_this_user.Rows)
+                {
+                    builder.AppendLine("<tr>");
+                    builder.AppendLine("<td>" + thisRow["ItemID"] + "</td>");
+                    builder.AppendLine("<td>" + thisRow["WorkFlowName"] + "</td>");
+                    builder.AppendLine("<td>" + thisRow["DateStarted"] + "</td>");
+                    builder.AppendLine("<td>" + thisRow["DateCompleted"] + "</td>");
+                    builder.AppendLine("<td>" + thisRow["RelatedEquipment"] + "</td>");
+                    builder.AppendLine("<td>" + thisRow["WorkPerformedBy"] + "</td>");
+                    builder.AppendLine("</tr>");
+                }
+                builder.AppendLine("</table>");
 
+            }
+            builder.AppendLine("</div>");
+            #endregion
 
             builder.AppendLine("</div>");
 

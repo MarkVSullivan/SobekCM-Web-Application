@@ -23,7 +23,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private readonly string oclc;
         private readonly string aleph;
         private readonly string username;
-        private readonly string[] authors_list;
+        private readonly List<string> authors_list;
         private readonly string[] publishers_list;
 
     
@@ -60,13 +60,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 aleph = "(none)";
 
             //Determine the author(s) for display
-            authors_list = new string[track_item.Bib_Info.Names_Count];
-            for (int i = 0; i < track_item.Bib_Info.Names_Count; i++)
+            authors_list = new List<string>();
+            int author_startCount = 0;
+          
+            //Add the main entity first
+            if (track_item.Bib_Info.hasMainEntityName)
+            {
+                authors_list.Add(track_item.Bib_Info.Main_Entity_Name.Full_Name + track_item.Bib_Info.Main_Entity_Name.Role_String);
+                author_startCount++;
+            }
+
+            //Now add all other associated creators
+            for (int i = author_startCount; i < track_item.Bib_Info.Names_Count; i++)
             {
                 //Skip any publishers in this list
                 if(track_item.Bib_Info.Names[i].Role_String.ToUpper().Contains("PUBLISHER"))
                     continue;
-                authors_list[i] = track_item.Bib_Info.Names[i].Full_Name  + track_item.Bib_Info.Names[i].Role_String;
+                authors_list.Add(track_item.Bib_Info.Names[i].Full_Name  + track_item.Bib_Info.Names[i].Role_String);
             }
             
             //Determine the publisher(s) for display
@@ -158,7 +168,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Add the Author information
             Output.WriteLine("<tr><td><span class=\"sbkTs_tableLabel\">Author:</span></td>");
             Output.WriteLine("<td colspan=\"3\" ><span>");
-            if (authors_list.Length == 1)
+            if (authors_list.Count == 1)
             {
                 Output.WriteLine(authors_list[0]);
             }
@@ -169,8 +179,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string extra_authors = String.Empty;
                 foreach (string author in authors_list)
                 {
-                    if (count == 5 && authors_list.Length > 5)
-                        extra_authors = "<span class=\"sbkTs_extraText\"> "+LABEL_SPACE+"  ...+" + (authors_list.Length - 5) + " more</span>";
+                    if (count == 5 && authors_list.Count > 5)
+                        extra_authors = "<span class=\"sbkTs_extraText\"> "+LABEL_SPACE+"  ...+" + (authors_list.Count - 5) + " more</span>";
                     Output.WriteLine("<tr><td>" + author + extra_authors+ "</td></tr>");
                     count++;
                     //Limit the display to 5
