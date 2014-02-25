@@ -430,13 +430,22 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 #sbkPrsw_FacetOuterColumn { background-color:#eeeeee; width: 240px; border-right:#ccc 1px solid;}
 .sbkPrsw_FacetColumn { background-color:#eeeeee;color: #333333;height:100%;text-align:left;margin: 0;width: 239px;}
 .sbkPrsw_FacetColumnTitle { background-color:#7d90d5;font-weight:bold;color:White;padding: 5px 0 5px 5px; }
+.sbkPrsw_FacetBoxTitle { font-weight: bold;padding-left: 5px;padding-top: 15px;}
 .sbkPrsw_FacetBox { margin:2px;background-color:White;font-size:0.85em;padding-left:3px;color:#666666;}
 .sbkPrsw_FacetBox a { color: #008; }
+.sbkPrsw_FacetReorder { float:right;padding-right: 3px; }
 .sbkPrsw_ShowHideFacets { text-align:right;font-size:0.90em;width:100%;margin-right:5px;padding-right: 5px;}
 #sbkPrsw_DescTable { width: 100%; }
 #sbkPrsw_ButtonsTable { width: 100%;padding-top: 10px; }
 #sbkPrsw_ResultsOuterTable { width: 100%;border-collapse: collapse;margin: 0;padding: 0;}
-
+.sbkPrsw_ViewIconButtons { width: 100%;text-align: center;}
+.sbkPrsw_ViewIconButtonCurrent { margin: 0 2px 0 2px;padding: 2px; }
+.sbkPrsw_ViewIconButton { margin: 0 2px 0 2px; padding: 2px;  }
+.sbkPrsw_ViewIconButton:hover { margin: 0 2px 0 2px;padding: 2px; background-color: #888888; }
+.sbkPrsw_SearchTerm { display: inline; padding: 3px 3px 2px 2px;margin: 2px;}
+.sbkPrsw_SearchTermHovered { display: inline;border: 2px #0122a7 solid;border-radius: 8px; padding: 3px 3px 2px 2px; }
+.sbkPrsw_RemoveSearchTerm { opacity:0.4; }
+.sbkPrsw_RemoveSearchTermHovered { opacity:1; }
 
 
   .briefResultsTitle { font-size: 1.2em; font-weight: bold; }

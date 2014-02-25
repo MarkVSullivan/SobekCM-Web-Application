@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
@@ -42,6 +43,7 @@ namespace SobekCM.Library.HTML
 		private readonly Search_Results_Statistics resultsStatistics;
 		private string sortOptions;
 		private readonly Language_Support_Info translations;
+		private int term_counter;
 
 		/// <summary> Constructor for a new instance of the paged_result_html_subwriter class </summary>
 		/// <param name="Results_Statistics"> Information about the entire set of results for a search or browse </param>
@@ -76,6 +78,7 @@ namespace SobekCM.Library.HTML
 			currentMode= Current_Mode;
 			Folder_Owner_Name = String.Empty;
 			Folder_Owner_Email = String.Empty;
+			term_counter = 0;
 
 			// Try to get the facet configuration information
 			facetInformation = "0000000";
@@ -87,6 +90,7 @@ namespace SobekCM.Library.HTML
 				// Pull the standard values
 				NameValueCollection form = HttpContext.Current.Request.Form;
 
+			
 				if (form["item_action"] != null)
 				{
 					string action = form["item_action"].ToLower().Trim();
@@ -708,8 +712,82 @@ namespace SobekCM.Library.HTML
 			}
 
 			// Empty strings for now
-			string VIEWICONS = String.Empty;
+			string brief_view = "BRIEF VIEW";
+			string map_view = "MAP VIEW";
+			string table_view = "TABLE VIEW";
+			string thumbnail_view = "THUMBNAIL VIEW";
+			if (Mode.Language == Web_Language_Enum.Spanish)
+			{
+				map_view = "VISTA MAPA";
+				brief_view = "VISTA BREVE";
+				table_view = "VISTA TABLERA";
+				thumbnail_view = "VISTA MINIATURA";
+			}
+			if (Mode.Language == Web_Language_Enum.French)
+			{
+				map_view = "MODE CARTE";
+				brief_view = "MODE SIMPLE";
+				table_view = "MODE DE TABLE";
+				thumbnail_view = "MODE IMAGETTE";
+			}
+			Result_Display_Type_Enum resultView = Mode.Result_Display_Type;
+			StringBuilder iconBuilder = new StringBuilder(1000);
+			iconBuilder.AppendLine();
+			iconBuilder.AppendLine("    <div class=\"sbkPrsw_ViewIconButtons\">");
+			if ((Mode.Coordinates.Length > 0) || (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map)))
+			{
+				if (resultView == Result_Display_Type_Enum.Map)
+				{
+					iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+				}
+				else
+				{
+					Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
+					iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+				}
+			}
 
+			if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+			{
+				if (resultView == Result_Display_Type_Enum.Brief)
+				{
+					iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+				}
+				else
+				{
+					Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
+					iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + currentMode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+				}
+			}
+
+			if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Table))
+			{
+				if (resultView == Result_Display_Type_Enum.Table)
+				{
+					iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+				}
+				else
+				{
+					Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
+					iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + table_view + "\"><img src=\"" + currentMode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+				}
+			}
+
+			if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
+			{
+				if (resultView == Result_Display_Type_Enum.Thumbnails)
+				{
+					iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+				}
+				else
+				{
+					Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
+					iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + thumbnail_view + "\"><img src=\"" + currentMode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+				}
+			}
+			Mode.Result_Display_Type = resultView;
+			iconBuilder.AppendLine("    </div>");
+			string VIEWICONS = iconBuilder.ToString();
 
 
 			string NEWSEARCH = String.Empty;
@@ -742,6 +820,18 @@ namespace SobekCM.Library.HTML
 			// End this division
 			Output.WriteLine("</div>");
 			Output.WriteLine();
+
+			// Configure the way to remove search terms
+			if (( SobekCM_Library_Settings.Can_Remove_Single_Term ) && ( term_counter > 0 ))
+			{
+				Output.WriteLine("<script>");
+				for (int i = 1; i <= term_counter; i++)
+				{
+					Output.WriteLine("  init_search_term('searchterm" + i + "', 'removesearchterm" + i + "');");
+				}
+				Output.WriteLine("</script>");
+				Output.WriteLine();
+			}
 
 			// Save the buttons for later, to be used at the bottom of the page
 			leftButtons = LEFT_BUTTONS;
@@ -956,63 +1046,196 @@ namespace SobekCM.Library.HTML
 
 				try
 				{
-					for (int i = 0; (i < terms.Count) && (i < fields.Count); i++)
+					// Create this differently depending on whether users can remove a search term from their current search
+					if (SobekCM_Library_Settings.Can_Remove_Single_Term)
 					{
-						if ((terms[i].Length > 0) && (fields[i].Length > 0))
-						{
-							// Remove the leading + sign
-							if (fields[i][0] == '+')
-								fields[i] = fields[i].Substring(1);
-							if (fields[i][0] == ' ')
-								fields[i] = fields[i].Substring(1);
+						string current_search_string = currentMode.Search_String;
+						string current_search_field = currentMode.Search_Fields;
+						Display_Mode_Enum current_display_mode = currentMode.Mode;
+						Aggregation_Type_Enum current_aggr_mode = currentMode.Aggregation_Type;
+						string current_info_browse_mode = currentMode.Info_Browse_Mode;
 
-							// Add the 'AND' value
-							if (i > 0)
+						StringBuilder fieldsBuilder = new StringBuilder();
+						StringBuilder termsBuilder = new StringBuilder();
+
+						term_counter = 0;
+						for (int i = 0; i < Math.Min(terms.Count, fields.Count); i++)
+						{
+							if ((terms[i].Length > 0) && (fields[i].Length > 0))
 							{
-								if (fields[i][0] == '=')
-								{
-									Output.Write(or_language);
-									length_of_explanation += or_language.Length;
+								Output.WriteLine();
+								Output.Write("        ");
+
+								// Remove the leading + sign
+								if (fields[i][0] == '+')
 									fields[i] = fields[i].Substring(1);
+								if (fields[i][0] == ' ')
+									fields[i] = fields[i].Substring(1);
+
+								// Add the 'AND' value
+								if (i > 0)
+								{
+									if (fields[i][0] == '=')
+									{
+										Output.Write(or_language);
+										length_of_explanation += or_language.Length;
+										fields[i] = fields[i].Substring(1);
+									}
+									else
+									{
+										Output.Write(and_language);
+										length_of_explanation += and_language.Length;
+									}
+								}
+
+								//// This explanataion need to be capped
+								//if (length_of_explanation >= 160)
+								//{
+								//	Output.Write("... ");
+								//	break;
+								//}
+
+								term_counter++;
+								Output.Write("<div id=\"searchterm" + term_counter + "\" class=\"sbkPrsw_SearchTerm\">");
+
+								// Add the term
+								if (terms[i].Contains(" "))
+								{
+									Output.Write("\"" + terms[i].Replace("''''", "'").Replace("''", "'") + "\" ");
+									length_of_explanation += terms[i].Length + 1;
 								}
 								else
 								{
-									Output.Write(and_language);
-									length_of_explanation += and_language.Length;
+									Output.Write("'" + terms[i].Replace("''''", "'").Replace("''", "'") + "' ");
+									length_of_explanation += terms[i].Length + 3;
 								}
-							}
 
-							// This explanataion need to be capped
-							if (length_of_explanation >= 160)
-							{
-								Output.Write("... ");
-								break;
-							}
+								// Does the field start with a negative?
+								if (fields[i][0] == '-')
+								{
+									Output.Write(and_not_language);
+									length_of_explanation += and_not_language.Length;
+									fields[i] = fields[i].Substring(1);
+								}
 
-							// Add the term
-							if (terms[i].Contains(" "))
-							{
-								Output.Write("\"" + terms[i].Replace("''''", "'").Replace("''", "'") + "\" ");
-								length_of_explanation += terms[i].Length + 1;
-							}
-							else
-							{
-								Output.Write("'" + terms[i].Replace("''''","'").Replace("''","'") + "' ");
-								length_of_explanation += terms[i].Length + 3;
-							}
+								string write_value = Search_Label_from_Sobek_Code(fields[i]).ToLower() + " ";
+								Output.Write(write_value);
 
-							// Does the field start with a negative?
-							if (fields[i][0] == '-')
-							{
-								Output.Write(and_not_language);
-								length_of_explanation += and_not_language.Length;
-								fields[i] = fields[i].Substring(1);
-							}
+								// Determine URL of this search without this one term
+								if (terms.Count > 1)
+								{
+									termsBuilder.Clear();
+									fieldsBuilder.Clear();
 
-							string write_value = Search_Label_from_Sobek_Code(fields[i]).ToLower() + " ";
-							Output.Write(write_value);
-							length_of_explanation += write_value.Length;
+									// Add all fields, EXCEPT the one to be skipped
+									for (int j = 0; j < Math.Min(terms.Count, fields.Count); j++)
+									{
+										if (j != i)
+										{
+											if (termsBuilder.Length > 0)
+												termsBuilder.Append(",");
+											termsBuilder.Append(terms[j]);
+
+											if (fieldsBuilder.Length > 0)
+												fieldsBuilder.Append(",");
+											fieldsBuilder.Append(fields[j]);
+										}
+									}
+									currentMode.Search_String = termsBuilder.ToString();
+									currentMode.Search_Fields = fieldsBuilder.ToString();
+								}
+								else
+								{
+									if (Current_Aggregation.Views_And_Searches.Contains(Item_Aggregation.CollectionViewsAndSearchesEnum.All_New_Items))
+									{
+										currentMode.Mode = Display_Mode_Enum.Aggregation;
+										currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+										currentMode.Info_Browse_Mode = "all";
+									}
+									else
+									{
+										currentMode.Mode = Display_Mode_Enum.Aggregation;
+										currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+									}
+								}
+
+
+								Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + "\" title=\"Click to remove this search term\"><img src=\"" + currentMode.Default_Images_URL + "removeIcon.gif\" id=\"removesearchterm" + term_counter + "\" class=\"sbkPrsw_RemoveSearchTerm\" /></a></div>");
+								length_of_explanation += write_value.Length;
+							}
 						}
+
+						currentMode.Search_String = current_search_string;
+						currentMode.Search_Fields = current_search_field;
+						currentMode.Mode = current_display_mode;
+						currentMode.Aggregation_Type = current_aggr_mode;
+						currentMode.Info_Browse_Mode = current_info_browse_mode;
+					}
+					else
+					{
+
+						for (int i = 0; (i < terms.Count) && (i < fields.Count); i++)
+						{
+							if ((terms[i].Length > 0) && (fields[i].Length > 0))
+							{
+								// Remove the leading + sign
+								if (fields[i][0] == '+')
+									fields[i] = fields[i].Substring(1);
+								if (fields[i][0] == ' ')
+									fields[i] = fields[i].Substring(1);
+
+								// Add the 'AND' value
+								if (i > 0)
+								{
+									if (fields[i][0] == '=')
+									{
+										Output.Write(or_language);
+										length_of_explanation += or_language.Length;
+										fields[i] = fields[i].Substring(1);
+									}
+									else
+									{
+										Output.Write(and_language);
+										length_of_explanation += and_language.Length;
+									}
+								}
+
+								//// This explanataion need to be capped
+								//if (length_of_explanation >= 160)
+								//{
+								//	Output.Write("... ");
+								//	break;
+								//}
+
+								// Add the term
+								if (terms[i].Contains(" "))
+								{
+									Output.Write("\"" + terms[i].Replace("''''", "'").Replace("''", "'") + "\" ");
+									length_of_explanation += terms[i].Length + 1;
+								}
+								else
+								{
+									Output.Write("'" + terms[i].Replace("''''", "'").Replace("''", "'") + "' ");
+									length_of_explanation += terms[i].Length + 3;
+								}
+
+								// Does the field start with a negative?
+								if (fields[i][0] == '-')
+								{
+									Output.Write(and_not_language);
+									length_of_explanation += and_not_language.Length;
+									fields[i] = fields[i].Substring(1);
+								}
+
+								string write_value = Search_Label_from_Sobek_Code(fields[i]).ToLower() + " ";
+								Output.Write(write_value);
+
+
+
+								length_of_explanation += write_value.Length;
+							}
+						}
+
 					}
 				}
 				catch
@@ -1217,31 +1440,32 @@ namespace SobekCM.Library.HTML
 					case '0':
 						other_sort_type = '2';
 						other_show_type = '1';
-						resort_image = "a_to_z.gif";
 						sort_instructions = sort_alphabetically;
 						break;
 
 					case '1':
 						other_sort_type = '3';
 						other_show_type = '0';
-						resort_image = "a_to_z.gif";
 						sort_instructions = sort_alphabetically;
 						break;
 
 					case '2':
 						other_sort_type = '0';
 						other_show_type = '3';
+						resort_image = "a_to_z.gif";
 						break;
 
 					case '3':
 						other_sort_type = '1';
 						other_show_type = '2';
+						resort_image = "a_to_z.gif";
 						break;
 				}
 
-				builder.AppendLine("<br /><span style=\"float:right; padding-right: 3px\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" /></a></span>");
-				builder.AppendLine("<b> &nbsp;" + title + "</b><br />");
+				builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + title + "</div>");
 				builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
+				if (resultsStatistics.Aggregation_Facets.Count > 1 )
+					builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
 				if ((facetInformation[FACET_INDEX] == '2') || (facetInformation[FACET_INDEX] == '3'))
 				{
 					SortedList<string, string> order_facets = new SortedList<string, string>();
@@ -1386,31 +1610,34 @@ namespace SobekCM.Library.HTML
 				case '0':
 					other_sort_type = '2';
 					other_show_type = '1';
-					resort_image = "a_to_z.gif";
 					sort_instructions = SortAlphabetically;
 					break;
 
 				case '1':
 					other_sort_type = '3';
 					other_show_type = '0';
-					resort_image = "a_to_z.gif";
 					sort_instructions = SortAlphabetically;
 					break;
 
 				case '2':
 					other_sort_type = '0';
 					other_show_type = '3';
+					resort_image = "a_to_z.gif";
 					break;
 
 				case '3':
 					other_sort_type = '1';
 					other_show_type = '2';
+					resort_image = "a_to_z.gif";
 					break;
 			}
 
-			Builder.AppendLine("<br /><span style=\"float:right; padding-right: 3px\"><a href=\"\" onclick=\"return set_facet(" + (FacetIndex - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></span>");
-			Builder.AppendLine("<b> &nbsp;" + Title + "</b><br />");
+			Builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + Title + "</div>");
 			Builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
+			if (Collection.Count > 1)
+			{
+				Builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + (FacetIndex - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
+			}
 			if ((facetInformation[FacetIndex - 1] == '2') || (facetInformation[FacetIndex - 1] == '3'))
 			{
 				SortedList<string, string> order_facets = new SortedList<string, string>();
@@ -1434,13 +1661,13 @@ namespace SobekCM.Library.HTML
 			}
 			if (facet_count > MINIMIZED_FACET_COUNT)
 			{
-				Builder.AppendLine("<div class=\"SobekShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + (FacetIndex - 1) + ",'" + other_show_type + "');\">&lt;&lt; " + ShowLess + " &nbsp; &nbsp;</a></div>");
+				Builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + (FacetIndex - 1) + ",'" + other_show_type + "');\">&lt;&lt; " + ShowLess + " &nbsp; &nbsp;</a></div>");
 			}
 			else
 			{
 				if (facet_count < Collection.Count)
 				{
-					Builder.AppendLine("<div class=\"SobekShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + ( FacetIndex - 1 ) + ",'" + other_show_type + "');\">" + ShowMore + " &gt;&gt; &nbsp;</a></div>");
+					Builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + (FacetIndex - 1) + ",'" + other_show_type + "');\">" + ShowMore + " &gt;&gt; &nbsp;</a></div>");
 				}
 			}
 			Builder.AppendLine("</div>");

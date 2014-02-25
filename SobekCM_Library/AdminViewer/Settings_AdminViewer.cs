@@ -95,6 +95,7 @@ namespace SobekCM.Library.AdminViewer
             Add_Setting_UI("Builder Operation Flag", "Builder", 200, new[] { "STANDARD OPERATION", "PAUSE REQUESTED", "ABORT REQUESTED", "NO BUILDER REQUESTED" }, "Last flag set when the builder/bulk loader ran.", false );
             Add_Setting_UI("Builder Seconds Between Polls", "Builder", 200, new[] { "15", "60", "300", "600" }, "Number of seconds the builder remains idle before checking for new incoming package again.", false, "60");
 			Add_Setting_UI("Caching Server", "Server Configuration", -1, empty_options, "URL for the AppFabric Cache host machine, if a caching server/cluster is in use in this system.", false);
+			Add_Setting_UI("Can Remove Single Search Term", "General Appearance", 70, boolean_options, "When this is set to TRUE, users can remove a single search term from their current search.  Setting this to FALSE, makes the display slightly cleaner.", false);
 			Add_Setting_UI("Can Submit Edit Online", "Resource Files", 70, boolean_options, "Flag dictates if users can submit items online, or if this is disabled in this system.", false);
             Add_Setting_UI("Convert Office Files to PDF", "Resource Files", 70, boolean_options, "Flag dictates if users can submit items online, or if this is disabled in this system.", false, "false");
             Add_Setting_UI("Create MARC Feed By Default", "Interoperability", 70, boolean_options, "Flag indicates if the builder/bulk loader should create the MARC feed by default when operating in background mode.", false );
@@ -103,6 +104,7 @@ namespace SobekCM.Library.AdminViewer
 			Add_Setting_UI("Document Solr Index URL", "Server Configuration", -1, empty_options, "URL for the document-level solr index.\n\nExample: 'http://localhost:8080/documents'", false);
             Add_Config_Setting("Error Emails", "Emails", SobekCM_Library_Settings.System_Error_Email, "Email address for the web application to mail for any errors encountered while executing requests.\n\nThis account will be notified of inabilities to connect to servers, potential attacks, missing files, etc..\n\nIf the system is able to connect to the database, the 'System Error Email' address listed there, if there is one, will be used instead.\n\nUse a semi-colon betwen email addresses if multiple addresses are included.\n\nExample: 'person1@corp.edu;person2@corp2.edu'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.");
 			Add_Config_Setting("Error HTML Page", "System Configuration", SobekCM_Library_Settings.System_Error_URL, "Static page the user should be redirected towards if an unexpected exception occurs which cannot be handled by the web application.\n\nExample: 'http://ufdc.ufl.edu/error.html'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.");
+			Add_Setting_UI("Facets Collapsible", "General Appearance", 70, boolean_options, "Flag determines if the facets are collapsible like an accordian, or if they all start fully expanded.", false);
             Add_Setting_UI("FDA Report DropBox", "Florida SUS", -1, empty_options, "Location for the builder/bulk loader to look for incoming Florida Dark Archive XML reports to process and add to the history of digital resources.", true );
             Add_Setting_UI("Files To Exclude From Downloads", "Resource Files", -1, empty_options, "Regular expressions used to exclude files from being added by default to the downloads of resources.\n\nExample: '((.*?)\\.(jpg|tif|jp2|jpx|bmp|jpeg|gif|png|txt|pro|mets|db|xml|bak|job)$|qc_error.html)'", false );
             Add_Setting_UI("Help URL", "Help", -1, empty_options, "URL used for the main help pages about this system's basic functionality.\n\nExample (and default): 'http://ufdc.ufl.edu/'", false );
@@ -557,6 +559,7 @@ namespace SobekCM.Library.AdminViewer
 				if ( show_florida_sus )
 					Add_Categorized_Settings("Florida SUS", "Florida SUS-Specific Settings", Output, false);
 				Add_Categorized_Settings("Help", "Help Settings", Output, false);
+				Add_Categorized_Settings("General Appearance", "General Appearance Settings", Output, false);
 				Add_Categorized_Settings("Interoperability", "Interoperability Settings", Output, false);
 				Add_Categorized_Settings("Resource Files", "Resource File Settings", Output, false);
 		        Add_Categorized_Settings("Server Configuration", "Server Configuration", Output, false);
