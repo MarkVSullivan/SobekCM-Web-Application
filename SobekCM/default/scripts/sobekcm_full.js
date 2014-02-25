@@ -1,4 +1,16 @@
 ﻿
+// Initialize the search term and the button to remove the search term
+function init_search_term(division, button) {
+	$("#" + division).mouseenter(function () {
+		$('#' + division).removeClass('sbkPrsw_SearchTerm').addClass('sbkPrsw_SearchTermHovered');
+		$('#' + button).removeClass('sbkPrsw_RemoveSearchTerm').addClass('sbkPrsw_RemoveSearchTermHovered');
+	});
+	$("#" + division).mouseleave(function () {
+		$('#' + division).removeClass('sbkPrsw_SearchTermHovered').addClass('sbkPrsw_SearchTerm');
+		$('#' + button).removeClass('sbkPrsw_RemoveSearchTermHovered').addClass('sbkPrsw_RemoveSearchTerm');
+	});
+}
+
 
 // Function to add something to the onload event 
 function addLoadEvent(func) {
@@ -28,6 +40,7 @@ function set_subaggr_display(new_value) {
 
 	return false;
 }
+
 
 function set_facet(facet, new_value) {
 	var hidden_value = document.getElementById("facet");
@@ -423,7 +436,7 @@ function preferences(root) {
 	var language_val = document.preferences_form.languageDropDown.value;
 	var url = "http://ufdc.ufl.edu/" + root + language_val;
 	if (document.preferences_form.lowRadioButton.Checked)
-		url = url + '&ba=s'
+		url = url + '&ba=s';
 	window.location.href = url;
 }
 
