@@ -9468,6 +9468,45 @@ namespace SobekCM.Library.Database
 
         }
 
+
+        /// <summary>Gets all tracking workflow entries created by a single user </summary>
+        /// <param name="username">User Name</param>
+        /// <returns>DataTable of all previous entries for this user</returns>
+        public static DataTable Tracking_Get_All_Entries_By_User(string username)
+        {
+            DataTable returnValue = new DataTable();
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Create the command
+                SqlCommand cmd = new SqlCommand("Tracking_Get_All_Entries_By_User", connect) { CommandType = CommandType.StoredProcedure };
+                cmd.Parameters.AddWithValue("@username", username);
+                
+
+                //Open the connection
+                connect.Open();
+
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                
+                adapter.Fill(returnValue);
+
+                //Close the connection
+                connect.Close();
+
+                //Return the data table
+                return (returnValue);
+
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error retrieving previous tracking entries for user "+username+" from the DB. " + ee.Message);
+            }
+
+        }
+
+
         /// <summary> Save a new workflow entry during tracking</summary>
         /// <param name="itemID"></param>
         /// <param name="workPerformedBy"></param>

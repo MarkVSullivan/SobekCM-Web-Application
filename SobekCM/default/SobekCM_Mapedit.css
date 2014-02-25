@@ -92,8 +92,8 @@ opacity: 0.75;*/
 {
     position: absolute;
     left: 50%;
-    width: 1100px;
-    margin-left: -575px;
+    width: 1050px;
+    margin-left: -525px;
 }
 
 .toolbar_grouping
@@ -1724,4 +1724,10 @@ a img
 
 #debugVersionNumber{
     display:inline-block;
+}
+.overlayListItemText{
+    display:inline-block;
+}
+.overlayListItemText:hover{
+    cursor:pointer;
 }
