@@ -1807,7 +1807,7 @@ function initMapEditor() {
                     initInterface: function (collection) {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: initInterface started...");
-
+                            MAPEDITOR.TRACER.addTracer("[INFO]: Loading Collection " + collection);
                             google.maps.visualRefresh = true; //Enable the visual refresh (new gmaps)
 
                             switch (collection) {
@@ -1821,7 +1821,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
                                     MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-                                    MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParel_v6.kmz");  //must be pingable by google
+                                    MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml");  //must be pingable by google
                                     MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 3;                                                  //zoom level, starting
                                     MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -1833,7 +1833,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.knobRotationValue = 0;                                                  //rotation to display by default 
                                     MAPEDITOR.GLOBAL.DEFINES.preservedOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
                                     MAPEDITOR.GLOBAL.DEFINES.strictBounds = null;                                                    //set the bounds for this google map instance (set to null for no bounds)
-                                    MAPEDITOR.GLOBAL.DEFINES.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
+                                    MAPEDITOR.GLOBAL.DEFINES.hasCustomMapType = false;                                                //used to determine if there is a custom maptype layer
                                     break;
                                 case "stAugustine":
                                     MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
@@ -1845,7 +1845,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
                                     MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-                                    MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://ufdc.ufl.edu/design/mapedit/stAugParcel_v6.kmz");  //must be pingable by google
+                                    MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml");  //must be pingable by google
                                     MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 14;                                                  //zoom level, starting
                                     MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
@@ -1883,7 +1883,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.preservedRotation = 0;                                                  //rotation, default
                                     MAPEDITOR.GLOBAL.DEFINES.knobRotationValue = 0;                                                  //rotation to display by default 
                                     MAPEDITOR.GLOBAL.DEFINES.preservedOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-                                    MAPEDITOR.GLOBAL.DEFINES.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
+                                    MAPEDITOR.GLOBAL.DEFINES.hasCustomMapType = false;                                                //used to determine if there is a custom maptype layer
                                     MAPEDITOR.GLOBAL.DEFINES.strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
                                         new google.maps.LatLng(22.053908635225607, -86.18838838405613), //east coast
                                         new google.maps.LatLng(36.06512404320089, -76.72320000000003)
@@ -3727,11 +3727,13 @@ function initMapEditor() {
                                     MAPEDITOR.TRACER.addTracer("[INFO]: action Other started...");
                                     MAPEDITOR.GLOBAL.DEFINES.actionActive = "Other";
                                     MAPEDITOR.UTILITIES.buttonActive("action");
-                                    //force a suppression dm
+                                    //force a suppression dm and effects
+                                    
                                     if (MAPEDITOR.GLOBAL.DEFINES.mapDrawingManagerDisplayed == true) {
                                         MAPEDITOR.GLOBAL.DEFINES.mapDrawingManagerDisplayed = true;
                                         MAPEDITOR.ACTIONS.toggleVis("mapDrawingManager");
                                     }
+                                    MAPEDITOR.GLOBAL.DEFINES.drawingManager.setMap(null);
 
                                     MAPEDITOR.GLOBAL.DEFINES.placerType = "none";
                                     MAPEDITOR.TRACER.addTracer("[INFO]: action Other ended...");
@@ -3744,12 +3746,13 @@ function initMapEditor() {
                                     MAPEDITOR.UTILITIES.buttonActive("action");
                                     MAPEDITOR.GLOBAL.DEFINES.placerType = "none";
 
-                                    //force a suppression dm (unknown if we need to?)
+                                    //force a suppression dm and effects
                                     if (MAPEDITOR.GLOBAL.DEFINES.mapDrawingManagerDisplayed == true) {
                                         MAPEDITOR.GLOBAL.DEFINES.mapDrawingManagerDisplayed = true;
                                         MAPEDITOR.ACTIONS.toggleVis("mapDrawingManager");
                                     }
-
+                                    MAPEDITOR.GLOBAL.DEFINES.drawingManager.setMap(null);
+                                    
                                     //open search tab
                                     MAPEDITOR.TRACER.addTracer("[INFO]: MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed: " + MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed);
                                     if (MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed == true) {
@@ -5769,12 +5772,12 @@ function initMapEditor() {
                                 var buttonVisibleCount = toolbarButtonIds.length - buttonNonVisibleCount;
                                 MAPEDITOR.TRACER.addTracer("[INFO]: vis button count: " + buttonVisibleCount);
                                 for (var i = 0; i < buttonVisibleCount; i++) {
-                                    MAPEDITOR.TRACER.addTracer("[INFO]: showing: " + toolbarButtonIds[i]);
+                                    //MAPEDITOR.TRACER.addTracer("[INFO]: showing: " + toolbarButtonIds[i]);
                                     //document.getElementById(toolbarButtonIds[i]).style.visibility = "show";
                                     //document.getElementById(toolbarButtonIds[i]).style.display = "block";
                                 }
                                 for (var i = buttonVisibleCount; i < buttonNonVisibleCount; i++) {
-                                    MAPEDITOR.TRACER.addTracer("[INFO]: hiding: " + toolbarButtonIds[i]);
+                                    //MAPEDITOR.TRACER.addTracer("[INFO]: hiding: " + toolbarButtonIds[i]);
                                     //document.getElementById(toolbarButtonIds[i]).style.visibility = "hidden";
                                     //document.getElementById(toolbarButtonIds[i]).style.display = "none";
                                 }
