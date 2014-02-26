@@ -114,7 +114,7 @@ namespace SobekCM.Library.AdminViewer
 							string new_name = form["admin_project_name"].Trim();
 
 							// Save this new interface
-							if (SobekCM_Database.Save_Project(save_value.ToUpper(), new_name, Tracer))
+							if (SobekCM_Database.Save_Default_Metadata(save_value.ToUpper(), new_name, Tracer))
 							{
 								actionMessage = "Saved new default metadata <i>" + save_value + "</i>";
 							}
@@ -145,7 +145,7 @@ namespace SobekCM.Library.AdminViewer
 							string edit_name = form["form_project_name"].Trim();
 
 							// Save this existing interface
-							if (SobekCM_Database.Save_Project(save_value.ToUpper(), edit_name, Tracer))
+							if (SobekCM_Database.Save_Default_Metadata(save_value.ToUpper(), edit_name, Tracer))
 							{
 								actionMessage = "Renamed existing default metadata <i>" + save_value + "</i>";
 							}
@@ -233,7 +233,7 @@ namespace SobekCM.Library.AdminViewer
 			Tracer.Add_Trace("Default_Metadata_AdminViewer.Write_ItemNavForm_Closing", "Write the rest of the form html");
 
 			// Get the list of all projects
-			DataSet projectsSet = SobekCM_Database.Get_All_Projects_Templates(Tracer);
+            DataSet projectsSet = SobekCM_Database.Get_All_Projects_DefaultMetadatas(Tracer);
 
 			Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
@@ -260,7 +260,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("            <option value=\"(none)\" selected=\"selected\">(none)</option>");
 			foreach (DataRow thisRow in projectsSet.Tables[0].Rows)
 			{
-				Output.Write("            <option value=\"" + thisRow["ProjectCode"] + "\" >" + thisRow["ProjectCode"] + "</option>");
+				Output.Write("            <option value=\"" + thisRow["MetadataCode"] + "\" >" + thisRow["MetadataCode"] + "</option>");
 			}
 			Output.WriteLine("          </select>");
 			Output.WriteLine("        </td>");
@@ -296,8 +296,8 @@ namespace SobekCM.Library.AdminViewer
 			foreach (DataRow thisRow in projectsSet.Tables[0].Rows)
 			{
 				// Pull all these values
-				string code = thisRow["ProjectCode"].ToString();
-				string name = thisRow["ProjectName"].ToString();
+				string code = thisRow["MetadataCode"].ToString();
+				string name = thisRow["MetadataName"].ToString();
 
 				// Build the action links
 				Output.WriteLine("    <tr>");

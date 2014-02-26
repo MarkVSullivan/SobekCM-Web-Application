@@ -74,12 +74,12 @@ namespace SobekCM.Library.Email
 
                 if ((Comments.Length > 0) && (Comments != URL_Title))
                 {
-                    messageBuilder.AppendLine(User_Name + " wanted you to see this " + URL_Short_Type + " on " + SobekCM_Instance_Name + " and included the following comments.\n");
+                    messageBuilder.AppendLine(User_Name + " wanted you to see this " + URL_Short_Type.ToLower() + " on " + SobekCM_Instance_Name + " and included the following comments.\n");
                     messageBuilder.AppendLine("\"" + Comments.Replace("<", "(").Replace(">", ")").Replace("\"", "&quot;") + "\"\n");
                 }
                 else
                 {
-                    messageBuilder.AppendLine(User_Name + " wanted you to see this " + URL_Short_Type + " on " + SobekCM_Instance_Name + ".\n");
+                    messageBuilder.AppendLine(User_Name + " wanted you to see this " + URL_Short_Type.ToLower() + " on " + SobekCM_Instance_Name + ".\n");
                 }
 
                 messageBuilder.AppendLine("\tURL:\t" + URL );

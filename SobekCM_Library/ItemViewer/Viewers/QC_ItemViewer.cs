@@ -64,6 +64,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    private List<string> filenamesFromMets;
 
 		/// <summary> Constructor for a new instance of the QC_ItemViewer class </summary>
+		/// <param name="Current_Object"> Digital resource to display </param>
+		/// <param name="Current_User"> Current user for this session </param>
+		/// <param name="Current_Mode"> Navigation object which encapsulates the user's current request </param>
 		public QC_ItemViewer(SobekCM_Item Current_Object, User_Object Current_User, SobekCM_Navigation_Object Current_Mode)
 		{
 			// Save the current user and current mode information (this is usually populated AFTER the constructor completes, 
@@ -156,7 +159,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				throw new ApplicationException("Unable to retrieve the item for Quality Control in QC_ItemViewer.Constructor");
 			}
 
-			// Get the default QC profile
+            // Get the default QC profile
 			qc_profile = QualityControl_Configuration.Default_Profile;
 
 			title = "Quality Control";
@@ -200,12 +203,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		    temp = HttpContext.Current.Request.Form["QC_sortable_option"] ?? "-1";
 		    if (Int32.TryParse(temp, out makeSortable) && (makeSortable > 0) && (makeSortable <= 3))
 		    {
-		        CurrentUser.Add_Option("QC_ItemViewer:SortableMode",makeSortable);
+		        CurrentUser.Add_Setting("QC_ItemViewer:SortableMode",makeSortable);
 		    }
             temp = HttpContext.Current.Request.Form["QC_autonumber_option"] ?? "-1";
             if ((Int32.TryParse(temp, out autonumber_mode)) && ( autonumber_mode >= 0 ) && ( autonumber_mode <= 2 ))
             {
-                CurrentUser.Add_Option("QC_ItemViewer:AutonumberingMode", autonumber_mode);
+				CurrentUser.Add_Setting("QC_ItemViewer:AutonumberingMode", autonumber_mode);
             }
             
 
@@ -397,16 +400,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             }
             //Get the Drag & Drop setting from the user options
-            makeSortable = CurrentUser.Get_Option("QC_ItemViewer:SortableMode", 3);
+            makeSortable = CurrentUser.Get_Setting("QC_ItemViewer:SortableMode", 3);
 
             // Get the proper number of thumbnails per page
             // First, pull the thumbnails per page from the user options
-            thumbnailsPerPage = CurrentUser.Get_Option("QC_ItemViewer:ThumbnailsPerPage", 1000);
+			thumbnailsPerPage = CurrentUser.Get_Setting("QC_ItemViewer:ThumbnailsPerPage", 1000);
 
             // Or was there a new value in the URL?
             if (CurrentMode.Thumbnails_Per_Page >= -1)
             {
-                CurrentUser.Add_Option("QC_ItemViewer:ThumbnailsPerPage", CurrentMode.Thumbnails_Per_Page);
+                CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailsPerPage", CurrentMode.Thumbnails_Per_Page);
                 thumbnailsPerPage = CurrentMode.Thumbnails_Per_Page;
 
                 // Now, reset the value in the navigation object, since we won't need to set it again
@@ -419,12 +422,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Get the proper size of thumbnails per page
             // First, pull the thumbnails per page from the user options
-            thumbnailSize = CurrentUser.Get_Option("QC_ItemViewer:ThumbnailSize", 1);
+            thumbnailSize = CurrentUser.Get_Setting("QC_ItemViewer:ThumbnailSize", 1);
 
             // Or was there a new value in the URL?
             if (CurrentMode.Size_Of_Thumbnails > -1)
             {
-                CurrentUser.Add_Option("QC_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails);
+                CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails);
                 thumbnailSize = CurrentMode.Size_Of_Thumbnails;
 
                 //Now reset the current mode value since we won't need to set it again
@@ -433,10 +436,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Get the autonumbering mode
             // First, pull the autonumbering mode from the user options
-            autonumber_mode = CurrentUser.Get_Option("QC_ItemViewer:AutonumberingMode", 0);
+            autonumber_mode = CurrentUser.Get_Setting("QC_ItemViewer:AutonumberingMode", 0);
 
             //Also pull the Sortable mode from the user options
-            makeSortable = CurrentUser.Get_Option("QC_ItemViewer:SortableMode", 3);
+            makeSortable = CurrentUser.Get_Setting("QC_ItemViewer:SortableMode", 3);
 
             // Ensure there are no pages directly under the item
             List<abstract_TreeNode> add_to_new_main = new List<abstract_TreeNode>();
@@ -539,27 +542,40 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    private void Clear_Pagination_And_Reorder_Pages()
 	    {
 	        SortedDictionary<string, Page_TreeNode> nodeToFilename = new SortedDictionary<string, Page_TreeNode>();
-
+	        int newPageCount = 0;
 	        // Add each page node to a sorted list/dictionary and clear the label
 	        foreach (Page_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Pages_PreOrder)
 	        {
 	            thisNode.Label = String.Empty;
 	            string file_sans = thisNode.Files[0].File_Name_Sans_Extension;
-	            nodeToFilename[file_sans] = thisNode;
-	        }
+	            if (!nodeToFilename.ContainsKey(file_sans))
+	            {
+	                nodeToFilename[file_sans] = thisNode;
+	                newPageCount++;
+	            }
 
+	        }
+            
 	        // Clear the physical (TOC) tree
 	        qc_item.Divisions.Physical_Tree.Clear();
 
 	        // Add the main node to the physical (TOC) division tree 
-	        Division_TreeNode mainNode = new Division_TreeNode("Main", String.Empty);
-	        qc_item.Divisions.Physical_Tree.Roots.Add(mainNode);
+            Division_TreeNode mainNode = new Division_TreeNode("Main", String.Empty);
+            qc_item.Divisions.Physical_Tree.Roots.Add(mainNode);
+     
+            //Update the web Page count for this item
+            qc_item.Web.Clear_Pages_By_Sequence();
+            
 
 	        // Add back each page, in order by filename (sans extension)
 	        for (int i = 0; i < nodeToFilename.Count; i++)
 	        {
-	            mainNode.Add_Child(nodeToFilename.ElementAt(i).Value);
-	        }
+	           mainNode.Add_Child(nodeToFilename.ElementAt(i).Value);
+               qc_item.Web.Add_Pages_By_Sequence(nodeToFilename.ElementAt(i).Value);
+	         }
+
+            //Update the QC web page count as well
+	        qc_item.Web.Static_PageCount = newPageCount;
 
 	        // Save the updated item to the session
 	        HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = qc_item;
@@ -1158,6 +1174,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/scrollbars.css\" />");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/scrollbars-black.css\" />");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\" />");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\""+CurrentMode.Base_URL+ "default/SobekCM_MySobek.css\"/>");
 
             Output.WriteLine("  <style type=\"text/css\">");
             Output.WriteLine("    .qcPickMainThumbnailCursor{cursor:url(" + CurrentMode.Base_URL + "default/images/qc/thumbnail_cursor.cur),default;}");
@@ -1260,6 +1277,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				List<string> goToUrls = new List<string>();
 				for (int i = 1; i <= PageCount; i++)
 				{
+				    int numThumbnailstemp = CurrentMode.Thumbnails_Per_Page;
+				    CurrentMode.Thumbnails_Per_Page =  (short)thumbnailsPerPage;
+				    CurrentMode.Size_Of_Thumbnails = (short)thumbnailSize;
 					goToUrls.Add(CurrentMode.Redirect_URL(i + "qc"));
 				}
 				return goToUrls.ToArray();
@@ -1787,6 +1807,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string info_text = "View technical image information";
             string delete_text = "Delete this page and related files";
             string view_text = "Open this page in a new window";
+            string error_text = "Mark an error on this page image";
 
 			//// Build the javascript to add references to the non-displayed pages
 			//StringBuilder javascriptBuilder = new StringBuilder(4000);
@@ -1974,6 +1995,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				    Output.WriteLine("      <td colspan=\"2\">");
                     Output.WriteLine("        <input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" /><span class=\"sbkQc_Filename\" title=\"" + filenameTooltipText + "\">" + filenameToDisplay + "</span>");
 
+                    //Add the error icon to mark errors for this page
+                Output.WriteLine("");
+
                     //Add the checkbox for moving this thumbnail
 				   // Output.WriteLine("      <td>");
                     Output.WriteLine("        <input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"sbkQc_Checkbox\" onchange=\"qccheckbox_onchange(event, this.id);\"/>");
@@ -1987,6 +2011,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
                     //else
                     //    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
+
+                    Output.WriteLine("<span id=\"error"+page_index+"\" class=\"errorIconSpan\"><a href=\"\" onclick=\"return popup('form_qcError');\"><img title=\"" + error_text + "\" height=\""+error_icon_height+"\" width=\""+error_icon_width+"\" src=\"" + CurrentMode.Base_URL + "default/images/qc/Cancel.ico" + "\" onclick=\"\"/></a></span>");
 
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
@@ -2239,6 +2265,65 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			Output.WriteLine("  <br />");
 			Output.WriteLine("</div>");
 			Output.WriteLine();
+
+
+            //Add the popup form for the error screen
+            Output.WriteLine("<!-- Pop-up form for marking page errors -->");
+            Output.WriteLine("<div class=\"sbkMySobek_PopupForm \" id=\"form_qcError\" style=\"display:none;\">");
+           
+            //Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">FILE ERROR</td><td align=\"right\"> &nbsp; <a href=\"#template\" onclick=\" popdown( 'form_qcError' ); \">X</a> &nbsp; </td></tr></table></div>");
+            Output.WriteLine("  <div class=\"sbkMySobek_PopupTitle\"><table width=\"100%\"><tr><td align=\"left\">FILE ERROR</td><td align=\"right\"> &nbsp; <a href=\"#template\" onclick=\" popdown( 'form_qcError' ); \">X</a> &nbsp; </td></tr></table></div>");
+            Output.WriteLine("  <br />");
+            Output.WriteLine(" <div class=\"qcErrorForm_LeftDiv\">");
+            Output.WriteLine("     <fieldset class=\"qcFormDivFieldset\"><legend class=\"qcErrorFormSubHeader\">Recapture required</legend>");
+            Output.WriteLine("     <table class=\"error_popup_table_left\">");
+            Output.WriteLine("         <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError1\" value=\"1\" onclick=\"\"/>Overcropped </td></tr>");
+            Output.WriteLine("         <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError2\" value=\"2\" onclick=\"\"/>Image Quality Error </td></tr>");
+            Output.WriteLine("         <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError3\" value=\"3\" onclick=\"\"/>Technical Spec Error </td></tr>");
+            Output.WriteLine("         <tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError4\" value=\"4\" onclick=\"\"/><input type=\"textarea\" rows=\"40\" value=\"Other(specify)\"/> </td></tr>");
+            Output.WriteLine("         <tr><td><br/></td></tr>");
+            Output.WriteLine("         <tr><td><br/></td></tr>");
+            Output.WriteLine("     </table>");
+            Output.WriteLine("     </fieldset>");
+            Output.WriteLine("</div>");
+
+            //Add the second table on the right with the 'Processing Required' errors
+            Output.WriteLine("<div class=\"qcErrorForm_RightDiv\">");
+            Output.WriteLine("<fieldset class=\"qcFormDivFieldset\"><legend class=\"qcErrorFormSubHeader\">Processing required</legend>");
+            Output.WriteLine("<table class=\"error_popup_table_left\">");
+            Output.WriteLine("<tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError5\" value=\"5\" onclick=\"\"/>Undercropped</td>");
+            Output.WriteLine("<tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError6\" value=\"6\" onclick=\"\"/>Orientation Error</td>");
+            Output.WriteLine("<tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError7\" value=\"7\" onclick=\"\"/>Skew Error</td>");
+            Output.WriteLine("<tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError8\" value=\"8\" onclick=\"\"/>Blur Needed</td>");
+            Output.WriteLine("<tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError9\" value=\"9\" onclick=\"\"/>Unblur needed</td>");
+            Output.WriteLine("<tr><td><input type=\"radio\" name=\"rbFile_errors\" id=\"rbError10\" value=\"10\" onclick=\"\"/><input type=\"textarea\" rows=\"40\" value=\"Other(specify)\"/></td>");
+            Output.WriteLine("</tr>");
+            Output.WriteLine("</table>");
+            Output.WriteLine("</fieldset>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("<br/><br/>");
+           //Start the last div for the "No file error" option and the buttons
+            Output.WriteLine("<div class=\"qcErrorForm_LeftDiv\">");
+            Output.WriteLine("<input type=\"radio\" name=\"rbFile_errors\" id=\"rbError11\" value=\"11\" onclick=\"\" checked/>No file error");
+            Output.WriteLine("</div>");
+
+            //Add the Cancel & Move buttons
+            Output.WriteLine("<div class=\"qcErrorForm_RightDiv\">");
+            Output.WriteLine("    <table><tr><td colspan=\"3\" style=\"text-align:center\">");
+            Output.WriteLine("      <br /><button title=\"Move selected pages\" class=\"sbkMySobek_BigButton\" onclick=\"move_pages_submit();return false;\">SUBMIT</button>&nbsp;");
+            Output.WriteLine("      <button title=\"Cancel this move\" class=\"sbkMySobek_BigButton\" onclick=\"return cancel_mark_file_error();\">CANCEL</button>&nbsp;<br />");
+            Output.WriteLine("    </td></tr>");
+            Output.WriteLine("</div>");
+
+            // Finish the popup form
+            Output.WriteLine("  </table>");
+            Output.WriteLine("  <br />");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
+
+
+
+            //End the popup for the error screen
 
 
 			// Finish the citation table

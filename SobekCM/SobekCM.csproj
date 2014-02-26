@@ -532,6 +532,8 @@
     <Content Include="default\scripts\sobekcm_track_item.js" />
     <Content Include="default\scripts\superfish\hoverIntent.js" />
     <Content Include="default\scripts\superfish\superfish.js" />
+    <Content Include="default\scripts\uploadify\change-log.txt" />
+    <Content Include="default\scripts\uploadify\Instructions.txt" />
     <Content Include="default\scripts\uploadify\jquery.uploadifive.js" />
     <Content Include="default\scripts\uploadify\jquery.uploadifive.min.js" />
     <Content Include="default\scripts\uploadify\license-standard.txt" />
@@ -719,6 +721,9 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
@@ -728,7 +733,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>15535</DevelopmentServerPort>
+          <DevelopmentServerPort>63131</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:52468/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

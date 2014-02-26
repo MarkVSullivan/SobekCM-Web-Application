@@ -732,12 +732,12 @@ namespace SobekCM.Library.MySobekViewer
                     MainPlaceHolder.Controls.Add(final_literal);
                 }
 
-				if (( pagedResults != null ) && ( pagedResults.Count > 0))
-				{
-					Literal literal = new Literal();
-					literal.Text = "<div class=\"sbkPrsw_ResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons + Environment.NewLine + "  " + writeResult.Showing_Text + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine;
-					MainPlaceHolder.Controls.Add(literal);
-				}
+				//if (( pagedResults != null ) && ( pagedResults.Count > 0))
+				//{
+				//	Literal literal = new Literal();
+				//	literal.Text = "<div class=\"sbkPrsw_ResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons + Environment.NewLine + "  " + writeResult.Showing_Text + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine;
+				//	MainPlaceHolder.Controls.Add(literal);
+				//}
             }
             else
             {

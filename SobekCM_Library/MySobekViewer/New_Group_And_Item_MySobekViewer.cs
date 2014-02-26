@@ -126,9 +126,9 @@ namespace SobekCM.Library.MySobekViewer
                         if (File.Exists(userInProcessDirectory + "\\agreement.txt"))
                             File.Delete(userInProcessDirectory + "\\agreement.txt");
                     }
-                    if ((action1 == "project") && (newvalue != user.Current_Project))
+                    if ((action1 == "project") && (newvalue != user.Current_Default_Metadata))
                     {
-                        user.Current_Project = newvalue;
+                        user.Current_Default_Metadata = newvalue;
                     }
                     HttpContext.Current.Session["item"] = null;
                 }
@@ -363,7 +363,7 @@ namespace SobekCM.Library.MySobekViewer
                     HttpContext.Current.Session["item"] = null;
 
                     // Clear any temporarily assigned current project and template
-                    user.Current_Project = null;
+                    user.Current_Default_Metadata = null;
                     user.Current_Template = null;
 
                     // Forward back to my Sobek home
@@ -414,7 +414,7 @@ namespace SobekCM.Library.MySobekViewer
                     // If this goes from step 1 to step 2, write the permissions first
                     if ((currentProcessStep == 1) && (next_phase == "2") && ( template.Permissions_Agreement.Length > 0 ))
                     {
-                        // Store this agreement in the session state
+						// Store this agreement in the session state
                         DateTime agreement_date = DateTime.Now;
                         HttpContext.Current.Session["agreement_date"] = agreement_date;
 
@@ -429,6 +429,15 @@ namespace SobekCM.Library.MySobekViewer
                         writer.WriteLine(template.Permissions_Agreement);
                         writer.Flush();
                         writer.Close();
+
+						if (HttpContext.Current.Request.Form["setNewDefaultCheckBox"] != null )
+						{
+							string prefProject = HttpContext.Current.Request.Form["prefProject"];
+							string prefTemplate = HttpContext.Current.Request.Form["prefTemplate"];
+							user.Set_Default_Template(prefTemplate.Trim());
+							user.Set_Current_Default_Metadata(prefProject.Trim());
+							Database.SobekCM_Database.Save_User(user, String.Empty, Tracer);
+						}
                     }
 
                     // If this is going from a step that includes the metadata entry portion, save this to the item
@@ -959,7 +968,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // Clear any temporarily assigned current project and template
-                user.Current_Project = null;
+                user.Current_Default_Metadata = null;
                 user.Current_Template = null;
 
             }
@@ -1139,16 +1148,16 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("</table>");
                 }
 
-                if ((user.Templates.Count > 1) || (user.Projects.Count > 1))
+                if ((user.Templates.Count > 1) || (user.Default_Metadata_Sets.Count > 1))
                 {
                     string changeable = "template and default metadata";
-                    if (user.Projects.Count == 0)
+                    if (user.Default_Metadata_Sets.Count == 0)
                         changeable = "default metadata";
                     if (user.Templates.Count == 0)
                         changeable = "template";
 
                     string current_template = user.Current_Template;
-                    string current_project = user.Current_Project;
+                    string current_project = user.Current_Default_Metadata;
 
                     Output.WriteLine("<br />");
                     Output.WriteLine("<hr />");
@@ -1177,13 +1186,14 @@ namespace SobekCM.Library.MySobekViewer
                         Output.WriteLine("    </td>");
                         Output.WriteLine("  </tr>");
                     }
-                    if (user.Projects.Count > 1)
+                    if (user.Default_Metadata_Sets.Count > 1)
                     {
+						Output.WriteLine("  <tr>");
 						Output.WriteLine("    <td style=\"width:" + COL1_WIDTH + "; padding: 5px;\">&nbsp;</td>");
 						Output.WriteLine("    <td style=\"width:" + COL2_WIDTH + ";padding:5px;text-weight:bold;\">" + projectLabel + ":</td>");
 						Output.WriteLine("    <td style=\"width:" + COL3_WIDTH + ";padding:5px;\">");
                         Output.WriteLine("      <select name=\"prefProject\" id=\"prefProject\" class=\"preferences_language_select\" onChange=\"project_changed()\" >");
-                        foreach (string t in user.Projects)
+                        foreach (string t in user.Default_Metadata_Sets)
                         {
                             if (t == current_project)
                             {
@@ -1198,6 +1208,11 @@ namespace SobekCM.Library.MySobekViewer
                         Output.WriteLine("    </td>");
                         Output.WriteLine("  </tr>");
                     }
+
+					Output.WriteLine("  <tr>");
+	                Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
+					Output.WriteLine("    <td><input type=\"checkbox\" name=\"setNewDefaultCheckBox\" id=\"setNewDefaultCheckBox\" /><label for=\"setNewDefaultCheckBox\">Save as my new defaults</label></td>");
+					Output.WriteLine("  </tr>");
 
                     Output.WriteLine("</table>");
                     Output.WriteLine("To change your default " + changeable + ", select <a href=\"" + currentMode.Base_URL + "my/preferences\">My Account</a> above.<br /><br />");
@@ -1711,7 +1726,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             // Load the project
             item = null;
-            string project_code = user.Current_Project;
+            string project_code = user.Current_Default_Metadata;
             try
             {
                 if (project_code.Length > 0)

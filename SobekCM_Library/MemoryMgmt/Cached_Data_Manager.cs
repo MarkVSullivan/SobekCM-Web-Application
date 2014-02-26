@@ -580,7 +580,7 @@ namespace SobekCM.Library.MemoryMgmt
 						Tracer.Add_Trace("Cached_Data_Manager.Store_Info_Browse", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
 					}
 
-					HttpContext.Current.Cache.Insert(key, pageOfResults, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
+					HttpContext.Current.Cache.Insert(key, pageOfResults, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
 				}
 
 				currentpage++;

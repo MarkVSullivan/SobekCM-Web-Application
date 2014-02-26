@@ -51,12 +51,10 @@ namespace SobekCM.URL_Rewriter
 				return;
 			}
 			
-			if (appRelative.Equals("~/") && HttpContext.Current.Request.RawUrl.StartsWith("/?") && HttpContext.Current.Request.RawUrl.Contains("."))
+			// If a USFLDC PURL, call redirection service method
+			if (appRelative.Equals("~/") && HttpContext.Current.Request.RawUrl.StartsWith("/?") && (HttpContext.Current.Request.Url.ToString().Contains("usf.edu") || HttpContext.Current.Request.Url.ToString().Contains("localhost:") || HttpContext.Current.Request.Url.ToString().Contains("usf.sobek.ufl.edu")))
 			{
-				String purl_handle = HttpContext.Current.Request.RawUrl.Substring(2);
-				String packageid=SobekCM_Database.Get_BibID_VID_From_Identifier(purl_handle);
-				
-				HttpContext.Current.Response.Redirect(packageid.ToUpper(),true);
+				USFLDC_Redirection_Service();
 			}
 
 			// Since the user may be using IIPimage server, skip .fgci extensions
@@ -258,5 +256,111 @@ namespace SobekCM.URL_Rewriter
 				}
 			}
 		}
+
+		void USFLDC_Redirection_Service()
+		{
+			String packageid=null;
+			String aggregationCode = null;
+			String purl_handle=null;
+			String url_error = "http://guides.lib.usf.edu/content.php?pid=87781&sid=744350";
+
+			try
+			{
+				purl_handle = HttpContext.Current.Request.RawUrl.Substring(2);
+			}
+			catch (Exception e)
+			{
+				purl_handle = "";
+			}
+
+			if (purl_handle == "m1" || purl_handle.StartsWith("m1."))
+			{
+				// Courtesy permanently moved redirect for former partner MCPL for the MCPLHPC (CID=M01)
+
+				HttpContext.Current.Response.StatusCode = 301;
+				HttpContext.Current.Response.Redirect("http://cdm16681.contentdm.oclc.org");
+			}
+			else if (purl_handle.Contains(".") && !purl_handle.Contains("browse") && !purl_handle.Contains("search"))
+			{
+				// item purl
+
+				packageid = SobekCM_Database.Get_BibID_VID_From_Identifier(purl_handle);
+
+				if (packageid != null)
+				{
+					packageid = packageid.ToUpper();
+					HttpContext.Current.Response.StatusCode = 307;
+					HttpContext.Current.Response.Redirect(packageid, true);
+				}
+				else
+				{
+					HttpContext.Current.Response.StatusCode = 307;
+					HttpContext.Current.Response.Redirect(url_error);
+				}
+			}
+			else if (purl_handle.Contains(".browse") || purl_handle.Contains(".search"))
+			{
+				// browse or search purl
+
+				String purl_handle_original = purl_handle;
+				int pos1 = purl_handle.IndexOf(".");
+				String action = "";
+				purl_handle=purl_handle.Substring(0,pos1);
+
+				if (purl_handle.Length==2)
+				{
+					purl_handle = purl_handle.Substring(0, 1) + "0" + purl_handle.Substring(1);
+				}
+
+				aggregationCode = SobekCM_Database.Get_AggregationCode_From_CID(purl_handle.ToUpper());
+
+				if (aggregationCode != null)
+				{
+					if (purl_handle_original.Contains(".browse"))
+					{
+						action = "/all";
+					}
+					else
+					{
+						action = "/advanced";
+					}
+
+					HttpContext.Current.Response.StatusCode = 307;
+					HttpContext.Current.Response.Redirect(aggregationCode.ToLower() + action, true);
+				}
+				else
+				{
+					HttpContext.Current.Response.StatusCode = 307;
+					HttpContext.Current.Response.Redirect(url_error);
+				}
+			}
+			else if (purl_handle.Length == 2 || purl_handle.Length == 3)
+			{
+				// collection purl
+
+				if (purl_handle.Length == 2)
+				{
+					purl_handle = purl_handle.Substring(0, 1) + "0" + purl_handle.Substring(1);
+				}
+				
+				aggregationCode = SobekCM_Database.Get_AggregationCode_From_CID(purl_handle.ToUpper());
+
+				if (aggregationCode != null)
+				{
+					HttpContext.Current.Response.StatusCode = 307;
+					HttpContext.Current.Response.Redirect(aggregationCode.ToLower(), true);
+				}
+				else
+				{
+					HttpContext.Current.Response.StatusCode = 307;
+					HttpContext.Current.Response.Redirect(url_error);
+				}
+			}
+			else
+			{
+				HttpContext.Current.Response.StatusCode = 307;
+				HttpContext.Current.Response.Redirect(url_error);
+			}
+	   }
 	}
 }
