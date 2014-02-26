@@ -20,7 +20,7 @@ namespace SobekCM.Library.MainWriters
 	/// <summary> Main writer provides datatables as JSON to drive anything which requires
 	/// server-side paging or sorting of a large amount of data. </summary>
 	/// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. </remarks>
-	public class DataProvider_MainWriter : abstractMainWriter
+	public class DataProvider_MainWriter : abstractMainWriter 
 	{
 		/// <summary> Constructor for a new instance of the DataProvider_MainWriter class </summary>
 		/// <param name="Current_Mode"> Mode / navigation information for the current request</param>
@@ -59,6 +59,7 @@ namespace SobekCM.Library.MainWriters
 						provide_dataset_items_view_data(Output);
 					}
 					break;
+					
 				default:
 					Output.Write("DataSet Writer - Unknown Mode");
 					break;

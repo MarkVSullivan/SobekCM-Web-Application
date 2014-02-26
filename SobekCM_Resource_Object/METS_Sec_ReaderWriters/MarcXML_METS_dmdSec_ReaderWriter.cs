@@ -219,115 +219,120 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     package.Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, geoInfo);
                 }
 
-                if (geoInfo.Polygon_Count == 0)
-                {
-                    string d_field = record.Get_Data_Subfield(034, 'd');
-                    string e_field = record.Get_Data_Subfield(034, 'e');
-                    string f_field = record.Get_Data_Subfield(034, 'f');
-                    string g_field = record.Get_Data_Subfield(034, 'g');
+	            if (geoInfo.Polygon_Count == 0)
+	            {
+		            try
+		            {
 
-                    double d_value = 1;
-                    double e_value = 1;
-                    double f_value = 1;
-                    double g_value = 1;
+			            string d_field = record.Get_Data_Subfield(034, 'd').Replace("O", "0");
+			            string e_field = record.Get_Data_Subfield(034, 'e').Replace("O", "0");
+			            string f_field = record.Get_Data_Subfield(034, 'f').Replace("O", "0");
+			            string g_field = record.Get_Data_Subfield(034, 'g').Replace("O", "0");
 
-                    if (d_field.Contains("."))
-                    {
-                        if (d_field.Contains("W"))
-                        {
-                            d_value = -1*Convert.ToDouble(d_field.Replace("W", ""));
-                        }
-                        else
-                        {
-                            d_value = Convert.ToDouble(d_field.Replace("E", ""));
-                        }
-                    }
-                    else
-                    {
-                        d_value = Convert.ToDouble(d_field.Substring(1, 3)) + (Convert.ToDouble(d_field.Substring(4, 2))/60);
+			            double d_value = 1;
+			            double e_value = 1;
+			            double f_value = 1;
+			            double g_value = 1;
 
-                        if ((d_field[0] == '-') || (d_field[0] == 'W'))
-                        {
-                            d_value = -1*d_value;
-                        }
-                    }
+			            if (d_field.Contains("."))
+			            {
+				            if (d_field.Contains("W"))
+				            {
+					            d_value = -1*Convert.ToDouble(d_field.Replace("W", ""));
+				            }
+				            else
+				            {
+					            d_value = Convert.ToDouble(d_field.Replace("E", ""));
+				            }
+			            }
+			            else
+			            {
+				            d_value = Convert.ToDouble(d_field.Substring(1, 3)) + (Convert.ToDouble(d_field.Substring(4, 2))/60);
 
-                    if (d_value < -180)
-                        d_value = d_value + 360;
+				            if ((d_field[0] == '-') || (d_field[0] == 'W'))
+				            {
+					            d_value = -1*d_value;
+				            }
+			            }
 
-                    if (e_field.Contains("."))
-                    {
-                        if (e_field.Contains("W"))
-                        {
-                            e_value = -1*Convert.ToDouble(e_field.Replace("W", ""));
-                        }
-                        else
-                        {
-                            e_value = Convert.ToDouble(e_field.Replace("E", ""));
-                        }
-                    }
-                    else
-                    {
-                        e_value = Convert.ToDouble(e_field.Substring(1, 3)) + (Convert.ToDouble(e_field.Substring(4, 2))/60);
+			            if (d_value < -180)
+				            d_value = d_value + 360;
 
-                        if ((e_field[0] == '-') || (e_field[0] == 'W'))
-                        {
-                            e_value = -1*e_value;
-                        }
-                    }
+			            if (e_field.Contains("."))
+			            {
+				            if (e_field.Contains("W"))
+				            {
+					            e_value = -1*Convert.ToDouble(e_field.Replace("W", ""));
+				            }
+				            else
+				            {
+					            e_value = Convert.ToDouble(e_field.Replace("E", ""));
+				            }
+			            }
+			            else
+			            {
+				            e_value = Convert.ToDouble(e_field.Substring(1, 3)) + (Convert.ToDouble(e_field.Substring(4, 2))/60);
 
-                    if (e_value < -180)
-                        e_value = e_value + 360;
+				            if ((e_field[0] == '-') || (e_field[0] == 'W'))
+				            {
+					            e_value = -1*e_value;
+				            }
+			            }
 
-                    if (f_field.Contains("."))
-                    {
-                        if (f_field.Contains("S"))
-                        {
-                            f_value = -1*Convert.ToDouble(f_field.Replace("S", ""));
-                        }
-                        else
-                        {
-                            f_value = Convert.ToDouble(f_field.Replace("N", ""));
-                        }
-                    }
-                    else
-                    {
-                        f_value = Convert.ToDouble(f_field.Substring(1, 3)) + (Convert.ToDouble(f_field.Substring(4, 2))/60);
+			            if (e_value < -180)
+				            e_value = e_value + 360;
 
-                        if ((f_field[0] == '-') || (f_field[0] == 'S'))
-                        {
-                            f_value = -1*f_value;
-                        }
-                    }
+			            if (f_field.Contains("."))
+			            {
+				            if (f_field.Contains("S"))
+				            {
+					            f_value = -1*Convert.ToDouble(f_field.Replace("S", ""));
+				            }
+				            else
+				            {
+					            f_value = Convert.ToDouble(f_field.Replace("N", ""));
+				            }
+			            }
+			            else
+			            {
+				            f_value = Convert.ToDouble(f_field.Substring(1, 3)) + (Convert.ToDouble(f_field.Substring(4, 2))/60);
 
-                    if (g_field.Contains("."))
-                    {
-                        if (g_field.Contains("S"))
-                        {
-                            g_value = -1*Convert.ToDouble(g_field.Replace("S", ""));
-                        }
-                        else
-                        {
-                            g_value = Convert.ToDouble(g_field.Replace("N", ""));
-                        }
-                    }
-                    else
-                    {
-                        g_value = Convert.ToDouble(g_field.Substring(1, 3)) + (Convert.ToDouble(g_field.Substring(4, 2))/60);
+				            if ((f_field[0] == '-') || (f_field[0] == 'S'))
+				            {
+					            f_value = -1*f_value;
+				            }
+			            }
 
-                        if ((g_field[0] == '-') || (g_field[0] == 'S'))
-                        {
-                            g_value = -1*g_value;
-                        }
-                    }
-                    Coordinate_Polygon polygon = new Coordinate_Polygon();
-                    polygon.Add_Edge_Point(f_value, d_value);
-                    polygon.Add_Edge_Point(g_value, d_value);
-                    polygon.Add_Edge_Point(g_value, e_value);
-                    polygon.Add_Edge_Point(f_value, e_value);
-                    polygon.Label = "Map Coverage";
-                    geoInfo.Add_Polygon(polygon);
-                }
+			            if (g_field.Contains("."))
+			            {
+				            if (g_field.Contains("S"))
+				            {
+					            g_value = -1*Convert.ToDouble(g_field.Replace("S", ""));
+				            }
+				            else
+				            {
+					            g_value = Convert.ToDouble(g_field.Replace("N", ""));
+				            }
+			            }
+			            else
+			            {
+				            g_value = Convert.ToDouble(g_field.Substring(1, 3)) + (Convert.ToDouble(g_field.Substring(4, 2))/60);
+
+				            if ((g_field[0] == '-') || (g_field[0] == 'S'))
+				            {
+					            g_value = -1*g_value;
+				            }
+			            }
+			            Coordinate_Polygon polygon = new Coordinate_Polygon();
+			            polygon.Add_Edge_Point(f_value, d_value);
+			            polygon.Add_Edge_Point(g_value, d_value);
+			            polygon.Add_Edge_Point(g_value, e_value);
+			            polygon.Add_Edge_Point(f_value, e_value);
+			            polygon.Label = "Map Coverage";
+			            geoInfo.Add_Polygon(polygon);
+		            }
+		            catch {   }
+	            }
             }
 
             // Add the abstract ( 520 |a )
