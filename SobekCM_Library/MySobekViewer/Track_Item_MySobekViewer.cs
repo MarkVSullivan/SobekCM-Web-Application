@@ -167,7 +167,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             //Get the table of all previous entries created by this user, for display in the third edit tab
-            previous_workflows_this_user = Database.SobekCM_Database.Tracking_Get_All_Entries_By_User(current_selected_user.UserName);
+    //        previous_workflows_this_user = Database.SobekCM_Database.Tracking_Get_All_Entries_By_User(current_selected_user.UserName);
 
             //Fetch the dictionaries of current work from the session
             current_workflows = (HttpContext.Current.Session["Tracking_Current_Workflows"]) as Dictionary<string, Tracking_Workflow>;
@@ -933,7 +933,7 @@ namespace SobekCM.Library.MySobekViewer
 
             builder.AppendLine("    <li id=\"tabHeader_1\" onclick=\"save_item_tracking('1');\">" + DURATION + "</li>");
             builder.AppendLine("     <li id=\"tabHeader_2\" onclick=\"save_item_tracking('2');\">" + SINGLE_POINT + "</li>");
-            builder.AppendLine("     <li id=\"tabHeader_3\" onclick=\"save_item_tracking('3');\">" + EDIT_SCREEN + "</li>");
+            //builder.AppendLine("     <li id=\"tabHeader_3\" onclick=\"save_item_tracking('3');\">" + EDIT_SCREEN + "</li>");
 
             builder.AppendLine("</ul>");
             builder.AppendLine("</div>");
@@ -1505,39 +1505,49 @@ namespace SobekCM.Library.MySobekViewer
             //Close the inner tab div
             builder.AppendLine("</div>");
 
-            builder.AppendLine("</div>");
+            //builder.AppendLine("</div>");
 
 
 
             #endregion
 
-            #region Third tab - Editing previous entries
-            builder.AppendLine("            <div class=\"tabpage\" id=\"tabpage_3\">");
-            if (previous_workflows_this_user.Rows.Count > 0)
-            {  
-                //Start the table for displaying the workflow entries
-                builder.AppendLine("<table id=\"sbkTracking_Workflows_Table\">");
+            //#region Third tab - Editing previous entries
+            //builder.AppendLine("            <div class=\"tabpage\" id=\"tabpage_3\">");
+            //if (previous_workflows_this_user.Rows.Count > 0)
+            //{  
+            //    //Start the table for displaying the workflow entries
+            //    builder.AppendLine("<table id=\"sbkTracking_Workflows_Table\">");
                 
-                foreach (DataRow thisRow in previous_workflows_this_user.Rows)
-                {
-                    builder.AppendLine("<tr>");
-                    builder.AppendLine("<td>" + thisRow["ItemID"] + "</td>");
-                    builder.AppendLine("<td>" + thisRow["WorkFlowName"] + "</td>");
-                    builder.AppendLine("<td>" + thisRow["DateStarted"] + "</td>");
-                    builder.AppendLine("<td>" + thisRow["DateCompleted"] + "</td>");
-                    builder.AppendLine("<td>" + thisRow["RelatedEquipment"] + "</td>");
-                    builder.AppendLine("<td>" + thisRow["WorkPerformedBy"] + "</td>");
-                    builder.AppendLine("</tr>");
-                }
-                builder.AppendLine("</table>");
+            //    //Add the table headers
+            //    builder.AppendLine("<tr><th>Workflow name</th>");
+            //    builder.AppendLine("<th>Date</th>");
+            //    builder.AppendLine("<th>Start time</th>");
+            //    builder.AppendLine("<th>End Time</th>");
+            //    builder.AppendLine("<th>Equipment</th>");
+            //    builder.AppendLine("<th>User</th></tr>");
 
-            }
-            builder.AppendLine("</div>");
-            #endregion
+            //    foreach (DataRow thisRow in previous_workflows_this_user.Rows)
+            //    {
+            //        builder.AppendLine("<tr>");
+            //      //  builder.AppendLine("<td>" + thisRow["ItemID"] + "</td>");
+            //        builder.AppendLine("<td>" + thisRow["WorkFlowName"] + "</td>");
+            //        builder.AppendLine("<td>" + thisRow["DateStarted"] + "</td>");
+            //        builder.AppendLine("<td>" + thisRow["DateCompleted"] + "</td>");
+            //        builder.AppendLine("<td>" + thisRow["RelatedEquipment"] + "</td>");
+            //        builder.AppendLine("<td>" + thisRow["WorkPerformedBy"] + "</td>");
+            //        builder.AppendLine("</tr>");
+            //    }
+            //    builder.AppendLine("</table>");
+
+            //}
+            //builder.AppendLine("</div>");
+            //#endregion
 
             builder.AppendLine("</div>");
 
             //Close the outer tab container
+            builder.AppendLine("</div>");
+
             builder.AppendLine("</div>");
 
 
