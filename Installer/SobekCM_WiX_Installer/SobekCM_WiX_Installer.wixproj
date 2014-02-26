@@ -22,10 +22,13 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CustomActions\CustomActions.wxs" />
+    <Compile Include="CustomActions\GetIISWebSites.wxs" />
     <Compile Include="Database.wxs" />
     <Compile Include="FileLists\Builder.wxs" />
     <Compile Include="FileLists\IIPimage.wxs" />
     <Compile Include="FileLists\Solr.wxs" />
+    <Compile Include="FileLists\Web32.wxs" />
     <Compile Include="FileLists\Web64.wxs" />
     <Compile Include="Registry.wxs" />
     <Compile Include="UI\UI_BuilderConfigDialog.wxs" />
@@ -89,6 +92,7 @@
     <Folder Include="Database" />
     <Folder Include="Images" />
     <Folder Include="FileLists" />
+    <Folder Include="CustomActions" />
     <Folder Include="UI" />
   </ItemGroup>
   <ItemGroup>
@@ -102,12 +106,18 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
-  <!--
-	To modify your build process, add your task inside one of the targets below and uncomment it.
-	Other similar extension points exist, see Wix.targets.
-	<Target Name="BeforeBuild">
-	</Target>
+
 	<Target Name="AfterBuild">
+		<Message Text="**************** After Build **********************" />
+		<CallTarget Targets="CopyToDeploy" />
 	</Target>
-	-->
+
+
+	<!-- Copy this to the DEPLOY folder with appropriate name -->
+	<!-- On release builds we version our installers, copying the msi file to a deployment directory. An example of this using a wixproj target called from AfterBuild target: -->
+	<Target Name="CopyToDeploy" Condition="'$(Configuration)' == 'Release'">
+		<!-- Note we append AssemblyFileVersion, changing MSI file name only works with Major Upgrades -->
+		<Copy SourceFiles="$(OutputPath)$(OutputName).msi"
+					DestinationFiles="..\Deploy\Setup\$(OutputName) $(AssemblyFileVersion)_$(Platform).msi" />
+	</Target>
 </Project>

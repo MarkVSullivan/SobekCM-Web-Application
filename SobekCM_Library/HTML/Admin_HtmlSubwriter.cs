@@ -176,17 +176,17 @@ namespace SobekCM.Library.HTML
                             SobekCM_Item projectObject = Cached_Data_Manager.Retrieve_Project(user.UserID, project_code, Tracer);
                             if (projectObject != null)
                             {
-                                Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Valid project file found in cache");
+                                Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Valid default metadata set found in cache");
                                 adminViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, projectObject, codeManager, iconTable, htmlSkin, null, null, Tracer);
                             }
                             else
                             {
-                                if (SobekCM_Database.Get_All_Projects_Templates(Tracer).Tables[0].Select("ProjectCode='" + project_code + "'").Length > 0)
+                                if (SobekCM_Database.Get_All_Projects_DefaultMetadatas(Tracer).Tables[0].Select("MetadataCode='" + project_code + "'").Length > 0)
                                 {
-                                    Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building project file from (possible) PMETS");
+                                    Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building default metadata set from (possible) PMETS");
                                     string pmets_file = SobekCM_Library_Settings.Base_MySobek_Directory + "projects\\" + Current_Mode.My_Sobek_SubMode.Substring(1) + ".pmets";
                                     SobekCM_Item pmets_item = File.Exists(pmets_file) ? SobekCM_Item.Read_METS(pmets_file) : new SobekCM_Item();
-                                    pmets_item.Bib_Info.Main_Title.Title = "Project level metadata for '" + project_code + "'";
+                                    pmets_item.Bib_Info.Main_Title.Title = "Default metadata set for '" + project_code + "'";
                                     pmets_item.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Project;
                                     pmets_item.BibID = project_code.ToUpper();
                                     pmets_item.VID = "00001";

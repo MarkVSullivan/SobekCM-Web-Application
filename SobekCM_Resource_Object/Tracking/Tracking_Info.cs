@@ -559,59 +559,62 @@ namespace SobekCM.Resource_Object.Tracking
             }
 
             // Pull all the single tracking values out of the dataset
-            DataRow itemRow = Tracking_Info.Tables[3].Rows[0];
-            Locally_Archived = Convert.ToBoolean(itemRow["Locally_Archived"]);
-            Remotely_Archived = Convert.ToBoolean(itemRow["Remotely_Archived"]);
-            Born_Digital = Convert.ToBoolean(itemRow["Born_Digital"]);
-            if (itemRow["Disposition_Advice"] == DBNull.Value)
-                dispositionAdvice = -1;
-            else
-                dispositionAdvice = Convert.ToInt16(itemRow["Disposition_Advice"]);
-            if (itemRow["Material_Received_Date"] == DBNull.Value)
-                material_recd_date = null;
-            else
-                material_recd_date = Convert.ToDateTime(itemRow["Material_Received_Date"]);
-            Material_Rec_Date_Estimated = Convert.ToBoolean(itemRow["Material_Recd_Date_Estimated"]);
-            if (itemRow["VIDSource"] != DBNull.Value)
-                vid_source = itemRow["VIDSource"].ToString();
-            lastMilestone = Convert.ToInt16(itemRow["Last_Milestone"]);
-            if (itemRow["Milestone_DigitalAcquisition"] == DBNull.Value)
-                digitalAcquisition = null;
-            else
-                digitalAcquisition = Convert.ToDateTime(itemRow["Milestone_DigitalAcquisition"]);
-            if (itemRow["Milestone_ImageProcessing"] == DBNull.Value)
-                imageProcessing = null;
-            else
-                imageProcessing = Convert.ToDateTime(itemRow["Milestone_ImageProcessing"]);
-            if (itemRow["Milestone_QualityControl"] == DBNull.Value)
-                qualityControl = null;
-            else
-                qualityControl = Convert.ToDateTime(itemRow["Milestone_QualityControl"]);
-            if (itemRow["Milestone_OnlineComplete"] == DBNull.Value)
-                onlineComplete = null;
-            else
-                onlineComplete = Convert.ToDateTime(itemRow["Milestone_OnlineComplete"]);
-            if (itemRow["Disposition_Date"] == DBNull.Value)
-                disposition_date = null;
-            else
-                disposition_date = Convert.ToDateTime(itemRow["Disposition_Date"]);
-            if (itemRow["Disposition_Type"] == DBNull.Value)
-                dispositionType = -1;
-            else
-                dispositionType = Convert.ToInt16(itemRow["Disposition_Type"]);
-            if (itemRow["Tracking_Box"] == DBNull.Value)
-                trackingBox = String.Empty;
-            else
-                trackingBox = itemRow["Tracking_Box"].ToString();
-            if (itemRow["Disposition_Advice_Notes"] == DBNull.Value)
-                dispositionAdviceNotes = String.Empty;
-            else
-                dispositionAdviceNotes = itemRow["Disposition_Advice_Notes"].ToString();
-            if (itemRow["Disposition_Notes"] == DBNull.Value)
-                dispositionNotes = String.Empty;
-            else
-                dispositionNotes = itemRow["Disposition_Notes"].ToString();
-            Born_Digital = Convert.ToBoolean(itemRow["Born_Digital"]);
+	        if (Tracking_Info.Tables[3].Rows.Count > 0)
+	        {
+		        DataRow itemRow = Tracking_Info.Tables[3].Rows[0];
+		        Locally_Archived = Convert.ToBoolean(itemRow["Locally_Archived"]);
+		        Remotely_Archived = Convert.ToBoolean(itemRow["Remotely_Archived"]);
+		        Born_Digital = Convert.ToBoolean(itemRow["Born_Digital"]);
+		        if (itemRow["Disposition_Advice"] == DBNull.Value)
+			        dispositionAdvice = -1;
+		        else
+			        dispositionAdvice = Convert.ToInt16(itemRow["Disposition_Advice"]);
+		        if (itemRow["Material_Received_Date"] == DBNull.Value)
+			        material_recd_date = null;
+		        else
+			        material_recd_date = Convert.ToDateTime(itemRow["Material_Received_Date"]);
+		        Material_Rec_Date_Estimated = Convert.ToBoolean(itemRow["Material_Recd_Date_Estimated"]);
+		        if (itemRow["VIDSource"] != DBNull.Value)
+			        vid_source = itemRow["VIDSource"].ToString();
+		        lastMilestone = Convert.ToInt16(itemRow["Last_Milestone"]);
+		        if (itemRow["Milestone_DigitalAcquisition"] == DBNull.Value)
+			        digitalAcquisition = null;
+		        else
+			        digitalAcquisition = Convert.ToDateTime(itemRow["Milestone_DigitalAcquisition"]);
+		        if (itemRow["Milestone_ImageProcessing"] == DBNull.Value)
+			        imageProcessing = null;
+		        else
+			        imageProcessing = Convert.ToDateTime(itemRow["Milestone_ImageProcessing"]);
+		        if (itemRow["Milestone_QualityControl"] == DBNull.Value)
+			        qualityControl = null;
+		        else
+			        qualityControl = Convert.ToDateTime(itemRow["Milestone_QualityControl"]);
+		        if (itemRow["Milestone_OnlineComplete"] == DBNull.Value)
+			        onlineComplete = null;
+		        else
+			        onlineComplete = Convert.ToDateTime(itemRow["Milestone_OnlineComplete"]);
+		        if (itemRow["Disposition_Date"] == DBNull.Value)
+			        disposition_date = null;
+		        else
+			        disposition_date = Convert.ToDateTime(itemRow["Disposition_Date"]);
+		        if (itemRow["Disposition_Type"] == DBNull.Value)
+			        dispositionType = -1;
+		        else
+			        dispositionType = Convert.ToInt16(itemRow["Disposition_Type"]);
+		        if (itemRow["Tracking_Box"] == DBNull.Value)
+			        trackingBox = String.Empty;
+		        else
+			        trackingBox = itemRow["Tracking_Box"].ToString();
+		        if (itemRow["Disposition_Advice_Notes"] == DBNull.Value)
+			        dispositionAdviceNotes = String.Empty;
+		        else
+			        dispositionAdviceNotes = itemRow["Disposition_Advice_Notes"].ToString();
+		        if (itemRow["Disposition_Notes"] == DBNull.Value)
+			        dispositionNotes = String.Empty;
+		        else
+			        dispositionNotes = itemRow["Disposition_Notes"].ToString();
+		        Born_Digital = Convert.ToBoolean(itemRow["Born_Digital"]);
+	        }
         }
 
         #endregion

@@ -133,14 +133,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             writeResult.Add_Controls(MainPlaceHolder, Tracer);
 
 
-            if ( resultsStatistics.Total_Items > 0)
-            {
-                Literal literal = new Literal
-                                      {
-										  Text = "<div class=\"sbkPrsw_ResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons + "" + Environment.NewLine + "  " + writeResult.Showing_Text + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine 
-                                      };
-                MainPlaceHolder.Controls.Add(literal);
-            }
+			//if ( resultsStatistics.Total_Items > 0)
+			//{
+			//	Literal literal = new Literal
+			//						  {
+			//							  Text = "<div class=\"sbkPrsw_ResultsNavBar\">" + Environment.NewLine + "  " + writeResult.Buttons + "" + Environment.NewLine + "  " + writeResult.Showing_Text + Environment.NewLine + "</div>" + Environment.NewLine + "<br />" + Environment.NewLine 
+			//						  };
+			//	MainPlaceHolder.Controls.Add(literal);
+			//}
         }
 
     }

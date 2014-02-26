@@ -293,6 +293,20 @@ namespace SobekCM.Builder
                 return;
             }
 
+            // Look for Ghostscript from the registry, if not provided in the config file
+            if (SobekCM_Library_Settings.Ghostscript_Executable.Length == 0)
+            {
+                // LOOK FOR THE GHOSTSCRIPT DIRECTORY
+                string possible_ghost = Look_For_Variable_Registry_Key("SOFTWARE\\GPL Ghostscript", "GS_DLL");
+                if (!String.IsNullOrEmpty(possible_ghost))
+                   SobekCM_Library_Settings.Ghostscript_Executable = possible_ghost;
+            }
+
+            // Look for Imagemagick from the registry, if not provided in the config file
+            string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
+            if (!String.IsNullOrEmpty(possible_imagemagick))
+                SobekCM_Library_Settings.ImageMagick_Executable = possible_imagemagick;
+
             // If this is to refresh the OAI, don't use the worker controller
             if (( refresh_oai ) &&  (SobekCM_Library_Settings.Database_Connections.Count == 1))
             {

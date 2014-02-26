@@ -316,7 +316,9 @@ namespace SobekCM.Library.Database
 				lastException = ee;
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("SobekCM_Database.Get_Build_Error_Logs", "Exception encounted", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Build_Error_Logs", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Build_Error_Logs", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Build_Error_Logs", ee.StackTrace, Custom_Trace_Type_Enum.Error);
 				}
 				return null;
 			}
@@ -442,6 +444,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Statistics_Aggregation_Titles", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -476,6 +484,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Statistics_By_Date_Range", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -508,6 +522,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -538,6 +558,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Statistics_History", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Statistics_History", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Statistics_History", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -567,6 +593,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Statistics_History", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Statistics_History", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Statistics_History", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -592,6 +624,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -623,6 +661,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -655,6 +699,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Count_DateRange", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -688,6 +738,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Hierarchies", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Hierarchies", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Hierarchies", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -720,6 +776,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Page_Item_Count_History", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -753,6 +815,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Users_Linked_To_Items", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Users_Linked_To_Items", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Users_Linked_To_Items", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -795,6 +863,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_User_Linked_Items_Stats", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_User_Linked_Items_Stats", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_User_Linked_Items_Stats", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -960,7 +1034,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
-
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_All_Browse_Paged", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_All_Browse_Paged", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_All_Browse_Paged", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				throw;
 			}
 
@@ -1222,6 +1301,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Metadata_Fields", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Metadata_Fields", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Metadata_Fields", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -2446,6 +2531,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Group_Details", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Group_Details", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Group_Details", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -2479,6 +2570,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Details", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Details", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Details", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -2519,6 +2616,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Restrictions", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Restrictions", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Restrictions", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 			}
 		}
 
@@ -2554,6 +2657,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Lookup_Item_By_ItemID", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -2777,6 +2886,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Multiple_Volumes", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Multiple_Volumes", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Multiple_Volumes", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -2818,8 +2933,14 @@ namespace SobekCM.Library.Database
 				// Return the built argument set
 				return true;
 			}
-			catch 
+			catch (Exception ee )
 			{
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Counts", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Counts", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Counts", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 
@@ -2887,9 +3008,11 @@ namespace SobekCM.Library.Database
 			{
 				if (Tracer != null)
 				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
 					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
 				}
-				throw;
+				throw ee;
 			}
 		}
 
@@ -2932,7 +3055,9 @@ namespace SobekCM.Library.Database
 			{
 				if (Tracer != null)
 				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Main_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
 					Tracer.Add_Trace("SobekCM_Database.Get_Main_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Main_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
 				}
 				throw;
 			}
@@ -3173,6 +3298,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Search_Stop_Words", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Search_Stop_Words", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Search_Stop_Words", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -3211,6 +3342,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Populate_Thematic_Headings", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Populate_Thematic_Headings", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Populate_Thematic_Headings", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -3249,6 +3386,12 @@ namespace SobekCM.Library.Database
 			catch ( Exception ee )
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Populate_Aggregation_Aliases", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Populate_Aggregation_Aliases", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Populate_Aggregation_Aliases", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -3362,11 +3505,16 @@ namespace SobekCM.Library.Database
 				// Return the built collection as readonly
 				return true;
 			}
-			catch
+			catch (Exception ee)
 			{
 				// Add the default url portal then
 				Portals.Default_Portal = Portals.Add_Portal(-1, "Default SobekCM Library", "Sobek", "all", "sobek", "", "");
-
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -3394,8 +3542,14 @@ namespace SobekCM.Library.Database
 
 				return true;
 			}
-			catch
+			catch (Exception ee)
 			{
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Delete_URL_Portal", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_URL_Portal", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_URL_Portal", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -3440,8 +3594,14 @@ namespace SobekCM.Library.Database
 
 				return Convert.ToInt32( paramList[9].Value );
 			}
-			catch (Exception)
+			catch (Exception ee)
 			{
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Edit_URL_Portal", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Edit_URL_Portal", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Edit_URL_Portal", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return -1;
 			}
 		}
@@ -3493,6 +3653,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Populate_Translations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Populate_Translations", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Populate_Translations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -3682,6 +3848,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -3722,6 +3894,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -3835,6 +4013,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Populate_Item_Lookup_Object", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Populate_Item_Lookup_Object", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Populate_Item_Lookup_Object", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -3940,6 +4124,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Ranges", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Ranges", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Ranges", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -3976,6 +4166,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Range_Details", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -4006,6 +4202,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Delete_Single_IP", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Single_IP", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Single_IP", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -4045,6 +4247,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Edit_Single_IP", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Edit_Single_IP", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Edit_Single_IP", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return -1;
 			}
 		}
@@ -4082,10 +4290,15 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Edit_IP_Range", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Edit_IP_Range", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Edit_IP_Range", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
-
 
 		#endregion
 
@@ -4126,6 +4339,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_All_Features_By_Item", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_All_Features_By_Item", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_All_Features_By_Item", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -4164,6 +4383,12 @@ namespace SobekCM.Library.Database
 			catch ( Exception ee )
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_All_Streets_By_Item", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_All_Streets_By_Item", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_All_Streets_By_Item", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -4178,7 +4403,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Password"> Plain-text password, which is then encrypted prior to saving</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
-		/// <remarks> This calls the 'mySobek_Save_User2' stored procedure</remarks> 
+		/// <remarks> This calls the 'mySobek_Save_User' stored procedure</remarks> 
 		public static bool Save_User(User_Object User, string Password, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
@@ -4217,23 +4442,29 @@ namespace SobekCM.Library.Database
 				{
 					paramList[16] = new SqlParameter("@default_template", String.Empty);
 				}
-				if (User.Projects.Count > 0)
+				if (User.Default_Metadata_Sets.Count > 0)
 				{
-					paramList[17] = new SqlParameter("@default_project", User.Projects[0]);
+					paramList[17] = new SqlParameter("@default_metadata", User.Default_Metadata_Sets[0]);
 				}
 				else
 				{
-					paramList[17] = new SqlParameter("@default_project", String.Empty);
+					paramList[17] = new SqlParameter("@default_metadata", String.Empty);
 				}
 				paramList[18] = new SqlParameter("@organization_code", User.Organization_Code);
 				paramList[19] = new SqlParameter("@receivestatsemail", User.Receive_Stats_Emails);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_User2", paramList);
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_User", paramList);
 				return true;
 			}
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Save_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_User", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 
@@ -4300,6 +4531,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Change_Password", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Change_Password", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Change_Password", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 
@@ -4339,6 +4576,12 @@ namespace SobekCM.Library.Database
 			catch ( Exception ee )
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.UserName_Exists", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.UserName_Exists", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.UserName_Exists", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				UserName_Exists = true;
 				Email_Exists = true;
 				return false;
@@ -4371,6 +4614,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Set_Receive_Stats_Email_Flag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -4407,6 +4656,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_User", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -4445,6 +4700,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_User", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -4488,6 +4749,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_User", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -4534,7 +4801,7 @@ namespace SobekCM.Library.Database
 
 			foreach (DataRow thisRow in ResultSet.Tables[2].Rows)
 			{
-				user.Add_Project(thisRow["ProjectCode"].ToString());
+				user.Add_Default_Metadata_Set(thisRow["MetadataCode"].ToString());
 			}
 
 			user.Items_Submitted_Count = ResultSet.Tables[3 ].Rows.Count;
@@ -4553,7 +4820,7 @@ namespace SobekCM.Library.Database
 			// Add links to aggregations
 			foreach (DataRow thisRow in ResultSet.Tables[5 ].Rows)
 			{
-				user.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditItems"]), Convert.ToBoolean(thisRow["IsCollectionManager"]), Convert.ToBoolean(thisRow["OnHomePage"]), Convert.ToBoolean(thisRow["IsAggregationAdmin"]));
+				user.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditMetadata"]), Convert.ToBoolean(thisRow["IsCollectionManager"]), Convert.ToBoolean(thisRow["OnHomePage"]), Convert.ToBoolean(thisRow["IsAggregationAdmin"]));
 			}
 
 			// Add the current folder names
@@ -4583,14 +4850,22 @@ namespace SobekCM.Library.Database
 			foreach (User_Folder rootFolder in parentNodes)
 				user.Add_Folder(rootFolder);
 
+			// Get the list of BibID/VID associated with this
 			foreach (DataRow itemRow in ResultSet.Tables[7 ].Rows)
 			{
 				user.Add_Bookshelf_Item(itemRow["BibID"].ToString(), itemRow["VID"].ToString());
 			}
 
+			// Add the user groups to which this user is a member
 			foreach (DataRow groupRow in ResultSet.Tables[8].Rows)
 			{
 				user.Add_User_Group(groupRow[0].ToString());
+			}
+
+			// Get all the user settings
+			foreach (DataRow settingRow in ResultSet.Tables[9].Rows)
+			{
+				user.Add_Setting(settingRow["Setting_Key"].ToString(), settingRow["Setting_Value"].ToString(), false);
 			}
 
 			return user;
@@ -4681,6 +4956,12 @@ namespace SobekCM.Library.Database
 			catch ( Exception ee )
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Folder_Search_Information", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -4712,6 +4993,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Delete_User_Search", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_User_Search", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_User_Search", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -4742,6 +5029,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_User_Searches", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_User_Searches", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_User_Searches", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -4783,6 +5076,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Save_User_Search", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_User_Search", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_User_Search", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return -1000;
 			}
 		}
@@ -4820,6 +5119,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -4855,6 +5160,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folders", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folders", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Item_From_User_Folders", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -4896,6 +5207,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Add_Item_To_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -5164,6 +5481,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Delete_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -5206,6 +5529,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Edit_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Edit_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Edit_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return -1;
 			}
 		}
@@ -5241,6 +5570,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.User_Set_Aggregation_Home_Page_Flag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -5291,6 +5626,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Public_User_Folder", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Public_User_Folder", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Public_User_Folder", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -5336,7 +5677,7 @@ namespace SobekCM.Library.Database
 
 					foreach (DataRow thisRow in resultSet.Tables[2].Rows)
 					{
-						group.Add_Project(thisRow["ProjectCode"].ToString());
+						group.Add_Default_Metadata_Set(thisRow["MetadataCode"].ToString());
 					}
 
 					// Add links to regular expressions
@@ -5348,7 +5689,7 @@ namespace SobekCM.Library.Database
 					// Add links to aggregations
 					foreach (DataRow thisRow in resultSet.Tables[4].Rows)
 					{
-						group.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditItems"]), Convert.ToBoolean(thisRow["IsCurator"]));
+						group.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditMetadata"]), Convert.ToBoolean(thisRow["IsCurator"]));
 					}
 
 					// Add the basic information about users in this user group
@@ -5379,6 +5720,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_User_Group", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_User_Group", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_User_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -5422,6 +5769,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Add_Description_Tag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Add_Description_Tag", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Add_Description_Tag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return -1;
 			}
 		}
@@ -5453,6 +5806,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if ( Tracer != null )
+				{
+					Tracer.Add_Trace("SobekCM_Database.Delete_Description_Tag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Description_Tag", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Description_Tag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -5482,6 +5841,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.View_Tags_By_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.View_Tags_By_User", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.View_Tags_By_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -5512,6 +5877,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.View_Tags_By_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return null;
 			}
 		}
@@ -5611,6 +5982,32 @@ namespace SobekCM.Library.Database
 			}
 
 			return returnValue;
+		}
+
+		/// <summary> Sets a value for an individual user's setting </summary>
+		/// <param name="UserID"> Primary key for this user in the database </param>
+		/// <param name="Setting_Key"> Key for the setting to update or insert </param>
+		/// <param name="Setting_Value"> Value for the setting to update or insert </param>
+		/// <returns> TRUE if successful, otherwise FALSE </returns>
+		/// <remarks> This calls the 'SobekCM_Set_User_Setting_Value' stored procedure </remarks> 
+		public static bool Set_User_Setting(int UserID, string Setting_Key, string Setting_Value)
+		{
+			try
+			{
+				// Execute this non-query stored procedure
+				SqlParameter[] paramList = new SqlParameter[3];
+				paramList[0] = new SqlParameter("@UserID", UserID);
+				paramList[1] = new SqlParameter("@Setting_Key", Setting_Key);
+				paramList[2] = new SqlParameter("@Setting_Value", Setting_Value);
+
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Set_User_Setting_Value", paramList);
+				return true;
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return false;
+			}
 		}
 
 		/// <summary> Sets a value in the settings table </summary>
@@ -5836,6 +6233,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Update_Additional_Work_Needed_Flag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_Additional_Work_Needed_Flag", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_Additional_Work_Needed_Flag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -6003,6 +6406,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Alias", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -6031,6 +6440,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Aggregation_Alias", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -6073,6 +6488,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Save_Web_Skin", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_Web_Skin", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_Web_Skin", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -6112,6 +6533,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Delete_Web_Skin", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Web_Skin", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Web_Skin", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -6166,6 +6593,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Save_Icon", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_Icon", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_Icon", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return -1;
 			}
 		}
@@ -6204,6 +6637,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Delete_Icon", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Icon", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Icon", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -6257,19 +6696,19 @@ namespace SobekCM.Library.Database
 		}
 
 
-		/// <summary> Gets the dataset with all projects and all templates </summary>
+		/// <summary> Gets the dataset with all default metadata and all templates </summary>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> DataSet with list of all projects and tables </returns>
-		/// <remarks> This calls the 'mySobek_Get_All_Projects_Templates' stored procedure</remarks> 
-		public static DataSet Get_All_Projects_Templates(Custom_Tracer Tracer)
+		/// <returns> DataSet with list of all default metadata sets and tables </returns>
+		/// <remarks> This calls the 'mySobek_Get_All_Projects_DefaultMetadatas' stored procedure</remarks> 
+		public static DataSet Get_All_Projects_DefaultMetadatas(Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("SobekCM_Database.Get_All_Projects_Templates", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Get_All_Projects_DefaultMetadatas", String.Empty);
 			}
 
 			// Define a temporary dataset
-			DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_All_Projects_Templates");
+			DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_All_Projects_DefaultMetadatas");
 			return tempSet;
 		}
 
@@ -6310,6 +6749,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Update_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -6399,6 +6844,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Save_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -6442,6 +6893,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Delete_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return -1;
 			}
 		}
@@ -6532,6 +6989,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Reset_User_Password", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Reset_User_Password", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Reset_User_Password", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -6587,6 +7050,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -6676,21 +7145,27 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Templates", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
 
-		/// <summary> Sets the list of projects possible for a given user </summary>
+		/// <summary> Sets the list of default metadata sets possible for a given user </summary>
 		/// <param name="UserID"> Primary key for this user from the database </param>
-		/// <param name="Projects"> List of projects to link to this user</param>
+		/// <param name="MetadataSets"> List of default metadata sets to link to this user</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'mySobek_Add_User_Projects_Link' stored procedure</remarks> 
-		public static bool Update_SobekCM_User_Projects(int UserID, ReadOnlyCollection<string> Projects, Custom_Tracer Tracer)
+		/// <remarks> This calls the 'mySobek_Add_User_DefaultMetadata_Link' stored procedure</remarks> 
+		public static bool Update_SobekCM_User_DefaultMetadata(int UserID, ReadOnlyCollection<string> MetadataSets, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Projects", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", String.Empty);
 			}
 
 			// Call the routine
@@ -6699,62 +7174,62 @@ namespace SobekCM.Library.Database
 				// Build the parameter list for the first run
 				SqlParameter[] paramList = new SqlParameter[6];
 				paramList[0] = new SqlParameter("@userid", UserID);
-				if (Projects.Count > 0)
-					paramList[1] = new SqlParameter("@project_default", Projects[0]);
+				if (MetadataSets.Count > 0)
+					paramList[1] = new SqlParameter("@metadata_default", MetadataSets[0]);
 				else
-					paramList[1] = new SqlParameter("@project_default", Projects[0]);
+					paramList[1] = new SqlParameter("@metadata_default", String.Empty);
 
-				if (Projects.Count > 1)
-					paramList[2] = new SqlParameter("@project2", Projects[1]);
+				if (MetadataSets.Count > 1)
+					paramList[2] = new SqlParameter("@metadata2", MetadataSets[1]);
 				else
-					paramList[2] = new SqlParameter("@project2", String.Empty);
+					paramList[2] = new SqlParameter("@metadata2", String.Empty);
 
-				if (Projects.Count > 2)
-					paramList[3] = new SqlParameter("@project3", Projects[2]);
+				if (MetadataSets.Count > 2)
+					paramList[3] = new SqlParameter("@metadata3", MetadataSets[2]);
 				else
-					paramList[3] = new SqlParameter("@project3", String.Empty);
+					paramList[3] = new SqlParameter("@metadata3", String.Empty);
 
-				if (Projects.Count > 3)
-					paramList[4] = new SqlParameter("@project4", Projects[3]);
+				if (MetadataSets.Count > 3)
+					paramList[4] = new SqlParameter("@metadata4", MetadataSets[3]);
 				else
-					paramList[4] = new SqlParameter("@project4", String.Empty);
+					paramList[4] = new SqlParameter("@metadata4", String.Empty);
 
-				if (Projects.Count > 4)
-					paramList[5] = new SqlParameter("@project5", Projects[4]);
+				if (MetadataSets.Count > 4)
+					paramList[5] = new SqlParameter("@metadata5", MetadataSets[4]);
 				else
-					paramList[5] = new SqlParameter("@project5", String.Empty);
+					paramList[5] = new SqlParameter("@metadata5", String.Empty);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Projects_Link", paramList);
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_DefaultMetadata_Link", paramList);
 
 				int currentIndex = 5;
-				while (Projects.Count > currentIndex)
+				while (MetadataSets.Count > currentIndex)
 				{
 					paramList[0] = new SqlParameter("@userid", UserID);
-					paramList[1] = new SqlParameter("@project_default", String.Empty);
+					paramList[1] = new SqlParameter("@metadata_default", String.Empty);
 
-					if (Projects.Count > currentIndex)
-						paramList[2] = new SqlParameter("@project2", Projects[currentIndex]);
+					if (MetadataSets.Count > currentIndex)
+						paramList[2] = new SqlParameter("@metadata2", MetadataSets[currentIndex]);
 					else
-						paramList[2] = new SqlParameter("@project2", String.Empty);
+						paramList[2] = new SqlParameter("@metadata2", String.Empty);
 
-					if (Projects.Count > currentIndex + 1)
-						paramList[3] = new SqlParameter("@project3", Projects[currentIndex + 1]);
+					if (MetadataSets.Count > currentIndex + 1)
+						paramList[3] = new SqlParameter("@metadata3", MetadataSets[currentIndex + 1]);
 					else
-						paramList[3] = new SqlParameter("@project3", String.Empty);
+						paramList[3] = new SqlParameter("@metadata3", String.Empty);
 
-					if (Projects.Count > currentIndex + 2)
-						paramList[4] = new SqlParameter("@project4", Projects[currentIndex + 2]);
+					if (MetadataSets.Count > currentIndex + 2)
+						paramList[4] = new SqlParameter("@metadata4", MetadataSets[currentIndex + 2]);
 					else
-						paramList[4] = new SqlParameter("@project4", String.Empty);
+						paramList[4] = new SqlParameter("@metadata4", String.Empty);
 
-					if (Projects.Count > currentIndex + 3)
-						paramList[5] = new SqlParameter("@project5", Projects[currentIndex + 3]);
+					if (MetadataSets.Count > currentIndex + 3)
+						paramList[5] = new SqlParameter("@metadata5", MetadataSets[currentIndex + 3]);
 					else
-						paramList[5] = new SqlParameter("@project5", String.Empty);
+						paramList[5] = new SqlParameter("@metadata5", String.Empty);
 
 					// Execute this query stored procedure
-					SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Projects_Link", paramList);
+					SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_DefaultMetadata_Link", paramList);
 
 					currentIndex += 4;
 				}
@@ -6764,6 +7239,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_DefaultMetadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -6785,66 +7266,97 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list for the first run
-				SqlParameter[] paramList = new SqlParameter[19];
-				paramList[0] = new SqlParameter("@userid", UserID);
+				SqlParameter[] paramList = new SqlParameter[34];
+				paramList[0] = new SqlParameter("@UserID", UserID);
 
 				if (Aggregations.Count > 0)
 				{
-					paramList[1] = new SqlParameter("@aggregationcode1", Aggregations[0].Code);
-					paramList[2] = new SqlParameter("@canselect1", Aggregations[0].CanSelect);
-					paramList[3] = new SqlParameter("@canedit1", Aggregations[0].CanEditItems);
-					paramList[4] = new SqlParameter("@iscurator1", Aggregations[0].IsCurator);
-					paramList[5] = new SqlParameter("@onhomepage1", Aggregations[0].OnHomePage);
-					paramList[6] = new SqlParameter("@isadmin1", Aggregations[0].IsAdmin);
+					paramList[1] = new SqlParameter("@AggregationCode1", Aggregations[0].Code);
+					paramList[2] = new SqlParameter("@canSelect1", Aggregations[0].CanSelect);
+					paramList[3] = new SqlParameter("@canEditMetadata1", Aggregations[0].CanEditItems);
+					paramList[4] = new SqlParameter("@canEditBehaviors1", Aggregations[0].CanEditItems);
+					paramList[5] = new SqlParameter("@canPerformQc1", Aggregations[0].CanEditItems);
+					paramList[6] = new SqlParameter("@canUploadFiles1", Aggregations[0].CanEditItems);
+					paramList[7] = new SqlParameter("@canChangeVisibility1", Aggregations[0].CanEditItems);
+					paramList[8] = new SqlParameter("@canDelete1", Aggregations[0].CanEditItems);
+					paramList[9] = new SqlParameter("@isCurator1", Aggregations[0].IsCurator);
+					paramList[10] = new SqlParameter("@onHomePage1", Aggregations[0].OnHomePage);
+					paramList[11] = new SqlParameter("@isAdmin1", Aggregations[0].IsAdmin);
 				}
 				else
 				{
-					paramList[1] = new SqlParameter("@aggregationcode1", String.Empty);
-					paramList[2] = new SqlParameter("@canselect1", false);
-					paramList[3] = new SqlParameter("@canedit1", false);
-					paramList[4] = new SqlParameter("@iscurator1", false);
-					paramList[5] = new SqlParameter("@onhomepage1", false);
-					paramList[6] = new SqlParameter("@isadmin1", false);
+					paramList[1] = new SqlParameter("@AggregationCode1", String.Empty);
+					paramList[2] = new SqlParameter("@canSelect1", false);
+					paramList[3] = new SqlParameter("@canEditMetadata1", false);
+					paramList[4] = new SqlParameter("@canEditBehaviors1", false);
+					paramList[5] = new SqlParameter("@canPerformQc1", false);
+					paramList[6] = new SqlParameter("@canUploadFiles1", false);
+					paramList[7] = new SqlParameter("@canChangeVisibility1", false);
+					paramList[8] = new SqlParameter("@canDelete1", false);
+					paramList[9] = new SqlParameter("@isCurator1", false);
+					paramList[10] = new SqlParameter("@onHomePage1", false);
+					paramList[11] = new SqlParameter("@isAdmin1", false);
 				}
 
 				if (Aggregations.Count > 1)
 				{
-					paramList[7] = new SqlParameter("@aggregationcode2", Aggregations[1].Code);
-					paramList[8] = new SqlParameter("@canselect2", Aggregations[1].CanSelect);
-					paramList[9] = new SqlParameter("@canedit2", Aggregations[1].CanEditItems);
-					paramList[10] = new SqlParameter("@iscurator2", Aggregations[1].IsCurator);
-					paramList[11] = new SqlParameter("@onhomepage2", Aggregations[1].OnHomePage);
-					paramList[12] = new SqlParameter("@isadmin2", Aggregations[1].IsAdmin);
+					paramList[12] = new SqlParameter("@AggregationCode2", Aggregations[1].Code);
+					paramList[13] = new SqlParameter("@canSelect2", Aggregations[1].CanSelect);
+					paramList[14] = new SqlParameter("@canEditMetadata2", Aggregations[1].CanEditItems);
+					paramList[15] = new SqlParameter("@canEditBehaviors2", Aggregations[1].CanEditItems);
+					paramList[16] = new SqlParameter("@canPerformQc2", Aggregations[1].CanEditItems);
+					paramList[17] = new SqlParameter("@canUploadFiles2", Aggregations[1].CanEditItems);
+					paramList[18] = new SqlParameter("@canChangeVisibility2", Aggregations[1].CanEditItems);
+					paramList[19] = new SqlParameter("@canDelete2", Aggregations[1].CanEditItems);
+					paramList[20] = new SqlParameter("@isCurator2", Aggregations[1].IsCurator);
+					paramList[21] = new SqlParameter("@onHomePage2", Aggregations[1].OnHomePage);
+					paramList[22] = new SqlParameter("@isAdmin2", Aggregations[1].IsAdmin);
 				}
 				else
 				{
-					paramList[7] = new SqlParameter("@aggregationcode2", String.Empty);
-					paramList[8] = new SqlParameter("@canselect2", false);
-					paramList[9] = new SqlParameter("@canedit2", false);
-					paramList[10] = new SqlParameter("@iscurator2", false);
-					paramList[11] = new SqlParameter("@onhomepage2", false);
-					paramList[12] = new SqlParameter("@isadmin2", false);
+					paramList[12] = new SqlParameter("@AggregationCode2", String.Empty);
+					paramList[13] = new SqlParameter("@canSelect2", false);
+					paramList[14] = new SqlParameter("@canEditMetadata2", false);
+					paramList[15] = new SqlParameter("@canEditBehaviors2", false);
+					paramList[16] = new SqlParameter("@canPerformQc2", false);
+					paramList[17] = new SqlParameter("@canUploadFiles2", false);
+					paramList[18] = new SqlParameter("@canChangeVisibility2", false);
+					paramList[19] = new SqlParameter("@canDelete2", false);
+					paramList[20] = new SqlParameter("@isCurator2", false);
+					paramList[21] = new SqlParameter("@onHomePage2", false);
+					paramList[22] = new SqlParameter("@isAdmin2", false);
 				}
+
 
 				if (Aggregations.Count > 2)
 				{
-					paramList[13] = new SqlParameter("@aggregationcode3", Aggregations[2].Code);
-					paramList[14] = new SqlParameter("@canselect3", Aggregations[2].CanSelect);
-					paramList[15] = new SqlParameter("@canedit3", Aggregations[2].CanEditItems);
-					paramList[16] = new SqlParameter("@iscurator3", Aggregations[2].IsCurator);
-					paramList[17] = new SqlParameter("@onhomepage3", Aggregations[2].OnHomePage);
-					paramList[18] = new SqlParameter("@isadmin3", Aggregations[2].IsAdmin);
+					paramList[23] = new SqlParameter("@AggregationCode3", Aggregations[2].Code);
+					paramList[24] = new SqlParameter("@canSelect3", Aggregations[2].CanSelect);
+					paramList[25] = new SqlParameter("@canEditMetadata3", Aggregations[2].CanEditItems);
+					paramList[26] = new SqlParameter("@canEditBehaviors3", Aggregations[2].CanEditItems);
+					paramList[27] = new SqlParameter("@canPerformQc3", Aggregations[2].CanEditItems);
+					paramList[28] = new SqlParameter("@canUploadFiles3", Aggregations[2].CanEditItems);
+					paramList[29] = new SqlParameter("@canChangeVisibility3", Aggregations[2].CanEditItems);
+					paramList[30] = new SqlParameter("@canDelete3", Aggregations[2].CanEditItems);
+					paramList[31] = new SqlParameter("@isCurator3", Aggregations[2].IsCurator);
+					paramList[32] = new SqlParameter("@onHomePage3", Aggregations[2].OnHomePage);
+					paramList[33] = new SqlParameter("@isAdmin3", Aggregations[2].IsAdmin);
 				}
 				else
 				{
-					paramList[13] = new SqlParameter("@aggregationcode3", String.Empty);
-					paramList[14] = new SqlParameter("@canselect3", false);
-					paramList[15] = new SqlParameter("@canedit3", false);
-					paramList[16] = new SqlParameter("@iscurator3", false);
-					paramList[17] = new SqlParameter("@onhomepage3", false);
-					paramList[18] = new SqlParameter("@isadmin3", false);
+					paramList[23] = new SqlParameter("@AggregationCode3", String.Empty);
+					paramList[24] = new SqlParameter("@canSelect3", false);
+					paramList[25] = new SqlParameter("@canEditMetadata3", false);
+					paramList[26] = new SqlParameter("@canEditBehaviors3", false);
+					paramList[27] = new SqlParameter("@canPerformQc3", false);
+					paramList[28] = new SqlParameter("@canUploadFiles3", false);
+					paramList[29] = new SqlParameter("@canChangeVisibility3", false);
+					paramList[30] = new SqlParameter("@canDelete3", false);
+					paramList[31] = new SqlParameter("@isCurator3", false);
+					paramList[32] = new SqlParameter("@onHomePage3", false);
+					paramList[33] = new SqlParameter("@isAdmin3", false);
 				}
-
+				
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Aggregations_Link", paramList);
 
@@ -6852,63 +7364,94 @@ namespace SobekCM.Library.Database
 				while (Aggregations.Count > currentIndex)
 				{
 					// Build the parameter list for the first run
-					paramList[0] = new SqlParameter("@userid", UserID);
+					paramList[0] = new SqlParameter("@UserID", UserID);
 
 					if (Aggregations.Count > currentIndex)
 					{
-						paramList[1] = new SqlParameter("@aggregationcode1", Aggregations[currentIndex].Code);
-						paramList[2] = new SqlParameter("@canselect1", Aggregations[currentIndex].CanSelect);
-						paramList[3] = new SqlParameter("@canedit1", Aggregations[currentIndex].CanEditItems);
-						paramList[4] = new SqlParameter("@iscurator1", Aggregations[currentIndex].IsCurator);
-						paramList[5] = new SqlParameter("@onhomepage1", Aggregations[currentIndex].OnHomePage);
-						paramList[6] = new SqlParameter("@isadmin1", Aggregations[currentIndex].IsAdmin);
+						paramList[1] = new SqlParameter("@AggregationCode1", Aggregations[currentIndex].Code);
+						paramList[2] = new SqlParameter("@canSelect1", Aggregations[currentIndex].CanSelect);
+						paramList[3] = new SqlParameter("@canEditMetadata1", Aggregations[currentIndex].CanEditItems);
+						paramList[4] = new SqlParameter("@canEditBehaviors1", Aggregations[currentIndex].CanEditItems);
+						paramList[5] = new SqlParameter("@canPerformQc1", Aggregations[currentIndex].CanEditItems);
+						paramList[6] = new SqlParameter("@canUploadFiles1", Aggregations[currentIndex].CanEditItems);
+						paramList[7] = new SqlParameter("@canChangeVisibility1", Aggregations[currentIndex].CanEditItems);
+						paramList[8] = new SqlParameter("@canDelete1", Aggregations[currentIndex].CanEditItems);
+						paramList[9] = new SqlParameter("@isCurator1", Aggregations[currentIndex].IsCurator);
+						paramList[10] = new SqlParameter("@onHomePage1", Aggregations[currentIndex].OnHomePage);
+						paramList[11] = new SqlParameter("@isAdmin1", Aggregations[currentIndex].IsAdmin);
 					}
 					else
 					{
-						paramList[1] = new SqlParameter("@aggregationcode1", String.Empty);
-						paramList[2] = new SqlParameter("@canselect1", false);
-						paramList[3] = new SqlParameter("@canedit1", false);
-						paramList[4] = new SqlParameter("@iscurator1", false);
-						paramList[5] = new SqlParameter("@onhomepage1", false);
-						paramList[6] = new SqlParameter("@isadmin1", false);
+						paramList[1] = new SqlParameter("@AggregationCode1", String.Empty);
+						paramList[2] = new SqlParameter("@canSelect1", false);
+						paramList[3] = new SqlParameter("@canEditMetadata1", false);
+						paramList[4] = new SqlParameter("@canEditBehaviors1", false);
+						paramList[5] = new SqlParameter("@canPerformQc1", false);
+						paramList[6] = new SqlParameter("@canUploadFiles1", false);
+						paramList[7] = new SqlParameter("@canChangeVisibility1", false);
+						paramList[8] = new SqlParameter("@canDelete1", false);
+						paramList[9] = new SqlParameter("@isCurator1", false);
+						paramList[10] = new SqlParameter("@onHomePage1", false);
+						paramList[11] = new SqlParameter("@isAdmin1", false);
 					}
 
 					if (Aggregations.Count > currentIndex + 1)
 					{
-						paramList[7] = new SqlParameter("@aggregationcode2", Aggregations[currentIndex + 1].Code);
-						paramList[8] = new SqlParameter("@canselect2", Aggregations[currentIndex + 1].CanSelect);
-						paramList[9] = new SqlParameter("@canedit2", Aggregations[currentIndex + 1].CanEditItems);
-						paramList[10] = new SqlParameter("@iscurator2", Aggregations[currentIndex + 1].IsCurator);
-						paramList[11] = new SqlParameter("@onhomepage2", Aggregations[currentIndex + 1].OnHomePage);
-						paramList[12] = new SqlParameter("@isadmin2", Aggregations[currentIndex + 1].IsAdmin);
+						paramList[12] = new SqlParameter("@AggregationCode2", Aggregations[currentIndex + 1].Code);
+						paramList[13] = new SqlParameter("@canSelect2", Aggregations[currentIndex + 1].CanSelect);
+						paramList[14] = new SqlParameter("@canEditMetadata2", Aggregations[currentIndex + 1].CanEditItems);
+						paramList[15] = new SqlParameter("@canEditBehaviors2", Aggregations[currentIndex + 1].CanEditItems);
+						paramList[16] = new SqlParameter("@canPerformQc2", Aggregations[currentIndex + 1].CanEditItems);
+						paramList[17] = new SqlParameter("@canUploadFiles2", Aggregations[currentIndex + 1].CanEditItems);
+						paramList[18] = new SqlParameter("@canChangeVisibility2", Aggregations[currentIndex + 1].CanEditItems);
+						paramList[19] = new SqlParameter("@canDelete2", Aggregations[currentIndex + 1].CanEditItems);
+						paramList[20] = new SqlParameter("@isCurator2", Aggregations[currentIndex + 1].IsCurator);
+						paramList[21] = new SqlParameter("@onHomePage2", Aggregations[currentIndex + 1].OnHomePage);
+						paramList[22] = new SqlParameter("@isAdmin2", Aggregations[currentIndex + 1].IsAdmin);
 					}
 					else
 					{
-						paramList[7] = new SqlParameter("@aggregationcode2", String.Empty);
-						paramList[8] = new SqlParameter("@canselect2", false);
-						paramList[9] = new SqlParameter("@canedit2", false);
-						paramList[10] = new SqlParameter("@iscurator2", false);
-						paramList[11] = new SqlParameter("@onhomepage2", false);
-						paramList[12] = new SqlParameter("@isadmin2", false);
+						paramList[12] = new SqlParameter("@AggregationCode2", String.Empty);
+						paramList[13] = new SqlParameter("@canSelect2", false);
+						paramList[14] = new SqlParameter("@canEditMetadata2", false);
+						paramList[15] = new SqlParameter("@canEditBehaviors2", false);
+						paramList[16] = new SqlParameter("@canPerformQc2", false);
+						paramList[17] = new SqlParameter("@canUploadFiles2", false);
+						paramList[18] = new SqlParameter("@canChangeVisibility2", false);
+						paramList[19] = new SqlParameter("@canDelete2", false);
+						paramList[20] = new SqlParameter("@isCurator2", false);
+						paramList[21] = new SqlParameter("@onHomePage2", false);
+						paramList[22] = new SqlParameter("@isAdmin2", false);
 					}
+
 
 					if (Aggregations.Count > currentIndex + 2)
 					{
-						paramList[13] = new SqlParameter("@aggregationcode3", Aggregations[currentIndex + 2].Code);
-						paramList[14] = new SqlParameter("@canselect3", Aggregations[currentIndex + 2].CanSelect);
-						paramList[15] = new SqlParameter("@canedit3", Aggregations[currentIndex + 2].CanEditItems);
-						paramList[16] = new SqlParameter("@iscurator3", Aggregations[currentIndex + 2].IsCurator);
-						paramList[17] = new SqlParameter("@onhomepage3", Aggregations[currentIndex + 2].OnHomePage);
-						paramList[18] = new SqlParameter("@isadmin3", Aggregations[currentIndex + 2].IsAdmin);
+						paramList[23] = new SqlParameter("@AggregationCode3", Aggregations[currentIndex + 2].Code);
+						paramList[24] = new SqlParameter("@canSelect3", Aggregations[currentIndex + 2].CanSelect);
+						paramList[25] = new SqlParameter("@canEditMetadata3", Aggregations[currentIndex + 2].CanEditItems);
+						paramList[26] = new SqlParameter("@canEditBehaviors3", Aggregations[currentIndex + 2].CanEditItems);
+						paramList[27] = new SqlParameter("@canPerformQc3", Aggregations[currentIndex + 2].CanEditItems);
+						paramList[28] = new SqlParameter("@canUploadFiles3", Aggregations[currentIndex + 2].CanEditItems);
+						paramList[29] = new SqlParameter("@canChangeVisibility3", Aggregations[currentIndex + 2].CanEditItems);
+						paramList[30] = new SqlParameter("@canDelete3", Aggregations[currentIndex + 2].CanEditItems);
+						paramList[31] = new SqlParameter("@isCurator3", Aggregations[currentIndex + 2].IsCurator);
+						paramList[32] = new SqlParameter("@onHomePage3", Aggregations[currentIndex + 2].OnHomePage);
+						paramList[33] = new SqlParameter("@isAdmin3", Aggregations[currentIndex + 2].IsAdmin);
 					}
 					else
 					{
-						paramList[13] = new SqlParameter("@aggregationcode3", String.Empty);
-						paramList[14] = new SqlParameter("@canselect3", false);
-						paramList[15] = new SqlParameter("@canedit3", false);
-						paramList[16] = new SqlParameter("@iscurator3", false);
-						paramList[17] = new SqlParameter("@onhomepage3", false);
-						paramList[18] = new SqlParameter("@isadmin3", false);
+						paramList[23] = new SqlParameter("@AggregationCode3", String.Empty);
+						paramList[24] = new SqlParameter("@canSelect3", false);
+						paramList[25] = new SqlParameter("@canEditMetadata3", false);
+						paramList[26] = new SqlParameter("@canEditBehaviors3", false);
+						paramList[27] = new SqlParameter("@canPerformQc3", false);
+						paramList[28] = new SqlParameter("@canUploadFiles3", false);
+						paramList[29] = new SqlParameter("@canChangeVisibility3", false);
+						paramList[30] = new SqlParameter("@canDelete3", false);
+						paramList[31] = new SqlParameter("@isCurator3", false);
+						paramList[32] = new SqlParameter("@onHomePage3", false);
+						paramList[33] = new SqlParameter("@isAdmin3", false);
 					}
 					 
 					// Execute this query stored procedure
@@ -6922,6 +7465,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Aggregations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -6937,13 +7486,13 @@ namespace SobekCM.Library.Database
 		/// <param name="Is_System_Admin"> Flag indicates if this user group is a system Administrator</param>
 		/// <param name="Is_Portal_Admin"> Flag indicated if this user group is a portal administrator </param>
 		/// <param name="Include_Tracking_Standard_Forms"> Should this user's settings include the tracking form portions? </param>
-		/// <param name="Clear_Projects_Templates"> Flag indicates whether to clear projects and templates for this user group </param>
+		/// <param name="Clear_Metadata_Templates"> Flag indicates whether to clear default metadata sets and templates for this user group </param>
 		/// <param name="Clear_Aggregation_Links"> Flag indicates whether to clear item aggregations linked to this user group </param>
 		/// <param name="Clear_Editable_Links"> Flag indicates whether to clear the link between this user group and editable regex expressions  </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> UserGroupId for a new user group, if this was to save a new one </returns>
 		/// <remarks> This calls the 'mySobek_Save_User_Group' stored procedure</remarks> 
-		public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, bool Clear_Projects_Templates, bool Clear_Aggregation_Links, bool Clear_Editable_Links, Custom_Tracer Tracer)
+		public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, bool Clear_Metadata_Templates, bool Clear_Aggregation_Links, bool Clear_Editable_Links, bool Auto_Assign_Users, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -6953,7 +7502,7 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[14];
+				SqlParameter[] paramList = new SqlParameter[15];
 				paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
 				paramList[1] = new SqlParameter("@groupname", GroupName);
 				paramList[2] = new SqlParameter("@groupdescription", GroupDescription);
@@ -6963,20 +7512,27 @@ namespace SobekCM.Library.Database
 				paramList[7] = new SqlParameter("@is_system_admin", Is_System_Admin);
 				paramList[8] = new SqlParameter("@is_portal_admin", Is_Portal_Admin);
 				paramList[9] = new SqlParameter("@include_tracking_standard_forms", Include_Tracking_Standard_Forms );
-				paramList[10] = new SqlParameter("@clear_projects_templates", Clear_Projects_Templates);
+				paramList[10] = new SqlParameter("@clear_metadata_templates", Clear_Metadata_Templates);
 				paramList[11] = new SqlParameter("@clear_aggregation_links", Clear_Aggregation_Links);
 				paramList[12] = new SqlParameter("@clear_editable_links", Clear_Editable_Links);
-				paramList[13] = new SqlParameter("@new_usergroupid", UserGroupID) {Direction = ParameterDirection.InputOutput};
+				paramList[13] = new SqlParameter("@autoAssignUsers", Auto_Assign_Users);
+				paramList[14] = new SqlParameter("@new_usergroupid", UserGroupID) {Direction = ParameterDirection.InputOutput};
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Group", paramList);
 
 				// Succesful, so return new id, if there was one
-				return Convert.ToInt32(paramList[13].Value);
+				return Convert.ToInt32(paramList[14].Value);
 			}
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Save_User_Group", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_User_Group", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_User_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return -1;
 			}
 		}
@@ -7037,26 +7593,32 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Templates", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
 
-		/// <summary> Sets the list of projects possible for a given user group </summary>
+		/// <summary> Sets the list of default metadata sets possible for a given user group </summary>
 		/// <param name="UserGroupID"> Primary key for this user group from the database </param>
-		/// <param name="Projects"> List of projects to link to this user group</param>
+		/// <param name="MetadataSets"> List of default metadata sets to link to this user group</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'mySobek_Add_User_Group_Projects_Link' stored procedure</remarks> 
-		public static bool Update_SobekCM_User_Group_Projects(int UserGroupID, List<string> Projects, Custom_Tracer Tracer)
+		/// <remarks> This calls the 'mySobek_Add_User_Group_Metadata_Link' stored procedure</remarks> 
+		public static bool Update_SobekCM_User_Group_DefaultMetadata(int UserGroupID, List<string> MetadataSets, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Projects", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", String.Empty);
 			}
 
 			// Ensure five values
-			while (Projects.Count < 5)
-				Projects.Add(String.Empty);
+			while (MetadataSets.Count < 5)
+				MetadataSets.Add(String.Empty);
 
 			// Call the routine
 			try
@@ -7064,30 +7626,30 @@ namespace SobekCM.Library.Database
 				// Build the parameter list for the first run
 				SqlParameter[] paramList = new SqlParameter[6];
 				paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
-				paramList[1] = new SqlParameter("@project1", Projects[0]);
-				paramList[2] = new SqlParameter("@project2", Projects[1]);
-				paramList[3] = new SqlParameter("@project3", Projects[2]);
-				paramList[4] = new SqlParameter("@project4", Projects[3]);
-				paramList[5] = new SqlParameter("@project5", Projects[4]);
+				paramList[1] = new SqlParameter("@metadata1", MetadataSets[0]);
+				paramList[2] = new SqlParameter("@metadata2", MetadataSets[1]);
+				paramList[3] = new SqlParameter("@metadata3", MetadataSets[2]);
+				paramList[4] = new SqlParameter("@metadata4", MetadataSets[3]);
+				paramList[5] = new SqlParameter("@metadata5", MetadataSets[4]);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Projects_Link", paramList);
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Metadata_Link", paramList);
 
 				int currentIndex = 5;
-				while (Projects.Count > currentIndex)
+				while (MetadataSets.Count > currentIndex)
 				{
-					while (Projects.Count < currentIndex + 4)
-						Projects.Add(String.Empty);
+					while (MetadataSets.Count < currentIndex + 4)
+						MetadataSets.Add(String.Empty);
 
 					paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
-					paramList[1] = new SqlParameter("@project1", String.Empty);
-					paramList[2] = new SqlParameter("@project2", Projects[currentIndex]);
-					paramList[3] = new SqlParameter("@project3", Projects[currentIndex + 1]);
-					paramList[4] = new SqlParameter("@project4", Projects[currentIndex + 2]);
-					paramList[5] = new SqlParameter("@project5", Projects[currentIndex + 3]);
+					paramList[1] = new SqlParameter("@metadata1", String.Empty);
+					paramList[2] = new SqlParameter("@metadata2", MetadataSets[currentIndex]);
+					paramList[3] = new SqlParameter("@metadata3", MetadataSets[currentIndex + 1]);
+					paramList[4] = new SqlParameter("@metadata4", MetadataSets[currentIndex + 2]);
+					paramList[5] = new SqlParameter("@metadata5", MetadataSets[currentIndex + 3]);
 
 					// Execute this query stored procedure
-					SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Projects_Link", paramList);
+					SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Metadata_Link", paramList);
 
 					currentIndex += 4;
 				}
@@ -7097,6 +7659,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -7179,32 +7747,38 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Update_SobekCM_User_Group_Aggregations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
 
-		/// <summary> Saves a new project, or edits an existing project name </summary>
-		/// <param name="Code"> Code for the new project, or project to edit </param>
-		/// <param name="Name"> Descriptive name for this project </param>
+		/// <summary> Saves a new default metadata set, or edits an existing default metadata name </summary>
+		/// <param name="Code"> Code for the new default metadata set, or set to edit </param>
+		/// <param name="Name"> Descriptive name for this default metadata set </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'mySobek_Save_Project' stored procedure</remarks> 
-		public static bool Save_Project(string Code, string Name, Custom_Tracer Tracer)
+		/// <remarks> This calls the 'mySobek_Save_DefaultMetadata' stored procedure</remarks> 
+		public static bool Save_Default_Metadata(string Code, string Name, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("SobekCM_Database.Save_Project", String.Empty);
+				Tracer.Add_Trace("SobekCM_Database.Save_Default_Metadata", String.Empty);
 			}
 
 			try
 			{
 				// Build the parameter list
 				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@project_code", Code);
-				paramList[1] = new SqlParameter("@project_name", Name);
+				paramList[0] = new SqlParameter("@metadata_code", Code);
+				paramList[1] = new SqlParameter("@metadata_name", Name);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_Project", paramList);
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_DefaultMetadata", paramList);
 
 				// Succesful, so return true
 				return true;
@@ -7212,6 +7786,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Save_Default_Metadata", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_Default_Metadata", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_Default_Metadata", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -7243,6 +7823,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Delete_Project", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Project", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Delete_Project", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -7276,6 +7862,12 @@ namespace SobekCM.Library.Database
 			catch (Exception ee)
 			{
 				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Save_Template", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_Template", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Save_Template", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
 				return false;
 			}
 		}
@@ -8876,6 +9468,45 @@ namespace SobekCM.Library.Database
 
 		}
 
+
+		/// <summary>Gets all tracking workflow entries created by a single user </summary>
+		/// <param name="username">User Name</param>
+		/// <returns>DataTable of all previous entries for this user</returns>
+		public static DataTable Tracking_Get_All_Entries_By_User(string username)
+		{
+			DataTable returnValue = new DataTable();
+			// Create the connection
+			SqlConnection connect = new SqlConnection(connectionString);
+
+			try
+			{
+				//Create the command
+				SqlCommand cmd = new SqlCommand("Tracking_Get_All_Entries_By_User", connect) { CommandType = CommandType.StoredProcedure };
+				cmd.Parameters.AddWithValue("@username", username);
+				
+
+				//Open the connection
+				connect.Open();
+
+				SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+				
+				adapter.Fill(returnValue);
+
+				//Close the connection
+				connect.Close();
+
+				//Return the data table
+				return (returnValue);
+
+			}
+			catch (Exception ee)
+			{
+				throw new ApplicationException("Error retrieving previous tracking entries for user "+username+" from the DB. " + ee.Message);
+			}
+
+		}
+
+
 		/// <summary> Save a new workflow entry during tracking</summary>
 		/// <param name="itemID"></param>
 		/// <param name="workPerformedBy"></param>
@@ -8997,7 +9628,36 @@ namespace SobekCM.Library.Database
 
 		#endregion
 
-		#region Methods supporting Rewriter
+		#region Methods supporting USFLDC_Redirection_Service method in SobekCM_URL_Rewriter
+
+		/// <summary> Gets aggregation code from CID in aggregation description</summary>
+		/// <param name="cid"> CID for the digital collection </param>
+		/// <returns> Aggregation Code </returns>
+		public static String Get_AggregationCode_From_CID(String cid)
+		{
+			try
+			{
+				SqlParameter[] parameters = new SqlParameter[1];
+				parameters[0] = new SqlParameter("@cid", cid);
+
+				// Define a temporary dataset
+				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_AggregationCode_From_CID", parameters);
+
+				// If there was no data for this collection and entry point, return null (an ERROR occurred)
+				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+				{
+					return null;
+				}
+
+				// Return the aggregation code from the first table
+				return tempSet.Tables[0].Rows[0][0].ToString();
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				return null;
+			}
+		}
 
 		/// <summary> Pulls the BibID, VID via the Identifier </summary>
 		/// <param name="identifier"> Identifier (PURL Handle) for the digital resource object </param>
@@ -9018,7 +9678,7 @@ namespace SobekCM.Library.Database
 					return null;
 				}
 
-				// Get the item id and the thumbnail from the first table
+				// return BibID and VID
 				return tempSet.Tables[0].Rows[0][0] + "/" + tempSet.Tables[0].Rows[0][1];
 			}
 			catch (Exception ee)

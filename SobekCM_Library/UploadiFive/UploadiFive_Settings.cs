@@ -61,6 +61,11 @@ namespace SobekCM.Library.UploadiFive
 		/// <value> Default value is 'Your browse must either be HTML5-compliant or have Adobe Flash installed to use this upload feature'.</value>
 		public string NoHtml5OrFlashMessage { get; set; }
 
+		/// <summary> Name for the final server-side file, which allows overriding the default name,
+		/// which would otherwise match the uploaded name </summary>
+		/// <remarks> This can be used to avoid having to manually rename the file after upload </remarks>
+		public string ServerSideFileName { get; set; }
+
 		#endregion
 
 		#region Exposing existing Options from UploadiFive
@@ -361,10 +366,12 @@ namespace SobekCM.Library.UploadiFive
 				try
 				{
 					Add_To_Stream(Output, Extra_Indent + "                       ", NoHtml5OrFlashMessage);
+                    Output.WriteLine("} //end");
 				}
-				catch (Exception)
+				catch (Exception ee)
 				{
 					// Just want to ensure the setting is returned
+                    bool error = true;
 				}
 				finally
 				{
@@ -372,7 +379,7 @@ namespace SobekCM.Library.UploadiFive
 					ButtonClass = buttonCss;
 				}
 
-				Output.WriteLine(Extra_Indent + "                    }");
+				
 			}
 			else
 			{

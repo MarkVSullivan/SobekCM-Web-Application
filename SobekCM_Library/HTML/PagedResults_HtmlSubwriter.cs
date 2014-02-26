@@ -32,7 +32,8 @@ namespace SobekCM.Library.HTML
 		private const int RESULTS_PER_PAGE = 20;
 
 		private readonly Item_Lookup_Object allItems;
-		private string buttons;
+		private string leftButtons;
+		private string rightButtons;
 		private readonly Aggregation_Code_Manager codeManager;
 		private readonly User_Object currentUser;
 		private readonly string facetInformation;
@@ -67,7 +68,8 @@ namespace SobekCM.Library.HTML
 			Browse_Title = String.Empty;
 			allItems = All_Items_Lookup;
 			sortOptions = String.Empty;
-			buttons = String.Empty;
+			leftButtons = String.Empty;
+			rightButtons = String.Empty;
 			Showing_Text = String.Empty;
 			Include_Bookshelf_View = false;
 			Outer_Form_Name = String.Empty;
@@ -183,109 +185,6 @@ namespace SobekCM.Library.HTML
 		/// <summary> Title for the current view, which is used rather than the search explanation </summary>
 		public string Browse_Title { get; set; }
 
-		/// <summary> HTML for the navigation row which links to previous and later pages from the result set </summary>
-		public string Buttons
-		{
-			get
-			{
-				if (buttons.Length == 0)
-				{
-					string first_page = "First Page";
-					string previous_page = "Previous Page";
-					string next_page = "Next Page";
-					string last_page = "Last Page";
-					string first_page_text = "First";
-					string previous_page_text = "Previous";
-					string next_page_text = "Next";
-					string last_page_text = "Last";
-
-					if (currentMode.Language == Web_Language_Enum.Spanish)
-					{
-						first_page = "Primera Página";
-						previous_page = "Página Anterior";
-						next_page = "Página Siguiente";
-						last_page = "Última Página";
-						first_page_text = "Primero";
-						previous_page_text = "Anterior";
-						next_page_text = "Proximo";
-						last_page_text = "Último";
-					}
-
-					if (currentMode.Language == Web_Language_Enum.French)
-					{
-						first_page = "Première Page";
-						previous_page = "Page Précédente";
-						next_page = "Page Suivante";
-						last_page = "Dernière Page";
-						first_page_text = "Première";
-						previous_page_text = "Précédente";
-						next_page_text = "Suivante";
-						last_page_text = "Derniere";
-					}
-
-					// Make sure the result writer has been created
-					if (resultWriter == null)
-						create_resultwriter();
-					if (resultWriter == null)
-					{
-						currentMode.Error_Message = "Unable to create the results writer";
-						return String.Empty;
-					}
-
-					Debug.Assert(resultWriter != null, "resultWriter != null");
-
-					StringBuilder buttons_builder = new StringBuilder(1000);
-
-					string inter_page_navigation = String.Empty;
-					if ((currentMode.Result_Display_Type == Result_Display_Type_Enum.Full_Citation) || (currentMode.Result_Display_Type == Result_Display_Type_Enum.Full_Image))
-						inter_page_navigation = "#image";
-
-					ushort current_page = currentMode.Page;
-
-					if (RESULTS_PER_PAGE < resultWriter.Total_Results)
-					{
-						
-						// Should the previous and first buttons be enabled?
-						if (current_page > 1)
-						{
-							buttons_builder.AppendLine("  <span class=\"sbkPrsw_LeftButtons\">");
-							currentMode.Page = 1;
-							buttons_builder.AppendLine("    <button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + inter_page_navigation + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-							currentMode.Page = (ushort)(current_page - 1);
-							buttons_builder.AppendLine("    <button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + inter_page_navigation + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
-							buttons_builder.AppendLine("  </span>");
-						}
-						else
-						{
-							buttons_builder.AppendLine("  <span class=\"sbkPrsw_LeftButtons\" style=\"width:120px\">&nbsp;</span>");
-						}
-
-						// Should the next and last buttons be enabled?
-						if ((current_page * RESULTS_PER_PAGE) < resultWriter.Total_Results)
-						{
-							buttons_builder.AppendLine("  <span class=\"sbkPrsw_RightButtons\">");
-							currentMode.Page = (ushort)(current_page + 1);
-							buttons_builder.AppendLine("    <button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + inter_page_navigation + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-							currentMode.Page = (ushort)(resultWriter.Total_Results / RESULTS_PER_PAGE);
-							if (resultWriter.Total_Results % RESULTS_PER_PAGE > 0)
-								currentMode.Page = (ushort)(currentMode.Page + 1);
-
-							buttons_builder.AppendLine("    <button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + inter_page_navigation + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
-							buttons_builder.AppendLine("  </span>");
-						}
-						else
-						{
-							buttons_builder.AppendLine("  <span class=\"sbkPrsw_RightButtons\" style=\"width:120px\">&nbsp;</span>");
-						}
-						
-						currentMode.Page = current_page;
-					}
-
-					buttons = buttons_builder.ToString();
-				}
-				return buttons;
-			}
-		}
 
 		/// <summary> Creates the specific results viewer according the user's preferences in the current request mode </summary>
 		private void create_resultwriter()
@@ -506,7 +405,7 @@ namespace SobekCM.Library.HTML
 			if ((resultsStatistics.Has_Facet_Info) && (resultsStatistics.Total_Items > 1) && (currentMode.Result_Display_Type != Result_Display_Type_Enum.Export) && (currentMode.Result_Display_Type != Result_Display_Type_Enum.Map))
 			{
 				// Start this table, write the facets, and start the next TD section for the results
-				Literal startFacetTable = new Literal { Text = string.Format("<table style=\"margin-left:auto;margin-right:auto;\">" + Environment.NewLine + "<tr style=\"vertical-align:top;\">" + Environment.NewLine + "<td id=\"sbkPrsw_FacetOuterColumn\">" + Environment.NewLine + "{0}" + Environment.NewLine + "</td>" + Environment.NewLine + "<td>" + Environment.NewLine, Add_Facet_Information(Tracer)) };
+				Literal startFacetTable = new Literal { Text = string.Format("<table id=\"sbkPrsw_ResultsOuterTable\">" + Environment.NewLine + "<tr style=\"vertical-align:top;\">" + Environment.NewLine + "<td id=\"sbkPrsw_FacetOuterColumn\">" + Environment.NewLine + "{0}" + Environment.NewLine + "</td>" + Environment.NewLine + "<td>" + Environment.NewLine, Add_Facet_Information(Tracer)) };
 				MainPlaceHolder.Controls.Add(startFacetTable);
 			}
 			else
@@ -553,8 +452,9 @@ namespace SobekCM.Library.HTML
 			if ( resultsStatistics.Total_Items > 0 )
 			{
 				Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">");
-				Output.Write(buttons);
+				Output.Write(leftButtons);
 				Output.WriteLine("  " + Showing_Text);
+				Output.Write(rightButtons);
 				Output.WriteLine("</div>");
 				Output.WriteLine("<br />");
 				Output.WriteLine();
@@ -569,12 +469,7 @@ namespace SobekCM.Library.HTML
 		{
 			Tracer.Add_Trace("paged_result_html_subwriter.Write_HTML", "Rendering HTML");
 
-			string bookshelf_view = "BOOKSHELF VIEW";
-			string brief_view = "BRIEF VIEW";
-			string map_view = "MAP VIEW";
-			string table_view = "TABLE VIEW";
-			string thumbnail_view = "THUMBNAIL VIEW";
-			const string EXPORT_VIEW = "EXPORT";
+
 			string sort_by = "Sort By";
 			string showing_range_text = "{0} - {1} of {2} matching titles";
 			string showing_coord_range_text = "{0} - {1} of {2} matching coordinates";
@@ -586,22 +481,12 @@ namespace SobekCM.Library.HTML
 
 			if (currentMode.Language == Web_Language_Enum.Spanish)
 			{
-				bookshelf_view = "VISTA BIBLIOTECA";
-				map_view = "VISTA MAPA";
-				brief_view = "VISTA BREVE";
-				table_view = "VISTA TABLERA";
-				thumbnail_view = "VISTA MINIATURA";
 				sort_by = "Organizar";
 				showing_range_text = "{0} - {1} de {2} títulos correspondientes";
 			}
 
 			if (currentMode.Language == Web_Language_Enum.French)
 			{
-				bookshelf_view = "MODE MA BIBLIOTHEQUE";
-				map_view = "MODE CARTE";
-				brief_view = "MODE SIMPLE";
-				table_view = "MODE DE TABLE";
-				thumbnail_view = "MODE IMAGETTE";
 				sort_by = "Limiter";
 				showing_range_text = "{0} - {1} de {2} titres correspondants";
 			}
@@ -650,19 +535,192 @@ namespace SobekCM.Library.HTML
 
 			// Get the name of this
 			string currentName = "browse";
-			string currentTitle = "B<span class=\"smaller\">ROWSE</span>";
+			string currentTitle = "Browse";
 			if (currentMode.Mode == Display_Mode_Enum.Results)
 			{
 				currentName = "search";
-				currentTitle = "S<span class=\"smaller\">EARCH</span>";
+				currentTitle = "Search";
 			}
 			if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
 			{
 				currentName = "public bookshelf";
-				currentTitle = "P<span class=\"smaller\">UBLIC</span> B<span class=\"smaller\">OOKSHELF</span>";
+				currentTitle = "Public Bookshelf";
+			}
+
+			// Load the HTML that can be used to customize the search/results bar
+			string html_source = String.Empty;
+			string fileToRead = HttpContext.Current.Server.MapPath("default/fragments/search_browse_bar.html");
+			if (File.Exists(fileToRead))
+			{
+				html_source = File.ReadAllText(fileToRead);
 			}
 			
-			// Write the HTML for the sort and then description and buttons, etc..
+			// Get the value for the <%SORTER%> directive (to sort the results)
+			string SORTER = String.Empty;
+			if ((resultWriter.Sortable) && (!currentMode.Is_Robot) && (currentMode.Mode != Display_Mode_Enum.My_Sobek) && (currentMode.Mode != Display_Mode_Enum.Public_Folder))
+			{
+				StringBuilder sorterBuilder = new StringBuilder("  <div class=\"sbkPrsw_ResultsSort\">");
+				short current_order = currentMode.Sort;
+				currentMode.Sort = 0;
+				string url = currentMode.Redirect_URL();
+				currentMode.Sort = current_order;
+				sorterBuilder.AppendLine("    " + sort_by + ": &nbsp;");
+				sorterBuilder.AppendLine("    <select name=\"sorter_input\" onchange=\"sort_results('" + url.Replace("&", "&amp;") + "')\" id=\"sorter_input\" class=\"sbkPrsw_SorterDropDown\">");
+				sorterBuilder.AppendLine(sortOptions);
+				sorterBuilder.AppendLine("    </select>");
+				sorterBuilder.AppendLine("  </div>");
+				SORTER = sorterBuilder.ToString();
+			}
+
+			// Get the value for the <%DESCRIPTION%> directive (to explain current display)
+			string DESCRIPTION = String.Empty;
+			string summation;
+			if ((currentMode.Mode == Display_Mode_Enum.Aggregation) || (currentMode.Mode == Display_Mode_Enum.Public_Folder) || ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management))) // browse info only for aggregation
+			{
+				if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
+				{
+					DESCRIPTION = "<h1>&quot;" + translations.Get_Translation(Browse_Title, currentMode.Language) + "&quot;</h1>" + Environment.NewLine + "  <span class=\"sbkPrsw_PublicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>";
+
+					summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " (publicly shared folder)";
+				}
+				else
+				{
+					DESCRIPTION = "<h1>" + translations.Get_Translation(Browse_Title, currentMode.Language) + "</h1>";
+					summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " browse in " + Current_Aggregation.Name; 
+				}                   
+			}
+			else
+			{
+				StringBuilder descriptionBuilder = new StringBuilder();
+				descriptionBuilder.Append("<div class=\"sbkPrsw_ResultsExplanation\">");
+				StringBuilder searchInfoBuilder = new StringBuilder();
+				StringWriter writer = new StringWriter(searchInfoBuilder);
+				Show_Search_Info(writer);
+				summation = searchInfoBuilder.ToString().Replace("<i>", "").Replace("</i>", "").Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26").Replace("</td>","");
+				descriptionBuilder.Append(searchInfoBuilder);
+				descriptionBuilder.Append("</div>");
+				DESCRIPTION = descriptionBuilder.ToString();
+			}
+
+
+			// Get the value for the <%DESCRIPTION%> directive (to explain current display)
+			//ushort current_page = currentMode.Page;
+			string SHOWING = String.Empty;
+			if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Export)
+			{
+				SHOWING = resultsStatistics.Total_Items.ToString();
+			}
+			else
+			{
+				SHOWING = String.Format(showing_range_text, startRow, Math.Min(lastRow, resultsStatistics.Total_Titles), resultWriter.Total_Results);
+				if (startRow == lastRow)
+				{
+					SHOWING = Showing_Text.Replace(startRow + " - " + startRow, startRow + " ");
+				}
+			}
+
+			// Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
+			string LEFT_BUTTONS = String.Empty;
+			string RIGHT_BUTTONS = String.Empty;
+			string first_page = "First Page";
+			string previous_page = "Previous Page";
+			string next_page = "Next Page";
+			string last_page = "Last Page";
+			string first_page_text = "First";
+			string previous_page_text = "Previous";
+			string next_page_text = "Next";
+			string last_page_text = "Last";
+
+			if (currentMode.Language == Web_Language_Enum.Spanish)
+			{
+				first_page = "Primera Página";
+				previous_page = "Página Anterior";
+				next_page = "Página Siguiente";
+				last_page = "Última Página";
+				first_page_text = "Primero";
+				previous_page_text = "Anterior";
+				next_page_text = "Proximo";
+				last_page_text = "Último";
+			}
+
+			if (currentMode.Language == Web_Language_Enum.French)
+			{
+				first_page = "Première Page";
+				previous_page = "Page Précédente";
+				next_page = "Page Suivante";
+				last_page = "Dernière Page";
+				first_page_text = "Première";
+				previous_page_text = "Précédente";
+				next_page_text = "Suivante";
+				last_page_text = "Derniere";
+			}
+
+			// Make sure the result writer has been created
+			if (resultWriter == null)
+				create_resultwriter();
+			if (resultWriter != null)
+			{
+				Debug.Assert(resultWriter != null, "resultWriter != null");
+
+				if (RESULTS_PER_PAGE < resultWriter.Total_Results)
+				{
+					ushort current_page = currentMode.Page;
+					StringBuilder buttons_builder = new StringBuilder(1000);
+
+					// Should the previous and first buttons be enabled?
+					if (current_page > 1)
+					{
+						buttons_builder.Append("<div class=\"sbkPrsw_LeftButtons\">");
+						currentMode.Page = 1;
+						buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+						currentMode.Page = (ushort)(current_page - 1);
+						buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+						buttons_builder.Append("</div>");
+						LEFT_BUTTONS = buttons_builder.ToString();
+						buttons_builder.Clear();
+					}
+					else
+					{
+						LEFT_BUTTONS = "<div class=\"sbkPrsw_NoLeftButtons\">&nbsp;</div>";
+					}
+
+
+					// Should the next and last buttons be enabled?
+					if ((current_page * RESULTS_PER_PAGE) < resultWriter.Total_Results)
+					{
+						buttons_builder.Append("<div class=\"sbkPrsw_RightButtons\">");
+						currentMode.Page = (ushort)(current_page + 1);
+						buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+						currentMode.Page = (ushort)(resultWriter.Total_Results / RESULTS_PER_PAGE);
+						if (resultWriter.Total_Results % RESULTS_PER_PAGE > 0)
+							currentMode.Page = (ushort)(currentMode.Page + 1);
+						buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+						buttons_builder.Append("</div>");
+						RIGHT_BUTTONS = buttons_builder.ToString();
+					}
+					else
+					{
+						RIGHT_BUTTONS = "<div class=\"sbkPrsw_NoRightButtons\">&nbsp;</div>";
+					}
+
+					currentMode.Page = current_page;
+				}
+			}
+
+			// Empty strings for now
+			string VIEWICONS = String.Empty;
+
+
+
+			string NEWSEARCH = String.Empty;
+
+
+
+			string ADDFILTER = String.Empty;
+
+
+
+			// Start the division for the sort and then description and buttons, etc..
 			switch (currentMode.Mode)
 			{
 				case Display_Mode_Enum.Public_Folder:
@@ -678,224 +736,17 @@ namespace SobekCM.Library.HTML
 					break;
 			}
 
-			short current_order = currentMode.Sort;
-			currentMode.Sort = 0;
-			string url = currentMode.Redirect_URL();
-			currentMode.Sort = current_order;
+			// Now, write this 
+			Output.WriteLine(html_source.Replace("<%DESCRIPTION%>", DESCRIPTION).Replace("<%NEWSEARCH%>", NEWSEARCH).Replace("<%ADDFILTER%>", ADDFILTER).Replace("<%VIEWICONS%>", VIEWICONS).Replace("<%LEFTBUTTONS%>", LEFT_BUTTONS).Replace("<%SHOWING%>", SHOWING).Replace("<%RIGHTBUTTONS%>", RIGHT_BUTTONS).Replace("<%SORTER%>", SORTER));
 
-			Output.WriteLine("  <span class=\"sbkPrsw_ResultsSort\">");
-			Output.Write("<a href=\"\" onmouseover=\"document." + form_name + ".print_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/print_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".print_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/print_rect_button.gif'\" onclick=\"window.print(); return false;\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"print_button\" id=\"print_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/print_rect_button.gif\" title=\"Print this " + currentName + "\" alt=\"PRINT\" /></a>");
-
-			if (currentUser != null)
-			{
-				Output.Write("<a href=\"\" onmouseover=\"document." + form_name + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif'\" onclick=\"return email_form_open2('send_button','');\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"send_button\" id=\"send_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif\" title=\"Send this " + currentName + " to someone\" alt=\"SEND\" /></a>");
-				if (currentMode.Mode != Display_Mode_Enum.My_Sobek)
-				{
-					Output.Write("<a href=\"\" onmouseover=\"document." + form_name + ".save_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/save_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".save_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/save_rect_button.gif'\" onclick=\"return save_search_form_open('save_button','');\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"save_button\" id=\"save_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/save_rect_button.gif\" title=\"Save this " + currentName + "\" alt=\"SAVE\" /></a>");
-				}
-			}
-			else
-			{
-				Output.Write("<a href=\"?m=hmh\" onmouseover=\"document." + form_name + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".send_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif'\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"send_button\" id=\"send_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/send_rect_button.gif\" title=\"Send this " + currentName + " to someone\" alt=\"SEND\" /></a>");
-				Output.Write("<a href=\"?m=hmh\" onmouseover=\"document." + form_name + ".save_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/save_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".save_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/save_rect_button.gif'\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"save_button\" id=\"save_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/save_rect_button.gif\" title=\"Save this " + currentName + "\" alt=\"SAVE\"  /></a>");
-			}
-
-			if (currentMode.Mode != Display_Mode_Enum.My_Sobek)
-			{
-				Output.Write("<a href=\"\" onmouseover=\"document." + form_name + ".share_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/share_rect_button_h.gif'\" onmouseout=\"document." + form_name + ".share_button.src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/share_rect_button.gif'\" onclick=\"return toggle_share_form2('share_button');\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"share_button\" id=\"share_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/share_rect_button.gif\" title=\"Share this " + currentName + "\" alt=\"SHARE\" /></a>");
-			}
-
-			string summation;
-			if ((currentMode.Mode == Display_Mode_Enum.Aggregation) || (currentMode.Mode == Display_Mode_Enum.Public_Folder) || ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management))) // browse info only for aggregation
-			{
-				if ((resultWriter.Sortable) && (!currentMode.Is_Robot) && (currentMode.Mode != Display_Mode_Enum.My_Sobek) && ( currentMode.Mode != Display_Mode_Enum.Public_Folder ))
-				{
-					Output.WriteLine("    <br />");
-					Output.WriteLine("    " + sort_by + ": &nbsp;");
-					Output.WriteLine("    <select name=\"sorter_input\" onchange=\"javascript:sort_results('" + url.Replace("&", "&amp;") + "')\" id=\"sorter_input\" class=\"sbkPrsw_SorterDropDown\">");
-					Output.WriteLine(sortOptions);
-					Output.WriteLine("    </select>");
-				}
-				Output.WriteLine("  </span>");
-				if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
-				{
-					Output.WriteLine("  <h1>&quot;" + translations.Get_Translation(Browse_Title, currentMode.Language) + "&quot;</h1>");
-					Output.WriteLine("  <span class=\"sbkPrsw_PublicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>");
-
-					summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " (publicly shared folder)";
-				}
-				else
-				{
-					Output.WriteLine("  <h1>" + translations.Get_Translation(Browse_Title, currentMode.Language) + "</h1>");
-					summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " browse in " + Current_Aggregation.Name; 
-				}                   
-			}
-			else
-			{
-				if ((resultWriter.Sortable) && (!currentMode.Is_Robot) && (currentMode.Mode != Display_Mode_Enum.My_Sobek))
-				{
-					Output.WriteLine("    <br />");
-					Output.WriteLine("    " + sort_by + ": &nbsp;");
-					Output.WriteLine("    <select name=\"sorter_input\" onchange=\"sort_results('" + url.Replace("&", "&amp;") + "')\" id=\"sorter_input\" class=\"sbkPrsw_SorterDropDown\">");
-					Output.WriteLine(sortOptions);
-					Output.WriteLine("    </select>");
-				}
-				Output.WriteLine("  </span>");
-				Output.WriteLine(sortOptions.Length == 0 ? "  <div class=\"sbkPrsw_ResultsExplanation_NoSort\">" : "  <div class=\"sbkPrsw_ResultsExplanation\">");
-				Output.Write("    ");
-				StringBuilder searchInfoBuilder = new StringBuilder();
-				StringWriter writer = new StringWriter(searchInfoBuilder);
-				Show_Search_Info(writer);
-				Output.Write(searchInfoBuilder.ToString());
-				summation = searchInfoBuilder.ToString().Replace("<i>", "").Replace("</i>", "").Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26").Replace("</td>","");
-				Output.WriteLine("  </div>");
-				Output.WriteLine("<br />");
-			}
+			// End this division
 			Output.WriteLine("</div>");
 			Output.WriteLine();
 
-			ushort current_page = currentMode.Page;
-			if ((currentMode.Result_Display_Type == Result_Display_Type_Enum.Full_Citation) || (currentMode.Result_Display_Type == Result_Display_Type_Enum.Full_Image))
-			{
-				Output.WriteLine("<a name=\"#image\"></a>");
-			}
-
-			if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Export)
-			{
-				Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBarImbed\">");
-				Output.WriteLine("  <br />");
-				Output.WriteLine("  " + resultsStatistics.Total_Items + "");
-				Output.WriteLine("</div>");
-			}
-			else
-			{
-				Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBarImbed\">");
-				Output.WriteLine("  <br />");
-				Output.Write(Buttons);
-				Showing_Text = String.Format(showing_range_text, startRow, Math.Min(lastRow, resultsStatistics.Total_Titles), resultWriter.Total_Results);
-				if (startRow == lastRow)
-				{
-					Showing_Text = Showing_Text.Replace(startRow + " - " + startRow, startRow + " ");
-				}
-
-				Output.WriteLine("  " + Showing_Text);
-				Output.WriteLine("</div>");
-			}
-
- 
-			Output.WriteLine();
-
-			// Now add the tabs for the view type
-			if (( Include_Bookshelf_View ) || (Current_Aggregation.Result_Views.Count > 1))
-			{
-
-				Output.WriteLine("<div id=\"sbkPrsw_ViewTypeSelectRow\">");
-				Output.WriteLine("  <ul class=\"sbk_FauxDownwardTabsList\">");
-
-				Result_Display_Type_Enum resultView = currentMode.Result_Display_Type;
-				if (Include_Bookshelf_View)
-				{
-					if (resultView == Result_Display_Type_Enum.Bookshelf)
-					{
-						Output.WriteLine("  <li class=\"current\">" + bookshelf_view + "</li>");
-					}
-					else
-					{
-						currentMode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
-						Output.WriteLine("  <li><a href=\"" + currentMode.Redirect_URL().Replace("&","&amp;") + "\">" + bookshelf_view + "</a></li>");
-					}
-				}
-
-				if ((currentMode.Coordinates.Length > 0) || (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map)))
-				{
-					if (resultView == Result_Display_Type_Enum.Map)
-					{
-						Output.WriteLine("  <li class=\"current\">" + map_view + "</li>");
-					}
-					else
-					{
-						currentMode.Result_Display_Type = Result_Display_Type_Enum.Map;
-						Output.WriteLine("  <li><a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + map_view + "</a></li>");
-					}
-				}
-
-				if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
-				{
-					if (resultView == Result_Display_Type_Enum.Brief)
-					{
-						Output.WriteLine("  <li class=\"current\">" + brief_view + "</li>");
-					}
-					else
-					{
-						currentMode.Result_Display_Type = Result_Display_Type_Enum.Brief;
-						Output.WriteLine("  <li><a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + brief_view + "</a></li>");
-					}
-				}
-
-				if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Table))
-				{
-					if (resultView == Result_Display_Type_Enum.Table)
-					{
-						Output.WriteLine("  <li class=\"current\">" + table_view + "</li>");
-					}
-					else
-					{
-						currentMode.Result_Display_Type = Result_Display_Type_Enum.Table;
-						Output.WriteLine("  <li><a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + table_view + "</a></li>");
-					}
-				}
-
-				if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
-				{
-					if (resultView == Result_Display_Type_Enum.Thumbnails)
-					{
-						Output.WriteLine("  <li class=\"current\">" + thumbnail_view + "</li>");
-					}
-					else
-					{
-						currentMode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
-						Output.WriteLine("  <li><a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + thumbnail_view + "</a></li>");
-					}
-				}
-
-				//if (!currentMode.Is_Robot)
-				//{
-				//    currentMode.Page = 1;
-				//    if (hierarchyObject.Result_Views.Contains(SobekCM.Library.Navigation.Result_Display_Type_Enum.Full_Citation))
-				//    {
-				//        if ((resultView == SobekCM.Library.Navigation.Result_Display_Type_Enum.Full_Citation) || (resultView == SobekCM.Library.Navigation.Result_Display_Type_Enum.Full_Image))
-				//        {
-				//            Output.WriteLine("  " + base.Down_Selected_Tab_Start + full_view + base.Down_Selected_Tab_End);
-				//        }
-				//        else
-				//        {
-				//            currentMode.Result_Display_Type = SobekCM.Library.Navigation.Result_Display_Type_Enum.Full_Image;
-				//            Output.WriteLine("  <a href=\"" + currentMode.Redirect_URL() + "\">" + base.Down_Tab_Start + full_view + base.Down_Tab_End + "</a>");
-				//        }
-				//    }
-
-
-				if (( Include_Bookshelf_View ) && ((resultView == Result_Display_Type_Enum.Export) || (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn )))
-				{
-					currentMode.Page = 1;
-					if (resultView == Result_Display_Type_Enum.Export)
-					{
-						Output.WriteLine("  <li class=\"current\">" + EXPORT_VIEW + "</li>");
-					}
-					else
-					{
-						currentMode.Result_Display_Type = Result_Display_Type_Enum.Export;
-						Output.WriteLine("  <li><a href=\"" + currentMode.Redirect_URL().Replace("&", "&amp;") + "\">" + EXPORT_VIEW + "</a></li>");
-					}
-				}
-
-				currentMode.Page = current_page;
-				currentMode.Result_Display_Type = resultView;
-				Output.WriteLine("  </ul>");
-				Output.WriteLine("</div>");
-				Output.WriteLine();
-			}
-
+			// Save the buttons for later, to be used at the bottom of the page
+			leftButtons = LEFT_BUTTONS;
+			rightButtons = RIGHT_BUTTONS;
+	
 			// Determine the number of columns for text areas, depending on browser
 			int actual_cols = 50;
 			if (currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0)

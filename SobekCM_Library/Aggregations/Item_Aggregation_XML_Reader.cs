@@ -680,16 +680,20 @@ namespace SobekCM.Library.Aggregations
                 {
                     if (NodeReader.Name.Trim().ToUpper() == lastName )
                     {
-                        HierarchyObject.Add_Child_Page(newBrowse);
-						//HierarchyObject.Add
+						// Don't add ALL or NEW here
+	                    if ((String.Compare(newBrowse.Code, "all", StringComparison.InvariantCultureIgnoreCase) != 0) && (String.Compare(newBrowse.Code, "new", StringComparison.InvariantCultureIgnoreCase) != 0))
+	                    {
+		                    HierarchyObject.Add_Child_Page(newBrowse);
+		                    //HierarchyObject.Add
 
-                        // If this set the default browse by save that information
-                        if ((newBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY) && (isDefault))
-                        {
-                            HierarchyObject.Default_BrowseBy = newBrowse.Code;
-                        }
+		                    // If this set the default browse by save that information
+		                    if ((newBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY) && (isDefault))
+		                    {
+			                    HierarchyObject.Default_BrowseBy = newBrowse.Code;
+		                    }
+	                    }
 
-                        return;
+	                    return;
                     }
                 }
             }
