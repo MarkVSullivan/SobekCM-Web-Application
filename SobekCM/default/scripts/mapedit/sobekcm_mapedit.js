@@ -1808,8 +1808,7 @@ function initMapEditor() {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: initInterface started...");
                             MAPEDITOR.TRACER.addTracer("[INFO]: Loading Collection " + collection);
-                            google.maps.visualRefresh = true; //Enable the visual refresh (new gmaps)
-
+                            
                             switch (collection) {
                                 case "default":
                                     MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
@@ -1874,7 +1873,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml"); //must be pingable by google
                                     MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 10;                                                  //zoom level, starting
-                                    MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 1;                                                       //max zoom out, default (21=lowest level, 1=highest level)
+                                    MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
@@ -1899,7 +1898,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
                                     MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 3;                                                  //zoom level, starting
-                                    MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
+                                    MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 2;                                                      //max zoom out, default (21=lowest level, 1=highest level)
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
                                     MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
@@ -1911,7 +1910,7 @@ function initMapEditor() {
                                     MAPEDITOR.GLOBAL.DEFINES.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
                                     break;
                             }
-
+                            
                             MAPEDITOR.TRACER.addTracer("[INFO]: initInterface completed...");
                         } catch (err) {
                             MAPEDITOR.TRACER.addTracer("[ERROR]: " + err + " at line " +err.lineNumber );
@@ -2125,7 +2124,7 @@ function initMapEditor() {
                             
                             //initialize google map objects
                             map = new google.maps.Map(document.getElementById("googleMap"), MAPEDITOR.GLOBAL.DEFINES.gmapOptions);
-                            //map = new google.maps.Map(document.getElementById(MAPEDITOR.GLOBAL.DEFINES.gmapPageDivId), MAPEDITOR.GLOBAL.DEFINES.gmapOptions);    //initialize map    
+                            google.maps.visualRefresh = true;                                                                                                    //Enable the visual refresh (new gmaps)
                             map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(MAPEDITOR.GLOBAL.DEFINES.copyrightNode);                                 //initialize custom copyright
                             map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(MAPEDITOR.GLOBAL.DEFINES.cursorLatLongTool);                              //initialize cursor lat long tool
                             map.controls[google.maps.ControlPosition.TOP_LEFT].push(MAPEDITOR.GLOBAL.DEFINES.toolbarBufferZone1);                                //initialize spacer
@@ -4871,7 +4870,7 @@ function initMapEditor() {
                     addOverlayListItemThumbnailTooltip: function (id) {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: addOverlayListItemThumbnailTooltip started...");
-                            $("#overlayListItemText" + MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPageId[id-1]).tooltip({ content: "<img src=\"" + MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[id-1] + "\" style=\"max-height:200px;\"/>" });
+                            $("#overlayListItemText" + MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPageId[id-1]).tooltip({ content: "<img src=\"" + MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[id-1] + "\" style=\"max-height:200px;width:auto;\"/>" });
                             MAPEDITOR.TRACER.addTracer("[INFO]: addOverlayListItemThumbnailTooltip completed...");
                         } catch (err) {
                             MAPEDITOR.TRACER.addTracer("[ERROR]: " + err + " at line " + err.lineNumber);
