@@ -643,7 +643,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine("  try{ ");
             mapeditBuilder.AppendLine("    //MAPEDITOR.TRACER.addTracer(\"[INFO]: initConfigSettings started...\"); ");
 
-            //add collection load type and attributes
+            //add collection load type and attributes (from config)
             #region
 
             //init collection load type
@@ -655,72 +655,168 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //read collectionIds from config.xml file
             try
             {
-                //get config file
-                string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/sobekcm_mapedit.config";
+                //get collectionIdsFromPage
+                List<string> collectionIdsFromPage = new List<string>();
+                collectionIdsFromPage.Add(CurrentItem.Behaviors.Aggregations[0].Code);
+                collectionIdsFromPage.Add(CurrentItem.BibID);
 
-                //read through and get all the ids
-                using (XmlReader reader = XmlReader.Create(configFilePath))
+                //get settings
+                List<string>[] settings = Configuration.MapEditor_Configuration.getSettings(collectionIdsFromPage);
+
+                //loop through settings
+                for (int i = 0; i < settings[0].Count; i++)
                 {
-                    while (reader.Read())
-                    {
-                        // Only detect start elements.
-                        if (reader.IsStartElement())
-                        {
-                            // Get element name and switch on it.
-                            switch (reader.Name)
-                            {
-                                case "collection":
-                                    collectionIdsFromConfig.Add(reader.GetAttribute("id"));
-                                    break;
-                            }
-                        }
-                    }
+                    ////define temps
+                    //string temp_settingName = String.Empty;
+                    //string temp_settingValue = String.Empty;
+
+                    ////parse settings
+                    //foreach (string settingName in settings[0])
+                    //{
+                    //    temp_settingName = settingName;
+                    //}
+                    //foreach (string settingValue in settings[1])
+                    //{
+                    //    temp_settingValue = settingValue;
+                    //}
+
+                    //write to page
+                    mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + settings[0][i] + " = " + settings[1][i] + "; //adding " + settings[0][i]);
                 }
 
-                //go through each collectionId in mapEditConfig.xml
-                foreach (string collectionId in collectionIdsFromConfig)
-                {
-                    //compare collectionID to all collectionIDs 
-                    if ((CurrentItem.Behaviors.Aggregations[0].Code == collectionId) || (CurrentItem.BibID == collectionId) || (CurrentItem.BibID.Contains(collectionId)))
-                    {
-                        //if found, assign "readFromXML" as first param
-                        collectionLoadParams.Add("readFromXML");
-                        //go through each  xml param and assign
-                        using (XmlReader reader = XmlReader.Create(configFilePath))
-                        {
-                            while (reader.Read())
-                            {
-                                // Only detect start elements.
-                                if (reader.IsStartElement())
-                                {
-                                    // Get element name and switch on it.
-                                    switch (reader.Name)
-                                    {
-                                        case "collection":
-                                            //verify that this is the right collectionId
-                                            if (reader[0] == collectionId)
-                                            {
-                                                //start with the second attribute and add them so long as there is one to add
-                                                for (int i = 1; i < reader.AttributeCount; i++)
-                                                {
-                                                    //move to the attribute
-                                                    reader.MoveToAttribute(i);
-                                                    //store param
-                                                    collectionLoadParams.Add(reader.Value); //not currently used
-                                                    //add param to page
-                                                    mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + reader.Name + " = " + reader.Value + "; //adding "+reader.Name); //could not determine how to get attribute's name
-                                                }
-                                            }
-                                            break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                ////get config file
+                //string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/sobekcm_mapeditor.config";
 
-                //add collection params to js var
-                //mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.collectionLoadParams = \"" + collectionLoadParams + "\"; //add collectionLoadParams ");
+                ////read through and get all the ids
+                //using (XmlReader reader = XmlReader.Create(configFilePath))
+                //{
+                //    while (reader.Read())
+                //    {
+                //        if (reader.IsStartElement())
+                //        {
+                //            if (reader.Name == "collection")
+                //            {
+                //                //get all of the collection ids
+                //                string[] tempCollectionIds = reader.GetAttribute("id").Split(',');
+                //                foreach (string tempCollectionId in tempCollectionIds)
+                //                {
+                //                    collectionIdsFromConfig.Add(tempCollectionId);
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+
+                ////go through each collectionId in mapEditConfig.xml
+                //foreach (string collectionId in collectionIdsFromConfig)
+                //{
+                //    // Create an XML reader for this file.
+                //    using (XmlReader reader = XmlReader.Create(configFilePath))
+                //    {
+                //        while (reader.Read())
+                //        {
+                //            // Only detect start elements.
+                //            if (reader.IsStartElement())
+                //            {
+                //                // Get element name and switch on it.
+                //                switch (reader.Name)
+                //                {
+                //                    case "collection":
+                //                        if ((CurrentItem.Behaviors.Aggregations[0].Code == collectionId) || (CurrentItem.BibID == collectionId) || (CurrentItem.BibID.Contains(collectionId)) || (reader["id"] == "default"))
+                //                        {
+                //                            while (reader.Read())
+                //                            {
+                //                                // Only detect start elements.
+                //                                if (reader.IsStartElement())
+                //                                {
+                //                                    string temp_readerName = reader.Name;
+                //                                    if (reader.Read() && (reader.Name!="collection"))
+                //                                    {
+                //                                        if (reader.Value == "")
+                //                                        {
+                //                                            //add param to page
+                //                                            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + temp_readerName + " = \"\"; //adding " + temp_readerName);
+                //                                        }
+                //                                        else
+                //                                        {
+                //                                            //add param to page
+                //                                            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + temp_readerName + " = " + reader.Value + "; //adding " + temp_readerName);
+                //                                        }
+                //                                    }
+                //                                }
+                //                            }
+                //                        }
+                //                        break;
+                //                }
+                //            }
+                //        }
+                //    }
+
+
+                ////compare collectionID to all collectionIDs 
+                //if ((CurrentItem.Behaviors.Aggregations[0].Code == collectionId) || (CurrentItem.BibID == collectionId) || (CurrentItem.BibID.Contains(collectionId)) || (collectionId=="default"))
+                //{
+                //    //go through each  xml param and assign
+                //    using (XmlReader reader = XmlReader.Create(configFilePath))
+                //    {
+                //        while (reader.Read())
+                //        {
+                //            // Only detect start elements.
+                //            if (reader.IsStartElement())
+                //            {
+                //                // Get element name and switch on it.
+                //                switch (reader.Name)
+                //                {
+                //                    case "collection":
+                //                        //assign params if the collection id is default
+                //                        if (reader[0] == "default")
+                //                        {
+                //                            while (reader.Read())
+                //                            {
+                //                                string temp_readerName = reader.Name;
+                //                                if (reader.IsStartElement() && (reader.Name != "collection"))
+                //                                {
+                //                                    if ((reader.ReadElementString() == "") || (reader.ReadElementString() == null))
+                //                                    {
+                //                                        //add param to page
+                //                                        mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + temp_readerName + " = \"\"; //adding " + temp_readerName);
+                //                                    }
+                //                                    else
+                //                                    {
+                //                                        //add param to page
+                //                                        mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + temp_readerName + " = " + reader.ReadElementString() + "; //adding " + temp_readerName);
+                //                                    }
+                //                                }
+                //                            }
+                //                        }
+                //                        //now load custom if ids match
+                //                        if (reader[0] == collectionId)
+                //                        {
+                //                            while (reader.Read())
+                //                            {
+                //                                string temp_readerName = reader.Name;
+                //                                if (reader.IsStartElement() && (reader.Name != "collection"))
+                //                                {
+                //                                    if ((reader.ReadElementString() == "") || (reader.ReadElementString() == null))
+                //                                    {
+                //                                        //add param to page
+                //                                        //mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + temp_readerName + " = \"\"; //adding " + temp_readerName);
+                //                                    }
+                //                                    else
+                //                                    {
+                //                                        //add param to page
+                //                                        mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + temp_readerName + " = " + reader.ReadElementString() + "; //adding " + temp_readerName);
+                //                                    }
+                //                                }
+                //                            }
+                //                        }
+                //                        break;
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+            //}
             }
             catch (Exception)
             {
