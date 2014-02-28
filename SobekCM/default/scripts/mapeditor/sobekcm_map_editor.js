@@ -5424,7 +5424,7 @@ function initMapEditor() {
                     testBounds: function () {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: testBounds started...");
-                            if (MAPEDITOR.GLOBAL.DEFINES.strictBounds != null) {
+                            if (MAPEDITOR.GLOBAL.DEFINES.strictBounds != "") {
                                 if (MAPEDITOR.GLOBAL.DEFINES.strictBounds.contains(map.getCenter())) {
                                     MAPEDITOR.GLOBAL.DEFINES.mapInBounds = "yes";
                                 } else {
