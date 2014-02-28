@@ -5432,6 +5432,8 @@ function initMapEditor() {
                                     map.panTo(MAPEDITOR.GLOBAL.DEFINES.mapCenter); //recenter
                                     MAPEDITOR.UTILITIES.displayMessage(MAPEDITOR.LOCALIZATION.DEFINES.L5);
                                 }
+                            } else {
+                                MAPEDITOR.GLOBAL.DEFINES.mapInBounds = "yes"; //explicitly state that because there are no bounds, we are allowing anything
                             }
                             MAPEDITOR.TRACER.addTracer("[INFO]: testBounds completed...");
                         } catch (err) {
