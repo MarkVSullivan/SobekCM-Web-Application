@@ -541,15 +541,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
-            try
-            {
-
             // Start to build the response
             StringBuilder mapeditBuilder = new StringBuilder();
 
             //page content
             mapeditBuilder.AppendLine("<td>");
 
+            try
+            {
+                
             mapeditBuilder.AppendLine(" <input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" /> ");
             mapeditBuilder.AppendLine(" <input type=\"hidden\" id=\"payload\" name=\"payload\" value=\"\" /> ");
             mapeditBuilder.AppendLine("  ");
@@ -564,8 +564,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-searchbox.css\"/> ");
 
             //custom css
-            mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit.css\"/> ");
-            mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_Mapedit_Theme_Default.css\"/> ");
+            mapeditBuilder.AppendLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_MapEditor.css\"/> ");
             
             //standard js files
 			mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script> ");
@@ -574,9 +573,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-knob.js\"></script> ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-json-2.4.min.js\"></script> ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&libraries=drawing\"></script> ");
-            mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/gmaps-infobox.js\"></script> ");
+            mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapeditor/gmaps-infobox.js\"></script> ");
 
-            //custom
+            //custom js
             #region
 
             mapeditBuilder.AppendLine(" ");
@@ -620,7 +619,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" // Add Server Vars ");
             mapeditBuilder.AppendLine(" function initServerToClientVars(){ ");
             mapeditBuilder.AppendLine("  try{ ");
-            mapeditBuilder.AppendLine("   //MAPEDITOR.TRACER.addTracer(\"[INFO]: initServerToClientVars started...\"); ");
+            mapeditBuilder.AppendLine("   MAPEDITOR.TRACER.addTracer(\"[INFO]: initServerToClientVars started...\"); ");
             mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.baseURL = \"" + CurrentMode.Base_URL + "\"; //add baseURL ");
             mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp = " + debugTime_unixTimestamp + "; //add debugTime ");
             mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp = \"" + debugTime_buildTimestamp + "\"; //add debugTimestamp ");
@@ -630,9 +629,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
                 mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debuggerOn = false; //debugger flag ");
 
-            mapeditBuilder.AppendLine("   //MAPEDITOR.TRACER.addTracer(\"[INFO]: initServerToClientVars completed...\"); ");
+            mapeditBuilder.AppendLine("   MAPEDITOR.TRACER.addTracer(\"[INFO]: initServerToClientVars completed...\"); ");
             mapeditBuilder.AppendLine("  }catch (err){ ");
-            mapeditBuilder.AppendLine("  //MAPEDITOR.TRACER.addTracer(\"[ERROR]: initServerToClientVars failed...\"); ");
+            mapeditBuilder.AppendLine("  MAPEDITOR.TRACER.addTracer(\"[ERROR]: initServerToClientVars failed...\"); ");
             mapeditBuilder.AppendLine("  } ");
             mapeditBuilder.AppendLine(" } ");
             mapeditBuilder.AppendLine(" ");
@@ -641,17 +640,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" // Add Config Settings Objects ");
             mapeditBuilder.AppendLine(" function initConfigSettings(){ ");
             mapeditBuilder.AppendLine("  try{ ");
-            mapeditBuilder.AppendLine("    //MAPEDITOR.TRACER.addTracer(\"[INFO]: initConfigSettings started...\"); ");
+            mapeditBuilder.AppendLine("    MAPEDITOR.TRACER.addTracer(\"[INFO]: initConfigSettings started...\"); ");
 
-            //add collection load type and attributes (from config)
+            //add collection configs
             #region
 
-            //init collection load type
-            String collectionLoadType;
-            //init collectionLoadParams
-            List<string> collectionLoadParams = new List<string>();
-            //init collectionIdsFromConfig
-            List<string> collectionIdsFromConfig = new List<string>();
             //read collectionIds from config.xml file
             try
             {
@@ -666,186 +659,30 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 //loop through settings
                 for (int i = 0; i < settings[0].Count; i++)
                 {
-                    ////define temps
-                    //string temp_settingName = String.Empty;
-                    //string temp_settingValue = String.Empty;
-
-                    ////parse settings
-                    //foreach (string settingName in settings[0])
-                    //{
-                    //    temp_settingName = settingName;
-                    //}
-                    //foreach (string settingValue in settings[1])
-                    //{
-                    //    temp_settingValue = settingValue;
-                    //}
-
                     //write to page
                     mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + settings[0][i] + " = " + settings[1][i] + "; //adding " + settings[0][i]);
                 }
-
-                ////get config file
-                //string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/sobekcm_mapeditor.config";
-
-                ////read through and get all the ids
-                //using (XmlReader reader = XmlReader.Create(configFilePath))
-                //{
-                //    while (reader.Read())
-                //    {
-                //        if (reader.IsStartElement())
-                //        {
-                //            if (reader.Name == "collection")
-                //            {
-                //                //get all of the collection ids
-                //                string[] tempCollectionIds = reader.GetAttribute("id").Split(',');
-                //                foreach (string tempCollectionId in tempCollectionIds)
-                //                {
-                //                    collectionIdsFromConfig.Add(tempCollectionId);
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
-
-                ////go through each collectionId in mapEditConfig.xml
-                //foreach (string collectionId in collectionIdsFromConfig)
-                //{
-                //    // Create an XML reader for this file.
-                //    using (XmlReader reader = XmlReader.Create(configFilePath))
-                //    {
-                //        while (reader.Read())
-                //        {
-                //            // Only detect start elements.
-                //            if (reader.IsStartElement())
-                //            {
-                //                // Get element name and switch on it.
-                //                switch (reader.Name)
-                //                {
-                //                    case "collection":
-                //                        if ((CurrentItem.Behaviors.Aggregations[0].Code == collectionId) || (CurrentItem.BibID == collectionId) || (CurrentItem.BibID.Contains(collectionId)) || (reader["id"] == "default"))
-                //                        {
-                //                            while (reader.Read())
-                //                            {
-                //                                // Only detect start elements.
-                //                                if (reader.IsStartElement())
-                //                                {
-                //                                    string temp_readerName = reader.Name;
-                //                                    if (reader.Read() && (reader.Name!="collection"))
-                //                                    {
-                //                                        if (reader.Value == "")
-                //                                        {
-                //                                            //add param to page
-                //                                            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + temp_readerName + " = \"\"; //adding " + temp_readerName);
-                //                                        }
-                //                                        else
-                //                                        {
-                //                                            //add param to page
-                //                                            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + temp_readerName + " = " + reader.Value + "; //adding " + temp_readerName);
-                //                                        }
-                //                                    }
-                //                                }
-                //                            }
-                //                        }
-                //                        break;
-                //                }
-                //            }
-                //        }
-                //    }
-
-
-                ////compare collectionID to all collectionIDs 
-                //if ((CurrentItem.Behaviors.Aggregations[0].Code == collectionId) || (CurrentItem.BibID == collectionId) || (CurrentItem.BibID.Contains(collectionId)) || (collectionId=="default"))
-                //{
-                //    //go through each  xml param and assign
-                //    using (XmlReader reader = XmlReader.Create(configFilePath))
-                //    {
-                //        while (reader.Read())
-                //        {
-                //            // Only detect start elements.
-                //            if (reader.IsStartElement())
-                //            {
-                //                // Get element name and switch on it.
-                //                switch (reader.Name)
-                //                {
-                //                    case "collection":
-                //                        //assign params if the collection id is default
-                //                        if (reader[0] == "default")
-                //                        {
-                //                            while (reader.Read())
-                //                            {
-                //                                string temp_readerName = reader.Name;
-                //                                if (reader.IsStartElement() && (reader.Name != "collection"))
-                //                                {
-                //                                    if ((reader.ReadElementString() == "") || (reader.ReadElementString() == null))
-                //                                    {
-                //                                        //add param to page
-                //                                        mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + temp_readerName + " = \"\"; //adding " + temp_readerName);
-                //                                    }
-                //                                    else
-                //                                    {
-                //                                        //add param to page
-                //                                        mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + temp_readerName + " = " + reader.ReadElementString() + "; //adding " + temp_readerName);
-                //                                    }
-                //                                }
-                //                            }
-                //                        }
-                //                        //now load custom if ids match
-                //                        if (reader[0] == collectionId)
-                //                        {
-                //                            while (reader.Read())
-                //                            {
-                //                                string temp_readerName = reader.Name;
-                //                                if (reader.IsStartElement() && (reader.Name != "collection"))
-                //                                {
-                //                                    if ((reader.ReadElementString() == "") || (reader.ReadElementString() == null))
-                //                                    {
-                //                                        //add param to page
-                //                                        //mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + temp_readerName + " = \"\"; //adding " + temp_readerName);
-                //                                    }
-                //                                    else
-                //                                    {
-                //                                        //add param to page
-                //                                        mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES." + temp_readerName + " = " + reader.ReadElementString() + "; //adding " + temp_readerName);
-                //                                    }
-                //                                }
-                //                            }
-                //                        }
-                //                        break;
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
-            //}
             }
             catch (Exception)
             {
                 Tracer.Add_Trace("Could Not Load MapEdit Configs");
                 throw;
             }
-            //determine if there is a custom collection to load
-            if (collectionLoadParams.Count > 1)
-                collectionLoadType = collectionLoadParams[0];
-            else
-                collectionLoadType = "default";
-            //add collection load type to page
-            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.collectionLoadType = \"" + collectionLoadType + "\"; //add collectionLoadType ");
 
             #endregion
 
-            mapeditBuilder.AppendLine("    //MAPEDITOR.TRACER.addTracer(\"[INFO]: initConfigSettings completed...\"); ");
+            mapeditBuilder.AppendLine("    MAPEDITOR.TRACER.addTracer(\"[INFO]: initConfigSettings completed...\"); ");
             mapeditBuilder.AppendLine("  }catch (err){ ");
-            mapeditBuilder.AppendLine("  //MAPEDITOR.TRACER.addTracer(\"[ERROR]: initConfigSettings failed...\"); ");
+            mapeditBuilder.AppendLine("  MAPEDITOR.TRACER.addTracer(\"[ERROR]: initConfigSettings failed...\"); ");
             mapeditBuilder.AppendLine("  } ");
             mapeditBuilder.AppendLine(" } ");
             mapeditBuilder.AppendLine(" ");
-
 
             //geo objects writer section 
             mapeditBuilder.AppendLine(" // Add Geo Objects ");
             mapeditBuilder.AppendLine(" function initGeoObjects(){ ");
             mapeditBuilder.AppendLine("  try{ ");
-            mapeditBuilder.AppendLine("    //MAPEDITOR.TRACER.addTracer(\"[INFO]: initGeoObjects started...\"); ");
+            mapeditBuilder.AppendLine("    MAPEDITOR.TRACER.addTracer(\"[INFO]: initGeoObjects started...\"); ");
             mapeditBuilder.AppendLine(" ");
 
             // Add the geo info
@@ -1275,9 +1112,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 #endregion
             }
-            mapeditBuilder.AppendLine("    //MAPEDITOR.TRACER.addTracer(\"[INFO]: initGeoObjects completed...\"); ");
+            mapeditBuilder.AppendLine("    MAPEDITOR.TRACER.addTracer(\"[INFO]: initGeoObjects completed...\"); ");
             mapeditBuilder.AppendLine("  }catch (err){ ");
-            mapeditBuilder.AppendLine("    //MAPEDITOR.TRACER.addTracer(\"[ERROR]: initGeoObjects failed...\"); ");
+            mapeditBuilder.AppendLine("    MAPEDITOR.TRACER.addTracer(\"[ERROR]: initGeoObjects failed...\"); ");
             mapeditBuilder.AppendLine("  } ");
             mapeditBuilder.AppendLine(" }");
             mapeditBuilder.AppendLine(" ");
@@ -1653,8 +1490,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             //custom js files (load order does matter)
-            mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/sobekcm_mapedit.js\"></script> ");
-            mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapedit/gmaps-markerwithlabel-1.9.1.js\"></script> "); //must load after custom
+            mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapeditor/sobekcm_map_editor.js\"></script> ");
+            mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapeditor/gmaps-markerwithlabel-1.9.1.js\"></script> "); //must load after custom
+
+            }
+            catch (Exception)
+            {
+                Tracer.Add_Trace("Could Not Create MapEdit Page");
+                mapeditBuilder.AppendLine("ERROR!");
+                throw;
+            }
 
             //end of custom content
             mapeditBuilder.AppendLine("</td>");
@@ -1663,13 +1508,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Literal placeHolderText = new Literal();
             placeHolderText.Text = mapeditBuilder.ToString();
             MainPlaceHolder.Controls.Add(placeHolderText);
-
-            }
-            catch (Exception)
-            {
-                Tracer.Add_Trace("Could Not Create MapEdit Page");
-                throw;
-            }
 
         }
     }
