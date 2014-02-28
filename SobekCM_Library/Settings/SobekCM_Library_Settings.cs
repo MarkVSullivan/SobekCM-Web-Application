@@ -92,6 +92,8 @@ namespace SobekCM.Library.Settings
 
 		private static bool canSubmit;
 		private static bool showFloridaSusSettings;
+		private static bool collapsibleFacets;
+		private static bool canRemoveSingleSearchTerm;
 
 		private static readonly Dictionary<int, KeyValuePair<int, string>> dispositionFutureTypes;
 		private static readonly Dictionary<int, KeyValuePair<int, string>> dispositionPastTypes;
@@ -148,6 +150,8 @@ namespace SobekCM.Library.Settings
 				ocrCommandPrompt = String.Empty;
 				Builder_Override_Seconds_Between_Polls = -1;
 				Builder_Logs_Publish_Directory = String.Empty;
+				collapsibleFacets = false;
+				canRemoveSingleSearchTerm = true;
 
 				// Define new empty collections
 				dispositionFutureTypes = new Dictionary<int, KeyValuePair<int, string>>();
@@ -313,10 +317,12 @@ namespace SobekCM.Library.Settings
 				Get_Integer_Value(settingsDictionary, "Builder Seconds Between Polls", ref builderSecondsBetweenPolls, ref error, 60);
 				Get_Boolean_Value(settingsDictionary, "Builder Verbose Flag", ref builderVerbose, ref error, false);
 				Get_String_Value(settingsDictionary, "Caching Server", ref cachingServer, ref error);
+				Get_Boolean_Value(settingsDictionary, "Can Remove Single Search Term", ref canRemoveSingleSearchTerm, ref error, true);
 				Get_Boolean_Value(settingsDictionary, "Can Submit Edit Online", ref canSubmit, ref error, false);
 				Get_Boolean_Value(settingsDictionary, "Convert Office Files to PDF", ref convertOfficeFilesToPdf, ref error, false);
 				Get_Boolean_Value(settingsDictionary, "Create MARC Feed By Default", ref buildMarcFeedByDefault, ref error, false);
 				Get_String_Value(settingsDictionary, "Document Solr Index URL", ref documentSolrUrl, ref error);
+				Get_Boolean_Value(settingsDictionary, "Facets Collapsible", ref collapsibleFacets, ref error, false);
 				Get_String_Value(settingsDictionary, "FDA Report DropBox", ref fdaReportDropbox, ref error);
 				Get_String_Value(settingsDictionary, "Files To Exclude From Downloads", ref filesToExcludeFromDownloads, ref error);
 				Get_String_Value(settingsDictionary, "Help URL", ref helpUrl, "http://ufdc.ufl.edu/");
@@ -1245,6 +1251,18 @@ namespace SobekCM.Library.Settings
 		/// <summary> Directory where the builder should publish log to, before sleeping between
 		/// actions </summary>
 		public static string Builder_Logs_Publish_Directory { get; private set; }
+
+		/// <summary> Flag indicates if facets start out collapsed </summary>
+		public static bool Facets_Collapsible
+		{
+			get { return collapsibleFacets; }
+		}
+
+		/// <summary> Flag indicates if users can remove a single part of their search term </summary>
+		public static bool Can_Remove_Single_Term
+		{
+			get { return canRemoveSingleSearchTerm; }
+		}
 
 		#region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 

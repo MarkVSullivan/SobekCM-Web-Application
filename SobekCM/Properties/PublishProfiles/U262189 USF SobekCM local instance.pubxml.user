@@ -1,0 +1,1828 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit http://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>C:\inetpub\wwwroot</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/App_global.asax.compiled">
+      <publishTime>01/20/2014 09:29:49</publishTime>
+    </File>
+    <File Include="bin/App_global.asax.dll">
+      <publishTime>01/20/2014 09:29:49</publishTime>
+    </File>
+    <File Include="bin/Microsoft.ApplicationBlocks.Data.dll">
+      <publishTime>01/06/2014 09:57:01</publishTime>
+    </File>
+    <File Include="bin/Microsoft.ApplicationServer.Caching.Client.dll">
+      <publishTime>01/06/2014 09:57:01</publishTime>
+    </File>
+    <File Include="bin/Microsoft.ApplicationServer.Caching.Core.dll">
+      <publishTime>01/06/2014 09:57:01</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Practices.ServiceLocation.dll">
+      <publishTime>01/06/2014 09:57:01</publishTime>
+    </File>
+    <File Include="bin/Microsoft.WindowsFabric.Common.dll">
+      <publishTime>07/12/2013 02:46:20</publishTime>
+    </File>
+    <File Include="bin/Microsoft.WindowsFabric.Data.Common.dll">
+      <publishTime>07/12/2013 02:46:20</publishTime>
+    </File>
+    <File Include="bin/SobekCM.dll">
+      <publishTime>01/20/2014 09:29:36</publishTime>
+    </File>
+    <File Include="bin/SobekCM_Library.dll">
+      <publishTime>01/20/2014 09:29:34</publishTime>
+    </File>
+    <File Include="bin/SobekCM_Resource_Object.dll">
+      <publishTime>01/06/2014 10:22:46</publishTime>
+    </File>
+    <File Include="bin/SobekCM_Tools.dll">
+      <publishTime>01/06/2014 10:22:45</publishTime>
+    </File>
+    <File Include="bin/SobekCM_URL_Rewriter.dll">
+      <publishTime>01/20/2014 09:29:35</publishTime>
+    </File>
+    <File Include="bin/SolrNet.dll">
+      <publishTime>01/06/2014 09:57:01</publishTime>
+    </File>
+    <File Include="bin/Zen.Barcode.Core.dll">
+      <publishTime>01/06/2014 09:57:02</publishTime>
+    </File>
+    <File Include="bin/Zoom.Net.dll">
+      <publishTime>01/06/2014 09:57:02</publishTime>
+    </File>
+    <File Include="bin/Zoom.Net.YazSharp.dll">
+      <publishTime>01/06/2014 09:57:02</publishTime>
+    </File>
+    <File Include="config/sobekcm.config">
+      <publishTime>01/06/2014 10:17:40</publishTime>
+    </File>
+    <File Include="config/sobekcm_metadata.config">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="config/sobekcm_qc.config">
+      <publishTime>01/17/2014 13:43:21</publishTime>
+    </File>
+    <File Include="Dashboard.aspx">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/16px-Feed-icon.svg.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/add_comment.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/add_volume.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/admin_view.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/arrows-ffffff.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/ARW05LT.ICO">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/ARW05RT.ICO">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/autofill_volumes.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/big_bookshelf.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/big_bookshelf.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/Blank.ICO">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookshelf.jpg">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookshelf.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/button.psd">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/emptypage.jpg">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/first.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/first2.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/headDept.psd">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/headLogo.psd">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/last.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/last2.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/next.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/next2.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/pageNumBg.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/previous.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/previous2.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/return.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/ufdc.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/ufdc.psd">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/ufgas.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/ufgas.psd">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/zoomin.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/bookturner/zoomout.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/building.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/button_down_arrow.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/button_first_arrow.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/button_last_arrow.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/button_next_arrow.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/button_next_arrow2.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/button_previous_arrow.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/button_up_arrow.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/calendar_button.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/cancel_gray.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/cc_by.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/cc_by_nc.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/cc_by_nc_nd.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/cc_by_nc_sa.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/cc_by_nd.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/cc_by_sa.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/cc_zero.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/chat.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/checkmark.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/checkmark2.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/closed_folder.jpg">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/closed_folder_public.jpg">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/closed_folder_public_big.jpg">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/colors_sample.bmp">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/Copy of DownloadOnly.tif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/Copy of Selet_Box_small.bmp">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/Copy of text-only.jpg">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/dark_resource.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/aqua_dayDown.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/aqua_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/aqua_dayOver.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/armygreen_dayDown.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/armygreen_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/armygreen_dayOver.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/bananasplit_dayDown.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/bananasplit_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/bananasplit_dayOver.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/beige_dayDown.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/beige_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/beige_dayOver.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/datepicker/boxBottomLeftCorner.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/boxBottomRightCorner.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/boxSideWallPx.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/boxSideWallPx.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/boxTopLeftCorner.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/boxTopPx.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/boxTopPx.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/boxTopRightCorner.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/closeButton_down.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/closeButton_normal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/closeButton_over.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/deepblue_dayDown.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/deepblue_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/deepblue_dayOver.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/greenish_dayDown.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/greenish_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/greenish_dayOver.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/lightgreen_dayDown.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/lightgreen_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/lightgreen_dayOver.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/monthBackward_down.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/monthBackward_normal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/monthBackward_over.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/monthForward_down.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/monthForward_normal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/monthForward_over.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/ocean_blue_dayDown.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/ocean_blue_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/ocean_blue_dayOver.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/orange_dayDown.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/orange_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/orange_dayOver.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/peppermint_dayDown.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/peppermint_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/peppermint_dayOver.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/pink_dayDown.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/pink_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/pink_dayOver.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/purple_dayDown.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/purple_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/purple_dayOver.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/torqoise_dayDown.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/torqoise_dayNormal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/torqoise_dayOver.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/yearBackward_down.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/yearBackward_normal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/yearBackward_over.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/yearForward_down.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/yearForward_normal.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/datepicker/yearForward_over.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/default_banner.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/default_button.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/default_button.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/delete_item.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/digger_share.bmp">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/digg_share.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/digg_share_h.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/dloc_banner_550.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/dloc_banner_700.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/edit.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/edit_behaviors.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/edit_hierarchy.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/edit_metadata.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/email.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/exit.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/facebook_share.bmp">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/facebook_share.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/facebook_share_h.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/favorites_share.bmp">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/favorites_share.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/favorites_share_h.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/file_management.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/firewall.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/firewall.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/Folder_Back.ico">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/folder_open.ico">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/forwarding.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/forwarding.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/Gear.ico">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/gears.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/gears2.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/get_adobe_reader.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/Globe.ico">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/google_share.bmp">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/google_share.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/google_share_h.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/go_button.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/go_button2.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/go_gray.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/help_button.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/help_button_darkgray.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/hide_internal_header.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/hide_internal_header2.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/home.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/home_button.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/home_folder.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/icon57.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/iDLOC_banner_3en.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/item_count.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/largbutton_back.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/large_question_mark.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/leftarrow.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/left_arrow2.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/left_arrow3.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/legend_nonselected_polygon.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/legend_point_interest.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/legend_red_pushpin.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/legend_search_area.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/legend_selected_polygon.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/add.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/ajax-loader.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/bg1.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-action1.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-action2.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-action3.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-base.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-blockLot.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-cancel.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-controls.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-convertToOverlay.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-drawCircle.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-drawLine.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-drawMarker.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-drawPolygon.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-drawRectangle.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-hybrid.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-itemGetUserLocation.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-itemPlace.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-itemReset.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-latLong.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-layerCustom.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-layerHybrid.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-layerReset.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-layerRoadmap.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-layerSatellite.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-layerTerrain.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-manageItem.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-manageOverlay.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-managePOI.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-overlayEdit.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-overlayGetUserLocation.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-overlayPlace.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-overlayReset.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-overlayRotate.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-overlayToggle.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-overlayTransparency.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-panDown.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-panLeft.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-panReset.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-panRight.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-panUp.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-poiCircle.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-poiEdit.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-poiGetUserLocation.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-poiLine.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-poiMarker.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-poiPlace.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-poiPolygon.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-poiRectangle.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-poiReset.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-poiToggle.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-reset.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-roadmap.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-satellite.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-save.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-saveItem.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-saveOverlay.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-savePOI.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-search.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-terrain.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-toggleMapControls.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-toggleToolbar.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-toggleToolbox.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-toolbox.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-useSearchAsLocation.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-zoomIn.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-zoomOut.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-zoomReset.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-zoomReset2.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/button-zoomReset3.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/delete.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/edit.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/getUserLocation.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/icons-os.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/icon_reset.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/menubox-close.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/menubox-close3.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/menubox-close4.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/menubox-maximize.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/menubox-menubar.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/menubox-minimize.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/menubox-minimize3.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/rotation-clockwise.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/rotation-counterClockwise.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/rotation-reset.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/search.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/sub.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/toolbar-toggle.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/toolbox-close2.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/toolbox-icon.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/toolbox-maximize2.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mapedit/toolbox-minimize2.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/map_drag_hand.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/map_point.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/map_point.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/map_polygon2.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/map_rectangle.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/map_rectangle2.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/mass_update.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/minussign.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/MissingImage.jpg">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/new_element.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/new_element_demo.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/new_folder.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/new_item.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/No Thumb.jpg">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/nocheckmark.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/NoThumb.jpg">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/OOFL.ICO">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/open_folder.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/open_folder_public.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/plussign.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/pmets.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/pmets.ico">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/pointer_blue.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/pointer_small.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/portable_drive.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/portals.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/portals.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/preferences.ico">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/printer.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/private_items.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/private_resource.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/public_resource.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/ARW05LT.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/ARW05RT.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/delete_cursor.cur">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/DRAG1PG.ICO">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/loading.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/loading_small.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/Main_Information.ICO">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/move_pages_cursor.cur">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/move_pages_here.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/move_page_here.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/no_pages.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/POINT02.ICO">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/POINT04.ICO">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/POINT13.ICO">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/qc_addfiles.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/rect_large.ico">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/rect_medium.ico">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/rect_small.ico">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/Save.ico">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/thumbnail_cursor.cur">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/thumbnail_large.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/thumbnail_small.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/TRASH01.ICO">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc/View.ico">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/qc_button.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/red-pushpin.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/red-pushpin_orig.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/refresh.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/refresh.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/refresh_folder.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/restricted_resource.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/rightarrow.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/right_arrow2.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/right_arrow3.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/rss_small.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/rss_tiny.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/saved_searches.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/saved_searches_big.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/save_gray.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/Settings.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/Settings.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/show_internal_header.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/skins.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/skins.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/sobek.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/Sobek1.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/Sobek1_small.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/Sobek1_small.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/sobek_old.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/speaker.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/spinner.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/spinner_gray.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/sqltut.ico">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/stumbledupon_share.bmp">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/stumbleupon_share.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/stumbleupon_share_h.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/submitted_items.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/text-only.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/thumbnail_large.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/thumbnail_small.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/thumbs1.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/thumbs1_selected.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/thumbs2.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/thumbs2_selected.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/thumbs3.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/thumbs3_selected.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/twitter_share.bmp">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/twitter_share.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/twitter_share_h.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/ufdc_banner_550.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/ufdc_banner_700.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/ufdc_banner_800.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/ufdc_banner_850.jpg">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/usage.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/usage_statistics.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/Users.gif">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/Users.png">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/images/view_comment.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/view_mets.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/view_work_log.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/wordmarks.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/wrench.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/xml.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/yahoobuzz_share.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/yahoobuzz_share_h.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/yahoo_buzz_share.bmp">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/yahoo_share.bmp">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/yahoo_share.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/yahoo_share_h.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/images/zoom_tool.cur">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/jquery-searchbox.css">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/jquery-ui.css">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/jsDatePick_ltr.css">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/opensearch.xml">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/print.css">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/bookturner/bookturner.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/bookturner/jquery-1.2.6.min.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/bookturner/jquery.easing.1.3.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/contentslider.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/contentslider.min.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/css/jquery.dataTables.css">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/css/jquery.dataTables_themeroller.css">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/back_disabled.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/back_enabled.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/back_enabled_hover.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/favicon.ico">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/forward_disabled.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/forward_enabled.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/forward_enabled_hover.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/Sorting icons.psd">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/sort_asc.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/sort_asc_disabled.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/sort_both.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/sort_desc.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/images/sort_desc_disabled.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/js/ColReorderWithResize.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/js/jquery.dataTables.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/js/jquery.dataTables.min.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/scroller/css/dataTables.scroller.css">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/scroller/images/loading-background.png">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/scroller/js/dataTables.scroller.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/scroller/js/dataTables.scroller.min.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datatables/scroller/js/dataTables.scroller.min.js.gz">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datepicker/gpl.txt">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datepicker/jsDatePick.full.1.3.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/datepicker/jsDatePick.min.1.3.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/html5shiv/html5shiv-printshiv.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/html5shiv/html5shiv.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/htmleditor/images/buttons.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/htmleditor/images/table.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/htmleditor/images/toolbar.gif">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/htmleditor/jquery.cleditor.advancedtable.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/htmleditor/jquery.cleditor.advancedtable.min.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/htmleditor/jquery.cleditor.css">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/htmleditor/jquery.cleditor.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/htmleditor/jquery.cleditor.min.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/htmleditor/jquery.cleditor.xhtml.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/htmleditor/jquery.cleditor.xhtml.min.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery-1.10.2.js">
+      <publishTime>01/06/2014 09:57:23</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery-1.10.2.min.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery-json-2.4.min.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery-knob.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery-migrate-1.1.1.min.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery-rotate.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery-ui-1.10.1.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery-ui-1.10.3.custom.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery-ui-1.10.3.custom.min.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery-ui-1.10.3.draggable.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery-ui-1.10.3.draggable.min.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery.color-2.1.1.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery.mousewheel.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery.timers.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/jquery/jquery.timers.min.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/keydragzoom_packed.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/mapedit/gmaps-infobox.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/mapedit/gmaps-markerwithlabel-1.9.1.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/mapedit/sobekcm_mapedit.js">
+      <publishTime>01/17/2014 13:43:21</publishTime>
+    </File>
+    <File Include="default/scripts/mapedit/sobekcm_mapedit_declarations.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/mapedit/sobekcm_mapedit_gmap.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/mapedit/sobekcm_mapedit_listeners.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/mapedit/sobekcm_mapedit_listener_actions.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/mapedit/sobekcm_mapedit_localization.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/mapedit/sobekcm_mapedit_other.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/mapedit/sobekcm_mapedit_utilities.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/sobekcm_admin.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/sobekcm_full.js">
+      <publishTime>01/20/2014 09:27:50</publishTime>
+    </File>
+    <File Include="default/scripts/sobekcm_full.min.js">
+      <publishTime>01/20/2014 09:27:50</publishTime>
+    </File>
+    <File Include="default/scripts/sobekcm_map_search.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/sobekcm_map_tool.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/sobekcm_metadata.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/sobekcm_qc.js">
+      <publishTime>01/17/2014 13:43:21</publishTime>
+    </File>
+    <File Include="default/scripts/sobekcm_track_item.js">
+      <publishTime>01/17/2014 13:43:21</publishTime>
+    </File>
+    <File Include="default/scripts/superfish/hoverIntent.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/superfish/superfish.js">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/superfish/superfish.js.orig">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/uploadify/change-log.txt">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/uploadify/check-exists.php">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/uploadify/index.php">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/uploadify/Instructions.txt">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/uploadify/jquery.uploadifive.js">
+      <publishTime>01/17/2014 13:43:21</publishTime>
+    </File>
+    <File Include="default/scripts/uploadify/jquery.uploadifive.min.js">
+      <publishTime>01/17/2014 13:43:21</publishTime>
+    </File>
+    <File Include="default/scripts/uploadify/license-standard.txt">
+      <publishTime>01/17/2014 13:43:21</publishTime>
+    </File>
+    <File Include="default/scripts/uploadify/uploadifive-cancel.png">
+      <publishTime>01/17/2014 13:43:21</publishTime>
+    </File>
+    <File Include="default/scripts/uploadify/uploadifive-image-only.php">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/scripts/uploadify/uploadifive.css">
+      <publishTime>01/17/2014 13:43:21</publishTime>
+    </File>
+    <File Include="default/scripts/uploadify/uploadifive.php">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/SobekCM.css">
+      <publishTime>01/20/2014 09:27:50</publishTime>
+    </File>
+    <File Include="default/SobekCM.min.css">
+      <publishTime>01/20/2014 09:27:50</publishTime>
+    </File>
+    <File Include="default/SobekCM_Admin.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_Admin.min.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_BookTurner.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_DataTables.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/sobekcm_default.xsl">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="default/SobekCM_Item.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_Item.min.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_Mapedit_Layout_Default.BAK.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_Mapedit_Layout_Default.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_Mapedit_Other.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_Mapedit_Theme_Default.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_Metadata.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_Metadata.min.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_MySobek.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_MySobek.min.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_NonIE.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_Print.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_QC.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_Stats.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="default/SobekCM_TrackingSheet.css">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="design/favicons/localhost/favicon.ico">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="design/home.html">
+      <publishTime>01/06/2014 09:57:24</publishTime>
+    </File>
+    <File Include="Files.aspx">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="iipimage/iipsrv.fcgi">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/index.html">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/fullpage_grouphover.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/fullpage_hover.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/fullpage_pressed.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/fullpage_rest.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/home_grouphover.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/home_hover.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/home_pressed.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/home_rest.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/next_grouphover.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/next_hover.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/next_pressed.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/next_rest.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/previous_grouphover.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/previous_hover.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/previous_pressed.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/previous_rest.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/zoomin_grouphover.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/zoomin_hover.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/zoomin_pressed.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/zoomin_rest.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/zoomout_grouphover.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/zoomout_hover.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/zoomout_pressed.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/images/zoomout_rest.png">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/index.html">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/LICENSE.txt">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/openseadragon.js">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/openseadragon.min.js">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/openseadragon/openseadragon.min.js.map">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="iipimage/web.config">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/projects/DLOC.pmets">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/projects/EVERGLADES.pmets">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/projects/FHP.pmets">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/projects/IFSA.pmets">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/projects/IRFIU.pmets">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/projects/NONE.pmets">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/projects/ORAL.pmets">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/projects/UFIR.pmets">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/projects/VODOU2.pmets">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/defaults/addvolume.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/defaults/groupbehaviors.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/defaults/itembehaviors.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/defaults/massupdate.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/dloc.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/edit/edit.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/edit/editmarc.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/edit/editmarc_catalog.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/edit/editmarc_internal.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/edit/edit_catalog.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/edit/edit_internal.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/govdocs.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/hnc.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/images/oral.jpg">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/internal.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/ir.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/oral.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/vodou.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="mySobek/templates/vodou2.xml">
+      <publishTime>01/06/2014 09:57:26</publishTime>
+    </File>
+    <File Include="PrecompiledApp.config">
+      <publishTime>01/20/2014 09:29:40</publishTime>
+    </File>
+    <File Include="SobekCM.aspx">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="SobekCM_Data.aspx">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="SobekCM_OAI.aspx">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="UploadiFiveFileHandler.ashx">
+      <publishTime>01/06/2014 09:57:22</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>01/06/2014 10:22:54</publishTime>
+    </File>
+  </ItemGroup>
+</Project>
