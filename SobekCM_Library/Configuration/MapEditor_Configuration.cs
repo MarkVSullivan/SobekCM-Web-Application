@@ -33,18 +33,17 @@ namespace SobekCM.Library.Configuration
 
         private static bool hasCustomSettings(List<string> IdsFromPage)
         {
+            bool hasCustomSettings = false;
             foreach (string IdFromPage in IdsFromPage)
             {
                 foreach (string IdFromConfig in getIdsFromConfig())
                 {
-                    if (IdFromPage==IdFromConfig)
-                    {
-                        return true;
-                    }
+                    if (IdFromPage.Replace(" ", "") == IdFromConfig.Replace(" ", ""))
+                        hasCustomSettings = true;
                 }
             }
             
-            return false;
+            return hasCustomSettings;
         }
         
         private static List<string> getIdsFromConfig()
@@ -97,25 +96,12 @@ namespace SobekCM.Library.Configuration
                                 {
                                     while (reader.Read())
                                     {
-                                        // Only detect start elements.
-                                        if (reader.IsStartElement())
-                                        {
-                                            if (reader.Name != "collection")
-                                            {
-                                                settings[0].Add(reader.Name);
-                                            }
-                                            if (reader.Read() && (reader.Name != "collection"))
-                                            {
-                                                if (string.IsNullOrEmpty(reader.Value))
-                                                {
-                                                    settings[1].Add("\"\"");
-                                                }
-                                                else
-                                                {
-                                                    settings[1].Add(reader.Value);
-                                                }
-                                            }
-                                        }
+                                        if (!reader.IsStartElement()) continue;
+                                        if (reader.Name == "collection")
+                                            break;
+                                        settings[0].Add(reader.Name);
+                                        if (reader.Read())
+                                            settings[1].Add(string.IsNullOrEmpty(reader.Value) ? "\"\"" : reader.Value);
                                     }
                                 }
                                 break;
@@ -149,29 +135,16 @@ namespace SobekCM.Library.Configuration
                             case "collection":
                                 foreach (string Id in IdsFromPage)
                                 {
-                                    if ((reader["id"] == Id))
+                                    if ((reader["id"].Contains(Id)))
                                     {
                                         while (reader.Read())
                                         {
-                                            // Only detect start elements.
-                                            if (reader.IsStartElement())
-                                            {
-                                                if (reader.Name != "collection")
-                                                {
-                                                    settings[0].Add(reader.Name);
-                                                }
-                                                if (reader.Read() && (reader.Name != "collection"))
-                                                {
-                                                    if (string.IsNullOrEmpty(reader.Value))
-                                                    {
-                                                        settings[1].Add("\"\"");
-                                                    }
-                                                    else
-                                                    {
-                                                        settings[1].Add(reader.Value);
-                                                    }
-                                                }
-                                            }
+                                            if (!reader.IsStartElement()) continue;
+                                            if (reader.Name == "collection")
+                                                break;
+                                            settings[0].Add(reader.Name);
+                                            if (reader.Read())
+                                                settings[1].Add(string.IsNullOrEmpty(reader.Value) ? "\"\"" : reader.Value);
                                         }
                                     }
                                 }
