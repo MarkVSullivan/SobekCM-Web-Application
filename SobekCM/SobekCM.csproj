@@ -695,6 +695,9 @@
     <Content Include="mySobek\projects\ORAL.pmets" />
     <Content Include="mySobek\projects\UFIR.pmets" />
     <Content Include="mySobek\projects\VODOU2.pmets" />
+    <Content Include="config\sobekcm_mapedit.config" />
+    <Content Include="config\sobekcm_mapeditor.config" />
+    <Content Include="config\sobekcm_mapsearch.config" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
