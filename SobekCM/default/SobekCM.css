@@ -500,6 +500,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 /* Used for the SobekCM home page */
 .groupname { FONT-WEIGHT: bold; FONT-SIZE: small }
 .groupnamecaps { FONT-SIZE: medium }
+.sbk_hoverTooltipStyle .qtip-content{padding: 10px;background-color: White; color: Black}
 
 
 /* Used for the CONTACT US ( and PREFERENCES) page */
