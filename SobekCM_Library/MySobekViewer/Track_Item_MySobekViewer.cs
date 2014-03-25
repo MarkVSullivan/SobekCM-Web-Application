@@ -134,6 +134,7 @@ namespace SobekCM.Library.MySobekViewer
             else
             {
                 equipment = scanners_list[0];
+                User.Add_Setting("Track_Item_MySobekViewer:Equipment",equipment);
               //  HttpContext.Current.Session["Equipment"] = equipment;
             }
 
@@ -408,7 +409,12 @@ namespace SobekCM.Library.MySobekViewer
 
             this_workflow.BibID = BibID;
             this_workflow.VID = VID;
-            this_workflow.Equipment = equipment;
+            if(selected_ddl_workflow==1)
+                this_workflow.Equipment = equipment;
+            else
+            {
+                this_workflow.Equipment = "";
+            }
             this_workflow.Date = new_date.ToString("yyyy-MM-dd");
             this_workflow.Saved = true;
             this_workflow.Title = title;

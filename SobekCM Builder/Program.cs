@@ -11,6 +11,7 @@ using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
+using Microsoft.Win32;
 
 #endregion
 
@@ -363,5 +364,37 @@ namespace SobekCM.Builder
             if (( operationFlag == Builder_Operation_Flag_Enum.ABORTING ) || ( operationFlag == Builder_Operation_Flag_Enum.ABORT_REQUESTED ))
                 Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
         }
+
+        private static string Look_For_Variable_Registry_Key(string Manufacturer, string KeyName)
+        {
+            RegistryKey localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+            localKey = localKey.OpenSubKey(Manufacturer);
+            if (localKey != null)
+            {
+                string[] subkeys = localKey.GetSubKeyNames();
+                foreach (string thisSubKey in subkeys)
+                {
+                    RegistryKey subKey = localKey.OpenSubKey(thisSubKey);
+                    string value64 = subKey.GetValue(KeyName) as string;
+                    if (!String.IsNullOrEmpty(value64))
+                        return value64;
+                }
+            }
+            RegistryKey localKey32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            localKey32 = localKey32.OpenSubKey(Manufacturer);
+            if (localKey32 != null)
+            {
+                string[] subkeys = localKey32.GetSubKeyNames();
+                foreach (string thisSubKey in subkeys)
+                {
+                    RegistryKey subKey = localKey32.OpenSubKey(thisSubKey);
+                    string value32 = subKey.GetValue(KeyName) as string;
+                    if (!String.IsNullOrEmpty(value32))
+                        return value32;
+                }
+            }
+            return null;
+        }
+
     }
 }
