@@ -1804,119 +1804,6 @@ function initMapEditor() {
                             MAPEDITOR.TRACER.addTracer("[ERROR]: " + err + " at line " +err.lineNumber );
                         }
                     },
-                    initInterface: function (collection) {
-                        try {
-                            MAPEDITOR.TRACER.addTracer("[INFO]: initInterface started...");
-                            MAPEDITOR.TRACER.addTracer("[INFO]: Loading Collection " + collection);
-                            google.maps.visualRefresh = true; //Enable the visual refresh (new gmaps)
-
-                            switch (collection) {
-                                case "default":
-                                    MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
-                                    MAPEDITOR.GLOBAL.DEFINES.mapLayerActive = "Roadmap";                                             //what map layer is displayed
-                                    MAPEDITOR.GLOBAL.DEFINES.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
-                                    MAPEDITOR.GLOBAL.DEFINES.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-                                    MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-                                    MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml");  //must be pingable by google
-                                    MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 3;                                                  //zoom level, starting
-                                    MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 2;                                                       //max zoom out, default (21=lowest level, 1=highest level)
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
-                                    MAPEDITOR.GLOBAL.DEFINES.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
-                                    MAPEDITOR.GLOBAL.DEFINES.preservedRotation = 0;                                                  //rotation, default
-                                    MAPEDITOR.GLOBAL.DEFINES.knobRotationValue = 0;                                                  //rotation to display by default 
-                                    MAPEDITOR.GLOBAL.DEFINES.preservedOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-                                    MAPEDITOR.GLOBAL.DEFINES.strictBounds = null;                                                    //set the bounds for this google map instance (set to null for no bounds)
-                                    MAPEDITOR.GLOBAL.DEFINES.hasCustomMapType = false;                                                //used to determine if there is a custom maptype layer
-                                    break;
-                                case "stAugustine":
-                                    MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
-                                    MAPEDITOR.GLOBAL.DEFINES.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.mapLayerActive = "Roadmap";                                             //what map layer is displayed
-                                    MAPEDITOR.GLOBAL.DEFINES.mapCenter = new google.maps.LatLng(29.8944, -81.3147);                  //used to center map on load
-                                    MAPEDITOR.GLOBAL.DEFINES.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-                                    MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-                                    MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml");  //must be pingable by google
-                                    MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 14;                                                  //zoom level, starting
-                                    MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
-                                    MAPEDITOR.GLOBAL.DEFINES.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
-                                    MAPEDITOR.GLOBAL.DEFINES.preservedRotation = 0;                                                  //rotation, default
-                                    MAPEDITOR.GLOBAL.DEFINES.knobRotationValue = 0;                                                  //rotation to display by default 
-                                    MAPEDITOR.GLOBAL.DEFINES.preservedOpacity = 0.35;                                                 //opacity, default value (0-1,1=opaque)
-                                    MAPEDITOR.GLOBAL.DEFINES.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
-                                    MAPEDITOR.GLOBAL.DEFINES.strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
-                                        new google.maps.LatLng(29.78225755812941, -81.4306640625),
-                                        new google.maps.LatLng(29.99181288866604, -81.1917114257)
-                                    );
-                                    break;
-                                case "florida":
-                                    MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
-                                    MAPEDITOR.GLOBAL.DEFINES.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.mapLayerActive = "Roadmap";                                             //what map layer is displayed
-                                    MAPEDITOR.GLOBAL.DEFINES.mapCenter = new google.maps.LatLng(29.6480, -82.3482);                  //used to center map on load
-                                    MAPEDITOR.GLOBAL.DEFINES.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-                                    MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-                                    MAPEDITOR.GLOBAL.DEFINES.kmlLayer = new google.maps.KmlLayer("http://hlmatt.com/uf/kml/10.kml"); //must be pingable by google
-                                    MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 10;                                                  //zoom level, starting
-                                    MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 1;                                                       //max zoom out, default (21=lowest level, 1=highest level)
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
-                                    MAPEDITOR.GLOBAL.DEFINES.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) 
-                                    MAPEDITOR.GLOBAL.DEFINES.preservedRotation = 0;                                                  //rotation, default
-                                    MAPEDITOR.GLOBAL.DEFINES.knobRotationValue = 0;                                                  //rotation to display by default 
-                                    MAPEDITOR.GLOBAL.DEFINES.preservedOpacity = 0.75;                                                 //opacity, default value (0-1,1=opaque)
-                                    MAPEDITOR.GLOBAL.DEFINES.hasCustomMapType = false;                                                //used to determine if there is a custom maptype layer
-                                    MAPEDITOR.GLOBAL.DEFINES.strictBounds = new google.maps.LatLngBounds(                            //set the bounds for this google map instance
-                                        new google.maps.LatLng(22.053908635225607, -86.18838838405613), //east coast
-                                        new google.maps.LatLng(36.06512404320089, -76.72320000000003)
-                                    );
-                                    break;
-                                case "readFromXML":
-                                    MAPEDITOR.GLOBAL.DEFINES.baseImageDirURL = "default/images/mapedit/";                            //the default directory to the image files
-                                    MAPEDITOR.GLOBAL.DEFINES.mapDrawingManagerDisplayed = false;                                     //by default, is the drawing manager displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.mapLayerActive = "Roadmap";                                             //what map layer is displayed
-                                    MAPEDITOR.GLOBAL.DEFINES.mapControlsDisplayed = true;                                            //by default, are map controls displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.defaultDisplayDrawingMangerTool = false;                                //by default, is the drawingmanger displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.toolboxDisplayed = true;                                                //by default, is the toolbox displayed (true/false)
-                                    MAPEDITOR.GLOBAL.DEFINES.toolbarDisplayed = true;                                                //by default, is the toolbar open (yes/no)
-                                    MAPEDITOR.GLOBAL.DEFINES.kmlDisplayed = false;                                                   //by default, is kml layer on (yes/no)
-                                    MAPEDITOR.GLOBAL.DEFINES.defaultZoomLevel = 3;                                                  //zoom level, starting
-                                    MAPEDITOR.GLOBAL.DEFINES.maxZoomLevel = 10;                                                      //max zoom out, default (21=lowest level, 1=highest level)
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Terrain = 15;                                              //max zoom in, terrain
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Satellite = 20;                                            //max zoom in, sat + hybrid
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_Roadmap = 21;                                              //max zoom in, roadmap (default)
-                                    MAPEDITOR.GLOBAL.DEFINES.minZoomLevel_BlockLot = 19;                                             //max zoom in, used for special layers not having default of roadmap
-                                    MAPEDITOR.GLOBAL.DEFINES.isCustomOverlay = false;                                                //used to determine if other overlays (block/lot etc) //unknown
-                                    MAPEDITOR.GLOBAL.DEFINES.preservedRotation = 0;                                                  //rotation, default
-                                    MAPEDITOR.GLOBAL.DEFINES.knobRotationValue = 0;                                                  //rotation to display by default 
-                                    MAPEDITOR.GLOBAL.DEFINES.preservedOpacity = 0.35;                                                 //opacity, default value (0-1,1=opaque)
-                                    MAPEDITOR.GLOBAL.DEFINES.hasCustomMapType = true;                                                //used to determine if there is a custom maptype layer
-                                    break;
-                            }
-
-                            MAPEDITOR.TRACER.addTracer("[INFO]: initInterface completed...");
-                        } catch (err) {
-                            MAPEDITOR.TRACER.addTracer("[ERROR]: " + err + " at line " +err.lineNumber );
-                        }
-                    },
                     initOptions: function () {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: initOptions started...");
@@ -2125,7 +2012,7 @@ function initMapEditor() {
                             
                             //initialize google map objects
                             map = new google.maps.Map(document.getElementById("googleMap"), MAPEDITOR.GLOBAL.DEFINES.gmapOptions);
-                            //map = new google.maps.Map(document.getElementById(MAPEDITOR.GLOBAL.DEFINES.gmapPageDivId), MAPEDITOR.GLOBAL.DEFINES.gmapOptions);    //initialize map    
+                            google.maps.visualRefresh = true;                                                                                                    //Enable the visual refresh (new gmaps)
                             map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(MAPEDITOR.GLOBAL.DEFINES.copyrightNode);                                 //initialize custom copyright
                             map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(MAPEDITOR.GLOBAL.DEFINES.cursorLatLongTool);                              //initialize cursor lat long tool
                             map.controls[google.maps.ControlPosition.TOP_LEFT].push(MAPEDITOR.GLOBAL.DEFINES.toolbarBufferZone1);                                //initialize spacer
@@ -2133,7 +2020,6 @@ function initMapEditor() {
                             MAPEDITOR.GLOBAL.DEFINES.drawingManager.setMap(map);                                                                                 //initialize drawing manager
                             MAPEDITOR.GLOBAL.DEFINES.drawingManager.setMap(null);                                                                                //initialize drawing manager (hide)
                             MAPEDITOR.GLOBAL.DEFINES.geocoder = new google.maps.Geocoder();                                                                      //initialize MAPEDITOR.GLOBAL.DEFINES.geocoder
-                            
                             //#region Google Specific Listeners  
 
                             //initialize drawingmanger listeners
@@ -2894,13 +2780,14 @@ function initMapEditor() {
                                 MAPEDITOR.UTILITIES.checkZoomLevel();
                             });
                             //when kml layer is clicked, get feature that was clicked
-                            google.maps.event.addListener(MAPEDITOR.GLOBAL.DEFINES.kmlLayer, 'click', function (kmlEvent) {
-                                var name = kmlEvent.featureData.name;
-                                MAPEDITOR.UTILITIES.displayMessage("ParcelID: " + name); //temp
-                            });
-
+                            if (MAPEDITOR.GLOBAL.DEFINES.kmlLayer!="") {
+                                google.maps.event.addListener(MAPEDITOR.GLOBAL.DEFINES.kmlLayer, 'click', function (kmlEvent) {
+                                    var name = kmlEvent.featureData.name;
+                                    MAPEDITOR.UTILITIES.displayMessage("ParcelID: " + name); //temp
+                                });
+                            }
                             //#endregion
-
+                            
                             //initialize all the incoming geo obejects (the fcn is written via c#)
                             initGeoObjects();
 
@@ -4871,7 +4758,7 @@ function initMapEditor() {
                     addOverlayListItemThumbnailTooltip: function (id) {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: addOverlayListItemThumbnailTooltip started...");
-                            $("#overlayListItemText" + MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPageId[id-1]).tooltip({ content: "<img src=\"" + MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[id-1] + "\" style=\"max-height:200px;\"/>" });
+                            $("#overlayListItemText" + MAPEDITOR.GLOBAL.DEFINES.incomingPolygonPageId[id-1]).tooltip({ content: "<img src=\"" + MAPEDITOR.GLOBAL.DEFINES.incomingPolygonSourceURL[id-1] + "\" style=\"max-height:200px;width:auto;\"/>" });
                             MAPEDITOR.TRACER.addTracer("[INFO]: addOverlayListItemThumbnailTooltip completed...");
                         } catch (err) {
                             MAPEDITOR.TRACER.addTracer("[ERROR]: " + err + " at line " + err.lineNumber);
@@ -5537,7 +5424,7 @@ function initMapEditor() {
                     testBounds: function () {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: testBounds started...");
-                            if (MAPEDITOR.GLOBAL.DEFINES.strictBounds != null) {
+                            if (MAPEDITOR.GLOBAL.DEFINES.strictBounds != "") {
                                 if (MAPEDITOR.GLOBAL.DEFINES.strictBounds.contains(map.getCenter())) {
                                     MAPEDITOR.GLOBAL.DEFINES.mapInBounds = "yes";
                                 } else {
@@ -5545,6 +5432,8 @@ function initMapEditor() {
                                     map.panTo(MAPEDITOR.GLOBAL.DEFINES.mapCenter); //recenter
                                     MAPEDITOR.UTILITIES.displayMessage(MAPEDITOR.LOCALIZATION.DEFINES.L5);
                                 }
+                            } else {
+                                MAPEDITOR.GLOBAL.DEFINES.mapInBounds = "yes"; //explicitly state that because there are no bounds, we are allowing anything
                             }
                             MAPEDITOR.TRACER.addTracer("[INFO]: testBounds completed...");
                         } catch (err) {
@@ -6106,8 +5995,7 @@ function initMapEditor() {
                     MAPEDITOR.GLOBAL.initListOfTextAreaIds();
                     MAPEDITOR.GLOBAL.initLocalization();
                     MAPEDITOR.GLOBAL.initListeners();
-                    initConfigSettings(); //c# to js
-                    MAPEDITOR.GLOBAL.initInterface(MAPEDITOR.GLOBAL.DEFINES.collectionLoadType); //defines interface
+                    initConfigSettings(); //c# to js config vars
                     MAPEDITOR.GLOBAL.initGMap();
                     window.onkeypress = MAPEDITOR.ACTIONS.keyPress; //keypress shortcuts/actions (MOVE TO dynamic)
                     MAPEDITOR.TRACER.addTracer("[INFO]: MapEditor.run completed...");

@@ -298,6 +298,18 @@ namespace SobekCM.URL_Rewriter
 					return;
 				}
 
+	   
+				if (purl_handle.Contains("-ead"))
+				{
+					// It is an EAD item purl
+
+					int pos1 = purl_handle.IndexOf("-");
+					int len = pos1 - 4;
+					String doi = "U29-" + int.Parse(purl_handle.Substring(4, len)).ToString("D5") + "-" + purl_handle.Substring(pos1 + 1, 3);
+					String url = "http://www.lib.usf.edu/aeon/eads/index.html?eadrequest=true&ead_id=" + doi;
+					HttpContext.Current.Response.StatusCode = 307;
+					HttpContext.Current.Response.Redirect(url, true);
+				}
 
 				packageid = SobekCM_Database.Get_BibID_VID_From_Identifier(purl_handle);
 
