@@ -250,10 +250,11 @@ function DivisionTypeChanged(SelectID)
 	else if(currVal.indexOf('!')==-1)
 	{
 	    //else if the division type selected is not a nameable div
-	    //Hide the name textbox for this page
+	    //Clear and Hide the name textbox for this page
+	    document.getElementById('divNameTableRow' + index).value = '';
 	    document.getElementById('divNameTableRow' + index).style.visibility = 'hidden';
 	
-	    //Hide the name textboxes of all the other pages of this division type
+	    //Clear and Hide the name textboxes of all the other pages of this division type
 	    while ((i < spanArray.length) && (document.getElementById(spanArray[i].replace('span', 'selectDivType')).disabled == true))
 	    {
 	        document.getElementById(spanArray[i].replace('span', 'selectDivType')).value = currVal;
@@ -818,7 +819,7 @@ function bulkdeleteicon_click()
 }
 
 
-//Make the thumbnails sortable
+//Apply JQuery sortable to the container div
 function MakeSortable1()
 {
     var startPosition;
@@ -831,7 +832,7 @@ function MakeSortable1()
         },
         stop: function(event, ui) {
            
-// Pull a new spanArray
+                // Pull a new spanArray
                 var newSpanArray = new Array();
                 //get the list of all the thumbnail spans on the page
                 spanArrayObjects = $("#allThumbnailsOuterDiv").children();
@@ -853,7 +854,7 @@ function MakeSortable1()
             var makeSortable_input = true;
 			if(makeSortable==2 && (startPosition!=newPosition))
 			{
- //    			alert('startPosition:'+startPosition+' newPosition:'+newPosition);
+               // alert('startPosition:'+startPosition+' newPosition:'+newPosition);
 				makeSortable_input = confirm("Are you sure you want to move this page?");
 			}
 
