@@ -310,7 +310,7 @@ function isValidDateTime(start_Date, startTime, endTime) {
     return true;
 }
 
-
+//Called when user hits 'save' for a single entry ont he first tab
 function save_workflow(workflow_ID, itemID) {
 
     //First do some validations
@@ -344,8 +344,10 @@ function save_workflow(workflow_ID, itemID) {
         
     }
     else if (page == 2) {
-        var startDate = document.getElementById('txtStartDate2' + workflow_ID).value;
-   //        alert(startDate.value);
+        
+  //      alert(document.getElementById('txtStartDate2'));
+        var startDate = document.getElementById('txtStartDate2').value;
+  //        alert(startDate);
         if (startDate == null || !isValidDate(startDate)) {
             alert('You must enter a valid date!');
             return false;
@@ -357,8 +359,8 @@ function save_workflow(workflow_ID, itemID) {
         document.getElementById('Track_Item_behaviors_request').value = 'save';
         document.getElementById('Track_Item_hidden_value').value = workflow_ID;
         document.getElementById('hidden_itemID').value = itemID;
-  //      alert(document.getElementById('Track_Item_behaviors_request').value);
-   //     alert(document.getElementById('Track_Item_hidden_value').value);
+ //      alert(document.getElementById('Track_Item_behaviors_request').value);
+ //      alert(document.getElementById('Track_Item_hidden_value').value);
         document.itemNavForm.submit();
         
  
