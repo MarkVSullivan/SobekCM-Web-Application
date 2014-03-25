@@ -259,7 +259,14 @@ function isValidDateTime(start_Date, startTime, endTime) {
 
 
     if (matchArray2 != null) {
-        var endTime24_hours = matchArray2[3].toString().toLowerCase().trim() == "am" ? matchArray2[1] : parseInt(matchArray2[1]) + 12;
+        var ampm = matchArray2[3].toString().toLowerCase().trim();
+        var endTime24_hours = '';
+        if (ampm == 'am' && parseInt(matchArray2[1]) == 12)
+            endTime24_hours = '00';
+        else if (ampm == 'pm' && parseInt(matchArray2[1]) < 12)
+            endTime24 = parseInt(matchArray2[1]) + 12;
+        else
+           endTime24_hours =  matchArray2[1];
         var endTime24_min = matchArray2[2];
         var endTime24 = endTime24_hours + ":" + endTime24_min;
 
@@ -301,7 +308,7 @@ function isValidDateTime(start_Date, startTime, endTime) {
             return false;
         }
     }
- //   alert('dateBeforeToday:' + dateBeforeToday + ',  currentTime24:'+currentTime24 + ' startTime24:' + startTime24);
+   //alert('dateBeforeToday:' + dateBeforeToday + ',  currentTime24:'+currentTime24 + ' startTime24:' + startTime24);
     if (!(dateBeforeToday) && (startTime24 > currentTime24 || (endTime24 != null && endTime24 > currentTime24))) {
         alert('Start/End time cannot be in the future!');
         return false;
