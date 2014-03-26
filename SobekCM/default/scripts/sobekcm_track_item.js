@@ -317,7 +317,7 @@ function isValidDateTime(start_Date, startTime, endTime) {
     return true;
 }
 
-//Called when user hits 'save' for a single entry ont he first tab
+//Called when user hits 'save' for a single entry 
 function save_workflow(workflow_ID, itemID) {
 
     //First do some validations
