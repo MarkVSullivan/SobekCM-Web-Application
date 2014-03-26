@@ -1663,3 +1663,17 @@ function filename_truncate(filename) {
     //alert(filenameToDisplay);
     return filenameToDisplay;
 }
+
+/***** Functions related to marking QC Errors*******/
+//Called when the user clicks on the 'X' icon for any page
+function Set_Error_Page(filename_sans_extension) {
+    var error_hidden_value = document.getElementById('QC_affected_file');
+    error_hidden_value.value = filename_sans_extension;
+}
+
+//Called when user clicks on the 'Save' button on the error popup form 
+function save_qcErrors() {
+    document.getElementById('QC_behaviors_request').value = 'save_error';
+    document.getElementById('QC_error_number').value = $("input[name='rbFile_errors']:checked").val();
+    document.itemNavForm.submit();
+}
