@@ -348,12 +348,14 @@ namespace SobekCM.Library.MySobekViewer
             }
             if (page == 1)
             {
-                new_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate" + thisWorkflowId_string]);
+                DateTime.TryParse(HttpContext.Current.Request.Form["txtStartDate" + thisWorkflowId_string], out new_date);
+         //       new_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate" + thisWorkflowId_string]);
                 selected_ddl_workflow = Convert.ToInt32(HttpContext.Current.Request.Form["ddlEvent" + thisWorkflowId_string]);
             }
             else
             {
-                new_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate2"]);
+                DateTime.TryParse(HttpContext.Current.Request.Form["txtStartDate2"], out new_date);
+                //new_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate2"]);
                 selected_ddl_workflow = Convert.ToInt32(HttpContext.Current.Request.Form["ddlEvent2"]);
             }
 
@@ -520,7 +522,8 @@ namespace SobekCM.Library.MySobekViewer
                             current_workflows.Remove(opened_key);
                     }
 
-
+                    if (current_workflows.ContainsKey(key))
+                        current_workflows.Remove(key);
                     //Add this to the dictionary
                     current_workflows.Add(key, this_workflow);
                 }
