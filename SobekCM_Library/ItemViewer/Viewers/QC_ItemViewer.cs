@@ -426,6 +426,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 case "4":
                     //thisError.ErrorName = "Other (specify)";
                     thisError.ErrorName = HttpContext.Current.Request.Form["txtErrorOther1"] ?? String.Empty;
+                    if (String.IsNullOrEmpty(thisError.ErrorName))
+                        thisError.ErrorName = 
                     thisError.Description = HttpContext.Current.Request.Form["txtErrorOther1"] ?? String.Empty;
                     break;
 
@@ -450,7 +452,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     break;
                 
                 case "10":
-                    thisError.ErrorName = "Other (specify)";
+                    //thisError.ErrorName = "Other (specify)";
+                    thisError.ErrorName = HttpContext.Current.Request.Form["txtErrorOther2"] ?? "Other (specify)";
                     thisError.Description = HttpContext.Current.Request.Form["txtErrorOther2"] ?? String.Empty;
                     break;
 
@@ -2546,7 +2549,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("</tr><tr><td colspan=\"100%\">");
 			//Output.WriteLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\" style=\"float:left\">" + displayTimeText + "</span>");
 			//Start inner table
+            const string criticalVolumeText = "Critical Volume Error: ";
             Output.WriteLine("<div id=\"sbkQc_BottomRow\">");
+            Output.WriteLine("<span class=\"sbkQc_CriticalVolumeError\">" + criticalVolumeText + "<select id=\"sbkQc_ddlCriticalVolumeError\" class=\"sbkQc_ddlCriticalVolumeError\">");
+            Output.WriteLine("<option value=\"11\">No Volume Error</option>");
+            Output.WriteLine("<option value=\"12\">Invalid Images</option>");
+            Output.WriteLine("<option value=\"13\">Incorrect Volume</option>");
+            Output.WriteLine("</select></span>");
 			Output.WriteLine("<span id=\"sbkQC_BottomRowTextSpan\">Comments: </span><textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea> ");
             Output.WriteLine("<button type=\"button\" class=\"sbkQc_MainButtons\" onclick=\"save_submit_form();\">Complete</button>");
             Output.WriteLine("<button type=\"button\" class=\"sbkQc_MainButtons\" onclick=\"behaviors_cancel_form();\">Cancel</button>");
