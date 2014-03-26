@@ -1268,7 +1268,10 @@ namespace SobekCM.Library.MainWriters
 
 	        bool end_div = !(( currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS ) && ( siteMap != null ));
 
-	        const string VERSION = SobekCM_Library_Settings.CURRENT_WEB_VERSION;
+	        string VERSION = SobekCM_Library_Settings.CURRENT_WEB_VERSION;
+	        if (VERSION.IndexOf(" ") > 0)
+		        VERSION = VERSION.Split(" ".ToCharArray())[0];
+
 			if (useItemFooter)
 			{
 				Output.WriteLine(htmlSkin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());

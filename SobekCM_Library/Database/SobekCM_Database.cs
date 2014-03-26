@@ -9641,7 +9641,7 @@ namespace SobekCM.Library.Database
 				parameters[0] = new SqlParameter("@cid", cid);
 
 				// Define a temporary dataset
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_AggregationCode_From_CID", parameters);
+				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "USF_Get_AggregationCode_From_CID", parameters);
 
 				// If there was no data for this collection and entry point, return null (an ERROR occurred)
 				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
