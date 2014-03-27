@@ -20,7 +20,7 @@
 #sbkQC_BottomRowTextSpan { vertical-align: top; }
 
 /* Code for the pages that appear within the QC item viewer, including controls around them */
-.sbkQc_Span { text-align:left; display:inline-block; background-color: #b0c4de;padding: 10px; border: 1px solid  #a9a9a9; margin: 5px; border-radius:15px; -moz-border-radius:15px;}
+.sbkQc_Span { text-align:left; display:inline-block; background-color: #b0c4de;padding: 10px; border: 1px solid  #a9a9a9; margin: 5px; border-radius:15px; -moz-border-radius:15px;position: relative;}
 .sbkQc_SpanMouseOver { background-color: #bfc6ce; }
 .sbkQc_SpanMouseOut { background-color: #b0c4de; }
 .sbkQc_SpanSelected { background-color: Yellow; }
@@ -31,10 +31,10 @@
 .sbkQc_DivisionText { color: #3c3c3c;text-align: left; }
 .sbkQc_NamedDivisionText { color: #3c3c3c;text-align: left; }
 
-.sbkQc_Thumbnail_Small { border: 1px solid  #a9a9a9; }
-.sbkQc_Thumbnail_Medium { border: 1px solid  #a9a9a9; width: 315px; height: 50%;}
-.sbkQc_Thumbnail_Large { border: 1px solid  #a9a9a9; width: 472.5px; height: 75%;  }
-.sbkQc_Thumbnail_Full { border: 1px solid  #a9a9a9; }
+.sbkQc_Thumbnail_Small { border: 1px solid  #a9a9a9;position: relative;}
+.sbkQc_Thumbnail_Medium { border: 1px solid  #a9a9a9; width: 315px; height: 50%;position: relative;}
+.sbkQc_Thumbnail_Large { border: 1px solid  #a9a9a9; width: 472.5px; height: 75%;position: relative;  }
+.sbkQc_Thumbnail_Full { border: 1px solid  #a9a9a9;position: relative;}
 
 .sbkQc_DivisionBox_Small { border: 1px solid  #a9a9a9;color: #3c3c3c;width: 110px; }
 .sbkQc_DivisionBox_Medium { border: 1px solid  #a9a9a9;color: #3c3c3c; width: 240px; }
@@ -77,6 +77,18 @@
 
 .sbkQc_CriticalVolumeError{ float: left;margin-left: 10px;margin-right: 10px;}
 .sbkQc_ddlCriticalVolumeError{ background-color: #f5f5f5;color: black;}
+
+.QC_Page_Error_Small{ font-size: 25px;font-weight: bold;color: tomato;margin-left: -70%;text-align: center;margin-top: 30%; width: 100px;position:absolute; z-index:10; }
+.QC_Page_Error_Medium{ font-size: 45px;font-weight: bold;color: tomato;margin-left: -70%;text-align: center;margin-top: 30%; width: 100px;position:absolute; z-index:10; }
+.QC_Page_Error_Large{ font-size: 60px;font-weight: bold;color: tomato;margin-left: -70%;text-align: center;margin-top: 30%; width: 100px;position:absolute; z-index:10; }
+.QC_Page_Error_Full{ font-size: 80px;font-weight: bold;color: tomato;margin-left: -70%;text-align: center;margin-top: 30%; width: 100px;position:absolute; z-index:10; }
+
+
+/*Classes for positioning the Main_Thumbnail iconimage*/
+.QC_MainThumbnail_Small{position: relative; z-index:2;margin-bottom: 70%;margin-left:-20%;}
+.QC_MainThumbnail_Medium{position:relative; z-index:2; margin-bottom:70%; margin-left:-20%;}
+.QC_MainThumbnail_Large{position:relative; z-index:2; margin-bottom:70%; margin-left:-20%;}
+.QC_MainThumbnail_Full{ position:relative; z-index:2; margin-bottom:70%; margin-left:-20%;}
 
 .qcContainerDivClass {
      overflow: scroll; 
