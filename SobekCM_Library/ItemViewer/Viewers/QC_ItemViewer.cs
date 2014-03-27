@@ -65,6 +65,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	    private Dictionary<string, QC_Error> qc_errors_dictionary;
 	    private DataTable qc_errors_table;
+	    private bool volumeErrorPresent = false;
+	    private string volumeErrorCode = String.Empty;
 
 		/// <summary> Constructor for a new instance of the QC_ItemViewer class </summary>
 		/// <param name="Current_Object"> Digital resource to display </param>
@@ -427,7 +429,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //thisError.ErrorName = "Other (specify)";
                     thisError.ErrorName = HttpContext.Current.Request.Form["txtErrorOther1"] ?? String.Empty;
                     if (String.IsNullOrEmpty(thisError.ErrorName))
-                        thisError.ErrorName = 
+                        thisError.ErrorName = "Other (specify)";
                     thisError.Description = HttpContext.Current.Request.Form["txtErrorOther1"] ?? String.Empty;
                     break;
 
@@ -457,6 +459,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     thisError.Description = HttpContext.Current.Request.Form["txtErrorOther2"] ?? String.Empty;
                     break;
 
+               //11 indicates no Volume error, so simply delete any volume errors present for this item
+               case "11":
+                    volumeErrorPresent = false;
+                    volumeErrorCode = "11";
+                    break;
+
+                //Now handle the volume errors
+                case "12":
+                    thisError.ErrorName = "Invalid Images";
+                    volumeErrorPresent = true;
+                    volumeErrorCode = "12";
+                    break;
+
+                case "13":
+                    thisError.ErrorName = "Incorrect Volume";
+                    volumeErrorPresent = true;
+                    volumeErrorCode = "13";
+                    break;
+
             }
             if (qc_errors_dictionary.ContainsKey(affected_page_filename))
             {
@@ -468,13 +489,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             }
             //Now save this error to the DB, and update the dictionary
-            thisError.Error_ID = Resource_Object.Database.SobekCM_Database.Save_QC_Error(itemID, affected_page_filename, thisError.ErrorCode, thisError.Description, thisError.isVolumeError);
-            if (qc_errors_dictionary == null)
-                qc_errors_dictionary = new Dictionary<string, QC_Error>();
-               
-            qc_errors_dictionary.Add(affected_page_filename, thisError);
-      
-            //Update the session dictionary with this updated one
+            if (error_code != "11")
+            {
+                thisError.Error_ID = Resource_Object.Database.SobekCM_Database.Save_QC_Error(itemID, affected_page_filename, thisError.ErrorCode, thisError.Description, thisError.isVolumeError);
+                if (qc_errors_dictionary == null)
+                    qc_errors_dictionary = new Dictionary<string, QC_Error>();
+
+                qc_errors_dictionary.Add(affected_page_filename, thisError);
+            }
+
+            //Update the session dictionary with the updated one
             HttpContext.Current.Session["QC_Errors"] = qc_errors_dictionary;
 
         }
@@ -546,6 +570,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         case "10":
                             thisError.ErrorName = "Other (specify)";
                             thisError.Description = HttpContext.Current.Request.Form["txtErrorOther2"] ?? String.Empty;
+                            break;
+
+                       //Volume error cases
+                        case "12":
+                            volumeErrorPresent = true;
+                            volumeErrorCode = "12";
+                            break;
+
+                        case "13":
+                            volumeErrorPresent = true;
+                            volumeErrorCode = "13";
                             break;
 
                     }
@@ -2183,10 +2218,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                     //End filename truncation
                     
-                    // Start the top row and add the filename
+                    // Start the top row and add the main thumbnail and filename
 				    Output.WriteLine("    <tr>");
 				    Output.WriteLine("      <td colspan=\"2\">");
-                    Output.WriteLine("        <input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" /><span class=\"sbkQc_Filename\" title=\"" + filenameTooltipText + "\">" + filenameToDisplay + "</span>");
+
+                //Write the main thumbnail icon
+			    Output.WriteLine("        <input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" />");
+                if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
+                    Output.WriteLine("       <a onclick=\"apply_Main_Thumbnail_Cursor_Control();return false;\" href=\"\"><img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Visible\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;\" /></a>");
+                else
+                    Output.WriteLine("        <a onclick=\"apply_Main_Thumbnail_Cursor_Control();return false;\" href=\"\" ><img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Hidden\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;\" /></a>");
+
+                //Write the filename on the top left corner
+                Output.WriteLine("<span class=\"sbkQc_Filename\" title=\"" + filenameTooltipText + "\">" + filenameToDisplay + "</span>");
 
                     
                    
@@ -2199,13 +2243,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','After'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05RT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
                     //Output.WriteLine("        </span>");
 
-                    //Add the main_thumbnail icon
-                    //if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                    //    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
-                    //else
-                    //    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
-
-                    //Add the error icon to mark errors for this page
                     Output.WriteLine("<span id=\"error"+page_index+"\" class=\"errorIconSpan\"><a href=\"\" onclick=\"return popup('form_qcError');\"><img title=\"" + error_text + "\" height=\""+error_icon_height+"\" width=\""+error_icon_width+"\" src=\"" + CurrentMode.Base_URL + "default/images/qc/Cancel.ico" + "\" onclick=\"Set_Error_Page('"+filename_sans_extension+"');\"/></a></span>");
 
                     Output.WriteLine("      </td>");
@@ -2214,7 +2251,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				    Output.WriteLine("    <tr>");
                     Output.WriteLine("      <td colspan=\"2\">");
 			    
-                //Add the style class is this page has an error
+                //Add the style class if this page has an error
                 string error_Class_Name = "QC_No_Page_Error";
 			    if (errorPresentThisPage)
                     error_Class_Name = "QC_Page_Error_Small";
@@ -2225,17 +2262,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					{
 						case 2:
 					        {
-					            if (errorPresentThisPage)
-					                error_Class_Name = "QC_Page_Error_Medium";
 					            Output.Write("        <img id=\"child" + image_url + "\"  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Medium\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" style=\" z-index:1;\"/>");
-                                if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Medium\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible; z-index:2;\" />");
-                                else
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Medium\"  style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;z-index:2;\" />");
-                                if(errorPresentThisPage)
-                                    //Output.WriteLine("<div style=\"float:right; color:tomato;position:relative; z-index:3; margin-top:-60%; margin-right:10%\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</div>");
-                                    if (errorPresentThisPage)
-                                        Output.WriteLine("<span style=\"\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</span>");
+                              
+                               if (errorPresentThisPage)
+                               {
+                                   error_Class_Name = "QC_Page_Error_Medium";
+                                   Output.WriteLine("<span style=\"\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</span>");
+                               }
 
 					        }
 
@@ -2244,11 +2277,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						case 3:
 					        {
 					            Output.WriteLine("        <img id=\"child" + image_url + "\" src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Large\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
-                                if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Large\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
-                                else
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Large\"  style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
-                               if (errorPresentThisPage)
+                                    if (errorPresentThisPage)
                                {
                                    error_Class_Name = "QC_Page_Error_Large";
                                    Output.WriteLine("<span style=\"\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</span>");
@@ -2261,11 +2290,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					        {
                                 
 					            Output.WriteLine("        <img id=\"child" + image_url + "\" src=\"" + image_url + "\"  alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Full\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\"  />");
-                                if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Full\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
-                                else
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Full\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
-                                if (errorPresentThisPage)
+                               if (errorPresentThisPage)
                                 {
                                     error_Class_Name = "QC_Page_Error_Full";
                                     Output.WriteLine("<span style=\"\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</span>");
@@ -2276,11 +2301,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						default:
 					        {
 					            Output.WriteLine("        <img  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Small\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
-                                if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Small\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
-                                else
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Small\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
-
+                              
                                 if (errorPresentThisPage)
                                     Output.WriteLine("<span style=\"\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</span>");
 					        }
@@ -2565,12 +2586,28 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//Start inner table
             const string criticalVolumeText = "Critical Volume Error: ";
             Output.WriteLine("<div id=\"sbkQc_BottomRow\">");
-            Output.WriteLine("<span class=\"sbkQc_CriticalVolumeError\">" + criticalVolumeText + "<select id=\"sbkQc_ddlCriticalVolumeError\" class=\"sbkQc_ddlCriticalVolumeError\">");
-            Output.WriteLine("<option value=\"11\">No Volume Error</option>");
-            Output.WriteLine("<option value=\"12\">Invalid Images</option>");
-            Output.WriteLine("<option value=\"13\">Incorrect Volume</option>");
+            if(volumeErrorPresent)
+                Output.WriteLine("<span class=\"sbkQc_CriticalVolumeErrorRed\">" + criticalVolumeText + "<select id=\"sbk_ddlCriticalVolumeError\" class=\"sbkQc_ddlCriticalVolumeError\" onchange=\"ddlCriticalVolumeError_change(this.value);\">");
+            else
+                Output.WriteLine("<span class=\"sbkQc_CriticalVolumeError\">" + criticalVolumeText + "<select id=\"sbk_ddlCriticalVolumeError\" class=\"sbkQc_ddlCriticalVolumeError\" onchange=\"ddlCriticalVolumeError_change(this.value);\">");
+           if(!volumeErrorPresent)
+            Output.WriteLine("<option value=\"11\" selected>No Volume Error</option>");
+           else
+               Output.WriteLine("<option value=\"11\">No Volume Error</option>");
+           
+            if(volumeErrorPresent && volumeErrorCode=="12")
+                Output.WriteLine("<option value=\"12\" selected>Invalid Images</option>");
+            else
+            {
+                Output.WriteLine("<option value=\"12\">Invalid Images</option>");
+            }
+           if(volumeErrorPresent && volumeErrorCode=="13")
+               Output.WriteLine("<option value=\"13\" selected>Incorrect Volume</option>");
+           else
+               Output.WriteLine("<option value=\"13\">Incorrect Volume</option>");
             Output.WriteLine("</select></span>");
-			Output.WriteLine("<span id=\"sbkQC_BottomRowTextSpan\">Comments: </span><textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea> ");
+			
+            Output.WriteLine("<span id=\"sbkQC_BottomRowTextSpan\">Comments: </span><textarea cols=\"50\" id=\"txtComments\" name=\"txtComments\"></textarea> ");
             Output.WriteLine("<button type=\"button\" class=\"sbkQc_MainButtons\" onclick=\"save_submit_form();\">Complete</button>");
             Output.WriteLine("<button type=\"button\" class=\"sbkQc_MainButtons\" onclick=\"behaviors_cancel_form();\">Cancel</button>");
 			//Close inner table

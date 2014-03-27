@@ -641,11 +641,44 @@ function hideErrorIcon(SpanID)
 	    qcErrorIconSpan.className = "errorIconSpan";
 }
 
+//Applies the cursor control to the main thumbnail icon on the page
+
+function apply_Main_Thumbnail_Cursor_Control() {
+  
+     if (cursorMode == 2) {
+            ResetCursorToDefault();
+            $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
+        } else {
+            //Remove the default cursor style class, and any other custom class first before setting this one, 
+            //otherwise the previously set class will override the new custom cursor class
+            ResetCursorToDefault();
+            $('#qc_mainmenu_thumb').addClass('sbkQc_MainMenuIconCurrent');
+
+            // Step through each span
+            for (var j = 0; j < spanArray.length; j++) {
+                // Get the span
+                var span = $('#' + spanArray[j]);
+
+                span.removeClass('qcResetMouseCursorToDefault');
+                span.addClass('qcPickMainThumbnailCursor');
+            }
+
+            // Set flag to thumbnail cursor mode
+            cursorMode = 2;
+
+            //Disable sorting(drag & drop)
+            $("#allThumbnailsOuterDiv").sortable("disable");
+
+        }
+        event.stopImmediatePropagation();
+        return false;
+  
+}
+
 //Change the cursor to the custom cursor for Selecting a Main Thumbnail
 //On clicking on the "Pick Main Thumbnail" icon in the menu bar
-function mainthumbnailicon_click()
-{
-	//If this cursor is already set, change back to default
+function mainthumbnailicon_click() {
+    //If this cursor is already set, change back to default
 	if(cursorMode == 2) {
 	    ResetCursorToDefault();
 	    $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
@@ -1586,14 +1619,19 @@ function qcspan_onclick(event, spanid) {
 
         // Ensure no other spans are set
         for (var i = 0; i < spanArray.length; i++) {
-            if (document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).style.visibility == 'visible') {
-                document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).style.visibility = 'hidden';
+            //if (document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).style.visibility == 'visible') {
+            //    document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).style.visibility = 'hidden';
+  
+            if (document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).className == 'QC_MainThumbnail_Visible') {
+                document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).className = 'QC_MainThumbnail_Hidden';
+
                 break;
             }
         }
 
         // Set the new thumbnail in the user interface
-        document.getElementById('pick_main_thumbnail' + pageIndex).style.visibility = 'visible';
+        // document.getElementById('pick_main_thumbnail' + pageIndex).style.visibility = 'visible';
+        document.getElementById('pick_main_thumbnail' + pageIndex).className = 'QC_MainThumbnail_Visible';
     }
     
     // Cursor set to bulk delete or move
@@ -1675,5 +1713,14 @@ function Set_Error_Page(filename_sans_extension) {
 function save_qcErrors() {
     document.getElementById('QC_behaviors_request').value = 'save_error';
     document.getElementById('QC_error_number').value = $("input[name='rbFile_errors']:checked").val();
+    document.itemNavForm.submit();
+}
+
+
+function ddlCriticalVolumeError_change(new_value_selected) {
+    document.getElementById('QC_behaviors_request').value = 'save_error';
+    document.getElementById('QC_error_number').value = new_value_selected;
+    document.getElementById('QC_affected_file').value = '-1';
+    //alert(new_value_selected);
     document.itemNavForm.submit();
 }
