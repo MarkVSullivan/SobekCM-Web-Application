@@ -2217,7 +2217,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 //Add the style class is this page has an error
                 string error_Class_Name = "QC_No_Page_Error";
 			    if (errorPresentThisPage)
-			        error_Class_Name = "QC_Page_Error";
+                    error_Class_Name = "QC_Page_Error_Small";
 
 
 					// Write the image, based on current thumbnail size
@@ -2225,13 +2225,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					{
 						case 2:
 					        {
+					            if (errorPresentThisPage)
+					                error_Class_Name = "QC_Page_Error_Medium";
 					            Output.Write("        <img id=\"child" + image_url + "\"  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Medium\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" style=\" z-index:1;\"/>");
                                 if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-90%; margin-right:10%; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible; z-index:2;\" />");
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Medium\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible; z-index:2;\" />");
                                 else
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-90%; margin-right:10%; height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;z-index:2;\" />");
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Medium\"  style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;z-index:2;\" />");
                                 if(errorPresentThisPage)
-                                    Output.WriteLine("<div style=\"float:right; color:tomato;position:relative; z-index:3; margin-top:-60%; margin-right:10%\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</div>");
+                                    //Output.WriteLine("<div style=\"float:right; color:tomato;position:relative; z-index:3; margin-top:-60%; margin-right:10%\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</div>");
+                                    if (errorPresentThisPage)
+                                        Output.WriteLine("<span style=\"\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</span>");
 
 					        }
 
@@ -2241,21 +2245,31 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					        {
 					            Output.WriteLine("        <img id=\"child" + image_url + "\" src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Large\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
                                 if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-90%; margin-right:10%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Large\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
                                 else
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-90%; margin-right:10%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
-					            
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Large\"  style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
+                               if (errorPresentThisPage)
+                               {
+                                   error_Class_Name = "QC_Page_Error_Large";
+                                   Output.WriteLine("<span style=\"\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</span>");
+                               }
+
 					        }
 							break;
 
 						case 4:
 					        {
+                                
 					            Output.WriteLine("        <img id=\"child" + image_url + "\" src=\"" + image_url + "\"  alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Full\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\"  />");
                                 if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-90%; margin-right:10%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Full\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
                                 else
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-90%; margin-right:10%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
-					            
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Full\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
+                                if (errorPresentThisPage)
+                                {
+                                    error_Class_Name = "QC_Page_Error_Full";
+                                    Output.WriteLine("<span style=\"\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</span>");
+                                }
 					        }
 							break;
 
@@ -2263,12 +2277,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					        {
 					            Output.WriteLine("        <img  src=\"" + image_url + "\" alt=\"MISSING THUMBNAIL\" class=\"sbkQc_Thumbnail_Small\" onclick=\"thumbnail_click(this.id,'" + url + "');return false;\" />");
                                 if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-95%; margin-right:15%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Small\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:visible;\" />");
                                 else
-                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" style=\"float:right; position:relative; z-index:2; margin-top:-95%; margin-right:15%;height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
+                                    Output.WriteLine("        <img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Small\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;visibility:hidden;\" />");
 
                                 if (errorPresentThisPage)
-                                    Output.WriteLine("<div style=\"float:right; color:tomato;position:relative; z-index:3; margin-top:-60%; margin-right:15%\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</div>");
+                                    Output.WriteLine("<span style=\"\" class=\"" + error_Class_Name + "\">" + thisError.ErrorName + "</span>");
 					        }
 							break;
 					}
