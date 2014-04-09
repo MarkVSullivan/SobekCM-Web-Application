@@ -223,6 +223,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     break;
 
                 case "STILLIMAGE":
+				case "IMAGE":
                     modsType = TypeOfResource_MODS_Enum.Still_Image;
                     break;
 
