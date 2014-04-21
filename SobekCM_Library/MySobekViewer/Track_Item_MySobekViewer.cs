@@ -134,6 +134,7 @@ namespace SobekCM.Library.MySobekViewer
             else
             {
                 equipment = scanners_list[0];
+                User.Add_Setting("Track_Item_MySobekViewer:Equipment",equipment);
               //  HttpContext.Current.Session["Equipment"] = equipment;
             }
 
@@ -284,6 +285,10 @@ namespace SobekCM.Library.MySobekViewer
                     int WorkflowId = Convert.ToInt32(HttpContext.Current.Request.Form["Track_Item_hidden_value"]);
                     current_workflow_id = WorkflowId;
                     Database.SobekCM_Database.Tracking_Delete_Workflow(WorkflowId);
+                    if (page == 1 && current_workflows.ContainsKey(current_workflow_id.ToString()))
+                        current_workflows.Remove(current_workflow_id.ToString());
+                    else if (page == 2 && current_workflows_no_durations.ContainsKey(current_workflow_id.ToString()))
+                        current_workflows_no_durations.Remove(current_workflow_id.ToString());
                     break;
 
                 default:
@@ -347,11 +352,13 @@ namespace SobekCM.Library.MySobekViewer
             }
             if (page == 1)
             {
+            //    DateTime.TryParse(HttpContext.Current.Request.Form["txtStartDate" + thisWorkflowId_string], out new_date);
                 new_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate" + thisWorkflowId_string]);
                 selected_ddl_workflow = Convert.ToInt32(HttpContext.Current.Request.Form["ddlEvent" + thisWorkflowId_string]);
             }
             else
             {
+         //       DateTime.TryParse(HttpContext.Current.Request.Form["txtStartDate2"], out new_date);
                 new_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate2"]);
                 selected_ddl_workflow = Convert.ToInt32(HttpContext.Current.Request.Form["ddlEvent2"]);
             }
@@ -408,7 +415,12 @@ namespace SobekCM.Library.MySobekViewer
 
             this_workflow.BibID = BibID;
             this_workflow.VID = VID;
-            this_workflow.Equipment = equipment;
+            if(selected_ddl_workflow==1)
+                this_workflow.Equipment = equipment;
+            else
+            {
+                this_workflow.Equipment = "";
+            }
             this_workflow.Date = new_date.ToString("yyyy-MM-dd");
             this_workflow.Saved = true;
             this_workflow.Title = title;
@@ -514,7 +526,8 @@ namespace SobekCM.Library.MySobekViewer
                             current_workflows.Remove(opened_key);
                     }
 
-
+                    if (current_workflows.ContainsKey(key))
+                        current_workflows.Remove(key);
                     //Add this to the dictionary
                     current_workflows.Add(key, this_workflow);
                 }
@@ -1171,8 +1184,12 @@ namespace SobekCM.Library.MySobekViewer
                                 continue;
                         }
 
-                        string this_date_started = (row["DateStarted"] == null) ? "" : Convert.ToDateTime(row["DateStarted"]).ToString("MM/dd/yyyy");
-
+                        string this_date_started = String.Empty;
+                        if (row["DateStarted"] != null)
+                        {
+                            object  thisRowDateStarted = (object) (row["DateStarted"]);
+                            this_date_started = (thisRowDateStarted==DBNull.Value) ? String.Empty : Convert.ToDateTime(row["DateStarted"]).ToString("MM/dd/yyyy");
+                        }
                         builder.AppendLine("<span id=\"TI_NewEntry_duplicate_Span" + row["ProgressID"] + "\"  class=\"sbkTi_TrackingEntrySpanMouseOut\"  onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
                         builder.AppendLine("<table class=\"sbkTi_table\" >");
 
@@ -1207,14 +1224,19 @@ namespace SobekCM.Library.MySobekViewer
                         builder.AppendLine("         </td>");
                         builder.AppendLine("         <td>Date:</td>");
 
-                        builder.AppendLine("         <td><input type=\"text\" name=\"txtStartDate" + thisWorkflowID + "\" id=\"txtStartDate" + thisWorkflowID + "\" value=\"" + Convert.ToDateTime(row["DateStarted"]).ToString("MM/dd/yyyy") + "\" /> </td>");
+                        DateTime startDateToDisplay;
+                        string startDateDisplayString = String.Empty;
+                        //DateTime.TryParse(this_date_started, out startDateToDisplay);
+                        if(!String.IsNullOrEmpty(row["DateStarted"].ToString()))
+                            startDateDisplayString = Convert.ToDateTime(row["DateStarted"].ToString()).ToString();
+                        builder.AppendLine("         <td><input type=\"text\" name=\"txtStartDate" + thisWorkflowID + "\" id=\"txtStartDate" + thisWorkflowID + "\" value=\"" + (this_date_started == String.Empty ? String.Empty : Convert.ToDateTime(startDateDisplayString).ToString("MM/dd/yyyy")) + "\" /> </td>");
                         builder.AppendLine("<script type=\"text/javascript\">setDatePicker(\"txtStartDate" + thisWorkflowID + "\");</script>");
                         builder.AppendLine("</tr>");
 
                         //Add the Start and End Times
                         builder.AppendLine("<tr>");
                         builder.AppendLine("<td>Start Time:</td>");
-                        builder.AppendLine("<td><input type=\"text\" name=\"txtStartTime" + thisWorkflowID + "\" id=\"txtStartTime" + thisWorkflowID + "\" value = \"" + Convert.ToDateTime(row["DateStarted"]).ToString("hh:mmtt") + "\"/></td>");
+                        builder.AppendLine("<td><input type=\"text\" name=\"txtStartTime" + thisWorkflowID + "\" id=\"txtStartTime" + thisWorkflowID + "\" value = \"" + (this_date_started == String.Empty ? String.Empty : Convert.ToDateTime(startDateDisplayString).ToString("hh:mmtt")) + "\"/></td>");
                         builder.AppendLine("<script type=\"text/javascript\">setTimePicker(\"txtStartTime" + thisWorkflowID + "\");</script>");
 
                         builder.AppendLine("<td>End Time:</td>");

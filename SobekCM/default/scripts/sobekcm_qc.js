@@ -250,10 +250,11 @@ function DivisionTypeChanged(SelectID)
 	else if(currVal.indexOf('!')==-1)
 	{
 	    //else if the division type selected is not a nameable div
-	    //Hide the name textbox for this page
+	    //Clear and Hide the name textbox for this page
+	    document.getElementById('divNameTableRow' + index).value = '';
 	    document.getElementById('divNameTableRow' + index).style.visibility = 'hidden';
 	
-	    //Hide the name textboxes of all the other pages of this division type
+	    //Clear and Hide the name textboxes of all the other pages of this division type
 	    while ((i < spanArray.length) && (document.getElementById(spanArray[i].replace('span', 'selectDivType')).disabled == true))
 	    {
 	        document.getElementById(spanArray[i].replace('span', 'selectDivType')).value = currVal;
@@ -640,11 +641,44 @@ function hideErrorIcon(SpanID)
 	    qcErrorIconSpan.className = "errorIconSpan";
 }
 
+//Applies the cursor control to the main thumbnail icon on the page
+
+function apply_Main_Thumbnail_Cursor_Control() {
+  
+     if (cursorMode == 2) {
+            ResetCursorToDefault();
+            $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
+        } else {
+            //Remove the default cursor style class, and any other custom class first before setting this one, 
+            //otherwise the previously set class will override the new custom cursor class
+            ResetCursorToDefault();
+            $('#qc_mainmenu_thumb').addClass('sbkQc_MainMenuIconCurrent');
+
+            // Step through each span
+            for (var j = 0; j < spanArray.length; j++) {
+                // Get the span
+                var span = $('#' + spanArray[j]);
+
+                span.removeClass('qcResetMouseCursorToDefault');
+                span.addClass('qcPickMainThumbnailCursor');
+            }
+
+            // Set flag to thumbnail cursor mode
+            cursorMode = 2;
+
+            //Disable sorting(drag & drop)
+            $("#allThumbnailsOuterDiv").sortable("disable");
+
+        }
+        event.stopImmediatePropagation();
+        return false;
+  
+}
+
 //Change the cursor to the custom cursor for Selecting a Main Thumbnail
 //On clicking on the "Pick Main Thumbnail" icon in the menu bar
-function mainthumbnailicon_click()
-{
-	//If this cursor is already set, change back to default
+function mainthumbnailicon_click() {
+    //If this cursor is already set, change back to default
 	if(cursorMode == 2) {
 	    ResetCursorToDefault();
 	    $('#qc_mainmenu_default').addClass('sbkQc_MainMenuIconCurrent');
@@ -818,7 +852,7 @@ function bulkdeleteicon_click()
 }
 
 
-//Make the thumbnails sortable
+//Apply JQuery sortable to the container div
 function MakeSortable1()
 {
     var startPosition;
@@ -831,7 +865,7 @@ function MakeSortable1()
         },
         stop: function(event, ui) {
            
-// Pull a new spanArray
+                // Pull a new spanArray
                 var newSpanArray = new Array();
                 //get the list of all the thumbnail spans on the page
                 spanArrayObjects = $("#allThumbnailsOuterDiv").children();
@@ -853,7 +887,7 @@ function MakeSortable1()
             var makeSortable_input = true;
 			if(makeSortable==2 && (startPosition!=newPosition))
 			{
- //    			alert('startPosition:'+startPosition+' newPosition:'+newPosition);
+               // alert('startPosition:'+startPosition+' newPosition:'+newPosition);
 				makeSortable_input = confirm("Are you sure you want to move this page?");
 			}
 
@@ -1585,14 +1619,19 @@ function qcspan_onclick(event, spanid) {
 
         // Ensure no other spans are set
         for (var i = 0; i < spanArray.length; i++) {
-            if (document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).style.visibility == 'visible') {
-                document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).style.visibility = 'hidden';
+            //if (document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).style.visibility == 'visible') {
+            //    document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).style.visibility = 'hidden';
+  
+            if (document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).className == 'QC_MainThumbnail_Visible') {
+                document.getElementById(spanArray[i].replace('span', 'pick_main_thumbnail')).className = 'QC_MainThumbnail_Hidden';
+
                 break;
             }
         }
 
         // Set the new thumbnail in the user interface
-        document.getElementById('pick_main_thumbnail' + pageIndex).style.visibility = 'visible';
+        // document.getElementById('pick_main_thumbnail' + pageIndex).style.visibility = 'visible';
+        document.getElementById('pick_main_thumbnail' + pageIndex).className = 'QC_MainThumbnail_Visible';
     }
     
     // Cursor set to bulk delete or move
@@ -1661,4 +1700,27 @@ function filename_truncate(filename) {
 
     //alert(filenameToDisplay);
     return filenameToDisplay;
+}
+
+/***** Functions related to marking QC Errors*******/
+//Called when the user clicks on the 'X' icon for any page
+function Set_Error_Page(filename_sans_extension) {
+    var error_hidden_value = document.getElementById('QC_affected_file');
+    error_hidden_value.value = filename_sans_extension;
+}
+
+//Called when user clicks on the 'Save' button on the error popup form 
+function save_qcErrors() {
+    document.getElementById('QC_behaviors_request').value = 'save_error';
+    document.getElementById('QC_error_number').value = $("input[name='rbFile_errors']:checked").val();
+    document.itemNavForm.submit();
+}
+
+
+function ddlCriticalVolumeError_change(new_value_selected) {
+    document.getElementById('QC_behaviors_request').value = 'save_error';
+    document.getElementById('QC_error_number').value = new_value_selected;
+    document.getElementById('QC_affected_file').value = '-1';
+    //alert(new_value_selected);
+    document.itemNavForm.submit();
 }

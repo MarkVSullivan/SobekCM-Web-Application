@@ -244,6 +244,7 @@ function isValidTime(timeString) {
 
 //Check for a vlid Date, start time, end time combination
 function isValidDateTime(start_Date, startTime, endTime) {
+//    alert('in function isValidDateTime .' + start_Date+startTime+ endTime);
     var dateBeforeToday = true;
 
     //Convert the start and end times to the 24-hour format for easy comparison
@@ -251,15 +252,24 @@ function isValidDateTime(start_Date, startTime, endTime) {
     var matchArray1 = startTime.match(timePat);
     var matchArray2 = endTime.match(timePat);
 
-
-    var startTime24_hours = matchArray1[3].toString.toLowerCase == "am" ? matchArray1[1] : matchArray1[1] + 12;
+    var ampm = matchArray1[3].toString().toLowerCase().trim();
+    var startTime24_hours = ( ampm == 'am') ? (matchArray1[1]) : (parseInt(matchArray1[1]) + 12);
     var startTime24_min = matchArray1[2];
     var startTime24 = startTime24_hours + ":" + startTime24_min;
 
+
     if (matchArray2 != null) {
-        var endTime24_hours = matchArray2[3].toString.toLowerCase == "am" ? matchArray2[1] : matchArray2[1] + 12;
+        var ampm = matchArray2[3].toString().toLowerCase().trim();
+        var endTime24_hours = '';
+        if (ampm == 'am' && parseInt(matchArray2[1]) == 12)
+            endTime24_hours = '00';
+        else if (ampm == 'pm' && parseInt(matchArray2[1]) < 12)
+            endTime24 = parseInt(matchArray2[1]) + 12;
+        else
+           endTime24_hours =  matchArray2[1];
         var endTime24_min = matchArray2[2];
         var endTime24 = endTime24_hours + ":" + endTime24_min;
+
     }
 
     var datePat = /^(\d{1,2})(\/|-)(\d{1,2})\2(\d{4})$/;
@@ -292,12 +302,13 @@ function isValidDateTime(start_Date, startTime, endTime) {
 
     //End time should be after start time
     if (endTime24 != null) {
+  //      alert('endTime24<startTime24'+(endTime24<startTime24));
         if (endTime24 < startTime24) {
             alert('End time cannot be before Start time!');
             return false;
         }
     }
- //   alert('dateBeforeToday:' + dateBeforeToday + ',  currentTime24:'+currentTime24 + ' startTime24:' + startTime24);
+   //alert('dateBeforeToday:' + dateBeforeToday + ',  currentTime24:'+currentTime24 + ' startTime24:' + startTime24);
     if (!(dateBeforeToday) && (startTime24 > currentTime24 || (endTime24 != null && endTime24 > currentTime24))) {
         alert('Start/End time cannot be in the future!');
         return false;
@@ -306,19 +317,20 @@ function isValidDateTime(start_Date, startTime, endTime) {
     return true;
 }
 
-
+//Called when user hits 'save' for a single entry 
 function save_workflow(workflow_ID, itemID) {
 
     //First do some validations
     if (page == 1) {
         var start_Date = document.getElementById('txtStartDate' + workflow_ID).value;
-
+    //    alert(start_Date);
         if (start_Date == null || !isValidDate(start_Date)) {
             alert('You must enter a valid date!');
             return false;
         }
         //Check for a valid start time
         var startTime = document.getElementById('txtStartTime' + workflow_ID).value;
+ //       alert(startTime);
         if (startTime == null || !isValidTime(startTime)) {
             alert('You must enter a valid start time!');
             return false;
@@ -326,20 +338,23 @@ function save_workflow(workflow_ID, itemID) {
         
         //Check for a valid end time
         var endTime = document.getElementById('txtEndTime' + workflow_ID).value;
-  //      alert(endTime);
+//        alert(endTime);
         if ((endTime != null && endTime.length > 0) && !isValidTime(endTime)) {
             alert('Invalid End Time entered!');
             return false;
         }
-        
+
+//        alert(isValidDateTime(start_Date, startTime, endTime));
         //Check for a valid date/time combination
         if (!isValidDateTime(start_Date, startTime, endTime))
             return false;
         
     }
     else if (page == 2) {
-        var startDate = document.getElementById('txtStartDate2' + workflow_ID).value;
-   //        alert(startDate.value);
+        
+  //      alert(document.getElementById('txtStartDate2'));
+        var startDate = document.getElementById('txtStartDate2').value;
+  //        alert(startDate);
         if (startDate == null || !isValidDate(startDate)) {
             alert('You must enter a valid date!');
             return false;
@@ -351,7 +366,8 @@ function save_workflow(workflow_ID, itemID) {
         document.getElementById('Track_Item_behaviors_request').value = 'save';
         document.getElementById('Track_Item_hidden_value').value = workflow_ID;
         document.getElementById('hidden_itemID').value = itemID;
-
+ //      alert(document.getElementById('Track_Item_behaviors_request').value);
+ //      alert(document.getElementById('Track_Item_hidden_value').value);
         document.itemNavForm.submit();
         
  

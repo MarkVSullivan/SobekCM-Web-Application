@@ -1651,6 +1651,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
                     case "PHOTOGRAPH":
                     case "STILL IMAGE":
+					case "IMAGE":
                         SobekCM_Type = TypeOfResource_SobekCM_Enum.Photograph;
                         return;
 

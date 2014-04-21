@@ -3794,7 +3794,122 @@ namespace SobekCM.Resource_Object.Database
 				return null;
 
 			}
-		}
- 
-	}
+        }
+
+        #region Quality Control related methods
+       /// <summary> Get the list of all the QC Page errors for a single item </summary>
+       /// <param name="itemID">ItemID</param>
+       /// <returns></returns>
+        public static DataTable Get_QC_Errors_For_Item(int itemID)
+        {
+            try
+            {
+                SqlConnection connection = new SqlConnection(connectionString);
+                
+                //Create the command
+                SqlCommand command = new SqlCommand("SobekCM_QC_Get_Errors", connection) { CommandType = CommandType.StoredProcedure };
+                command.Parameters.AddWithValue("@itemID", itemID);
+
+                //Open the connection
+                connection.Open();
+
+                // Create the adapter
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                DataTable returnTable = new DataTable();
+
+                adapter.Fill(returnTable);
+
+                //Close the connection
+                connection.Close();
+
+                return returnTable;
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error getting the QC errors for this item."+ee.Message);
+            }
+            
+        }
+
+        /// <summary> Save QC error for a single page of a single item </summary>
+        /// <param name="itemID">ItemID</param>
+        /// <param name="filename">Root filename of this page</param>
+        /// <param name="errorCode">Error Code for this error</param>
+        /// <param name="description">Error Description</param>
+        /// <param name="isVolumeError">Indicates if this error is a Volume error or not</param>
+        /// <returns></returns>
+        public static int Save_QC_Error(int itemID, string filename, string errorCode, string description, bool isVolumeError)
+        {
+            int errorID;
+
+            try
+            {
+                //Create the connection
+                SqlConnection connect = new SqlConnection(connectionString);
+
+                //Create the command
+                SqlCommand command = new SqlCommand("SobekCM_QC_Save_Error", connect) {CommandType = CommandType.StoredProcedure};
+
+                //Open the connection
+                connect.Open();
+
+                //Add the parameters to this command
+                command.Parameters.AddWithValue("@itemID", itemID);
+                command.Parameters.AddWithValue("@filename", filename);
+                command.Parameters.AddWithValue("@errorCode", errorCode);
+                command.Parameters.AddWithValue("@description", description);
+                command.Parameters.AddWithValue("@isVolumeError", isVolumeError);
+
+                //Add the output parameter
+                SqlParameter output_errorID = command.Parameters.AddWithValue("@errorID", SqlDbType.BigInt);
+                output_errorID.Direction = ParameterDirection.Output;
+
+                command.ExecuteNonQuery();
+                Int32.TryParse(output_errorID.Value.ToString(), out errorID);
+
+                connect.Close();
+
+                return errorID;
+
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error saving QC page error to the database"+ee.Message);
+            }
+        }
+
+        /// <summary> Delete the QC error for a single page of an item from the database </summary>
+        /// <param name="itemID"></param>
+        /// <param name="filename"></param>
+        public static void Delete_QC_Error(int itemID, string filename)
+        {
+            try
+            {
+                //Create the connection
+                SqlConnection connect = new SqlConnection(connectionString);
+
+                //Create the command
+                SqlCommand command = new SqlCommand("SobekCM_QC_Delete_Error", connect) {CommandType = CommandType.StoredProcedure};
+
+                //Open the connection
+                connect.Open();
+
+                //Add the parameters to this command
+                command.Parameters.AddWithValue("@itemID", itemID);
+                command.Parameters.AddWithValue("@filename", filename);
+
+                command.ExecuteNonQuery();
+
+                connect.Close();
+            }
+
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error deleting QC error from the database." +ee.Message);
+            }
+        }
+        #endregion
+
+    }
 }

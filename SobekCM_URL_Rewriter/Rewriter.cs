@@ -50,6 +50,8 @@ namespace SobekCM.URL_Rewriter
 			{
 				return;
 			}
+
+			string raw_url = HttpContext.Current.Request.RawUrl;
 			
 			// If a USFLDC PURL, call redirection service method
 			if (appRelative.Equals("~/") && HttpContext.Current.Request.RawUrl.StartsWith("/?") && (HttpContext.Current.Request.Url.ToString().Contains("usf.edu") || HttpContext.Current.Request.Url.ToString().Contains("localhost:") || HttpContext.Current.Request.Url.ToString().Contains("usf.sobek.ufl.edu")))
@@ -283,6 +285,19 @@ namespace SobekCM.URL_Rewriter
 			else if (purl_handle.Contains(".") && !purl_handle.Contains("browse") && !purl_handle.Contains("search"))
 			{
 				// item purl
+				if (purl_handle.Contains("-ead"))
+				{
+					// It is an EAD item purl
+
+					int pos1 = purl_handle.IndexOf("-");
+					int len = pos1 - 4;
+					String doi = "U29-" + int.Parse(purl_handle.Substring(4, len)).ToString("D5") + "-" + purl_handle.Substring(pos1 + 1, 3);
+					String url = "http://www.lib.usf.edu/aeon/eads/index.html?eadrequest=true&ead_id=" + doi;
+					HttpContext.Current.Response.StatusCode = 307;
+					HttpContext.Current.Response.Redirect(url, true);
+					return;
+				}
+
 	   
 				if (purl_handle.Contains("-ead"))
 				{
