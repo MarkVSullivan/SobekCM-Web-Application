@@ -23,6 +23,7 @@ using SobekCM.Library.SiteMap;
 using SobekCM.Library.Skins;
 using SobekCM.Library.Users;
 using SobekCM.Library.WebContent;
+using SobekCM.Tools;
 
 #endregion
 
@@ -108,7 +109,7 @@ namespace SobekCM.Library.MainWriters
             HTML_Based_Content Static_Web_Content,
             Custom_Tracer Tracer )
             : base(Current_Mode, Hierarchy_Object, Results_Statistics, Paged_Results, Browse_Object,  Current_Item, Current_Page, Static_Web_Content)
-        {
+	    {
             // Save parameters
             htmlSkin = HTML_Skin;
             translator = Translator;

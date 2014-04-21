@@ -127,18 +127,18 @@ namespace SobekCM.Library.MySobekViewer
                 }
                 else
                 {
-					//if (currentMode.BibID.ToUpper() == "UF00028423")
-					//{
-					//	for (int deleteVID = 1338; deleteVID <= 1404; deleteVID++)
-					//	{
-					//		currentMode.VID = deleteVID.ToString().PadLeft(5, '0');
-					//		Delete_Item(User, All_Items_Lookup, Tracer);
-					//	}
-					//}
-					//else
-					//{
+					if (currentMode.BibID.ToUpper() == "TEMP000001")
+					{
+						for (int deleteVID = 2124; deleteVID <= 2134; deleteVID++)
+						{
+							currentMode.VID = deleteVID.ToString().PadLeft(5, '0');
+							Delete_Item(User, All_Items_Lookup, Tracer);
+						}
+					}
+					else
+					{
 						Delete_Item(User, All_Items_Lookup, Tracer);
-					//}
+					}
 
                 }
             }

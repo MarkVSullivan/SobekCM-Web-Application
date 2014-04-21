@@ -73,8 +73,8 @@ namespace SobekCM.Library.AdminViewer
             settings = SobekCM_Database.Get_Settings(Tracer);
 
 			// Add some keys, which are stored in this portion of the database, 
-			// but are not really setting values
-			standardSettingKeys = new List<string> {"Builder Last Message", "Builder Last Run Finished", "Builder Version", "Builder Operation Flag"};
+			// but are not really setting values so shouldn't show here (or are hidden)
+			standardSettingKeys = new List<string> { "Builder Last Message", "Builder Last Run Finished", "Builder Version", "Builder Operation Flag", "Spreadsheet Library License" };
 
 	        // Get the default URL and default system location
             string default_url = Current_Mode.Base_URL;
