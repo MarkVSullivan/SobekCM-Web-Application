@@ -469,12 +469,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 case "12":
                     thisError.ErrorName = "Invalid Images";
                     volumeErrorPresent = true;
+                    thisError.isVolumeError = true;
                     volumeErrorCode = "12";
                     break;
 
                 case "13":
                     thisError.ErrorName = "Incorrect Volume";
                     volumeErrorPresent = true;
+                    thisError.isVolumeError = true;
                     volumeErrorCode = "13";
                     break;
 
@@ -575,11 +577,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                        //Volume error cases
                         case "12":
                             volumeErrorPresent = true;
+                            thisError.isVolumeError = true;
                             volumeErrorCode = "12";
                             break;
 
                         case "13":
                             volumeErrorPresent = true;
+                            thisError.isVolumeError = true;
                             volumeErrorCode = "13";
                             break;
 
@@ -2242,8 +2246,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','Before'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05LT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) before this page\"/></a>");
                     //Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','After'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05RT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
                     //Output.WriteLine("        </span>");
+			    //Default "0": No error
+                string error_code_to_set_form = "0";
+			    if (errorPresentThisPage)
+			        error_code_to_set_form = thisError.ErrorCode;
 
-                    Output.WriteLine("<span id=\"error"+page_index+"\" class=\"errorIconSpan\"><a href=\"\" onclick=\"return popup('form_qcError');\"><img title=\"" + error_text + "\" height=\""+error_icon_height+"\" width=\""+error_icon_width+"\" src=\"" + CurrentMode.Base_URL + "default/images/qc/Cancel.ico" + "\" onclick=\"Set_Error_Page('"+filename_sans_extension+"');\"/></a></span>");
+                Output.WriteLine("<span id=\"error" + page_index + "\" class=\"errorIconSpan\"><a href=\"\" onclick=\"return popup('form_qcError');\"><img title=\"" + error_text + "\" height=\"" + error_icon_height + "\" width=\"" + error_icon_width + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/Cancel.ico" + "\" onclick=\"Set_Error_Page('" + filename_sans_extension + "','" + error_code_to_set_form + "');\"/></a></span>");
 
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
@@ -2544,7 +2552,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
           
             //Start the last div for the "No file error" option and the buttons
             Output.WriteLine("<div class=\"qcErrorForm_LeftDiv\">");
-            Output.WriteLine("<input type=\"radio\" name=\"rbFile_errors\" id=\"rbError11\" value=\"11\" onclick=\"\" checked/>No file error");
+            Output.WriteLine("<input type=\"radio\" name=\"rbFile_errors\" id=\"rbError11\" value=\"0\" onclick=\"\" checked/>No file error");
             Output.WriteLine("</div>");
 
             //Add the Cancel & Submit buttons

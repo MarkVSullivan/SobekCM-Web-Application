@@ -1704,9 +1704,10 @@ function filename_truncate(filename) {
 
 /***** Functions related to marking QC Errors*******/
 //Called when the user clicks on the 'X' icon for any page
-function Set_Error_Page(filename_sans_extension) {
+function Set_Error_Page(filename_sans_extension, currently_set_error_code) {
     var error_hidden_value = document.getElementById('QC_affected_file');
     error_hidden_value.value = filename_sans_extension;
+    $('input[name="rbFile_errors"]').val([currently_set_error_code]);
 }
 
 //Called when user clicks on the 'Save' button on the error popup form 
