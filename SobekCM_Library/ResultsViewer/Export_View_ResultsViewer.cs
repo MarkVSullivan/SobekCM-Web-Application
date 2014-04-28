@@ -9,6 +9,7 @@ using GemBox.Spreadsheet;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Results;
 using SobekCM.Library.Users;
+using SobekCM.Tools;
 
 #endregion
 
@@ -40,10 +41,10 @@ namespace SobekCM.Library.ResultsViewer
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
-        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
+        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-        public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public override void Add_HTML(PlaceHolder placeHolder, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -91,7 +92,7 @@ namespace SobekCM.Library.ResultsViewer
 
                 // Add this to the page
                 Literal mainLiteral = new Literal {Text = resultsBldr.ToString()};
-                MainPlaceHolder.Controls.Add(mainLiteral);
+                placeHolder.Controls.Add(mainLiteral);
 
             }
             else
@@ -99,7 +100,26 @@ namespace SobekCM.Library.ResultsViewer
                 string filename = CurrentMode.SobekCM_Instance_Name;
 
                 // Set the Gembox spreadsheet license key
-                SpreadsheetInfo.SetLicense("EDWF-ZKV9-D793-1D2A");
+	           
+	            string from_db = String.Empty;
+	            string key = String.Empty;
+				if (Settings.SobekCM_Library_Settings.Additional_Settings.ContainsKey("Spreadsheet Library License"))
+				{
+					try
+					{
+						key = Settings.SobekCM_Library_Settings.Additional_Settings["Spreadsheet Library License"];
+
+						SecurityInfo thisDecryptor = new SecurityInfo();
+						string encryptedPassword = thisDecryptor.DecryptString(from_db, "*h3kj(83", "unsalted");
+					}
+					catch (Exception )
+					{
+
+					}
+				}
+
+				
+                SpreadsheetInfo.SetLicense(key);
 
                 // Create the excel file and worksheet
                 ExcelFile excelFile = new ExcelFile();
@@ -207,7 +227,7 @@ namespace SobekCM.Library.ResultsViewer
                         excelSheet.Cells[row, columnSelector + 1].Value = CurrentMode.Base_URL + titleResult.BibID + "/" + itemResult.VID;
                         excelSheet.Cells[row, columnSelector + 2].Value = titleResult.GroupTitle.Replace("<i>","").Replace("</i>","").Replace("&amp;","&");
                         excelSheet.Cells[row, columnSelector + 3].Value = itemResult.Title.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
-                        excelSheet.Cells[row, columnSelector + 4].Value = itemResult.PubDate.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
+						//excelSheet.Cells[row, columnSelector + 4].Value = itemResult.PubDate.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
 						//excelSheet.Cells[row, columnSelector + 5].Value = titleResult.Author.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
 						//excelSheet.Cells[row, columnSelector + 6].Value = titleResult.Publisher.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
 						//excelSheet.Cells[row, columnSelector + 7].Value = titleResult.Format.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
@@ -258,6 +278,7 @@ namespace SobekCM.Library.ResultsViewer
 
 
                     case 3:
+                        HttpContext.Current.Response.Clear();
                         HttpContext.Current.Response.ContentType = "application/vnd.ms-excel";
                         HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=" + filename + ".xls");
                         excelFile.SaveXls(HttpContext.Current.Response.OutputStream);

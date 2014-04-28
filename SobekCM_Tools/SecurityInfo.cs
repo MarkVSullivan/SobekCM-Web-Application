@@ -225,6 +225,7 @@ namespace SobekCM.Tools
             return Convert.ToBase64String(bytOut, 0, bytOut.Length);
         }
 
+
         /// <summary> Encrypt a string, given the string.  </summary>
         /// <param name="Source"> String to encrypt </param>
         /// <param name="Key"> Key for the encryption </param>

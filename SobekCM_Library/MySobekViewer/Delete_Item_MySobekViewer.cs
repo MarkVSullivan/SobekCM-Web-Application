@@ -127,9 +127,9 @@ namespace SobekCM.Library.MySobekViewer
                 }
                 else
                 {
-					if (currentMode.BibID.ToUpper() == "UF00098964")
+					if (currentMode.BibID.ToUpper() == "TEMP000001")
 					{
-						for (int deleteVID = 2; deleteVID <= 2172; deleteVID++)
+						for (int deleteVID = 2124; deleteVID <= 2134; deleteVID++)
 						{
 							currentMode.VID = deleteVID.ToString().PadLeft(5, '0');
 							Delete_Item(User, All_Items_Lookup, Tracer);
