@@ -134,15 +134,15 @@ namespace SobekCM.Library.MySobekViewer
             else
             {
                 equipment = scanners_list[0];
-                User.Add_Setting("Track_Item_MySobekViewer:Equipment",equipment);
-              //  HttpContext.Current.Session["Equipment"] = equipment;
+                User.Add_Setting("Track_Item_MySobekViewer:Equipment", equipment);
+                //  HttpContext.Current.Session["Equipment"] = equipment;
             }
 
             //Check the hidden value to see if equipment was previously changed
             if (!String.IsNullOrEmpty(HttpContext.Current.Request.Form["hidden_equipment"]))
             {
                 equipment = HttpContext.Current.Request.Form["hidden_equipment"];
-             //   HttpContext.Current.Session["equipment"] = equipment;
+                //   HttpContext.Current.Session["equipment"] = equipment;
                 User.Add_Setting("Track_Item_MySobekViewer:Equipment", equipment);
             }
 
@@ -168,7 +168,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             //Get the table of all previous entries created by this user, for display in the third edit tab
-    //        previous_workflows_this_user = Database.SobekCM_Database.Tracking_Get_All_Entries_By_User(current_selected_user.UserName);
+            //        previous_workflows_this_user = Database.SobekCM_Database.Tracking_Get_All_Entries_By_User(current_selected_user.UserName);
 
             //Fetch the dictionaries of current work from the session
             current_workflows = (HttpContext.Current.Session["Tracking_Current_Workflows"]) as Dictionary<string, Tracking_Workflow>;
@@ -352,13 +352,13 @@ namespace SobekCM.Library.MySobekViewer
             }
             if (page == 1)
             {
-            //    DateTime.TryParse(HttpContext.Current.Request.Form["txtStartDate" + thisWorkflowId_string], out new_date);
+                //    DateTime.TryParse(HttpContext.Current.Request.Form["txtStartDate" + thisWorkflowId_string], out new_date);
                 new_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate" + thisWorkflowId_string]);
                 selected_ddl_workflow = Convert.ToInt32(HttpContext.Current.Request.Form["ddlEvent" + thisWorkflowId_string]);
             }
             else
             {
-         //       DateTime.TryParse(HttpContext.Current.Request.Form["txtStartDate2"], out new_date);
+                //       DateTime.TryParse(HttpContext.Current.Request.Form["txtStartDate2"], out new_date);
                 new_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate2"]);
                 selected_ddl_workflow = Convert.ToInt32(HttpContext.Current.Request.Form["ddlEvent2"]);
             }
@@ -415,7 +415,7 @@ namespace SobekCM.Library.MySobekViewer
 
             this_workflow.BibID = BibID;
             this_workflow.VID = VID;
-            if(selected_ddl_workflow==1)
+            if (selected_ddl_workflow == 1)
                 this_workflow.Equipment = equipment;
             else
             {
@@ -1187,8 +1187,8 @@ namespace SobekCM.Library.MySobekViewer
                         string this_date_started = String.Empty;
                         if (row["DateStarted"] != null)
                         {
-                            object  thisRowDateStarted = (object) (row["DateStarted"]);
-                            this_date_started = (thisRowDateStarted==DBNull.Value) ? String.Empty : Convert.ToDateTime(row["DateStarted"]).ToString("MM/dd/yyyy");
+                            object thisRowDateStarted = (object)(row["DateStarted"]);
+                            this_date_started = (thisRowDateStarted == DBNull.Value) ? String.Empty : Convert.ToDateTime(row["DateStarted"]).ToString("MM/dd/yyyy");
                         }
                         builder.AppendLine("<span id=\"TI_NewEntry_duplicate_Span" + row["ProgressID"] + "\"  class=\"sbkTi_TrackingEntrySpanMouseOut\"  onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
                         builder.AppendLine("<table class=\"sbkTi_table\" >");
@@ -1227,7 +1227,7 @@ namespace SobekCM.Library.MySobekViewer
                         DateTime startDateToDisplay;
                         string startDateDisplayString = String.Empty;
                         //DateTime.TryParse(this_date_started, out startDateToDisplay);
-                        if(!String.IsNullOrEmpty(row["DateStarted"].ToString()))
+                        if (!String.IsNullOrEmpty(row["DateStarted"].ToString()))
                             startDateDisplayString = Convert.ToDateTime(row["DateStarted"].ToString()).ToString();
                         builder.AppendLine("         <td><input type=\"text\" name=\"txtStartDate" + thisWorkflowID + "\" id=\"txtStartDate" + thisWorkflowID + "\" value=\"" + (this_date_started == String.Empty ? String.Empty : Convert.ToDateTime(startDateDisplayString).ToString("MM/dd/yyyy")) + "\" /> </td>");
                         builder.AppendLine("<script type=\"text/javascript\">setDatePicker(\"txtStartDate" + thisWorkflowID + "\");</script>");
@@ -1303,12 +1303,12 @@ namespace SobekCM.Library.MySobekViewer
 
 
             #endregion
-            
+
             #region Second tab - Tracking without duration
 
 
             builder.AppendLine("            <div class=\"tabpage\" id=\"tabpage_2\">");
-           
+
             //Start the item information table
             //Display errors if any
             if (error_message.Length > 0 && page == 2)
@@ -1335,7 +1335,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 //Add the option for manual entry
                 builder.AppendLine("<td colspan=\"100%\"><input type=\"radio\" name=\"rbEntryType2\" id=\"rb_manual\" value=1 checked onclick=\"rbEntryType2Changed(this.value);\">Manual Entry</td></tr>");
-               
+
                 if (page == 2)
                 {
                     builder.AppendLine("<tr id=\"tblrow2_Manual1\" " + manual_row_style + "><td></td><td>BibID:</td><td><input type=\"text\" id=\"txtBibID2\"  value=\"" + bibid + "\" /></td>");
@@ -1539,7 +1539,7 @@ namespace SobekCM.Library.MySobekViewer
             //{  
             //    //Start the table for displaying the workflow entries
             //    builder.AppendLine("<table id=\"sbkTracking_Workflows_Table\">");
-                
+
             //    //Add the table headers
             //    builder.AppendLine("<tr><th>Workflow name</th>");
             //    builder.AppendLine("<th>Date</th>");
