@@ -253,7 +253,14 @@ function isValidDateTime(start_Date, startTime, endTime) {
     var matchArray2 = endTime.match(timePat);
 
     var ampm = matchArray1[3].toString().toLowerCase().trim();
-    var startTime24_hours = ( ampm == 'am') ? (matchArray1[1]) : (parseInt(matchArray1[1]) + 12);
+    var startTime24_hours = '';
+    if (ampm == 'am' && parseInt(matchArray1[1]) == 12)
+        startTime24_hours = '00';
+    else if (ampm == 'pm' && parseInt(matchArray1[1]) < 12)
+        startTime24_hours = parseInt(matchArray1[1]) + 12;
+    else
+        startTime24_hours = matchArray1[1];
+    //startTime24_hours = ( ampm == 'am') ? (matchArray1[1]) : (parseInt(matchArray1[1]) + 12);
     var startTime24_min = matchArray1[2];
     var startTime24 = startTime24_hours + ":" + startTime24_min;
 
@@ -264,7 +271,7 @@ function isValidDateTime(start_Date, startTime, endTime) {
         if (ampm == 'am' && parseInt(matchArray2[1]) == 12)
             endTime24_hours = '00';
         else if (ampm == 'pm' && parseInt(matchArray2[1]) < 12)
-            endTime24 = parseInt(matchArray2[1]) + 12;
+            endTime24_hours = parseInt(matchArray2[1]) + 12;
         else
            endTime24_hours =  matchArray2[1];
         var endTime24_min = matchArray2[2];
@@ -302,14 +309,16 @@ function isValidDateTime(start_Date, startTime, endTime) {
 
     //End time should be after start time
     if (endTime24 != null) {
-  //      alert('endTime24<startTime24'+(endTime24<startTime24));
+ //       alert('endTime24<startTime24' + (endTime24 < startTime24));
+//        alert('startTime24:' + startTime24);
+ //       alert('endTime24: ' + endTime24);
         if (endTime24 < startTime24) {
             alert('End time cannot be before Start time!');
             return false;
         }
     }
-   //alert('dateBeforeToday:' + dateBeforeToday + ',  currentTime24:'+currentTime24 + ' startTime24:' + startTime24);
-    if (!(dateBeforeToday) && (startTime24 > currentTime24 || (endTime24 != null && endTime24 > currentTime24))) {
+//   alert('dateBeforeToday:' + dateBeforeToday + ',  currentTime24:'+currentTime24 + ' startTime24:' + startTime24);
+    if ((!dateBeforeToday) && (startTime24 > currentTime24 || (endTime24 != null && endTime24 > currentTime24))) {
         alert('Start/End time cannot be in the future!');
         return false;
     }
