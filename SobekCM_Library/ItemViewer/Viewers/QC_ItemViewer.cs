@@ -402,14 +402,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                   //0 indicates no error, so delete if present from the database and dictionary
                  case "0":
-                    if (qc_errors_dictionary.ContainsKey(affected_page_filename))
+                    if (qc_errors_dictionary.ContainsKey(itemID+affected_page_filename))
                     {
                         //Delete the previous error for this file from the database
                         Resource_Object.Database.SobekCM_Database.Delete_QC_Error(itemID, affected_page_filename);
 
                         //Also remove any previous entry from the session dictionary
-                        qc_errors_dictionary.Remove(affected_page_filename);
-
+                        qc_errors_dictionary.Remove(itemID+affected_page_filename);
+                        
                     }
                     break;
 
@@ -481,23 +481,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     break;
 
             }
-            if (qc_errors_dictionary.ContainsKey(affected_page_filename))
+            if (qc_errors_dictionary.ContainsKey(itemID + affected_page_filename))
             {
                 //Delete the previous error for this file from the database
                 Resource_Object.Database.SobekCM_Database.Delete_QC_Error(itemID, affected_page_filename);
 
                 //Also remove any previous entry from the session dictionary
-                qc_errors_dictionary.Remove(affected_page_filename);
+                qc_errors_dictionary.Remove(itemID+affected_page_filename);
 
             }
             //Now save this error to the DB, and update the dictionary
-            if (error_code != "11")
+            if (error_code != "11" && error_code!="0")
             {
                 thisError.Error_ID = Resource_Object.Database.SobekCM_Database.Save_QC_Error(itemID, affected_page_filename, thisError.ErrorCode, thisError.Description, thisError.isVolumeError);
                 if (qc_errors_dictionary == null)
                     qc_errors_dictionary = new Dictionary<string, QC_Error>();
 
-                qc_errors_dictionary.Add(affected_page_filename, thisError);
+                qc_errors_dictionary.Add(itemID+affected_page_filename, thisError);
             }
 
             //Update the session dictionary with the updated one
@@ -2149,15 +2149,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			        string image_url = image_by_pageindex[page_index];
                     string filename_sans_extension = file_sans_by_pageindex[page_index];
                     string filenameToDisplay = filename_sans_extension;
-
+                    int itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(CurrentItem.BibID, CurrentItem.VID);
 					string url = CurrentMode.Redirect_URL().Replace("&", "&amp;").Replace("\"", "&quot;");
 
                     QC_Error thisError = new QC_Error();
 			        bool errorPresentThisPage = false;
-			        if (qc_errors_dictionary.ContainsKey(filename_sans_extension))
+			        if (qc_errors_dictionary.ContainsKey(itemID.ToString()+filename_sans_extension))
 			        {
 			            errorPresentThisPage = true;
-			            thisError = qc_errors_dictionary[filename_sans_extension];
+			            thisError = qc_errors_dictionary[itemID.ToString() + filename_sans_extension];
 			        }
 
                 
