@@ -144,6 +144,9 @@ namespace SobekCM.Resource_Object.Behaviors
                 case View_Enum.GOOGLE_MAP:
                     return new string[] {"map", "mapsearch"};
 
+                case View_Enum.GOOGLE_MAP_BETA:
+                    return new string[] { "mapbeta", "mapsearchbeta" };
+
                 case View_Enum.GOOGLE_COORDINATE_ENTRY:
                     return new string[] { "mapedit" };
 

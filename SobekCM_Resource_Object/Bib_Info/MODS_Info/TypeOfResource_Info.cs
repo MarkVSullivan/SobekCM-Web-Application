@@ -64,6 +64,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         EAD,
         Learning_Object,
         Map,
+        Map_Beta,
         Mixed_Material,
         Multivolume,
         Newspaper,

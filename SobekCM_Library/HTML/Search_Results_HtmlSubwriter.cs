@@ -133,6 +133,14 @@ namespace SobekCM.Library.HTML
 
                     return returnValue;
                 }
+                if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
+                {
+                    List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
+
+                    returnValue.Add(new Tuple<string, string>("onload", "load();"));
+
+                    return returnValue;
+                }
                 return null;
             }
         }

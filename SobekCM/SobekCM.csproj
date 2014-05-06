@@ -328,6 +328,26 @@
     <Content Include="default\images\mapedit\toolbox-icon.png" />
     <Content Include="default\images\mapedit\toolbox-maximize2.png" />
     <Content Include="default\images\mapedit\toolbox-minimize2.png" />
+    <Content Include="default\images\mapsearch\arrow_asc.png" />
+    <Content Include="default\images\mapsearch\arrow_desc.png" />
+    <Content Include="default\images\mapsearch\blue-pin.png" />
+    <Content Include="default\images\mapsearch\brief_blue.png" />
+    <Content Include="default\images\mapsearch\brief_grey.png" />
+    <Content Include="default\images\mapsearch\delete.png" />
+    <Content Include="default\images\mapsearch\geo_blue.png" />
+    <Content Include="default\images\mapsearch\geo_grey.png" />
+    <Content Include="default\images\mapsearch\removeIcon.gif" />
+    <Content Include="default\images\mapsearch\sorterDown_grey.png" />
+    <Content Include="default\images\mapsearch\sorterDown_grey2.png" />
+    <Content Include="default\images\mapsearch\sorterDown_grey3.png" />
+    <Content Include="default\images\mapsearch\sorterDown_grey4.png" />
+    <Content Include="default\images\mapsearch\table_blue.png" />
+    <Content Include="default\images\mapsearch\table_grey.png" />
+    <Content Include="default\images\mapsearch\thumb_blue.png" />
+    <Content Include="default\images\mapsearch\thumb_grey.png" />
+    <Content Include="default\images\mapsearch\ui-icons_ffffff_256x240.png" />
+    <Content Include="default\images\mapsearch\view_blue.png" />
+    <Content Include="default\images\mapsearch\view_grey.png" />
     <Content Include="default\images\map_drag_hand.gif" />
     <Content Include="default\images\map_point.gif" />
     <Content Include="default\images\map_point.png" />
@@ -458,6 +478,7 @@
     <Content Include="default\scripts\bookturner\bookturner.js" />
     <Content Include="default\scripts\bookturner\jquery-1.2.6.min.js" />
     <Content Include="default\scripts\bookturner\jquery.easing.1.3.js" />
+    <Content Include="default\scripts\CallBacks.aspx" />
     <Content Include="default\scripts\contentslider.js" />
     <Content Include="default\scripts\contentslider.min.js" />
     <Content Include="default\scripts\datatables\css\jquery.dataTables.css" />
@@ -622,6 +643,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="default\scripts\CallBacks.aspx.cs">
+      <DependentUpon>CallBacks.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="default\scripts\CallBacks.aspx.designer.cs">
+      <DependentUpon>CallBacks.aspx</DependentUpon>
+    </Compile>
     <Compile Include="SobekCM_Page_Globals.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
@@ -698,6 +726,9 @@
     <Content Include="config\sobekcm_mapedit.config" />
     <Content Include="config\sobekcm_mapeditor.config" />
     <Content Include="config\sobekcm_mapsearch.config" />
+    <Content Include="default\scripts\sobekcm_full.min.js.map">
+      <DependentUpon>sobekcm_full.js</DependentUpon>
+    </Content>
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

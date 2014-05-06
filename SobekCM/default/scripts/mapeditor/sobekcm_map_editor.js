@@ -4166,24 +4166,27 @@ function initMapEditor() {
                         try {
                             MAPEDITOR.TRACER.addTracer("[INFO]: overlayDeleteMe started...");
                             if (MAPEDITOR.GLOBAL.DEFINES.overlaysOnMap[id]) {
-                                MAPEDITOR.UTILITIES.confirmMessage(MAPEDITOR.LOCALIZATION.DEFINES.L54);
-                                try {
-                                    //MAPEDITOR.GLOBAL.DEFINES.toServerSuccessMessage = MAPEDITOR.LOCALIZATION.DEFINES.L68;
-                                    MAPEDITOR.GLOBAL.DEFINES.toServerSuccessMessage = MAPEDITOR.LOCALIZATION.DEFINES.L55 + " " + id;
-                                    MAPEDITOR.UTILITIES.createSavedOverlay("delete", id, "", "", "", "");
-                                    MAPEDITOR.GLOBAL.DEFINES.overlaysOnMap[id].setMap(null);
-                                    MAPEDITOR.GLOBAL.DEFINES.overlaysOnMap[id] = null;
-                                    MAPEDITOR.GLOBAL.DEFINES.ghostOverlayRectangle[id].setMap(null);
-                                    MAPEDITOR.GLOBAL.DEFINES.ghostOverlayRectangle[id] = null;
-                                    //var strg = "#overlayListItem" + id; //create <li> overlay string
-                                    //$(strg).remove(); //remove <li>
-                                    MAPEDITOR.GLOBAL.DEFINES.overlayCount += -1;
-                                    MAPEDITOR.GLOBAL.DEFINES.workingOverlayIndex = null;
-                                    //MAPEDITOR.UTILITIES.displayMessage(id + " " + MAPEDITOR.LOCALIZATION.DEFINES.L33);
-                                    //MAPEDITOR.UTILITIES.displayMessage(MAPEDITOR.LOCALIZATION.DEFINES.L55 + " " + id);
-                                    MAPEDITOR.GLOBAL.DEFINES.userMayLoseData = false;
-                                } catch (e) {
-                                    MAPEDITOR.UTILITIES.displayMessage(MAPEDITOR.LOCALIZATION.DEFINES.L57); //nothing to delete
+                                if (MAPEDITOR.UTILITIES.confirmMessage(MAPEDITOR.LOCALIZATION.DEFINES.L54)) {
+                                    try {
+                                        //MAPEDITOR.GLOBAL.DEFINES.toServerSuccessMessage = MAPEDITOR.LOCALIZATION.DEFINES.L68;
+                                        MAPEDITOR.GLOBAL.DEFINES.toServerSuccessMessage = MAPEDITOR.LOCALIZATION.DEFINES.L55 + " " + id;
+                                        MAPEDITOR.UTILITIES.createSavedOverlay("delete", id, "", "", "", "");
+                                        MAPEDITOR.GLOBAL.DEFINES.overlaysOnMap[id].setMap(null);
+                                        MAPEDITOR.GLOBAL.DEFINES.overlaysOnMap[id] = null;
+                                        MAPEDITOR.GLOBAL.DEFINES.ghostOverlayRectangle[id].setMap(null);
+                                        MAPEDITOR.GLOBAL.DEFINES.ghostOverlayRectangle[id] = null;
+                                        //var strg = "#overlayListItem" + id; //create <li> overlay string
+                                        //$(strg).remove(); //remove <li>
+                                        MAPEDITOR.GLOBAL.DEFINES.overlayCount += -1;
+                                        MAPEDITOR.GLOBAL.DEFINES.workingOverlayIndex = null;
+                                        //MAPEDITOR.UTILITIES.displayMessage(id + " " + MAPEDITOR.LOCALIZATION.DEFINES.L33);
+                                        //MAPEDITOR.UTILITIES.displayMessage(MAPEDITOR.LOCALIZATION.DEFINES.L55 + " " + id);
+                                        MAPEDITOR.GLOBAL.DEFINES.userMayLoseData = false;
+                                    } catch (e) {
+                                        MAPEDITOR.UTILITIES.displayMessage(MAPEDITOR.LOCALIZATION.DEFINES.L57); //nothing to delete
+                                    }
+                                } else {
+                                    //do nothing
                                 }
                             } else {
                                 MAPEDITOR.UTILITIES.displayMessage(MAPEDITOR.LOCALIZATION.DEFINES.L57); //nothing to delete
@@ -4411,25 +4414,28 @@ function initMapEditor() {
                             MAPEDITOR.TRACER.addTracer("[INFO]: deleteItemLocation started...");
                             if (MAPEDITOR.GLOBAL.DEFINES.itemMarker) {
                                 //confirm
-                                MAPEDITOR.UTILITIES.confirmMessage(MAPEDITOR.LOCALIZATION.DEFINES.L70);
-                                //hide marker
-                                MAPEDITOR.GLOBAL.DEFINES.itemMarker.setMap(null);
-                                MAPEDITOR.GLOBAL.DEFINES.itemMarker = null;
-                                //msg
-                                MAPEDITOR.GLOBAL.DEFINES.toServerSuccessMessage = MAPEDITOR.LOCALIZATION.DEFINES.L69;
-                                //send to server and delete from mets
-                                MAPEDITOR.GLOBAL.DEFINES.RIBMode = true;
-                                MAPEDITOR.UTILITIES.createSavedItem("delete", null);
-                                MAPEDITOR.GLOBAL.DEFINES.RIBMode = false;
-                                //clear saving item center as well
-                                MAPEDITOR.GLOBAL.DEFINES.savingMarkerCenter = null;
-                                //explicitly disallow editing after converting
-                                MAPEDITOR.GLOBAL.DEFINES.drawingManager.setDrawingMode(null);
-                                //MAPEDITOR.GLOBAL.DEFINES.drawingManager.setMap(null);
-                                MAPEDITOR.GLOBAL.DEFINES.userMayLoseData = false;
-                                //clear item boxes
-                                document.getElementById("content_toolbox_posItem").value = "";
-                                document.getElementById("content_toolbox_rgItem").value = "";
+                                if (MAPEDITOR.UTILITIES.confirmMessage(MAPEDITOR.LOCALIZATION.DEFINES.L70)) {
+                                    //hide marker
+                                    MAPEDITOR.GLOBAL.DEFINES.itemMarker.setMap(null);
+                                    MAPEDITOR.GLOBAL.DEFINES.itemMarker = null;
+                                    //msg
+                                    MAPEDITOR.GLOBAL.DEFINES.toServerSuccessMessage = MAPEDITOR.LOCALIZATION.DEFINES.L69;
+                                    //send to server and delete from mets
+                                    MAPEDITOR.GLOBAL.DEFINES.RIBMode = true;
+                                    MAPEDITOR.UTILITIES.createSavedItem("delete", null);
+                                    MAPEDITOR.GLOBAL.DEFINES.RIBMode = false;
+                                    //clear saving item center as well
+                                    MAPEDITOR.GLOBAL.DEFINES.savingMarkerCenter = null;
+                                    //explicitly disallow editing after converting
+                                    MAPEDITOR.GLOBAL.DEFINES.drawingManager.setDrawingMode(null);
+                                    //MAPEDITOR.GLOBAL.DEFINES.drawingManager.setMap(null);
+                                    MAPEDITOR.GLOBAL.DEFINES.userMayLoseData = false;
+                                    //clear item boxes
+                                    document.getElementById("content_toolbox_posItem").value = "";
+                                    document.getElementById("content_toolbox_rgItem").value = "";
+                                } else {
+                                    //do nothing
+                                }
                             } else {
                                 //did not delete
                                 MAPEDITOR.UTILITIES.displayMessage(MAPEDITOR.LOCALIZATION.DEFINES.L_NotDeleted);

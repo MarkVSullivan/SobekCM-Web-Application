@@ -73,8 +73,14 @@ namespace SobekCM.Library.Aggregations
             /// <summary> View all of the coordinates points present for an item aggregation </summary>
             Map_Browse,
 
+            /// <summary> View all of the coordinates points present for an item aggregation </summary>
+            Map_Browse_Beta,
+
             /// <summary> Map searching employs a map to allow the user to select a rectangle of interest </summary>
             Map_Search,
+            
+            /// <summary> Map searching employs a map to allow the user to select a rectangle of interest </summary>
+            Map_Search_Beta,
 
             /// <summary> Browse by metadata feature allows a user to see every piece of data in a particular metadata field </summary>
             Metadata_Browse,
@@ -171,7 +177,9 @@ namespace SobekCM.Library.Aggregations
             Is_Active = true;
             Hidden = false;
             Map_Search = 0;
+            Map_Search_Beta = 0;
             Map_Display = 0;
+            Map_Display_Beta = 0;
             OAI_Flag = false;
             OAI_Metadata = String.Empty;
             Contact_Email = String.Empty;
@@ -235,7 +243,9 @@ namespace SobekCM.Library.Aggregations
             Is_Active = true;
             Hidden = false;
             Map_Search = 0;
+            Map_Search_Beta = 0;
             Map_Display = 0;
+            Map_Display_Beta = 0;
             OAI_Flag = false;
             OAI_Metadata = String.Empty;
             Contact_Email = String.Empty;
@@ -303,6 +313,10 @@ namespace SobekCM.Library.Aggregations
 						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Map_Browse);
 						break;
 
+                    case 'g':
+                        viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Map_Browse_Beta);
+                        break;
+
 					case 'I':
 						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.All_New_Items);
 						break;
@@ -310,6 +324,10 @@ namespace SobekCM.Library.Aggregations
 					case 'M':
 						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Map_Search);
 						break;
+
+                    case 'm':
+                        viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Map_Search_Beta);
+                        break;
 
                     case 'N':
                         viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Newspaper_Search);
@@ -446,8 +464,14 @@ namespace SobekCM.Library.Aggregations
         /// <summary> Flag that tells what type of map searching to allow for this item aggregation </summary>
         public ushort Map_Search { get; set; }
 
+        /// <summary> Flag that tells what type of map searching to allow for this item aggregation </summary>
+        public ushort Map_Search_Beta { get; set; }
+
         /// <summary> Flag that tells what type of map display to show for this item aggregation </summary>
         public ushort Map_Display { get; set; }
+
+        /// <summary> Flag that tells what type of map display to show for this item aggregation </summary>
+        public ushort Map_Display_Beta { get; set; }
 
         /// <summary> Flag indicates whether this item aggregation should be made available via OAI-PMH </summary>
         public bool OAI_Flag { get; set; }
@@ -530,6 +554,8 @@ namespace SobekCM.Library.Aggregations
                     returnValue.Add(Search_Type_Enum.Newspaper);
                 if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Map_Search))
                     returnValue.Add(Search_Type_Enum.Map);
+                if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Map_Search_Beta))
+                    returnValue.Add(Search_Type_Enum.Map_Beta);
                 if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.FullText_Search))
                     returnValue.Add(Search_Type_Enum.Full_Text);
                 if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.DLOC_FullText_Search))
@@ -1314,6 +1340,10 @@ namespace SobekCM.Library.Aggregations
                             adds.Add("<hi:remove type=\"MAP\" />");
                             break;
 
+                        case Result_Display_Type_Enum.Map_Beta:
+                            adds.Add("<hi:remove type=\"MAP_BETA\" />");
+                            break;
+
                         case Result_Display_Type_Enum.Table:
                             deletes.Remove("<hi:remove type=\"TABLE\" />");
                             break;
@@ -1337,6 +1367,11 @@ namespace SobekCM.Library.Aggregations
                     case Result_Display_Type_Enum.Map:
                         adds.Remove("<hi:add type=\"MAP\" />");
                         adds.Add("<hi:add type=\"MAP\" default=\"DEFAULT\" />");
+                        break;
+
+                    case Result_Display_Type_Enum.Map_Beta:
+                        adds.Remove("<hi:add type=\"MAP_BETA\" />");
+                        adds.Add("<hi:add type=\"MAP_BETA\" default=\"DEFAULT\" />");
                         break;
 
                     case Result_Display_Type_Enum.Table:
@@ -1453,7 +1488,7 @@ namespace SobekCM.Library.Aggregations
 	    public bool Save_To_Database( string Username, Custom_Tracer Tracer )
         {
             return Database.SobekCM_Database.Save_Item_Aggregation(Aggregation_ID, Code, Name, ShortName,
-                Description, Thematic_Heading_ID, Aggregation_Type, Is_Active, Hidden, Display_Options, Map_Search, Map_Display, OAI_Flag,
+                Description, Thematic_Heading_ID, Aggregation_Type, Is_Active, Hidden, Display_Options, Map_Search, Map_Search_Beta, Map_Display, Map_Display_Beta, OAI_Flag,
                 OAI_Metadata, Contact_Email,  String.Empty, External_Link, -1, Username, Tracer );
         }
 

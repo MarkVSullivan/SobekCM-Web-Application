@@ -297,6 +297,10 @@ namespace SobekCM.Library.HTML
 						collectionViewer = new Map_Browse_AggregationViewer(Current_Mode, Current_Aggregation, Tracer);
 						break;
 
+                    case Aggregation_Type_Enum.Browse_Map_Beta:
+                        collectionViewer = new Map_Browse_AggregationViewer_Beta(Current_Mode, Current_Aggregation, Tracer);
+                        break;
+
 					case Aggregation_Type_Enum.Item_Count:
 						collectionViewer = new Item_Count_AggregationViewer(Current_Mode, Current_Aggregation);
 						break;
@@ -489,6 +493,7 @@ namespace SobekCM.Library.HTML
 
 						case Aggregation_Type_Enum.Browse_By:
 						case Aggregation_Type_Enum.Browse_Map:
+                        case Aggregation_Type_Enum.Browse_Map_Beta:
 						case Aggregation_Type_Enum.Private_Items:
 						case Aggregation_Type_Enum.Item_Count:
 						case Aggregation_Type_Enum.Usage_Statistics:
@@ -514,6 +519,10 @@ namespace SobekCM.Library.HTML
 		            {
 			            returnValue.Add(new Tuple<string, string>("onload", "load();"));
 		            }
+                    if (currentMode.Search_Type == Search_Type_Enum.Map_Beta)
+                    {
+                        returnValue.Add(new Tuple<string, string>("onload", "load();"));
+                    }
 				}
 				else if (currentMode.Mode == Display_Mode_Enum.Aggregation)
 				{
@@ -529,6 +538,10 @@ namespace SobekCM.Library.HTML
 						case Aggregation_Type_Enum.Browse_Map:
 							returnValue.Add(new Tuple<string, string>("onload", "load();"));
 							break;
+
+                        case Aggregation_Type_Enum.Browse_Map_Beta:
+                            returnValue.Add(new Tuple<string, string>("onload", "load();"));
+                            break;
 					}
 				}
 
@@ -647,6 +660,10 @@ namespace SobekCM.Library.HTML
             if (( currentMode.Mode == Display_Mode_Enum.Aggregation ) && ( currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Map))
                 Output.WriteLine("</div>");
 
+            // If this is the map browse beta, end the page container here
+            if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Map_Beta))
+                Output.WriteLine("</div>");
+
             // Is there a script to be included?
             if (collectionViewer.Search_Script_Reference.Length > 0)
                 Output.WriteLine(collectionViewer.Search_Script_Reference);
@@ -738,6 +755,9 @@ namespace SobekCM.Library.HTML
                 {
                     if (( currentMode.Mode != Display_Mode_Enum.Aggregation ) || ( currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map ))
                         Output.WriteLine("<div class=\"SobekSearchPanel\">");
+
+                    if ((currentMode.Mode != Display_Mode_Enum.Aggregation) || (currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map_Beta))
+                        Output.WriteLine("<div class=\"SobekSearchPanel\">");
                 }
 
                 if (collectionViewer.Type == Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search)
@@ -758,6 +778,8 @@ namespace SobekCM.Library.HTML
                 {
                     collectionViewer.Add_Search_Box_HTML(Output, Tracer);
                     Output.WriteLine((( currentMode.Mode != Display_Mode_Enum.Aggregation ) || ( currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map )) ? "</div>" : "<div id=\"pagecontainer_resumed\">");
+
+                    Output.WriteLine(((currentMode.Mode != Display_Mode_Enum.Aggregation) || (currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map_Beta)) ? "</div>" : "<div id=\"pagecontainer_resumed\">");
                 }
 
                 Output.WriteLine();
@@ -2202,15 +2224,13 @@ namespace SobekCM.Library.HTML
             // Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
             //Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.hovercard.min.js\"></script>");
             //Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_aggre.js\"></script>");
-            
-            
 #endif
             //NOTE: The jquery.hovercard.min.js file included below has been modified for SobekCM, and also includes bug fixes. DO NOT REPLACE with another version
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.hovercard.min.js\"></script>");
   //          Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
           Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_aggre.js\"></script>");
             
-			Output.WriteLine();
+            Output.WriteLine();
         }
 
 		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
@@ -2225,6 +2245,9 @@ namespace SobekCM.Library.HTML
 
 					case Aggregation_Type_Enum.Browse_Map:
 						return "container-inner1000";
+
+                    case Aggregation_Type_Enum.Browse_Map_Beta:
+                        return "container-inner1000";
 
 					case Aggregation_Type_Enum.Private_Items:
 						return "container-inner1215";

@@ -274,8 +274,14 @@ namespace SobekCM.Library.HTML
 			// Create the result writer and populate the sort list for MAP view
 			if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
 			{
-				resultWriter = new Map_ResultsViewer(allItems);
+				resultWriter = new Google_Map_ResultsViewer(allItems);
 			}
+
+            // Create the result writer and populate the sort list for MAP view
+            if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
+            {
+                resultWriter = new Google_Map_ResultsViewer_Beta(currentMode, allItems);
+            }
 
 			// Create the result writer and populate the sort list for TEXT view
 			if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Export)
@@ -432,13 +438,12 @@ namespace SobekCM.Library.HTML
 				return;
 			}
 
-			Literal startingLiteral = new Literal { Text = currentMode.Result_Display_Type == Result_Display_Type_Enum.Map ? "</div>" + Environment.NewLine + "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine : "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine };
+			Literal startingLiteral = new Literal{ Text = (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map || currentMode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta) ? "</div>" + Environment.NewLine + "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine : "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine};
 			MainPlaceHolder.Controls.Add(startingLiteral);
 
 			resultWriter.Add_HTML(MainPlaceHolder, Tracer );
 
-			Literal endingLiteral = new Literal
-										{ Text = currentMode.Result_Display_Type == Result_Display_Type_Enum.Map ? "</div>" + Environment.NewLine + "<div id=\"pagecontainer_resumed\">" + Environment.NewLine  : "</div>" + Environment.NewLine  };
+            Literal endingLiteral = new Literal { Text = (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map || currentMode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta) ? "</div>" + Environment.NewLine + "<div id=\"pagecontainer_resumed\">" + Environment.NewLine : "</div>" + Environment.NewLine };
 			MainPlaceHolder.Controls.Add(endingLiteral);
 
 			// If the results have facets, end the result table
@@ -497,6 +502,9 @@ namespace SobekCM.Library.HTML
 
 			if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
 				showing_range_text = showing_coord_range_text;
+
+            if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
+                showing_range_text = showing_coord_range_text;
 
 			Display_Mode_Enum initialMode = currentMode.Mode;
 
@@ -747,6 +755,19 @@ namespace SobekCM.Library.HTML
 				}
 			}
 
+            if ((Mode.Coordinates.Length > 0) || (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)))
+            {
+                if (resultView == Result_Display_Type_Enum.Map_Beta)
+                {
+                    iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                }
+                else
+                {
+                    Mode.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
+                    iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                }
+            }
+
 			if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
 			{
 				if (resultView == Result_Display_Type_Enum.Brief)
@@ -788,16 +809,9 @@ namespace SobekCM.Library.HTML
 			Mode.Result_Display_Type = resultView;
 			iconBuilder.AppendLine("    </div>");
 			string VIEWICONS = iconBuilder.ToString();
-
-
-			string NEWSEARCH = String.Empty;
-
-
-
-			string ADDFILTER = String.Empty;
-
-
-
+            string NEWSEARCH = String.Empty;
+            string ADDFILTER = String.Empty;
+            
 			// Start the division for the sort and then description and buttons, etc..
 			switch (currentMode.Mode)
 			{
@@ -1027,7 +1041,7 @@ namespace SobekCM.Library.HTML
 					break;
 
 				default:
-					if (currentMode.Search_Type == Search_Type_Enum.Map)
+					if ((currentMode.Search_Type == Search_Type_Enum.Map)||(currentMode.Search_Type == Search_Type_Enum.Map_Beta))
 						Output.Write("Your geographic search of <i>" + Current_Aggregation.Name + "</i> ");
 					else
 						Output.Write("Your search of <i>" + Current_Aggregation.Name + "</i> for ");
@@ -1035,7 +1049,7 @@ namespace SobekCM.Library.HTML
 			}
 
 			// Split the parts
-			if (currentMode.Search_Type != Search_Type_Enum.Map)
+			if ((currentMode.Search_Type != Search_Type_Enum.Map)||(currentMode.Search_Type != Search_Type_Enum.Map_Beta))
 			{
 				int length_of_explanation = 0;
 				List<string> terms = new List<string>();

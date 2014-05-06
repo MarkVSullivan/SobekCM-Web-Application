@@ -98,7 +98,7 @@ namespace SobekCM.Library.Citation.Elements
             }
             if (Bib.Behaviors.Views_Count > 0)
             {
-                views.AddRange(Bib.Behaviors.Views.Where(ItemView => (ItemView.View_Type != View_Enum.CITATION) && (ItemView.View_Type != View_Enum.ALL_VOLUMES) && (ItemView.View_Type != View_Enum.DOWNLOADS) && (ItemView.View_Type != View_Enum.FLASH) && (ItemView.View_Type != View_Enum.GOOGLE_MAP) && (ItemView.View_Type != View_Enum.PDF) && (ItemView.View_Type != View_Enum.TOC)));
+                views.AddRange(Bib.Behaviors.Views.Where(ItemView => (ItemView.View_Type != View_Enum.CITATION) && (ItemView.View_Type != View_Enum.ALL_VOLUMES) && (ItemView.View_Type != View_Enum.DOWNLOADS) && (ItemView.View_Type != View_Enum.FLASH) && (ItemView.View_Type != View_Enum.GOOGLE_MAP) && (ItemView.View_Type != View_Enum.GOOGLE_MAP_BETA) && (ItemView.View_Type != View_Enum.PDF) && (ItemView.View_Type != View_Enum.TOC)));
             }
 
             if (views.Count == 0 )
@@ -113,6 +113,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.Write("<option value=\"jpeg\" >JPEG</option>");
                 Output.Write("<option value=\"jpeg2000\" >JPEG2000</option>");
                 Output.Write("<option value=\"map\">Map Display</option>");
+                Output.Write("<option value=\"mapbeta\">Map Display Beta</option>");
                 Output.Write("<option value=\"pageturner\" >Page Turner</option>");
                 Output.Write("<option value=\"related\" >Related Images</option>");
                 Output.Write("<option value=\"text\" >Text</option>");
@@ -181,6 +182,10 @@ namespace SobekCM.Library.Citation.Elements
 		                Output.Write(views[i - 1].View_Type == View_Enum.GOOGLE_MAP
 			                             ? "<option value=\"map\" selected=\"selected\" >Map Display</option>"
 			                             : "<option value=\"map\" >Map Display</option>");
+
+                        Output.Write(views[i - 1].View_Type == View_Enum.GOOGLE_MAP_BETA
+                                         ? "<option value=\"mapbeta\" selected=\"selected\" >Map Display Beta</option>"
+                                         : "<option value=\"mapbeta\" >Map Display Beta</option>");
 
 		                Output.Write(views[i - 1].View_Type == View_Enum.PAGE_TURNER
 			                             ? "<option value=\"pageturner\" selected=\"selected\" >Page Turner</option>"
@@ -307,6 +312,10 @@ namespace SobekCM.Library.Citation.Elements
 
                         case "map":
                             viewType = View_Enum.GOOGLE_MAP;
+                            break;
+
+                        case "mapbeta":
+                            viewType = View_Enum.GOOGLE_MAP_BETA;
                             break;
 
                         case "pageturner":

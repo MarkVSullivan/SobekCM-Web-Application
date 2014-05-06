@@ -47,6 +47,9 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Google map view shows the coverage of a digital resource graphically </summary>
         GOOGLE_MAP,
 
+        /// <summary> Google map view shows the coverage of a digital resource graphically </summary>
+        GOOGLE_MAP_BETA,
+
         /// <summary> Resource views shows a static HTML page </summary>
         HTML,
 

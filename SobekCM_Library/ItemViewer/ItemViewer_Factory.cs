@@ -67,6 +67,9 @@ namespace SobekCM.Library.ItemViewer
                 case View_Enum.GOOGLE_MAP:
                     return new Google_Map_ItemViewer();
 
+                case View_Enum.GOOGLE_MAP_BETA:
+                    return new Google_Map_ItemViewer_Beta();
+
                 case View_Enum.HTML:
                     return new HTML_ItemViewer(viewObject.Attributes, viewObject.Label);
 

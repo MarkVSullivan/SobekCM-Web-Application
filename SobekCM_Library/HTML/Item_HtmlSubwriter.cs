@@ -1636,6 +1636,12 @@ namespace SobekCM.Library.HTML
                 ((Google_Map_ItemViewer)PageViewer).Add_Google_Map_Scripts(Output, Tracer);
             }
 
+            //// Add google map beta stuff if that is selected
+            //if ((PageViewer != null) && (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.Google_Map_Beta))
+            //{
+            //    ((Google_Map_ItemViewer_Beta)PageViewer).Add_Google_Map_Scripts(Output, Tracer);
+            //}
+
 
             if (ShouldLeftNavigationBarBeShown)
             {

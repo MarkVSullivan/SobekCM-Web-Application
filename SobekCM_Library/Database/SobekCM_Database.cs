@@ -1271,6 +1271,78 @@ namespace SobekCM.Library.Database
 
 		#endregion
 
+        #region Method to return DATATABLE of all items from an aggregation
+
+        /// <summary> Gets the list of unique coordinate points and associated bibid and group title for a single 
+        /// item aggregation </summary>
+        /// <param name="Aggregation_Code"> Code for the item aggregation </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataTable with all the coordinate values </returns>
+        /// <remarks> This calls the 'SobekCM_Coordinate_Points_By_Aggregation' stored procedure </remarks>
+        public static DataTable Get_All_Items_By_AggregationID(string Aggregation_Code, List<string> FIDs, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_All_Items_By_AggregationID", "Pull the item list");
+            }
+
+            string HOOK_FIDDBCallPrefix = "SobekCM_Metadata_Basic_Search_Table"; //this is the correct sql syntax for searching the db table for a specific metadata type
+            int nonFIDsParamCount = 2; //how many non fids are there?
+
+            // Build the parameter list
+            SqlParameter[] paramList = new SqlParameter[(FIDs.Count + nonFIDsParamCount)];
+            paramList[0] = new SqlParameter("@aggregation_code", Aggregation_Code);
+            //paramList[1] = new SqlParameter("@FID1_PassIn", FIDs[0]);
+            //paramList[2] = new SqlParameter("@FID2_PassIn", FIDs[1]);
+            //paramList[3] = new SqlParameter("@FID3_PassIn", FIDs[2]);
+            //paramList[4] = new SqlParameter("@FID4_PassIn", FIDs[3]);
+            //paramList[5] = new SqlParameter("@FID5_PassIn", FIDs[4]);
+            //paramList[6] = new SqlParameter("@FID6_PassIn", FIDs[5]);
+            //paramList[7] = new SqlParameter("@FID7_PassIn", FIDs[6]);
+            //paramList[8] = new SqlParameter("@FID8_PassIn", FIDs[7]);
+            int paramListIndex = 0; //set where we are at
+            int FIDIndex = 0; //where do the fids start (zero)
+            foreach (string fiD in FIDs)
+            {
+                paramListIndex++;
+                FIDIndex++;
+                paramList[paramListIndex] = new SqlParameter("@FID" + FIDIndex.ToString(), fiD);
+            }
+            paramList[(paramListIndex + 1)] = new SqlParameter("FIDDBCallPrefix", HOOK_FIDDBCallPrefix);
+
+            // Define a temporary dataset
+            DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_Items_By_AggregationID", paramList);
+            return tempSet == null ? null : tempSet.Tables[0];
+        }
+
+        #endregion
+
+        #region Method to return STIRNG of the human readable metadata code
+
+        /// <summary> Gets the human readable name of a metadate id</summary>
+        /// <param name="metadataTypeId"> Code for the metadata</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> String with the name of the metadata </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Metadata_Name_From_MetadataTypeID' stored procedure </remarks>
+        public static string Get_Metadata_Name_From_MetadataTypeID(short metadataTypeId, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_Metadata_Name_From_MetadataTypeID", "Get the metadataID name");
+            }
+
+            // Build the parameter list
+            SqlParameter[] paramList = new SqlParameter[1];
+            paramList[0] = new SqlParameter("@metadataTypeID", metadataTypeId);
+
+            // Define a temporary dataset
+            DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Metadata_Name_From_MetadataTypeID", paramList);
+            DataTable tempResult = tempSet.Tables[0];
+            return tempResult.Rows[0][0].ToString();
+        }
+
+        #endregion
+
 		#region Method to perform a metadata search of items in the database
 
 		/// <summary> Gets the list of metadata fields searchable in the database, along with field number </summary>
@@ -6776,7 +6848,7 @@ namespace SobekCM.Library.Database
 		/// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
 		public static bool Save_Item_Aggregation( string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string ExternalLink, int ParentID, string Username, Custom_Tracer Tracer)
 		{
-			return Save_Item_Aggregation( -1, Code, Name, ShortName, Description, ThematicHeadingID, Type, IsActive, IsHidden, String.Empty, 0, 0, false, String.Empty, String.Empty,  String.Empty, ExternalLink, ParentID, Username, Tracer);
+            return Save_Item_Aggregation(-1, Code, Name, ShortName, Description, ThematicHeadingID, Type, IsActive, IsHidden, String.Empty, 0, 0, 0, 0, false, String.Empty, String.Empty, String.Empty, ExternalLink, ParentID, Username, Tracer);
 		}
 
 		/// <summary> Save a new item aggregation or edit an existing item aggregation in the database </summary>
@@ -6791,7 +6863,9 @@ namespace SobekCM.Library.Database
 		/// <param name="IsHidden"> Flag indicates if this item is hidden</param>
 		/// <param name="DisplayOptions"> Display options for this item aggregation </param>
 		/// <param name="Map_Search"> Map Search value indicates if there is a map search, and the type of search </param>
-		/// <param name="Map_Display"> Map Display value indicates if there is a map display option when looking at search results or browses </param>
+        /// /// <param name="Map_Search_Beta"> Map Search value indicates if there is a map search, and the type of search </param>
+        /// <param name="Map_Display"> Map Display value indicates if there is a map display option when looking at search results or browses </param>
+        /// <param name="Map_Display_Beta"> Map Display value indicates if there is a map display option when looking at search results or browses </param>
 		/// <param name="OAI_Flag"> Flag indicates if this item aggregation should be available via OAI-PMH </param>
 		/// <param name="OAI_Metadata"> Additional metadata about this collection, to be included in the set information in OAI-PMH</param>
 		/// <param name="ContactEmail"> Contact email for this item aggregation (can leave blank to use default)</param>
@@ -6802,7 +6876,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-		public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Display, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, Custom_Tracer Tracer )
+        public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Search_Beta, int Map_Display, int Map_Display_Beta, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -6834,6 +6908,9 @@ namespace SobekCM.Library.Database
 				paramList[18] = new SqlParameter("@username", Username);
 				paramList[19] = new SqlParameter("@newaggregationid", 0) {Direction = ParameterDirection.InputOutput};
 
+                //BETA
+                //paramList[20] = new SqlParameter("@map_search_beta", Map_Search_Beta);
+                //paramList[21] = new SqlParameter("@map_display_beta", Map_Display_Beta);
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Aggregation", paramList);

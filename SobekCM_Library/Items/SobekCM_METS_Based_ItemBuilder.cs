@@ -755,6 +755,10 @@ namespace SobekCM.Library.Items
 						viewTypeEnum = View_Enum.GOOGLE_MAP;
 						break;
 
+                    case "Google Map Beta":
+                        viewTypeEnum = View_Enum.GOOGLE_MAP_BETA;
+                        break;
+
 					case "HTML Viewer":
 						viewTypeEnum = View_Enum.HTML;
 						break;

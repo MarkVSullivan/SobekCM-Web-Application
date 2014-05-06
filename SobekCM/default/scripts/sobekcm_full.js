@@ -41,6 +41,15 @@ function set_subaggr_display(new_value) {
 	return false;
 }
 
+//toggles the specific filter id
+function toggleFilterTitle(id) {
+    if ((document.getElementById(id).style.display == "none") || (document.getElementById(id).style.display == "")) {
+        document.getElementById(id).style.display = "block";
+    } else {
+        document.getElementById(id).style.display = "none";
+    }
+}
+
 
 function set_facet(facet, new_value) {
 	var hidden_value = document.getElementById("facet");
