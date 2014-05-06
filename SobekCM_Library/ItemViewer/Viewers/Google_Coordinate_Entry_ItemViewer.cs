@@ -541,15 +541,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
+            
+            try
+            {
+
             // Start to build the response
             StringBuilder mapeditBuilder = new StringBuilder();
 
             //page content
             mapeditBuilder.AppendLine("<td>");
 
-            try
-            {
-                
             mapeditBuilder.AppendLine(" <input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" /> ");
             mapeditBuilder.AppendLine(" <input type=\"hidden\" id=\"payload\" name=\"payload\" value=\"\" /> ");
             mapeditBuilder.AppendLine("  ");
@@ -581,48 +582,60 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\"> ");
             mapeditBuilder.AppendLine(" ");
-            
-            //create build time
-            string filePath = System.Reflection.Assembly.GetCallingAssembly().Location;
-            const int c_PeHeaderOffset = 60;
-            const int c_LinkerTimestampOffset = 8;
-            byte[] b = new byte[2048];
-            System.IO.Stream s = null;
-            try
-            {
-                s = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-                s.Read(b, 0, 2048);
-            }
-            catch (Exception)
-            {
-                Tracer.Add_Trace("Could Not Create Build Time");
-                throw;
-            }
-            finally
-            {
-                if (s != null)
-                {
-                    s.Close();
-                }
-            }
-            int i2 = System.BitConverter.ToInt32(b, c_PeHeaderOffset);
-            int secondsSince1970 = System.BitConverter.ToInt32(b, i2 + c_LinkerTimestampOffset);
-            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
-            dt = dt.AddSeconds(secondsSince1970);
-            dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
-            string debugTime_buildTimestamp = dt.ToString();
-            //get current timestamp
-            TimeSpan span = (dt - new DateTime(1970, 1, 1, 0, 0, 0, 0));
-            double debugTime_unixTimestamp = span.TotalSeconds;
-            
+
             //setup server to client vars writer
             mapeditBuilder.AppendLine(" // Add Server Vars ");
             mapeditBuilder.AppendLine(" function initServerToClientVars(){ ");
             mapeditBuilder.AppendLine("  try{ ");
             mapeditBuilder.AppendLine("   MAPEDITOR.TRACER.addTracer(\"[INFO]: initServerToClientVars started...\"); ");
             mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.baseURL = \"" + CurrentMode.Base_URL + "\"; //add baseURL ");
-            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp = " + debugTime_unixTimestamp + "; //add debugTime ");
-            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp = \"" + debugTime_buildTimestamp + "\"; //add debugTimestamp ");
+            
+            //create build time
+            try
+            {
+                string filePath = System.Reflection.Assembly.GetCallingAssembly().Location;
+                const int c_PeHeaderOffset = 60;
+                const int c_LinkerTimestampOffset = 8;
+                byte[] b = new byte[2048];
+                System.IO.Stream s = null;
+                try
+                {
+                    s = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                    s.Read(b, 0, 2048);
+                }
+                catch (Exception)
+                {
+                    Tracer.Add_Trace("Could Not Create Build Time");
+                    throw;
+                }
+                finally
+                {
+                    if (s != null)
+                    {
+                        s.Close();
+                    }
+                }
+                int i2 = System.BitConverter.ToInt32(b, c_PeHeaderOffset);
+                int secondsSince1970 = System.BitConverter.ToInt32(b, i2 + c_LinkerTimestampOffset);
+                DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
+                dt = dt.AddSeconds(secondsSince1970);
+                dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
+                string debugTime_buildTimestamp = dt.ToString();
+                //get current timestamp
+                TimeSpan span = (dt - new DateTime(1970, 1, 1, 0, 0, 0, 0));
+                double debugTime_unixTimestamp = span.TotalSeconds;
+
+                mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp = " + debugTime_unixTimestamp + "; //add debugTime ");
+                mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp = \"" + debugTime_buildTimestamp + "\"; //add debugTimestamp ");
+            }
+            catch (Exception)
+            {
+                mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp = 0; //add debugTime ");
+                mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp = \"1/1/1970 00:00:00\"; //add debugTimestamp ");
+                Tracer.Add_Trace("Could Not Create Build Time -Fatal");
+                throw;
+            }
+            
             //detemrine if debugging
             if (CurrentMode.Base_URL.Contains("localhost"))
                 mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debuggerOn = true; //debugger flag ");
@@ -1484,7 +1497,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 mapeditBuilder.AppendLine(" </div> ");
                 mapeditBuilder.AppendLine(" <div id=\"debugs\"></div> ");
 
-
+                
                 #endregion
 
             }
@@ -1493,14 +1506,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapeditor/sobekcm_map_editor.js\"></script> ");
             mapeditBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapeditor/gmaps-markerwithlabel-1.9.1.js\"></script> "); //must load after custom
 
-            }
-            catch (Exception)
-            {
-                Tracer.Add_Trace("Could Not Create MapEdit Page");
-                mapeditBuilder.AppendLine("ERROR!");
-                throw;
-            }
-
             //end of custom content
             mapeditBuilder.AppendLine("</td>");
 
@@ -1508,6 +1513,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Literal placeHolderText = new Literal();
             placeHolderText.Text = mapeditBuilder.ToString();
             MainPlaceHolder.Controls.Add(placeHolderText);
+
+            }
+            catch (Exception)
+            {
+                Tracer.Add_Trace("Could Not Create MapEdit Page");
+                throw;
+            }
 
         }
     }
