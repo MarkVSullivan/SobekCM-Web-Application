@@ -320,6 +320,15 @@ namespace SobekCM.Resource_Object.Database
 						}
 						break;
 
+                    case View_Enum.GOOGLE_MAP_BETA:
+                        if (!view_type_ids.Contains(5))
+                        {
+                            view_type_ids.Add(5);
+                            view_labels.Add(String.Empty);
+                            view_attributes.Add(String.Empty);
+                        }
+                        break;
+
 					case View_Enum.HTML:
 						view_type_ids.Add(6);
 						view_labels.Add(thisView.Label);
@@ -1731,6 +1740,15 @@ namespace SobekCM.Resource_Object.Database
 							view_attributes.Add(String.Empty);
 						}
 						break;
+
+                    case View_Enum.GOOGLE_MAP_BETA:
+                        if (!view_type_ids.Contains(5))
+                        {
+                            view_type_ids.Add(5);
+                            view_labels.Add(String.Empty);
+                            view_attributes.Add(String.Empty);
+                        }
+                        break;
 
 					case View_Enum.HTML:
 						view_type_ids.Add(6);

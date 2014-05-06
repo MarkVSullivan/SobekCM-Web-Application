@@ -118,6 +118,32 @@ namespace SobekCM.Library.ItemViewer
                     }
                     break;
 
+                case View_Enum.GOOGLE_MAP_BETA:
+                    if (Current_Mode.Coordinates.Length > 0)
+                    {
+                        if (Current_Mode.ViewerCode == "mapsearchbeta")
+                        {
+                            returnVal.Add(HTML_Helper(Skin_Code, "mapsearchbeta", Translator.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode));
+                        }
+                        else
+                        {
+                            if ((Current_Item.Web.Static_PageCount > 1) || (Current_Item.Bib_Info.SobekCM_Type != TypeOfResource_SobekCM_Enum.Map_Beta))
+                            {
+                                returnVal.Add(HTML_Helper(Skin_Code, "mapbeta", Translator.Get_Translation("SEARCH RESULTS", Current_Mode.Language), Current_Mode));
+                            }
+                            else
+                            {
+                                returnVal.Add(HTML_Helper(Skin_Code, "mapbeta", Translator.Get_Translation("MAP COVERAGE", Current_Mode.Language), Current_Mode));
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        returnVal.Add(HTML_Helper(Skin_Code, "map", Translator.Get_Translation("MAP IT!", Current_Mode.Language), Current_Mode));
+                    }
+                    break;
+
                 case View_Enum.HTML:
                     returnVal.Add(Item_View.Label.Length > 0
                                       ? HTML_Helper(Skin_Code, "html", Item_View.Label.ToUpper(), Current_Mode)
@@ -168,9 +194,7 @@ namespace SobekCM.Library.ItemViewer
                 case View_Enum.TOC:
                      // returnVal.Add(base.HTML_Helper(Skin_Code, "TC", "Table of Contents", Current_Mode));
                     break;
-
-
-
+                    
                 case View_Enum.RESTRICTED:
                     returnVal.Add(HTML_Helper(Skin_Code, "restricted", Translator.Get_Translation("RESTRICTED", Current_Mode.Language), Current_Mode));
                     break;

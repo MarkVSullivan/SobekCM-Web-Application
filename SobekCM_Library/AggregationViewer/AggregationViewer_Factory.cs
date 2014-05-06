@@ -53,6 +53,9 @@ namespace SobekCM.Library.AggregationViewer
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search:
                     return new Map_Search_AggregationViewer(Current_Aggregation, Current_Mode);
 
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search_Beta:
+                    return new Map_Search_AggregationViewer_Beta(Current_Aggregation, Current_Mode);
+
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.DLOC_FullText_Search:
                     return new dLOC_Search_AggregationViewer(Current_Aggregation, Current_Mode);
 
@@ -92,6 +95,9 @@ namespace SobekCM.Library.AggregationViewer
 
                 case Search_Type_Enum.Map:
                     return new Map_Search_AggregationViewer(Current_Aggregation, Current_Mode);
+
+                case Search_Type_Enum.Map_Beta:
+                    return new Map_Search_AggregationViewer_Beta(Current_Aggregation, Current_Mode);
 
                 case Search_Type_Enum.dLOC_Full_Text:
                     return new dLOC_Search_AggregationViewer(Current_Aggregation, Current_Mode);

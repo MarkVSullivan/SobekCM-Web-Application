@@ -148,6 +148,9 @@ namespace SobekCM.Library.Navigation
 		/// <summary> Map searching employs a map to allow the user to select a rectangle of interest</summary>
 		Map,
 
+        /// <summary> Map searching employs a map to allow the user to select a rectangle of interest</summary>
+        Map_Beta,
+
 		/// <summary> Newspaper search type allows searching with one search field and suggests several metadata fields to search (i.e., newspaper title, full text, location, etc..)</summary>
 		Newspaper,
 
@@ -199,6 +202,9 @@ namespace SobekCM.Library.Navigation
 
 		/// <summary> Display the results according to their main coordinate information</summary>
 		Map,
+
+        /// <summary> Display the results according to their main coordinate information</summary>
+        Map_Beta,
 
 		/// <summary> Static text-type browse/info mode </summary>
 		Static_Text,
@@ -435,6 +441,9 @@ namespace SobekCM.Library.Navigation
 
 		/// <summary> View all the coordinates linked to this item aggregation on a map </summary>
 		Browse_Map,
+
+        /// <summary> View all the coordinates linked to this item aggregation on a map </summary>
+        Browse_Map_Beta,
 
 		/// <summary>Ability to edit the static html aggregation child pages</summary>
 		Child_Page_Edit,

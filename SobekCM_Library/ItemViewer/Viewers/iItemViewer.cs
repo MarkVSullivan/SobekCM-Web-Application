@@ -93,6 +93,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Google map display allows user to view the geographic coverage of this digital resource</summary>
         Google_Map,
 
+        /// <summary> Google map display allows user to view the geographic coverage of this digital resource</summary>
+        Google_Map_Beta,
+
         /// <summary> Displays a HTML file related to the digital resource, within the SobekCM window </summary>
         HTML,
 

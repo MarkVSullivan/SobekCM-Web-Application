@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
@@ -18,7 +19,7 @@ namespace SobekCM.Library.ResultsViewer
     /// <summary> Results viewer shows the results which have spatial information in Google maps.  </summary>
     /// <remarks> This class extends the abstract class <see cref="abstract_ResultsViewer"/> and implements the 
     /// <see cref="iResultsViewer" /> interface. </remarks>
-    public class Map_ResultsViewer : abstract_ResultsViewer
+    public class Google_Map_ResultsViewer : abstract_ResultsViewer
     {
         private int currentResultCount;
 
@@ -29,7 +30,7 @@ namespace SobekCM.Library.ResultsViewer
 
         /// <summary> Constructor for a new instance of the Full_ResultsViewer class </summary>
         /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        public Map_ResultsViewer(Item_Lookup_Object All_Items_Lookup)
+        public Google_Map_ResultsViewer(Item_Lookup_Object All_Items_Lookup)
         {
             base.All_Items_Lookup = All_Items_Lookup;
         }
@@ -658,5 +659,81 @@ namespace SobekCM.Library.ResultsViewer
                     return "http://www.google.com/mapfiles/markerA.png";
             }
         }
+
+        //for some reason I cannot put this in the beta???
+        public static object Process_MapSearch_Callback(string sendData)
+        {
+            //blank tracer
+            Custom_Tracer Tracer = new Custom_Tracer();
+
+            #region Process SendData
+
+            //get rid of excess string 
+            sendData = sendData.Replace("{\"sendData\": \"", "").Replace("{\"sendData\":\"", "");
+
+            //validate
+            if (sendData.Length == 0)
+                return "";
+
+            //get the length of incoming message
+            int index1 = sendData.LastIndexOf("~", StringComparison.Ordinal);
+
+            //split into each action message
+            string[] allActions = sendData.Substring(0, index1).Split('~');
+
+            //hold action type handle
+            string actionTypeHandle = null;
+
+            //go through each item to action and check for ovelrays and item only not pois (ORDER does matter because these will be actiond to db before pois are actiond)
+            for (int i = 0; i < allActions.Length; i++)
+            {
+                //get the length of action message
+                int index2 = allActions[i].LastIndexOf("|");
+                //split into action elements
+                string[] ar = allActions[i].Substring(0, index2).Split('|');
+                //determine the action type handle (position 0 in array)
+                actionTypeHandle = ar[0];
+                //determine the action type (position 1 in array)
+                string actionType = ar[1];
+                //based on actionType, parse into objects
+                if (actionTypeHandle == "search")
+                {
+                    //split aggregation incoming subset into an array
+                    string[] aggregationList = ar[2].Replace("##", "|").Split('|');
+                    //handle action based on type
+                    switch (actionType)
+                    {
+                        case "aggregation":
+                            Google_Map_ResultsViewer_Beta.Perform_Aggregation_Search(aggregationList, Tracer);
+                            break;
+                        case "bounds":
+                            Google_Map_ResultsViewer_Beta.Perform_Coordinate_Bounds_Search(Convert.ToDouble(ar[2]), Convert.ToDouble(ar[3]), Convert.ToDouble(ar[4]), Convert.ToDouble(ar[5]));
+                            break;
+                        case "filter":
+                            //split filterlist incoming subset into an array
+                            string[] filterList = ar[3].Replace("###", "|").Split('|');
+                            Google_Map_ResultsViewer_Beta.Perform_Filter_Search(filterList);
+                            break;
+                        case "dateTime":
+                            Google_Map_ResultsViewer_Beta.Perform_DateTime_Range_Search(Convert.ToDateTime(ar[3]), Convert.ToDateTime(ar[4]));
+                            break;
+                        case "coordinate":
+                            Google_Map_ResultsViewer_Beta.Perform_Coordinate_Bounds_Search(Convert.ToDouble(ar[2]), Convert.ToDouble(ar[3]), Convert.ToDouble(ar[4]), Convert.ToDouble(ar[5]));
+                            //Map_ResultsViewer_Beta.Perform_Coordinate_Bounds_Search(aggregationList, Convert.ToDouble(ar[3]), Convert.ToDouble(ar[4]), Convert.ToDouble(ar[5]), Convert.ToDouble(ar[6]), Tracer);
+                            break;
+                        case "complete":
+                            string[] filterList2 = ar[3].Replace("###", "|").Split('|'); //split filterlist incoming subset into an array
+                            Google_Map_ResultsViewer_Beta.Perform_Complete_Search(aggregationList, filterList2, Convert.ToDateTime(ar[4]), Convert.ToDateTime(ar[5]), Convert.ToDouble(ar[6]), Convert.ToDouble(ar[7]), Convert.ToDouble(ar[8]), Convert.ToDouble(ar[9]), Tracer);
+                            break;
+                    }
+                }
+            }
+
+            #endregion
+
+            //return HttpContext.Current.Session["SearchResultsJSON"].ToString();
+            return HttpContext.Current.Items["DSR"];
+        }
+
     }
 }

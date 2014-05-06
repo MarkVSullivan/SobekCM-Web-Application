@@ -9,6 +9,7 @@ namespace SobekCM.Library.Configuration
         //assign config file
         private static string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/sobekcm_mapeditor.config";
         
+        //gets all settings from config file
         public static List<string>[] getSettings(List<string> IdsFromPage)
         {
             //get defaults as base
@@ -31,6 +32,7 @@ namespace SobekCM.Library.Configuration
             return settings;
         } 
 
+        //determines if there are custom settings
         private static bool hasCustomSettings(List<string> IdsFromPage)
         {
             bool hasCustomSettings = false;
@@ -46,6 +48,7 @@ namespace SobekCM.Library.Configuration
             return hasCustomSettings;
         }
         
+        //get all the collection ids from the config file
         private static List<string> getIdsFromConfig()
         {
             //init IdsFromConfig
@@ -73,6 +76,7 @@ namespace SobekCM.Library.Configuration
             return IdsFromConfig;
         } 
 
+        //gets the default settings
         private static List<string>[] getDefaultSettings()
         {
             //init LoadParams
@@ -114,6 +118,7 @@ namespace SobekCM.Library.Configuration
             return settings;
         }
 
+        //gets all the custom settigns as defined from page itself
         private static List<string>[] getCustomSettings(List<string> IdsFromPage)
         {
             //init LoadParams

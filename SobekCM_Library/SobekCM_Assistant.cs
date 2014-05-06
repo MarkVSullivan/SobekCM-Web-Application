@@ -11,6 +11,7 @@ using System.Web.Caching;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
+using SobekCM.Library.ResultsViewer;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
@@ -1139,7 +1140,16 @@ namespace SobekCM.Library
                         }
                     }
                 }
-            }      
+            }
+            //create search results json object and place into session state
+            DataTable TEMPsearchResults = new DataTable();
+            TEMPsearchResults.Columns.Add("BibID", typeof(string));
+            TEMPsearchResults.Columns.Add("Spatial_Coordinates", typeof(string));
+            foreach (iSearch_Title_Result searchTitleResult in Paged_Results)
+            {
+                TEMPsearchResults.Rows.Add(searchTitleResult.BibID, searchTitleResult.Spatial_Coordinates);
+            }
+            HttpContext.Current.Session["TEMPSearchResultsJSON"] = Google_Map_ResultsViewer_Beta.Create_JSON_Search_Results_Object(TEMPsearchResults);
         }
 
         /// <summary> Takes the search string and search fields from the URL and parses them, according to the search type,
@@ -1271,7 +1281,7 @@ namespace SobekCM.Library
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Assistant.Perform_Database_Sear`ch", "Query the database for search results");
+                Tracer.Add_Trace("SobekCM_Assistant.Perform_Database_Search", "Query the database for search results");
             }
 
             // Get the list of facets first
