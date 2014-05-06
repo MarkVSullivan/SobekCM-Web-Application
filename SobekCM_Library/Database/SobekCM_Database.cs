@@ -6909,8 +6909,8 @@ namespace SobekCM.Library.Database
 				paramList[19] = new SqlParameter("@newaggregationid", 0) {Direction = ParameterDirection.InputOutput};
 
                 //BETA
-                paramList[20] = new SqlParameter("@map_search_beta", Map_Search_Beta);
-                paramList[21] = new SqlParameter("@map_display_beta", Map_Display_Beta);
+                //paramList[20] = new SqlParameter("@map_search_beta", Map_Search_Beta);
+                //paramList[21] = new SqlParameter("@map_display_beta", Map_Display_Beta);
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Aggregation", paramList);
