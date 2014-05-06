@@ -40,6 +40,9 @@ namespace SobekCM.Library.AggregationViewer
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search:
                     return SearchType2 == Search_Type_Enum.Map;
 
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search_Beta:
+                    return SearchType2 == Search_Type_Enum.Map_Beta;
+
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Newspaper_Search:
                     return SearchType2 == Search_Type_Enum.Newspaper;
 
@@ -74,6 +77,9 @@ namespace SobekCM.Library.AggregationViewer
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search:
 					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Map, Translations.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode);
+
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search_Beta:
+                    return Menu_HTML_Helper(skinCode, Search_Type_Enum.Map_Beta, Translations.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode);
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Newspaper_Search:
 					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Newspaper, Translations.Get_Translation("NEWSPAPER SEARCH", Current_Mode.Language), Current_Mode);
@@ -152,6 +158,9 @@ namespace SobekCM.Library.AggregationViewer
 
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search:
                     return Tabs_HTML_Helper(skinCode, Search_Type_Enum.Map, Translations.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode, Downward_Tabs);
+
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search_Beta:
+                    return Tabs_HTML_Helper(skinCode, Search_Type_Enum.Map_Beta, Translations.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode, Downward_Tabs);
 
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Newspaper_Search:
                     return Tabs_HTML_Helper(skinCode, Search_Type_Enum.Newspaper, Translations.Get_Translation("NEWSPAPER SEARCH", Current_Mode.Language), Current_Mode, Downward_Tabs);

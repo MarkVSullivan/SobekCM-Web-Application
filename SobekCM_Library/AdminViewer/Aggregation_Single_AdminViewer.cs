@@ -747,6 +747,7 @@ namespace SobekCM.Library.AdminViewer
 			if (Form["admin_aggr_advsearch"] != null) displayOptionsBldr.Append("A");
 			if (Form["admin_aggr_advsearch_years"] != null) displayOptionsBldr.Append("Z");
 			if (Form["admin_aggr_mapsearch"] != null) displayOptionsBldr.Append("M");
+            if (Form["admin_aggr_mapsearchbeta"] != null) displayOptionsBldr.Append("m");
 			if (Form["admin_aggr_mapbrowse"] != null) displayOptionsBldr.Append("G");
 			if (Form["admin_aggr_allitems"] != null) displayOptionsBldr.Append("I");
 
@@ -762,6 +763,7 @@ namespace SobekCM.Library.AdminViewer
 			const string ADVANCED_YEARS_HELP = "Advanced search with year range help place holder";
 			const string FULLTEXT_HELP = "Full text saerch help place holder";
 			const string MAP_SEARCH_HELP = "Map search help place holder";
+            const string MAP_SEARCH_BETA_HELP = "This enables the map searcher [beta]";
 			const string DLOC_SEARCH_HELP = "dLOC-Specific search help place holder";
 			const string NEWSPAPER_SEARCH_HELP = "Newspaper search help place holder";
 			const string ALL_ITEMS_HELP = "All and New Item browses help place holder";
@@ -880,11 +882,25 @@ namespace SobekCM.Library.AdminViewer
 			Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_mapsearch\" id=\"admin_aggr_mapsearch\"");
 			if (itemAggregation.Display_Options.IndexOf("M") >= 0)
 				Output.Write(" checked=\"checked\"");
-			Output.WriteLine(" /> <label for=\"admin_aggr_mapsearch\">Map Search</label>");
+			Output.WriteLine(" /> <label for=\"admin_aggr_mapsearch\">Map Search (Legacy)</label>");
 			Output.WriteLine("        </td>");
 			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + MAP_SEARCH_HELP + "');\"  title=\"" + MAP_SEARCH_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
+
+            // Add line for Map saerch beta
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+            Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_mapsearchbeta\" id=\"admin_aggr_mapsearchbeta\"");
+            if (itemAggregation.Display_Options.IndexOf("m") >= 0)
+                Output.Write(" checked=\"checked\"");
+            Output.WriteLine(" /> <label for=\"admin_aggr_mapsearchbeta\">Map Search (Beta)</label>");
+            Output.WriteLine("        </td>");
+            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + MAP_SEARCH_BETA_HELP + "');\"  title=\"" + MAP_SEARCH_HELP + "\" /></td></tr></table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
 
 
 			// Add line for all/new item browses type

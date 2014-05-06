@@ -718,6 +718,9 @@ namespace SobekCM.Library.Navigation
 							case Result_Display_Type_Enum.Map:
 								folderBuilder.Append("/map");
 								break;
+                            case Result_Display_Type_Enum.Map_Beta:
+                                folderBuilder.Append("/mapbeta");
+                                break;
 							case Result_Display_Type_Enum.Table:
 								folderBuilder.Append("/table");
 								break;
@@ -1318,6 +1321,9 @@ namespace SobekCM.Library.Navigation
 						case Result_Display_Type_Enum.Map:
 							results_url_builder.Append("map/");
 							break;
+                        case Result_Display_Type_Enum.Map_Beta:
+                            results_url_builder.Append("mapbeta/");
+                            break;
 						case Result_Display_Type_Enum.Table:
 							results_url_builder.Append("table/");
 							break;
@@ -1542,6 +1548,8 @@ namespace SobekCM.Library.Navigation
 											return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/image/" + Page + urlOptions1;
 										case Result_Display_Type_Enum.Map:
 											return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/map/" + Page + urlOptions1;
+                                        case Result_Display_Type_Enum.Map_Beta:
+                                            return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/mapbeta/" + Page + urlOptions1;
 										case Result_Display_Type_Enum.Table:
 											return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/table/" + Page + urlOptions1;
 										case Result_Display_Type_Enum.Thumbnails:
@@ -1562,6 +1570,8 @@ namespace SobekCM.Library.Navigation
 										return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/image" + urlOptions1;
 									case Result_Display_Type_Enum.Map:
 										return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/map" + urlOptions1;
+                                    case Result_Display_Type_Enum.Map_Beta:
+                                        return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/mapbeta" + urlOptions1;
 									case Result_Display_Type_Enum.Table:
 										return this_base_url + adjusted_aggregation + "/" + infoBrowseMode + "/table" + urlOptions1;
 									case Result_Display_Type_Enum.Thumbnails:
@@ -1588,6 +1598,8 @@ namespace SobekCM.Library.Navigation
 										return this_base_url + pre_mode_string + infoBrowseMode + "/image/" + Page + urlOptions1;
 									case Result_Display_Type_Enum.Map:
 										return this_base_url + pre_mode_string + infoBrowseMode + "/map/" + Page + urlOptions1;
+                                    case Result_Display_Type_Enum.Map_Beta:
+                                        return this_base_url + pre_mode_string + infoBrowseMode + "/mapsearch/" + Page + urlOptions1;
 									case Result_Display_Type_Enum.Table:
 										return this_base_url + pre_mode_string + infoBrowseMode + "/table/" + Page + urlOptions1;
 									case Result_Display_Type_Enum.Thumbnails:
@@ -1608,6 +1620,8 @@ namespace SobekCM.Library.Navigation
 									return this_base_url + pre_mode_string + infoBrowseMode + "/image" + urlOptions1;
 								case Result_Display_Type_Enum.Map:
 									return this_base_url + pre_mode_string + infoBrowseMode + "/map" + urlOptions1;
+                                case Result_Display_Type_Enum.Map_Beta:
+                                    return this_base_url + pre_mode_string + infoBrowseMode + "/mapsearch" + urlOptions1;
 								case Result_Display_Type_Enum.Table:
 									return this_base_url + pre_mode_string + infoBrowseMode + "/table" + urlOptions1;
 								case Result_Display_Type_Enum.Thumbnails:
