@@ -40,7 +40,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				
 			CurrentUser = Current_User;
 			CurrentItem = Current_Item;
-			this.CurrentMode = Current_Mode;
+			CurrentMode = Current_Mode;
 
 			//string resource_directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
 			//string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
@@ -50,8 +50,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-				CurrentMode.Redirect();
-				return;
+                CurrentMode.Return_URL = Current_Item.BibID + "/" + Current_Item.VID + "/mapedit";
+                CurrentMode.Redirect();
+                return;
 			}
 
 			//holds actions from page
@@ -71,11 +72,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//File.Copy(current_mets, backup_mets_name);
 
 			}
-			catch (Exception)
+			catch (Exception ee)
 			{
 				//Custom_Tracer.Add_Trace("MapEdit Start Failure");
 				throw new ApplicationException("MapEdit Start Failure");
-				throw;
 			}
 		}
 
@@ -1503,8 +1503,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
             catch (Exception ee)
 			{
-				Tracer.Add_Trace("Could Not Create MapEdit Page");
-				throw;
+                throw new SobekCM_Traced_Exception("Could Not Create MapEdit Page", ee, Tracer);
 			}
 
 		}

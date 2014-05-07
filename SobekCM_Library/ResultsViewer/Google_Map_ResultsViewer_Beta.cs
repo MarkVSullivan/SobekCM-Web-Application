@@ -38,7 +38,7 @@ namespace SobekCM.Library.ResultsViewer
                 //do a search for all the items in this agg
                 string temp_AggregationId = CurrentMode.Aggregation;
                 string[] temp_AggregationList = temp_AggregationId.Split(' ');
-                Perform_Aggregation_Search(temp_AggregationList, Tracer);
+                //Perform_Aggregation_Search(temp_AggregationList, Tracer);
             }
 
         }
@@ -95,11 +95,15 @@ namespace SobekCM.Library.ResultsViewer
             mapSearchBuilder.AppendLine("  ");
             //ADD EXISTING POINTS WITH JSON
             mapSearchBuilder.AppendLine("       function initJSON(){ ");
-            if (!string.IsNullOrEmpty(HttpContext.Current.Items["DSR"].ToString()))
+            if (HttpContext.Current.Items["DSR"]!=null)
                 mapSearchBuilder.AppendLine("       DSR = JSON.stringify(" + HttpContext.Current.Items["DSR"].ToString() + "); ");
             mapSearchBuilder.AppendLine("       } ");
             mapSearchBuilder.AppendLine("     </script> ");
             mapSearchBuilder.AppendLine("  ");
+
+            //BETA BLANKET
+            mapSearchBuilder.AppendLine(" <div id=\"container-betaBlanket\">WARNING: This page is currently in beta testing and so some features may not work.</div> ");
+            
             // PAGE LITERAL
             mapSearchBuilder.AppendLine(" <div id=\"container_SearchMap\"></div> ");
             
@@ -125,7 +129,8 @@ namespace SobekCM.Library.ResultsViewer
 
             #region FIDs Support
 
-            //HTML.PagedResults_HtmlSubwriter.Assign_FilterIDs();
+            if (HttpContext.Current.Session["FIDKey"]==null)
+                HttpContext.Current.Session["FIDKey"] = ""; //init
             string FIDKey = HttpContext.Current.Session["FIDKey"].ToString();
             List<string> FIDs = (List<string>)HttpContext.Current.Cache[FIDKey];
             List<string> temp_FIDs = new List<string>();

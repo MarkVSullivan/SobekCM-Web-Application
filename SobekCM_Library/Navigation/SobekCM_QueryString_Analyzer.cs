@@ -352,6 +352,9 @@ namespace SobekCM.Library.Navigation
 											case "map":
 												Navigator.Result_Display_Type = Result_Display_Type_Enum.Map;
 												break;
+                                            case "mapbeta":
+                                                Navigator.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
+                                                break;
 											case "table":
 												Navigator.Result_Display_Type = Result_Display_Type_Enum.Table;
 												break;
@@ -855,6 +858,7 @@ namespace SobekCM.Library.Navigation
 							case "new":
 							case "edit":
 							case "map":
+                            case "mapbeta":
 							case "advanced":
 							case "text":
 							case "results":
@@ -1182,6 +1186,15 @@ namespace SobekCM.Library.Navigation
 						}
 						break;
 
+                    case "mapbeta":
+                        Navigator.Mode = Display_Mode_Enum.Search;
+                        Navigator.Search_Type = Search_Type_Enum.Map_Beta;
+                        if (RemainingURLRedirectList.Count > 1)
+                        {
+                            Navigator.Info_Browse_Mode = RemainingURLRedirectList[1];
+                        }
+                        break;
+
 					case "advanced":
 						Navigator.Mode = Display_Mode_Enum.Search;
 						Navigator.Search_Type = Search_Type_Enum.Advanced;
@@ -1274,6 +1287,10 @@ namespace SobekCM.Library.Navigation
 									Navigator.Result_Display_Type = Result_Display_Type_Enum.Map;
 									search_handled_args++;
 									break;
+                                case "mapbeta":
+                                    Navigator.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
+                                    search_handled_args++;
+                                    break;
 								case "table":
 									Navigator.Result_Display_Type = Result_Display_Type_Enum.Table;
 									search_handled_args++;
@@ -1414,6 +1431,10 @@ namespace SobekCM.Library.Navigation
 									Navigator.Result_Display_Type = Result_Display_Type_Enum.Map;
 									aggr_handled_args++;
 									break;
+                                case "mapbeta":
+                                    Navigator.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
+                                    aggr_handled_args++;
+                                    break;
 								case "table":
 									Navigator.Result_Display_Type = Result_Display_Type_Enum.Table;
 									aggr_handled_args++;
