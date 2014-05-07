@@ -1501,7 +1501,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			MainPlaceHolder.Controls.Add(placeHolderText);
 
 			}
-			catch (Exception)
+            catch (Exception ee)
 			{
 				Tracer.Add_Trace("Could Not Create MapEdit Page");
 				throw;
