@@ -747,7 +747,7 @@ namespace SobekCM.Library.AdminViewer
 			if (Form["admin_aggr_advsearch"] != null) displayOptionsBldr.Append("A");
 			if (Form["admin_aggr_advsearch_years"] != null) displayOptionsBldr.Append("Z");
 			if (Form["admin_aggr_mapsearch"] != null) displayOptionsBldr.Append("M");
-            if (Form["admin_aggr_mapsearchbeta"] != null) displayOptionsBldr.Append("m");
+            if (Form["admin_aggr_mapsearchbeta"] != null) displayOptionsBldr.Append("Q");
 			if (Form["admin_aggr_mapbrowse"] != null) displayOptionsBldr.Append("G");
 			if (Form["admin_aggr_allitems"] != null) displayOptionsBldr.Append("I");
 
@@ -894,7 +894,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
             Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_mapsearchbeta\" id=\"admin_aggr_mapsearchbeta\"");
-            if (itemAggregation.Display_Options.IndexOf("m") >= 0)
+            if (itemAggregation.Display_Options.IndexOf("Q") >= 0)
                 Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_mapsearchbeta\">Map Search (Beta)</label>");
             Output.WriteLine("        </td>");
