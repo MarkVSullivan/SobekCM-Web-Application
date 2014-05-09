@@ -150,7 +150,7 @@ namespace SobekCM.Library.MySobekViewer
             // If a return URL was provided, add a link to return there
             if ((currentMode.Return_URL.Length > 0) && ( currentMode.Return_URL.IndexOf("my") < 0 ))
             {
-				Output.WriteLine("    <tr><td style=\"width:35px\">&nbsp;</td><td><a href=\"" + currentMode.Base_URL + currentMode.Return_URL + "\">Return to " + sobek_text + "</a></td></tr>");
+                Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + currentMode.Base_URL + currentMode.Return_URL + "\"><img src=\"" + currentMode.Default_Images_URL + "return.gif\" /></a></td><td><a href=\"" + currentMode.Base_URL + currentMode.Return_URL + "\">Return to previous " + sobek_text + " page</a></td></tr>");
             }
             
             // Add a log out link
