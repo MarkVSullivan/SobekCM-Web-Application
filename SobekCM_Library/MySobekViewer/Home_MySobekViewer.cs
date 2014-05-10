@@ -147,6 +147,10 @@ namespace SobekCM.Library.MySobekViewer
             currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
 			Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "settings.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Edit my account preferences</a></td></tr>");
 
+            //If the user is a scanning/processing technician, add a link for item tracking here
+            currentMode.My_Sobek_Type=My_Sobek_Type_Enum.Item_Tracking;
+            Output.WriteLine("<tr><td style=\"width:35px\"><a href=\""+currentMode.Redirect_URL()+"\"><img src=\""+currentMode.Default_Images_URL+"track2.gif\"/></a></td><td><a href=\""+currentMode.Redirect_URL()+"\">Track Item Scanning/Processing</a></td></tr>");
+
             // If a return URL was provided, add a link to return there
             if ((currentMode.Return_URL.Length > 0) && ( currentMode.Return_URL.IndexOf("my") < 0 ))
             {
