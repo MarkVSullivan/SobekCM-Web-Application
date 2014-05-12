@@ -853,13 +853,12 @@ namespace SobekCM.Library.Navigation
 								Navigator.Home_Type = Home_Type_Enum.Personalized;
 								break;
 
-
 							case "all":
 							case "new":
 							case "edit":
 							case "map":
                             case "mapbeta":
-							case "advanced":
+                            case "advanced":
 							case "text":
 							case "results":
 							case "contains":

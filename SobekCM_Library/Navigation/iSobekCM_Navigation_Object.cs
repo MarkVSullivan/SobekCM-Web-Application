@@ -104,6 +104,9 @@ namespace SobekCM.Library.Navigation
 		/// <summary>Used to redirect from a legacy URL to a new URL, during URL transition times</summary>
 		Legacy_URL,
 
+        /// <summary> This holds the mapsearch beta enum</summary>
+        MapSearchBeta,
+
 		/// <summary>Display is something from the authenticated portion of mySobek</summary>
 		My_Sobek,
 
