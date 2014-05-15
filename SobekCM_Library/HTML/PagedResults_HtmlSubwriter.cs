@@ -1092,20 +1092,20 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta))
-                {
-                    if (resultView == Result_Display_Type_Enum.Map_Beta)
-                    {
-                        iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAPBETA\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
-                    }
-                    else
-                    {
-                        Mode.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
-                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAPBETA\" class=\"sbkPrsw_ViewIconButton\"/></a>");
-                    }
-                }
+		        if ((Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)) & (currentMode.Use_Beta))
+		        {
+		            if (resultView == Result_Display_Type_Enum.Map_Beta)
+		            {
+		                iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAPBETA\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+		            }
+		            else
+		            {
+		                Mode.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
+		                iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAPBETA\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+		            }
+		        }
 
-                if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+		        if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
                 {
                     if (resultView == Result_Display_Type_Enum.Brief)
                     {
@@ -1928,8 +1928,10 @@ namespace SobekCM.Library.HTML
                 }
                 builder.AppendLine("      var stem_url = '" + url + "';");
                 builder.AppendLine("      var new_url = stem_url.replace('<%CODE%>', code).replace('<%VALUE%>', new_value);");
-                builder.AppendLine("      window.location.href = new_url;");
-                builder.AppendLine("      return false;");
+                builder.AppendLine("      //window.location.href = new_url;");
+                builder.AppendLine("      //return false;");
+                builder.AppendLine("      var new_url_hash = \"?t=\\\"\"+new_value+\"\\\"&f=\"+code;");
+                builder.AppendLine("      window.location.hash = new_url_hash;");
                 builder.AppendLine("    }");
                 builder.AppendLine("  //]]>");
                 builder.AppendLine("</script>");
@@ -1989,7 +1991,7 @@ namespace SobekCM.Library.HTML
                     builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + title + "</div>");
                     builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
                     if (resultsStatistics.Aggregation_Facets.Count > 1)
-                        builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet_callback(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
+                        builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a onclick=\"set_facet_callback(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
                     if ((facetInformation[FACET_INDEX] == '2') || (facetInformation[FACET_INDEX] == '3'))
                     {
                         SortedList<string, string> order_facets = new SortedList<string, string>();
@@ -2019,13 +2021,13 @@ namespace SobekCM.Library.HTML
                     }
                     if (facet_count > MINIMIZED_FACET_COUNT)
                     {
-                        builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet_callback(" + FACET_INDEX + ",'" + other_show_type + "');\">&lt;&lt; " + show_less + " &nbsp; &nbsp;</a></div>");
+                        builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a onclick=\"set_facet_callback(" + FACET_INDEX + ",'" + other_show_type + "');\">&lt;&lt; " + show_less + " &nbsp; &nbsp;</a></div>");
                     }
                     else
                     {
                         if (facet_count < resultsStatistics.Aggregation_Facets.Count)
                         {
-                            builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet_callback(" + FACET_INDEX + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
+                            builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a onclick=\"set_facet_callback(" + FACET_INDEX + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
                         }
                     }
                     builder.AppendLine("</div>");
@@ -2248,17 +2250,17 @@ namespace SobekCM.Library.HTML
             }
 
             Builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + Title + "</div>");
-            Builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
+            Builder.AppendLine("<div class=\"sbkPrsw_FacetBox\"><ul>");
             if (Collection.Count > 1)
             {
-                Builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet_callback(" + (FacetIndex - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
+                Builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a onclick=\"set_facet_callback(" + (FacetIndex - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
             }
             if ((facetInformation[FacetIndex - 1] == '2') || (facetInformation[FacetIndex - 1] == '3'))
             {
                 SortedList<string, string> order_facets = new SortedList<string, string>();
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
-                    order_facets[Collection[facet_count].Facet.ToUpper()] = "<a href=\"\" onclick=\"return add_facet_callback('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />";
+                    order_facets[Collection[facet_count].Facet.ToUpper()] = "<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) </li>";
                     facet_count++;
                 }
                 foreach (string html in order_facets.Values)
@@ -2270,22 +2272,22 @@ namespace SobekCM.Library.HTML
             {
                 while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
                 {
-                    Builder.AppendLine("<a href=\"\" onclick=\"return add_facet_callback('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />");
+                    Builder.AppendLine("<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " )</li>");
                     facet_count++;
                 }
             }
             if (facet_count > MINIMIZED_FACET_COUNT)
             {
-                Builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet_callback(" + (FacetIndex - 1) + ",'" + other_show_type + "');\">&lt;&lt; " + ShowLess + " &nbsp; &nbsp;</a></div>");
+                Builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets loadmoreResults\"><a onclick=\"set_facet_callback(" + (FacetIndex - 1) + ",'" + other_show_type + "');\">&lt;&lt; " + ShowLess + " &nbsp; &nbsp;</a></div>");
             }
             else
             {
                 if (facet_count < Collection.Count)
                 {
-                    Builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet_callback(" + (FacetIndex - 1) + ",'" + other_show_type + "');\">" + ShowMore + " &gt;&gt; &nbsp;</a></div>");
+                    Builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets loadmoreResults\"><a onclick=\"set_facet_callback(" + (FacetIndex - 1) + ",'" + other_show_type + "');\">" + ShowMore + " &gt;&gt; &nbsp;</a></div>");
                 }
             }
-            Builder.AppendLine("</div>");
+            Builder.AppendLine("</ul></div>");
         }
 		
         #endregion

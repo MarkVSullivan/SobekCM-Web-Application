@@ -589,52 +589,47 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			mapeditBuilder.AppendLine("  try{ ");
 			mapeditBuilder.AppendLine("   MAPEDITOR.TRACER.addTracer(\"[INFO]: initServerToClientVars started...\"); ");
 			mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.baseURL = \"" + CurrentMode.Base_URL + "\"; //add baseURL ");
-			
-			//create build time
-			try
-			{
-				string filePath = System.Reflection.Assembly.GetCallingAssembly().Location;
-				const int c_PeHeaderOffset = 60;
-				const int c_LinkerTimestampOffset = 8;
-				byte[] b = new byte[2048];
-				System.IO.Stream s = null;
-				try
-				{
-					s = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-					s.Read(b, 0, 2048);
-				}
-				catch (Exception)
-				{
-					Tracer.Add_Trace("Could Not Create Build Time");
-					throw;
-				}
-				finally
-				{
-					if (s != null)
-					{
-						s.Close();
-					}
-				}
-				int i2 = System.BitConverter.ToInt32(b, c_PeHeaderOffset);
-				int secondsSince1970 = System.BitConverter.ToInt32(b, i2 + c_LinkerTimestampOffset);
-				DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
-				dt = dt.AddSeconds(secondsSince1970);
-				dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
-				string debugTime_buildTimestamp = dt.ToString();
-				//get current timestamp
-				TimeSpan span = (dt - new DateTime(1970, 1, 1, 0, 0, 0, 0));
-				double debugTime_unixTimestamp = span.TotalSeconds;
 
-				mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp = " + debugTime_unixTimestamp + "; //add debugTime ");
-				mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp = \"" + debugTime_buildTimestamp + "\"; //add debugTimestamp ");
-			}
-			catch (Exception)
-			{
-				mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp = 0; //add debugTime ");
-				mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp = \"1/1/1970 00:00:00\"; //add debugTimestamp ");
-				Tracer.Add_Trace("Could Not Create Build Time -Fatal");
-				throw;
-			}
+            #region Get debug time (only while debugging)
+
+#if DEBUG
+            string filePath = System.Reflection.Assembly.GetCallingAssembly().Location;
+            const int c_PeHeaderOffset = 60;
+            const int c_LinkerTimestampOffset = 8;
+            byte[] b = new byte[2048];
+            System.IO.Stream s = null;
+            try
+            {
+                s = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                s.Read(b, 0, 2048);
+            }
+            catch (Exception)
+            {
+                Tracer.Add_Trace("Could Not Create Build Time");
+                throw;
+            }
+            finally
+            {
+                if (s != null)
+                {
+                    s.Close();
+                }
+            }
+            int i2 = System.BitConverter.ToInt32(b, c_PeHeaderOffset);
+            int secondsSince1970 = System.BitConverter.ToInt32(b, i2 + c_LinkerTimestampOffset);
+            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
+            dt = dt.AddSeconds(secondsSince1970);
+            dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
+            string debugTime_buildTimestamp = dt.ToString();
+            //get current timestamp
+            TimeSpan span = (dt - new DateTime(1970, 1, 1, 0, 0, 0, 0));
+            double debugTime_unixTimestamp = span.TotalSeconds;
+
+            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp = " + debugTime_unixTimestamp + "; //add debugTime ");
+            mapeditBuilder.AppendLine("   MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp = \"" + debugTime_buildTimestamp + "\"; //add debugTimestamp ");
+#endif
+
+            #endregion
 			
 			//detemrine if debugging
 			if (CurrentMode.Base_URL.Contains("localhost"))

@@ -451,10 +451,14 @@ function resizeView(param) {
 }
 
 //serach with this facet
-function add_facet_callback(code, new_value) {
+function add_facet_callback2(code, new_value) {
+    alert(code);
+    alert(new_value);
+
+
     var aggregations = "usach";
     var data = "search|filter|" + aggregations + "|" + map.getBounds().getSouthWest().lat() + "|" + map.getBounds().getSouthWest().lng() + "|" + map.getBounds().getNorthEast().lat() + "|" + map.getBounds().getNorthEast().lng() + "|";
-    toServer(data);
+    //toServer(data);
 }
 
 //init filterbox onload
@@ -493,7 +497,7 @@ $(function () {
             // Toggle the panel's icon
             currHeader.children('.ui-icon').toggleClass('ui-icon-triangle-1-e', isPanelSelected).toggleClass('ui-icon-triangle-1-s', !isPanelSelected);
             // Toggle the panel's content
-            currContent.toggleClass('accordion-content-active', !isPanelSelected)
+            currContent.toggleClass('accordion-content-active', !isPanelSelected);
             if (isPanelSelected) { currContent.slideUp(); } else { currContent.slideDown(); }
             // Cancels the default action
             return false;
