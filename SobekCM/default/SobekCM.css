@@ -65,7 +65,20 @@ img { border: 0; }
     color:#fff;
     text-decoration:underline;
     }
-    
+
+#container-betaBlanket {
+    width: 100vw;
+    margin-left: -325px;
+    height: 100vh;
+    margin-top: -265px;
+    padding-top: 50%;
+    position: absolute;
+    background-color:#000000;
+    text-align: center;
+    color: chartreuse;
+    opacity: 0.25;
+}    
+
 #container-facets {
     margin: auto;
     width: 1100px;

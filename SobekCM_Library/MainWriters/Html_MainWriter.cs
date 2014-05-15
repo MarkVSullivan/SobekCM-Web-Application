@@ -553,11 +553,11 @@ namespace SobekCM.Library.MainWriters
 
                 case Display_Mode_Enum.Search:
                 case Display_Mode_Enum.Aggregation:
-		            Aggregation_HtmlSubwriter aggregationSub = subwriter as Aggregation_HtmlSubwriter;
-					if (aggregationSub != null )
+                    Aggregation_HtmlSubwriter aggregationSub = subwriter as Aggregation_HtmlSubwriter;
+                    if (aggregationSub != null)
                     {
                         // Also try to add any controls
-						aggregationSub.Add_Controls(Main_Place_Holder, Tracer);
+                        aggregationSub.Add_Controls(Main_Place_Holder, Tracer);
                     }
                     break;
 

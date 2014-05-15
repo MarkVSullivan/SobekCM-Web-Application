@@ -795,7 +795,7 @@ namespace SobekCM.Library.HTML
             currentMode.Statistics_Type = Statistics_Type_Enum.Usage_Items_By_Collection;
             Output.WriteLine();
             Output.WriteLine("<h2>Selected Collection</h2>");
-            Output.WriteLine("<p>The most commonly accessed titles below are displayed is for the following collection:</p>");
+            Output.WriteLine("<p>The most commonly accessed titles below are displayed for the following collection:</p>");
 			Output.WriteLine("<form name=\"statistics_form\" action=\"Javascript:collection_jump_sobekcm('" + redirect_url + "')\" id=\"addedForm\">");
 			Output.WriteLine("  <blockquote>");
 
