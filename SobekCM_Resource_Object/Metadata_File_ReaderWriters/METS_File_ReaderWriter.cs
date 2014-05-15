@@ -2272,6 +2272,9 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             string fileID = String.Empty;
             string size = String.Empty;
 
+			// Only allow ONE instance of each file in the METS
+	        Dictionary<string, SobekCM_File_Info> filename_to_object = new Dictionary<string, SobekCM_File_Info>();
+
             // begin to loop through the XML DOM tree
             SobekCM_File_Info newFile;
 
@@ -2333,17 +2336,27 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
 	                            if (systemName.ToLower() != "web.config")
 	                            {
-
 		                            newFile = null;
+									// Is this a new FILEID?
 		                            if (!files_by_fileid.ContainsKey(fileID))
 		                            {
-			                            newFile = new SobekCM_File_Info(systemName);
-			                            files_by_fileid[fileID] = newFile;
+										// In addition, is this a new FILENAME?
+										if (filename_to_object.ContainsKey(systemName.ToUpper()))
+										{
+											newFile = filename_to_object[systemName.ToUpper()];
+											files_by_fileid[fileID] = newFile;
+										}
+										else
+										{
+											newFile = new SobekCM_File_Info(systemName);
+											files_by_fileid[fileID] = newFile;
+											filename_to_object[systemName.ToUpper()] = newFile;
+										}
 		                            }
 		                            else
 		                            {
 			                            newFile = files_by_fileid[fileID];
-			                            newFile.System_Name = systemName;
+			                            // newFile.System_Name = systemName;  (SHOULD BE REDUNDANT - removed 5/2014)
 		                            }
 
 		                            if ((!Minimize_File_Info) && (!String.IsNullOrEmpty(checkSum)) && (!String.IsNullOrEmpty(checkSumType)))

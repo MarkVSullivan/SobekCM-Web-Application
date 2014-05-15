@@ -1141,15 +1141,17 @@ namespace SobekCM.Library
                     }
                 }
             }
-            ////create search results json object and place into session state
-            //DataTable TEMPsearchResults = new DataTable();
-            //TEMPsearchResults.Columns.Add("BibID", typeof(string));
-            //TEMPsearchResults.Columns.Add("Spatial_Coordinates", typeof(string));
-            //foreach (iSearch_Title_Result searchTitleResult in Paged_Results)
-            //{
-            //    TEMPsearchResults.Rows.Add(searchTitleResult.BibID, searchTitleResult.Spatial_Coordinates);
-            //}
-            //HttpContext.Current.Session["TEMPSearchResultsJSON"] = Google_Map_ResultsViewer_Beta.Create_JSON_Search_Results_Object(TEMPsearchResults);
+
+
+			////create search results json object and place into session state
+			//DataTable TEMPsearchResults = new DataTable();
+			//TEMPsearchResults.Columns.Add("BibID", typeof(string));
+			//TEMPsearchResults.Columns.Add("Spatial_Coordinates", typeof(string));
+			//foreach (iSearch_Title_Result searchTitleResult in Paged_Results)
+			//{
+			//	TEMPsearchResults.Rows.Add(searchTitleResult.BibID, searchTitleResult.Spatial_Coordinates);
+			//}
+			//HttpContext.Current.Session["TEMPSearchResultsJSON"] = Google_Map_ResultsViewer_Beta.Create_JSON_Search_Results_Object(TEMPsearchResults);
         }
 
         /// <summary> Takes the search string and search fields from the URL and parses them, according to the search type,
