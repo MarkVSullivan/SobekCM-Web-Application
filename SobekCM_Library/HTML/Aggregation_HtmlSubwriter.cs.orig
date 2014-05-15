@@ -2221,28 +2221,26 @@ namespace SobekCM.Library.HTML
 #else
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.min.js\"></script>");
 <<<<<<< HEAD
+
+#endif
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.js\"></script>");
+			Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.hovercard.min.js\"></script>");
+			Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_aggre.js\"></script>");
+
+=======
             // Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.js\"></script>");
             // Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
             //Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.hovercard.min.js\"></script>");
             //Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_aggre.js\"></script>");
-            
-            
 #endif
             //NOTE: The jquery.hovercard.min.js file included below has been modified for SobekCM, and also includes bug fixes. DO NOT REPLACE with another version
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.hovercard.min.js\"></script>");
   //          Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
           Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_aggre.js\"></script>");
             
-			Output.WriteLine();
-=======
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.js\"></script>");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.hovercard.min.js\"></script>");
-            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_aggre.js\"></script>");
-#endif
+>>>>>>> 816e6a4989048fd24542ffe14ce3ae7f2a37b49c
             Output.WriteLine();
->>>>>>> 06d107f82c55ced2537e2605d46a691ae07f097d
         }
 
 		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
