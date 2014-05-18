@@ -756,8 +756,8 @@ namespace SobekCM.Library.HTML
                     if (( currentMode.Mode != Display_Mode_Enum.Aggregation ) || ( currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map ))
                         Output.WriteLine("<div class=\"SobekSearchPanel\">");
 
-                    if ((currentMode.Mode != Display_Mode_Enum.Aggregation) || (currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map_Beta))
-                        Output.WriteLine("<div class=\"SobekSearchPanel\">");
+                    //if ((currentMode.Mode != Display_Mode_Enum.Aggregation) || (currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map_Beta))
+                    //    Output.WriteLine("<div class=\"SobekSearchPanel\">");
                 }
 
                 if (collectionViewer.Type == Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search)
@@ -777,9 +777,10 @@ namespace SobekCM.Library.HTML
                 else
                 {
                     collectionViewer.Add_Search_Box_HTML(Output, Tracer);
-                    Output.WriteLine((( currentMode.Mode != Display_Mode_Enum.Aggregation ) || ( currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map )) ? "</div>" : "<div id=\"pagecontainer_resumed\">");
 
-                    Output.WriteLine(((currentMode.Mode != Display_Mode_Enum.Aggregation) || (currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map_Beta)) ? "</div>" : "<div id=\"pagecontainer_resumed\">");
+	                Output.WriteLine((( currentMode.Mode != Display_Mode_Enum.Aggregation ) || ( currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map )) ? "</div>" : "<div id=\"pagecontainer_resumed\">");
+
+	                //Output.WriteLine(((currentMode.Mode != Display_Mode_Enum.Aggregation) || (currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map_Beta)) ? "</div>" : "<div id=\"pagecontainer_resumed\">");
                 }
 
                 Output.WriteLine();
