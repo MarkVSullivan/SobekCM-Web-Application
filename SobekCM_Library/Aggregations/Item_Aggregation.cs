@@ -325,7 +325,7 @@ namespace SobekCM.Library.Aggregations
 						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Map_Search);
 						break;
 
-                    case 'm':
+                    case 'Q':
                         viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Map_Search_Beta);
                         break;
 

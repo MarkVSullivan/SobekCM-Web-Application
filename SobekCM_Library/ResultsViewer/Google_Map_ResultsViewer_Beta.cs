@@ -102,11 +102,11 @@ namespace SobekCM.Library.ResultsViewer
             mapSearchBuilder.AppendLine("  ");
 
             //BETA BLANKET
-            mapSearchBuilder.AppendLine(" <div id=\"container-betaBlanket\">WARNING: This page is currently in beta testing and so some features may not work.</div> ");
+            //mapSearchBuilder.AppendLine(" <div id=\"container-betaBlanket\">WARNING: This page is currently in beta testing and so some features may not work.</div> ");
             
             // PAGE LITERAL
             mapSearchBuilder.AppendLine(" <div id=\"container_SearchMap\"></div> ");
-            
+
             // Add this to the page
             Literal writeData = new Literal { Text = mapSearchBuilder.ToString() };
             MainPlaceHolder.Controls.Add(writeData);
@@ -129,6 +129,10 @@ namespace SobekCM.Library.ResultsViewer
 
             #region FIDs Support
 
+            //get fids
+            
+
+            //old
             if (HttpContext.Current.Session["FIDKey"]==null)
                 HttpContext.Current.Session["FIDKey"] = ""; //init
             string FIDKey = HttpContext.Current.Session["FIDKey"].ToString();

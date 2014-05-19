@@ -572,8 +572,6 @@
     <Content Include="default\SobekCM_Item.min.css" />
     <Content Include="default\SobekCM_MapEditor.css" />
     <Content Include="default\SobekCM_MapSearch.css" />
-    <Content Include="default\SobekCM_Mapedit_Other.css" />
-    <Content Include="default\SobekCM_Mapedit_Theme_Default.css" />
     <Content Include="default\SobekCM_Metadata.css" />
     <Content Include="default\SobekCM_Metadata.min.css" />
     <Content Include="default\SobekCM_MySobek.css" />

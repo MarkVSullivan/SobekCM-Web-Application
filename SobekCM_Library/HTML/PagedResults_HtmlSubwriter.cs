@@ -169,28 +169,31 @@ namespace SobekCM.Library.HTML
 			}
 		}
 
-		/// <summary> If the results dataset should be displayed in the context of an outer form (such as in
-		/// the case that this is part of the mySobek bookshelf functionality) then the form name should go here.  If 
-		/// no outer form name is provided, this will create its own sort form  </summary>
-		public string Outer_Form_Name { get; set; }
+        #region Properties
 
-		/// <summary> Flag indicates if the bookshelf view should be included in the list of possible views  </summary>
-		public bool Include_Bookshelf_View { get; set; }
+        /// <summary> If the results dataset should be displayed in the context of an outer form (such as in
+        /// the case that this is part of the mySobek bookshelf functionality) then the form name should go here.  If 
+        /// no outer form name is provided, this will create its own sort form  </summary>
+        public string Outer_Form_Name { get; set; }
 
-		/// <summary> Name of the owner of this folder </summary>
-		public string Folder_Owner_Name { private get; set; }
+        /// <summary> Flag indicates if the bookshelf view should be included in the list of possible views  </summary>
+        public bool Include_Bookshelf_View { get; set; }
 
-		/// <summary> Email of the owner of this folder </summary>
-		public string Folder_Owner_Email { private get; set; }
+        /// <summary> Name of the owner of this folder </summary>
+        public string Folder_Owner_Name { private get; set; }
 
-		/// <summary> Text which indicates which values of the current result or browse are being shown</summary>
-		public string Showing_Text { get; private set; }
+        /// <summary> Email of the owner of this folder </summary>
+        public string Folder_Owner_Email { private get; set; }
 
-		/// <summary> Title for the current view, which is used rather than the search explanation </summary>
-		public string Browse_Title { get; set; }
+        /// <summary> Text which indicates which values of the current result or browse are being shown</summary>
+        public string Showing_Text { get; private set; }
 
+        /// <summary> Title for the current view, which is used rather than the search explanation </summary>
+        public string Browse_Title { get; set; }
+        
+        #endregion
 
-		/// <summary> Creates the specific results viewer according the user's preferences in the current request mode </summary>
+        /// <summary> Creates the specific results viewer according the user's preferences in the current request mode </summary>
 		private void create_resultwriter()
 		{
 			if ( resultsStatistics.Total_Items == 0)
@@ -407,7 +410,7 @@ namespace SobekCM.Library.HTML
 		/// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
 		/// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
-		public void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer )
+		public void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
 		{
 			Tracer.Add_Trace("paged_result_html_subwriter.Add_Controls", "Adding controls for the result set");
 
@@ -478,501 +481,715 @@ namespace SobekCM.Library.HTML
 		{
 			Tracer.Add_Trace("paged_result_html_subwriter.Write_HTML", "Rendering HTML");
 
-
-			string sort_by = "Sort By";
-			string showing_range_text = "{0} - {1} of {2} matching titles";
-			string showing_coord_range_text = "{0} - {1} of {2} matching coordinates";
-
-			if (currentMode.Aggregation == "aerials")
-			{
-				showing_coord_range_text = "{0} - {1} of {2} matching flights";
-			}
-
-			if (currentMode.Language == Web_Language_Enum.Spanish)
-			{
-				sort_by = "Organizar";
-				showing_range_text = "{0} - {1} de {2} títulos correspondientes";
-			}
-
-			if (currentMode.Language == Web_Language_Enum.French)
-			{
-				sort_by = "Limiter";
-				showing_range_text = "{0} - {1} de {2} titres correspondants";
-			}
-
-			if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
-				showing_range_text = showing_coord_range_text;
-
-            if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
-                showing_range_text = showing_coord_range_text;
-
-			Display_Mode_Enum initialMode = currentMode.Mode;
-
-			Tracer.Add_Trace("paged_result_html_subwriter.Write_HTML", "Building appropriate ResultsWriter");
-
-			currentMode.Mode = initialMode;
-			if (currentMode.Mode == Display_Mode_Enum.Search)
-				currentMode.Mode = Display_Mode_Enum.Results;
-
-			// If no results, display different information here
-			if ((currentMode.Mode == Display_Mode_Enum.Results) && ( resultsStatistics.Total_Items == 0))
-			{
-				Output.WriteLine("<div class=\"sbkPrsw_DescPanel\" style=\"margin-top:10px\">");
-				Show_Search_Info(Output);
-				Output.WriteLine("</div>");
-				Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">&nbsp;</div>");
-				return true;
-			}
-
-			// Make sure the result writer has been created
-			if (resultWriter == null)
-				create_resultwriter();
-		   Debug.Assert(resultWriter != null, "resultWriter != null");
-			if (resultWriter == null)
-				return false;
-
-			// Determine which rows are being displayed
-			int lastRow = currentMode.Page * RESULTS_PER_PAGE;
-			int startRow = lastRow - 19;
-
-			// Start the form for this, unless we are already in an appropriate form
-			string form_name = Outer_Form_Name;
-			if (form_name.Length == 0)
-				form_name = "sort_form";
-			if (Outer_Form_Name.Length == 0)
-			{
-				string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
-				Output.WriteLine("<form name=\"sort_form\" id=\"addedForm\" method=\"post\" action=\"" + post_url + "\" >");
-			}
-
-			// Get the name of this
-			string currentName = "browse";
-			string currentTitle = "Browse";
-			if (currentMode.Mode == Display_Mode_Enum.Results)
-			{
-				currentName = "search";
-				currentTitle = "Search";
-			}
-			if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
-			{
-				currentName = "public bookshelf";
-				currentTitle = "Public Bookshelf";
-			}
-
-			// Load the HTML that can be used to customize the search/results bar
-			string html_source = String.Empty;
-			string fileToRead = HttpContext.Current.Server.MapPath("default/fragments/search_browse_bar.html");
-			if (File.Exists(fileToRead))
-			{
-				html_source = File.ReadAllText(fileToRead);
-			}
-			
-			// Get the value for the <%SORTER%> directive (to sort the results)
-			string SORTER = String.Empty;
-			if ((resultWriter.Sortable) && (!currentMode.Is_Robot) && (currentMode.Mode != Display_Mode_Enum.My_Sobek) && (currentMode.Mode != Display_Mode_Enum.Public_Folder))
-			{
-				StringBuilder sorterBuilder = new StringBuilder("  <div class=\"sbkPrsw_ResultsSort\">");
-				short current_order = currentMode.Sort;
-				currentMode.Sort = 0;
-				string url = currentMode.Redirect_URL();
-				currentMode.Sort = current_order;
-				sorterBuilder.AppendLine("    " + sort_by + ": &nbsp;");
-				sorterBuilder.AppendLine("    <select name=\"sorter_input\" onchange=\"sort_results('" + url.Replace("&", "&amp;") + "')\" id=\"sorter_input\" class=\"sbkPrsw_SorterDropDown\">");
-				sorterBuilder.AppendLine(sortOptions);
-				sorterBuilder.AppendLine("    </select>");
-				sorterBuilder.AppendLine("  </div>");
-				SORTER = sorterBuilder.ToString();
-			}
-
-			// Get the value for the <%DESCRIPTION%> directive (to explain current display)
-			string DESCRIPTION = String.Empty;
-			string summation;
-			if ((currentMode.Mode == Display_Mode_Enum.Aggregation) || (currentMode.Mode == Display_Mode_Enum.Public_Folder) || ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management))) // browse info only for aggregation
-			{
-				if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
-				{
-					DESCRIPTION = "<h1>&quot;" + translations.Get_Translation(Browse_Title, currentMode.Language) + "&quot;</h1>" + Environment.NewLine + "  <span class=\"sbkPrsw_PublicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>";
-
-					summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " (publicly shared folder)";
-				}
-				else
-				{
-					DESCRIPTION = "<h1>" + translations.Get_Translation(Browse_Title, currentMode.Language) + "</h1>";
-					summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " browse in " + Current_Aggregation.Name; 
-				}                   
-			}
-			else
-			{
-				StringBuilder descriptionBuilder = new StringBuilder();
-				descriptionBuilder.Append("<div class=\"sbkPrsw_ResultsExplanation\">");
-				StringBuilder searchInfoBuilder = new StringBuilder();
-				StringWriter writer = new StringWriter(searchInfoBuilder);
-				Show_Search_Info(writer);
-				summation = searchInfoBuilder.ToString().Replace("<i>", "").Replace("</i>", "").Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26").Replace("</td>","");
-				descriptionBuilder.Append(searchInfoBuilder);
-				descriptionBuilder.Append("</div>");
-				DESCRIPTION = descriptionBuilder.ToString();
-			}
-
-
-			// Get the value for the <%DESCRIPTION%> directive (to explain current display)
-			//ushort current_page = currentMode.Page;
-			string SHOWING = String.Empty;
-			if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Export)
-			{
-				SHOWING = resultsStatistics.Total_Items.ToString();
-			}
-			else
-			{
-				SHOWING = String.Format(showing_range_text, startRow, Math.Min(lastRow, resultsStatistics.Total_Titles), resultWriter.Total_Results);
-				if (startRow == lastRow)
-				{
-					SHOWING = Showing_Text.Replace(startRow + " - " + startRow, startRow + " ");
-				}
-			}
-
-			// Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
-			string LEFT_BUTTONS = String.Empty;
-			string RIGHT_BUTTONS = String.Empty;
-			string first_page = "First Page";
-			string previous_page = "Previous Page";
-			string next_page = "Next Page";
-			string last_page = "Last Page";
-			string first_page_text = "First";
-			string previous_page_text = "Previous";
-			string next_page_text = "Next";
-			string last_page_text = "Last";
-
-			if (currentMode.Language == Web_Language_Enum.Spanish)
-			{
-				first_page = "Primera Página";
-				previous_page = "Página Anterior";
-				next_page = "Página Siguiente";
-				last_page = "Última Página";
-				first_page_text = "Primero";
-				previous_page_text = "Anterior";
-				next_page_text = "Proximo";
-				last_page_text = "Último";
-			}
-
-			if (currentMode.Language == Web_Language_Enum.French)
-			{
-				first_page = "Première Page";
-				previous_page = "Page Précédente";
-				next_page = "Page Suivante";
-				last_page = "Dernière Page";
-				first_page_text = "Première";
-				previous_page_text = "Précédente";
-				next_page_text = "Suivante";
-				last_page_text = "Derniere";
-			}
-
-			// Make sure the result writer has been created
-			if (resultWriter == null)
-				create_resultwriter();
-			if (resultWriter != null)
-			{
-				Debug.Assert(resultWriter != null, "resultWriter != null");
-
-				if (RESULTS_PER_PAGE < resultWriter.Total_Results)
-				{
-					ushort current_page = currentMode.Page;
-					StringBuilder buttons_builder = new StringBuilder(1000);
-
-					// Should the previous and first buttons be enabled?
-					if (current_page > 1)
-					{
-						buttons_builder.Append("<div class=\"sbkPrsw_LeftButtons\">");
-						currentMode.Page = 1;
-						buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-						currentMode.Page = (ushort)(current_page - 1);
-						buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
-						buttons_builder.Append("</div>");
-						LEFT_BUTTONS = buttons_builder.ToString();
-						buttons_builder.Clear();
-					}
-					else
-					{
-						LEFT_BUTTONS = "<div class=\"sbkPrsw_NoLeftButtons\">&nbsp;</div>";
-					}
-
-
-					// Should the next and last buttons be enabled?
-					if ((current_page * RESULTS_PER_PAGE) < resultWriter.Total_Results)
-					{
-						buttons_builder.Append("<div class=\"sbkPrsw_RightButtons\">");
-						currentMode.Page = (ushort)(current_page + 1);
-						buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-						currentMode.Page = (ushort)(resultWriter.Total_Results / RESULTS_PER_PAGE);
-						if (resultWriter.Total_Results % RESULTS_PER_PAGE > 0)
-							currentMode.Page = (ushort)(currentMode.Page + 1);
-						buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
-						buttons_builder.Append("</div>");
-						RIGHT_BUTTONS = buttons_builder.ToString();
-					}
-					else
-					{
-						RIGHT_BUTTONS = "<div class=\"sbkPrsw_NoRightButtons\">&nbsp;</div>";
-					}
-
-					currentMode.Page = current_page;
-				}
-			}
-
-			// Empty strings for now
-			string brief_view = "BRIEF VIEW";
-			string map_view = "MAP VIEW";
-			string table_view = "TABLE VIEW";
-			string thumbnail_view = "THUMBNAIL VIEW";
-			if (Mode.Language == Web_Language_Enum.Spanish)
-			{
-				map_view = "VISTA MAPA";
-				brief_view = "VISTA BREVE";
-				table_view = "VISTA TABLERA";
-				thumbnail_view = "VISTA MINIATURA";
-			}
-			if (Mode.Language == Web_Language_Enum.French)
-			{
-				map_view = "MODE CARTE";
-				brief_view = "MODE SIMPLE";
-				table_view = "MODE DE TABLE";
-				thumbnail_view = "MODE IMAGETTE";
-			}
-			Result_Display_Type_Enum resultView = Mode.Result_Display_Type;
-			StringBuilder iconBuilder = new StringBuilder(1000);
-			iconBuilder.AppendLine();
-			iconBuilder.AppendLine("    <div class=\"sbkPrsw_ViewIconButtons\">");
-			if ((Mode.Coordinates.Length > 0) || (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map)))
-			{
-				if (resultView == Result_Display_Type_Enum.Map)
-				{
-					iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
-				}
-				else
-				{
-					Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
-					iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
-				}
-			}
-
-            if ((Mode.Coordinates.Length > 0) || (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)))
+            if (currentMode.Result_Display_Type != Result_Display_Type_Enum.Map_Beta)
             {
-                if (resultView == Result_Display_Type_Enum.Map_Beta)
+                #region all but map beta
+
+                string sort_by = "Sort By";
+                string showing_range_text = "{0} - {1} of {2} matching titles";
+                string showing_coord_range_text = "{0} - {1} of {2} matching coordinates";
+
+                if (currentMode.Aggregation == "aerials")
                 {
-                    iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                    showing_coord_range_text = "{0} - {1} of {2} matching flights";
+                }
+
+                if (currentMode.Language == Web_Language_Enum.Spanish)
+                {
+                    sort_by = "Organizar";
+                    showing_range_text = "{0} - {1} de {2} títulos correspondientes";
+                }
+
+                if (currentMode.Language == Web_Language_Enum.French)
+                {
+                    sort_by = "Limiter";
+                    showing_range_text = "{0} - {1} de {2} titres correspondants";
+                }
+
+                if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
+                    showing_range_text = showing_coord_range_text;
+
+                if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
+                    showing_range_text = showing_coord_range_text;
+
+                Display_Mode_Enum initialMode = currentMode.Mode;
+
+                Tracer.Add_Trace("paged_result_html_subwriter.Write_HTML", "Building appropriate ResultsWriter");
+
+                currentMode.Mode = initialMode;
+                if (currentMode.Mode == Display_Mode_Enum.Search)
+                    currentMode.Mode = Display_Mode_Enum.Results;
+
+                // If no results, display different information here
+                if ((currentMode.Mode == Display_Mode_Enum.Results) && (resultsStatistics.Total_Items == 0))
+                {
+                    Output.WriteLine("<div class=\"sbkPrsw_DescPanel\" style=\"margin-top:10px\">");
+                    Show_Search_Info(Output);
+                    Output.WriteLine("</div>");
+                    Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">&nbsp;</div>");
+                    return true;
+                }
+
+                // Make sure the result writer has been created
+                if (resultWriter == null)
+                    create_resultwriter();
+                Debug.Assert(resultWriter != null, "resultWriter != null");
+                if (resultWriter == null)
+                    return false;
+
+                // Determine which rows are being displayed
+                int lastRow = currentMode.Page * RESULTS_PER_PAGE;
+                int startRow = lastRow - 19;
+
+                // Start the form for this, unless we are already in an appropriate form
+                string form_name = Outer_Form_Name;
+                if (form_name.Length == 0)
+                    form_name = "sort_form";
+                if (Outer_Form_Name.Length == 0)
+                {
+                    string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
+                    Output.WriteLine("<form name=\"sort_form\" id=\"addedForm\" method=\"post\" action=\"" + post_url + "\" >");
+                }
+
+                // Get the name of this
+                string currentName = "browse";
+                string currentTitle = "Browse";
+                if (currentMode.Mode == Display_Mode_Enum.Results)
+                {
+                    currentName = "search";
+                    currentTitle = "Search";
+                }
+                if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
+                {
+                    currentName = "public bookshelf";
+                    currentTitle = "Public Bookshelf";
+                }
+
+                // Load the HTML that can be used to customize the search/results bar
+                string html_source = String.Empty;
+                string fileToRead = HttpContext.Current.Server.MapPath("default/fragments/search_browse_bar.html");
+                if (File.Exists(fileToRead))
+                {
+                    html_source = File.ReadAllText(fileToRead);
+                }
+
+                // Get the value for the <%SORTER%> directive (to sort the results)
+                string SORTER = String.Empty;
+                if ((resultWriter.Sortable) && (!currentMode.Is_Robot) && (currentMode.Mode != Display_Mode_Enum.My_Sobek) && (currentMode.Mode != Display_Mode_Enum.Public_Folder))
+                {
+                    StringBuilder sorterBuilder = new StringBuilder("  <div class=\"sbkPrsw_ResultsSort\">");
+                    short current_order = currentMode.Sort;
+                    currentMode.Sort = 0;
+                    string url = currentMode.Redirect_URL();
+                    currentMode.Sort = current_order;
+                    sorterBuilder.AppendLine("    " + sort_by + ": &nbsp;");
+                    sorterBuilder.AppendLine("    <select name=\"sorter_input\" onchange=\"sort_results('" + url.Replace("&", "&amp;") + "')\" id=\"sorter_input\" class=\"sbkPrsw_SorterDropDown\">");
+                    sorterBuilder.AppendLine(sortOptions);
+                    sorterBuilder.AppendLine("    </select>");
+                    sorterBuilder.AppendLine("  </div>");
+                    SORTER = sorterBuilder.ToString();
+                }
+
+                // Get the value for the <%DESCRIPTION%> directive (to explain current display)
+                string DESCRIPTION = String.Empty;
+                string summation;
+                if ((currentMode.Mode == Display_Mode_Enum.Aggregation) || (currentMode.Mode == Display_Mode_Enum.Public_Folder) || ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management))) // browse info only for aggregation
+                {
+                    if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
+                    {
+                        DESCRIPTION = "<h1>&quot;" + translations.Get_Translation(Browse_Title, currentMode.Language) + "&quot;</h1>" + Environment.NewLine + "  <span class=\"sbkPrsw_PublicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>";
+
+                        summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " (publicly shared folder)";
+                    }
+                    else
+                    {
+                        DESCRIPTION = "<h1>" + translations.Get_Translation(Browse_Title, currentMode.Language) + "</h1>";
+                        summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " browse in " + Current_Aggregation.Name;
+                    }
                 }
                 else
                 {
-                    Mode.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
-                    iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                    StringBuilder descriptionBuilder = new StringBuilder();
+                    descriptionBuilder.Append("<div class=\"sbkPrsw_ResultsExplanation\">");
+                    StringBuilder searchInfoBuilder = new StringBuilder();
+                    StringWriter writer = new StringWriter(searchInfoBuilder);
+                    Show_Search_Info(writer);
+                    summation = searchInfoBuilder.ToString().Replace("<i>", "").Replace("</i>", "").Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26").Replace("</td>", "");
+                    descriptionBuilder.Append(searchInfoBuilder);
+                    descriptionBuilder.Append("</div>");
+                    DESCRIPTION = descriptionBuilder.ToString();
                 }
+
+
+                // Get the value for the <%DESCRIPTION%> directive (to explain current display)
+                //ushort current_page = currentMode.Page;
+                string SHOWING = String.Empty;
+                if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Export)
+                {
+                    SHOWING = resultsStatistics.Total_Items.ToString();
+                }
+                else
+                {
+                    SHOWING = String.Format(showing_range_text, startRow, Math.Min(lastRow, resultsStatistics.Total_Titles), resultWriter.Total_Results);
+                    if (startRow == lastRow)
+                    {
+                        SHOWING = Showing_Text.Replace(startRow + " - " + startRow, startRow + " ");
+                    }
+                }
+
+                // Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
+                string LEFT_BUTTONS = String.Empty;
+                string RIGHT_BUTTONS = String.Empty;
+                string first_page = "First Page";
+                string previous_page = "Previous Page";
+                string next_page = "Next Page";
+                string last_page = "Last Page";
+                string first_page_text = "First";
+                string previous_page_text = "Previous";
+                string next_page_text = "Next";
+                string last_page_text = "Last";
+
+                if (currentMode.Language == Web_Language_Enum.Spanish)
+                {
+                    first_page = "Primera Página";
+                    previous_page = "Página Anterior";
+                    next_page = "Página Siguiente";
+                    last_page = "Última Página";
+                    first_page_text = "Primero";
+                    previous_page_text = "Anterior";
+                    next_page_text = "Proximo";
+                    last_page_text = "Último";
+                }
+
+                if (currentMode.Language == Web_Language_Enum.French)
+                {
+                    first_page = "Première Page";
+                    previous_page = "Page Précédente";
+                    next_page = "Page Suivante";
+                    last_page = "Dernière Page";
+                    first_page_text = "Première";
+                    previous_page_text = "Précédente";
+                    next_page_text = "Suivante";
+                    last_page_text = "Derniere";
+                }
+
+                // Make sure the result writer has been created
+                if (resultWriter == null)
+                    create_resultwriter();
+                if (resultWriter != null)
+                {
+                    Debug.Assert(resultWriter != null, "resultWriter != null");
+
+                    if (RESULTS_PER_PAGE < resultWriter.Total_Results)
+                    {
+                        ushort current_page = currentMode.Page;
+                        StringBuilder buttons_builder = new StringBuilder(1000);
+
+                        // Should the previous and first buttons be enabled?
+                        if (current_page > 1)
+                        {
+                            buttons_builder.Append("<div class=\"sbkPrsw_LeftButtons\">");
+                            currentMode.Page = 1;
+                            buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                            currentMode.Page = (ushort)(current_page - 1);
+                            buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                            buttons_builder.Append("</div>");
+                            LEFT_BUTTONS = buttons_builder.ToString();
+                            buttons_builder.Clear();
+                        }
+                        else
+                        {
+                            LEFT_BUTTONS = "<div class=\"sbkPrsw_NoLeftButtons\">&nbsp;</div>";
+                        }
+
+
+                        // Should the next and last buttons be enabled?
+                        if ((current_page * RESULTS_PER_PAGE) < resultWriter.Total_Results)
+                        {
+                            buttons_builder.Append("<div class=\"sbkPrsw_RightButtons\">");
+                            currentMode.Page = (ushort)(current_page + 1);
+                            buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                            currentMode.Page = (ushort)(resultWriter.Total_Results / RESULTS_PER_PAGE);
+                            if (resultWriter.Total_Results % RESULTS_PER_PAGE > 0)
+                                currentMode.Page = (ushort)(currentMode.Page + 1);
+                            buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                            buttons_builder.Append("</div>");
+                            RIGHT_BUTTONS = buttons_builder.ToString();
+                        }
+                        else
+                        {
+                            RIGHT_BUTTONS = "<div class=\"sbkPrsw_NoRightButtons\">&nbsp;</div>";
+                        }
+
+                        currentMode.Page = current_page;
+                    }
+                }
+
+                // Empty strings for now
+                string brief_view = "BRIEF VIEW";
+                string map_view = "MAP VIEW";
+                string table_view = "TABLE VIEW";
+                string thumbnail_view = "THUMBNAIL VIEW";
+                if (Mode.Language == Web_Language_Enum.Spanish)
+                {
+                    map_view = "VISTA MAPA";
+                    brief_view = "VISTA BREVE";
+                    table_view = "VISTA TABLERA";
+                    thumbnail_view = "VISTA MINIATURA";
+                }
+                if (Mode.Language == Web_Language_Enum.French)
+                {
+                    map_view = "MODE CARTE";
+                    brief_view = "MODE SIMPLE";
+                    table_view = "MODE DE TABLE";
+                    thumbnail_view = "MODE IMAGETTE";
+                }
+                Result_Display_Type_Enum resultView = Mode.Result_Display_Type;
+                StringBuilder iconBuilder = new StringBuilder(1000);
+                iconBuilder.AppendLine();
+                iconBuilder.AppendLine("    <div class=\"sbkPrsw_ViewIconButtons\">");
+                if ((Mode.Coordinates.Length > 0) || (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map)))
+                {
+                    if (resultView == Result_Display_Type_Enum.Map)
+                    {
+                        iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                    }
+                    else
+                    {
+                        Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
+                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                    }
+                }
+
+                if ((Mode.Coordinates.Length > 0) || (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)))
+                {
+                    if (resultView == Result_Display_Type_Enum.Map_Beta)
+                    {
+                        iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                    }
+                    else
+                    {
+                        Mode.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
+                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                    }
+                }
+
+                if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+                {
+                    if (resultView == Result_Display_Type_Enum.Brief)
+                    {
+                        iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                    }
+                    else
+                    {
+                        Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
+                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + currentMode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                    }
+                }
+
+                if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Table))
+                {
+                    if (resultView == Result_Display_Type_Enum.Table)
+                    {
+                        iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                    }
+                    else
+                    {
+                        Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
+                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + table_view + "\"><img src=\"" + currentMode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                    }
+                }
+
+                if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
+                {
+                    if (resultView == Result_Display_Type_Enum.Thumbnails)
+                    {
+                        iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                    }
+                    else
+                    {
+                        Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
+                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + thumbnail_view + "\"><img src=\"" + currentMode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                    }
+                }
+                Mode.Result_Display_Type = resultView;
+                iconBuilder.AppendLine("    </div>");
+                string VIEWICONS = iconBuilder.ToString();
+                string NEWSEARCH = String.Empty;
+                string ADDFILTER = String.Empty;
+
+                // Start the division for the sort and then description and buttons, etc..
+                switch (currentMode.Mode)
+                {
+                    case Display_Mode_Enum.Public_Folder:
+                        Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_FolderDescPanel\">");
+                        break;
+
+                    case Display_Mode_Enum.Aggregation:  // browse info only
+                        Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_BrowseDescPanel\">");
+                        break;
+
+                    default:
+                        Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_ResultsDescPanel\">");
+                        break;
+                }
+
+                // Now, write this 
+                Output.WriteLine(html_source.Replace("<%DESCRIPTION%>", DESCRIPTION).Replace("<%NEWSEARCH%>", NEWSEARCH).Replace("<%ADDFILTER%>", ADDFILTER).Replace("<%VIEWICONS%>", VIEWICONS).Replace("<%LEFTBUTTONS%>", LEFT_BUTTONS).Replace("<%SHOWING%>", SHOWING).Replace("<%RIGHTBUTTONS%>", RIGHT_BUTTONS).Replace("<%SORTER%>", SORTER));
+
+                // End this division
+                Output.WriteLine("</div>");
+                Output.WriteLine();
+
+                // Configure the way to remove search terms
+                if ((SobekCM_Library_Settings.Can_Remove_Single_Term) && (term_counter > 0))
+                {
+                    Output.WriteLine("<script>");
+                    for (int i = 1; i <= term_counter; i++)
+                    {
+                        Output.WriteLine("  init_search_term('searchterm" + i + "', 'removesearchterm" + i + "');");
+                    }
+                    Output.WriteLine("</script>");
+                    Output.WriteLine();
+                }
+
+                // Save the buttons for later, to be used at the bottom of the page
+                leftButtons = LEFT_BUTTONS;
+                rightButtons = RIGHT_BUTTONS;
+
+                // Determine the number of columns for text areas, depending on browser
+                int actual_cols = 50;
+                if (currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0)
+                    actual_cols = 45;
+
+                // Add the hidden field
+                Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+                if (currentMode.Mode != Display_Mode_Enum.My_Sobek)
+                {
+                    Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
+                }
+                Output.WriteLine("<input type=\"hidden\" id=\"url_description\" name=\"url_description\" value=\"" + HttpUtility.HtmlEncode(summation) + "\" />");
+                Output.WriteLine("<input type=\"hidden\" id=\"list_type\" name=\"list_type\" value=\"" + currentName + "\" />");
+                Output.WriteLine();
+
+                // Add the scripts needed
+                if (currentMode.Mode != Display_Mode_Enum.My_Sobek)
+                {
+                    Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+                    Output.WriteLine();
+                }
+
+                #region Email form
+
+                if (currentUser != null)
+                {
+                    Output.WriteLine("<!-- Email form -->");
+                    Output.WriteLine("<div class=\"email_popup_div\" id=\"form_email\" style=\"display:none;\">");
+                    Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">S<span class=\"smaller\">END THIS</span> " + currentTitle + "<span class=\"smaller\"> TO A</span> F<span class=\"smaller\">RIEND</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+                    Output.WriteLine("  <br />");
+                    Output.WriteLine("  <fieldset><legend>Enter the email information below &nbsp; </legend>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("    <table class=\"popup_table\">");
+
+
+                    // Add email address line
+                    Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"email_address\">To:</label></td>");
+                    Output.WriteLine("<td><input class=\"email_input\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + currentUser.Email + "\" onfocus=\"javascript:textbox_enter('email_address', 'email_input_focused')\" onblur=\"javascript:textbox_leave('email_address', 'email_input')\" /></td></tr>");
+
+                    // Add comments area
+                    Output.Write("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"email_comments\">Comments:</label></td>");
+                    Output.WriteLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"email_comments\" id=\"email_comments\" class=\"email_textarea\" onfocus=\"javascript:textbox_enter('email_comments','email_textarea_focused')\" onblur=\"javascript:textbox_leave('email_comments','email_textarea')\"></textarea></td></tr>");
+
+                    // Add format area
+                    Output.Write("      <tr align=\"left\" valign=\"top\"><td>Format:</td>");
+                    Output.Write("<td><input type=\"radio\" name=\"email_format\" id=\"email_format_html\" value=\"html\" checked=\"checked\" /> <label for=\"email_format_html\">HTML</label> &nbsp; &nbsp; ");
+                    Output.WriteLine("<input type=\"radio\" name=\"email_format\" id=\"email_format_text\" value=\"text\" /> <label for=\"email_format_text\">Plain Text</label></td></tr>");
+
+
+                    Output.WriteLine("    </table>");
+                    Output.WriteLine("    <br />");
+                    Output.WriteLine("  </fieldset><br />");
+                    Output.WriteLine("  <center><a href=\"\" onclick=\"return email_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/send_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
+                    Output.WriteLine("</div>");
+                    Output.WriteLine();
+                }
+
+                #endregion
+
+                if (currentMode.Mode != Display_Mode_Enum.My_Sobek)
+                {
+
+                    #region Save search/browse form
+
+                    if (currentUser != null)
+                    {
+                        Output.WriteLine("<!-- Save search/browse -->");
+                        Output.WriteLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\">");
+                        Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">A<span class=\"smaller\">DD THIS</span> " + currentTitle + "<span class=\"smaller\"> TO YOUR</span> S<span class=\"smaller\">AVED</span> S<span class=\"smaller\">EARCHES</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"add_item_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+                        Output.WriteLine("  <br />");
+                        Output.WriteLine("  <fieldset><legend>Enter notes for this " + currentName + " &nbsp; </legend>");
+                        Output.WriteLine("    <br />");
+                        Output.WriteLine("    <table class=\"popup_table\">");
+
+                        // Add comments area
+                        Output.Write("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"add_notes\">Description:</label></td>");
+                        Output.WriteLine("<td><textarea rows=\"8\" cols=\"" + actual_cols + "\" name=\"add_notes\" id=\"add_notes\" class=\"add_notes_textarea\" onfocus=\"javascript:textbox_enter('add_notes','add_notes_textarea_focused')\" onblur=\"javascript:textbox_leave('add_notes','add_notes_textarea')\">" + summation + "</textarea></td></tr>");
+                        Output.WriteLine("      <tr align=\"left\" valign=\"top\"><td>&nbsp;</td><td><input type=\"checkbox\" id=\"open_searches\" name=\"open_searches\" value=\"open\" /> <label for=\"open_searches\">Open saved searches in new window</label></td></tr>");
+                        Output.WriteLine("    </table>");
+                        Output.WriteLine("    <br />");
+                        Output.WriteLine("  </fieldset><br />");
+                        Output.WriteLine("  <center><a href=\"\" onclick=\"return add_item_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
+                        Output.WriteLine("</div>");
+                        Output.WriteLine();
+                    }
+
+                    #endregion
+
+                    #region Share form
+
+                    // Calculate the title and url
+                    string title = HttpUtility.HtmlEncode(summation);
+                    string share_url = HttpContext.Current.Items["Original_URL"].ToString().Replace("&", "%26").Replace("?", "%3F").Replace("http://", "").Replace("=", "%3D").Replace("\"", "&quot;");
+
+                    Output.WriteLine("<!-- Share form -->");
+                    Output.WriteLine("<div class=\"share_popup_div\" id=\"share_form\" style=\"display:none;\">");
+
+                    Output.WriteLine("<a href=\"http://www.facebook.com/share.php?u=" + share_url + "&amp;t=" + title + "\" target=\"FACEBOOK_WINDOW\" onmouseover=\"facebook_share.src='" + currentMode.Base_URL + "default/images/facebook_share_h.gif'\" onmouseout=\"facebook_share.src='" + currentMode.Base_URL + "default/images/facebook_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"facebook_share\" name=\"facebook_share\" src=\"" + currentMode.Base_URL + "default/images/facebook_share.gif\" alt=\"FACEBOOK\" /></a>");
+                    Output.WriteLine("<a href=\"http://buzz.yahoo.com/buzz?targetUrl=" + share_url + "&amp;headline=" + title + "\" target=\"YAHOOBUZZ_WINDOW\" onmouseover=\"yahoobuzz_share.src='" + currentMode.Base_URL + "default/images/yahoobuzz_share_h.gif'\" onmouseout=\"yahoobuzz_share.src='" + currentMode.Base_URL + "default/images/yahoobuzz_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoobuzz_share\" name=\"yahoobuzz_share\" src=\"" + currentMode.Base_URL + "default/images/yahoobuzz_share.gif\" alt=\"YAHOO BUZZ\" /></a>");
+                    Output.WriteLine("<br />");
+
+                    Output.WriteLine("<a href=\"http://twitter.com/home?status=Currently reading " + share_url + "\" target=\"TWITTER_WINDOW\" onmouseover=\"twitter_share.src='" + currentMode.Base_URL + "default/images/twitter_share_h.gif'\" onmouseout=\"twitter_share.src='" + currentMode.Base_URL + "default/images/twitter_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"twitter_share\" name=\"twitter_share\" src=\"" + currentMode.Base_URL + "default/images/twitter_share.gif\" alt=\"TWITTER\" /></a>");
+                    Output.WriteLine("<a href=\"http://www.google.com/bookmarks/mark?op=add&amp;bkmk=" + share_url + "&amp;title=" + title + "\" target=\"GOOGLE_WINDOW\" onmouseover=\"google_share.src='" + currentMode.Base_URL + "default/images/google_share_h.gif'\" onmouseout=\"google_share.src='" + currentMode.Base_URL + "default/images/google_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"google_share\" name=\"google_share\" src=\"" + currentMode.Base_URL + "default/images/google_share.gif\" alt=\"GOOGLE SHARE\" /></a>");
+                    Output.WriteLine("<br />");
+
+                    Output.WriteLine("<a href=\"http://www.stumbleupon.com/submit?url=" + share_url + "&amp;title=" + title + "\" target=\"STUMBLEUPON_WINDOW\" onmouseover=\"stumbleupon_share.src='" + currentMode.Base_URL + "default/images/stumbleupon_share_h.gif'\" onmouseout=\"stumbleupon_share.src='" + currentMode.Base_URL + "default/images/stumbleupon_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"stumbleupon_share\" name=\"stumbleupon_share\" src=\"" + currentMode.Base_URL + "default/images/stumbleupon_share.gif\" alt=\"STUMBLEUPON\" /></a>");
+                    Output.WriteLine("<a href=\"http://myweb.yahoo.com/myresults/bookmarklet?t=" + title + "&amp;u=" + share_url + "\" target=\"YAHOO_WINDOW\" onmouseover=\"yahoo_share.src='" + currentMode.Base_URL + "default/images/yahoo_share_h.gif'\" onmouseout=\"yahoo_share.src='" + currentMode.Base_URL + "default/images/yahoo_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoo_share\" name=\"yahoo_share\" src=\"" + currentMode.Base_URL + "default/images/yahoo_share.gif\" alt=\"YAHOO SHARE\" /></a>");
+                    Output.WriteLine("<br />");
+
+                    Output.WriteLine("<a href=\"http://digg.com/submit?phase=2&amp;url=" + share_url + "&amp;title=" + title + "\" target=\"DIGG_WINDOW\" onmouseover=\"digg_share.src='" + currentMode.Base_URL + "default/images/digg_share_h.gif'\" onmouseout=\"digg_share.src='" + currentMode.Base_URL + "default/images/digg_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"digg_share\" name=\"digg_share\" src=\"" + currentMode.Base_URL + "default/images/digg_share.gif\" alt=\"DIGG\" /></a>");
+                    Output.WriteLine("<a onmouseover=\"favorites_share.src='" + currentMode.Base_URL + "default/images/favorites_share_h.gif'\" onmouseout=\"favorites_share.src='" + currentMode.Base_URL + "default/images/favorites_share.gif'\" onclick=\"javascript:add_to_favorites();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"favorites_share\" name=\"favorites_share\" src=\"" + currentMode.Base_URL + "default/images/favorites_share.gif\" alt=\"MY FAVORITES\" /></a>");
+                    Output.WriteLine("<br />");
+
+                    Output.WriteLine("</div>");
+                    Output.WriteLine();
+
+                    #endregion
+
+                }
+
+                if (Outer_Form_Name.Length == 0)
+                    Output.WriteLine("</form>");
+
+                #endregion
             }
+            else
+		    {
+                #region map beta
 
-			if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
-			{
-				if (resultView == Result_Display_Type_Enum.Brief)
-				{
-					iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
-				}
-				else
-				{
-					Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
-					iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + currentMode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
-				}
-			}
+                Display_Mode_Enum initialMode = currentMode.Mode;
 
-			if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Table))
-			{
-				if (resultView == Result_Display_Type_Enum.Table)
-				{
-					iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
-				}
-				else
-				{
-					Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
-					iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + table_view + "\"><img src=\"" + currentMode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButton\"/></a>");
-				}
-			}
+                currentMode.Mode = initialMode;
+                if (currentMode.Mode == Display_Mode_Enum.Search)
+                    currentMode.Mode = Display_Mode_Enum.Results;
 
-			if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
-			{
-				if (resultView == Result_Display_Type_Enum.Thumbnails)
-				{
-					iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
-				}
-				else
-				{
-					Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
-					iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + thumbnail_view + "\"><img src=\"" + currentMode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButton\"/></a>");
-				}
-			}
-			Mode.Result_Display_Type = resultView;
-			iconBuilder.AppendLine("    </div>");
-			string VIEWICONS = iconBuilder.ToString();
-            string NEWSEARCH = String.Empty;
-            string ADDFILTER = String.Empty;
-            
-			// Start the division for the sort and then description and buttons, etc..
-			switch (currentMode.Mode)
-			{
-				case Display_Mode_Enum.Public_Folder:
-					Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_FolderDescPanel\">");
-					break;
+                // If no results, display different information here
+                if ((currentMode.Mode == Display_Mode_Enum.Results) && (resultsStatistics.Total_Items == 0))
+                {
+                    Output.WriteLine("<div class=\"sbkPrsw_DescPanel\" style=\"margin-top:10px\">");
+                    Show_Search_Info(Output);
+                    Output.WriteLine("</div>");
+                    Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">&nbsp;</div>");
+                    return true;
+                }
 
-				case Display_Mode_Enum.Aggregation:  // browse info only
-					Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_BrowseDescPanel\">");
-					break;
+                // Load the HTML that can be used to customize the search/results bar
+                string html_source = String.Empty;
+                string fileToRead = HttpContext.Current.Server.MapPath("default/fragments/search_browse_bar.html");
+                if (File.Exists(fileToRead))
+                {
+                    html_source = File.ReadAllText(fileToRead);
+                }
 
-				default:
-					Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_ResultsDescPanel\">");
-					break;
-			}
+                // Get the value for the <%SORTER%> directive (to sort the results)
+                string SORTER = String.Empty;
 
-			// Now, write this 
-			Output.WriteLine(html_source.Replace("<%DESCRIPTION%>", DESCRIPTION).Replace("<%NEWSEARCH%>", NEWSEARCH).Replace("<%ADDFILTER%>", ADDFILTER).Replace("<%VIEWICONS%>", VIEWICONS).Replace("<%LEFTBUTTONS%>", LEFT_BUTTONS).Replace("<%SHOWING%>", SHOWING).Replace("<%RIGHTBUTTONS%>", RIGHT_BUTTONS).Replace("<%SORTER%>", SORTER));
+                // Get the value for the <%DESCRIPTION%> directive (to explain current display)
+                string DESCRIPTION = String.Empty;
+                string summation;
+                if ((currentMode.Mode == Display_Mode_Enum.Aggregation) || (currentMode.Mode == Display_Mode_Enum.Public_Folder) || ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management))) // browse info only for aggregation
+                {
+                    if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
+                    {
+                        DESCRIPTION = "<h1>&quot;" + translations.Get_Translation(Browse_Title, currentMode.Language) + "&quot;</h1>" + Environment.NewLine + "  <span class=\"sbkPrsw_PublicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>";
 
-			// End this division
-			Output.WriteLine("</div>");
-			Output.WriteLine();
+                        summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " (publicly shared folder)";
+                    }
+                    else
+                    {
+                        DESCRIPTION = "<h1>" + translations.Get_Translation(Browse_Title, currentMode.Language) + "</h1>";
+                        summation = translations.Get_Translation(Browse_Title, currentMode.Language) + " browse in " + Current_Aggregation.Name;
+                    }
+                }
+                else
+                {
+                    StringBuilder descriptionBuilder = new StringBuilder();
+                    descriptionBuilder.Append("<div class=\"sbkPrsw_ResultsExplanation\">");
+                    StringBuilder searchInfoBuilder = new StringBuilder();
+                    StringWriter writer = new StringWriter(searchInfoBuilder);
+                    Show_Search_Info(writer);
+                    summation = searchInfoBuilder.ToString().Replace("<i>", "").Replace("</i>", "").Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26").Replace("</td>", "");
+                    descriptionBuilder.Append(searchInfoBuilder);
+                    descriptionBuilder.Append("</div>");
+                    DESCRIPTION = descriptionBuilder.ToString();
+                }
 
-			// Configure the way to remove search terms
-			if (( SobekCM_Library_Settings.Can_Remove_Single_Term ) && ( term_counter > 0 ))
-			{
-				Output.WriteLine("<script>");
-				for (int i = 1; i <= term_counter; i++)
-				{
-					Output.WriteLine("  init_search_term('searchterm" + i + "', 'removesearchterm" + i + "');");
-				}
-				Output.WriteLine("</script>");
-				Output.WriteLine();
-			}
+                //// Get the value for the <%DESCRIPTION%> directive (to explain current display)
+                //string DESCRIPTION = String.Empty;
+                //DESCRIPTION = "<div id\"descriptionHolder\"></div>";
 
-			// Save the buttons for later, to be used at the bottom of the page
-			leftButtons = LEFT_BUTTONS;
-			rightButtons = RIGHT_BUTTONS;
-	
-			// Determine the number of columns for text areas, depending on browser
-			int actual_cols = 50;
-			if (currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0)
-				actual_cols = 45;
+                string SHOWING = String.Empty;
+                SHOWING = "showing <div id=\"showingCountHook\" style=\"display:inline;\"></div> matching titles";
 
-			// Add the hidden field
-			Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
-			if (currentMode.Mode != Display_Mode_Enum.My_Sobek)
-			{
-				Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
-			}
-			Output.WriteLine("<input type=\"hidden\" id=\"url_description\" name=\"url_description\" value=\"" + HttpUtility.HtmlEncode(summation) + "\" />");
-			Output.WriteLine("<input type=\"hidden\" id=\"list_type\" name=\"list_type\" value=\"" + currentName + "\" />");
-			Output.WriteLine();
+                // Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
+                string LEFT_BUTTONS = String.Empty;
+                string RIGHT_BUTTONS = String.Empty;
 
-			// Add the scripts needed
-			if (currentMode.Mode != Display_Mode_Enum.My_Sobek)
-			{
-				Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
-				Output.WriteLine();
-			}
+                #region view icons
 
-			#region Email form
+                // Empty strings for now
+                string brief_view = "BRIEF VIEW";
+                string map_view = "MAP VIEW";
+                string table_view = "TABLE VIEW";
+                string thumbnail_view = "THUMBNAIL VIEW";
+                if (Mode.Language == Web_Language_Enum.Spanish)
+                {
+                    map_view = "VISTA MAPA";
+                    brief_view = "VISTA BREVE";
+                    table_view = "VISTA TABLERA";
+                    thumbnail_view = "VISTA MINIATURA";
+                }
+                if (Mode.Language == Web_Language_Enum.French)
+                {
+                    map_view = "MODE CARTE";
+                    brief_view = "MODE SIMPLE";
+                    table_view = "MODE DE TABLE";
+                    thumbnail_view = "MODE IMAGETTE";
+                }
+                Result_Display_Type_Enum resultView = Mode.Result_Display_Type;
+                StringBuilder iconBuilder = new StringBuilder(1000);
+                iconBuilder.AppendLine();
+                iconBuilder.AppendLine("    <div class=\"sbkPrsw_ViewIconButtons\">");
+                if ((Mode.Coordinates.Length > 0) || (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map)))
+                {
+                    if (resultView == Result_Display_Type_Enum.Map)
+                    {
+                        iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                    }
+                    else
+                    {
+                        Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
+                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                    }
+                }
 
-			if (currentUser != null)
-			{
-				Output.WriteLine("<!-- Email form -->");
-				Output.WriteLine("<div class=\"email_popup_div\" id=\"form_email\" style=\"display:none;\">");
-				Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">S<span class=\"smaller\">END THIS</span> " + currentTitle + "<span class=\"smaller\"> TO A</span> F<span class=\"smaller\">RIEND</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
-				Output.WriteLine("  <br />");
-				Output.WriteLine("  <fieldset><legend>Enter the email information below &nbsp; </legend>");
-				Output.WriteLine("    <br />");
-				Output.WriteLine("    <table class=\"popup_table\">");
+		        if ((Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)) & (currentMode.Use_Beta))
+		        {
+		            if (resultView == Result_Display_Type_Enum.Map_Beta)
+		            {
+		                iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAPBETA\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+		            }
+		            else
+		            {
+		                Mode.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
+		                iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + currentMode.Default_Images_URL + "geo_blue.png\" alt=\"MAPBETA\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+		            }
+		        }
 
+		        if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+                {
+                    if (resultView == Result_Display_Type_Enum.Brief)
+                    {
+                        iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                    }
+                    else
+                    {
+                        Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
+                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + currentMode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                    }
+                }
 
-				// Add email address line
-				Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"email_address\">To:</label></td>");
-				Output.WriteLine("<td><input class=\"email_input\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + currentUser.Email + "\" onfocus=\"javascript:textbox_enter('email_address', 'email_input_focused')\" onblur=\"javascript:textbox_leave('email_address', 'email_input')\" /></td></tr>");
+                if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Table))
+                {
+                    if (resultView == Result_Display_Type_Enum.Table)
+                    {
+                        iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                    }
+                    else
+                    {
+                        Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
+                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + table_view + "\"><img src=\"" + currentMode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                    }
+                }
 
-				// Add comments area
-				Output.Write("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"email_comments\">Comments:</label></td>");
-				Output.WriteLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"email_comments\" id=\"email_comments\" class=\"email_textarea\" onfocus=\"javascript:textbox_enter('email_comments','email_textarea_focused')\" onblur=\"javascript:textbox_leave('email_comments','email_textarea')\"></textarea></td></tr>");
+                if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
+                {
+                    if (resultView == Result_Display_Type_Enum.Thumbnails)
+                    {
+                        iconBuilder.AppendLine("      <img src=\"" + currentMode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                    }
+                    else
+                    {
+                        Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
+                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + thumbnail_view + "\"><img src=\"" + currentMode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                    }
+                }
+                Mode.Result_Display_Type = resultView;
+                iconBuilder.AppendLine("    </div>");
+                string VIEWICONS = iconBuilder.ToString();
 
-				// Add format area
-				Output.Write("      <tr align=\"left\" valign=\"top\"><td>Format:</td>");
-				Output.Write("<td><input type=\"radio\" name=\"email_format\" id=\"email_format_html\" value=\"html\" checked=\"checked\" /> <label for=\"email_format_html\">HTML</label> &nbsp; &nbsp; ");
-				Output.WriteLine("<input type=\"radio\" name=\"email_format\" id=\"email_format_text\" value=\"text\" /> <label for=\"email_format_text\">Plain Text</label></td></tr>");
+                #endregion
 
+                string NEWSEARCH = String.Empty;
 
-				Output.WriteLine("    </table>");
-				Output.WriteLine("    <br />");
-				Output.WriteLine("  </fieldset><br />");
-				Output.WriteLine("  <center><a href=\"\" onclick=\"return email_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/send_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
-				Output.WriteLine("</div>");
-				Output.WriteLine();
-			}
+                string ADDFILTER = String.Empty;
 
-			#endregion
+                // Start the division for the sort and then description and buttons, etc..
+                switch (currentMode.Mode)
+                {
+                    case Display_Mode_Enum.Public_Folder:
+                        Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_FolderDescPanel\">");
+                        break;
 
-			if (currentMode.Mode != Display_Mode_Enum.My_Sobek)
-			{
+                    case Display_Mode_Enum.Aggregation:  // browse info only
+                        Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_BrowseDescPanel\">");
+                        break;
 
-				#region Save search/browse form
+                    default:
+                        Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_ResultsDescPanel\">");
+                        break;
+                }
 
-				if (currentUser != null)
-				{
-					Output.WriteLine("<!-- Save search/browse -->");
-					Output.WriteLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\">");
-					Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">A<span class=\"smaller\">DD THIS</span> " + currentTitle + "<span class=\"smaller\"> TO YOUR</span> S<span class=\"smaller\">AVED</span> S<span class=\"smaller\">EARCHES</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"add_item_form_close()\">X</a> &nbsp; </td></tr></table></div>");
-					Output.WriteLine("  <br />");
-					Output.WriteLine("  <fieldset><legend>Enter notes for this " + currentName + " &nbsp; </legend>");
-					Output.WriteLine("    <br />");
-					Output.WriteLine("    <table class=\"popup_table\">");
+                // Now, write this 
+                Output.WriteLine(html_source.Replace("<%DESCRIPTION%>", DESCRIPTION).Replace("<%NEWSEARCH%>", NEWSEARCH).Replace("<%ADDFILTER%>", ADDFILTER).Replace("<%VIEWICONS%>", VIEWICONS).Replace("<%LEFTBUTTONS%>", LEFT_BUTTONS).Replace("<%SHOWING%>", SHOWING).Replace("<%RIGHTBUTTONS%>", RIGHT_BUTTONS).Replace("<%SORTER%>", SORTER));
 
-					// Add comments area
-					Output.Write("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"add_notes\">Description:</label></td>");
-					Output.WriteLine("<td><textarea rows=\"8\" cols=\"" + actual_cols + "\" name=\"add_notes\" id=\"add_notes\" class=\"add_notes_textarea\" onfocus=\"javascript:textbox_enter('add_notes','add_notes_textarea_focused')\" onblur=\"javascript:textbox_leave('add_notes','add_notes_textarea')\">" + summation + "</textarea></td></tr>");
-					Output.WriteLine("      <tr align=\"left\" valign=\"top\"><td>&nbsp;</td><td><input type=\"checkbox\" id=\"open_searches\" name=\"open_searches\" value=\"open\" /> <label for=\"open_searches\">Open saved searches in new window</label></td></tr>");
-					Output.WriteLine("    </table>");
-					Output.WriteLine("    <br />");
-					Output.WriteLine("  </fieldset><br />");
-					Output.WriteLine("  <center><a href=\"\" onclick=\"return add_item_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
-					Output.WriteLine("</div>");
-					Output.WriteLine();
-				}
+                // End this division
+                Output.WriteLine("</div>");
+                Output.WriteLine();
 
-				#endregion
+                // Configure the way to remove search terms
+                if ((SobekCM_Library_Settings.Can_Remove_Single_Term) && (term_counter > 0))
+                {
+                    Output.WriteLine("<script>");
+                    for (int i = 1; i <= term_counter; i++)
+                    {
+                        Output.WriteLine("  init_search_term('searchterm" + i + "', 'removesearchterm" + i + "');");
+                    }
+                    Output.WriteLine("</script>");
+                    Output.WriteLine();
+                }
 
-				#region Share form
-
-				// Calculate the title and url
-				string title = HttpUtility.HtmlEncode(summation);
-				string share_url = HttpContext.Current.Items["Original_URL"].ToString().Replace("&", "%26").Replace("?", "%3F").Replace("http://", "").Replace("=", "%3D").Replace("\"","&quot;");
-
-				Output.WriteLine("<!-- Share form -->");
-				Output.WriteLine("<div class=\"share_popup_div\" id=\"share_form\" style=\"display:none;\">");
-
-				Output.WriteLine("<a href=\"http://www.facebook.com/share.php?u=" + share_url + "&amp;t=" + title + "\" target=\"FACEBOOK_WINDOW\" onmouseover=\"facebook_share.src='" + currentMode.Base_URL + "default/images/facebook_share_h.gif'\" onmouseout=\"facebook_share.src='" + currentMode.Base_URL + "default/images/facebook_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"facebook_share\" name=\"facebook_share\" src=\"" + currentMode.Base_URL + "default/images/facebook_share.gif\" alt=\"FACEBOOK\" /></a>");
-				Output.WriteLine("<a href=\"http://buzz.yahoo.com/buzz?targetUrl=" + share_url + "&amp;headline=" + title + "\" target=\"YAHOOBUZZ_WINDOW\" onmouseover=\"yahoobuzz_share.src='" + currentMode.Base_URL + "default/images/yahoobuzz_share_h.gif'\" onmouseout=\"yahoobuzz_share.src='" + currentMode.Base_URL + "default/images/yahoobuzz_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoobuzz_share\" name=\"yahoobuzz_share\" src=\"" + currentMode.Base_URL + "default/images/yahoobuzz_share.gif\" alt=\"YAHOO BUZZ\" /></a>");
-				Output.WriteLine("<br />");
-
-				Output.WriteLine("<a href=\"http://twitter.com/home?status=Currently reading " + share_url + "\" target=\"TWITTER_WINDOW\" onmouseover=\"twitter_share.src='" + currentMode.Base_URL + "default/images/twitter_share_h.gif'\" onmouseout=\"twitter_share.src='" + currentMode.Base_URL + "default/images/twitter_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"twitter_share\" name=\"twitter_share\" src=\"" + currentMode.Base_URL + "default/images/twitter_share.gif\" alt=\"TWITTER\" /></a>");
-				Output.WriteLine("<a href=\"http://www.google.com/bookmarks/mark?op=add&amp;bkmk=" + share_url + "&amp;title=" + title + "\" target=\"GOOGLE_WINDOW\" onmouseover=\"google_share.src='" + currentMode.Base_URL + "default/images/google_share_h.gif'\" onmouseout=\"google_share.src='" + currentMode.Base_URL + "default/images/google_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"google_share\" name=\"google_share\" src=\"" + currentMode.Base_URL + "default/images/google_share.gif\" alt=\"GOOGLE SHARE\" /></a>");
-				Output.WriteLine("<br />");
-
-				Output.WriteLine("<a href=\"http://www.stumbleupon.com/submit?url=" + share_url + "&amp;title=" + title + "\" target=\"STUMBLEUPON_WINDOW\" onmouseover=\"stumbleupon_share.src='" + currentMode.Base_URL + "default/images/stumbleupon_share_h.gif'\" onmouseout=\"stumbleupon_share.src='" + currentMode.Base_URL + "default/images/stumbleupon_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"stumbleupon_share\" name=\"stumbleupon_share\" src=\"" + currentMode.Base_URL + "default/images/stumbleupon_share.gif\" alt=\"STUMBLEUPON\" /></a>");
-				Output.WriteLine("<a href=\"http://myweb.yahoo.com/myresults/bookmarklet?t=" + title + "&amp;u=" + share_url + "\" target=\"YAHOO_WINDOW\" onmouseover=\"yahoo_share.src='" + currentMode.Base_URL + "default/images/yahoo_share_h.gif'\" onmouseout=\"yahoo_share.src='" + currentMode.Base_URL + "default/images/yahoo_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoo_share\" name=\"yahoo_share\" src=\"" + currentMode.Base_URL + "default/images/yahoo_share.gif\" alt=\"YAHOO SHARE\" /></a>");
-				Output.WriteLine("<br />");
-
-				Output.WriteLine("<a href=\"http://digg.com/submit?phase=2&amp;url=" + share_url + "&amp;title=" + title + "\" target=\"DIGG_WINDOW\" onmouseover=\"digg_share.src='" + currentMode.Base_URL + "default/images/digg_share_h.gif'\" onmouseout=\"digg_share.src='" + currentMode.Base_URL + "default/images/digg_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"digg_share\" name=\"digg_share\" src=\"" + currentMode.Base_URL + "default/images/digg_share.gif\" alt=\"DIGG\" /></a>");
-				Output.WriteLine("<a onmouseover=\"favorites_share.src='" + currentMode.Base_URL + "default/images/favorites_share_h.gif'\" onmouseout=\"favorites_share.src='" + currentMode.Base_URL + "default/images/favorites_share.gif'\" onclick=\"javascript:add_to_favorites();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"favorites_share\" name=\"favorites_share\" src=\"" + currentMode.Base_URL + "default/images/favorites_share.gif\" alt=\"MY FAVORITES\" /></a>");
-				Output.WriteLine("<br />");
-
-				Output.WriteLine("</div>");
-				Output.WriteLine();
-
-				#endregion
-
-			}
-
-			if (Outer_Form_Name.Length == 0)
-				Output.WriteLine("</form>");
+                #endregion
+            }
 
 			return true;
 		}
@@ -1324,289 +1541,594 @@ namespace SobekCM.Library.HTML
 		protected string Add_Facet_Information(Custom_Tracer Tracer)
 		{
 
-			string collection = translations.Get_Translation("Collection", currentMode.Language );
-			string show_more = translations.Get_Translation("Show More", currentMode.Language); 
-			string show_less = translations.Get_Translation("Show Less", currentMode.Language); 
-			string sort_by_frequency = translations.Get_Translation("Sort these facets by frequency", currentMode.Language);
-			string sort_alphabetically = translations.Get_Translation("Sort these facets alphabetically", currentMode.Language);
+            StringBuilder builder = new StringBuilder();
 
-			StringBuilder builder = new StringBuilder();
+            if (currentMode.Result_Display_Type != Result_Display_Type_Enum.Map_Beta)
+            {
+                #region all but mapbeta
 
-			builder.AppendLine("<input type=\"hidden\" id=\"facet\" name=\"facet\" value=\"" + HttpUtility.HtmlEncode(facetInformation) + "\" />");
+                string collection = translations.Get_Translation("Collection", currentMode.Language);
+                string show_more = translations.Get_Translation("Show More", currentMode.Language);
+                string show_less = translations.Get_Translation("Show Less", currentMode.Language);
+                string sort_by_frequency = translations.Get_Translation("Sort these facets by frequency", currentMode.Language);
+                string sort_alphabetically = translations.Get_Translation("Sort these facets alphabetically", currentMode.Language);
+                
+                builder.AppendLine("<input type=\"hidden\" id=\"facet\" name=\"facet\" value=\"" + HttpUtility.HtmlEncode(facetInformation) + "\" />");
 
-			builder.AppendLine("<script type=\"text/javascript\">");
-			builder.AppendLine("  //<![CDATA[");
-			builder.AppendLine("    function add_facet(code, new_value) {");
+                builder.AppendLine("<script type=\"text/javascript\">");
+                builder.AppendLine("  //<![CDATA[");
+                builder.AppendLine("    function add_facet(code, new_value) {");
 
-			string url = String.Empty;
-			string aggregation_url = String.Empty;
+                string url = String.Empty;
+                string aggregation_url = String.Empty;
 
-			if (currentMode.Mode == Display_Mode_Enum.Aggregation)  // browse info only
-			{
-				Display_Mode_Enum displayMode = currentMode.Mode;
-				currentMode.Mode = Display_Mode_Enum.Results;
-				currentMode.Search_Type = Search_Type_Enum.Advanced;
-				currentMode.Search_Fields = "<%CODE%>";
-				currentMode.Search_String = "<%VALUE%>";
-				ushort page = currentMode.Page;
-				currentMode.Page = 1;
-				url = currentMode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>","\"<%VALUE%>\"");
-				currentMode.Mode = displayMode;
-				currentMode.Page = page;
-				currentMode.Search_Fields = String.Empty;
-				currentMode.Search_String = String.Empty;
+                if (currentMode.Mode == Display_Mode_Enum.Aggregation)  // browse info only
+                {
+                    Display_Mode_Enum displayMode = currentMode.Mode;
+                    currentMode.Mode = Display_Mode_Enum.Results;
+                    currentMode.Search_Type = Search_Type_Enum.Advanced;
+                    currentMode.Search_Fields = "<%CODE%>";
+                    currentMode.Search_String = "<%VALUE%>";
+                    ushort page = currentMode.Page;
+                    currentMode.Page = 1;
+                    url = currentMode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                    currentMode.Mode = displayMode;
+                    currentMode.Page = page;
+                    currentMode.Search_Fields = String.Empty;
+                    currentMode.Search_String = String.Empty;
 
-				if ((currentMode.Aggregation.Length == 0) || (currentMode.Aggregation == "all"))
-				{
-					currentMode.Aggregation = "<%AGGREGATION%>";
-					aggregation_url = currentMode.Redirect_URL();
-					currentMode.Aggregation = String.Empty;
-				}
-			}
-			else
-			{
-				if ((currentMode.Aggregation.Length == 0) || ( currentMode.Aggregation == "all" ))
-				{
-					currentMode.Aggregation = "<%AGGREGATION%>";
-					aggregation_url = currentMode.Redirect_URL();
-					currentMode.Aggregation = String.Empty;
-				}
+                    if ((currentMode.Aggregation.Length == 0) || (currentMode.Aggregation == "all"))
+                    {
+                        currentMode.Aggregation = "<%AGGREGATION%>";
+                        aggregation_url = currentMode.Redirect_URL();
+                        currentMode.Aggregation = String.Empty;
+                    }
+                }
+                else
+                {
+                    if ((currentMode.Aggregation.Length == 0) || (currentMode.Aggregation == "all"))
+                    {
+                        currentMode.Aggregation = "<%AGGREGATION%>";
+                        aggregation_url = currentMode.Redirect_URL();
+                        currentMode.Aggregation = String.Empty;
+                    }
 
-				if (currentMode.Search_Type == Search_Type_Enum.Advanced)
-				{
-					string orig_field = currentMode.Search_Fields;
-					string orig_terms = currentMode.Search_String;
-					currentMode.Search_Fields = currentMode.Search_Fields + ",<%CODE%>";
-					currentMode.Search_String = currentMode.Search_String + ",<%VALUE%>";
-					ushort page = currentMode.Page;
-					currentMode.Page = 1;
-					url = currentMode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
-					currentMode.Page = page;
-					currentMode.Search_Fields = orig_field;
-					currentMode.Search_String = orig_terms;
-				}
-				if ( currentMode.Search_Type == Search_Type_Enum.Basic )
-				{
-					List<string> output_terms = new List<string>();
-					List<string> output_fields = new List<string>();
-					SobekCM_Assistant.Split_Clean_Search_Terms_Fields(currentMode.Search_String, currentMode.Search_Fields, currentMode.Search_Type, output_terms, output_fields, SobekCM_Library_Settings.Search_Stop_Words, currentMode.Search_Precision, ',');
+                    if (currentMode.Search_Type == Search_Type_Enum.Advanced)
+                    {
+                        string orig_field = currentMode.Search_Fields;
+                        string orig_terms = currentMode.Search_String;
+                        currentMode.Search_Fields = currentMode.Search_Fields + ",<%CODE%>";
+                        currentMode.Search_String = currentMode.Search_String + ",<%VALUE%>";
+                        ushort page = currentMode.Page;
+                        currentMode.Page = 1;
+                        url = currentMode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                        currentMode.Page = page;
+                        currentMode.Search_Fields = orig_field;
+                        currentMode.Search_String = orig_terms;
+                    }
+                    if (currentMode.Search_Type == Search_Type_Enum.Basic)
+                    {
+                        List<string> output_terms = new List<string>();
+                        List<string> output_fields = new List<string>();
+                        SobekCM_Assistant.Split_Clean_Search_Terms_Fields(currentMode.Search_String, currentMode.Search_Fields, currentMode.Search_Type, output_terms, output_fields, SobekCM_Library_Settings.Search_Stop_Words, currentMode.Search_Precision, ',');
 
-					string original_search = currentMode.Search_String;
-					currentMode.Search_Type = Search_Type_Enum.Advanced;
-					StringBuilder term_builder = new StringBuilder();
-					foreach (string thisTerm in output_terms)
-					{
-						if (term_builder.Length > 0)
-							term_builder.Append(",");
-						term_builder.Append(thisTerm);
-					}
-					StringBuilder field_builder = new StringBuilder();
-					foreach (string thisField in output_fields)
-					{
-						if (field_builder.Length > 0)
-							field_builder.Append(",");
-						field_builder.Append(thisField);
-					}
-					currentMode.Search_Fields = field_builder.ToString();
-					currentMode.Search_String = term_builder.ToString();
+                        string original_search = currentMode.Search_String;
+                        currentMode.Search_Type = Search_Type_Enum.Advanced;
+                        StringBuilder term_builder = new StringBuilder();
+                        foreach (string thisTerm in output_terms)
+                        {
+                            if (term_builder.Length > 0)
+                                term_builder.Append(",");
+                            term_builder.Append(thisTerm);
+                        }
+                        StringBuilder field_builder = new StringBuilder();
+                        foreach (string thisField in output_fields)
+                        {
+                            if (field_builder.Length > 0)
+                                field_builder.Append(",");
+                            field_builder.Append(thisField);
+                        }
+                        currentMode.Search_Fields = field_builder.ToString();
+                        currentMode.Search_String = term_builder.ToString();
 
-					currentMode.Search_Fields = currentMode.Search_Fields + ",<%CODE%>";
-					currentMode.Search_String = currentMode.Search_String + ",<%VALUE%>";
-					url = currentMode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\""); 
+                        currentMode.Search_Fields = currentMode.Search_Fields + ",<%CODE%>";
+                        currentMode.Search_String = currentMode.Search_String + ",<%VALUE%>";
+                        url = currentMode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
 
-					currentMode.Search_Type = Search_Type_Enum.Basic;
-					currentMode.Search_Fields = String.Empty;
-					currentMode.Search_String = original_search;
+                        currentMode.Search_Type = Search_Type_Enum.Basic;
+                        currentMode.Search_Fields = String.Empty;
+                        currentMode.Search_String = original_search;
 
-				}
-			}
-			builder.AppendLine("      var stem_url = '" + url + "';");
-			builder.AppendLine("      var new_url = stem_url.replace('<%CODE%>', code).replace('<%VALUE%>', new_value);");
-			builder.AppendLine("      window.location.href = new_url;");
-			builder.AppendLine("      return false;");
-			builder.AppendLine("    }");
-			builder.AppendLine("  //]]>");
-			builder.AppendLine("</script>");
-			builder.AppendLine();
+                    }
+                }
+                builder.AppendLine("      var stem_url = '" + url + "';");
+                builder.AppendLine("      var new_url = stem_url.replace('<%CODE%>', code).replace('<%VALUE%>', new_value);");
+                builder.AppendLine("      window.location.href = new_url;");
+                builder.AppendLine("      return false;");
+                builder.AppendLine("    }");
+                builder.AppendLine("  //]]>");
+                builder.AppendLine("</script>");
+                builder.AppendLine();
 
-			builder.AppendLine("<div class=\"sbkPrsw_FacetColumn\">");
-			builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + translations.Get_Translation("NARROW RESULTS BY", currentMode.Language) + ":</div>");
+                builder.AppendLine("<div class=\"sbkPrsw_FacetColumn\">");
+                builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + translations.Get_Translation("NARROW RESULTS BY", currentMode.Language) + ":</div>");
 
 
-			// Add the aggregation information first
-			if ((( currentMode.Aggregation.Length == 0 ) || ( currentMode.Aggregation == "all")) && (resultsStatistics.Aggregation_Facets_Count > 0))
-			{
-				string title = collection;
-				const int FACET_INDEX = 0;
-				int facet_count = 0;
-				int total_facets_to_show = MINIMIZED_FACET_COUNT;
-				char other_sort_type = '2';
-				char other_show_type = '1';
-				if ((facetInformation[FACET_INDEX] == '1') || (facetInformation[FACET_INDEX] == '3'))
-				{
-					total_facets_to_show = MAXIMIZED_FACET_COUNT;
-				}
+                // Add the aggregation information first
+                if (((currentMode.Aggregation.Length == 0) || (currentMode.Aggregation == "all")) && (resultsStatistics.Aggregation_Facets_Count > 0))
+                {
+                    string title = collection;
+                    const int FACET_INDEX = 0;
+                    int facet_count = 0;
+                    int total_facets_to_show = MINIMIZED_FACET_COUNT;
+                    char other_sort_type = '2';
+                    char other_show_type = '1';
+                    if ((facetInformation[FACET_INDEX] == '1') || (facetInformation[FACET_INDEX] == '3'))
+                    {
+                        total_facets_to_show = MAXIMIZED_FACET_COUNT;
+                    }
 
-				string resort_image = "2_to_1.gif";
-				string sort_instructions = sort_by_frequency;
-				switch (facetInformation[FACET_INDEX])
-				{
-					case '0':
-						other_sort_type = '2';
-						other_show_type = '1';
-						sort_instructions = sort_alphabetically;
-						break;
+                    string resort_image = "2_to_1.gif";
+                    string sort_instructions = sort_by_frequency;
+                    switch (facetInformation[FACET_INDEX])
+                    {
+                        case '0':
+                            other_sort_type = '2';
+                            other_show_type = '1';
+                            sort_instructions = sort_alphabetically;
+                            break;
 
-					case '1':
-						other_sort_type = '3';
-						other_show_type = '0';
-						sort_instructions = sort_alphabetically;
-						break;
+                        case '1':
+                            other_sort_type = '3';
+                            other_show_type = '0';
+                            sort_instructions = sort_alphabetically;
+                            break;
 
-					case '2':
-						other_sort_type = '0';
-						other_show_type = '3';
-						resort_image = "a_to_z.gif";
-						break;
+                        case '2':
+                            other_sort_type = '0';
+                            other_show_type = '3';
+                            resort_image = "a_to_z.gif";
+                            break;
 
-					case '3':
-						other_sort_type = '1';
-						other_show_type = '2';
-						resort_image = "a_to_z.gif";
-						break;
-				}
+                        case '3':
+                            other_sort_type = '1';
+                            other_show_type = '2';
+                            resort_image = "a_to_z.gif";
+                            break;
+                    }
 
-				builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + title + "</div>");
-				builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
-				if (resultsStatistics.Aggregation_Facets.Count > 1 )
-					builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
-				if ((facetInformation[FACET_INDEX] == '2') || (facetInformation[FACET_INDEX] == '3'))
-				{
-					SortedList<string, string> order_facets = new SortedList<string, string>();
-					while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
-					{
-						if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
-						{
-							order_facets[resultsStatistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
-						}
-						facet_count++;
-					}
-					foreach (string html in order_facets.Values)
-					{
-						builder.AppendLine(html);
-					}
-				}
-				else
-				{
-					while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
-					{
-						if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
-						{
-							builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
-						}
-						facet_count++;
-					}
-				}
-				if (facet_count > MINIMIZED_FACET_COUNT)
-				{
-					builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_show_type + "');\">&lt;&lt; " + show_less + " &nbsp; &nbsp;</a></div>");
-				}
-				else
-				{
-					if (facet_count < resultsStatistics.Aggregation_Facets.Count)
-					{
-						builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
-					}
-				}
-				builder.AppendLine("</div>");
-			}
+                    builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + title + "</div>");
+                    builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
+                    if (resultsStatistics.Aggregation_Facets.Count > 1)
+                        builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
+                    if ((facetInformation[FACET_INDEX] == '2') || (facetInformation[FACET_INDEX] == '3'))
+                    {
+                        SortedList<string, string> order_facets = new SortedList<string, string>();
+                        while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
+                        {
+                            if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
+                            {
+                                order_facets[resultsStatistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
+                            }
+                            facet_count++;
+                        }
+                        foreach (string html in order_facets.Values)
+                        {
+                            builder.AppendLine(html);
+                        }
+                    }
+                    else
+                    {
+                        while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
+                        {
+                            if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
+                            {
+                                builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
+                            }
+                            facet_count++;
+                        }
+                    }
+                    if (facet_count > MINIMIZED_FACET_COUNT)
+                    {
+                        builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_show_type + "');\">&lt;&lt; " + show_less + " &nbsp; &nbsp;</a></div>");
+                    }
+                    else
+                    {
+                        if (facet_count < resultsStatistics.Aggregation_Facets.Count)
+                        {
+                            builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
+                        }
+                    }
+                    builder.AppendLine("</div>");
+                }
 
-			// Add the first facet information 
-			if (resultsStatistics.First_Facets_Count > 0)
-			{
-				Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.First_Facets_MetadataTypeID);
-				if (field != null)
-				{
-					Add_Single_Facet(builder,  translations.Get_Translation(field.Facet_Term, currentMode.Language ), field.Web_Code, show_less, show_more, 1, sort_by_frequency, sort_alphabetically, resultsStatistics.First_Facets);
-				}
-			}
+                // Add the first facet information 
+                if (resultsStatistics.First_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.First_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 1, sort_by_frequency, sort_alphabetically, resultsStatistics.First_Facets);
+                    }
+                }
 
-			// Add the second facet information 
-			if (resultsStatistics.Second_Facets_Count > 0)
-			{
-				Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Second_Facets_MetadataTypeID);
-				if (field != null)
-				{
-					Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 2, sort_by_frequency, sort_alphabetically, resultsStatistics.Second_Facets);
-				}
-			}
+                // Add the second facet information 
+                if (resultsStatistics.Second_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Second_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 2, sort_by_frequency, sort_alphabetically, resultsStatistics.Second_Facets);
+                    }
+                }
 
-			// Add the third facet information 
-			if (resultsStatistics.Third_Facets_Count > 0)
-			{
-				Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Third_Facets_MetadataTypeID);
-				if (field != null)
-				{
-					Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 3, sort_by_frequency, sort_alphabetically, resultsStatistics.Third_Facets);
-				}
-			}
+                // Add the third facet information 
+                if (resultsStatistics.Third_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Third_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 3, sort_by_frequency, sort_alphabetically, resultsStatistics.Third_Facets);
+                    }
+                }
 
-			// Add the fourth facet information 
-			if (resultsStatistics.Fourth_Facets_Count > 0)
-			{
-				Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Fourth_Facets_MetadataTypeID);
-				if (field != null)
-				{
-					Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 4, sort_by_frequency, sort_alphabetically, resultsStatistics.Fourth_Facets);
-				}
-			}
+                // Add the fourth facet information 
+                if (resultsStatistics.Fourth_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Fourth_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 4, sort_by_frequency, sort_alphabetically, resultsStatistics.Fourth_Facets);
+                    }
+                }
 
-			// Add the fifth facet information 
-			if (resultsStatistics.Fifth_Facets_Count > 0)
-			{
-				Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Fifth_Facets_MetadataTypeID);
-				if (field != null)
-				{
-					Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 5, sort_by_frequency, sort_alphabetically, resultsStatistics.Fifth_Facets);
-				}
-			}
+                // Add the fifth facet information 
+                if (resultsStatistics.Fifth_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Fifth_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 5, sort_by_frequency, sort_alphabetically, resultsStatistics.Fifth_Facets);
+                    }
+                }
 
-			// Add the sixth facet information 
-			if (resultsStatistics.Sixth_Facets_Count > 0)
-			{
-				Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Sixth_Facets_MetadataTypeID);
-				if (field != null)
-				{
-					Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 6, sort_by_frequency, sort_alphabetically, resultsStatistics.Sixth_Facets);
-				}
-			}
+                // Add the sixth facet information 
+                if (resultsStatistics.Sixth_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Sixth_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 6, sort_by_frequency, sort_alphabetically, resultsStatistics.Sixth_Facets);
+                    }
+                }
 
-			// Add the seventh facet information 
-			if (resultsStatistics.Seventh_Facets_Count > 0)
-			{
-				Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Seventh_Facets_MetadataTypeID);
-				if (field != null)
-				{
-					Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 7, sort_by_frequency, sort_alphabetically, resultsStatistics.Seventh_Facets);
-				}
-			}
+                // Add the seventh facet information 
+                if (resultsStatistics.Seventh_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Seventh_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 7, sort_by_frequency, sort_alphabetically, resultsStatistics.Seventh_Facets);
+                    }
+                }
 
-			// Add the eighth facet information 
-			if (resultsStatistics.Eighth_Facets_Count > 0)
-			{
-				Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Eighth_Facets_MetadataTypeID);
-				if (field != null)
-				{
-					Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 8, sort_by_frequency, sort_alphabetically, resultsStatistics.Eighth_Facets);
-				}
-			}
+                // Add the eighth facet information 
+                if (resultsStatistics.Eighth_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Eighth_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 8, sort_by_frequency, sort_alphabetically, resultsStatistics.Eighth_Facets);
+                    }
+                }
 
-			builder.AppendLine("</div>");
-			return builder.ToString();
+                builder.AppendLine("</div>");
+
+                #endregion
+            }
+            else
+            {
+                #region mapbeta
+
+                string collection = translations.Get_Translation("Collection", currentMode.Language);
+                string show_more = translations.Get_Translation("Show More", currentMode.Language);
+                string show_less = translations.Get_Translation("Show Less", currentMode.Language);
+                string sort_by_frequency = translations.Get_Translation("Sort these facets by frequency", currentMode.Language);
+                string sort_alphabetically = translations.Get_Translation("Sort these facets alphabetically", currentMode.Language);
+
+                #region js
+
+                builder.AppendLine("<input type=\"hidden\" id=\"facet\" name=\"facet\" value=\"" + HttpUtility.HtmlEncode(facetInformation) + "\" />");
+
+                builder.AppendLine("<script type=\"text/javascript\">");
+                builder.AppendLine("  //<![CDATA[");
+                builder.AppendLine("    function add_facet_callback(code, new_value) {");
+
+                string url = String.Empty;
+                string aggregation_url = String.Empty;
+
+                if (currentMode.Mode == Display_Mode_Enum.Aggregation)  // browse info only
+                {
+                    Display_Mode_Enum displayMode = currentMode.Mode;
+                    currentMode.Mode = Display_Mode_Enum.Results;
+                    currentMode.Search_Type = Search_Type_Enum.Advanced;
+                    currentMode.Search_Fields = "<%CODE%>";
+                    currentMode.Search_String = "<%VALUE%>";
+                    ushort page = currentMode.Page;
+                    currentMode.Page = 1;
+                    url = currentMode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                    currentMode.Mode = displayMode;
+                    currentMode.Page = page;
+                    currentMode.Search_Fields = String.Empty;
+                    currentMode.Search_String = String.Empty;
+
+                    if ((currentMode.Aggregation.Length == 0) || (currentMode.Aggregation == "all"))
+                    {
+                        currentMode.Aggregation = "<%AGGREGATION%>";
+                        aggregation_url = currentMode.Redirect_URL();
+                        currentMode.Aggregation = String.Empty;
+                    }
+                }
+                else
+                {
+                    if ((currentMode.Aggregation.Length == 0) || (currentMode.Aggregation == "all"))
+                    {
+                        currentMode.Aggregation = "<%AGGREGATION%>";
+                        aggregation_url = currentMode.Redirect_URL();
+                        currentMode.Aggregation = String.Empty;
+                    }
+
+                    if (currentMode.Search_Type == Search_Type_Enum.Advanced)
+                    {
+                        string orig_field = currentMode.Search_Fields;
+                        string orig_terms = currentMode.Search_String;
+                        currentMode.Search_Fields = currentMode.Search_Fields + ",<%CODE%>";
+                        currentMode.Search_String = currentMode.Search_String + ",<%VALUE%>";
+                        ushort page = currentMode.Page;
+                        currentMode.Page = 1;
+                        url = currentMode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                        currentMode.Page = page;
+                        currentMode.Search_Fields = orig_field;
+                        currentMode.Search_String = orig_terms;
+                    }
+                    if (currentMode.Search_Type == Search_Type_Enum.Basic)
+                    {
+                        List<string> output_terms = new List<string>();
+                        List<string> output_fields = new List<string>();
+                        SobekCM_Assistant.Split_Clean_Search_Terms_Fields(currentMode.Search_String, currentMode.Search_Fields, currentMode.Search_Type, output_terms, output_fields, SobekCM_Library_Settings.Search_Stop_Words, currentMode.Search_Precision, ',');
+
+                        string original_search = currentMode.Search_String;
+                        currentMode.Search_Type = Search_Type_Enum.Advanced;
+                        StringBuilder term_builder = new StringBuilder();
+                        foreach (string thisTerm in output_terms)
+                        {
+                            if (term_builder.Length > 0)
+                                term_builder.Append(",");
+                            term_builder.Append(thisTerm);
+                        }
+                        StringBuilder field_builder = new StringBuilder();
+                        foreach (string thisField in output_fields)
+                        {
+                            if (field_builder.Length > 0)
+                                field_builder.Append(",");
+                            field_builder.Append(thisField);
+                        }
+                        currentMode.Search_Fields = field_builder.ToString();
+                        currentMode.Search_String = term_builder.ToString();
+
+                        currentMode.Search_Fields = currentMode.Search_Fields + ",<%CODE%>";
+                        currentMode.Search_String = currentMode.Search_String + ",<%VALUE%>";
+                        url = currentMode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+
+                        currentMode.Search_Type = Search_Type_Enum.Basic;
+                        currentMode.Search_Fields = String.Empty;
+                        currentMode.Search_String = original_search;
+
+                    }
+                }
+                builder.AppendLine("      var stem_url = '" + url + "';");
+                builder.AppendLine("      var new_url = stem_url.replace('<%CODE%>', code).replace('<%VALUE%>', new_value);");
+                builder.AppendLine("      //window.location.href = new_url;");
+                builder.AppendLine("      //return false;");
+                builder.AppendLine("      var new_url_hash = \"?t=\\\"\"+new_value+\"\\\"&f=\"+code;");
+                builder.AppendLine("      window.location.hash = new_url_hash;");
+                builder.AppendLine("    }");
+                builder.AppendLine("  //]]>");
+                builder.AppendLine("</script>");
+                builder.AppendLine();
+
+                #endregion
+
+                builder.AppendLine("<div id=\"filterBox\" class=\"sbkPrsw_FacetColumn\">");
+
+                #region filterbox
+
+                builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + translations.Get_Translation("NARROW RESULTS BY", currentMode.Language) + ":</div>");
+                
+                // Add the aggregation information first
+                if (((currentMode.Aggregation.Length == 0) || (currentMode.Aggregation == "all")) && (resultsStatistics.Aggregation_Facets_Count > 0))
+                {
+                    string title = collection;
+                    const int FACET_INDEX = 0;
+                    int facet_count = 0;
+                    int total_facets_to_show = MINIMIZED_FACET_COUNT;
+                    char other_sort_type = '2';
+                    char other_show_type = '1';
+                    if ((facetInformation[FACET_INDEX] == '1') || (facetInformation[FACET_INDEX] == '3'))
+                    {
+                        total_facets_to_show = MAXIMIZED_FACET_COUNT;
+                    }
+
+                    string resort_image = "2_to_1.gif";
+                    string sort_instructions = sort_by_frequency;
+                    switch (facetInformation[FACET_INDEX])
+                    {
+                        case '0':
+                            other_sort_type = '2';
+                            other_show_type = '1';
+                            sort_instructions = sort_alphabetically;
+                            break;
+
+                        case '1':
+                            other_sort_type = '3';
+                            other_show_type = '0';
+                            sort_instructions = sort_alphabetically;
+                            break;
+
+                        case '2':
+                            other_sort_type = '0';
+                            other_show_type = '3';
+                            resort_image = "a_to_z.gif";
+                            break;
+
+                        case '3':
+                            other_sort_type = '1';
+                            other_show_type = '2';
+                            resort_image = "a_to_z.gif";
+                            break;
+                    }
+
+                    builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + title + "</div>");
+                    builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
+                    if (resultsStatistics.Aggregation_Facets.Count > 1)
+                        builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a onclick=\"set_facet_callback(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
+                    if ((facetInformation[FACET_INDEX] == '2') || (facetInformation[FACET_INDEX] == '3'))
+                    {
+                        SortedList<string, string> order_facets = new SortedList<string, string>();
+                        while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
+                        {
+                            if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
+                            {
+                                order_facets[resultsStatistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
+                            }
+                            facet_count++;
+                        }
+                        foreach (string html in order_facets.Values)
+                        {
+                            builder.AppendLine(html);
+                        }
+                    }
+                    else
+                    {
+                        while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
+                        {
+                            if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
+                            {
+                                builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
+                            }
+                            facet_count++;
+                        }
+                    }
+                    if (facet_count > MINIMIZED_FACET_COUNT)
+                    {
+                        builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a onclick=\"set_facet_callback(" + FACET_INDEX + ",'" + other_show_type + "');\">&lt;&lt; " + show_less + " &nbsp; &nbsp;</a></div>");
+                    }
+                    else
+                    {
+                        if (facet_count < resultsStatistics.Aggregation_Facets.Count)
+                        {
+                            builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a onclick=\"set_facet_callback(" + FACET_INDEX + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
+                        }
+                    }
+                    builder.AppendLine("</div>");
+                }
+
+                #endregion
+
+                #region add the filters
+
+                // Add the first facet information 
+                if (resultsStatistics.First_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.First_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 1, sort_by_frequency, sort_alphabetically, resultsStatistics.First_Facets);
+                    }
+                }
+
+                // Add the second facet information 
+                if (resultsStatistics.Second_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Second_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 2, sort_by_frequency, sort_alphabetically, resultsStatistics.Second_Facets);
+                    }
+                }
+
+                // Add the third facet information 
+                if (resultsStatistics.Third_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Third_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 3, sort_by_frequency, sort_alphabetically, resultsStatistics.Third_Facets);
+                    }
+                }
+
+                // Add the fourth facet information 
+                if (resultsStatistics.Fourth_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Fourth_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 4, sort_by_frequency, sort_alphabetically, resultsStatistics.Fourth_Facets);
+                    }
+                }
+
+                // Add the fifth facet information 
+                if (resultsStatistics.Fifth_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Fifth_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 5, sort_by_frequency, sort_alphabetically, resultsStatistics.Fifth_Facets);
+                    }
+                }
+
+                // Add the sixth facet information 
+                if (resultsStatistics.Sixth_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Sixth_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 6, sort_by_frequency, sort_alphabetically, resultsStatistics.Sixth_Facets);
+                    }
+                }
+
+                // Add the seventh facet information 
+                if (resultsStatistics.Seventh_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Seventh_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 7, sort_by_frequency, sort_alphabetically, resultsStatistics.Seventh_Facets);
+                    }
+                }
+
+                // Add the eighth facet information 
+                if (resultsStatistics.Eighth_Facets_Count > 0)
+                {
+                    Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(resultsStatistics.Eighth_Facets_MetadataTypeID);
+                    if (field != null)
+                    {
+                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 8, sort_by_frequency, sort_alphabetically, resultsStatistics.Eighth_Facets);
+                    }
+                }
+
+                #endregion
+
+                builder.AppendLine("</div>");
+
+                #endregion
+            }
+
+            return builder.ToString();
+
 		}
 
-
-		private void Add_Single_Facet(StringBuilder Builder, string Title, string SearchCode, string ShowLess, string ShowMore, int FacetIndex, string SortByFrequency, string SortAlphabetically, List<Search_Facet> Collection)
+        private void Add_Single_Facet(StringBuilder Builder, string Title, string SearchCode, string ShowLess, string ShowMore, int FacetIndex, string SortByFrequency, string SortAlphabetically, List<Search_Facet> Collection)
 		{
 			int facet_count = 0;
 			int total_facets_to_show = MINIMIZED_FACET_COUNT;
@@ -1686,6 +2208,88 @@ namespace SobekCM.Library.HTML
 			}
 			Builder.AppendLine("</div>");
 		}
-		#endregion
+
+        private void Add_Single_Facet_Callback(StringBuilder Builder, string Title, string SearchCode, string ShowLess, string ShowMore, int FacetIndex, string SortByFrequency, string SortAlphabetically, List<Search_Facet> Collection)
+        {
+            int facet_count = 0;
+            int total_facets_to_show = MINIMIZED_FACET_COUNT;
+            char other_sort_type = '2';
+            char other_show_type = '1';
+            if ((facetInformation[FacetIndex - 1] == '1') || (facetInformation[FacetIndex - 1] == '3'))
+            {
+                total_facets_to_show = MAXIMIZED_FACET_COUNT;
+            }
+
+            string resort_image = "2_to_1.gif";
+            string sort_instructions = SortByFrequency;
+            switch (facetInformation[FacetIndex - 1])
+            {
+                case '0':
+                    other_sort_type = '2';
+                    other_show_type = '1';
+                    sort_instructions = SortAlphabetically;
+                    break;
+
+                case '1':
+                    other_sort_type = '3';
+                    other_show_type = '0';
+                    sort_instructions = SortAlphabetically;
+                    break;
+
+                case '2':
+                    other_sort_type = '0';
+                    other_show_type = '3';
+                    resort_image = "a_to_z.gif";
+                    break;
+
+                case '3':
+                    other_sort_type = '1';
+                    other_show_type = '2';
+                    resort_image = "a_to_z.gif";
+                    break;
+            }
+
+            Builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + Title + "</div>");
+            Builder.AppendLine("<div class=\"sbkPrsw_FacetBox\"><ul>");
+            if (Collection.Count > 1)
+            {
+                Builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a onclick=\"set_facet_callback(" + (FacetIndex - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
+            }
+            if ((facetInformation[FacetIndex - 1] == '2') || (facetInformation[FacetIndex - 1] == '3'))
+            {
+                SortedList<string, string> order_facets = new SortedList<string, string>();
+                while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
+                {
+                    order_facets[Collection[facet_count].Facet.ToUpper()] = "<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) </li>";
+                    facet_count++;
+                }
+                foreach (string html in order_facets.Values)
+                {
+                    Builder.AppendLine(html);
+                }
+            }
+            else
+            {
+                while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
+                {
+                    Builder.AppendLine("<li><a onclick=\"add_facet_callback('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " )</li>");
+                    facet_count++;
+                }
+            }
+            if (facet_count > MINIMIZED_FACET_COUNT)
+            {
+                Builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets loadmoreResults\"><a onclick=\"set_facet_callback(" + (FacetIndex - 1) + ",'" + other_show_type + "');\">&lt;&lt; " + ShowLess + " &nbsp; &nbsp;</a></div>");
+            }
+            else
+            {
+                if (facet_count < Collection.Count)
+                {
+                    Builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets loadmoreResults\"><a onclick=\"set_facet_callback(" + (FacetIndex - 1) + ",'" + other_show_type + "');\">" + ShowMore + " &gt;&gt; &nbsp;</a></div>");
+                }
+            }
+            Builder.AppendLine("</ul></div>");
+        }
+		
+        #endregion
 	}
 }

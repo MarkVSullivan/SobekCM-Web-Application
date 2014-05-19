@@ -25,7 +25,7 @@ var mcOptions = {
 };
 
 //add start listener
-google.maps.event.addDomListener(window, 'load', initAll);
+//google.maps.event.addDomListener(window, 'load', initAll);
 
 //init all
 function initAll() {
@@ -33,13 +33,13 @@ function initAll() {
     //init server vars
     initServerToClientVars();
     //init display search result (DSR)
-    initDSR();
+    //initDSR();
     //init declarations (local/js)
     initDeclarations();
     //init map elements
     initMapElements();
     //show DSR
-    showDSR();
+    //showDSR();
     //fit map
     map.fitBounds(MAPSEARCHER.GLOBAL.DEFINES.defaultSearchBounds); //this could trigger a zoom changed event (redraw of markers) if the zoom changes from default
     //resize view (currently just the map)
@@ -451,9 +451,60 @@ function resizeView(param) {
 }
 
 //serach with this facet
-function add_facet_callback(code, new_value) {
+function add_facet_callback2(code, new_value) {
+    alert(code);
+    alert(new_value);
+
+
     var aggregations = "usach";
     var data = "search|filter|" + aggregations + "|" + map.getBounds().getSouthWest().lat() + "|" + map.getBounds().getSouthWest().lng() + "|" + map.getBounds().getNorthEast().lat() + "|" + map.getBounds().getNorthEast().lng() + "|";
-    toServer(data);
+    //toServer(data);
 }
 
+//init filterbox onload
+$(function () {
+    
+    //define icons object
+    var icons = {
+        header: "ui-icon-circle-arrow-e",
+        activeHeader: "ui-icon-circle-arrow-s"
+    };
+
+    //disable icons
+    //$( "#filterBox" ).accordion( "option", "icons", null );
+
+    //define filterBox
+    $('#filterBox').accordion({
+        header: "div.sbkPrsw_FacetBoxTitle",
+        //icons: icons,
+        active: false,
+        collapsible: true,
+        heightStyle: "content",
+        beforeActivate: function (event, ui) {
+            // The accordion believes a panel is being opened
+            if (ui.newHeader[0]) {
+                var currHeader = ui.newHeader;
+                var currContent = currHeader.next('.ui-accordion-content');
+                // The accordion believes a panel is being closed
+            } else {
+                var currHeader = ui.oldHeader;
+                var currContent = currHeader.next('.ui-accordion-content');
+            }
+            // Since we've changed the default behavior, this detects the actual status
+            var isPanelSelected = currHeader.attr('aria-selected') == 'true';
+            // Toggle the panel's header
+            currHeader.toggleClass('ui-corner-all', isPanelSelected).toggleClass('accordion-header-active ui-state-active ui-corner-top', !isPanelSelected).attr('aria-selected', ((!isPanelSelected).toString()));
+            // Toggle the panel's icon
+            currHeader.children('.ui-icon').toggleClass('ui-icon-triangle-1-e', isPanelSelected).toggleClass('ui-icon-triangle-1-s', !isPanelSelected);
+            // Toggle the panel's content
+            currContent.toggleClass('accordion-content-active', !isPanelSelected);
+            if (isPanelSelected) { currContent.slideUp(); } else { currContent.slideDown(); }
+            // Cancels the default action
+            return false;
+        }
+    });
+
+    //set currently active boxes //2do, read from config
+    //$( "#filterBox" ).accordion( "option", "active", 5 );
+
+});

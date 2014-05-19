@@ -1298,9 +1298,10 @@ function initMapEditor() {
                             initServerToClientVars();
                             //reinit debug time
                             if (MAPEDITOR.GLOBAL.DEFINES.debuggerOn) {
-                                MAPEDITOR.TRACER.DEFINES.debugVersionNumber = " (last build: " + MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp + ") ";
+                                //MAPEDITOR.TRACER.DEFINES.debugVersionNumber = " (last build: " + MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp + ") ";
+                                MAPEDITOR.TRACER.DEFINES.debugVersionNumber = " v1." + MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp + " (built: " + MAPEDITOR.GLOBAL.DEFINES.debugBuildTimeStamp + ") ";
                             } else {
-                                MAPEDITOR.TRACER.DEFINES.debugVersionNumber = " (v1." + MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp + ") ";
+                                //MAPEDITOR.TRACER.DEFINES.debugVersionNumber = " (v1." + MAPEDITOR.GLOBAL.DEFINES.debugUnixTimeStamp + ") ";
                             }
                             MAPEDITOR.TRACER.addTracer("[INFO]: initDeclarations completed...");
                         } catch (err) {

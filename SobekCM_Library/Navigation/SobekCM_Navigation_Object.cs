@@ -168,6 +168,10 @@ namespace SobekCM.Library.Navigation
 			Internal_User = false;
 			Logon_Required = false;
 		    Request_Completed = false;
+
+            //beta
+		    Use_Beta = false;
+
 		}
 
 		#endregion
@@ -579,6 +583,9 @@ namespace SobekCM.Library.Navigation
         /// <summary> Flag indicates if the request was completed, so no further
         /// operations should occur </summary>
         public bool Request_Completed { get; set; }
+
+        /// <summary> Flag indicates if the we are using beta</summary>
+        public bool Use_Beta { get; set; }
 
 		#endregion
 
