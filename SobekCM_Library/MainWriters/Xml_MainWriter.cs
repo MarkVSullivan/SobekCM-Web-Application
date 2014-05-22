@@ -1,5 +1,6 @@
 #region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
@@ -53,6 +54,12 @@ namespace SobekCM.Library.MainWriters
                     if (paged_results != null)
                         display_search_results(Output);
                     break;
+				case Display_Mode_Enum.Reports:
+					if (!String.IsNullOrEmpty(currentMode.Report_Name))
+					{
+						Output.WriteLine("REPORT REQUESTED: " + currentMode.Report_Name);
+					}
+		            break;
                 default:
                     Output.Write("XML Writer - Unknown Mode");
                     break;

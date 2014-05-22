@@ -23,7 +23,7 @@ namespace SobekCM.Library.Items
         /// <returns> Fully built digital resource object for a single volume </returns>
         /// <remarks> This method relies heavily upon the <see cref="SobekCM_METS_Based_ItemBuilder"/> class to actually
         /// read the METS files and build the items. </remarks>
-        public static SobekCM_Item Get_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
+        public static SobekCM_Item Get_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -34,7 +34,7 @@ namespace SobekCM.Library.Items
             SobekCM_METS_Based_ItemBuilder builder = new SobekCM_METS_Based_ItemBuilder();
 
             // Allow the builder to build the item
-            return builder.Build_Item( BibID, VID, Icon_Dictionary, Tracer);
+            return builder.Build_Item( BibID, VID, Icon_Dictionary, Item_Viewer_Priority, Tracer);
         }
 
         /// <summary> Builds a digital resource object for the given BibID and VID </summary>
@@ -46,7 +46,7 @@ namespace SobekCM.Library.Items
         /// <returns> Fully built digital resource object for a single volume </returns>
         /// <remarks> This method relies heavily upon the <see cref="SobekCM_METS_Based_ItemBuilder"/> class to actually
         /// read the METS files and build the items. </remarks>
-        public static SobekCM_Item Get_Item(string METS_Location, string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
+        public static SobekCM_Item Get_Item(string METS_Location, string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -57,7 +57,7 @@ namespace SobekCM.Library.Items
             SobekCM_METS_Based_ItemBuilder builder = new SobekCM_METS_Based_ItemBuilder();
 
             // Allow the builder to build the item
-            return builder.Build_Item(METS_Location, BibID, VID, Icon_Dictionary, Tracer);
+            return builder.Build_Item(METS_Location, BibID, VID, Icon_Dictionary, Item_Viewer_Priority, Tracer);
         }
 
         /// <summary> Builds a title-level digital resource object for the given BibID </summary>

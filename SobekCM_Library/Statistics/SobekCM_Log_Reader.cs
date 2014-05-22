@@ -37,8 +37,8 @@ namespace SobekCM.Library.Statistics
         private static Language_Support_Info Translation;
         private static Portal_List URL_Portals;
         private static string Version;
-        private static Dictionary<string, Mime_Type_Info> Mime_Types; 
-
+        private static Dictionary<string, Mime_Type_Info> Mime_Types;
+	    private static List<string> Item_Viewer_Priority; 
 
         private List<string> dloc_ips;
         private SortedList<SobekCM_Hit, SobekCM_Hit> hits;
@@ -60,7 +60,7 @@ namespace SobekCM.Library.Statistics
                                                               ref Codes, ref Item_Lookup_Object, ref Icon_List,
                                                               ref Stats_Date_Range, ref Thematic_Headings,
                                                               ref Collection_Aliases, ref IP_Restrictions,
-                                                              ref URL_Portals, ref Mime_Types);
+                                                              ref URL_Portals, ref Mime_Types, ref Item_Viewer_Priority);
 
             // The cache needs to be disabled
             Cached_Data_Manager.Disabled = true;

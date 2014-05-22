@@ -225,58 +225,39 @@ namespace SobekCM.Resource_Object
             // No match, so just return the default, if there is one
             if ((viewer_code.Length == 0) && ( behaviors.Default_View != null) && (behaviors.Default_View.Viewer_Codes.Length > 0))
             {
-                return behaviors.Default_View.Viewer_Codes[0];
-            }
+	            if (behaviors.Item_Level_Page_Views.Contains(behaviors.Default_View))
+	            {
+					foreach (SobekCM_File_Info thisFile in pages_by_seq[page - 1].Files)
+					{
+						if (thisFile.Get_Viewer() != null)
+						{
+							if (thisFile.Get_Viewer().View_Type == behaviors.Default_View.View_Type)
+							{
+								return page.ToString() + thisFile.Get_Viewer().Viewer_Codes[0];
+							}
+						}
+					}
 
-            // If embedded video is present, show that.
-            if ( behaviors.Views_Count > 0 )
-            {
-                foreach (View_Object thisView in behaviors.Views)
-                {
-                    if (thisView.View_Type == View_Enum.YOUTUBE_VIDEO)
-                        return thisView.Viewer_Codes[0];
-                    if (thisView.View_Type == View_Enum.EMBEDDED_VIDEO)
-                        return thisView.Viewer_Codes[0];
-                }
-            }
-
-            // If there are no pages, return the DEFAULT viewer, or FULL CITATION code
-            if ((viewer_to_file == null) || (viewer_to_file.Count == 0))
-            {
-                if ((behaviors.Default_View != null) && (behaviors.Default_View.Viewer_Codes.Length > 0))
-                    return behaviors.Default_View.Viewer_Codes[0];
-                else
-                    return View_Object.Viewer_Code_By_Type(View_Enum.CITATION)[0];
-            }
-
-            // Return the first viewer code for this page
-            if ((pages_by_seq != null) && ( behaviors.Item_Level_Page_Views_Count > 0 ) && (pages_by_seq.Count >= page) && (pages_by_seq[page - 1].Files.Count > 0))
-            {
-                foreach (View_Object itemTaggedView in behaviors.Item_Level_Page_Views)
-                {
-                    foreach (SobekCM_File_Info thisFile in pages_by_seq[page - 1].Files)
-                    {
-                        if (thisFile.Get_Viewer() != null)
-                        {
-                            if (thisFile.Get_Viewer().View_Type == itemTaggedView.View_Type)
-                            {
-                                return page.ToString() + thisFile.Get_Viewer().Viewer_Codes[0];
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Look for FLASH or PDF views if no page was requested
-            if ( behaviors.Views_Count > 0 )
-            {
-                foreach (View_Object thisView in behaviors.Views)
-                {
-                    if ((thisView.View_Type == View_Enum.PDF) || (thisView.View_Type == View_Enum.FLASH))
-                    {
-                        return thisView.Viewer_Codes[0];
-                    }
-                }
+					// If no matching item level page view was found matching the view type,
+					// default to any of the item level page views
+					foreach (View_Object itemTaggedView in behaviors.Item_Level_Page_Views)
+					{
+						foreach (SobekCM_File_Info thisFile in pages_by_seq[page - 1].Files)
+						{
+							if (thisFile.Get_Viewer() != null)
+							{
+								if (thisFile.Get_Viewer().View_Type == itemTaggedView.View_Type)
+								{
+									return page.ToString() + thisFile.Get_Viewer().Viewer_Codes[0];
+								}
+							}
+						}
+					}
+	            }
+	            else
+	            {
+					return behaviors.Default_View.Viewer_Codes[0];
+	            }
             }
 
             // Return first page viewer code

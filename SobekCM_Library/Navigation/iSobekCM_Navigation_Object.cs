@@ -116,6 +116,9 @@ namespace SobekCM.Library.Navigation
 		/// <summary> Display a user's public folder </summary>
 		Public_Folder,
 
+		/// <summary> Reporting module </summary>
+		Reports,
+
 		/// <summary>Full memory reset was requested</summary>
 		Reset,
 
