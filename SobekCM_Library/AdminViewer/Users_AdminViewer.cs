@@ -331,11 +331,11 @@ namespace SobekCM.Library.AdminViewer
 								editUser.Clear_Templates();
 								foreach (string thisProject in projects)
 								{
-									editUser.Add_Default_Metadata_Set(thisProject);
+									editUser.Add_Default_Metadata_Set(thisProject, false);
 								}
 								foreach (string thisTemplate in templates)
 								{
-									editUser.Add_Template(thisTemplate);
+									editUser.Add_Template(thisTemplate, false);
 								}
 
 								// Try to add back the defaults, which won't do anything if 
@@ -362,6 +362,17 @@ namespace SobekCM.Library.AdminViewer
 							if (newGroups.Count != editUser.User_Groups.Count)
 							{
 								update_user_groups = true;
+							}
+							else
+							{
+								foreach (string thisGroup in newGroups)
+								{
+									if (!editUser.User_Groups.Contains(thisGroup))
+									{
+										update_user_groups = true;
+										break;
+									}
+								}
 							}
 							if (update_user_groups)
 							{
@@ -401,7 +412,7 @@ namespace SobekCM.Library.AdminViewer
 										aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, true, false, false, false, false));
 									}
 								}
-								if (thisKey.IndexOf("admin_project_edit_") == 0)
+								if (thisKey.IndexOf("admin_project_editall_") == 0)
 								{
 									string edit_project = thisKey.Replace("admin_project_edit_", "");
 									if (aggregations.ContainsKey(edit_project))
@@ -413,6 +424,90 @@ namespace SobekCM.Library.AdminViewer
 										aggregations.Add(edit_project, new User_Editable_Aggregation(edit_project, String.Empty, false, true, false, false, false));
 									}
 								}
+								if (thisKey.IndexOf("admin_project_edit_metadata_") == 0)
+								{
+									string edit_project = thisKey.Replace("admin_project_edit_metadata_", "");
+									if (aggregations.ContainsKey(edit_project))
+									{
+										aggregations[edit_project].CanEditMetadata = true;
+									}
+									else
+									{
+										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										thisAggrLink.CanEditMetadata = true;
+										aggregations.Add(edit_project, thisAggrLink);
+									}
+								}
+								if (thisKey.IndexOf("admin_project_edit_behavior_") == 0)
+								{
+									string edit_project = thisKey.Replace("admin_project_edit_behavior_", "");
+									if (aggregations.ContainsKey(edit_project))
+									{
+										aggregations[edit_project].CanEditBehaviors = true;
+									}
+									else
+									{
+										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										thisAggrLink.CanEditBehaviors = true;
+										aggregations.Add(edit_project, thisAggrLink);
+									}
+								}
+								if (thisKey.IndexOf("admin_project_perform_qc_") == 0)
+								{
+									string edit_project = thisKey.Replace("admin_project_perform_qc_", "");
+									if (aggregations.ContainsKey(edit_project))
+									{
+										aggregations[edit_project].CanPerformQc = true;
+									}
+									else
+									{
+										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										thisAggrLink.CanPerformQc = true;
+										aggregations.Add(edit_project, thisAggrLink);
+									}
+								}
+								if (thisKey.IndexOf("admin_project_upload_files_") == 0)
+								{
+									string edit_project = thisKey.Replace("admin_project_upload_files_", "");
+									if (aggregations.ContainsKey(edit_project))
+									{
+										aggregations[edit_project].CanUploadFiles = true;
+									}
+									else
+									{
+										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										thisAggrLink.CanUploadFiles = true;
+										aggregations.Add(edit_project, thisAggrLink);
+									}
+								}
+								if (thisKey.IndexOf("admin_project_change_visibility_") == 0)
+								{
+									string edit_project = thisKey.Replace("admin_project_change_visibility_", "");
+									if (aggregations.ContainsKey(edit_project))
+									{
+										aggregations[edit_project].CanChangeVisibility = true;
+									}
+									else
+									{
+										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										thisAggrLink.CanChangeVisibility = true;
+										aggregations.Add(edit_project, thisAggrLink);
+									}
+								}
+								if (thisKey.IndexOf("admin_project_can_delete_") == 0)
+								{
+									string edit_project = thisKey.Replace("admin_project_can_delete_", "");
+									if (aggregations.ContainsKey(edit_project))
+									{
+										aggregations[edit_project].CanDelete = true;
+									}
+									else
+									{
+										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										thisAggrLink.CanDelete = true;
+										aggregations.Add(edit_project, thisAggrLink);
+									}
+								} 
 								if (thisKey.IndexOf("admin_project_curator_") == 0)
 								{
 									string admin_project = thisKey.Replace("admin_project_curator_", "");
@@ -455,7 +550,10 @@ namespace SobekCM.Library.AdminViewer
 								{
 									if (existingAggr.ContainsKey(adminAggr.Code))
 									{
-										if ((adminAggr.CanSelect != existingAggr[adminAggr.Code].CanSelect) || (adminAggr.CanEditItems != existingAggr[adminAggr.Code].CanEditItems) || (adminAggr.IsCurator != existingAggr[adminAggr.Code].IsCurator) || (adminAggr.OnHomePage != existingAggr[adminAggr.Code].OnHomePage))
+										if ((adminAggr.CanSelect != existingAggr[adminAggr.Code].CanSelect) || (adminAggr.CanEditMetadata != existingAggr[adminAggr.Code].CanEditMetadata) ||
+											(adminAggr.CanEditBehaviors != existingAggr[adminAggr.Code].CanEditBehaviors) || (adminAggr.CanPerformQc != existingAggr[adminAggr.Code].CanPerformQc) ||
+											(adminAggr.CanUploadFiles != existingAggr[adminAggr.Code].CanUploadFiles) || (adminAggr.CanChangeVisibility != existingAggr[adminAggr.Code].CanChangeVisibility) ||
+											(adminAggr.CanDelete != existingAggr[adminAggr.Code].CanDelete) || (adminAggr.IsCurator != existingAggr[adminAggr.Code].IsCurator) || (adminAggr.OnHomePage != existingAggr[adminAggr.Code].OnHomePage))
 										{
 											update_aggregations = true;
 											break;
@@ -477,7 +575,7 @@ namespace SobekCM.Library.AdminViewer
 								{
 									foreach (User_Editable_Aggregation dictionaryAggregation in aggregations.Values)
 									{
-										editUser.Add_Aggregation(dictionaryAggregation.Code, dictionaryAggregation.Name, dictionaryAggregation.CanSelect, dictionaryAggregation.CanEditItems, dictionaryAggregation.IsCurator, dictionaryAggregation.OnHomePage, dictionaryAggregation.IsAdmin);
+										editUser.Add_Aggregation(dictionaryAggregation.Code, dictionaryAggregation.Name, dictionaryAggregation.CanSelect, dictionaryAggregation.CanEditMetadata, dictionaryAggregation.CanEditBehaviors, dictionaryAggregation.CanPerformQc, dictionaryAggregation.CanUploadFiles, dictionaryAggregation.CanChangeVisibility, dictionaryAggregation.CanDelete, dictionaryAggregation.IsCurator, dictionaryAggregation.OnHomePage, dictionaryAggregation.IsAdmin, false);
 									}
 								}
 							}
@@ -1114,7 +1212,28 @@ namespace SobekCM.Library.AdminViewer
 
                     // Get the list of collections lists in the user object
                     ReadOnlyCollection<User_Editable_Aggregation> aggregations_in_editable_user = editUser.Aggregations;
-                    Dictionary<string, User_Editable_Aggregation> lookup_aggs = aggregations_in_editable_user.ToDictionary(thisAggr => thisAggr.Code.ToLower());
+
+                    Dictionary<string, List<User_Editable_Aggregation>> lookup_aggs = new Dictionary<string, List<User_Editable_Aggregation>>();
+					foreach (User_Editable_Aggregation thisAggr in aggregations_in_editable_user)
+					{
+						if (lookup_aggs.ContainsKey(thisAggr.Code.ToLower()))
+						{
+							lookup_aggs[thisAggr.Code.ToLower()].Add(thisAggr);
+						}
+						else
+						{
+							List<User_Editable_Aggregation> thisAggrList = new List<User_Editable_Aggregation>();
+							thisAggrList.Add(thisAggr);
+							lookup_aggs[thisAggr.Code.ToLower()] = thisAggrList;
+						}
+					}
+
+					// Determine if this is a detailed view of rights
+		            int columns = 8;
+					if (SobekCM_Library_Settings.Detailed_User_Aggregation_Permissions)
+					{
+						columns = 13;
+					}
 
                     // Step through each aggregation type
                     foreach (string aggregationType in codeManager.All_Types)
@@ -1122,18 +1241,35 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
                         if ((aggregationType.Length > 0) && (aggregationType[aggregationType.Length - 1] != 'S'))
                         {
-                            Output.WriteLine("    <td colspan=\"8\"><span style=\"color: White\"><b>" + aggregationType.ToUpper() + "S</b></span></td>");
+                            Output.WriteLine("    <td colspan=\"" + columns + "\"><span style=\"color: White\"><b>" + aggregationType.ToUpper() + "S</b></span></td>");
                         }
                         else
                         {
-                            Output.WriteLine("    <td colspan=\"8\"><span style=\"color: White\"><b>" + aggregationType.ToUpper() + "</b></span></td>");
+							Output.WriteLine("    <td colspan=\"" + columns + "\"><span style=\"color: White\"><b>" + aggregationType.ToUpper() + "</b></span></td>");
                         }
                         Output.WriteLine("  </tr>");
 
                         Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\" >");
                         Output.WriteLine("    <td width=\"55px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Is on user's custom home page\">ON<br />HOME</acronym></span></td>");
                         Output.WriteLine("    <td width=\"57px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can select this aggregation when editing or submitting an item\">CAN<br />SELECT</acronym></span></td>");
-                        Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit any item in this aggregation\">CAN<br />EDIT</acronym></span></td>");
+
+						if (SobekCM_Library_Settings.Detailed_User_Aggregation_Permissions)
+						{
+							Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">ITEM<br />EDIT<br />METADATA</acronym></span></td>");
+							Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">ITEM<br />EDIT<br />BEHAVIORS</acronym></span></td>");
+							Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">ITEM<br />PERFORM<br />QC</acronym></span></td>");
+							Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">ITEM<br />UPLOAD<br />FILES</acronym></span></td>");
+							Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">ITEM<br />CHANGE<br />VISIBILITY</acronym></span></td>");
+							Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">ITEM<br />CAN<br />DELETE</acronym></span></td>");
+						}
+						else
+						{
+							Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">CAN<br />EDIT</acronym></span></td>");
+						}
+
+
+
+
                         Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">IS<br />CURATOR</acronym></span></td>");
 						Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can perform administrative tasks on this aggregation\">IS<br />ADMIN</acronym></span></td>");
                         Output.WriteLine("    <td align=\"left\" colspan=\"2\"><span style=\"color: White\">ITEM AGGREGATION</span></td>");
@@ -1147,35 +1283,264 @@ namespace SobekCM.Library.AdminViewer
                             {
                                 Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_onhome_" + thisAggr.Code + "\" id=\"admin_project_onhome_" + thisAggr.Code + "\" /></td>");
                                 Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" /></td>");
-                                Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_" + thisAggr.Code + "\" id=\"admin_project_edit_" + thisAggr.Code + "\" /></td>");
+
+								if (SobekCM_Library_Settings.Detailed_User_Aggregation_Permissions)
+								{
+									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_metadata_" + thisAggr.Code + "\" id=\"admin_project_edit_metadata_" + thisAggr.Code + "\" /></td>");
+									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_behavior_" + thisAggr.Code + "\" id=\"admin_project_edit_behavior_" + thisAggr.Code + "\" /></td>");
+									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_perform_qc_" + thisAggr.Code + "\" id=\"admin_project_perform_qc_" + thisAggr.Code + "\" /></td>");
+									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_upload_files_" + thisAggr.Code + "\" id=\"admin_project_upload_files_" + thisAggr.Code + "\" /></td>");
+									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_change_visibility_" + thisAggr.Code + "\" id=\"admin_project_change_visibility_" + thisAggr.Code + "\" /></td>");
+									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_can_delete_" + thisAggr.Code + "\" id=\"admin_project_can_delete_" + thisAggr.Code + "\" /></td>");
+								}
+								else
+								{
+									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_" + thisAggr.Code + "\" id=\"admin_project_edit_" + thisAggr.Code + "\" /></td>");
+								}
+
 								Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_curator_" + thisAggr.Code + "\" id=\"admin_project_curator_" + thisAggr.Code + "\" /></td>");
                                 Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_admin_" + thisAggr.Code + "\" id=\"admin_project_admin_" + thisAggr.Code + "\" /></td>");
                             }
                             else
                             {
-                                if (lookup_aggs[thisAggr.Code.ToLower()].OnHomePage)
+                                if (lookup_aggs[thisAggr.Code.ToLower()][0].OnHomePage)
                                     Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_onhome_" + thisAggr.Code + "\" id=\"admin_project_onhome_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
                                 else
                                     Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_onhome_" + thisAggr.Code + "\" id=\"admin_project_onhome_" + thisAggr.Code + "\" /></td>");
 
-                                if (lookup_aggs[thisAggr.Code.ToLower()].CanSelect)
-                                    Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
-                                else
-                                    Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" /></td>");
+	                            bool can_select = false;
+	                            bool can_select_from_group = false;
+								bool can_edit_metadata = false;
+								bool can_edit_metadata_from_group = false;
+								bool can_edit_behaviors = false;
+								bool can_edit_behaviors_from_group = false;
+								bool can_perform_qc = false;
+								bool can_perform_qc_from_group = false;
+								bool can_change_visibility = false;
+								bool can_change_visibility_from_group = false;
+								bool can_delete_item = false;
+								bool can_delete_item_from_group = false;
+								bool can_upload_files = false;
+								bool can_upload_files_from_group = false;
+								bool is_curator = false;
+								bool is_curator_from_group = false;
+								bool is_admin = false;
+								bool is_admin_from_group = false;
+								foreach (User_Editable_Aggregation thisAggrFromList in lookup_aggs[thisAggr.Code.ToLower()])
+								{
+									if (thisAggrFromList.CanSelect)
+									{
+										if (thisAggrFromList.GroupDefined)
+										{
+											can_select = true;
+											can_select_from_group = true;
+										}
+										else
+										{
+											can_select = true;
+										}
+									}
+									if (thisAggrFromList.CanEditMetadata)
+									{
+										if (thisAggrFromList.GroupDefined)
+										{
+											can_edit_metadata = true;
+											can_edit_metadata_from_group = true;
+										}
+										else
+										{
+											can_edit_metadata = true;
+										}
+									}
+									if (thisAggrFromList.CanEditBehaviors)
+									{
+										if (thisAggrFromList.GroupDefined)
+										{
+											can_edit_behaviors = true;
+											can_edit_behaviors_from_group = true;
+										}
+										else
+										{
+											can_edit_behaviors = true;
+										}
+									}
+									if (thisAggrFromList.CanChangeVisibility)
+									{
+										if (thisAggrFromList.GroupDefined)
+										{
+											can_change_visibility = true;
+											can_change_visibility_from_group = true;
+										}
+										else
+										{
+											can_change_visibility = true;
+										}
+									}
+									if (thisAggrFromList.CanDelete)
+									{
+										if (thisAggrFromList.GroupDefined)
+										{
+											can_delete_item = true;
+											can_delete_item_from_group = true;
+										}
+										else
+										{
+											can_delete_item = true;
+										}
+									}
+									if (thisAggrFromList.CanUploadFiles)
+									{
+										if (thisAggrFromList.GroupDefined)
+										{
+											can_upload_files = true;
+											can_upload_files_from_group = true;
+										}
+										else
+										{
+											can_upload_files = true;
+										}
+									}
+									if (thisAggrFromList.CanPerformQc)
+									{
+										if (thisAggrFromList.GroupDefined)
+										{
+											can_perform_qc = true;
+											can_perform_qc_from_group = true;
+										}
+										else
+										{
+											can_perform_qc = true;
+										}
+									}
+									if (thisAggrFromList.IsCurator)
+									{
+										if (thisAggrFromList.GroupDefined)
+										{
+											is_curator = true;
+											is_curator_from_group = true;
+										}
+										else
+										{
+											is_curator = true;
+										}
+									}
+									if (thisAggrFromList.IsAdmin)
+									{
+										if (thisAggrFromList.GroupDefined)
+										{
+											is_admin = true;
+											is_admin_from_group = true;
+										}
+										else
+										{
+											is_admin = true;
+										}
+									}
+								}
 
-                                if (lookup_aggs[thisAggr.Code.ToLower()].CanEditItems)
-                                    Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_" + thisAggr.Code + "\" id=\"admin_project_edit_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
-                                else
-                                    Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_" + thisAggr.Code + "\" id=\"admin_project_edit_" + thisAggr.Code + "\" /></td>");
+	                            if (can_select)
+	                            {
+									if ( can_select_from_group )
+			                            Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" checked=\"checked\" disabled=\"disabled\" /></td>");
+									else
+										Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+	                            }
+	                            else
+		                            Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" /></td>");
 
-                                if (lookup_aggs[thisAggr.Code.ToLower()].IsCurator)
-									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_curator_" + thisAggr.Code + "\" id=\"admin_project_curator_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+
+	                            if (SobekCM_Library_Settings.Detailed_User_Aggregation_Permissions)
+								{
+									if (can_edit_metadata)
+									{
+										if ( can_edit_metadata_from_group )
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_metadata_" + thisAggr.Code + "\" id=\"admin_project_edit_metadata_" + thisAggr.Code + "\" checked=\"checked\" disabled=\"disabled\" /></td>");
+										else
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_metadata_" + thisAggr.Code + "\" id=\"admin_project_edit_metadata_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+									}
+									else
+										Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_metadata_" + thisAggr.Code + "\" id=\"admin_project_edit_metadata_" + thisAggr.Code + "\" /></td>");
+
+									if (can_edit_behaviors)
+									{
+										if (can_edit_behaviors_from_group)
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_behavior_" + thisAggr.Code + "\" id=\"admin_project_edit_behavior_" + thisAggr.Code + "\" checked=\"checked\" disabled=\"disabled\" /></td>");
+										else
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_behavior_" + thisAggr.Code + "\" id=\"admin_project_edit_behavior_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+									}
+									else
+										Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_behavior_" + thisAggr.Code + "\" id=\"admin_project_edit_behavior_" + thisAggr.Code + "\" /></td>");
+
+									if ( can_perform_qc)
+									{
+										if ( can_perform_qc_from_group )
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_perform_qc_" + thisAggr.Code + "\" id=\"admin_project_perform_qc_" + thisAggr.Code + "\" checked=\"checked\" disabled=\"disabled\" /></td>");
+										else
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_perform_qc_" + thisAggr.Code + "\" id=\"admin_project_perform_qc_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+									}
+									else
+										Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_perform_qc_" + thisAggr.Code + "\" id=\"admin_project_perform_qc_" + thisAggr.Code + "\" /></td>");
+
+									if ( can_upload_files)
+									{
+										if ( can_upload_files_from_group )
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_upload_files_" + thisAggr.Code + "\" id=\"admin_project_upload_files_" + thisAggr.Code + "\" checked=\"checked\" disabled=\"disabled\" /></td>");
+										else
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_upload_files_" + thisAggr.Code + "\" id=\"admin_project_upload_files_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+									}
+									else
+										Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_upload_files_" + thisAggr.Code + "\" id=\"admin_project_upload_files_" + thisAggr.Code + "\" /></td>");
+
+									if ( can_change_visibility)
+									{
+										if ( can_change_visibility_from_group )
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_change_visibility_" + thisAggr.Code + "\" id=\"admin_project_change_visibility_" + thisAggr.Code + "\" checked=\"checked\" disabled=\"disabled\" /></td>");
+										else
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_change_visibility_" + thisAggr.Code + "\" id=\"admin_project_change_visibility_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+									}
+									else
+										Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_change_visibility_" + thisAggr.Code + "\" id=\"admin_project_change_visibility_" + thisAggr.Code + "\" /></td>");
+
+									if ( can_delete_item )
+									{
+										if ( can_delete_item_from_group )
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_can_delete_" + thisAggr.Code + "\" id=\"admin_project_can_delete_" + thisAggr.Code + "\" checked=\"checked\" disabled=\"disabled\" /></td>"); 
+										else
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_can_delete_" + thisAggr.Code + "\" id=\"admin_project_can_delete_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+									}
+									else
+										Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_can_delete_" + thisAggr.Code + "\" id=\"admin_project_can_delete_" + thisAggr.Code + "\" /></td>");
+								}
+								else
+								{
+									if (can_edit_metadata)
+									{
+										if ( can_edit_metadata_from_group )
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_editall_" + thisAggr.Code + "\" id=\"admin_project_editall_" + thisAggr.Code + "\" checked=\"checked\" disabled=\"disabled\" /></td>");
+										else
+											Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_editall_" + thisAggr.Code + "\" id=\"admin_project_editall_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+									}
+									else
+										Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_editall_" + thisAggr.Code + "\" id=\"admin_project_editall_" + thisAggr.Code + "\" /></td>");
+								}
+
+								if (is_curator)
+								{
+									if ( is_curator_from_group )
+										Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_curator_" + thisAggr.Code + "\" id=\"admin_project_curator_" + thisAggr.Code + "\" checked=\"checked\" disabled=\"disabled\" /></td>");
+									else
+										Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_curator_" + thisAggr.Code + "\" id=\"admin_project_curator_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+								}
                                 else
 									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_curator_" + thisAggr.Code + "\" id=\"admin_project_curator_" + thisAggr.Code + "\" /></td>");
 
-								if (lookup_aggs[thisAggr.Code.ToLower()].IsAdmin)
-									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_admin_" + thisAggr.Code + "\" id=\"admin_project_admin_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
-								else
+								if (is_admin)
+								{
+									if ( is_admin_from_group )
+										Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_admin_" + thisAggr.Code + "\" id=\"admin_project_admin_" + thisAggr.Code + "\" checked=\"checked\" disabled=\"disabled\" /></td>");	
+									else
+										Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_admin_" + thisAggr.Code + "\" id=\"admin_project_admin_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+								}								else
 									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_admin_" + thisAggr.Code + "\" id=\"admin_project_admin_" + thisAggr.Code + "\" /></td>");
 
 
@@ -1184,7 +1549,7 @@ namespace SobekCM.Library.AdminViewer
                             Output.WriteLine("    <td>" + thisAggr.Code + "</td>");
                             Output.WriteLine("    <td>" + thisAggr.Name + "</td>");
                             Output.WriteLine("   </tr>");
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"6\"></td></tr>");
+							Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + columns + "\"></td></tr>");
                         }
                     }
 

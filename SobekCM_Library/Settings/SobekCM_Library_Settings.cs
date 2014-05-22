@@ -29,10 +29,10 @@ namespace SobekCM.Library.Settings
 		public const string BACKUP_FILES_FOLDER_NAME = "sobek_files";
 
 		/// <summary> Current version number associated with this SobekCM digital repository web application </summary>
-		public const string CURRENT_WEB_VERSION = "4.0.0 ALPHA";
+		public const string CURRENT_WEB_VERSION = "4.01";
 
 		/// <summary> Current version number associated with this SobekCM builder application </summary>
-		public const string CURRENT_BUILDER_VERSION = "4.0.0 ALPHA";
+		public const string CURRENT_BUILDER_VERSION = "4.01";
 
 		/// <summary> Number of ticks that a complete package must age before being processed </summary>
 		/// <value> This is currently set to 15 minutes (in ticks) </value>
@@ -83,6 +83,7 @@ namespace SobekCM.Library.Settings
 		private static string webServerIp;
 		private static string uploadFileTypes;
 		private static string uploadImageTypes;
+		private static bool useDetailedUserAggregationPermissions;
 
 		private static readonly string base_url;
 
@@ -321,6 +322,7 @@ namespace SobekCM.Library.Settings
 				Get_Boolean_Value(settingsDictionary, "Can Submit Edit Online", ref canSubmit, ref error, false);
 				Get_Boolean_Value(settingsDictionary, "Convert Office Files to PDF", ref convertOfficeFilesToPdf, ref error, false);
 				Get_Boolean_Value(settingsDictionary, "Create MARC Feed By Default", ref buildMarcFeedByDefault, ref error, false);
+				Get_Boolean_Value(settingsDictionary, "Detailed User Permissions", ref useDetailedUserAggregationPermissions, ref error, false);
 				Get_String_Value(settingsDictionary, "Document Solr Index URL", ref documentSolrUrl, ref error);
 				Get_Boolean_Value(settingsDictionary, "Facets Collapsible", ref collapsibleFacets, ref error, false);
 				Get_String_Value(settingsDictionary, "FDA Report DropBox", ref fdaReportDropbox, ref error);
@@ -368,6 +370,7 @@ namespace SobekCM.Library.Settings
 				Get_Integer_Value(settingsDictionary, "Thumbnail Width", ref thumbnailWidth, ref error, -1);
 				Get_String_Value(settingsDictionary, "Upload File Types", ref uploadFileTypes, ".aif,.aifc,.aiff,.au,.avi,.bz2,.c,.c++,.css,.dbf,.ddl,.doc,.docx,.dtd,.dvi,.flac,.gz,.htm,.html,.java,.jps,.js,.m4p,.mid,.midi,.mp2,.mp3,.mpg,.odp,.ogg,.pdf,.pgm,.ppt,.pptx,.ps,.ra,.ram,.rar,.rm,.rtf,.sgml,.swf,.sxi,.tbz2,.tgz,.wav,.wave,.wma,.wmv,.xls,.xlsx,.xml,.zip");
 				Get_String_Value(settingsDictionary, "Upload Image Types", ref uploadImageTypes, ".txt,.tif,.jpg,.jp2,.pro");
+
 				Get_String_Value(settingsDictionary, "Web In Process Submission Location", ref inProcessSubmissionLocation, String.Empty);
 				Get_Integer_Value(settingsDictionary, "Web Output Caching Minutes", ref webOutputCachingMinutes, ref error, 0);
 
@@ -1262,6 +1265,12 @@ namespace SobekCM.Library.Settings
 		public static bool Can_Remove_Single_Term
 		{
 			get { return canRemoveSingleSearchTerm; }
+		}
+
+		/// <summary> Flag determines if the detailed view of user permissions for items in an aggregation should show  </summary>
+		public static bool Detailed_User_Aggregation_Permissions
+		{
+			get { return useDetailedUserAggregationPermissions; }
 		}
 
 		#region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
