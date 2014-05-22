@@ -2558,8 +2558,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Add the Cancel & Submit buttons
             Output.WriteLine("<div class=\"qcErrorForm_RightDiv\">");
             Output.WriteLine("    <table><tr><td colspan=\"3\" style=\"text-align:center\">");
-            Output.WriteLine("      <br /><button title=\"Move selected pages\" class=\"sbkMySobek_BigButton\" onclick=\"save_qcErrors();return false;\">SUBMIT</button>&nbsp;");
-            Output.WriteLine("      <button title=\"Cancel this move\" class=\"sbkMySobek_BigButton\" onclick=\"popdown('form_qcError')\">CANCEL</button>&nbsp;<br />");
+            Output.WriteLine("      <br /><button title=\"Save this error\" class=\"sbkMySobek_BigButton\" onclick=\"save_qcErrors();return false;\">SUBMIT</button>&nbsp;");
+            Output.WriteLine("      <button title=\"Cancel\" class=\"sbkMySobek_BigButton\" onclick=\"popdown('form_qcError')\">CANCEL</button>&nbsp;<br />");
             Output.WriteLine("    </td></tr>");
             Output.WriteLine("</div>");
 
