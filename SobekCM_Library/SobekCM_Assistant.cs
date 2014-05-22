@@ -633,13 +633,14 @@ namespace SobekCM.Library
                              Item_Lookup_Object All_Items_Lookup,
                              string Base_URL, 
                              Dictionary<string, Wordmark_Icon> Icon_Table,
-                             User_Object Current_User,
+							 List<string> Item_Viewer_Priority,
+							 User_Object Current_User,
                              Custom_Tracer Tracer, 
                              out SobekCM_Item Current_Item, 
                              out Page_TreeNode Current_Page,
                              out SobekCM_Items_In_Title Items_In_Title )
         {
-            return Get_Item(String.Empty, Current_Mode, All_Items_Lookup, Base_URL, Icon_Table, Tracer, Current_User, out Current_Item, out Current_Page, out Items_In_Title);
+            return Get_Item(String.Empty, Current_Mode, All_Items_Lookup, Base_URL, Icon_Table, Item_Viewer_Priority, Tracer, Current_User, out Current_Item, out Current_Page, out Items_In_Title);
         }
 
         /// <summary> Get a digital resource for display or for editing </summary>
@@ -662,7 +663,8 @@ namespace SobekCM.Library
                              Item_Lookup_Object All_Items_Lookup, 
                              string Base_URL, 
                              Dictionary<string, Wordmark_Icon> Icon_Table, 
-                             Custom_Tracer Tracer, 
+							 List<string> Item_Viewer_Priority,
+							 Custom_Tracer Tracer, 
                              User_Object Current_User,
                              out SobekCM_Item Current_Item,
                              out Page_TreeNode Current_Page,
@@ -767,7 +769,7 @@ namespace SobekCM.Library
                         Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "Build the item");
                     }
 
-                    Current_Item = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, Icon_Table, Tracer);
+                    Current_Item = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, Icon_Table, Item_Viewer_Priority, Tracer);
                     if (Current_Item != null)
                     {
                         if ((Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (Current_User != null))

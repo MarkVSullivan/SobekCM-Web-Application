@@ -81,7 +81,8 @@ namespace SobekCM.Library.Application_State
             ref Dictionary<string, string> Aggregation_Aliases, 
             ref IP_Restriction_Ranges IP_Restrictions,
             ref Portal_List URL_Portals,
-            ref Dictionary<string, Mime_Type_Info> Mime_Types)
+            ref Dictionary<string, Mime_Type_Info> Mime_Types,
+			ref List<string> Item_Viewer_Priority )
 		{
             // Should we reload the data from the exteral configuraiton file?
             if (Reload_All)
@@ -310,6 +311,22 @@ namespace SobekCM.Library.Application_State
                     SobekCM_Database.Populate_MIME_List(Mime_Types, Tracer);
                 }
             }
+
+			// Check the list of forwardings
+			if ((Item_Viewer_Priority == null) || (Reload_All))
+			{
+				if (Item_Viewer_Priority != null)
+				{
+					lock (Item_Viewer_Priority)
+					{
+						Item_Viewer_Priority = SobekCM_Database.Get_Viewer_Priority(Tracer);
+					}
+				}
+				else
+				{
+					Item_Viewer_Priority = SobekCM_Database.Get_Viewer_Priority(Tracer);
+				}
+			}
 
 			// Check the IE hack CSS is loaded
 			if ((HttpContext.Current.Application["NonIE_Hack_CSS"] == null) || (Reload_All))

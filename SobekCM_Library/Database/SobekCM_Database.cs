@@ -9908,6 +9908,46 @@ namespace SobekCM.Library.Database
 
 		#endregion
 
+		public static List<string> Get_Viewer_Priority(Custom_Tracer Tracer)
+		{
+			if (Tracer != null)
+			{
+				Tracer.Add_Trace("SobekCM_Database.Get_Viewer_Priority", "Pulling from database");
+			}
+
+			try
+			{
+				List<string> returnValue = new List<string>();
+
+				// Define a temporary dataset
+				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Viewer_Priority");
+
+				// If there was no data for this collection and entry point, return null (an ERROR occurred)
+				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+				{
+					return returnValue;
+				}
+
+				// Return the first table from the returned dataset
+				foreach (DataRow thisRow in tempSet.Tables[0].Rows)
+				{
+					returnValue.Add(thisRow["ViewType"].ToString());
+				}
+				return returnValue;
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				if (Tracer != null)
+				{
+					Tracer.Add_Trace("SobekCM_Database.Get_Viewer_Priority", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Viewer_Priority", ee.Message, Custom_Trace_Type_Enum.Error);
+					Tracer.Add_Trace("SobekCM_Database.Get_Viewer_Priority", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
+				return null;
+			}
+		}
+
 	}
 
 }

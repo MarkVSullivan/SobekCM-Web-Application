@@ -78,7 +78,7 @@ namespace SobekCM
 				Application_State_Builder.Build_Application_State(tracer, false, ref Global.Skins, ref Global.Translation,
 				                                                  ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
 				                                                  ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-				                                                  ref Global.URL_Portals, ref Global.Mime_Types);
+																  ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority);
 
 				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Application State validated or built");
 
@@ -985,7 +985,7 @@ namespace SobekCM
 			else
 			{
 				if (!assistant.Get_Item(currentMode, Global.Item_List, SobekCM_Library_Settings.Image_URL,
-				                        Global.Icon_List, currentUser, tracer, out currentItem, out currentPage, out itemsInTitle))
+				                        Global.Icon_List, Global.Item_Viewer_Priority, currentUser, tracer, out currentItem, out currentPage, out itemsInTitle))
 				{
 					if ((currentMode.Mode == Display_Mode_Enum.Legacy_URL) || (currentMode.Invalid_Item))
 					{
@@ -1174,7 +1174,7 @@ namespace SobekCM
 			Application_State_Builder.Build_Application_State(tracer, true, ref Global.Skins, ref Global.Translation,
 			                                                  ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
 			                                                  ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-			                                                  ref Global.URL_Portals, ref Global.Mime_Types);
+															  ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority);
 
 			// Since this reset, send to the admin, memory management portion
 			currentMode.Mode = Display_Mode_Enum.Internal;

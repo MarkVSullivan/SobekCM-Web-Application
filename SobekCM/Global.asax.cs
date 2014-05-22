@@ -30,6 +30,7 @@ namespace SobekCM
 		public static Language_Support_Info Translation;
 		public static Portal_List URL_Portals;
 		public static Dictionary<string, Mime_Type_Info> Mime_Types;
+		public static List<string> Item_Viewer_Priority;
 
 		protected void Application_Start(object sender, EventArgs e)
 		{

@@ -179,7 +179,7 @@ namespace SobekCM.Library.MySobekViewer
                     try
                     {
                         // Get a new instance of this item
-                        SobekCM_Item saveItem = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, vid, Icon_Table, Tracer);
+                        SobekCM_Item saveItem = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, vid, Icon_Table, null, Tracer);
                         
                         // Clear some values for this item
                         saveItem.VID = String.Empty;

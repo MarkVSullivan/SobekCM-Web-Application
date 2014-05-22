@@ -111,7 +111,7 @@ namespace SobekCM.Library.Items
 			}
 
 			// If this has more than 1 sibling (this count includes itself), add the multi-volumes viewer
-			Item_Group_Object.Behaviors.Default_View = Item_Group_Object.Behaviors.Insert_View(0, View_Enum.ALL_VOLUMES, String.Empty, Item_Group_Object.Bib_Info.SobekCM_Type_String);
+			Item_Group_Object.Behaviors.Insert_View(0, View_Enum.ALL_VOLUMES, String.Empty, Item_Group_Object.Bib_Info.SobekCM_Type_String);
 
 			// Pull the data from the database
 			Item_Group_Object.Behaviors.GroupType = mainItemRow["Type"].ToString();
@@ -215,7 +215,7 @@ namespace SobekCM.Library.Items
 		/// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Fully built version of a digital resource </returns>
-		public SobekCM_Item Build_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
+		public SobekCM_Item Build_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 				{
@@ -274,7 +274,7 @@ namespace SobekCM.Library.Items
 				bool multiple_volumes_exist = Convert.ToInt32(mainItemRow["Total_Volumes"]) > 1;
 
 				// Now finish building the object from the application state values
-				Finish_Building_Item(thisPackage, itemDetails, multiple_volumes_exist);              
+				Finish_Building_Item(thisPackage, itemDetails, multiple_volumes_exist, Item_Viewer_Priority);              
 
 				return thisPackage;
 			}
@@ -293,7 +293,7 @@ namespace SobekCM.Library.Items
 		/// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Fully built version of a digital resource </returns>
-		public SobekCM_Item Build_Item(string METS_Location, string BibID, String VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
+		public SobekCM_Item Build_Item(string METS_Location, string BibID, String VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -329,7 +329,7 @@ namespace SobekCM.Library.Items
 				}
 
 				// Now finish building the object from the application state values
-				Finish_Building_Item(thisPackage, itemDetails, false);
+				Finish_Building_Item(thisPackage, itemDetails, false, Item_Viewer_Priority);
 
 				return thisPackage;
 			}
@@ -393,7 +393,7 @@ namespace SobekCM.Library.Items
 
 		#region Private methods for finalizing builds
 
-		private void Finish_Building_Item(SobekCM_Item Package_To_Finalize, DataSet DatabaseInfo, bool Multiple)
+		private void Finish_Building_Item(SobekCM_Item Package_To_Finalize, DataSet DatabaseInfo, bool Multiple, List<string> Item_Viewer_Priority )
 		{
 			// Copy over some basic values
 			DataRow mainItemRow = DatabaseInfo.Tables[2].Rows[0];
@@ -807,7 +807,6 @@ namespace SobekCM.Library.Items
 			if (viewsFromDb.ContainsKey(View_Enum.DATASET_VIEWDATA))
 			{
 				Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.DATASET_VIEWDATA]);
-				Package_To_Finalize.Behaviors.Default_View = viewsFromDb[View_Enum.DATASET_VIEWDATA];
 				viewsFromDb.Remove(View_Enum.DATASET_VIEWDATA);
 			}
 			if (viewsFromDb.ContainsKey(View_Enum.DATASET_CODEBOOK))
@@ -923,7 +922,6 @@ namespace SobekCM.Library.Items
 							{
 								string flashlabel = downloadPage.Label;
 								View_Object newView = Package_To_Finalize.Behaviors.Add_View(View_Enum.FLASH, flashlabel, String.Empty, thisFile.System_Name);
-								Package_To_Finalize.Behaviors.Default_View = newView;
 							}
 							else
 							{
@@ -952,7 +950,7 @@ namespace SobekCM.Library.Items
 					reader.Read_Metadata(ead_file_location, Package_To_Finalize, options, out errorMessage);
 
 					// Clear all existing views
-					Package_To_Finalize.Behaviors.Default_View = Package_To_Finalize.Behaviors.Add_View(View_Enum.EAD_DESCRIPTION);
+					Package_To_Finalize.Behaviors.Add_View(View_Enum.EAD_DESCRIPTION);
 
 					// Get the metadata module for EADs
 					EAD_Info eadInfo = Package_To_Finalize.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY) as EAD_Info;
@@ -961,29 +959,20 @@ namespace SobekCM.Library.Items
 
 				}
 
+				string view_type_of = Package_To_Finalize.Behaviors.Views[0].GetType().ToString();
+				string ufdc_type_of = Package_To_Finalize.Behaviors.Views[0].View_Type.ToString();
+
+
 				if (((non_flash_downloads > 0) && (pdf_download != 1)) || ((non_flash_downloads > 1) && (pdf_download == 1)))
 				{
 
-					if ((Package_To_Finalize.Web.Static_PageCount == 0) && ( Package_To_Finalize.Behaviors.Default_View == null ))
-						Package_To_Finalize.Behaviors.Default_View = Package_To_Finalize.Behaviors.Add_View(View_Enum.DOWNLOADS);
-					else
-						Package_To_Finalize.Behaviors.Add_View(View_Enum.DOWNLOADS);
+					Package_To_Finalize.Behaviors.Add_View(View_Enum.DOWNLOADS);
 				}
 
 				if (pdf_download == 1)
 				{
-					if ((Package_To_Finalize.Web.Static_PageCount == 0) && ( Package_To_Finalize.Behaviors.Default_View == null ))
-					{
-						Package_To_Finalize.Behaviors.Default_View = Package_To_Finalize.Behaviors.Add_View(View_Enum.PDF);
-						Package_To_Finalize.Behaviors.Default_View.FileName = pdf_download_url;
-					}
-					else
-					{
-						Package_To_Finalize.Behaviors.Add_View(View_Enum.PDF).FileName = pdf_download_url;
-					}
+					Package_To_Finalize.Behaviors.Add_View(View_Enum.PDF).FileName = pdf_download_url;
 				}
-
-
 			}
 			else
 			{
@@ -998,14 +987,12 @@ namespace SobekCM.Library.Items
 			{
 				View_Object newViewObj = new View_Object(View_Enum.YOUTUBE_VIDEO);
 				Package_To_Finalize.Behaviors.Add_View(newViewObj);
-				Package_To_Finalize.Behaviors.Default_View = newViewObj;
 			}
 
 			// Look for the HTML type views next, and possible set some defaults
 			if (viewsFromDb.ContainsKey(View_Enum.HTML))
 			{
 				Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.HTML]);
-				Package_To_Finalize.Behaviors.Default_View = viewsFromDb[View_Enum.HTML];
 				viewsFromDb.Remove(View_Enum.HTML);
 			}
 
@@ -1048,15 +1035,40 @@ namespace SobekCM.Library.Items
 			}
 
 			// Finally, add all the ITEM VIEWS
-			foreach (View_Object thisObject in viewsFromDb.Values)
+			if ((Package_To_Finalize.Web.Pages_By_Sequence != null) && (Package_To_Finalize.Web.Pages_By_Sequence.Count > 0))
 			{
-				switch (thisObject.View_Type)
+				foreach (View_Object thisObject in viewsFromDb.Values)
 				{
-					case View_Enum.TEXT:
-					case View_Enum.JPEG:
-					case View_Enum.JPEG2000:
-						Package_To_Finalize.Behaviors.Add_Item_Level_Page_View(thisObject);
-						break;
+					switch (thisObject.View_Type)
+					{
+						case View_Enum.TEXT:
+						case View_Enum.JPEG:
+						case View_Enum.JPEG2000:
+							Package_To_Finalize.Behaviors.Add_Item_Level_Page_View(thisObject);
+							break;
+					}
+				}
+			}
+
+			// Set the default views for this item
+			Package_To_Finalize.Behaviors.Default_View = null;
+			Dictionary<string, View_Object> views_by_view_name = new Dictionary<string, View_Object>();
+			foreach (View_Object thisView in Package_To_Finalize.Behaviors.Views)
+			{
+				if (!views_by_view_name.ContainsKey(thisView.View_Type.ToString()))
+					views_by_view_name[thisView.View_Type.ToString()] = thisView;
+			}
+			foreach (View_Object thisView in Package_To_Finalize.Behaviors.Item_Level_Page_Views)
+			{
+				if (!views_by_view_name.ContainsKey(thisView.View_Type.ToString()))
+					views_by_view_name[thisView.View_Type.ToString()] = thisView;
+			}
+			foreach (string thisViewerType in Item_Viewer_Priority)
+			{
+				if (views_by_view_name.ContainsKey(thisViewerType))
+				{
+					Package_To_Finalize.Behaviors.Default_View = views_by_view_name[thisViewerType];
+					break;
 				}
 			}
 		}

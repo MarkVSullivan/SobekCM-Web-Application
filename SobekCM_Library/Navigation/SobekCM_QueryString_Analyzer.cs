@@ -689,6 +689,14 @@ namespace SobekCM.Library.Navigation
 								Navigator.Mode = Display_Mode_Enum.Preferences;
 								break;
 
+							case "reports":
+								Navigator.Mode = Display_Mode_Enum.Reports;
+								if (url_relative_list.Count > 1)
+								{
+									Navigator.Report_Name = url_relative_list[1];
+								}
+								break;
+
 							case "stats":
 							case "statistics":
 								Navigator.Mode = Display_Mode_Enum.Statistics;
