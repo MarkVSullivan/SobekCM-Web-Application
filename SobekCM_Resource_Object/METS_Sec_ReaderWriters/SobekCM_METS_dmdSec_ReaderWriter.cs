@@ -334,6 +334,19 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             }
                             break;
 
+						case "VisibilityRestrictions":
+		                    Input_XmlReader.Read();
+							if (Input_XmlReader.NodeType == XmlNodeType.Text)
+							{
+								string restriction_text = Input_XmlReader.Value;
+								short restriction;
+								if (Int16.TryParse(restriction_text, out restriction))
+								{
+									Return_Package.Behaviors.IP_Restriction_Membership = restriction;
+								}
+							}
+		                    break;
+
                         case "Tickler":
                             Input_XmlReader.Read();
                             if (Input_XmlReader.NodeType == XmlNodeType.Text)

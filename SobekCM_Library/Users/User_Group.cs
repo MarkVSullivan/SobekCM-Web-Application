@@ -122,9 +122,9 @@ namespace SobekCM.Library.Users
         /// <param name="CanSelect">Flag indicates if this user can add items to this item aggregation</param>
         /// <param name="CanEditItems">Flag indicates if this user can edit any items in this item aggregation</param>
         /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
-        internal void Add_Aggregation(string Code, string Aggregation_Name, bool CanSelect, bool CanEditItems, bool IsCurator)
+		internal void Add_Aggregation(string Code, string Aggregation_Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool IsAdmin)
         {
-            aggregations.Add(Code, Aggregation_Name, CanSelect, CanEditItems, IsCurator, false, false );
+            aggregations.Add(Code, Aggregation_Name, CanSelect, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete, IsCurator, false, IsAdmin, true );
         }
 
         /// <summary> Adds a template to the list of templates this user group can select </summary>

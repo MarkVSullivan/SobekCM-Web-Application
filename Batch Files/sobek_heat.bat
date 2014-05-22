@@ -61,6 +61,7 @@ del "%source%\Installer\SobekCM_WiX_Installer\Staging32\SobekCM.csproj"
 del "%source%\Installer\SobekCM_WiX_Installer\Staging32\SobekCM.csproj.user"
 del "%source%\Installer\SobekCM_WiX_Installer\Staging32\Web.Debug.config"
 del "%source%\Installer\SobekCM_WiX_Installer\Staging32\Web.Release.config"
+del "%source%\Installer\SobekCM_WiX_Installer\Staging32\SobekCM.sln"
 echo.
 
 echo COMPILING 64-BiT VERSION
@@ -73,9 +74,11 @@ del "%source%\Installer\SobekCM_WiX_Installer\Staging64\SobekCM.csproj"
 del "%source%\Installer\SobekCM_WiX_Installer\Staging64\SobekCM.csproj.user"
 del "%source%\Installer\SobekCM_WiX_Installer\Staging64\Web.Debug.config"
 del "%source%\Installer\SobekCM_WiX_Installer\Staging64\Web.Release.config"
+del "%source%\Installer\SobekCM_WiX_Installer\Staging64\SobekCM.sln"
 echo.
 
 cd c:\
+
 
 echo COPY FILES TO INCLUDE FOLDER OVER
 xcopy "%source%\Installer\FilesToInclude" "%source%\Installer\SobekCM_WiX_Installer\Staging32" /s /e /i /y /q

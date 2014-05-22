@@ -31,7 +31,10 @@ namespace SobekCM.Library.Users
         private readonly List<string> defaultMetadataSets;
         private readonly List<string> templates;
         private readonly List<string> userGroups;
-        private readonly Dictionary<string, object> userSettings; 
+        private readonly Dictionary<string, object> userSettings;
+
+		private readonly List<string> templates_from_groups;
+	    private readonly List<string> defaultMetadataSets_from_groups;
 
         #endregion
 
@@ -79,6 +82,9 @@ namespace SobekCM.Library.Users
 			userSettings = new Dictionary<string, object>();
 	        Can_Delete_All = false;
 	        Shibboleth_Authenticated = false;
+			defaultMetadataSets_from_groups = new List<string>();
+			templates_from_groups = new List<string>();
+
         }
 
         #endregion
@@ -410,7 +416,7 @@ namespace SobekCM.Library.Users
 
             if (Flag)
             {
-                aggregations.Add(Code, Name, false, false, false, true, false );
+                aggregations.Add(Code, Name, false, false, false, false, false, false, false, false, true, false, false );
             }
         }
 
@@ -535,9 +541,9 @@ namespace SobekCM.Library.Users
         /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
         /// <param name="OnHomePage"> Flag indicates if this user has asked to have this aggregation appear on their personalized home page</param>
         /// <param name="IsAdmin"> Flag indicates if this user is listed athe admin for this aggregation </param>
-        internal void Add_Aggregation(string Code, string Name, bool CanSelect, bool CanEditItems, bool IsCurator, bool OnHomePage, bool IsAdmin )
+		internal void Add_Aggregation(string Code, string Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool OnHomePage, bool IsAdmin, bool GroupDefined )
         {
-            aggregations.Add(Code, Name, CanSelect, CanEditItems, IsCurator, OnHomePage, IsAdmin );
+            aggregations.Add(Code, Name, CanSelect, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete, IsCurator, OnHomePage, IsAdmin, GroupDefined );
         }
 
         /// <summary> Adds a BibID to the list of bibid's this user can edit </summary>
@@ -556,9 +562,11 @@ namespace SobekCM.Library.Users
         /// <summary> Adds a template to the list of templates this user can select </summary>
         /// <param name="Template">Code for this template</param>
         /// <remarks>This must match the name of one of the template XML files in the mySobek\templates folder</remarks>
-        internal void Add_Template(string Template)
+        internal void Add_Template(string Template, bool Group_Defined)
         {
             templates.Add(Template);
+			if ( Group_Defined )
+				templates_from_groups.Add(Template);
         }
 
         /// <summary> Sets the default template for this user </summary>
@@ -581,9 +589,11 @@ namespace SobekCM.Library.Users
         /// <summary> Adds a default metadata set to the list of sets this user can select </summary>
         /// <param name="MetadataSet">Code for this default metadata set</param>
         /// <remarks>This must match the name of one of the project METS (.pmets) files in the mySobek\projects folder</remarks>
-        internal void Add_Default_Metadata_Set(string MetadataSet)
+        internal void Add_Default_Metadata_Set(string MetadataSet, bool Group_Defined)
         {
             defaultMetadataSets.Add(MetadataSet);
+			if ( Group_Defined )
+				defaultMetadataSets_from_groups.Add(MetadataSet);
         }
 
         /// <summary> Sets the current default metadata set for this user </summary>
@@ -651,7 +661,7 @@ namespace SobekCM.Library.Users
                 return false;
 
             if (Item.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project )
-                return Is_System_Admin;
+				return Is_Portal_Admin;
 
 	        if ((Is_Portal_Admin) || (Is_System_Admin))
 		        return true;

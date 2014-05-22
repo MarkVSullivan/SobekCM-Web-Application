@@ -1208,6 +1208,10 @@ namespace SobekCM.Library.Navigation
 						Navigator.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
 						if (RemainingURLRedirectList.Count > 1)
 							Navigator.Info_Browse_Mode = RemainingURLRedirectList[1];
+						if ((RemainingURLRedirectList.Count > 2) && (RemainingURLRedirectList[2] == "edit"))
+						{
+							Navigator.Aggregation_Type = Aggregation_Type_Enum.Child_Page_Edit;
+						}
 						break;
 
 					case "browseby":
