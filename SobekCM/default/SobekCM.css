@@ -1073,3 +1073,7 @@ textarea.sbkSbia_HeaderTextArea {width: 400px; color:Blue; border-style:solid; b
 .SobekEditPanel {
     position: relative; margin-left: auto; margin-right: auto; BORDER: #ccc 2px solid; padding: 10px 5px 5px 5px; FONT-SIZE: small; WIDTH: 790px;  white-space:nowrap; text-align:left;background-color: #eeeeee;
 }
+
+
+/*JQuery tooltip style for the Thumbnail_ResultsViewer page*/
+.qtip_BriefTitle{ color: #a5a5a5;font-weight: bold;}
