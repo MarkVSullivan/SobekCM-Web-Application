@@ -7,7 +7,7 @@ $(document).ready(function() {
         var $this = $(this);
         var title_count = $this.attr('id').split('g')[1];
         var divContent = $('#descThumbnail' + title_count).html();
-        var titleText = '<div style="color:red;"><b>' + $this.parent().parent().parent().parent().next().find('span').html() + '</b></div>';
+     //   var titleText = '<div style="color:red;"><b>' + $this.parent().parent().parent().parent().next().find('span').html() + '</b></div>';
         var myPosition = 'center left';
         var atPosition = 'center right';
         //Set the location based on the thumbnail column number. If the image is in the fourth and last column, the tooltip should display on the left

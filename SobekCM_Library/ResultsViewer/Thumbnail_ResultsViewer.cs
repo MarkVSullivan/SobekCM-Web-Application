@@ -194,13 +194,13 @@ namespace SobekCM.Library.ResultsViewer
                 if (multiple_title)
                 {
                     //<a href=\"" + internal_link + "\">
-                    resultsBldr.AppendLine("\t\t\t\t<tr style=\"height:40px;\" valign=\"middle\"><td colspan=\"3\"><span class=\"qtip_BriefTitle\" style=\"color: #a5a5a5;font-weight: bold;\">" + titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;") + "</span> &nbsp; </td></tr>");
+                    resultsBldr.AppendLine("\t\t\t\t<tr style=\"height:40px;\" valign=\"middle\"><td colspan=\"3\"><span class=\"qtip_BriefTitle\" style=\"color: #a5a5a5;font-weight: bold;font-size:13px;\">" + titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;") + "</span> &nbsp; </td></tr>");
                     resultsBldr.AppendLine("<tr><td colspan=\"100%\"><br/></td></tr>");
                 }
                 else
                 {
                     resultsBldr.AppendLine(
-                        "\t\t\t\t<tr style=\"height:40px;\" valign=\"middle\"><td colspan=\"3\"><span class=\"qtip_BriefTitle\" style=\"color: #a5a5a5;font-weight: bold;\">" + firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
+                        "\t\t\t\t<tr style=\"height:40px;\" valign=\"middle\"><td colspan=\"3\"><span class=\"qtip_BriefTitle\" style=\"color: #a5a5a5;font-weight: bold;font-size:13px;\">" + firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
                         "</span> &nbsp; </td></tr><br/>");
                     resultsBldr.AppendLine("<tr><td colspan=\"100%\"><br/></td></tr>");
                 }
