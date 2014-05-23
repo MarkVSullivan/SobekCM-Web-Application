@@ -464,7 +464,7 @@ namespace SobekCM.Library
                     int results_per_page = 20;
                     if ((Current_Mode.Writer_Type == Writer_Type_Enum.XML) || (Current_Mode.Writer_Type == Writer_Type_Enum.DataSet))
                     {
-                        results_per_page = 1000000;
+                        results_per_page = 1000;
                         special_search_type = true;
                         sort = 2; // Sort by BibID always for these
                     }
@@ -633,14 +633,13 @@ namespace SobekCM.Library
                              Item_Lookup_Object All_Items_Lookup,
                              string Base_URL, 
                              Dictionary<string, Wordmark_Icon> Icon_Table,
-							 List<string> Item_Viewer_Priority,
-							 User_Object Current_User,
+                             User_Object Current_User,
                              Custom_Tracer Tracer, 
                              out SobekCM_Item Current_Item, 
                              out Page_TreeNode Current_Page,
                              out SobekCM_Items_In_Title Items_In_Title )
         {
-            return Get_Item(String.Empty, Current_Mode, All_Items_Lookup, Base_URL, Icon_Table, Item_Viewer_Priority, Tracer, Current_User, out Current_Item, out Current_Page, out Items_In_Title);
+            return Get_Item(String.Empty, Current_Mode, All_Items_Lookup, Base_URL, Icon_Table, Tracer, Current_User, out Current_Item, out Current_Page, out Items_In_Title);
         }
 
         /// <summary> Get a digital resource for display or for editing </summary>
@@ -663,8 +662,7 @@ namespace SobekCM.Library
                              Item_Lookup_Object All_Items_Lookup, 
                              string Base_URL, 
                              Dictionary<string, Wordmark_Icon> Icon_Table, 
-							 List<string> Item_Viewer_Priority,
-							 Custom_Tracer Tracer, 
+                             Custom_Tracer Tracer, 
                              User_Object Current_User,
                              out SobekCM_Item Current_Item,
                              out Page_TreeNode Current_Page,
@@ -769,7 +767,7 @@ namespace SobekCM.Library
                         Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "Build the item");
                     }
 
-                    Current_Item = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, Icon_Table, Item_Viewer_Priority, Tracer);
+                    Current_Item = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, Icon_Table, Tracer);
                     if (Current_Item != null)
                     {
                         if ((Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (Current_User != null))
@@ -1143,6 +1141,7 @@ namespace SobekCM.Library
                     }
                 }
             }
+<<<<<<< HEAD
 
 
 			////create search results json object and place into session state
@@ -1154,6 +1153,17 @@ namespace SobekCM.Library
 			//	TEMPsearchResults.Rows.Add(searchTitleResult.BibID, searchTitleResult.Spatial_Coordinates);
 			//}
 			//HttpContext.Current.Session["TEMPSearchResultsJSON"] = Google_Map_ResultsViewer_Beta.Create_JSON_Search_Results_Object(TEMPsearchResults);
+=======
+            ////create search results json object and place into session state
+            //DataTable TEMPsearchResults = new DataTable();
+            //TEMPsearchResults.Columns.Add("BibID", typeof(string));
+            //TEMPsearchResults.Columns.Add("Spatial_Coordinates", typeof(string));
+            //foreach (iSearch_Title_Result searchTitleResult in Paged_Results)
+            //{
+            //    TEMPsearchResults.Rows.Add(searchTitleResult.BibID, searchTitleResult.Spatial_Coordinates);
+            //}
+            //HttpContext.Current.Session["TEMPSearchResultsJSON"] = Google_Map_ResultsViewer_Beta.Create_JSON_Search_Results_Object(TEMPsearchResults);
+>>>>>>> bc4f2fd63166dc4d31a8198a433562a7577c6f82
         }
 
         /// <summary> Takes the search string and search fields from the URL and parses them, according to the search type,

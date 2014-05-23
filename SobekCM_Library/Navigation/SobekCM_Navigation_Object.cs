@@ -238,6 +238,9 @@ namespace SobekCM.Library.Navigation
 
 		#region Public Properties
 
+		/// <summary> Name of the report requested from the reporting module </summary>
+		public string Report_Name { get; set; }
+
 		/// <summary> Gets the PURL associated with this portal which should be used for building permanent links for items </summary>
 		public string Portal_PURL { get; set; }
 
@@ -658,6 +661,11 @@ namespace SobekCM.Library.Navigation
 
 			switch (Mode)
 			{
+				case Display_Mode_Enum.Reports:
+					if ( !String.IsNullOrEmpty(Report_Name))
+						return this_base_url + "reports/" + Report_Name + urlOptions1;
+					return this_base_url + "reports" + urlOptions1;
+
 				case Display_Mode_Enum.Error:
 					return SobekCM_Library_Settings.System_Error_URL;
 

@@ -144,13 +144,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					(File.GetLastWriteTime(metsInProcessFile).Subtract(DateTime.Now).Hours < 8))
 				{
 					// Read the temporary METS file, and use that to build the qc_item
-					qc_item = SobekCM_Item_Factory.Get_Item(metsInProcessFile, Current_Object.BibID, Current_Object.VID, null, null);
+					qc_item = SobekCM_Item_Factory.Get_Item(metsInProcessFile, Current_Object.BibID, Current_Object.VID, null, null, null);
                     qc_item.Source_Directory = Current_Object.Source_Directory;
 				}
 				else
 				{
 					// Just read the normal otherwise ( if we had the ability to deep copy a SobekCM_Item, we could skip this )
-					qc_item = SobekCM_Item_Factory.Get_Item(Current_Object.BibID, Current_Object.VID, null, null);
+					qc_item = SobekCM_Item_Factory.Get_Item(Current_Object.BibID, Current_Object.VID, null, null, null);
 				}
 
                 // Save to the session, so it is easily available for next time

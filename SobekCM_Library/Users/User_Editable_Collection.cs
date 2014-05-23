@@ -41,14 +41,23 @@ namespace SobekCM.Library.Users
         /// <param name="Code">Code for this user editable item aggregation</param>
         /// <param name="Name">Name for this user editable item aggregation </param>
         /// <param name="CanSelect">Flag indicates if this user can add items to this item aggregation</param>
-        /// <param name="CanEditItems">Flag indicates if this user can edit any items in this item aggregation</param>
+		/// <param name="CanEditMetadata">Flag indicates if this user can edit any items in this item aggregation</param>
         /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
         /// <param name="OnHomePage">Flag indicates if this user has asked to have this aggregation appear on their personalized home page</param>
 		/// <param name="IsAdmin"> Flag indicates if this user is listed athe admin for this aggregation </param>
-        public void Add(string Code, string Name, bool CanSelect, bool CanEditItems, bool IsCurator, bool OnHomePage, bool IsAdmin )
+		public void Add(string Code, string Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool OnHomePage, bool IsAdmin, bool GroupDefined)
         {
-            collection.Add(new User_Editable_Aggregation(Code.ToUpper(), Name, CanSelect, CanEditItems, IsCurator, OnHomePage, IsAdmin ));
-            if (CanEditItems)
+	        User_Editable_Aggregation aggrLink = new User_Editable_Aggregation(Code.ToUpper(), Name, CanSelect, false, IsCurator, OnHomePage, IsAdmin);
+	        aggrLink.CanEditMetadata = CanEditMetadata;
+			aggrLink.CanEditBehaviors = CanEditBehaviors;
+			aggrLink.CanPerformQc = CanPerformQc;
+			aggrLink.CanUploadFiles = CanUploadFiles;
+			aggrLink.CanChangeVisibility = CanChangeVisibility;
+			aggrLink.CanDelete = CanDelete;
+	        aggrLink.GroupDefined = GroupDefined;
+            collection.Add(aggrLink);
+
+			if (CanEditMetadata)
             {
                 canEditCodes.Add(Code.ToUpper());
             }

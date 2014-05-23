@@ -41,7 +41,7 @@ namespace SobekCM
 					Application_State_Builder.Build_Application_State(tracer, false, ref Global.Skins, ref Global.Translation,
 					                                                  ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
 					                                                  ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-					                                                  ref Global.URL_Portals, ref Global.Mime_Types);
+					                                                  ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority);
 
 					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Application State validated or built");
 

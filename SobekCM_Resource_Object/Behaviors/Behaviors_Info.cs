@@ -151,6 +151,12 @@ namespace SobekCM.Resource_Object.Behaviors
 				}
 			}
 
+			// Add IP restriction mask (if present and not public)
+			if ((ip_restricted.HasValue) && ( ip_restricted.Value != 0 ))
+			{
+				Results.Write(ToMETS(Sobek_Namespace + ":VisibilityRestrictions", ip_restricted.Value.ToString()));
+			}
+
 			// End the Administrative section
 			Results.Write("</" + Sobek_Namespace + ":procParam>\r\n");
 		}
@@ -890,6 +896,7 @@ namespace SobekCM.Resource_Object.Behaviors
 		}
 
 		/// <summary> Bitwise flags determines if this item should be restricted to certain IP ranges </summary>
+		/// <remarks>-1 would be PRIVATE, 0 would be public, and above that is IP restricted </remarks>
 		public short IP_Restriction_Membership
 		{
 			get { return ip_restricted.HasValue ? ip_restricted.Value : (short) -1; }
@@ -908,6 +915,20 @@ namespace SobekCM.Resource_Object.Behaviors
 				if (value)
 					ip_restricted = null;
 			}
+		}
+
+		/// <summary> Makes this item public in the behaviorSec, which results in 
+		/// a VisibilityRestrictions tag of zero in the procParam of the resulting METS </summary>
+		public void Set_Public()
+		{
+			ip_restricted = 0;
+		}
+
+		/// <summary> Makes this item private in the behaviorSec, which results in 
+		/// a VisibilityRestrictions tag of -1 in the procParam of the resulting METS </summary>
+		public void Set_Private()
+		{
+			ip_restricted = -1;
 		}
 
 		/// <summary> Gets the information about the main page for this item </summary>
