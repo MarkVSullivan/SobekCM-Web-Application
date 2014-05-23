@@ -441,7 +441,7 @@ namespace SobekCM.Library.HTML
 				return;
 			}
 
-			Literal startingLiteral = new Literal{ Text = (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map || currentMode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta) ? "</div>" + Environment.NewLine + "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine : "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine};
+			Literal startingLiteral = new Literal{ Text = (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map) ? "</div>" + Environment.NewLine + "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine : (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta) ? "</div>" + Environment.NewLine + "<div>" + Environment.NewLine : "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine};
 			MainPlaceHolder.Controls.Add(startingLiteral);
 
 			resultWriter.Add_HTML(MainPlaceHolder, Tracer );
@@ -2037,6 +2037,8 @@ namespace SobekCM.Library.HTML
 
                 #region add the filters
 
+                List<string> FIDS = new List<string>();
+
                 // Add the first facet information 
                 if (resultsStatistics.First_Facets_Count > 0)
                 {
@@ -2044,6 +2046,7 @@ namespace SobekCM.Library.HTML
                     if (field != null)
                     {
                         Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 1, sort_by_frequency, sort_alphabetically, resultsStatistics.First_Facets);
+                        FIDS.Add(field.Display_Term);
                     }
                 }
 
@@ -2054,6 +2057,7 @@ namespace SobekCM.Library.HTML
                     if (field != null)
                     {
                         Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 2, sort_by_frequency, sort_alphabetically, resultsStatistics.Second_Facets);
+                        FIDS.Add(field.Display_Term);
                     }
                 }
 
@@ -2064,6 +2068,7 @@ namespace SobekCM.Library.HTML
                     if (field != null)
                     {
                         Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 3, sort_by_frequency, sort_alphabetically, resultsStatistics.Third_Facets);
+                        FIDS.Add(field.Display_Term);
                     }
                 }
 
@@ -2074,6 +2079,7 @@ namespace SobekCM.Library.HTML
                     if (field != null)
                     {
                         Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 4, sort_by_frequency, sort_alphabetically, resultsStatistics.Fourth_Facets);
+                        FIDS.Add(field.Display_Term);
                     }
                 }
 
@@ -2084,6 +2090,7 @@ namespace SobekCM.Library.HTML
                     if (field != null)
                     {
                         Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 5, sort_by_frequency, sort_alphabetically, resultsStatistics.Fifth_Facets);
+                        FIDS.Add(field.Display_Term);
                     }
                 }
 
@@ -2094,6 +2101,7 @@ namespace SobekCM.Library.HTML
                     if (field != null)
                     {
                         Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 6, sort_by_frequency, sort_alphabetically, resultsStatistics.Sixth_Facets);
+                        FIDS.Add(field.Display_Term);
                     }
                 }
 
@@ -2104,6 +2112,7 @@ namespace SobekCM.Library.HTML
                     if (field != null)
                     {
                         Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 7, sort_by_frequency, sort_alphabetically, resultsStatistics.Seventh_Facets);
+                        FIDS.Add(field.Display_Term);
                     }
                 }
 
@@ -2114,9 +2123,30 @@ namespace SobekCM.Library.HTML
                     if (field != null)
                     {
                         Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, currentMode.Language), field.Web_Code, show_less, show_more, 8, sort_by_frequency, sort_alphabetically, resultsStatistics.Eighth_Facets);
+                        FIDS.Add(field.Display_Term);
                     }
                 }
 
+                #region FIDKey Support
+
+                //create fid key hash and id and session state
+                int FIDKeyHashSpecial = 0;
+                foreach (string FID in FIDS)
+                {
+                    byte[] tempFIDChars = Encoding.ASCII.GetBytes(FID);
+                    foreach (byte tempFIDChar in tempFIDChars)
+                    {
+                        FIDKeyHashSpecial += Convert.ToInt32(tempFIDChar);
+                    }
+                }
+                //finish processing FIDkeyhash and store
+                FIDKeyHashSpecial = Convert.ToInt32(FIDKeyHashSpecial * FIDS.Count);
+                HttpContext.Current.Session["FIDKey"] = "FIDKey_" + FIDKeyHashSpecial.ToString();
+
+                HttpContext.Current.Cache[HttpContext.Current.Session["FIDKey"].ToString()] = FIDS;
+
+                #endregion
+                
                 #endregion
 
                 builder.AppendLine("</div>");

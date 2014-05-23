@@ -25,7 +25,7 @@ var mcOptions = {
 };
 
 //add start listener
-//google.maps.event.addDomListener(window, 'load', initAll);
+google.maps.event.addDomListener(window, 'load', initAll);
 
 //init all
 function initAll() {
@@ -33,13 +33,17 @@ function initAll() {
     //init server vars
     initServerToClientVars();
     //init display search result (DSR)
-    //initDSR();
+    initDSR();
     //init declarations (local/js)
     initDeclarations();
     //init map elements
     initMapElements();
     //show DSR
-    //showDSR();
+    try {
+        showDSR();
+    } catch (e) {
+        console.error("Could not show DSR " + e);
+    }
     //fit map
     map.fitBounds(MAPSEARCHER.GLOBAL.DEFINES.defaultSearchBounds); //this could trigger a zoom changed event (redraw of markers) if the zoom changes from default
     //resize view (currently just the map)
@@ -97,14 +101,19 @@ function initAll() {
 
 //testing/holder
 function searchWithinBounds(bounds) {
+    //toServer("search|bounds|" + bounds.getSouthWest().lat() + "|" + bounds.getSouthWest().lng() + "|" + bounds.getNorthEast().lat() + "|" + bounds.getNorthEast().lng() + "|" + MSRKey + "|");
     toServer("search|bounds|" + bounds.getSouthWest().lat() + "|" + bounds.getSouthWest().lng() + "|" + bounds.getNorthEast().lat() + "|" + bounds.getNorthEast().lng() + "|");
 }
 
 //#region inits
 
 function initDSR() {
-    initJSON();
-    DSR = JSON.parse(DSR);
+    try {
+        initJSON();
+        DSR = JSON.parse(DSR);
+    } catch(e) {
+        console.error("Could not show DSR " + e);
+    } 
 }
 
 function initDeclarations() {
@@ -134,17 +143,24 @@ function initDeclarations() {
     }();
 
     //init dependent vars
+    
     //get search results bounds (these are always the last two josn points)
-    var swx = DSR[DSR.length - 2].Point_Latitude;
-    var swy = DSR[DSR.length - 2].Point_Longitude;
-    var nex = DSR[DSR.length - 1].Point_Latitude;
-    var ney = DSR[DSR.length - 1].Point_Longitude;
-    MAPSEARCHER.GLOBAL.DEFINES.defaultSearchBounds = new google.maps.LatLngBounds(new google.maps.LatLng(swx, swy), new google.maps.LatLng(nex, ney));
-
-
+    try {
+        var swx = DSR[DSR.length - 2].Point_Latitude;
+        var swy = DSR[DSR.length - 2].Point_Longitude;
+        var nex = DSR[DSR.length - 1].Point_Latitude;
+        var ney = DSR[DSR.length - 1].Point_Longitude;
+        MAPSEARCHER.GLOBAL.DEFINES.defaultSearchBounds = new google.maps.LatLngBounds(new google.maps.LatLng(swx, swy), new google.maps.LatLng(nex, ney));
+    } catch (e) {
+        console.error("Could not get bounds from DSR " + e);
+        MAPSEARCHER.GLOBAL.DEFINES.defaultSearchBounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(85, -180),           // top left corner of map
+            new google.maps.LatLng(-85, 180)            // bottom right corner
+        );
+    }
+    
     //alert("LOADING (this is here to force firebug to start)");
-
-
+    
 }
 
 function initMapElements() {
@@ -443,6 +459,7 @@ function resizeView(param) {
             //bodyPX = totalPX - 265; //TEMP OVERRIDE
         }
 
+        document.getElementById("container_SearchMap").style.height = (totalPX - 283) + "px";
         document.getElementById("container_SearchMap").style.height = (totalPX - 283) + "px";
 
     } catch (e) {

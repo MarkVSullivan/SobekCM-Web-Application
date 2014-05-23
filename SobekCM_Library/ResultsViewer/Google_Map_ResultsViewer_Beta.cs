@@ -38,7 +38,7 @@ namespace SobekCM.Library.ResultsViewer
                 //do a search for all the items in this agg
                 string temp_AggregationId = CurrentMode.Aggregation;
                 string[] temp_AggregationList = temp_AggregationId.Split(' ');
-                //Perform_Aggregation_Search(temp_AggregationList, Tracer);
+                Perform_Aggregation_Search(temp_AggregationList, Tracer);
             }
 
         }
@@ -91,6 +91,7 @@ namespace SobekCM.Library.ResultsViewer
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\"> ");
             mapSearchBuilder.AppendLine("       function initServerToClientVars(){ ");
             mapSearchBuilder.AppendLine("         baseURL = \"" + CurrentMode.Base_URL + "\"; ");
+            //mapSearchBuilder.AppendLine("         MSRKey = \"" + HttpContext.Current.Session["MapSearchResultsKey"] + "\"; ");
             mapSearchBuilder.AppendLine("       } ");
             mapSearchBuilder.AppendLine("  ");
             //ADD EXISTING POINTS WITH JSON
@@ -131,9 +132,8 @@ namespace SobekCM.Library.ResultsViewer
 
             //get fids
             
-
             //old
-            if (HttpContext.Current.Session["FIDKey"]==null)
+            if (HttpContext.Current.Session["FIDKey"] == null)
                 HttpContext.Current.Session["FIDKey"] = ""; //init
             string FIDKey = HttpContext.Current.Session["FIDKey"].ToString();
             List<string> FIDs = (List<string>)HttpContext.Current.Cache[FIDKey];
@@ -147,11 +147,12 @@ namespace SobekCM.Library.ResultsViewer
             //make sure we have alll the FIDs, if not create blank holders
             if (HOOK_maxFIDCount > temp_FIDs.Count)
             {
-                while (HOOK_maxFIDCount >= temp_FIDs.Count)
+                while (HOOK_maxFIDCount > temp_FIDs.Count)
                 {
                     temp_FIDs.Add("");
                 }
             }
+            
 
             #endregion
 
@@ -191,7 +192,7 @@ namespace SobekCM.Library.ResultsViewer
                 searchResults.Columns.Add(filterName.Replace(" ", "_"), typeof(string));
             }
 
-            //determine if we have used all 8 of the real filters, if not, create gap (8 + x where x= non fid count to date)
+            //determine if we have used all 8 of the real filters, if not, create gap (8 + x where x= non fid column count to date)
             for (int i = searchResults.Columns.Count; i < (8 + 5); i++)
             {
                 searchResults.Columns.Add("empty" + i.ToString(), typeof(string));
@@ -476,15 +477,15 @@ namespace SobekCM.Library.ResultsViewer
         //performs a bounds search
         public static void Perform_Coordinate_Bounds_Search(double swx, double swy, double nex, double ney)
         {
+            
             //create them display search results object
             DataTable tempDSR = new DataTable();
             tempDSR.Columns.Add("ItemID", typeof (string));
             tempDSR.Columns.Add("Point_Latitude", typeof(string));
             tempDSR.Columns.Add("Point_Longitude", typeof(string));
-            Refresh_MSRKey();
             //get original SR
-            if (HttpContext.Current.Session["MapSearchResultsKey"] == null)
-                Refresh_MSRKey();
+            //if (HttpContext.Current.Session["MapSearchResultsKey"] == null)
+            
             string MSRKey = HttpContext.Current.Session["MapSearchResultsKey"].ToString();
             
             DataTable SR = new DataTable();
