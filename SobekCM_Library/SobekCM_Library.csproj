@@ -266,6 +266,111 @@
     <Compile Include="ItemViewer\Viewers\TrackingSheet_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Localization\baseLocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\abstractHtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\abstractItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\abstract_ResultsViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\AddRemove_Fragment_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Advanced_Search_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Advanced_Search_YearRange_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Aggregation_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Aggregation_Nav_Bar_HTML_Factory_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Aggregation_Single_AdminViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Aware_JP2_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Basic_Search_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Basic_Search_YearRange_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Bookshelf_View_ResultsViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Brief_ResultsViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Checked_Out_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Citation_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Contact_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Delete_Item_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Describe_Fragment_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\dLOC_Search_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Download_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\EAD_Container_List_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\EAD_Description_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Edit_Group_Behaviors_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Edit_Item_Behaviors_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Edit_Item_Metadata_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Edit_Serial_Hierarchy_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\EmbeddedVideo_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Error_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Export_View_ResultsViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Feature_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\File_Management_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Folder_Mgmt_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Full_Text_Search_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\General_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\GnuBooks_PageTurner_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Google_Coordinate_Entry_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Google_Map_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Google_Map_ResultsViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Group_Add_Volume_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Group_AutoFill_Volume_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Home_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Html_Echo_MainWriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\HTML_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Html_MainWriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\HTML_Map_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Internal_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Item_Count_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Item_Count_Aggregation_Viewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Item_Email_Helper_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Item_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Item_Nav_Bar_HTML_Factory_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\JPEG2000_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\JPEG_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\LegacyUrl_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Logon_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\MainMenus_Helper_HtmlSubWriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\ManageMenu_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Map_Browse_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Map_ResultsWriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Map_Search_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Mass_Update_Items_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Metadata_Browse_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\MultiVolumes_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\MySobek_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\NewPassword_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Newspaper_Search_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\New_Group_And_Item_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\No_Results_ResultsViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\No_Search_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\PagedResults_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Page_Image_Upload_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\PDF_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Preferences_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Preferences_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\PrintForm_Fragment_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Print_Item_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Private_Items_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Public_Folder_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\QC_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Related_Images_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Rotating_Highlight_Search_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Saved_Searches_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Search_Results_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Send_Fragment_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Share_Fragment_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Static_Browse_Info_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Statistics_HtmlSubwriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Street_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Table_ResultsViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Text_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Text_MainWriter_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Text_Search_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Thumbnail_ResultsViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\TOC_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Tracking_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\URL_Email_Helper_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Usage_Statistics_AggregationViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\Usage_Stats_Email_Helper_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\User_Tags_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\User_Usage_Stats_MySobekViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\Classes\YouTube_Embedded_Video_ItemViewer_LocalizationInfo.cs" />
+    <Compile Include="Localization\SampleClass_LocalizationInfo.cs" />
+    <Compile Include="Localization\SobekCM_LocalizationInfo.cs" />
     <Compile Include="MainWriters\DataProvider_MainWriter.cs" />
     <Compile Include="ResultsViewer\Google_Map_ResultsViewer_Beta.cs" />
     <Compile Include="UploadiFive\UploadiFive_Settings.cs" />
@@ -616,9 +721,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Localization\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
