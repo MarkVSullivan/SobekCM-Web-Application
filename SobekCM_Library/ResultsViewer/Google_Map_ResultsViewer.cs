@@ -707,6 +707,7 @@ namespace SobekCM.Library.ResultsViewer
                             Google_Map_ResultsViewer_Beta.Perform_Aggregation_Search(aggregationList, Tracer);
                             break;
                         case "bounds":
+                            //HttpContext.Current.Session["MapSearchResultsKey"] = ar[6];
                             Google_Map_ResultsViewer_Beta.Perform_Coordinate_Bounds_Search(Convert.ToDouble(ar[2]), Convert.ToDouble(ar[3]), Convert.ToDouble(ar[4]), Convert.ToDouble(ar[5]));
                             break;
                         case "filter":
