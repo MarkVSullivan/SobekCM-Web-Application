@@ -4,9 +4,10 @@ namespace SobekCM.Library.Localization.Classes
     public class abstract_ResultsViewer_LocalizationInfo : baseLocalizationInfo
     {
         /// <summary> Constructor for a new instance of the abstract_ResultsViewer_Localization class </summary>
-        public abstract_ResultsViewer_LocalizationInfo() : base()
+        public abstract_ResultsViewer_LocalizationInfo()
         {
-            // Do nothing
+            // Set the source class name this localization file serves
+            ClassName = "abstract_ResultsViewer";
         }
 
         /// <summary> Adds a localization string ( with key and value ) to this localization class </summary>

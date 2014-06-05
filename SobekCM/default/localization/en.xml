@@ -1,0 +1,2113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<localization lang="English">
+	<Section class="abstract_ResultsViewer">
+		<Text key="Artifact" value="artifact" />
+		<Text key="Artifacts" value="artifacts" />
+		<Text key="Audio" value="audio" />
+		<Text key="Audio Item" value="audio item" />
+		<Text key="Audio Items" value="audio items" />
+		<Text key="Audios" value="audios" />
+		<Text key="Flight Line" value="flight line" />
+		<Text key="Flight Lines" value="flight lines" />
+		<Text key="Issue" value="issue" />
+		<Text key="Issues" value="issues" />
+		<Text key="Item" value="item" />
+		<Text key="Items" value="items" />
+		<Text key="Map Set" value="map set" />
+		<Text key="Map Sets" value="map sets" />
+		<Text key="Photograph Set" value="photograph set" />
+		<Text key="Photograph Sets" value="photograph sets" />
+		<Text key="Video" value="video" />
+		<Text key="Videos" value="videos" />
+	</Section>
+	<Section class="abstractHtmlSubwriter">
+		<Text key="ALEPH Number" value="ALEPH Number" />
+		<Text key="Anywhere" value="Anywhere" />
+		<Text key="Attribution" value="Attribution" />
+		<Text key="Author" value="Author" />
+		<Text key="City" value="City" />
+		<Text key="Country" value="Country" />
+		<Text key="County" value="County" />
+		<Text key="Donor" value="Donor" />
+		<Text key="Frequency" value="Frequency" />
+		<Text key="Genre" value="Genre" />
+		<Text key="Identifier" value="Identifier" />
+		<Text key="Language" value="Language" />
+		<Text key="Notes" value="Notes" />
+		<Text key="OCLC Number" value="OCLC Number" />
+		<Text key="Place Of Publication" value="Place of Publication" />
+		<Text key="Publisher" value="Publisher" />
+		<Text key="Spatial Coverage" value="Spatial Coverage" />
+		<Text key="State" value="State" />
+		<Text key="Subject Keywords" value="Subject Keywords" />
+		<Text key="Target Audience" value="Target Audience" />
+		<Text key="Tickler" value="Tickler" />
+		<Text key="Title" value="Title" />
+		<Text key="Tracking Box" value="Tracking Box" />
+		<Text key="Type" value="Type" />
+	</Section>
+	<Section class="abstractItemViewer">
+		<Text key="Page" value="Page " />
+		<Text key="Unnumbered" value="Unnumbered " />
+	</Section>
+	<Section class="AddRemove_Fragment_ItemViewer">
+		<Text key="Add This Item To Your Bookshelf" value="Add this Item to your Bookshelf" />
+		<Text key="Bookshelf" value="Bookshelf:" />
+		<Text key="Cancel" value="Cancel" />
+		<Text key="Enter Notes For This Item In Your Bookshelf" value="Enter notes for this item in your bookshelf" />
+		<Text key="My Bookshelf" value="My Bookshelf" />
+		<Text key="Notes" value="Notes:" />
+		<Text key="Open Bookshelf In New Window" value="Open bookshelf in new window" />
+		<Text key="Save" value="Save" />
+		<Text key="Send" value="Send" />
+	</Section>
+	<Section class="Advanced_Search_AggregationViewer">
+		<Text key="And" value="and" />
+		<Text key="And Not" value="and not" />
+		<Text key="Contains Any Form Of The Search Terms" value="Contains any form of the search terms" />
+		<Text key="Contains Exactly The Search Terms" value="Contains exactly the search terms" />
+		<Text key="Contains The Search Term Or Terms Of Similar Meaning" value="Contains the search term or terms of similar meaning" />
+		<Text key="In" value="in" />
+		<Text key="Or" value="or" />
+		<Text key="Precision" value="Precision" />
+		<Text key="Search" value="Search" />
+		<Text key="Search For" value="Search for:" />
+		<Text key="Search Options" value="Search Options" />
+	</Section>
+	<Section class="Advanced_Search_YearRange_AggregationViewer">
+		<Text key="And" value="and" />
+		<Text key="And Not" value="and not" />
+		<Text key="Contains Any Form Of The Search Terms" value="Contains any form of the search terms" />
+		<Text key="Contains Exactly The Search Terms" value="Contains exactly the search terms" />
+		<Text key="Contains The Search Term Or Terms Of Similar Meaning" value="Contains the search term or terms of similar meaning" />
+		<Text key="In" value="in" />
+		<Text key="Limit By Year" value="Limit by Year" />
+		<Text key="Or" value="or" />
+		<Text key="Precision" value="Precision" />
+		<Text key="Search" value="Search" />
+		<Text key="Search For" value="Search for:" />
+		<Text key="Search Options" value="Search Options" />
+	</Section>
+	<Section class="Aggregation_HtmlSubwriter">
+		<Text key="ADD" value="ADD" />
+		<Text key="Add This To My Collections Home Page" value="Add this to my collections home page" />
+		<Text key="Aggregation_Htmlsubwriter" value="Aggregation_HtmlSubwriter" />
+		<Text key="All Collections" value="All collections" />
+		<Text key="All Items" value="All Items" />
+		<Text key="BRIEF VIEW" value="BRIEF VIEW" />
+		<Text key="Browse By" value="Browse By" />
+		<Text key="Browse Partners" value="Browse Partners" />
+		<Text key="Cancel" value="Cancel" />
+		<Text key="Close" value="Close" />
+		<Text key="Collapse All" value="Collapse All" />
+		<Text key="Comments" value="Comments:" />
+		<Text key="Do Not Apply Changes" value="Do not apply changes" />
+		<Text key="Edit Administrative Information" value="Edit Administrative Information" />
+		<Text key="Edit Content" value="edit content" />
+		<Text key="Edit This Home Text" value="Edit this home text" />
+		<Text key="Enter The Email Information Below" value="Enter the email information below" />
+		<Text key="Expand All" value="Expand All" />
+		<Text key="Format" value="Format:" />
+		<Text key="Go To My Bookshelf" value="Go to my bookshelf" />
+		<Text key="Go To My Saved Searches" value="Go to my saved searches" />
+		<Text key="Go To My XXX Home" value="Go to my %1 home" />
+		<Text key="Help Regarding This Header" value="Help regarding this header" />
+		<Text key="Hide Collection Groups" value="Hide Collection Groups" />
+		<Text key="Hide Collections" value="Hide Collections" />
+		<Text key="Hide Internal Header" value="Hide Internal Header" />
+		<Text key="Hide Subcollections" value="Hide SubCollections" />
+		<Text key="Home" value="Home" />
+		<Text key="HTML" value="HTML" />
+		<Text key="LIST VIEW" value="LIST VIEW" />
+		<Text key="Make Private" value="make private" />
+		<Text key="Map Browse" value="Map Browse" />
+		<Text key="My Collections" value="My Collections" />
+		<Text key="My Library" value="My Library" />
+		<Text key="My Links" value="My Links" />
+		<Text key="My Public Bookshelves" value="My Public Bookshelves" />
+		<Text key="My Saved Searches" value="My Saved Searches" />
+		<Text key="New Items" value="New Items" />
+		<Text key="Partners And Contributing Institutions" value="Partners and Contributing Institutions" />
+		<Text key="Partners Collaborating And Contributing To Digital Collections And Libraries Include" value="Partners collaborating and contributing to digital collections and libraries include:" />
+		<Text key="Perform Search" value="Perform search" />
+		<Text key="Plain Text" value="Plain text" />
+		<Text key="PRINT" value="PRINT" />
+		<Text key="Print This Page" value="Print this page" />
+		<Text key="REMOVE" value="REMOVE" />
+		<Text key="Remove This From My Collections Home Page" value="Remove this from my collections home page" />
+		<Text key="Removed Aggregation From Your Home Page" value="Removed aggregation from your home page" />
+		<Text key="Save" value="Save" />
+		<Text key="Save Changes To This Aggregation Home Page Text" value="Save changes to this aggregation home page text" />
+		<Text key="Save This To My Collections Home Page" value="Save this to my collections home page" />
+		<Text key="Select Collection Groups To Include In Search" value="Select collection groups to include in search" />
+		<Text key="Select Collections To Include In Search" value="Select collections to include in search" />
+		<Text key="Select Subcollections To Include In Search" value="Select subcollections to include in search" />
+		<Text key="SEND" value="SEND" />
+		<Text key="Send This Collection To A Friend" value="Send this collection to a friend" />
+		<Text key="Send This To Someone" value="Send this to someone" />
+		<Text key="Share This Collection" value="Share this collection" />
+		<Text key="Show Collection Groups" value="Show Collection Groups" />
+		<Text key="Show Collections" value="Show Collections" />
+		<Text key="Show Internal Header" value="Show Internal Header" />
+		<Text key="Show Subcollections" value="Show SubCollections" />
+		<Text key="THUMBNAIL VIEW" value="THUMBNAIL VIEW" />
+		<Text key="To" value="To:" />
+		<Text key="To Add A Collection Use The XXX Button From That Collections Home Page" value="&quot;To add a collection, use the %1 button from that collection's home page.&quot;" />
+		<Text key="TREE VIEW" value="TREE VIEW" />
+		<Text key="View Administrative Information" value="View Administrative Information" />
+		<Text key="View Item Count" value="View Item Count" />
+		<Text key="View Private Items" value="View Private Items" />
+		<Text key="View Usage Statistics" value="View Usage Statistics" />
+		<Text key="Welcome To Your Personalized XXX Home Page This Page Displays Any Collections You Have Added As Well As Any Of Your Bookshelves You Have Made Public" value="&quot;Welcome to your personalized %1 home page. This page displays any collections you have added, as well as any of your bookshelves you have made public.&quot;" />
+		<Text key="You Do Not Have Any Collections Added To Your Home Page" value="You do not have any collections added to your home page." />
+		<Text key="Your Email Has Been Sent" value="Your email has been sent" />
+	</Section>
+	<Section class="Aggregation_Nav_Bar_HTML_Factory">
+		<Text key="Advanced Search" value="Advanced Search" />
+		<Text key="Basic Search" value="Basic Search" />
+		<Text key="Display Text" value="Display Text" />
+		<Text key="Map Search" value="Map Search" />
+		<Text key="Newspaper Search" value="Newspaper Search" />
+		<Text key="Text Search" value="Text Search" />
+	</Section>
+	<Section class="Aggregation_Single_AdminViewer">
+		<Text key="ACTION" value="ACTION" />
+		<Text key="ACTIONS" value="ACTIONS" />
+		<Text key="Active" value="Active?" />
+		<Text key="Add" value="Add" />
+		<Text key="Add New Banner" value="Add new banner" />
+		<Text key="Add New Home Page" value="Add new home page" />
+		<Text key="Additional Dublin Core Metadata To Include In OAIPMH Set List" value="Additional dublin core metadata to include in OAI-PMH set list:" />
+		<Text key="Advanced Search" value="Advanced Search" />
+		<Text key="Advanced Search With Year Range" value="Advanced Search (with Year Range)" />
+		<Text key="Africa" value="Africa" />
+		<Text key="Aggregationlevel Custom Stylesheet CSS" value="Aggregation-level Custom Stylesheet (CSS)" />
+		<Text key="Appearance" value="Appearance" />
+		<Text key="Appearance Options" value="Appearance Options" />
+		<Text key="Asia" value="Asia" />
+		<Text key="BACK" value="BACK" />
+		<Text key="Banner Type" value="Banner Type:" />
+		<Text key="Banners" value="Banners" />
+		<Text key="Basic Information" value="Basic Information" />
+		<Text key="Basic Search With Year Range" value="Basic Search (with Year Range)" />
+		<Text key="Behavior" value="Behavior:" />
+		<Text key="Brief View" value="Brief View" />
+		<Text key="Browse By" value="Browse By" />
+		<Text key="CANCEL" value="CANCEL" />
+		<Text key="Caribbean" value="Caribbean" />
+		<Text key="Child Pages" value="Child Pages" />
+		<Text key="Child Pages Are Pages Related To The Aggregation And Allow Additional Information To Be Presented Within The Same Aggregational Branding These Can Appear In The Aggregation Main Menu With Any Metadata Browses Pulled From The Database Or You Can Set Them To For No Automatic Visibility In Which Case They Are Only Accessible By Links In The Home Page Or Other Child Pages" value="&quot;Child pages are pages related to the aggregation and allow additional information to be presented within the same aggregational branding.  These can appear in the aggregation main menu, with any metadata browses pulled from the database, or you can set them to for no automatic visibility, in which case they are only accessible by links in the home page or other child pages.&quot;" />
+		<Text key="Click Here To View The Help Page" value="click here to view the help page" />
+		<Text key="Click To Delete This Subcollection" value="Click to delete this subcollection" />
+		<Text key="Close This Child Page Details And Return To Main Admin Pages" value="Close this child page details and return to main admin pages" />
+		<Text key="CODE" value="CODE" />
+		<Text key="Collection" value="Collection" />
+		<Text key="Collection Button" value="Collection Button:" />
+		<Text key="Collection Visibility" value="Collection Visibility" />
+		<Text key="Contact Email" value="Contact Email:" />
+		<Text key="Copy From Existing" value="Copy from existing" />
+		<Text key="Copy From Existing Home" value="Copy from existing home:" />
+		<Text key="Custom Home Page" value="Custom Home Page:" />
+		<Text key="Custom Stylesheet" value="Custom Stylesheet:" />
+		<Text key="Default" value="default" />
+		<Text key="Default Browse" value="Default Browse:" />
+		<Text key="Default Result View" value="Default Result View:" />
+		<Text key="Delete" value="delete" />
+		<Text key="Delete This Banner" value="Delete this banner" />
+		<Text key="DELETE THIS HIGHLIGHT" value="DELETE THIS HIGHLIGHT" />
+		<Text key="Delete This XXX Version" value="Delete this %1 version" />
+		<Text key="Deleted XXX Subcollection" value="Deleted %1 subcollection" />
+		<Text key="Description" value="Description:" />
+		<Text key="Disable This Aggregationlevel Stylesheet" value="Disable this aggregation-level stylesheet" />
+		<Text key="Dloc Full Text Search" value="dLOC Full Text Search" />
+		<Text key="Do Not Apply Changes" value="Do not apply changes" />
+		<Text key="Edit" value="Edit" />
+		<Text key="Edit Child Page Detail" value="Edit Child Page Detail" />
+		<Text key="Edit This Aggregationlevel Stylesheet" value="Edit this aggregation-level stylesheet" />
+		<Text key="Edit This Child Page" value="Edit this child page" />
+		<Text key="Edit This Child Page In XXX" value="Edit this child page in %1" />
+		<Text key="Edit This Home Page" value="Edit this home page" />
+		<Text key="Edit This Home Page In XXX" value="Edit this home page in %1" />
+		<Text key="Edit This Subcollection" value="Edit this subcollection" />
+		<Text key="ENABLE" value="ENABLE" />
+		<Text key="Enable An Aggregationlevel Stylesheet" value="Enable an aggregation-level stylesheet" />
+		<Text key="Enabled Flag" value="Enabled Flag:" />
+		<Text key="Error Adding New Version To This Child Page" value="Error adding new version to this child page" />
+		<Text key="ERROR Invalid Entry For New Item Aggregation" value="ERROR: Invalid entry for new item aggregation" />
+		<Text key="ERROR Invalid Entry For New Item Child Page" value="ERROR: Invalid entry for new item child page" />
+		<Text key="Error Saving Aggregation Information" value="Error saving aggregation information!" />
+		<Text key="ERROR Saving The New Item Aggregation To The Database" value="ERROR saving the new item aggregation to the database" />
+		<Text key="Europe" value="Europe" />
+		<Text key="Exhibit" value="Exhibit" />
+		<Text key="Existing Banners" value="Existing Banners:" />
+		<Text key="Existing Child Pages" value="Existing Child Pages:" />
+		<Text key="Existing Home Pages" value="Existing Home Pages:" />
+		<Text key="Existing Subcollections" value="Existing Subcollections:" />
+		<Text key="Existing Versions" value="Existing Versions:" />
+		<Text key="External Link" value="External Link:" />
+		<Text key="Florida" value="Florida" />
+		<Text key="For More Information About The Settings On This Tab" value="&quot;For more information about the settings on this tab,&quot;" />
+		<Text key="Full Text Search" value="Full Text Search" />
+		<Text key="Full View" value="Full View" />
+		<Text key="General" value="General" />
+		<Text key="Highlights" value="Highlights" />
+		<Text key="Highlights Type" value="Highlights Type:" />
+		<Text key="Home Page" value="Home Page" />
+		<Text key="Home Page Left" value="Home Page - Left" />
+		<Text key="Home Page Right" value="Home Page - Right" />
+		<Text key="Home Page Text" value="Home Page Text" />
+		<Text key="Image" value="Image" />
+		<Text key="Include All New Item Browses" value="Include All / New Item Browses" />
+		<Text key="Include In OAIPMH As A Set" value="Include in OAI-PMH as a set?" />
+		<Text key="Include Map Browse" value="Include Map Browse" />
+		<Text key="Institutional Division" value="Institutional Division" />
+		<Text key="Language" value="Language:" />
+		<Text key="LANGUAGES" value="LANGUAGE(S)" />
+		<Text key="Link" value="Link" />
+		<Text key="Main Menu" value="Main Menu" />
+		<Text key="Map Search Beta" value="Map Search (Beta)" />
+		<Text key="Map Search Default Area" value="Map Search Default Area:" />
+		<Text key="Map Search Legacy" value="Map Search (Legacy)" />
+		<Text key="Metadata" value="Metadata" />
+		<Text key="Metadata Browses" value="Metadata Browses" />
+		<Text key="Middle East" value="Middle East" />
+		<Text key="Name Full" value="Name (full)" />
+		<Text key="Name Short" value="Name (short):" />
+		<Text key="New Aggregation Code Must Be Twenty Characters Long Or Less" value="New aggregation code must be twenty characters long or less" />
+		<Text key="New Banner" value="New Banner:" />
+		<Text key="New Child Page" value="New Child Page:" />
+		<Text key="New Child Page Code Must Be Twenty Characters Long Or Less" value="New child page code must be twenty characters long or less" />
+		<Text key="New Code Must Be Unique XXX Already Exists" value="New code must be unique... %1 already exists" />
+		<Text key="New Collection Home Page Text Goes Here" value="New collection home page text goes here." />
+		<Text key="New Home Page" value="New Home Page:" />
+		<Text key="New Home Page Text In XXX Goes Here" value="New home page text in %1 goes here" />
+		<Text key="New Item Aggregation XXX Saved Successfully" value="New item aggregation %1 saved successfully" />
+		<Text key="New Subcollection" value="New Subcollection:" />
+		<Text key="No Custom Aggregationlevel Stylesheet" value="No custom aggregation-level stylesheet" />
+		<Text key="NO DEFAULT" value="( NO DEFAULT)" />
+		<Text key="No Html Source Files" value="No html source files" />
+		<Text key="NONE" value="NONE" />
+		<Text key="None Top Level" value="(none - top level)" />
+		<Text key="North America" value="North America" />
+		<Text key="NOTE You May Need To Refresh Your Browser For Your Changes To Take Affect" value="NOTE: You may need to refresh your browser for your changes to take affect." />
+		<Text key="OAIPMH Settings" value="OAI-PMH Settings" />
+		<Text key="Other Display Types" value="Other Display Types:" />
+		<Text key="Parent" value="Parent:" />
+		<Text key="Parent Codes" value="Parent Code(s)" />
+		<Text key="Result Views" value="Result Views:" />
+		<Text key="Results" value="Results" />
+		<Text key="Results Options" value="Results Options" />
+		<Text key="Rotating" value="Rotating" />
+		<Text key="SAVE" value="SAVE" />
+		<Text key="Save Changes To This Item Aggregation" value="Save changes to this item Aggregation" />
+		<Text key="Save New Child Page" value="Save new child page" />
+		<Text key="Save New Version Of This Child Page" value="Save new version of this child page" />
+		<Text key="Search" value="Search" />
+		<Text key="Search Options" value="Search Options" />
+		<Text key="Search Types" value="Search Types:" />
+		<Text key="Selected Image File" value="Selected image file" />
+		<Text key="Show In Parent Collection Home Page" value="Show in parent collection home page?" />
+		<Text key="Some Of The Files May Be In Use" value="Some of the files may be in use" />
+		<Text key="SOURCE FILE" value="SOURCE FILE" />
+		<Text key="South America" value="South America" />
+		<Text key="Standard" value="Standard" />
+		<Text key="Static" value="Static" />
+		<Text key="Subcollections" value="SubCollections" />
+		<Text key="Table View" value="Table View" />
+		<Text key="Text" value="Text:" />
+		<Text key="That Code Is A Systemreserved Keyword Try A Different Code" value="That code is a system-reserved keyword.  Try a different code." />
+		<Text key="The Code For This Browse Is XXX" value="The code for this browse is: %1" />
+		<Text key="The Information In This Section Controls How Search Results Or Item Browses Appears The Facet Options Control Which Metadata Values Appear To The Left Of The Results To Allow Users To Narrow Their Results The Search Results Values Determine Which Options Are Available For Viewing The Results And What Are The Aggregation Defaults Finally The Result Fields Determines Which Values Are Displayed With Each Individual Result In The Result Set" value="&quot;The information in this section controls how search results or item browses appears.  The facet options control which metadata values appear to the left of the results, to allow users to narrow their results.  The search results values determine which options are available for viewing the results and what are the aggregation defaults.  Finally, the result fields determines which values are displayed with each individual result in the result set.&quot;" />
+		<Text key="The Information In This Section Is The Basic Information About The Aggregation Such As The Full Name The Shortened Name Used For Breadcrumbs The Description And The Email Contact" value="&quot;The information in this section is the basic information about the aggregation, such as the full name, the shortened name used for breadcrumbs, the description, and the email contact. &quot;" />
+		<Text key="The Metadata Browses Can Be Used To Expose All The Metadata Of The Resources Within This Aggregation For Public Browsing Select The Metadata Fields You Would Like Have Available Below" value="The metadata browses can be used to expose all the metadata of the resources within this aggregation for public browsing.  Select the metadata fields you would like have available below." />
+		<Text key="The Values In This Section Determine If The Collection Is Currently Visible At All Whether It Is Eligible To Appear On The Collection List At The Bottom Of The Parent Page And The Collection Button Used In That Case Thematic Headings Are Used To Place This Collection On The Main Home Page" value="&quot;The values in this section determine if the collection is currently visible at all, whether it is eligible to appear on the collection list at the bottom of the parent page, and the collection button used in that case.  Thematic headings are used to place this collection on the main home page.&quot;" />
+		<Text key="Thematic Heading" value="Thematic Heading:" />
+		<Text key="These Options Control How Searching Works Within This Aggregation Such As Which Search Options Are Made Publicly Available" value="&quot;These options control how searching works within this aggregation, such as which search options are made publicly available.&quot;" />
+		<Text key="These Three Settings Have The Most Profound Affects On The Appearance Of This Aggregation By Forcing It To Appear Under A Particular Web Skin Allowing A Custom Aggregationlevel Stylesheet Or Completely Overriding The Systemgenerated Home Page For A Custom Home Page HTML Source File" value="&quot;These three settings have the most profound affects on the appearance of this aggregation, by forcing it to appear under a particular web skin, allowing a custom aggregation-level stylesheet, or completely overriding the system-generated home page for a custom home page HTML source file.&quot;" />
+		<Text key="This Aggregation Currently Has No Child Pages" value="This aggregation currently has no child pages" />
+		<Text key="This Aggregation Currently Has No Subcollections" value="This aggregation currently has no subcollections" />
+		<Text key="THIS BANNER IMAGE IS MISSING" value="THIS BANNER IMAGE IS MISSING" />
+		<Text key="This Page Allows You To Edit The Basic Information About A Single Child Page And Add The Ability To Display This Child Page In Alternate Languages" value="This page allows you to edit the basic information about a single child page and add the ability to display this child page in alternate languages." />
+		<Text key="This Section Controls All The Languagespecific And Default Text Which Appears On The Home Page" value="This section controls all the language-specific (and default) text which appears on the home page." />
+		<Text key="This Section Shows All The Existing Languagespecific Banners For This Aggregation And Allows You Upload New Banners For This Aggregation" value="This section shows all the existing language-specific banners for this aggregation and allows you upload new banners for this aggregation." />
+		<Text key="Thumbnail View" value="Thumbnail View" />
+		<Text key="TITLE" value="TITLE" />
+		<Text key="Title Default" value="Title (default):" />
+		<Text key="To Change Browse To A 50X50 Pixel GIF File And Then Select UPLOAD" value="&quot;To change, browse to a 50x50 pixel GIF file, and then select UPLOAD&quot;" />
+		<Text key="To Edit This Log On As The Aggregation Admin And Hover Over This Text To Edit It" value="&quot;To edit this, log on as the aggregation admin and hover over this text to edit it.&quot;" />
+		<Text key="To Upload Browse To A GIF PNG JPEG Or BMP File And Then Select UPLOAD" value="&quot;To upload, browse to a GIF, PNG, JPEG, or BMP file, and then select UPLOAD&quot;" />
+		<Text key="Tooltip" value="Tooltip:" />
+		<Text key="TYPE" value="TYPE" />
+		<Text key="Unable To Remove Subcollection Directory" value="Unable to remove subcollection directory" />
+		<Text key="United States" value="United States" />
+		<Text key="Upload New Banner Image" value="Upload New Banner Image:" />
+		<Text key="View" value="View" />
+		<Text key="View Banner Image File" value="View banner image file" />
+		<Text key="View CSS File" value="View CSS file" />
+		<Text key="View Source File" value="View source file" />
+		<Text key="View This Child Page" value="View this child page" />
+		<Text key="View This Child Page In XXX" value="View this child page in %1" />
+		<Text key="View This Home Page" value="View this home page" />
+		<Text key="View This Home Page In XXX" value="View this home page in %1" />
+		<Text key="View This Subcollection" value="View this subcollection" />
+		<Text key="Visibility" value="Visibility:" />
+		<Text key="Web Skin" value="Web Skin:" />
+		<Text key="World" value="World" />
+		<Text key="You Can Edit The Contents Of The Aggregationlevel Custom Stylesheet Css File Here Click SAVE When Complete To Return To The Main Aggregation Administration Screen" value="You can edit the contents of the aggregation-level custom stylesheet (css) file here.  Click SAVE when complete to return to the main aggregation administration screen." />
+		<Text key="You Can Use OAIPMH To Expose All The Metadata Of The Resources Within This Aggregation For Automatic Harvesting By Other Repositories Additionally You Can Choose To Attach Metadata To The Collectionlevel OAIPMH Record This Should Be Coded As Dublin Core Tags" value="&quot;You can use OAI-PMH to expose all the metadata of the resources within this aggregation for automatic harvesting by other repositories.  Additionally, you can choose to attach metadata to the collection-level OAI-PMH record.  This should be coded as dublin core tags.&quot;" />
+		<Text key="You Can View Existing Subcollections Or Add New Subcollections To This Aggregation From This Tab You Will Have Full Curatorial Rights Over Any New Subcollections You Add Currently Only System Administrators Can DELETE Subcollections" value="&quot;You can view existing subcollections or add new subcollections to this aggregation from this tab.  You will have full curatorial rights over any new subcollections you add.  Currently, only system administrators can DELETE subcollections.&quot;" />
+		<Text key="You Must Enter A CODE For This Child Page" value="You must enter a CODE for this child page" />
+		<Text key="You Must Enter A CODE For This Item Aggregation" value="You must enter a CODE for this item aggregation" />
+		<Text key="You Must Enter A DESCRIPTION For This New Aggregation" value="You must enter a DESCRIPTION for this new aggregation" />
+		<Text key="You Must Enter A LABEL For This Child Page" value="You must enter a LABEL for this child page" />
+		<Text key="You Must Enter A NAME For This New Aggregation" value="You must enter a NAME for this new aggregation" />
+		<Text key="You Must SAVE Your Changes Before You Can View Or Edit Newly Added Child Page Versions" value="You must SAVE your changes before you can view or edit newly added child page versions" />
+		<Text key="You Must SAVE Your Changes Before You Can View Or Edit Newly Added Home Pages" value="You must SAVE your changes before you can view or edit newly added home pages." />
+		<Text key="You Must Select A TYPE For This New Aggregation" value="You must select a TYPE for this new aggregation" />
+		<Text key="You Must Select A VISIBILITY For This Child Page" value="You must select a VISIBILITY for this child page" />
+	</Section>
+	<Section class="Aware_JP2_ItemViewer">
+		<Text key="Click On Thumbnail To Recenter Image" value="Click on Thumbnail to Recenter Image" />
+		<Text key="Current Zoom" value="Current Zoom" />
+		<Text key="JPEG2000 IMAGE NOT FOUND IN DATABASE" value="JPEG2000 IMAGE NOT FOUND IN DATABASE!" />
+		<Text key="Large Size View" value="Large size view" />
+		<Text key="Medium Size View" value="Medium size view" />
+		<Text key="Mediumlarge Size View" value="Medium-large size view" />
+		<Text key="Pan Down" value="Pan Down" />
+		<Text key="Pan Left" value="Pan Left" />
+		<Text key="Pan Right" value="Pan Right" />
+		<Text key="Pan Up" value="Pan Up" />
+		<Text key="Rotate Clockwise" value="Rotate Clockwise" />
+		<Text key="Rotate Counter Clockwise" value="Rotate Counter Clockwise" />
+		<Text key="Small Size View" value="Small size view" />
+		<Text key="THUMBNAIL" value="THUMBNAIL" />
+		<Text key="To Download Right Click Here Select Save Target As And Save The JPEG2000 To Your Local Computer" value="&quot;To download, right click here, select 'Save Target As...' and save the JPEG2000 to your local computer.&quot;" />
+		<Text key="Zoom In" value="Zoom In" />
+		<Text key="Zoom Out" value="Zoom Out" />
+		<Text key="Zoom To Level" value="Zoom to Level" />
+	</Section>
+	<Section class="Basic_Search_AggregationViewer">
+		<Text key="Include Nonpublic Items" value="Include non-public items" />
+		<Text key="Search Collection" value="Search Collection" />
+	</Section>
+	<Section class="Basic_Search_YearRange_AggregationViewer">
+		<Text key="Limit By Year" value="Limit by Year" />
+		<Text key="Search Collection" value="Search Collection" />
+	</Section>
+	<Section class="Bookshelf_View_ResultsViewer">
+		<Text key="ACTIONS" value="ACTIONS" />
+		<Text key="Add Note" value="add note" />
+		<Text key="Edit" value="edit" />
+		<Text key="Edit Note" value="edit note" />
+		<Text key="Edit This Item" value="Edit this item" />
+		<Text key="Move" value="move" />
+		<Text key="Move All Checked Items To A New Bookshelf" value="Move all checked items to a new bookshelf" />
+		<Text key="Move This Item To A New Bookshelf" value="Move this item to a new bookshelf" />
+		<Text key="Remove" value="remove" />
+		<Text key="Remove All Checked Items From Your Bookshelf" value="Remove all checked items from your bookshelf" />
+		<Text key="Remove This Item From Your Bookshelf" value="Remove this item from your bookshelf" />
+		<Text key="Select Or Unselect All Items In This Bookshelf" value="Select or unselect all items in this bookshelf" />
+		<Text key="Select Or Unselect This Item" value="Select or unselect this item" />
+		<Text key="Send" value="send" />
+		<Text key="Send This Item To A Friend" value="Send this item to a friend" />
+		<Text key="TITLE NOTES" value="TITLE / NOTES" />
+	</Section>
+	<Section class="Brief_ResultsViewer">
+		<Text key="Access Restricted" value="Access Restricted" />
+		<Text key="MISSING THUMBNAIL" value="MISSING THUMBNAIL" />
+	</Section>
+	<Section class="Checked_Out_ItemViewer">
+		<Text key="The Item You Have Requested Contains Copyright Material And Is Reserved For Singleuse Br Br Someone Has Currently Checked Out This Digital Copy For Viewing Br Br Please Try Again In Several Minutes" value="The item you have requested contains copyright material and is reserved for single-use.  &lt;br /&gt;&lt;br /&gt;Someone has currently checked out this digital copy for viewing.  &lt;br /&gt;&lt;br /&gt;Please try again in several minutes." />
+	</Section>
+	<Section class="Citation_ItemViewer">
+		<Text key="Citation" value="Citation" />
+		<Text key="Date" value="Date" />
+		<Text key="Download" value="Download" />
+		<Text key="Flash" value="Flash" />
+		<Text key="For Definitions Of These Terms See The Definitions On The Main Statistics Page" value="&quot;For definitions of these terms, see the definitions on the main statistics page.&quot;" />
+		<Text key="JPEG" value="JPEG" />
+		<Text key="Map" value="Map" />
+		<Text key="MARC View" value="MARC View" />
+		<Text key="Material Information" value="Material Information" />
+		<Text key="Metadata" value="Metadata" />
+		<Text key="METS Information" value="METS Information" />
+		<Text key="Missing Image" value="Missing Image" />
+		<Text key="Notes" value="Notes" />
+		<Text key="Record Information" value="Record Information" />
+		<Text key="Related Items" value="Related Items" />
+		<Text key="Standard View" value="Standard View" />
+		<Text key="Static" value="Static" />
+		<Text key="Subjects" value="Subjects" />
+		<Text key="System Admin Information" value="System Admin Information" />
+		<Text key="Text" value="Text" />
+		<Text key="The Data Or Metadata About This Digital Resource Is Available In A Variety Of Metadata Formats For More Information About These Formats See The A Href Httpufdcufledusobekcmmetadata Metadata Section A Of The A Href Httpufdcufledusobekcm Technical Aspects A Information" value="&quot;The data (or metadata) about this digital resource is available in a variety of metadata formats. For more information about these formats, see the &lt;a href=&quot;&quot;http://ufdc.ufl.edu/sobekcm/metadata&quot;&quot;&gt;Metadata Section&lt;/a&gt; of the &lt;a href=&quot;&quot;http://ufdc.ufl.edu/sobekcm/&quot;&quot;&gt;Technical Aspects&lt;/a&gt; information.&quot;" />
+		<Text key="The Entered Metadata Is Also Converted To MARC XML Format For Interoperability With Other Library Catalog Systems This Represents The Same Data Available In The A Href XXX MARC VIEW A Except This Is A Static XML File This File Follows The A Href Httpwwwlocgovstandardsmarcxml Marcxml Schema A" value="&quot;The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the &lt;a href=&quot;%1&quot;&gt;MARC VIEW&lt;/a&gt; except this is a static XML file.  This file follows the &lt;a href=&quot;http://www.loc.gov/standards/marcxml/&quot;&gt;MarcXML Schema&lt;/a&gt;.&quot;" />
+		<Text key="The Fulltext Of This Item Is Also Available In The Established Standard A Href Httpwwwteicorgindexxml Text Encoding Initiative A TEI Downloadable File" value="&quot;The full-text of this item is also available in the established standard &lt;a href=&quot;&quot;http://www.tei-c.org/index.xml&quot;&quot;&gt;Text Encoding Initiative&lt;/a&gt; (TEI) downloadable file.&quot;" />
+		<Text key="The Record Above Was Autogenerated From The METS File" value="The record above was auto-generated from the METS file." />
+		<Text key="This Item Was Has Been Viewed XXX Times Within XXX Visits Below Are The Details For Overall Usage For This Item Within This Library" value="This item was has been viewed %1 times within %2 visits.  Below are the details for overall usage for this item within this library." />
+		<Text key="This Metadata File Is The Source Metadata File Submitted Along With All The Digital Resource Files This Contains All Of The Citation And Processing Information Used To Build This Resource This File Follows The Established A Href Httpwwwlocgovstandardsmets Metadata Encoding And Transmission Standard A METS And A Href Httpwwwlocgovstandardsmods Metadata Object Description Schema A MODS This METSMODS File Was Just Read When This Item Was Loaded Into Memory And Used To Display All The Information In The Standard View And Marc View Within The Citation" value="&quot;This metadata file is the source metadata file submitted along with all the digital resource files. This contains all of the citation and processing information used to build this resource. This file follows the established &lt;a href=&quot;&quot;http://www.loc.gov/standards/mets/&quot;&quot;&gt;Metadata Encoding and Transmission Standard&lt;/a&gt; (METS) and &lt;a href=&quot;&quot;http://www.loc.gov/standards/mods/&quot;&quot;&gt;Metadata Object Description Schema&lt;/a&gt; (MODS). This METS/MODS file was just read when this item was loaded into memory and used to display all the information in the standard view and marc view within the citation.&quot;" />
+		<Text key="Thumbnail" value="Thumbnail" />
+		<Text key="Total" value="Total" />
+		<Text key="Usage Statistics" value="Usage Statistics" />
+		<Text key="View Complete METSMODS" value="View Complete METS/MODS" />
+		<Text key="View Finding Aid EAD" value="View Finding Aid (EAD)" />
+		<Text key="View MARC XML File" value="View MARC XML File" />
+		<Text key="View Teitext File" value="View TEI/Text File" />
+		<Text key="Views" value="Views" />
+		<Text key="Visits" value="Visits" />
+		<Text key="XXX Membership" value="%1 Membership" />
+		<Text key="XXX STATISTICS" value="%1 STATISTICS" />
+		<Text key="Zoomable" value="Zoomable" />
+	</Section>
+	<Section class="Contact_HtmlSubwriter">
+		<Text key="Cancel" value="Cancel" />
+		<Text key="Click Here To Close This Tab In Your Browser" value="Click here to close this tab in your browser" />
+		<Text key="Click Here To Return To The Digital Collection Home" value="Click here to return to the digital collection home" />
+		<Text key="Contact Us" value="Contact Us" />
+		<Text key="Describe Your Question Or Problem Here" value="Describe your question or problem here:" />
+		<Text key="Email" value="Email:" />
+		<Text key="Enter A Subject Here" value="Enter a subject here:" />
+		<Text key="Enter Your Email Address Here" value="Enter your e-mail address here:" />
+		<Text key="Enter Your Name Here" value="Enter your name here:" />
+		<Text key="May We Contact You If So Please Provide The Following Information" value="&quot;May we contact you?  If so, please provide the following information:&quot;" />
+		<Text key="Name" value="Name:" />
+		<Text key="PERSONAL INFORMATION" value="PERSONAL INFORMATION" />
+		<Text key="Please Complete The Following Required Fields" value="Please complete the following required fields:" />
+		<Text key="Submit" value="Submit" />
+		<Text key="The Following Information Is Collected To Allow Us Better Serve Your Needs" value="The following information is collected to allow us better serve your needs." />
+		<Text key="XXX Submission" value="[ %1 Submission ]" />
+		<Text key="Your Email Has Been Sent" value="Your email has been sent." />
+	</Section>
+	<Section class="Delete_Item_MySobekViewer">
+		<Text key="Confirm Delete Of This Item" value="Confirm delete of this item" />
+		<Text key="DELETE FAILED" value="DELETE FAILED" />
+		<Text key="Delete Item" value="Delete Item" />
+		<Text key="DELETE PARTIALLY SUCCESSFUL" value="DELETE PARTIALLY SUCCESSFUL" />
+		<Text key="DELETE SUCCESSFUL" value="DELETE SUCCESSFUL" />
+		<Text key="Enter DELETE In The Textbox Below And Select GO To Complete This Deletion" value="Enter DELETE in the textbox below and select GO to complete this deletion." />
+		<Text key="Error While Performing Delete In Database" value="Error while performing delete in database" />
+		<Text key="Insufficient User Permissions To Perform Delete" value="Insufficient user permissions to perform delete" />
+		<Text key="Item Indicated Does Not Exists" value="Item indicated does not exists" />
+		<Text key="Unable To Move All Files To The RECYCLE BIN Folder" value="Unable to move all files to the RECYCLE BIN folder" />
+	</Section>
+	<Section class="Describe_Fragment_ItemViewer">
+		<Text key="Add Item Description" value="Add Item Description" />
+		<Text key="Close" value="Close" />
+		<Text key="Enter A Description Or Notes To Add To This Item" value="Enter a description or notes to add to this item" />
+		<Text key="Notes" value="Notes:" />
+	</Section>
+	<Section class="dLOC_Search_AggregationViewer">
+		<Text key="Go" value="Go" />
+		<Text key="Include Newspapers" value="Include newspapers?" />
+		<Text key="Search Full Text" value="Search full text" />
+	</Section>
+	<Section class="Download_ItemViewer">
+		<Text key="The Following Tiles Are Available For Download" value="The following tiles are available for download:" />
+		<Text key="This Item Has The Following Downloads" value="This item has the following downloads:" />
+		<Text key="This Item Is Only Available As The Following Downloads" value="This item is only available as the following downloads:" />
+		<Text key="To Download Right Click On The Tile Name Below Select Save Link As And Save The JPEG2000 To Your Local Computer" value="&quot;To download, right click on the tile name below, select 'Save Link As...' and save the JPEG2000 to your local computer.&quot;" />
+		<Text key="To Download Right Click On The Tile Name Below Select Save Target As And Save The JPEG2000 To Your Local Computer" value="&quot;To download, right click on the tile name below, select 'Save Target As...' and save the JPEG2000 to your local computer. &quot;" />
+	</Section>
+	<Section class="EAD_Container_List_ItemViewer">
+		<Text key="Container List" value="Container List" />
+	</Section>
+	<Section class="EAD_Description_ItemViewer">
+		<Text key="Archival Description" value="Archival Description" />
+	</Section>
+	<Section class="Edit_Group_Behaviors_MySobekViewer">
+		<Text key="Click" value="Click" />
+		<Text key="Clicking On The Green Plus Button" value="Clicking on the green plus button ( " />
+		<Text key="Edit The Behaviors Associated With This Item Group Within This Library" value="Edit the behaviors associated with this item group within this library" />
+		<Text key="Enter The Data For This Item Group Below And Press The SAVE Button When All Your Edits Are Complete" value="Enter the data for this item group below and press the SAVE button when all your edits are complete." />
+		<Text key="Here For Detailed Instructions" value="here for detailed instructions" />
+		<Text key="On Editing Behaviors Online" value=" on editing behaviors online." />
+		<Text key="Will Add Another Instance Of The Element If The Element Is Repeatable" value="&quot; ) will add another instance of the element, if the element is repeatable.&quot;" />
+	</Section>
+	<Section class="Edit_Item_Behaviors_MySobekViewer">
+		<Text key="Click" value="Click" />
+		<Text key="Clicking On The Green Plus Button" value="Clicking on the green plus button ( " />
+		<Text key="Edit Item Behaviors" value="Edit Item Behaviors" />
+		<Text key="Edit This Items Behaviors Within This Library" value="Edit this item's behaviors within this library" />
+		<Text key="Enter The Data For This Item Below And Press The SAVE Button When All Your Edits Are Complete" value="Enter the data for this item below and press the SAVE button when all your edits are complete." />
+		<Text key="Here For Detailed Instructions" value="here for detailed instructions" />
+		<Text key="On Editing Behaviors Online" value="on editing behaviors online" />
+		<Text key="Will Add Another Instance Of The Element If The Element Is Repeatable" value="&quot;) will add another instance of the element, if the element is repeatable.&quot;" />
+	</Section>
+	<Section class="Edit_Item_Metadata_MySobekViewer">
+		<Text key="Click" value="Click" />
+		<Text key="Click On The Element Names For Detailed Information Inluding Definitions Best Practices And Technical Information" value="&quot;Click on the element names for detailed information inluding definitions, best practices, and technical information.&quot;" />
+		<Text key="Clicking On The Blue Plus Signs" value="Clicking on the blue plus signs ( " />
+		<Text key="Clicking On The Green Plus Button" value="Clicking on the green plus button ( " />
+		<Text key="Edit Item" value="Edit Item" />
+		<Text key="Edit Project" value="Edit Project" />
+		<Text key="Edit This Item" value="Edit this item" />
+		<Text key="Edit This Project" value="Edit this project" />
+		<Text key="Enter The Data For This Item Below And Press The SAVE Button When All Your Edits Are Complete" value="Enter the data for this item below and press the SAVE button when all your edits are complete." />
+		<Text key="Enter The Default Data For This Project Below And Press The SAVE Button When All Your Edits Are Complete" value="Enter the default data for this project below and press the SAVE button when all your edits are complete." />
+		<Text key="Here For Detailed Instructions" value="here for detailed instructions" />
+		<Text key="Here To Return To The Simplified Version" value="here to return to the simplified version" />
+		<Text key="MARC View" value="MARC View" />
+		<Text key="METS View" value="METS View" />
+		<Text key="On Editing Metadata Online" value=" on editing metadata online." />
+		<Text key="Standard View" value="Standard View" />
+		<Text key="To Open Detailed Edit Forms Click On The Linked Metadata Values" value="&quot;To open detailed edit forms, click on the linked metadata values.&quot;" />
+		<Text key="Will Add Another Instance Of The Element If The Element Is Repeatable" value="&quot; ) will add another instance of the element, if the element is repeatable.&quot;" />
+		<Text key="You Are Using The Full Editing Form Because This Item Contains Complex Elements Or Was Derived From MARC" value="You are using the full editing form because this item contains complex elements or was derived from MARC." />
+		<Text key="You Are Using The Full Editing Form Because You Are Editing A Project" value="You are using the full editing form because you are editing a project." />
+		<Text key="You Are Using The Full Editing Form Click" value="You are using the full editing form.  Click" />
+		<Text key="You Are Using The Simplified Editing Form Click" value="You are using the simplified editing form.  Click" />
+	</Section>
+	<Section class="Edit_Serial_Hierarchy_MySobekViewer">
+		<Text key="EDIT SERIAL HIERARCHY" value="EDIT SERIAL HIERARCHY" />
+		<Text key="Implementation For This Feature Is Currently Pending" value="Implementation for this feature is currently pending." />
+	</Section>
+	<Section class="EmbeddedVideo_ItemViewer">
+		<Text key="Streaming Video" value="Streaming Video" />
+	</Section>
+	<Section class="Error_HtmlSubwriter">
+		<Text key="Click Here To Report An Error" value="Click here to report an error." />
+		<Text key="Click Here To Report The Problem" value="Click here to report the problem." />
+		<Text key="Click Here To Return To The Library" value="Click here to return to the library." />
+		<Text key="The Item Indicated Was Not Valid" value="The item indicated was not valid." />
+		<Text key="Unknown Error Occurred" value="Unknown error occurred." />
+		<Text key="We Apologize For The Inconvenience" value="We apologize for the inconvenience." />
+	</Section>
+	<Section class="Export_View_ResultsViewer">
+		<Text key="Commaseperated Value Text File CSV" value="Comma-seperated value text file (CSV)" />
+		<Text key="Excel Spreadsheet File XLS" value="Excel Spreadsheet file (XLS)" />
+		<Text key="Select The File Type Below To Create The Report" value="Select the file type below to create the report:" />
+		<Text key="This Option Allows You To Export The List Of Results Which Match Your Search Or Browse To An Excel Document Or CSV File For Download" value="This option allows you to export the list of results which match your search or browse to an excel document or CSV file for download." />
+	</Section>
+	<Section class="Feature_ItemViewer">
+		<Text key="Index Of Features" value="Index of Features" />
+		<Text key="UNABLE TO LOAD FEATURES FROM DATABASE" value="UNABLE TO LOAD FEATURES FROM DATABASE" />
+	</Section>
+	<Section class="File_Management_MySobekViewer">
+		<Text key="Add A New File For This Package" value="Add a new file for this package" />
+		<Text key="Click Here To Upload Page Images Instead" value="Click here to upload page images instead." />
+		<Text key="ERROR CAUGHT WHILE SAVING DIGITAL RESOURCE" value="ERROR CAUGHT WHILE SAVING DIGITAL RESOURCE" />
+		<Text key="Error During File Management For XXX" value="Error during file management for %1" />
+		<Text key="ERROR ENCOUNTERED DURING ONLINE FILE MANAGEMENT" value="ERROR ENCOUNTERED DURING ONLINE FILE MANAGEMENT" />
+		<Text key="Manage Downloads" value="Manage Downloads" />
+		<Text key="Upload The Download Files For Your Item You Can Also Provide Labels For Each File Once They Are Uploaded" value="&quot;Upload the download files for your item.  You can also provide labels for each file, once they are uploaded.&quot;" />
+	</Section>
+	<Section class="Folder_Mgmt_MySobekViewer">
+		<Text key="ACTIONS" value="ACTIONS" />
+		<Text key="Add New Bookshelf" value="Add New Bookshelf" />
+		<Text key="Addedit Notes For Bookshelf Item" value="Add/Edit Notes for Bookshelf Item" />
+		<Text key="Bookshelf" value="Bookshelf:" />
+		<Text key="BOOKSHELF NAME" value="BOOKSHELF NAME" />
+		<Text key="Click To Add A New Bookshelf" value="Click to add a new bookshelf" />
+		<Text key="Click To Delete This Bookshelf" value="Click to delete this bookshelf" />
+		<Text key="Click To Manage This Bookshelf" value="Click to manage this bookshelf" />
+		<Text key="CLOSE" value="CLOSE" />
+		<Text key="Comments" value="Comments" />
+		<Text key="Enter Notes For This Item In Your Bookshelf" value="Enter notes for this item in your bookshelf" />
+		<Text key="Enter The Email Information Below" value="Enter the email information below" />
+		<Text key="Enter The Information For Your New Bookshelf" value="Enter the information for your new bookshelf" />
+		<Text key="Format" value="Format:" />
+		<Text key="Make Private" value="make private" />
+		<Text key="Make Public" value="make public" />
+		<Text key="Make This Bookshelf Private" value="Make this bookshelf private" />
+		<Text key="Make This Bookshelf Public" value="Make this bookshelf public" />
+		<Text key="Manage" value="manage" />
+		<Text key="Manage My Bookshelves" value="Manage My Bookshelves" />
+		<Text key="Manage My Library" value="Manage my library" />
+		<Text key="Move Item Between Bookshelves" value="Move Item Between Bookshelves" />
+		<Text key="My Collections Home" value="My Collections Home" />
+		<Text key="My Library" value="My Library" />
+		<Text key="My Saved Searches" value="My Saved Searches" />
+		<Text key="Name" value="Name:" />
+		<Text key="New Bookshelf" value="New Bookshelf" />
+		<Text key="Notes" value="Notes:" />
+		<Text key="Parent" value="Parent:" />
+		<Text key="Public Folder" value="Public folder" />
+		<Text key="Refresh Bookshelves List" value="Refresh Bookshelves List" />
+		<Text key="Select New Bookshelf For This Item" value="Select new bookshelf for this item" />
+		<Text key="This Bookshelf Is Currently Empty" value="This bookshelf is currently empty" />
+		<Text key="To" value="To:" />
+		<Text key="View My Collections Home Page" value="View my collections home page" />
+		<Text key="View My Saved Searches" value="View my saved searches" />
+		<Text key="You Cannot Delete Bookshelves Which Contain Other Bookshelves" value="You cannot delete bookshelves which contain other bookshelves" />
+		<Text key="You Cannot Delete Your Last Bookshelf" value="You cannot delete your last bookshelf" />
+	</Section>
+	<Section class="Full_Text_Search_AggregationViewer">
+		<Text key="Go" value="Go" />
+		<Text key="Search Full Text" value="Search full text" />
+	</Section>
+	<Section class="General">
+		<Text key="ACTIONS" value="ACTIONS" />
+		<Text key="Add" value="Add" />
+		<Text key="April" value="April " />
+		<Text key="August" value="August" />
+		<Text key="Bibid" value="BibID" />
+		<Text key="Cancel" value="Cancel" />
+		<Text key="Close" value="Close" />
+		<Text key="December" value="December" />
+		<Text key="Delete" value="delete" />
+		<Text key="Describe" value="Describe" />
+		<Text key="Eight" value="eight" />
+		<Text key="Eleven" value="eleven" />
+		<Text key="Error" value="Error" />
+		<Text key="February" value="February" />
+		<Text key="First" value="First" />
+		<Text key="First Page" value="First Page" />
+		<Text key="Five" value="five" />
+		<Text key="Four" value="four" />
+		<Text key="Help" value="Help" />
+		<Text key="Internal" value="Internal" />
+		<Text key="January" value="January" />
+		<Text key="July" value="July " />
+		<Text key="June" value="June" />
+		<Text key="Last" value="Last" />
+		<Text key="Last Page" value="Last Page" />
+		<Text key="March" value="March" />
+		<Text key="May" value="May " />
+		<Text key="Missing Banner" value="Missing Banner" />
+		<Text key="Missing Image" value="Missing Image" />
+		<Text key="My" value="my" />
+		<Text key="My Account" value="My Account" />
+		<Text key="My Library" value="My Library" />
+		<Text key="Next" value="Next" />
+		<Text key="Next Page" value="Next Page" />
+		<Text key="Nine" value="nine" />
+		<Text key="November" value="November" />
+		<Text key="October" value="October" />
+		<Text key="One" value="one" />
+		<Text key="Portal Admin" value="Portal Admin" />
+		<Text key="Previous" value="Previous" />
+		<Text key="Previous Page" value="Previous Page" />
+		<Text key="Print" value="Print" />
+		<Text key="Remove" value="Remove" />
+		<Text key="Save" value="Save" />
+		<Text key="Search" value="Search" />
+		<Text key="Send" value="Send" />
+		<Text key="September" value="September" />
+		<Text key="Seven" value="seven" />
+		<Text key="Share" value="Share" />
+		<Text key="Six" value="six" />
+		<Text key="Sort By" value="Sort by" />
+		<Text key="Submit" value="Submit" />
+		<Text key="System Admin" value="System Admin" />
+		<Text key="Ten" value="ten" />
+		<Text key="The Following Errors Were Detected" value="The following errors were detected:" />
+		<Text key="Three" value="three" />
+		<Text key="Total" value="Total" />
+		<Text key="Twelve" value="twelve" />
+		<Text key="Two" value="two" />
+		<Text key="Unknown" value="Unknown" />
+		<Text key="VID" value="VID" />
+		<Text key="View" value="view" />
+		<Text key="XXX Is A Required Field" value="{0} is a required field" />
+	</Section>
+	<Section class="GnuBooks_PageTurner_ItemViewer">
+		<Text key="Book Turner Presentations Require A Javascriptenabled Browser" value="Book Turner presentations require a Javascript-enabled browser." />
+		<Text key="Return To Item" value="Return to Item" />
+		<Text key="Zoom" value="Zoom" />
+	</Section>
+	<Section class="Google_Coordinate_Entry_ItemViewer">
+		<Text key="Loading" value="Loading..." />
+	</Section>
+	<Section class="Google_Map_ItemViewer">
+		<Text key="Address" value="Address:" />
+		<Text key="Click Here To Search Other Items In The Current Collection" value="Click here to search other items in the current collection" />
+		<Text key="Enter Address Ie 12 Main Street Gainesville Florida" value="&quot;Enter address ( i.e., 12 Main Street, Gainesville Florida )&quot;" />
+		<Text key="Find Address" value="Find Address" />
+		<Text key="Modify Item Search" value="Modify item search" />
+		<Text key="Modify Search Within Flight" value="Modify search within flight" />
+		<Text key="Press The I Search I Button To See Results" value="Press the &lt;i&gt;Search&lt;/i&gt; button to see results" />
+		<Text key="PRESS TO SELECT AREA" value="PRESS TO SELECT AREA" />
+		<Text key="PRESS TO SELECT POINT" value="PRESS TO SELECT POINT" />
+		<Text key="Search" value="Search" />
+		<Text key="Search All Flights" value="Search all flights" />
+		<Text key="Search Entire Collection" value="Search entire collection" />
+		<Text key="SELECT A POINT ON THE MAP" value="SELECT A POINT ON THE MAP" />
+		<Text key="SELECT THE FIRST POINT" value="SELECT THE FIRST POINT" />
+		<Text key="Select The I Select Area I Button Below To Draw A Search Box On The Map Or Enter An Address And Press Find Address" value="Select the &lt;i&gt;Select Area&lt;/i&gt; button below to draw a search box on the map or enter an address and press Find Address." />
+		<Text key="SELECT THE SECOND POINT" value="SELECT THE SECOND POINT" />
+		<Text key="Sheet" value="Sheet" />
+		<Text key="The Following Results Match Your Geographic Search And Also Appear On The Navigation Bar To The Left" value="The following results match your geographic search and also appear on the navigation bar to the left:" />
+		<Text key="There Were No Matches Within This Item For Your Geographic Search" value="There were no matches within this item for your geographic search." />
+		<Text key="Tile" value="Tile" />
+		<Text key="Zoom To Extent" value="Zoom to extent" />
+		<Text key="Zoom To Matches" value="Zoom to matches" />
+	</Section>
+	<Section class="Google_Map_ResultsViewer">
+		<Text key="The Following XXX Matches Have No Coordinate Information" value="The following %1  matches have no coordinate information" />
+		<Text key="The Following XXX Matches In XXX Sets Have No Coordinate Information" value="The following  %1 matches  in %2  sets have no coordinate information" />
+		<Text key="The Following XXX Matches In XXX Sets Share The Same Coordinate Information" value="The following %1 matches in  %2 sets share the same coordinate information" />
+		<Text key="The Following XXX Matches Share The Same Coordinate Information" value="The following %1  matches share the same coordinate information" />
+		<Text key="The Following XXX Titles Have The Same Coordinate Point" value="The following %1 titles have the same coordinate point" />
+	</Section>
+	<Section class="Group_Add_Volume_MySobekViewer">
+		<Text key="Add A New Volume To This Existing Titleitem Group" value="Add a new volume to this existing title/item group" />
+		<Text key="Click" value="Click" />
+		<Text key="EXCEPTION CAUGHT" value="EXCEPTION CAUGHT!" />
+		<Text key="Here For Detailed Instructions" value="here for detailed instructions" />
+		<Text key="In Addition The Following Actions Are Available" value="&quot;In addition, the following actions are available:&quot;" />
+		<Text key="NEW VOLUME" value="NEW VOLUME" />
+		<Text key="No Base Volume Selected" value="No base volume selected!" />
+		<Text key="Only Enter Data That You Wish To Override The Data In The Existing Base Volume" value="Only enter data that you wish to override the data in the existing base volume." />
+		<Text key="SAVE ADD ANOTHER" value="SAVE &amp; ADD ANOTHER" />
+		<Text key="SAVE ADD FILES" value="SAVE &amp; ADD FILES" />
+		<Text key="SAVE EDIT ITEM" value="SAVE &amp; EDIT ITEM" />
+	</Section>
+	<Section class="Group_AutoFill_Volume_MySobekViewer">
+		<Text key="AUTOFILL NEW VOLUMES" value="AUTO-FILL NEW VOLUMES" />
+		<Text key="Implementation For This Feature Is Currently Pending" value="Implementation for this feature is currently pending." />
+	</Section>
+	<Section class="Home_MySobekViewer">
+		<Text key="Comments Or Recommendations Please Xxxcontact Usxxx" value="Comments or recommendations?  Please {0}contact us{1}." />
+		<Text key="Edit My Account Preferences" value="Edit my account preferences" />
+		<Text key="If You Would Like To Contribute Materials Through The Online System Please Xxxcontact Usxxx As Well" value="&quot;If you would like to contribute materials through the online system, please {0}contact us{1} as well.&quot;" />
+		<Text key="Log Out" value="Log Out" />
+		<Text key="Online Submittals Are Temporarily Disabled" value="Online submittals are temporarily disabled" />
+		<Text key="Return To Previous XXX Page" value="Return to previous %1 page" />
+		<Text key="Return To XXX" value="Return to {0}" />
+		<Text key="Start A New Item" value="Start a new item" />
+		<Text key="Track Item Scanningprocessing" value="Track Item Scanning/Processing" />
+		<Text key="View All My Submitted Items" value="View all my submitted items" />
+		<Text key="View And Organize My Bookshelves" value="View and organize my bookshelves" />
+		<Text key="View My Descriptive Tags" value="View my descriptive tags" />
+		<Text key="View My Saved Searches" value="View my saved searches" />
+		<Text key="View Usage For My Items" value="View usage for my items" />
+		<Text key="Welcome Back XXX" value="&quot;Welcome back, {0}&quot;" />
+		<Text key="Welcome To XXX This Feature Allows You To Add Items To Your Bookshelves Organize Your Bookshelves And Email Your Bookshelves To Friends" value="&quot;Welcome to {0}.  This feature allows you to add items to your bookshelves, organize your bookshelves, and email your bookshelves to friends.&quot;" />
+		<Text key="Welcome To XXX XXX" value="&quot;Welcome to {0}, {1}&quot;" />
+		<Text key="What Would You Like To Do Today" value="What would you like to do today?" />
+	</Section>
+	<Section class="Html_Echo_MainWriter">
+		<Text key="ERROR READING THE SOURCE FILE" value="ERROR READING THE SOURCE FILE" />
+	</Section>
+	<Section class="HTML_ItemViewer">
+		<Text key="Click Here To Report The Problem" value="Click here to report the problem." />
+		<Text key="Unable To Pull Html View For Item" value="Unable to pull html view for item" />
+		<Text key="Unable To Pull Html View For Item XXX" value="Unable to pull html view for item %1" />
+		<Text key="We Apologize For The Inconvenience" value="We apologize for the inconvenience." />
+	</Section>
+	<Section class="Html_MainWriter">
+		<Text key="Log Out" value="Log Out" />
+		<Text key="XXX Contact Sent" value="%1 Contact Sent" />
+		<Text key="XXX Contact Us" value="%1 Contact Us" />
+		<Text key="XXX Error" value="%1 Error" />
+		<Text key="XXX Home" value="%1 Home" />
+		<Text key="XXX Item" value="%1 Item" />
+		<Text key="XXX Preferences" value="%1 Preferences" />
+		<Text key="XXX Search" value="%1 Search" />
+		<Text key="XXX Search Results" value="%1 Search Results" />
+		<Text key="Xxxs XXX" value="%1's %2 " />
+	</Section>
+	<Section class="HTML_Map_ItemViewer">
+		<Text key="Click On A Sheet In The Map To View A Sheet" value="Click on a sheet in the map to view a sheet" />
+	</Section>
+	<Section class="Internal_HtmlSubwriter">
+		<Text key="Active Aggregations" value="Active Aggregations" />
+		<Text key="Active And Inactive Collections" value="Active and Inactive Collections" />
+		<Text key="ALL" value="ALL" />
+		<Text key="All Aggregation Types" value="All Aggregation Types" />
+		<Text key="APPLICATION STATE VALUES" value="APPLICATION STATE VALUES" />
+		<Text key="Below Is The Complete Master List Of All Aggregations Within This Library This Includes All Active Aggregations As Well As All Hidden Or Inactive Collections" value="&quot;Below is the complete master list of all aggregations within this library.  This includes all active aggregations, as well as all hidden or inactive collections.&quot;" />
+		<Text key="Build Failure Logs" value="Build Failure Logs" />
+		<Text key="Build Failures" value="Build Failures" />
+		<Text key="Build Failures And Warnings" value="Build Failures and Warnings" />
+		<Text key="BULK LOADED" value="BULK LOADED" />
+		<Text key="Child Aggregations" value="Child Aggregations" />
+		<Text key="Click Here To Return To The Digital Library Home Page" value="Click here to return to the digital library home page." />
+		<Text key="Click Here To Sort By CODE" value="Click here to sort by CODE" />
+		<Text key="Click Here To Sort By DATE ADDED" value="Click here to sort by DATE ADDED" />
+		<Text key="Collection Hierarchy" value="Collection Hierarchy" />
+		<Text key="Current Memory Profile" value="Current Memory Profile" />
+		<Text key="Date Added" value="Date Added" />
+		<Text key="Description" value="Description" />
+		<Text key="From" value="From:" />
+		<Text key="GLOBAL VALUES" value="GLOBAL VALUES" />
+		<Text key="Inactive Aggregations" value="Inactive Aggregations" />
+		<Text key="INSTANCE NAME" value="INSTANCE NAME" />
+		<Text key="Internal Users Only" value="Internal Users Only" />
+		<Text key="KEY" value="KEY" />
+		<Text key="LOCALLY CACHED OBJECTS" value="LOCALLY CACHED OBJECTS" />
+		<Text key="Memory Management" value="Memory Management" />
+		<Text key="METS TYPE" value="METS TYPE" />
+		<Text key="Name" value="Name" />
+		<Text key="New Items" value="New Items" />
+		<Text key="Newly Added Or Modified Items" value="Newly Added or Modified Items" />
+		<Text key="NO INFORMATION FOR YOUR SELECTION" value="NO INFORMATION FOR YOUR SELECTION" />
+		<Text key="NO NEW ITEMS" value="NO NEW ITEMS" />
+		<Text key="No Uncleared Warnings Or Failures For The Selected Date Range" value="No uncleared warnings or failures for the selected date range." />
+		<Text key="None" value="( none )" />
+		<Text key="OBJECT" value="OBJECT" />
+		<Text key="ONLINE EDITS" value="ONLINE EDITS" />
+		<Text key="ONLINE SUBMITS" value="ONLINE SUBMITS" />
+		<Text key="Parent Aggregations" value="Parent Aggregations" />
+		<Text key="POSTPROCESSED" value="POST-PROCESSED" />
+		<Text key="REMOTELY CACHED OBJECTS" value="REMOTELY CACHED OBJECTS" />
+		<Text key="Select One Of The Aggregation Types Below To View Information About All Aggregations Of That Type" value="Select one of the aggregation types below to view information about all aggregations of that type." />
+		<Text key="Select The Update Type Tab Above To View The Details" value="Select the update type tab above to view the details." />
+		<Text key="Selected Date Range" value="Selected Date Range" />
+		<Text key="SESSION STATE VALUES" value="SESSION STATE VALUES" />
+		<Text key="Sobekcm Code" value="SobekCM Code" />
+		<Text key="The Data Below Shows Errors Which Occurred While Loading New Items Through The Builder These Can Be Displayed By Month And Year Below By Selecting The Start And End Month These Failures Will Continue To Display Until They Are Manually Cleared Or Until The Item Successfully Loads After The Failure Or Warning" value="The data below shows errors which occurred while loading new items through the builder.  These can be displayed by month and year below by selecting the start and end month.  These failures will continue to display until they are manually cleared or until the item successfully loads after the failure or warning." />
+		<Text key="The Failures And Warnings Which Were Encountered During Build Are Searchable Below By Month" value="&quot;The failures and warnings which were encountered during build are searchable below, by month:&quot;" />
+		<Text key="There Have Been An Unusually Large Number Of Updates Over The Last Week" value="There have been an unusually large number of updates over the last week." />
+		<Text key="To" value="To:" />
+		<Text key="To Change The Date Shown Choose Your Dates Above And Hit The GO Button" value="&quot;To change the date shown, choose your dates above and hit the GO button.&quot;" />
+		<Text key="Type" value="Type" />
+		<Text key="UNKNOWN OBJECT TYPE" value="UNKNOWN OBJECT TYPE" />
+		<Text key="USER" value="USER" />
+		<Text key="VISIBILITY CHANGES" value="VISIBILITY CHANGES" />
+		<Text key="Wordmarks" value="Wordmarks" />
+		<Text key="You Are Not Authorized To Access This View" value="You are not authorized to access this view." />
+	</Section>
+	<Section class="Item_Count_Aggregation_Viewer">
+		<Text key="Below Is The Number Of Titles And Items For All Items Within This Aggregation Including Currently Online Items As Well As Items In Process" value="&quot;Below is the number of titles and items for all items within this aggregation, including currently online items as well as items in process.&quot;" />
+		<Text key="FILE COUNT" value="FILE COUNT" />
+		<Text key="ITEM COUNT" value="ITEM COUNT" />
+		<Text key="LAST MILESTONE" value="LAST MILESTONE" />
+		<Text key="PAGE COUNT" value="PAGE COUNT" />
+		<Text key="Resource Count In Aggregation" value="Resource Count in Aggregation" />
+		<Text key="TITLE COUNT" value="TITLE COUNT" />
+	</Section>
+	<Section class="Item_Count_AggregationViewer">
+		<Text key="Below Is The Number Of Titles And Items For All Items Within This Aggregation Including Currently Online Items As Well As Items In Process" value="&quot;Below is the number of titles and items for all items within this aggregation, including currently online items as well as items in process.&quot;" />
+		<Text key="File Count" value="File Count" />
+		<Text key="Item Count" value="Item Count" />
+		<Text key="Last Milestone" value="Last Milestone" />
+		<Text key="Page Count" value="Page Count" />
+		<Text key="Resource Count In Aggregation" value="Resource Count in Aggregation" />
+		<Text key="Title Count" value="Title Count" />
+	</Section>
+	<Section class="Item_Email_Helper">
+		<Text key="Abbreviated Title XXX" value="Abbreviated Title: %1" />
+		<Text key="Alternate Title XXX" value="Alternate Title: %1" />
+		<Text key="BLOCKED THUMBNAIL IMAGE" value="BLOCKED THUMBNAIL IMAGE" />
+		<Text key="Creator XXX" value="Creator: %1" />
+		<Text key="Date XXX" value="Date: %1" />
+		<Text key="Description XXX" value="Description: %1" />
+		<Text key="Genre XXX" value="Genre: %1" />
+		<Text key="ITEM INFORMATION" value="ITEM INFORMATION" />
+		<Text key="Publisher XXX" value="Publisher: %1" />
+		<Text key="Rights XXX" value="Rights: %1" />
+		<Text key="Series Title XXX" value="Series Title: %1" />
+		<Text key="Spatial Coverage XXX" value="Spatial Coverage: %1" />
+		<Text key="Subject XXX" value="Subject: %1" />
+		<Text key="Translated Title XXX" value="Translated Title: %1" />
+		<Text key="Uniform Title XXX" value="Uniform Title: %1" />
+		<Text key="XXX Wanted You To See This Item On XXX" value="%1 wanted you to see this item on %2." />
+		<Text key="XXX Wanted You To See This Item On XXX And Included The Following Comments" value="%1 wanted you to see this item on %2 and included the following comments." />
+	</Section>
+	<Section class="Item_HtmlSubwriter">
+		<Text key="Accession Number" value="Accession number" />
+		<Text key="Add IP Restriction To This Item" value="Add IP restriction to this item" />
+		<Text key="Add Volume" value="Add Volume" />
+		<Text key="Autofill Volumes" value="Auto-Fill Volumes" />
+		<Text key="Beta" value="beta" />
+		<Text key="Cancel Changes" value="Cancel changes" />
+		<Text key="Change Access Restriction" value="Change Access Restriction" />
+		<Text key="Comments" value="Comments" />
+		<Text key="Container List" value="Container List" />
+		<Text key="DARK ITEM" value="DARK ITEM" />
+		<Text key="Delete This Item" value="Delete this item" />
+		<Text key="Digitization Of This Item Is Currently In Progress" value="Digitization of this item is currently in progress." />
+		<Text key="Edit Behaviors" value="Edit Behaviors" />
+		<Text key="Edit Item Behaviors" value="Edit Item Behaviors" />
+		<Text key="Edit Item Group Behaviors" value="Edit Item Group Behaviors" />
+		<Text key="Edit Metadata" value="Edit Metadata" />
+		<Text key="Edit Serial Hierarchy" value="Edit Serial Hierarchy" />
+		<Text key="Error Encountered While Sending Email" value="Error encountered while sending email" />
+		<Text key="ERROR Encountered While Trying To Remove Item From Your Bookshelves" value="ERROR encountered while trying to remove item from your bookshelves." />
+		<Text key="ERROR Encountered While Trying To Save To Your Bookshelf" value="ERROR encountered while trying to save to your bookshelf." />
+		<Text key="First" value="First" />
+		<Text key="First Page" value="First Page" />
+		<Text key="Go To" value="Go To:" />
+		<Text key="HIDE" value="HIDE" />
+		<Text key="Hide Internal Header" value="Hide Internal Header" />
+		<Text key="HIDE TABLE OF CONTENTS" value="HIDE TABLE OF CONTENTS" />
+		<Text key="Item Was Removed From Your Bookshelves" value="Item was removed from your bookshelves." />
+		<Text key="Item Was Saved To Your Bookshelf" value="Item was saved to your bookshelf." />
+		<Text key="Last" value="Last" />
+		<Text key="Last Page" value="Last Page" />
+		<Text key="List View" value="List View" />
+		<Text key="Make Item Private" value="Make item private" />
+		<Text key="Make Item Public" value="Make item public" />
+		<Text key="Manage Download Files" value="Manage Download Files" />
+		<Text key="Manage Files" value="Manage Files" />
+		<Text key="Manage Geospatial Data" value="Manage Geo-Spatial Data" />
+		<Text key="Manage Pages And Divisions" value="Manage Pages and Divisions" />
+		<Text key="MARC View" value="MARC View" />
+		<Text key="Mass Update Item Behaviors" value="Mass Update Item Behaviors" />
+		<Text key="Mass Update Volumes" value="Mass Update Volumes" />
+		<Text key="MATCHING PAGES" value="MATCHING PAGES" />
+		<Text key="MATCHING TILES" value="MATCHING TILES" />
+		<Text key="Metadata" value="Metadata" />
+		<Text key="Next" value="Next" />
+		<Text key="Next Page" value="Next Page" />
+		<Text key="Perform QC" value="Perform QC" />
+		<Text key="Perform Quality Control" value="Perform Quality Control" />
+		<Text key="Previous" value="Previous" />
+		<Text key="Previous Page" value="Previous Page" />
+		<Text key="PRIVATE ITEM" value="PRIVATE ITEM" />
+		<Text key="Private Resource" value="Private Resource" />
+		<Text key="Public Item" value="Public Item" />
+		<Text key="Public Resource" value="Public Resource" />
+		<Text key="Restricted Item" value="Restricted Item" />
+		<Text key="Save New Internal Comments" value="Save new internal comments" />
+		<Text key="SET ACCESS RESTRICTIONS" value="SET ACCESS RESTRICTIONS" />
+		<Text key="Show Internal Header" value="Show Internal Header" />
+		<Text key="SHOW TABLE OF CONTENTS" value="SHOW TABLE OF CONTENTS" />
+		<Text key="TABLE OF CONTENTS" value="TABLE OF CONTENTS" />
+		<Text key="Thumbnails" value="Thumbnails" />
+		<Text key="Tree View" value="Tree View" />
+		<Text key="Usage Statistics" value="Usage Statistics" />
+		<Text key="View Tracking Sheet" value="View Tracking Sheet" />
+		<Text key="View Work History" value="View Work History" />
+		<Text key="View Work Log" value="View Work Log" />
+		<Text key="Your Email Has Been Sent" value="Your email has been sent" />
+	</Section>
+	<Section class="Item_Nav_Bar_HTML_Factory">
+		<Text key="ALL ISSUES" value="ALL ISSUES" />
+		<Text key="ALL VOLUMES" value="ALL VOLUMES" />
+		<Text key="CITATION" value="CITATION" />
+		<Text key="CONTAINER LIST" value="CONTAINER LIST" />
+		<Text key="DATA STRUCTURE" value="DATA STRUCTURE" />
+		<Text key="DOWNLOADS" value="DOWNLOADS" />
+		<Text key="EXPLORE DATA" value="EXPLORE DATA" />
+		<Text key="FEATURES" value="FEATURES" />
+		<Text key="FLASH VIEW" value="FLASH VIEW" />
+		<Text key="MAP COVERAGE" value="MAP COVERAGE" />
+		<Text key="MAP IT" value="MAP IT!" />
+		<Text key="MAP SEARCH" value="MAP SEARCH" />
+		<Text key="PAGE IMAGE WITH TEXT" value="PAGE IMAGE WITH TEXT" />
+		<Text key="PAGE TEXT" value="PAGE TEXT" />
+		<Text key="PAGE TURNER" value="PAGE TURNER" />
+		<Text key="PDF VIEWER" value="PDF VIEWER" />
+		<Text key="RELATED FLIGHTS" value="RELATED FLIGHTS" />
+		<Text key="RELATED MAPS" value="RELATED MAPS" />
+		<Text key="REPORTS" value="REPORTS" />
+		<Text key="RESTRICTED" value="RESTRICTED" />
+		<Text key="SEARCH" value="SEARCH" />
+		<Text key="SEARCH RESULTS" value="SEARCH RESULTS" />
+		<Text key="STANDARD" value="STANDARD" />
+		<Text key="STREETS" value="STREETS" />
+		<Text key="THUMBNAILS" value="THUMBNAILS" />
+		<Text key="VIDEO" value="VIDEO" />
+		<Text key="ZOOMABLE" value="ZOOMABLE" />
+	</Section>
+	<Section class="JPEG_ItemViewer">
+		<Text key="Click On Image Below To Switch To Zoomable Version" value="Click on image below to switch to zoomable version" />
+		<Text key="Click On Image To Switch To Zoomable Version" value="Click on image to switch to zoomable version" />
+		<Text key="MISSING IMAGE" value="MISSING IMAGE" />
+	</Section>
+	<Section class="JPEG2000_ItemViewer">
+		<Text key="THUMBNAIL" value="THUMBNAIL" />
+	</Section>
+	<Section class="LegacyUrl_HtmlSubwriter">
+		<Text key="Deprecated URL Detected" value="Deprecated URL detected" />
+		<Text key="Please Update Your Records To The New URL Below" value="Please update your records to the new URL below:" />
+		<Text key="The URL You Entered Is A Legacy URL Support For This URL Will End Shortly" value="The URL you entered is a legacy URL.  Support for this URL will end shortly." />
+	</Section>
+	<Section class="Logon_MySobekViewer">
+		<Text key="Forgot Your Username Or Password Please Xxxcontact Usxxx" value="Forgot your username or password?  Please {0}contact us{1}." />
+		<Text key="If You Have A Valid XXX Logon Xxxsign On With XXX Authentication Herexxx" value="&quot;&lt;b&gt;If you have a valid {0} logon&lt;/b&gt;, {1}Sign on with {0} authentication here{2}.&quot;" />
+		<Text key="LOG IN" value="LOG IN" />
+		<Text key="Logon To XXX" value="Logon to {0}" />
+		<Text key="Not Registered Yet Xxxregister Nowxxx" value="Not registered yet?  {0}Register now{1}" />
+		<Text key="Not Registered Yet Xxxregister Nowxxx Or Xxxcontact Usxxx" value="&lt;b&gt;Not registered yet?&lt;/b&gt; {0}Register now{1} or {2}Contact Us{1}." />
+		<Text key="Password" value="Password:" />
+		<Text key="Please Choose The Appropriate Logon Directly Below" value="Please choose the appropriate logon directly below." />
+		<Text key="Remember Me" value="Remember me" />
+		<Text key="The Feature You Are Trying To Access Requires A Valid Logon" value="The feature you are trying to access requires a valid logon." />
+		<Text key="Username Or Email" value="Username or email:" />
+	</Section>
+	<Section class="MainMenus_Helper_HtmlSubWriter">
+		<Text key="Added Automatically" value=" ( Added Automatically )" />
+		<Text key="Advanced Search" value="Advanced Search" />
+		<Text key="BOOKSHELF VIEW" value="BOOKSHELF VIEW" />
+		<Text key="BRIEF VIEW" value="BRIEF VIEW" />
+		<Text key="BROWSE BY" value="BROWSE BY" />
+		<Text key="Browse Partners" value="Browse Partners" />
+		<Text key="Build Failures" value="Build Failures" />
+		<Text key="Collection Hierarchy" value="Collection Hierarchy" />
+		<Text key="EXPORT" value="EXPORT" />
+		<Text key="Home" value="Home" />
+		<Text key="Internal" value="Internal" />
+		<Text key="List View" value="List View" />
+		<Text key="MAP BROWSE" value="MAP BROWSE" />
+		<Text key="MAP VIEW" value="MAP VIEW" />
+		<Text key="Memory Management" value="Memory Management" />
+		<Text key="My Account" value="My Account" />
+		<Text key="MY COLLECTIONS" value="MY COLLECTIONS" />
+		<Text key="My Library" value="My Library" />
+		<Text key="New Items" value="New Items" />
+		<Text key="Portal Admin" value="Portal Admin" />
+		<Text key="Print" value="Print" />
+		<Text key="Save" value="Save" />
+		<Text key="SEARCH OPTIONS" value="SEARCH OPTIONS" />
+		<Text key="Send" value="Send" />
+		<Text key="System Admin" value="System Admin" />
+		<Text key="TABLE VIEW" value="TABLE VIEW" />
+		<Text key="THUMBNAIL VIEW" value="THUMBNAIL VIEW" />
+		<Text key="Tree View" value="Tree View" />
+		<Text key="View All Items" value="View All Items" />
+		<Text key="View Items" value="View Items" />
+		<Text key="View Recently Added Items" value="View Recently Added Items" />
+		<Text key="Wordmarks" value="Wordmarks" />
+	</Section>
+	<Section class="ManageMenu_ItemViewer">
+		<Text key="Add A New Related Volume To This Item Group" value="&quot;Add a new, related volume to this item group.&quot;" />
+		<Text key="Add Geospatial Information For This Item This Can Be As Simple As A Location For A Photograph Or Can Be An Overlay For A Map Points Lines And Polygons Of Interest Can Also Be Drawn" value="&quot;Add geo-spatial information for this item.  This can be as simple as a location for a photograph or can be an overlay for a map.  Points, lines, and polygons of interest can also be drawn.&quot;" />
+		<Text key="Add New Volume" value="Add New Volume" />
+		<Text key="Beta" value="(beta)" />
+		<Text key="Change The Way This Item Behaves In This Library Including Which Aggregations It Appears Under The Wordmarks To The Left And Which Viewer Types Are Publicly Accessible" value="&quot;Change the way this item behaves in this library, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible.&quot;" />
+		<Text key="Edit Item Behaviors" value="Edit Item Behaviors" />
+		<Text key="Edit Item Group Behaviors" value="Edit Item Group Behaviors" />
+		<Text key="Edit Item Metadata" value="Edit Item Metadata" />
+		<Text key="Edit The Information About This Item Which Appears In The Citationdescription This Is Basic Information About The Original Item And This Digital Manifestation" value="Edit the information about this item which appears in the citation/description.  This is basic information about the original item and this digital manifestation." />
+		<Text key="How Would You Like To Manage This Item Group Today" value="How would you like to manage this item group today?" />
+		<Text key="How Would You Like To Manage This Item Today" value="How would you like to manage this item today?" />
+		<Text key="In Addition The Following Changes Can Be Made At The Item Group Level" value="&quot;In addition, the following changes can be made at the item group level:&quot;" />
+		<Text key="Manage Download Files" value="Manage Download Files" />
+		<Text key="Manage Geospatial Data" value="Manage Geo-Spatial Data" />
+		<Text key="Manage Pages And Divisions Quality Control" value="Manage Pages and Divisions (Quality Control)" />
+		<Text key="Manage This Item" value="Manage this Item" />
+		<Text key="Manage This Item Group" value="Manage this Item Group" />
+		<Text key="Mass Update Item Behaviors" value="Mass Update Item Behaviors" />
+		<Text key="Reorder Page Images Name Pages Assign Divisions And Delete And Add New Page Images To This Item" value="&quot;Reorder page images, name pages, assign divisions, and delete and add new page images to this item.&quot;" />
+		<Text key="Set The Title Under Which All Of These Items Appear In Search Results And Set The Web Skins Under Which All These Items Should Appear" value="Set the title under which all of these items appear in search results and set the web skins under which all these items should appear." />
+		<Text key="This Allows Itemlevel Behaviors To Be Set For All Items Within This Item Group Including Which Aggregations It Appears Under The Wordmarks To The Left And Which Viewer Types Are Publicly Accessible" value="&quot;This allows item-level behaviors to be set for all items within this item group, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible.&quot;" />
+		<Text key="This Can Be Used For Printing The Tracking Sheet For This Item Which Can Be Used As Part Of The Builtin Digitization Workflow" value="&quot;This can be used for printing the tracking sheet for this item, which can be used as part of the built-in digitization workflow.&quot;" />
+		<Text key="Upload New Files For Download Or Remove Existing Files That Are Attached To This Item For Download This Generally Includes Everything Except For The Page Images" value="Upload new files for download or remove existing files that are attached to this item for download.  This generally includes everything except for the page images." />
+		<Text key="View The History Of All Work Performed On This Item From This View You Can Also See Any Digitization Milestones And Digital Resource File Information" value="&quot;View the history of all work performed on this item.  From this view, you can also see any digitization milestones and digital resource file information.&quot;" />
+		<Text key="View Tracking Sheet" value="View Tracking Sheet" />
+		<Text key="View Work History" value="View Work History" />
+	</Section>
+	<Section class="Map_Browse_AggregationViewer">
+		<Text key="Click Here For More Information About These XXX Titles" value="Click here for more information about these %1 titles" />
+		<Text key="Click Here For More Information About This Title" value="Click here for more information about this title" />
+		<Text key="Press The SHIFT Button And Then Drag A Box On The Map To Zoom In" value="&quot;Press the SHIFT button, and then drag a box on the map to zoom in.&quot;" />
+		<Text key="Select A Point Below To View The Items From Or About That Location" value="Select a point below to view the items from or about that location." />
+		<Text key="XXX Issues" value="( %1 issues )" />
+		<Text key="XXX Volumes" value="( %1 volumes )" />
+	</Section>
+	<Section class="Map_ResultsWriter">
+		<Text key="The Following XXX Matches Have No Coordinate Information" value="The following {0} matches have no coordinate information" />
+		<Text key="The Following XXX Matches In XXX Sets Share The Same Coordinate Information" value="The following {0} matches in {1} sets share the same coordinate information" />
+		<Text key="The Following XXX Matches Share The Same Coordinate Information" value="The following {0} matches share the same coordinate information" />
+		<Text key="The Following XXX Titles Have The Same Coordinate Point" value="The following {0} titles have the same coordinate point" />
+		<Text key="The Followingxxx Matches In XXX Sets Have No Coordinate Information" value="The following{0} matches in {1} sets have no coordinate information" />
+		<Text key="Varies" value="( varies )" />
+	</Section>
+	<Section class="Map_Search_AggregationViewer">
+		<Text key="A Enter An Address And Press I Find Address I To Locate I Or I" value="&quot;a. Enter an address and press &lt;i&gt;Find Address&lt;/i&gt; to locate, &lt;i&gt;or&lt;/i&gt;&quot;" />
+		<Text key="Actions" value="Actions" />
+		<Text key="Address" value="Address" />
+		<Text key="Address This Is The Nearest Address Of The Point You Selected" value="Address: This is the nearest address of the point you selected." />
+		<Text key="Applied" value="Applied" />
+		<Text key="Apply" value="Apply" />
+		<Text key="Apply Changes Make Changes Public" value="Apply Changes (Make Changes Public)" />
+		<Text key="B Press The I Select Area I Button And Click To Select Two Opposite Corners I Or I" value="&quot;b. Press the &lt;i&gt;Select Area&lt;/i&gt; button and click to select two opposite corners, &lt;i&gt;or&lt;/i&gt;&quot;" />
+		<Text key="Blocklot Toggle Blocklot Map Layer" value="Block/Lot: Toggle Block/Lot Map Layer" />
+		<Text key="C Press The I Select Point I Button And Click To Select A Single Point" value="c. Press the &lt;i&gt;Select Point&lt;/i&gt; button and click to select a single point" />
+		<Text key="Cancel Editing" value="Cancel Editing" />
+		<Text key="Canceling" value="Canceling..." />
+		<Text key="Cannot Convert" value="Cannot Convert" />
+		<Text key="Cannot Zoom In Further" value="Cannot Zoom in further" />
+		<Text key="Cannot Zoom Out Further" value="Cannot Zoom out Further" />
+		<Text key="Center On Current Location" value="Center on Current Location" />
+		<Text key="Center On Your Current Position" value="Center On Your Current Position" />
+		<Text key="Circle" value="Circle" />
+		<Text key="Circle Place A Circle" value="Circle: Place a Circle" />
+		<Text key="Clear Point Of Interest Set" value="Clear Point Of Interest Set" />
+		<Text key="Click Here To View Instructions For This Search Interface" value="Click here to view instructions for this search interface" />
+		<Text key="Clockwise" value="Clockwise" />
+		<Text key="Complete Editing" value="Complete Editing" />
+		<Text key="Completed" value="Completed" />
+		<Text key="Controls" value="Controls" />
+		<Text key="Controls Toggle Map Controls" value="Controls: Toggle Map Controls" />
+		<Text key="Convert This To A Map Overlay" value="Convert This To a Map Overlay" />
+		<Text key="Convert To Overlay" value="Convert to Overlay" />
+		<Text key="Converted Item To Overlay" value="Converted Item to Overlay" />
+		<Text key="Coordinate Data Removed For" value="Coordinate Data removed for" />
+		<Text key="Coordinates Copied To Clipboard" value="Coordinates Copied to Clipboard" />
+		<Text key="Coordinates This Is The Selected Latitude And Longitude Of The Point You Selected" value="Coordinates: This is the selected Latitude and Longitude of the point you selected." />
+		<Text key="Coordinates Viewer Frozen" value="Coordinates Viewer Frozen" />
+		<Text key="Coordinates Viewer Unfrozen" value="Coordinates Viewer Unfrozen" />
+		<Text key="Could Not Find Location Either The Format You Entered Is Invalid Or The Location Is Outside Of The Map Bounds" value="Could not find location. Either the format you entered is invalid or the location is outside of the map bounds." />
+		<Text key="Could Not Find Within Bounds" value="Could not find within bounds" />
+		<Text key="Counterclockwise" value="Counter-Clockwise" />
+		<Text key="Custom" value="Custom" />
+		<Text key="Default Pan Map To Default" value="Default: Pan Map To Default" />
+		<Text key="Delete" value="Delete" />
+		<Text key="Delete Coordinate Data For Overlay" value="Delete Coordinate Data for Overlay" />
+		<Text key="Delete Geographic Location" value="Delete Geographic Location" />
+		<Text key="Delete POI" value="Delete POI" />
+		<Text key="Delete Search Result" value="Delete Search Result" />
+		<Text key="Deleted" value="Deleted" />
+		<Text key="Description Optional" value="Description (Optional)" />
+		<Text key="Did Not Reset Page" value="Did not Reset Page" />
+		<Text key="Documentation" value="Documentation" />
+		<Text key="Down Pan Map Down" value="Down: Pan Map Down" />
+		<Text key="Edit Location" value="Edit Location" />
+		<Text key="Edit Location By Dragging Existing Marker" value="Edit Location By Dragging Existing Marker" />
+		<Text key="Edit This Overlay" value="Edit this Overlay" />
+		<Text key="Edit This POI" value="Edit this POI" />
+		<Text key="Editing" value="Editing" />
+		<Text key="Enter Address Ie 12 Main Street Gainesville Florida" value="&quot;Enter address ( i.e., 12 Main Street, Gainesville Florida )&quot;" />
+		<Text key="Error Addign Other Listeners" value="Error Addign other Listeners" />
+		<Text key="Error Description Cannot Contain A Or" value="Error: Description cannot contain a ~ or |" />
+		<Text key="ERROR Failed Adding Textual Content" value="ERROR Failed Adding Textual Content" />
+		<Text key="ERROR Failed Adding Titles" value="ERROR Failed Adding Titles" />
+		<Text key="Error Overlay Image Source Cannot Contain A Or" value="Error: Overlay image source cannot contain a ~ or |" />
+		<Text key="File" value="File" />
+		<Text key="Find A Location" value="Find a Location" />
+		<Text key="Find Address" value="Find Address" />
+		<Text key="Find Location" value="Find Location" />
+		<Text key="Finding Your Location" value="Finding your location" />
+		<Text key="Geocoder Failed Due To" value="geocoder failed due to:" />
+		<Text key="Geolocation Service Failed" value="Geolocation Service Failed." />
+		<Text key="Help" value="Help" />
+		<Text key="Hide Coordinates" value="Hide Coordinates" />
+		<Text key="Hiding" value="Hiding" />
+		<Text key="Hiding Overlays" value="Hiding Overlays" />
+		<Text key="Hiding Pois" value="Hiding POIs" />
+		<Text key="Hybrid" value="Hybrid" />
+		<Text key="Hybrid Toggle Hybrid Map Layer" value="Hybrid: Toggle Hybrid Map Layer" />
+		<Text key="In Zoom Map In" value="In: Zoom Map In" />
+		<Text key="Item Geographic Location Deleted" value="Item Geographic Location Deleted" />
+		<Text key="Item Location Converted To Listing Overlays" value="Item Location Converted to Listing Overlays" />
+		<Text key="Item Relocation Reset" value="Item Relocation Reset!" />
+		<Text key="Item Saved" value="Item Saved!" />
+		<Text key="Latitude" value="Latitude" />
+		<Text key="Layers" value="Layers" />
+		<Text key="Left Pan Map Left" value="Left: Pan Map Left" />
+		<Text key="Line" value="Line" />
+		<Text key="Line Place A Line" value="Line: Place a Line" />
+		<Text key="Locate" value="Locate" />
+		<Text key="Locate Find A Location On The Map" value="Locate: Find A Location On The Map" />
+		<Text key="Longitude" value="Longitude" />
+		<Text key="Manage Location" value="Manage Location" />
+		<Text key="Manage Location Details" value="Manage Location Details" />
+		<Text key="Manage Map Coverage" value="Manage Map Coverage" />
+		<Text key="Manage Overlay" value="Manage Overlay" />
+		<Text key="Manage Overlays" value="Manage Overlays" />
+		<Text key="Manage POI" value="Manage POI" />
+		<Text key="Manage Points Of Interest" value="Manage Points of Interest" />
+		<Text key="Manage Pois" value="Manage POIs" />
+		<Text key="Map Controls" value="Map Controls" />
+		<Text key="Marker" value="Marker" />
+		<Text key="Marker Place A Point" value="Marker: Place a Point" />
+		<Text key="More Help" value="more help" />
+		<Text key="Nearest Address" value="Nearest Address" />
+		<Text key="Not Cleared" value="Not Cleared" />
+		<Text key="Nothing Happened" value="Nothing Happened!" />
+		<Text key="Nothing To Delete" value="Nothing to Delete" />
+		<Text key="Nothing To Hide" value="Nothing to Hide" />
+		<Text key="Nothing To Reset" value="Nothing to Reset" />
+		<Text key="Nothing To Save" value="Nothing to Save" />
+		<Text key="Nothing To Search" value="Nothing to Search" />
+		<Text key="Nothing To Toggle" value="Nothing to Toggle" />
+		<Text key="Out Zoom Map Out" value="Out: Zoom Map Out" />
+		<Text key="Overall Geographic Data Deleted" value="Overall Geographic Data Deleted" />
+		<Text key="Overlay Editing Turned Off" value="Overlay Editing Turned Off" />
+		<Text key="Overlay Editing Turned On" value="Overlay Editing Turned On" />
+		<Text key="Overlay Saved" value="Overlay Saved!" />
+		<Text key="Overlays Reset" value="Overlays Reset!" />
+		<Text key="Pan" value="Pan" />
+		<Text key="Place" value="Place" />
+		<Text key="POI Set Cleared" value="POI Set Cleared!" />
+		<Text key="POI Set Saved" value="POI Set Saved!" />
+		<Text key="Point 1" value="Point 1" />
+		<Text key="Point 2" value="Point 2" />
+		<Text key="Polygon" value="Polygon" />
+		<Text key="Polygon Place A Polygon" value="Polygon: Place a Polygon" />
+		<Text key="Press The I Search I Button To See Results" value="2. Press the &lt;i&gt;Search&lt;/i&gt; button to see results" />
+		<Text key="Rectangle" value="Rectangle" />
+		<Text key="Rectangle Place A Rectangle" value="rectangle: Place a rectangle" />
+		<Text key="Removed" value="Removed" />
+		<Text key="Report A Problem" value="Report a Problem" />
+		<Text key="Report A Sobek Error" value="Report a Sobek Error" />
+		<Text key="Reset" value="Reset" />
+		<Text key="Reset All Changes" value="Reset All Changes" />
+		<Text key="Reset All Overlay Changes" value="Reset All Overlay Changes" />
+		<Text key="Reset Click To Reset Rotation" value="Reset: Click to Reset Rotation" />
+		<Text key="Reset Location" value="Reset Location" />
+		<Text key="Reset Location Changes" value="Reset Location Changes" />
+		<Text key="Reset Me" value="Reset Me" />
+		<Text key="Reset Overlays" value="Reset Overlays" />
+		<Text key="Reset Pois" value="Reset POIs" />
+		<Text key="Reset Reset Map To Defaults" value="Reset: Reset Map To Defaults" />
+		<Text key="Reset Reset Map Type" value="Reset: Reset Map Type" />
+		<Text key="Reset Reset Zoom Level" value="Reset: Reset Zoom Level" />
+		<Text key="Reseting Page" value="Reseting Page" />
+		<Text key="Resetting Overlays" value="Resetting Overlays" />
+		<Text key="Resetting Pois" value="Resetting POIs" />
+		<Text key="Returned To Bounds" value="Returned to Bounds!" />
+		<Text key="Right Pan Map Right" value="Right: Pan Map Right" />
+		<Text key="Roadmap" value="Roadmap" />
+		<Text key="Roadmap Toggle Road Map Layer" value="Roadmap: Toggle Road Map Layer" />
+		<Text key="Rotate" value="Rotate" />
+		<Text key="Rotate Edit The Rotation Value" value="Rotate: Edit the rotation value" />
+		<Text key="Satellite" value="Satellite" />
+		<Text key="Satellite Toggle Satellite Map Layer" value="Satellite: Toggle Satellite Map Layer" />
+		<Text key="Save" value="Save" />
+		<Text key="Save Description" value="Save description" />
+		<Text key="Save Location Changes" value="Save Location Changes" />
+		<Text key="Save Overlay Changes" value="Save Overlay Changes" />
+		<Text key="Save Point Of Interest Set" value="Save Point Of Interest Set" />
+		<Text key="Save This Description" value="save this Description" />
+		<Text key="Save To Temporary File" value="Save to Temporary File" />
+		<Text key="Saved" value="Saved" />
+		<Text key="Saving" value="Saving..." />
+		<Text key="Search Coordinates" value="Search Coordinates" />
+		<Text key="Select Area" value="Select Area" />
+		<Text key="Select Point" value="Select Point" />
+		<Text key="Select The Area To Draw The Overlay" value="Select the area to Draw the Overlay" />
+		<Text key="Selected Latlong" value="Selected Lat/Long" />
+		<Text key="Show Coordinates" value="Show Coordinates" />
+		<Text key="Showing" value="Showing" />
+		<Text key="Showing Overlays" value="Showing Overlays" />
+		<Text key="Showing Pois" value="Showing POIs" />
+		<Text key="Tenth Degree Left Click To Rotate A Tenth Degree Counterclockwise" value="Tenth Degree Left: Click to Rotate a Tenth Degree Counter-Clockwise" />
+		<Text key="Tenth Degree Right Click To Rotate A Tenth Degree Clockwise" value="Tenth Degree Right: Click to Rotate a Tenth Degree Clockwise" />
+		<Text key="Terrain" value="Terrain" />
+		<Text key="Terrain Toggle Terrain Map Layer" value="Terrain: Toggle Terrain Map Layer" />
+		<Text key="This Will Delete All Of The Pois Are You Sure" value="&quot;This will delete all of the POIs, are you sure?&quot;" />
+		<Text key="This Will Delete The Geogarphic Coodinate Data For This Item Are You Sure" value="&quot;This will delete the geogarphic coodinate data for this item, are you sure?&quot;" />
+		<Text key="This Will Delete The Geographic Coordinate Data For This Overlay Are You Sure" value="&quot;This will delete the geographic coordinate data for this overlay, are you sure?&quot;" />
+		<Text key="Toggle All Map Overlays" value="Toggle All Map Overlays" />
+		<Text key="Toggle All Overlays On Map" value="Toggle All Overlays On Map" />
+		<Text key="Toggle All Pois On Map" value="Toggle All POIs On Map" />
+		<Text key="Toggle On Map" value="Toggle on Map" />
+		<Text key="Toggle Pois On Map" value="Toggle POIs on Map" />
+		<Text key="Toolbar" value="Toolbar" />
+		<Text key="Toolbar Toggle The Toolbar" value="Toolbar: Toggle the Toolbar" />
+		<Text key="Toolbox" value="Toolbox" />
+		<Text key="Toolbox Toggle Toolbox" value="Toolbox: Toggle Toolbox" />
+		<Text key="Transparency" value="Transparency" />
+		<Text key="Transparency Set The Transparency Of This Overlay" value="Transparency: Set the transparency of this Overlay" />
+		<Text key="Up Pan Map Up" value="Up: Pan Map Up" />
+		<Text key="Use One Of The Methods Below To Define Your Geographic Search" value="1. Use one of the methods below to define your geographic search:" />
+		<Text key="Use Search Result As Location" value="Use Search Result As Location" />
+		<Text key="Use The I Select Area I Button And Click To Select Opposite Corners To Draw A Search Box On The Map" value=" 1. Use the &lt;i&gt;Select Area&lt;/i&gt; button and click to select opposite corners to draw a search box on the map " />
+		<Text key="Using Search Results As Location" value="Using Search Results as Location" />
+		<Text key="View" value="View" />
+		<Text key="Warning This Will Erase Any Changes You Have Made Do You Still Want To Proceed" value="Warning! This will erase any changes you have made. Do you still want to proceed?" />
+		<Text key="Working" value="Working..." />
+		<Text key="Zoom" value="Zoom" />
+		<Text key="Zoom In" value="Zoom In" />
+		<Text key="Zoom Out" value="Zoom Out" />
+	</Section>
+	<Section class="Mass_Update_Items_MySobekViewer">
+		<Text key="Change The Behavior Of All Items Belonging To This Group" value="Change the behavior of all items belonging to this group" />
+		<Text key="Click" value="Click" />
+		<Text key="Clicking On The Green Plus Button" value="Clicking on the green plus button ( " />
+		<Text key="Enter Any Behaviors You Would Like To Have Propogate Through All The Items Within This Item Groupand Press The SAVE Button When Complete" value="Enter any behaviors you would like to have propogate through all the items within this item group.and press the SAVE button when complete." />
+		<Text key="Here For Detailed Instructions" value="here for detailed instructions" />
+		<Text key="MASS UPDATE" value="MASS UPDATE" />
+		<Text key="On Mass Updating Behaviors Online" value="on mass updating behaviors online." />
+		<Text key="Will Add Another Instance Of The Element If The Element Is Repeatable" value="&quot; ) will add another instance of the element, if the element is repeatable.&quot;" />
+	</Section>
+	<Section class="Metadata_Browse_AggregationViewer">
+		<Text key="Browse By" value="Browse By:" />
+		<Text key="Browse By XXX" value="Browse by %1" />
+		<Text key="Internal Browses" value="Internal Browses" />
+		<Text key="NO MATCHING VALUES" value="NO MATCHING VALUES" />
+		<Text key="Public Browses" value="Public Browses" />
+		<Text key="Select A Metadata Field To Browse By From The List On The Left" value="Select a metadata field to browse by from the list on the left" />
+	</Section>
+	<Section class="MultiVolumes_ItemViewer">
+		<Text key="Access" value="Access" />
+		<Text key="All Issues" value="All Issues" />
+		<Text key="All Volumes" value="All Volumes" />
+		<Text key="Dark" value="dark" />
+		<Text key="Level 1" value="Level 1" />
+		<Text key="Level 2" value="Level 2" />
+		<Text key="Level 3" value="Level 3" />
+		<Text key="List View" value="List View" />
+		<Text key="MISSING THUMBNAIL" value="MISSING THUMBNAIL" />
+		<Text key="Private" value="private" />
+		<Text key="Public" value="public" />
+		<Text key="Related Flights" value="Related Flights" />
+		<Text key="Related Map Sets" value="Related Map sets" />
+		<Text key="Related Maps" value="Related Maps" />
+		<Text key="Restricted" value="restricted" />
+		<Text key="Thumbnails" value="Thumbnails" />
+		<Text key="Tree View" value="Tree View" />
+	</Section>
+	<Section class="MySobek_HtmlSubwriter">
+		<Text key="Welcome Back XXX" value="&quot;Welcome back, {0}&quot;" />
+		<Text key="XXX Home" value="%1 Home" />
+	</Section>
+	<Section class="New_Group_And_Item_MySobekViewer">
+		<Text key="Above" value="above" />
+		<Text key="ACCEPT" value="ACCEPT" />
+		<Text key="ACTION" value="ACTION" />
+		<Text key="Add A New Item For This Package" value="Add a new item for this package" />
+		<Text key="Add Another Item" value="Add another item" />
+		<Text key="An Email Has Been Sent To The Programmer Who Will Attempt To Correct Your Issue You Should Be Contacted Within The Next 2448 Hours Regarding This Issue" value="An email has been sent to the programmer who will attempt to correct your issue.  You should be contacted within the next 24-48 hours regarding this issue" />
+		<Text key="An Email Has Been Sent To You With The New Item Information" value="An email has been sent to you with the new item information." />
+		<Text key="BACK" value="BACK" />
+		<Text key="CANCEL" value="CANCEL" />
+		<Text key="CLEAR" value="CLEAR" />
+		<Text key="CONGRATULATIONS" value="CONGRATULATIONS" />
+		<Text key="Date" value="Date" />
+		<Text key="DATE UPLOADED" value="DATE UPLOADED" />
+		<Text key="Default Metadata" value="Default Metadata" />
+		<Text key="Edit This Item" value="Edit this item" />
+		<Text key="Enter A URL For This New Item" value="Enter a URL for this new item." />
+		<Text key="Enter The Basic Information To Describe Your New Item" value="Enter the basic information to describe your new item" />
+		<Text key="Enter URL" value="Enter URL" />
+		<Text key="FILENAME" value="FILENAME" />
+		<Text key="Item Description" value="Item Description" />
+		<Text key="My Account" value="My Account" />
+		<Text key="Once All Files Are Uploaded Press SUBMIT To Finish This Item" value="&quot;Once all files are uploaded, press SUBMIT to finish this item&quot;" />
+		<Text key="Once Complete Press SUBMIT To Finish This Item" value="&quot;Once complete, press SUBMIT to finish this item&quot;" />
+		<Text key="Once The URL Is Entered Press SUBMIT To Finish This Item" value="&quot;Once the URL is entered, press SUBMIT to finish this item.&quot;" />
+		<Text key="Once You Enter Any Files Andor URL Press SUBMIT To Finish This Item" value="&quot;Once you enter any files and/or URL, press SUBMIT to finish this item&quot;" />
+		<Text key="Ooops We Encountered A Problem" value="Ooops!! We encountered a problem!" />
+		<Text key="Permissions Agreement" value="Permissions Agreement" />
+		<Text key="Return To My Home" value="Return to my home" />
+		<Text key="Search Indexes May Take A Couple Minutes To Build At Which Time This Item Will Be Discoverable Through The Search Interface" value="&quot;Search indexes may take a couple minutes to build, at which time this item will be discoverable through the search interface&quot;" />
+		<Text key="SIZE" value="SIZE" />
+		<Text key="Step 1 Of XXX Confirm Template And Project" value="Step 1 of %1: Confirm Template and Project " />
+		<Text key="Step 1 Of XXX Grant Of Permission" value="Step 1 of %1: Grant of Permission" />
+		<Text key="SUBMIT" value="SUBMIT" />
+		<Text key="Template" value="Template" />
+		<Text key="The Following Errors Were Detected" value="The following errors were detected:" />
+		<Text key="The Following Files Are Already Uploaded For This Package And Will Be Included As Downloads" value="The following files are already uploaded for this package and will be included as downloads" />
+		<Text key="To Change Your Default XXX Select" value="&quot;To change your default %1, select&quot;" />
+		<Text key="Upload Files" value="Upload Files" />
+		<Text key="Upload Files Or Enter URL" value="Upload Files or Enter URL" />
+		<Text key="Upload The Related Files For Your New Item You Can Also Provide Labels For Each File Once They Are Uploaded" value="&quot;Upload the related files for your new item.  You can also provide labels for each file, once they are uploaded.&quot;" />
+		<Text key="Upload The Related Files Or Enter A URL For Your New Item You Can Also Provide Labels For Each File Once They Are Uploaded" value="&quot;Upload the related files or enter a URL for your new item.  You can also provide labels for each file, once they are uploaded&quot;" />
+		<Text key="User" value="User" />
+		<Text key="View All My Submitted Items" value="View all my submitted items" />
+		<Text key="View This Item" value="View this item" />
+		<Text key="You May Also Change Your Current XXX For This Submission" value="You may also change your current %1 for this submission." />
+		<Text key="You Must Read And Accept The Above Permissions Agreement To Continue" value="You must read and accept the above permissions agreement to continue." />
+		<Text key="You Must Read And Accept The Below Permissions To Continue" value="You must read and accept the below permissions to continue." />
+		<Text key="Your Item Has Been Successfully Added To The Digital Library And Will Appear Immediately" value="Your item has been successfully added to the digital library and will appear immediately." />
+	</Section>
+	<Section class="NewPassword_MySobekViewer">
+		<Text key="Change Your Password" value="Change your password" />
+		<Text key="Confirm New Password" value="Confirm New Password:" />
+		<Text key="Existing Password" value="Existing Password:" />
+		<Text key="New Password" value="New Password:" />
+		<Text key="New Passwords Do Not Match" value="New passwords do not match" />
+		<Text key="Password Must Be At Least Eight Digits" value="Password must be at least eight digits" />
+		<Text key="Please Enter Your Existing Password And Your New Password" value="Please enter your existing password and your new password." />
+		<Text key="Select And Confirm A New Password" value="Select and confirm a new password" />
+		<Text key="The Following Errors Were Detected" value="The following errors were detected:" />
+		<Text key="The New Password Cannot Match The Old Password" value="The new password cannot match the old password" />
+		<Text key="Unable To Change Password Verify Current Password" value="Unable to change password.  Verify current password." />
+		<Text key="You Are Required To Change Your Password To Continue" value="You are required to change your password to continue." />
+	</Section>
+	<Section class="Newspaper_Search_AggregationViewer">
+		<Text key="Full Citation" value="Full Citation" />
+		<Text key="Full Text" value="Full Text" />
+		<Text key="Go" value="Go" />
+		<Text key="In" value="in" />
+		<Text key="Location" value="Location" />
+		<Text key="Newspaper Title" value="Newspaper Title" />
+		<Text key="Search For" value="Search for:" />
+	</Section>
+	<Section class="No_Results_ResultsViewer">
+		<Text key="Consider Searching One Of The Following" value="Consider searching one of the following:" />
+		<Text key="One Found In The University Of Florida Library Catalog" value="One found in the University of Florida Library Catalog" />
+		<Text key="Online Resource" value="Online Resource" />
+		<Text key="Physical Holdings" value="Physical Holdings" />
+		<Text key="The Following Matches Were Found" value="The following matches were found:" />
+		<Text key="XXX Found In The University Of Florida Library Catalog" value="%1 found in the University of Florida Library Catalog" />
+		<Text key="XXX Result Found In XXX" value="{0} result found in {1}" />
+		<Text key="Your Search Returned No Results" value="Your search returned no results." />
+	</Section>
+	<Section class="No_Search_AggregationViewer">
+		<Text key="XXX Home" value="%1 Home" />
+	</Section>
+	<Section class="Page_Image_Upload_MySobekViewer">
+		<Text key="ACTION" value="ACTION" />
+		<Text key="CANCEL" value="CANCEL" />
+		<Text key="Cancel This And Remove The Recentely Uploaded Images" value="Cancel this and remove the recentely uploaded images" />
+		<Text key="Click Here To Add Download Files Instead" value="Click here to add download files instead." />
+		<Text key="DATE UPLOADED" value="DATE UPLOADED" />
+		<Text key="FILENAME" value="FILENAME" />
+		<Text key="Once All Images Are Uploaded Press SUBMIT To Finish This Item" value="&quot;Once all images are uploaded, press SUBMIT to finish this item&quot;" />
+		<Text key="SIZE" value="SIZE" />
+		<Text key="SUBMIT" value="SUBMIT" />
+		<Text key="Submit The Recently Uploaded Page Images And Complete The Process" value="Submit the recently uploaded page images and complete the process" />
+		<Text key="The Following Extensions Are Accepted" value="The following extensions are accepted" />
+		<Text key="The Following New Page Images Will Be Added To The Item Once You Click SUBMIT" value="The following new page images will be added to the item once you click SUBMIT" />
+		<Text key="Upload Page Images" value="Upload Page Images" />
+		<Text key="Upload The Page Images For Your Item You Will Then Be Directed To Manage The Pages And Divisions To Ensure The New Page Images Appear In The Correct Order And Are Reflected In The Table Of Contents" value="Upload the page images for your item.  You will then be directed to manage the pages and divisions to ensure the new page images appear in the correct order and are reflected in the table of contents." />
+	</Section>
+	<Section class="PagedResults_HtmlSubwriter">
+		<Text key="Add This To Your Saved Searches" value="Add this to your Saved Searches" />
+		<Text key="And" value="and" />
+		<Text key="Bibid Ascending" value="BibID Ascending" />
+		<Text key="Bibid Descending" value="BibID Descending" />
+		<Text key="Bookshelf View" value="Bookshelf View" />
+		<Text key="BRIEF" value="BRIEF" />
+		<Text key="Brief View" value="Brief View" />
+		<Text key="Browse" value="Browse" />
+		<Text key="Comments" value="Comments:" />
+		<Text key="Counties" value="counties" />
+		<Text key="Date Added" value="Date Added" />
+		<Text key="Date Ascending" value="Date Ascending" />
+		<Text key="Date Descending" value="Date Descending" />
+		<Text key="Description" value="Description:" />
+		<Text key="Enter Notes For This Browse" value="Enter notes for this browse" />
+		<Text key="Enter Notes For This Public Bookshelf" value="Enter notes for this public bookshelf" />
+		<Text key="Enter Notes For This Search" value="Enter notes for this search" />
+		<Text key="Enter The Email Inforamtion Below" value="Enter the email inforamtion below" />
+		<Text key="ERROR Encountered While Saving" value="ERROR encountered while saving!" />
+		<Text key="ERROR Encountered While Saving Your Search" value="ERROR encountered while saving your search!" />
+		<Text key="Export" value="Export" />
+		<Text key="HTML" value="HTML" />
+		<Text key="In" value="in " />
+		<Text key="Map View" value="Map View" />
+		<Text key="NARROW RESULTS BY" value="NARROW RESULTS BY" />
+		<Text key="Not" value="not" />
+		<Text key="One County" value="one county" />
+		<Text key="One Title" value="one title" />
+		<Text key="Or" value="or" />
+		<Text key="Plain Text" value="Plain Text" />
+		<Text key="Public Bookshelf" value="Public Bookshelf" />
+		<Text key="Rank" value="Rank" />
+		<Text key="Resulted In No Matching Flights" value="resulted in no matching flights." />
+		<Text key="Resulted In No Matching Records" value="resulted in no matching records." />
+		<Text key="Resulted In One Flight In" value="resulted in one flight in " />
+		<Text key="Resulted In One Item In" value="resulted in one item in " />
+		<Text key="Resulted In One Matching Flight" value="resulted in one matching flight." />
+		<Text key="Resulted In One Matching Record" value="resulted in one matching record." />
+		<Text key="Resulted In XXX Flights In" value="resulted in {0} flights in " />
+		<Text key="Resulted In XXX Items In" value="resulted in {0} items in" />
+		<Text key="Resulted In XXX Matching Flights" value="resulted in {0} matching flights." />
+		<Text key="Resulted In XXX Matching Records" value="resulted in {0} matching records." />
+		<Text key="Search" value="Search" />
+		<Text key="Search Has Been Saved To Your Saved Searches" value="Search has been saved to your saved searches." />
+		<Text key="Show Less" value="Show Less" />
+		<Text key="Show More" value="Show More" />
+		<Text key="Sort Alphabetically" value="Sort alphabetically" />
+		<Text key="Sort By" value="Sort by" />
+		<Text key="Sort By Frequency" value="Sort by frequency" />
+		<Text key="Table View" value="Table View" />
+		<Text key="THUMB" value="THUMB" />
+		<Text key="Thumbnail View" value="Thumbnail View" />
+		<Text key="Title" value="Title" />
+		<Text key="Titles" value="titles" />
+		<Text key="To" value="To:" />
+		<Text key="UNRECOGNIZED SEARCH" value="UNRECOGNIZED SEARCH" />
+		<Text key="XXX Items For Export" value="{1} items for export" />
+		<Text key="XXX XXX Of XXX Matching Coordinates" value="{0} - {1} of {2} matching coordinates" />
+		<Text key="XXX XXX Of XXX Matching Flights" value="{0} - {1} of {2} matching flights" />
+		<Text key="XXX XXX Of XXX Matching Titles" value="{0} - {1} of {2} matching titles" />
+		<Text key="Your Email Has Been Sent" value="Your email has been sent" />
+		<Text key="Your Geographic Search Of XXX" value="Your geographic search of {0}" />
+		<Text key="Your Search Of XXX For" value="Your search of {0} for " />
+	</Section>
+	<Section class="PDF_ItemViewer">
+		<Text key="Download This PDF" value="Download this PDF" />
+	</Section>
+	<Section class="Preferences_HtmlSubwriter">
+		<Text key="Default Sort" value="Default Sort:" />
+		<Text key="Default View" value="Default View:" />
+		<Text key="Language" value="Language:" />
+		<Text key="Preferences" value="Preferences" />
+		<Text key="Return" value="Return" />
+	</Section>
+	<Section class="Preferences_MySobekViewer">
+		<Text key="A Valid Email Is Required" value="A valid email is required" />
+		<Text key="Account Information" value="Account Information" />
+		<Text key="Account Information Name And Email Are Required For Each New Account" value="&quot;Account information, name, and email are required for each new account.&quot;" />
+		<Text key="Already Registered Xxxlog Onxxx" value="Already registered?  {0}Log on{1}." />
+		<Text key="An Account For That Email Address Already Exists" value="An account for that email address already exists." />
+		<Text key="CANCEL" value="CANCEL" />
+		<Text key="College" value="College" />
+		<Text key="Confirm Password" value="Confirm Password" />
+		<Text key="Current Affiliation Information" value="Current Affiliation Information" />
+		<Text key="Default Metadata" value="Default Metadata" />
+		<Text key="Default Rights" value="Default Rights" />
+		<Text key="Department" value="Department" />
+		<Text key="Edit Your Account Preferences" value="Edit Your Account Preferences" />
+		<Text key="Email" value="Email" />
+		<Text key="Family Names" value="Family Name(s)" />
+		<Text key="Firstgiven Names" value="First/Given Name(s)" />
+		<Text key="Given Names" value="Given Name(s)" />
+		<Text key="I Would Like To Be Able To Submit Materials Online Once Your Application To Submit Has Been Approved You Will Receive Email Notification" value="&quot;I would like to be able to submit materials online. (Once your application to submit has been approved, you will receive email notification)&quot;" />
+		<Text key="Language" value="Language" />
+		<Text key="Lastfamily Names" value="Last/Family Name(s)" />
+		<Text key="Nickname" value="Nickname" />
+		<Text key="Organizationuniversity" value="Organization/University" />
+		<Text key="Other Preferences" value="Other Preferences" />
+		<Text key="Password" value="Password" />
+		<Text key="Password Must Be At Least Eight Digits" value="Password must be at least eight digits" />
+		<Text key="Passwords Do Not Match" value="Passwords do not match" />
+		<Text key="Personal Information" value="Personal Information" />
+		<Text key="Project" value="Project" />
+		<Text key="Register For XXX" value="Register for {0}" />
+		<Text key="Registration For XXX Is Free And Open To The Public Enter Your Information Below To Be Instantly Registered" value="Registration for {0} is free and open to the public.  Enter your information below to be instantly registered." />
+		<Text key="Rights Statement Truncated To 1000 Characters" value="Rights statement truncated to 1000 characters." />
+		<Text key="Select And Confirm A Password" value="Select and confirm a password" />
+		<Text key="Selfsubmittal Preferences" value="Self-Submittal Preferences" />
+		<Text key="Send Me An Email When I Submit New Items" value="Send me an email when I submit new items" />
+		<Text key="Send Me Monthly Usage Statistics For My Items" value="Send me monthly usage statistics for my items" />
+		<Text key="Template" value="Template" />
+		<Text key="That Username Is Taken Please Choose Another" value="That username is taken.  Please choose another." />
+		<Text key="The Following Errors Were Detected" value="The following errors were detected:" />
+		<Text key="These Are The Default Rights You Give For Sharing Repurposing Or Remixing Your Item To Other Users You Can Set This With Each New Item You Submit But This Will Be The Default That Appears" value="&quot;(These are the default rights you give for sharing, repurposing, or remixing your item to other users. You can set this with each new item you submit, but this will be the default that appears.)&quot;" />
+		<Text key="Ufids Are Always Eight Digits" value="UFIDs are always eight digits" />
+		<Text key="Ufids Are Always Numeric" value="UFIDs are always numeric" />
+		<Text key="Unit" value="Unit" />
+		<Text key="Username" value="UserName" />
+		<Text key="Username Must Be At Least Eight Digits" value="Username must be at least eight digits" />
+		<Text key="XXX Optionally Provides Access Through Gatorlink" value="%1 (optionally provides access through Gatorlink)" />
+		<Text key="You May Also Select A A Title Explanation Of Different Creative Commons Licenses Href Httpcreativecommonsorgaboutlicenses Creative Commons License A Option Below" value="&quot;You may also select a &lt;a title=&quot;&quot;Explanation of different creative commons licenses.&quot;&quot; href=&quot;&quot;http://creativecommons.org/about/licenses/&quot;&quot;&gt;Creative Commons License&lt;/a&gt; option below.&quot;" />
+	</Section>
+	<Section class="Print_Item_HtmlSubwriter">
+		<Text key="Site" value="Site:" />
+		<Text key="Title" value="Title:" />
+		<Text key="URL" value="URL:" />
+	</Section>
+	<Section class="PrintForm_Fragment_ItemViewer">
+		<Text key="Cancel" value="Cancel" />
+		<Text key="Citation Only" value="Citation only" />
+		<Text key="Close" value="Close" />
+		<Text key="From" value="from" />
+		<Text key="Full Citation" value="Full citation" />
+		<Text key="Include Brief Citation" value="Include brief citation?" />
+		<Text key="Print" value="Print" />
+		<Text key="Print A Range Of Pages" value="Print a range of pages" />
+		<Text key="Print All Pages" value="Print all pages" />
+		<Text key="Print Current Page" value="Print current page" />
+		<Text key="Print Current View" value="Print current view" />
+		<Text key="Print Options" value="Print Options" />
+		<Text key="Print Thumbnails" value="Print thumbnails" />
+		<Text key="Select The Options Below To Print This Item" value="Select the options below to print this item" />
+		<Text key="To" value="to" />
+	</Section>
+	<Section class="Private_Items_AggregationViewer">
+		<Text key="Below Is The List Of All Items Linked To This Aggregation Which Are Either Private In Process Or Dark" value="Below is the list of all items linked to this aggregation which are either private (in process) or dark." />
+		<Text key="Bibid VID" value="BibID / VID" />
+		<Text key="Dated XXX" value="Dated %1" />
+		<Text key="Days Ago" value="% days ago" />
+		<Text key="ERROR PULLING INFORMATION FROM DATABASE" value="ERROR PULLING INFORMATION FROM DATABASE" />
+		<Text key="First Page" value="First Page" />
+		<Text key="Last Activity" value="Last Activity" />
+		<Text key="Last Activity Date Most Recent First" value="Last Activity Date (most recent first)" />
+		<Text key="Last Activity Date Oldest First" value="Last Activity Date (oldest first)" />
+		<Text key="Last Milestone" value="Last Milestone" />
+		<Text key="Last Milestone Date Most Recent First" value="Last Milestone Date (most recent first)" />
+		<Text key="Last Milestone Date Oldest First" value="Last Milestone Date (oldest first)" />
+		<Text key="Last Page" value="Last Page" />
+		<Text key="Next Page" value="Next Page" />
+		<Text key="Online Completed" value="online completed" />
+		<Text key="Previous Page" value="Previous Page" />
+		<Text key="Private And Dark Items" value="Private and Dark Items" />
+		<Text key="Processed" value="processed" />
+		<Text key="Quality Control" value="quality control" />
+		<Text key="Record Created" value="record created" />
+		<Text key="Scanned" value="scanned" />
+		<Text key="There Are A Total Of XXX Items In One Title" value="There are a total of %1 items in one title." />
+		<Text key="There Are A Total Of XXX Items In XXX Titles" value="There are a total of %1 items in %2 titles." />
+		<Text key="There Are A Total Of XXX Titles" value="There are a total of %1 titles." />
+		<Text key="There Is Only One Matching Item" value="There is only one matching item." />
+		<Text key="This Collection Does Not Include Any PRIVATE Or DARK Items" value="This collection does not include any PRIVATE or DARK items." />
+		<Text key="Title" value="Title" />
+		<Text key="Title VID" value="Title / VID" />
+		<Text key="Unknown Milestone" value="unknown milestone" />
+		<Text key="XXX Volumes Out Of XXX Total Volumes" value="%1 volumes out of %2 total volumes" />
+	</Section>
+	<Section class="Public_Folder_HtmlSubwriter">
+		<Text key="Public Bookshelf" value="Public Bookshelf" />
+		<Text key="XXX Home" value="%1 Home" />
+	</Section>
+	<Section class="QC_ItemViewer">
+		<Text key="After" value="After" />
+		<Text key="All Thumbnails" value="All Thumbnails" />
+		<Text key="Automatic Numbering" value="Automatic numbering" />
+		<Text key="Before" value="Before" />
+		<Text key="Blur Needed" value="Blur needed" />
+		<Text key="CANCEL" value="CANCEL" />
+		<Text key="Cancel This Move" value="Cancel this move" />
+		<Text key="Check For The Beginning Of A New Division Type" value="Check for the beginning of a new division type" />
+		<Text key="Choose Main Thumbnail" value="Choose main thumbnail" />
+		<Text key="Clear All Reorder Pages" value="Clear All &amp; Reorder Pages" />
+		<Text key="Clear Pagination" value="Clear Pagination" />
+		<Text key="Comments" value="Comments:" />
+		<Text key="Complete" value="Complete" />
+		<Text key="Critical Volume Error" value="Critical Volume error" />
+		<Text key="Delete Multiple Pages" value="Delete multiple pages" />
+		<Text key="Delete This Page And Related Files" value="Delete this page and related files" />
+		<Text key="Disabled" value="Disabled" />
+		<Text key="Division" value="Division" />
+		<Text key="Drag Drop Pages" value="Drag &amp; drop pages" />
+		<Text key="Edit" value="Edit" />
+		<Text key="Enabled" value="Enabled" />
+		<Text key="Enabled With Confirmation" value="Enabled with confirmation" />
+		<Text key="Entire Document" value="Entire document" />
+		<Text key="FILE ERROR" value="FILE ERROR" />
+		<Text key="Go To" value="Go to:" />
+		<Text key="Go To Thumbnail" value="Go to thumbnail:" />
+		<Text key="Help" value="Help" />
+		<Text key="Image Quality Error" value="Image Quality Error" />
+		<Text key="Incorrect Volume" value="Incorrect Volume" />
+		<Text key="Invalid Images" value="Invalid Images" />
+		<Text key="Large Thumbnails" value="Large thumbnails" />
+		<Text key="Mark An Error On This Page Image" value="Mark an error on this page image" />
+		<Text key="Medium Thumbnails" value="Medium thumbnails" />
+		<Text key="Missing Icon" value="Missing icon" />
+		<Text key="Missing Thumbnail" value="Missing thumbnail" />
+		<Text key="Move Multiple Pages" value="Move multiple pages" />
+		<Text key="MOVE SELECTED PAGES" value="MOVE SELECTED PAGES" />
+		<Text key="No Automatic Numbering" value="No automatic numbering" />
+		<Text key="No File Error" value="No File error" />
+		<Text key="No Volume Error" value="No Volume Error" />
+		<Text key="Open This Page In A New Window" value="Open this page in a new window" />
+		<Text key="Orientation Error" value="Orientation error" />
+		<Text key="Other Specify" value="Other (specify)" />
+		<Text key="Overcropped" value="Overcropped" />
+		<Text key="Page" value="Page" />
+		<Text key="Pagination" value="Pagination" />
+		<Text key="PREVIEW" value="PREVIEW" />
+		<Text key="Processing Required" value="Processing required" />
+		<Text key="Recapture Required" value="Recapture required" />
+		<Text key="Resource" value="Resource" />
+		<Text key="Save" value="Save" />
+		<Text key="Save The Resource And Apply Your Changes" value="Save the resource and apply your changes" />
+		<Text key="Save This Error" value="Save this error" />
+		<Text key="Settings" value="Settings" />
+		<Text key="Skew Error" value="Skew error" />
+		<Text key="Small Thumbnails" value="Small thumbnails" />
+		<Text key="Standard Cursor" value="Standard cursor" />
+		<Text key="SUBMIT" value="SUBMIT" />
+		<Text key="Technical Specification Error" value="Technical Specification Error" />
+		<Text key="Thumbnail Size" value="Thumbnail size" />
+		<Text key="Thumbnails Per Page" value="% Thumbnails per page" />
+		<Text key="Unblur Needed" value="Unblur needed" />
+		<Text key="Undercropped" value="Undercropped" />
+		<Text key="Upload New Page Image Files" value="Upload new page image files" />
+		<Text key="View" value="View" />
+		<Text key="View Directory" value="View Directory" />
+		<Text key="View METS" value="View METS" />
+		<Text key="View QC History" value="View QC History" />
+		<Text key="View Technical Image Information" value="View technical image information" />
+		<Text key="Within Same Division" value="Within same division" />
+	</Section>
+	<Section class="Related_Images_ItemViewer">
+		<Text key="All Thumbnails" value="All Thumbnails" />
+		<Text key="Go To Thumbnail" value="Go to thumbnail:" />
+		<Text key="Large" value="Large" />
+		<Text key="Large Thumbnails" value="Large thumbnails" />
+		<Text key="Medium" value="Medium" />
+		<Text key="Medium Thumbnails" value="Medium thumbnails" />
+		<Text key="MISSING THUMBNAIL" value="MISSING THUMBNAIL" />
+		<Text key="Page" value="Page" />
+		<Text key="Small" value="Small" />
+		<Text key="Small Thumbnails" value="Small thumbnails" />
+		<Text key="Switch To Large Thumbnails" value="Switch to large thumbnails" />
+		<Text key="Switch To Medium Thumbnails" value="Switch to medium thumbnails" />
+		<Text key="Switch To Small Thumbnails" value="Switch to small thumbnails" />
+		<Text key="Thumbnails Per Page" value="% Thumbnails per page" />
+	</Section>
+	<Section class="Rotating_Highlight_Search_AggregationViewer">
+		<Text key="Search Collection" value="Search Collection:" />
+	</Section>
+	<Section class="Saved_Searches_MySobekViewer">
+		<Text key="ACTIONS" value="ACTIONS" />
+		<Text key="Click To Delete This Saved Search" value="Click to delete this saved search" />
+		<Text key="Click To View This Search" value="Click to view this search" />
+		<Text key="Delete" value="delete" />
+		<Text key="My Saved Searches" value="My Saved Searches" />
+		<Text key="SAVED SEARCH" value="SAVED SEARCH" />
+		<Text key="You Do Not Have Any Saved Searches Or Browses Br Br To Add A Search Or Browse Use The ADD Button While Viewing The Results Of Your Search Or Browse" value="&quot;You do not have any saved searches or browses.&lt;br /&gt;&lt;br /&gt;To add a search or browse, use the ADD button while viewing the results of your search or browse.&quot;" />
+	</Section>
+	<Section class="Search_Results_HtmlSubwriter">
+		<Text key="Modify Your Search" value="Modify your search" />
+		<Text key="New Search" value="New Search" />
+	</Section>
+	<Section class="Send_Fragment_ItemViewer">
+		<Text key="Cancel" value="Cancel" />
+		<Text key="Close" value="Close" />
+		<Text key="Comments" value="Comments:" />
+		<Text key="Enter The Email Information Below" value="Enter the email information below" />
+		<Text key="Format" value="Format:" />
+		<Text key="HTML" value="HTML:" />
+		<Text key="Plain Text" value="Plain Text" />
+		<Text key="Send" value="Send" />
+		<Text key="Send This Item To A Friend" value="Send this Item to a Friend" />
+		<Text key="Text" value="Text:" />
+		<Text key="To" value="To:" />
+		<Text key="You Cannot Send To More Than XXX Email Addresses Simultaneously" value="You cannot send to more than %1 email addresses simultaneously." />
+		<Text key="You Have Reached Your Daily Quota For Emails" value="You have reached your daily quota for emails." />
+		<Text key="You Must Wait XXX Seconds Between Sending Emails" value="You must wait %1 seconds between sending emails." />
+	</Section>
+	<Section class="Share_Fragment_ItemViewer">
+		<Text key="Add To Favorites" value="Add to favorites" />
+	</Section>
+	<Section class="Static_Browse_Info_AggregationViewer">
+		<Text key="Author" value="Author:" />
+		<Text key="Date" value="Date:" />
+		<Text key="Description" value="Description:" />
+		<Text key="Edit Content" value="edit content" />
+		<Text key="Edit This Home Text" value="Edit this home text" />
+		<Text key="HTML Head Info" value="HTML Head Info:" />
+		<Text key="Keywords" value="Keywords:" />
+		<Text key="Show Header Data Advanced" value="show header data (advanced)" />
+		<Text key="The Data Below Describes The Content Of This Static Child Page And Is Used By Some Search Engine Indexing Algorithms By Default It Will Not Show In Text Of The Page But Will Be Included In The Head Tag Of The Page" value="&quot;The data below describes the content of this static child page and is used by some search engine indexing algorithms.  By default, it will not show in text of the page, but will be included in the head tag of the page.&quot;" />
+		<Text key="Title" value="Title:" />
+	</Section>
+	<Section class="Statistics_HtmlSubwriter">
+		<Text key="Advanced Search" value="Advanced Search" />
+		<Text key="ALL COLLECTION GROUPS" value="ALL COLLECTION GROUPS" />
+		<Text key="Arbitrary Dates" value="Arbitrary Dates" />
+		<Text key="Below Are The Details About The Specialized Views For Items Aggregated At The Collection Levels" value="Below are the details about the specialized views for items aggregated at the collection levels." />
+		<Text key="Below Are The Most Up To Date Numbers For Overall Utilization Of XXX The First Table Shows The Summary Of Views Against All Collections The Second Table Includes The Details For Specialized Itemlevel Views" value="Below are the most up to date numbers for overall utilization of %1.  The first table shows the summary of views against all collections.  The second table includes the details for specialized item-level views." />
+		<Text key="Below Are The Number Of Items In Each Collection And Subcollection" value="Below are the number of items in each collection and subcollection." />
+		<Text key="Below Are The Number Of Titles Items And Pages In Each Collection And Subcollection The Quotinitialquot Values Are The Values That Were Present At Midnight On XXX Before Any New Items Were Processed That Day" value="&quot;Below are the number of titles, items, and pages in each collection and subcollection.  The &quot;INITIAL&quot; values are the values that were present at midnight on %1 before any new items were processed that day.&quot;" />
+		<Text key="Below Is The Collection And Itemlevel Details For Your Provided Date Range In Commaseperated Value Form To Use The Data Below Cut And Paste It Into A CSV Or Text File The Resulting File Can Be Opened In A Variety Of Applications Including Openoffice And Microsoft Excel" value="&quot;Below is the collection and item-level details for your provided date range in comma-seperated value form.  To use the data below, cut and paste it into a CSV or text file.  The resulting file can be opened in a variety of applications, including OpenOffice and Microsoft Excel.&quot;" />
+		<Text key="Below Is The History Collection Information Included In Commaseperated Value Form To Use The Data Below Cut And Paste It Into A CSV Or Text File The Resulting File Can Be Opened In A Variety Of Applications Including Openoffice And Microsoft Excel" value="&quot;Below is the history collection information included in comma-seperated value form.  To use the data below, cut and paste it into a CSV or text file.  The resulting file can be opened in a variety of applications, including OpenOffice and Microsoft Excel.&quot;" />
+		<Text key="Below Is The Item Count With Fiscal Year To Date Information Included In Commaseperated Value Form To Use The Data Below Cut And Paste It Into A CSV Or Text File The Resulting File Can Be Opened In A Variety Of Applications Including Openoffice And Microsoft Excel" value="&quot;Below is the item count with fiscal year to date information included in comma-seperated value form.  To use the data below, cut and paste it into a CSV or text file.  The resulting file can be opened in a variety of applications, including OpenOffice and Microsoft Excel.&quot;" />
+		<Text key="Bibid" value="BibID" />
+		<Text key="Brief View" value="Brief View" />
+		<Text key="Browse Partners" value="Browse Partners" />
+		<Text key="Browsed The Items Or Information About The Collection" value="browsed the items or information about the collection" />
+		<Text key="BROWSES" value="BROWSES" />
+		<Text key="By Name" value="By Name" />
+		<Text key="Citation Views" value="Citation Views" />
+		<Text key="Click Here To View The Most Commonly Accessed ITEMS" value="Click here to view the most commonly accessed ITEMS" />
+		<Text key="Click Here To View The Most Commonly Accessed TITLES" value="Click here to view the most commonly accessed TITLES" />
+		<Text key="CODES" value="CODES" />
+		<Text key="COLL CODE" value="COLL CODE" />
+		<Text key="Collection Groups" value="Collection Groups" />
+		<Text key="Collection Hierarchy" value="Collection Hierarchy" />
+		<Text key="Collection History" value="Collection History" />
+		<Text key="Collections" value="Collections" />
+		<Text key="Collections By Date" value="Collections by Date" />
+		<Text key="Defined Terms" value="Defined Terms" />
+		<Text key="Definitions" value="Definitions" />
+		<Text key="Download Views" value="Download Views" />
+		<Text key="Export As CSV" value="Export as CSV" />
+		<Text key="Flash Views" value="Flash Views" />
+		<Text key="For The Number Of Times Collections Were Viewed Or Searched See Collections By Date" value="&quot;For the number of times collections were viewed or searched, see Collections by Date.&quot;" />
+		<Text key="For The Specialized Itemlevel View Details See Item Views By Date" value="&quot;For the specialized item-level view details, see Item Views by Date.&quot;" />
+		<Text key="From" value="From:" />
+		<Text key="FYTD Growth View" value="FYTD Growth View" />
+		<Text key="FYTD ITEMS" value="FYTD ITEMS" />
+		<Text key="FYTD PAGES" value="FYTD PAGES" />
+		<Text key="FYTD TITLES" value="FYTD TITLES" />
+		<Text key="GROUP CODE" value="GROUP CODE" />
+		<Text key="INITIAL ITEMS" value="INITIAL ITEMS" />
+		<Text key="INITIAL PAGES" value="INITIAL PAGES" />
+		<Text key="INITIAL TITLES" value="INITIAL TITLES" />
+		<Text key="Item Count" value="Item Count" />
+		<Text key="Item Count And Growth" value="Item Count and Growth" />
+		<Text key="ITEM VIEWS" value="ITEM VIEWS" />
+		<Text key="Item Views By Date" value="Item Views by Date" />
+		<Text key="ITEMS" value="ITEMS" />
+		<Text key="JPEG Views" value="JPEG Views" />
+		<Text key="List View" value="List View" />
+		<Text key="MAIN PAGES" value="MAIN PAGES" />
+		<Text key="Map Views" value="Map Views" />
+		<Text key="MONTH" value="MONTH" />
+		<Text key="Most Accessed Items" value="Most Accessed Items" />
+		<Text key="Most Accessed Titles" value="Most Accessed Titles" />
+		<Text key="NAME" value="NAME" />
+		<Text key="Navigated To The Collection Main Pages" value="navigated to the collection main pages" />
+		<Text key="NO ITEM COUNT AVAILABLE" value="NO ITEM COUNT AVAILABLE" />
+		<Text key="NO STATISTICS FOUND FOR THAT DATE RANGE" value="NO STATISTICS FOUND FOR THAT DATE RANGE" />
+		<Text key="NO USAGE STATISTICS EXIST FOR YOUR SELECTION" value="NO USAGE STATISTICS EXIST FOR YOUR SELECTION" />
+		<Text key="NUMBER" value="NUMBER" />
+		<Text key="Overall Stats" value="Overall Stats" />
+		<Text key="PAGES" value="PAGES" />
+		<Text key="Performed Searches Against The Items Contained In The Collection" value="performed searches against the items contained in the collection" />
+		<Text key="Recent Searches" value="Recent Searches" />
+		<Text key="Recent Searches In XXX" value="Recent searches in %1" />
+		<Text key="Resource Count In XXX" value="Resource count in %1" />
+		<Text key="SEARCH RESULTS" value="SEARCH RESULTS" />
+		<Text key="Select Collection" value="Select Collection" />
+		<Text key="Selected Collection" value="Selected Collection" />
+		<Text key="Selected Date Range" value="Selected Date Range" />
+		<Text key="Standard View" value="Standard View" />
+		<Text key="Static Views" value="Static Views" />
+		<Text key="SUB CODE" value="SUB CODE" />
+		<Text key="Subcollections" value="SubCollections" />
+		<Text key="Summary By Collection" value="Summary by Collection" />
+		<Text key="Terms" value="Terms" />
+		<Text key="Text Searches" value="Text Searches" />
+		<Text key="The Data Below Shows Details For The Views That Occurred At Each Level Of The Collection Hierarchy Collection Groups Collections Subcollections" value="&quot;The data below shows details for the views that occurred at each level of the collection hierarchy (Collection Groups, Collections, SubCollections).&quot;" />
+		<Text key="The Data Below Shows The Collection History For The Selected Collection The First Table Shows The Summary Of All Views Of This Collection And Items Contained In The Collection The Second Table Includes The Details For Specialized Itemlevel Views" value="The data below shows the collection history for the selected collection.  The first table shows the summary of all views of this collection and items contained in the collection.  The second table includes the details for specialized item-level views." />
+		<Text key="The Data Below Shows The Most Commonly Accessed Items Within The Collection Above" value="The data below shows the most commonly accessed items within the collection above." />
+		<Text key="The Data Below Shows The Most Commonly Accessed Titles Within The Collection Above" value="The data below shows the most commonly accessed titles within the collection above." />
+		<Text key="The Definitions Page Provides More Details About The Statistics And Words Used Below" value="The Definitions page provides more details about the statistics and words used below." />
+		<Text key="The Following Terms Are Defined Below" value="The following terms are defined below:" />
+		<Text key="The Most Commonly Accessed Items Below Are Displayed For The Following Collection" value="The most commonly accessed items below are displayed for the following collection:" />
+		<Text key="The Most Commonly Accessed Items By Collection Appear Below" value="The most commonly accessed items by collection appear below." />
+		<Text key="The Most Commonly Accessed Titles Below Are Displayed Is For The Following Collection" value="The most commonly accessed titles below are displayed is for the following collection:" />
+		<Text key="The Most Commonly Utilized Titles By Collection Appear Below" value="The most commonly utilized titles by collection appear below." />
+		<Text key="The Quotaddedquot Values Are The Number Of Titles Items And Pages That Were Added Between XXX And XXX Inclusive" value="&quot; The &quot;ADDED&quot; values are the number of titles, items, and pages that were added between %1 and %2 inclusive.&quot;" />
+		<Text key="The Title Count Item Count And Page Count Appear Below For The Following Two Arbitrary Dates" value="&quot;The title count, item count, and page count appear below for the following two arbitrary dates:&quot;" />
+		<Text key="The Usage Displayed Is For The Following Collection" value="The usage displayed is for the following collection:" />
+		<Text key="The Usage For All Items Appears Below For The Following Date Range" value="The usage for all items appears below for the following date range:" />
+		<Text key="The Usage For All The Collections Appears Below For The Following Data Range" value="The usage for all the collections appears below for the following data range:" />
+		<Text key="These Statistics Show The Number Of Times Users" value="These statistics show the number of times users:" />
+		<Text key="This Option Allows The Complete Title Count Item Count And Page Count To Be Viewed For A Previous Time And To Additionally See The Growth Between Two Arbitrary Dates" value="&quot;This option allows the complete title count, item count, and page count to be viewed for a previous time and to additionally see the growth between two arbitrary dates.&quot;" />
+		<Text key="Thumbnail Views" value="Thumbnail Views" />
+		<Text key="Time" value="Time" />
+		<Text key="Title" value="Title" />
+		<Text key="TITLE VIEWS" value="TITLE VIEWS" />
+		<Text key="TITLES" value="TITLES" />
+		<Text key="Titles And Items" value="Titles and Items" />
+		<Text key="To" value="To:" />
+		<Text key="To Change The Collection Shown Choose The Collection Above And Hit The GO Button" value="&quot;To change the collection shown, choose the collection above and hit the GO button.&quot;" />
+		<Text key="To Change The Date Shown Choose Your Dates Above And Hit The GO Button" value="&quot;To change the date shown, choose your dates above and hit the GO button.&quot;" />
+		<Text key="To Change The Dates Shown Choose Your Dates Above And Hit The GO Button" value="&quot;To change the dates shown, choose your dates above and hit the GO button.&quot;" />
+		<Text key="Top Titles" value="Top Titles" />
+		<Text key="TOTAL" value="TOTAL" />
+		<Text key="TOTAL VIEWS" value="TOTAL VIEWS" />
+		<Text key="Tree View" value="Tree View" />
+		<Text key="Type" value="Type" />
+		<Text key="Usage History For A Single Collection Is Displayed Below This History Includes Views Of The Collection And Views Of The Items Within The Collections" value="Usage history for a single collection is displayed below. This history includes views of the collection and views of the items within the collections." />
+		<Text key="Usage Statistics" value="Usage Statistics" />
+		<Text key="Usage Statistics For XXX" value="Usage statistics for %1" />
+		<Text key="VID" value="VID" />
+		<Text key="Viewed Titles And Items Contained Within The Collection" value="viewed titles and items contained within the collection" />
+		<Text key="Views" value="Views" />
+		<Text key="VISITS" value="VISITS" />
+		<Text key="Zoomable Views" value="Zoomable Views" />
+	</Section>
+	<Section class="Street_ItemViewer">
+		<Text key="Click" value="Click" />
+		<Text key="Here" value="here" />
+		<Text key="Index Of Streets" value="Index of Streets" />
+		<Text key="To Report This Issue" value=" to report this issue." />
+		<Text key="UNABLE TO LOAD STREETS FROM DATABASE" value="UNABLE TO LOAD STREETS FROM DATABASE" />
+	</Section>
+	<Section class="Table_ResultsViewer">
+		<Text key="Date" value="Date" />
+		<Text key="No" value="No. " />
+		<Text key="Title" value="Title" />
+	</Section>
+	<Section class="Text_ItemViewer">
+		<Text key="No Text File Exists For This Page" value="No text file exists for this page" />
+		<Text key="No Text Is Recorded For This Page" value="No text is recorded for this page" />
+		<Text key="Unknown Error While Retrieving Text" value="Unknown error while retrieving text" />
+	</Section>
+	<Section class="Text_MainWriter">
+		<Text key="Bibid" value="BibID" />
+		<Text key="Default_Collection" value="Default_Collection" />
+		<Text key="File_Root" value="File_Root" />
+		<Text key="Greenstone_Code" value="Greenstone_Code" />
+		<Text key="Group" value="Group" />
+		<Text key="GROUP Table" value="GROUP table" />
+		<Text key="Grouptitle" value="GroupTitle" />
+		<Text key="ICON Table" value="ICON table" />
+		<Text key="Icon_Name" value="Icon_Name" />
+		<Text key="Icon_URL" value="Icon_URL" />
+		<Text key="Icons" value="Icons" />
+		<Text key="INTERFACE Table" value="INTERFACE table" />
+		<Text key="Invalid Group" value="Invalid Group" />
+		<Text key="INVALID ITEM INDICATED" value="INVALID ITEM INDICATED" />
+		<Text key="Itemid" value="ItemID" />
+		<Text key="Items" value="Items" />
+		<Text key="Level1_Index" value="Level1_Index" />
+		<Text key="Level1_Text" value="Level1_Text" />
+		<Text key="Level2_Index" value="Level2_Index" />
+		<Text key="Level2_Text" value="Level2_Text" />
+		<Text key="Level3_Index" value="Level3_Index" />
+		<Text key="Level3_Text" value="Level3_Text" />
+		<Text key="Level4_Index" value="Level4_Index" />
+		<Text key="Level4_Text" value="Level4_Text" />
+		<Text key="Level5_Index" value="Level5_Index" />
+		<Text key="Level5_Text" value="Level5_Text" />
+		<Text key="Link" value="Link" />
+		<Text key="Skins" value="Skins" />
+		<Text key="TEXT WRITER UNKNOWN MODE" value="TEXT WRITER - UNKNOWN MODE" />
+		<Text key="Title" value="Title" />
+		<Text key="Type" value="Type" />
+	</Section>
+	<Section class="Text_Search_ItemViewer">
+		<Text key="AND" value="AND" />
+		<Text key="AND NOT" value="AND NOT" />
+		<Text key="First" value="First" />
+		<Text key="First Page" value="First Page" />
+		<Text key="Last" value="Last" />
+		<Text key="Last Page" value="Last Page" />
+		<Text key="Matching Pages" value="matching pages" />
+		<Text key="Next" value="Next" />
+		<Text key="Next Page" value="Next Page" />
+		<Text key="No Matching Pages" value="no matching pages" />
+		<Text key="OR" value="OR " />
+		<Text key="Previous" value="Previous" />
+		<Text key="Previous Page" value="Previous Page" />
+		<Text key="Resulted In" value="resulted in" />
+		<Text key="Search This Document" value="Search this document" />
+		<Text key="You Can Expand Your Results By Searching For" value="You can expand your results by searching for" />
+		<Text key="You Can Restrict Your Results By Searching For" value="You can restrict your results by searching for" />
+		<Text key="Your Search Within This Document For" value="Your search within this document for " />
+	</Section>
+	<Section class="Thumbnail_ResultsViewer">
+		<Text key="Access Restricted" value="Access Restricted" />
+		<Text key="Issue" value="issue" />
+		<Text key="Issues" value="issues" />
+		<Text key="Volume" value="volume" />
+		<Text key="Volumes" value="volumes" />
+	</Section>
+	<Section class="TOC_ItemViewer">
+		<Text key="Table Of Contents" value="Table of Contents" />
+	</Section>
+	<Section class="Tracking_ItemViewer">
+		<Text key="Adobe Acrobat Document" value="Adobe Acrobat Document" />
+		<Text key="Archival TIFF Image" value="Archival TIFF image" />
+		<Text key="Archived Date" value="Archived Date" />
+		<Text key="ARCHIVED FILE INFORMATION" value="ARCHIVED FILE INFORMATION" />
+		<Text key="Archived Remotely FDA" value="Archived Remotely (FDA)" />
+		<Text key="Archives" value="Archives" />
+		<Text key="ARCHIVING MILESTONES" value="ARCHIVING MILESTONES" />
+		<Text key="Backup File" value="Backup File" />
+		<Text key="Born Digital" value="Born Digital" />
+		<Text key="CD Number" value="CD Number" />
+		<Text key="CDDVD ARCHIVE" value="CD/DVD ARCHIVE" />
+		<Text key="Citationonly METS File" value="Citation-only METS File" />
+		<Text key="Completed Date" value="Completed Date" />
+		<Text key="Date Burned" value="Date Burned" />
+		<Text key="Date Modified" value="Date Modified" />
+		<Text key="Digital Acquisition" value="Digital Acquisition" />
+		<Text key="DIGITIZATION MILESTONES" value="DIGITIZATION MILESTONES" />
+		<Text key="Directory" value="Directory" />
+		<Text key="Disposition Advice" value="Disposition Advice" />
+		<Text key="Disposition Date" value="Disposition Date" />
+		<Text key="FDA Ingest Report" value="FDA Ingest Report" />
+		<Text key="File Range" value="File Range" />
+		<Text key="Filename" value="Filename" />
+		<Text key="History" value="History" />
+		<Text key="Images" value="Images" />
+		<Text key="ITEM HAS NO ARCHIVE INFORMATION" value="ITEM HAS NO ARCHIVE INFORMATION" />
+		<Text key="ITEM HAS NO HISTORY" value="ITEM HAS NO HISTORY" />
+		<Text key="ITEM HISTORY" value="ITEM HISTORY" />
+		<Text key="ITEM IS NOT ARCHIVED TO MEDIA" value="ITEM IS NOT ARCHIVED TO MEDIA" />
+		<Text key="JPEG Image" value="JPEG image" />
+		<Text key="JPEG2000 Zoomable Image" value="JPEG2000 Zoomable image" />
+		<Text key="Last Write Date" value="Last Write Date" />
+		<Text key="Locally Stored On CD Or Tape" value="Locally Stored on CD or Tape" />
+		<Text key="Location Notes" value="Location / Notes" />
+		<Text key="MARC XML File" value="MARC XML File" />
+		<Text key="Materials Received" value="Materials Received" />
+		<Text key="Media" value="Media" />
+		<Text key="METADATA FILES" value="METADATA FILES" />
+		<Text key="Microsoft Office Excel Worksheet" value="Microsoft Office Excel Worksheet" />
+		<Text key="Microsoft Office Powerpoint Presentation" value="Microsoft Office Powerpoint Presentation" />
+		<Text key="Microsoft Office Word Document" value="Microsoft Office Word Document" />
+		<Text key="Milestones" value="Milestones" />
+		<Text key="Name" value="Name" />
+		<Text key="NOT ARCHIVED" value="NOT ARCHIVED" />
+		<Text key="Online Complete" value="Online Complete" />
+		<Text key="OTHER FILES" value="OTHER FILES" />
+		<Text key="PAGE FILES" value="PAGE FILES" />
+		<Text key="PHYSICAL MATERIAL MILESTONES" value="PHYSICAL MATERIAL MILESTONES" />
+		<Text key="PHYSICAL MATERIAL RELATED FIELDS" value="PHYSICAL MATERIAL RELATED FIELDS" />
+		<Text key="Postacquisition Processing" value="Post-Acquisition Processing" />
+		<Text key="Previous METS File Version" value="Previous METS File Version" />
+		<Text key="Quality Control Performed" value="Quality Control Performed" />
+		<Text key="Shockwave Flash Object" value="Shockwave Flash Object" />
+		<Text key="Size" value="Size" />
+		<Text key="Sobekcm Service METS File" value="SobekCM Service METS File" />
+		<Text key="Text File" value="Text file" />
+		<Text key="Thumbnail Image" value="Thumbnail image" />
+		<Text key="Tracking Box" value="Tracking Box" />
+		<Text key="Tracking Information" value="Tracking Information" />
+		<Text key="Type" value="Type" />
+		<Text key="User" value="User" />
+		<Text key="Usersubmitted METS File" value="User-submitted METS File" />
+		<Text key="Workflow Name" value="Workflow Name" />
+		<Text key="XML Document" value="XML Document" />
+	</Section>
+	<Section class="URL_Email_Helper">
+		<Text key="Item From XXX" value="Item from %1" />
+		<Text key="Page From XXX" value="Page from %1" />
+		<Text key="Search Results From XXX" value="Search results from %1" />
+		<Text key="Title XXX" value="Title: %1" />
+		<Text key="XXX Wanted You To See These Search Results On XXX" value="%1 wanted you to see these search results on %2." />
+		<Text key="XXX Wanted You To See These Search Results On XXX And Included The Following Comments" value="%1 wanted you to see these search results on %2 and included the following comments." />
+		<Text key="XXX Wanted You To See This On XXX" value="%1 wanted you to see this on %2" />
+		<Text key="XXX Wanted You To See This Page On XXX" value="%1 wanted you to see this page on %2." />
+		<Text key="XXX Wanted You To See This Page On XXX And Included The Following Comments" value="%1 wanted you to see this page on %2 and included the following comments." />
+		<Text key="XXX Wanted You To See This XXX On XXX And Included The Following Comments" value="%1 wanted you to see this %2 on %3 and included the following comments" />
+		<Text key="XXX XXX From XXX" value="&quot;%1,%2 from %3&quot;" />
+	</Section>
+	<Section class="Usage_Statistics_AggregationViewer">
+		<Text key="Bibid" value="BibID" />
+		<Text key="Browses" value="Browses" />
+		<Text key="Citation Views" value="Citation Views" />
+		<Text key="Collection Groups" value="Collection Groups" />
+		<Text key="Collection Hierarchy" value="Collection Hierarchy" />
+		<Text key="Collection Views" value="Collection Views" />
+		<Text key="Collections" value="Collections" />
+		<Text key="Date" value="Date" />
+		<Text key="Definitions" value="Definitions" />
+		<Text key="Definitions Of Terms Used" value="Definitions of Terms Used" />
+		<Text key="Definitions Page Provides More Details About The Statistics And Words Used Below" value="Definitions page provides more details about the statistics and words used below." />
+		<Text key="Download Views" value="Download Views" />
+		<Text key="Flash Views" value="Flash Views" />
+		<Text key="History Of Collectionlevel Usage" value="History of Collection-Level Usage" />
+		<Text key="History Of Item Usage" value="History of Item Usage" />
+		<Text key="Item Views" value="Item Views" />
+		<Text key="JPEG Views" value="JPEG Views" />
+		<Text key="Main Pages" value="Main Pages" />
+		<Text key="Map Views" value="Map Views" />
+		<Text key="Most Accessed Items" value="Most Accessed Items" />
+		<Text key="Most Accessed Titles" value="Most Accessed Titles" />
+		<Text key="Search Results" value="Search Results" />
+		<Text key="Static Views" value="Static Views" />
+		<Text key="Subcollections" value="SubCollections" />
+		<Text key="Text Searches" value="Text Searches" />
+		<Text key="The Most Commonly Utilized Items For This Collection Appear Below" value="The most commonly utilized items for this collection appear below." />
+		<Text key="The Most Commonly Utilized Titles By Collection Appear Below" value="The most commonly utilized titles by collection appear below." />
+		<Text key="Thumbnail Views" value="Thumbnail Views" />
+		<Text key="Title" value="Title" />
+		<Text key="Title Views" value="Title Views" />
+		<Text key="Titles And Items" value="Titles and Items" />
+		<Text key="Top Items" value="Top Items" />
+		<Text key="Top Titles" value="Top Titles" />
+		<Text key="Total Views" value="Total Views" />
+		<Text key="Usage History For The Items Within This Collection Are Displayed Below" value="Usage history for the items within this collection are displayed below." />
+		<Text key="Usage History For This Collection Is Displayed Below This History Includes Just The Toplevel Views Of The Collection" value="Usage history for this collection is displayed below. This history includes just the top-level views of the collection." />
+		<Text key="VID" value="VID" />
+		<Text key="Views" value="Views" />
+		<Text key="Visits" value="Visits" />
+		<Text key="XXX Statistics" value="%1 Statistics" />
+		<Text key="Zoomable Views" value="Zoomable Views" />
+	</Section>
+	<Section class="Usage_Stats_Email_Helper">
+		<Text key="Below Are The Details For Your Top 10 Items See The Link Below To View Usage Statistics For All XXX Of Your Items" value="Below are the details for your top 10 items.  See the link below to view usage statistics for all %1 of your items." />
+		<Text key="Total To Date Since XXX" value="Total to date ( since %1 )" />
+		<Text key="Usage Statistics For Your Materials XXX" value="Usage statistics for your materials ( %1 )" />
+		<Text key="XXX Views" value="%1 views" />
+		<Text key="You Are Receiving This Message Because You Are A Contributor To A Digital Library Or A Collection Supported By The UF Libraries Including The Institutional Repository IRUF The UF Digital Collections UFDC The Digital Library Of The Caribbean Dloc And Many Others If You Do Not Wish To Receive Future Messages Please A Href Httpufdcufledumypreferences Edit Your Account Preferences A Online Or Send An Email To A Href Mailtoufdcuflibufledu Ufdcuflibufledu A P P Strong Usage Statistics For Your Materials DATE Strong P P NAME P P Thank You For Sharing Materials That Will Be Accessible Online And For Supporting Worldwide Open Access To Scholarly Creative And Other Works This Is A Usage Report For The Shared Materials P P Your Items Have Been Viewed TOTAL Times Since They Were Added And Were Viewed MONTHLY Times This Month P ITEMS P Em A Href Httpufdcufledumystats YEAR MONTH D Click Here To See The Usage Statistics For All Of Your Items Gtgt A Em P P Thank You For Sharing These Materials Please Contact Us With Any Questions A Href Mailtoufdcuflibufledu Ufdcuflibufledu A Or 3522732900" value="&quot;You are receiving this message because you are a contributor to a digital library or a collection supported by the UF Libraries, including the Institutional Repository (IR@UF), the UF Digital Collections (UFDC), the Digital Library of the Caribbean (dLOC), and many others. If you do not wish to receive future messages, please &lt;a href=&quot;http://ufdc.ufl.edu/my/preferences&quot;&gt;edit your account preferences&lt;/a&gt; online or send an email to &lt;a href=&quot;mailto:ufdc@uflib.ufl.edu&quot;&gt;ufdc@uflib.ufl.edu&lt;/a&gt;. &lt;/p&gt;&quot;&quot; + &quot;&quot;&lt;p&gt;&lt;strong&gt;Usage statistics for your materials ( &lt;%DATE%&gt; )&lt;/strong&gt;&lt;/p&gt;&quot;&quot; + &quot;&quot;&lt;p&gt;&lt;%NAME%&gt;,&lt;/p&gt;&quot;&quot; + &quot;&quot;&lt;p&gt;Thank you for sharing materials that will be accessible online and for supporting worldwide open access to scholarly, creative, and other works.  This is a usage report for the shared materials.&lt;/p&gt;&quot;&quot; + &quot;&quot;&lt;p&gt;Your items have been viewed &lt;%TOTAL%&gt; times since they were added and were viewed &lt;%MONTHLY%&gt; times this month&lt;/p&gt;&quot;&quot; + &quot;&quot;&lt;%ITEMS%&gt;&quot;&quot; + &quot;&quot;&lt;p&gt;&lt;em&gt;&lt;a href=&quot;http://ufdc.ufl.edu/my/stats/&lt;%YEAR%&gt;&lt;%MONTH%&gt;d&quot;&gt;Click here to see the usage statistics for all of your items. &gt;&gt;&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;&quot;&quot; + &quot;&quot;&lt;p&gt;Thank you for sharing these materials.  Please contact us with any questions ( &lt;a href=&quot;mailto:ufdc@uflib.ufl.edu&quot;&gt;ufdc@uflib.ufl.edu&lt;/a&gt; or 352-273-2900).&quot;" />
+	</Section>
+	<Section class="User_Tags_MySobekViewer">
+		<Text key="Added By XXX On XXX" value="Added by %1 on %2" />
+		<Text key="Added By You On XXX" value="Added by you on %1" />
+		<Text key="All Aggregations" value="All Aggregations" />
+		<Text key="As A Digital Collection Manager Or Administrator You Can Use This Screen To View Descriptive Tags Added To Collections Of Interest As Well As View The Descriptive Tags You Have Added To Items" value="&quot;As a digital collection manager or administrator, you can use this screen to view descriptive tags added to collections of interest, as well as view the descriptive tags you have added to items.&quot;" />
+		<Text key="Choose An Aggregation Below To View All Tags For That Aggregation" value="Choose an aggregation below to view all tags for that aggregation:" />
+		<Text key="Tags By Aggregation" value="Tags By Aggregation" />
+		<Text key="Tags By User" value="Tags By User" />
+		<Text key="This User Has Not Added Any Descriptive Tags To Any Items Or It Is Not A Valid Userid" value="This user has not added any descriptive tags to any items or it is not a valid userid." />
+		<Text key="View All By This User" value="view all by this user" />
+		<Text key="You Have Added The Following XXX Descriptive Tags" value="You have added the following %1 descriptive tags" />
+		<Text key="You Have Not Added Any Descriptive Tags To Any Items" value="You have not added any descriptive tags to any items" />
+		<Text key="Your Descriptive Tags" value="Your Descriptive Tags" />
+	</Section>
+	<Section class="User_Usage_Stats_MySobekViewer">
+		<Text key="Below Is A List Of Items Associated With Your Account Including Usage Statistics Total Views And Visits Represents The Total Amount Of Usage Since The Item Was Added To The Library And The Monthly Views And Visits Is The Usage In The Selected Month" value="Below is a list of items associated with your account including usage statistics.  Total views and visits represents the total amount of usage since the item was added to the library and the monthly views and visits is the usage in the selected month." />
+		<Text key="Definitions On The Main Statistics Page" value="definitions on the main statistics page" />
+		<Text key="For More Information About These Terms See The" value="&quot;For more information about these terms, see the&quot;" />
+		<Text key="MONTHLY VIEWS" value="MONTHLY VIEWS" />
+		<Text key="Select Any Column To Resort This Data" value="Select any column to re-sort this data" />
+		<Text key="TITLE" value="TITLE" />
+		<Text key="TOTAL VIEWS" value="TOTAL VIEWS" />
+		<Text key="TOTAL VISITS" value="TOTAL VISITS" />
+	</Section>
+	<Section class="YouTube_Embedded_Video_ItemViewer">
+		<Text key="Streaming Video" value="Streaming Video" />
+	</Section>
+</localization>
