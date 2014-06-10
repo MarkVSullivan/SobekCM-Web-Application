@@ -1526,5 +1526,15 @@ GO
 GRANT EXECUTE ON mySobek_Get_All_Projects_DefaultMetadatas TO sobek_user;
 GO
 
-
+if (( select count(*) from SobekCM_Database_Version ) = 0 )
+begin
+	insert into SobekCM_Database_Version ( Major_Version, Minor_Version, Release_Phase )
+	values ( 4, 1, '' );
+end
+else
+begin
+	update SobekCM_Database_Version
+	set Major_Version=4, Minor_Version=0, Release_Phase='beta';
+end;
+GO
 

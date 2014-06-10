@@ -181,7 +181,7 @@ namespace SobekCM.Library.HTML
                             }
                             else
                             {
-                                if (SobekCM_Database.Get_All_Projects_DefaultMetadatas(Tracer).Tables[0].Select("MetadataCode='" + project_code + "'").Length > 0)
+                                if (SobekCM_Database.Get_All_Template_DefaultMetadatas(Tracer).Tables[0].Select("MetadataCode='" + project_code + "'").Length > 0)
                                 {
                                     Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building default metadata set from (possible) PMETS");
                                     string pmets_file = SobekCM_Library_Settings.Base_MySobek_Directory + "projects\\" + Current_Mode.My_Sobek_SubMode.Substring(1) + ".pmets";

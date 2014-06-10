@@ -1093,7 +1093,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("        <td> &nbsp; </td>");
                     Output.WriteLine("      </tr>");
 
-                    DataSet projectTemplateSet = SobekCM_Database.Get_All_Projects_DefaultMetadatas(Tracer);
+                    DataSet projectTemplateSet = SobekCM_Database.Get_All_Template_DefaultMetadatas(Tracer);
 
                     Output.WriteLine("      <tr valign=\"top\" >");
                     Output.WriteLine("        <td>");

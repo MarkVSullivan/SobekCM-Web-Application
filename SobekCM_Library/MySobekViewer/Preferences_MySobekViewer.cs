@@ -415,7 +415,7 @@ namespace SobekCM.Library.MySobekViewer
 						if (user.UserID == 1)
 						{
 							// Add each template and project
-                            DataSet projectTemplateSet = SobekCM_Database.Get_All_Projects_DefaultMetadatas(Tracer);
+                            DataSet projectTemplateSet = SobekCM_Database.Get_All_Template_DefaultMetadatas(Tracer);
 							List<string> templates = (from DataRow thisTemplate in projectTemplateSet.Tables[1].Rows select thisTemplate["TemplateCode"].ToString()).ToList();
 							List<string> projects = (from DataRow thisProject in projectTemplateSet.Tables[0].Rows select thisProject["MetadataCode"].ToString()).ToList();
 

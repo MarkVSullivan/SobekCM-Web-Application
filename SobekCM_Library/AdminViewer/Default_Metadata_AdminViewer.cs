@@ -233,7 +233,7 @@ namespace SobekCM.Library.AdminViewer
 			Tracer.Add_Trace("Default_Metadata_AdminViewer.Write_ItemNavForm_Closing", "Write the rest of the form html");
 
 			// Get the list of all projects
-            DataSet projectsSet = SobekCM_Database.Get_All_Projects_DefaultMetadatas(Tracer);
+            DataSet projectsSet = SobekCM_Database.Get_All_Template_DefaultMetadatas(Tracer);
 
 			Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");

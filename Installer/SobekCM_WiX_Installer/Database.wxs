@@ -4,7 +4,7 @@
          xmlns:sql="http://schemas.microsoft.com/wix/SqlExtension">
 	<Fragment>
 		<!-- Link to db create script file -->
-		<Binary Id="CreateDbBin" SourceFile="Database/Complete.sql"></Binary>
+		<Binary Id="CreateDbBin" SourceFile="Database/Complete_4_02.sql"></Binary>
 
 
 		<DirectoryRef Id="WEBINSTALLFOLDER">

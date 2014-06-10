@@ -6773,8 +6773,8 @@ namespace SobekCM.Library.Database
 		/// <summary> Gets the dataset with all default metadata and all templates </summary>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataSet with list of all default metadata sets and tables </returns>
-		/// <remarks> This calls the 'mySobek_Get_All_Projects_DefaultMetadatas' stored procedure</remarks> 
-		public static DataSet Get_All_Projects_DefaultMetadatas(Custom_Tracer Tracer)
+		/// <remarks> This calls the 'mySobek_Get_All_Template_DefaultMetadatas' stored procedure</remarks> 
+        public static DataSet Get_All_Template_DefaultMetadatas(Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -6782,7 +6782,7 @@ namespace SobekCM.Library.Database
 			}
 
 			// Define a temporary dataset
-			DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_All_Projects_DefaultMetadatas");
+			DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_All_Template_DefaultMetadatas");
 			return tempSet;
 		}
 

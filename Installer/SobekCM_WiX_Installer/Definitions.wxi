@@ -4,11 +4,11 @@
 	<!-- The product code identifies the MSI and prevents two of the same exact      -->
 	<!-- version to be installed.  Always change this for each new version.          -->
 	<?define UpgradeCode2="{8EDC200F-801D-4B30-8B1C-A81C31489241}"?>
-	<?define ProductCode="{F1581C76-EAD8-43C8-9BB3-9B981C7CE46A}"?>
+	<?define ProductCode="{8D0D247D-CFF4-405C-97F5-83D12909336D}"?>
 	
 	
-	<?define ProductVersion="4.1.0.0"?>
-	<?define ProductVersionText="Version 4.01"?>
+	<?define ProductVersion="4.2.0.0"?>
+	<?define ProductVersionText="Version 4.02"?>
 	<?define BuilderTargetSource="..\..\SobekCM Builder\bin\Release"?>
 	<?define BuilderConfigTargetSource="..\..\SobekCM_Builder_Configuration\bin\Release"?>
 	<?define IIPimageSource="IIPimage"?>

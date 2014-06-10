@@ -757,7 +757,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("    <table width=\"600px\">");
 
-            DataSet projectTemplateSet = SobekCM_Database.Get_All_Projects_DefaultMetadatas(Tracer);
+            DataSet projectTemplateSet = SobekCM_Database.Get_All_Template_DefaultMetadatas(Tracer);
 
             Output.WriteLine("      <tr valign=\"top\" >");
             Output.WriteLine("        <td wdith=\"300px\">");
