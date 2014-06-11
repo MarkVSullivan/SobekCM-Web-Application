@@ -159,7 +159,7 @@ namespace SobekCM.Library.ResultsViewer
 
 					if (value == "*")
 					{
-						resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
+						resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlDecode(VARIES_STRING) + "</td></tr>");
 					}
 					else if ( value.Trim().Length > 0 )
 					{
@@ -177,7 +177,7 @@ namespace SobekCM.Library.ResultsViewer
 										resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>");
 										value_found = true;
 									}
-									resultsBldr.Append(System.Web.HttpUtility.HtmlEncode(thisValue) + "<br />");
+									resultsBldr.Append(System.Web.HttpUtility.HtmlDecode(thisValue) + "<br />");
 								}
 							}
 
@@ -188,7 +188,7 @@ namespace SobekCM.Library.ResultsViewer
 						}
 						else
 						{
-							resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlEncode(value) + "</td></tr>");
+							resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlDecode(value) + "</td></tr>");
 						}
 					}
 				}
