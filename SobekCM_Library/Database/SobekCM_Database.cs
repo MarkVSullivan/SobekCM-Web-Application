@@ -4862,6 +4862,7 @@ namespace SobekCM.Library.Database
 			user.Include_Tracking_In_Standard_Forms = Convert.ToBoolean(userRow["Include_Tracking_Standard_Forms"]);
 			user.Receive_Stats_Emails = Convert.ToBoolean(userRow["Receive_Stats_Emails"]);
 			user.Has_Item_Stats = Convert.ToBoolean(userRow["Has_Item_Stats"]);
+            user.LoggedOn = true;
 
 			if (Convert.ToInt32(userRow["descriptions"]) > 0)
 				user.Has_Descriptive_Tags = true;

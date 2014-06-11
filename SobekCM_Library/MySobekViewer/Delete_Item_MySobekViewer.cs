@@ -63,7 +63,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // Second, ensure this is a logged on user and system administrator before continuing
             Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Validate user permissions" );
-            if (User == null) 
+            if ((User == null)  || ( !User.LoggedOn ))
 			{
                 Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "User does not have delete permissions", Custom_Trace_Type_Enum.Error );
                 errorCode = 1;

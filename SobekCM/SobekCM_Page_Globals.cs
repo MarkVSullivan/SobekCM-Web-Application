@@ -789,7 +789,7 @@ namespace SobekCM
 			}
 
 			// Set the internal DLC flag
-			if (HttpContext.Current.Session["user"] != null)
+			if (HttpContext.Current.Session["user"] != null) 
 			{
 				currentUser = (User_Object) HttpContext.Current.Session["user"];
 				currentMode.Internal_User = currentUser.Is_Internal_User;
@@ -797,8 +797,17 @@ namespace SobekCM
 				// Check if this is an administrative task that the current user does not have access to
 				if ((!currentUser.Is_System_Admin) && (!currentUser.Is_Portal_Admin) && (currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
 				{
-					currentMode.Mode = Display_Mode_Enum.My_Sobek;
-					currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                    if (currentUser.LoggedOn)
+                    {
+                        currentMode.Mode = Display_Mode_Enum.My_Sobek;
+                        currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                    }
+                    else
+                    {
+                        currentMode.Mode = Display_Mode_Enum.Aggregation;
+                        currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                        currentMode.Aggregation = String.Empty;
+                    }
 				}
 			}
 			else
@@ -811,6 +820,13 @@ namespace SobekCM
 				if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) && (currentMode.Home_Type == Home_Type_Enum.Personalized))
 					currentMode.Home_Type = Home_Type_Enum.List;
 			}
+
+            //// Create the empty user
+            //if (currentUser == null)
+            //{
+            //    currentUser = new User_Object();
+            //    HttpContext.Current.Session["user"] = currentUser;
+            //}
 		}
 
 		#endregion

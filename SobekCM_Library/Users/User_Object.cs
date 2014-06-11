@@ -84,6 +84,7 @@ namespace SobekCM.Library.Users
 	        Shibboleth_Authenticated = false;
 			defaultMetadataSets_from_groups = new List<string>();
 			templates_from_groups = new List<string>();
+            LoggedOn = false;
 
         }
 
@@ -91,10 +92,7 @@ namespace SobekCM.Library.Users
 
 		/// <summary> Flag indicates if this user is logged on, or if this represents
 		/// a non-logged on user's session-specific data </summary>
-	    public bool LoggedOn
-	    {
-			get { return true; }
-	    }
+        public bool LoggedOn { get; set; }
 
         /// <summary> Get the user option as an object, by option key </summary>
         /// <param name="Option_Key"> Key for the user option </param>

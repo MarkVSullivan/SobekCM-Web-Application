@@ -945,13 +945,17 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("     </ul>");
             Output.WriteLine("  </div>");
 
-            Output.WriteLine("  <div class=\"ViewsBrowsesRow\">");
-			Output.WriteLine("    <ul class=\"sbk_FauxUpwardTabsList\">");
+            // Start the outer tab containe
+            Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs\">");
+
+	
+            Output.WriteLine("  <div class=\"tabs\">");
+			Output.WriteLine("    <ul>");
             string last_mode = currentMode.My_Sobek_SubMode;
             currentMode.My_Sobek_SubMode = currentMode.My_Sobek_SubMode.Replace("b", "").Replace("c", "");
             if (page == 1)
             {
-                Output.WriteLine("      <li class=\"current\"> BASIC INFORMATION </li>");
+                Output.WriteLine("      <li class=\"tabActiveHeader\"> BASIC INFORMATION </li>");
             }
             else
             {
@@ -960,7 +964,7 @@ namespace SobekCM.Library.AdminViewer
 
             if (page == 2)
             {
-                Output.WriteLine("      <li class=\"current\"> GROUP MEMBERSHIP </li>" );
+                Output.WriteLine("      <li class=\"tabActiveHeader\"> GROUP MEMBERSHIP </li>");
             }
             else
             {
@@ -969,7 +973,7 @@ namespace SobekCM.Library.AdminViewer
 
             if (page == 3)
             {
-                Output.WriteLine("      <li class=\"current\"> AGGREGATIONS </li>");
+                Output.WriteLine("      <li class=\"tabActiveHeader\"> AGGREGATIONS </li>");
             }
             else
             {
@@ -982,6 +986,8 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    </ul>");
             Output.WriteLine("  </div>");
 
+            Output.WriteLine("    <div class=\"tabscontent\">");
+            Output.WriteLine("    	<div class=\"tabpage\" id=\"tabpage_1\">");
             Output.WriteLine("  <div class=\"SobekEditPanel\">");
 
             // Add the buttons
@@ -1162,6 +1168,9 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("      </tr>");
                     Output.WriteLine("   </table>");
                     Output.WriteLine("  </blockquote>");
+                    Output.WriteLine("</div>");
+                    Output.WriteLine("</div>");
+                    Output.WriteLine("</div>");
                     break;
 
                 case 2:
