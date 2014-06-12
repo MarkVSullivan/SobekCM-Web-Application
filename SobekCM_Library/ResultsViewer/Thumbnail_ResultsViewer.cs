@@ -207,7 +207,7 @@ namespace SobekCM.Library.ResultsViewer
 
                 if ((titleResult.Primary_Identifier_Type.Length > 0) && (titleResult.Primary_Identifier.Length > 0))
                 {
-                    resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(titleResult.Primary_Identifier_Type, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + titleResult.Primary_Identifier + "</td></tr>");
+                    resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(titleResult.Primary_Identifier_Type, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlDecode(titleResult.Primary_Identifier) + "</td></tr>");
                 }
 
                 if (CurrentMode.Internal_User)
@@ -238,7 +238,7 @@ namespace SobekCM.Library.ResultsViewer
 
 					if (value == "*")
 					{
-						resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
+                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlDecode(VARIES_STRING) + "</td></tr>");
 					}
 					else if ( value.Trim().Length > 0 )
 					{
@@ -256,7 +256,7 @@ namespace SobekCM.Library.ResultsViewer
 										resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>");
 										value_found = true;
 									}
-									resultsBldr.Append(System.Web.HttpUtility.HtmlEncode(thisValue) + "<br />");
+									resultsBldr.Append(System.Web.HttpUtility.HtmlDecode(thisValue) + "<br />");
 								}
 							}
 
@@ -267,7 +267,7 @@ namespace SobekCM.Library.ResultsViewer
 						}
 						else
 						{
-							resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlEncode(value) + "</td></tr>");
+							resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlDecode(value) + "</td></tr>");
 						}
 					}
 				}
