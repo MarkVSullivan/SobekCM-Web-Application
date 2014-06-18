@@ -1067,7 +1067,9 @@ namespace SobekCM.Library.HTML
 
 
 	                // If there is an ACCESSION number and this is an ARTIFACT, include that at the top
-	                if ((currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Artifact) && (currentItem.Bib_Info.Identifiers_Count > 0))
+                    //EDIT: Removing the condition for checking if this is an ARTIFACT. Always display the ACCESSION number if available (6/18/2014 - SY)
+	          //      if ((currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Artifact) && (currentItem.Bib_Info.Identifiers_Count > 0))
+                    if (currentItem.Bib_Info.Identifiers_Count > 0)
 	                {
 	                    foreach (Identifier_Info thisIdentifier in currentItem.Bib_Info.Identifiers)
 	                    {
