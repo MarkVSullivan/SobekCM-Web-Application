@@ -436,7 +436,7 @@ namespace SobekCM.Library.MySobekViewer
 							string prefTemplate = HttpContext.Current.Request.Form["prefTemplate"];
 							user.Set_Default_Template(prefTemplate.Trim());
 							user.Set_Current_Default_Metadata(prefProject.Trim());
-							Database.SobekCM_Database.Save_User(user, String.Empty, Tracer);
+							Database.SobekCM_Database.Save_User(user, String.Empty, user.Authentication_Type, Tracer);
 						}
                     }
 

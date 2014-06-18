@@ -599,7 +599,7 @@ namespace SobekCM
 
 					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", SobekCM_Library_Settings.Shibboleth_User_Identity_Attribute + " server variable = '" + shibboleth_id + "'");
 
-					if (shibboleth_id.Length == 8)
+					if (shibboleth_id.Length > 0)
 					{
 						tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Pulling from database by shibboleth id");
 
@@ -609,7 +609,7 @@ namespace SobekCM
 						if (possible_user_by_shibboleth_id != null)
 						{
 							tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting session user from shibboleth id");
-							possible_user_by_shibboleth_id.Shibboleth_Authenticated = true;
+							possible_user_by_shibboleth_id.Authentication_Type = User_Authentication_Type_Enum.Shibboleth;
 							HttpContext.Current.Session["user"] = possible_user_by_shibboleth_id;
 						}
 						else
@@ -659,12 +659,12 @@ namespace SobekCM
 							string password = passwordBuilder.ToString();
 
 							// Now, save this user
-							SobekCM_Database.Save_User(newUser, password, tracer);
+							SobekCM_Database.Save_User(newUser, password, newUser.Authentication_Type, tracer);
 
 							// Now, pull back out of the database
 							User_Object possible_user_by_shib2 = SobekCM_Database.Get_User(shibboleth_id, tracer);
 							possible_user_by_shib2.Is_Just_Registered = true;
-							possible_user_by_shib2.Shibboleth_Authenticated = true;
+							possible_user_by_shib2.Authentication_Type = User_Authentication_Type_Enum.Shibboleth;
 							HttpContext.Current.Session["user"] = possible_user_by_shib2;
 						}
 
