@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -42,6 +43,9 @@ namespace SobekCM.Library.HTML
         private readonly Item_Aggregation_Child_Page thisBrowseObject;
         private readonly HTML_Based_Content thisStaticBrowseObject;
         private readonly Language_Support_Info translator;
+        private string leftButtons;
+        private string rightButtons;
+        private const int RESULTS_PER_PAGE = 20;
 
         /// <summary> Constructor creates a new instance of the Aggregation_HtmlSubwriter class </summary>
 		/// <param name="Current_Aggregation"> Current item aggregation object to display </param>
@@ -80,6 +84,8 @@ namespace SobekCM.Library.HTML
             thematicHeadings = Thematic_Headings;
             resultsStatistics = Results_Statistics;
             pagedResults = Paged_Results;
+            leftButtons = String.Empty;
+            rightButtons = String.Empty;
 
 			// Check to see if the user should be able to edit the home page
 			if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
@@ -750,6 +756,98 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("<div class=\"SobekSearchPanel\">");
                         Add_Sharing_Buttons(Output, FORM_NAME, "SobekResultsSort");
                     }
+
+                    //#region LEFT and RIGHT Buttons
+                    //// Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
+                    //string LEFT_BUTTONS = String.Empty;
+                    //string RIGHT_BUTTONS = String.Empty;
+                    //string first_page = "First Page";
+                    //string previous_page = "Previous Page";
+                    //string next_page = "Next Page";
+                    //string last_page = "Last Page";
+                    //string first_page_text = "First";
+                    //string previous_page_text = "Previous";
+                    //string next_page_text = "Next";
+                    //string last_page_text = "Last";
+
+                    //if (currentMode.Language == Web_Language_Enum.Spanish)
+                    //{
+                    //    first_page = "Primera Página";
+                    //    previous_page = "Página Anterior";
+                    //    next_page = "Página Siguiente";
+                    //    last_page = "Última Página";
+                    //    first_page_text = "Primero";
+                    //    previous_page_text = "Anterior";
+                    //    next_page_text = "Proximo";
+                    //    last_page_text = "Último";
+                    //}
+
+                    //if (currentMode.Language == Web_Language_Enum.French)
+                    //{
+                    //    first_page = "Première Page";
+                    //    previous_page = "Page Précédente";
+                    //    next_page = "Page Suivante";
+                    //    last_page = "Dernière Page";
+                    //    first_page_text = "Première";
+                    //    previous_page_text = "Précédente";
+                    //    next_page_text = "Suivante";
+                    //    last_page_text = "Derniere";
+                    //}
+
+                    //// Make sure the result writer has been created
+                    //if (resultWriter == null)
+                    //    create_resultwriter();
+                    //if (resultWriter != null)
+                    //{
+                    //    Debug.Assert(resultWriter != null, "resultWriter != null");
+
+                    //    if (RESULTS_PER_PAGE < resultWriter.Total_Results)
+                    //    {
+                    //        ushort current_page = currentMode.Page;
+                    //        StringBuilder buttons_builder = new StringBuilder(1000);
+
+                    //        // Should the previous and first buttons be enabled?
+                    //        if (current_page > 1)
+                    //        {
+                    //            buttons_builder.Append("<div class=\"sbkPrsw_LeftButtons\">");
+                    //            currentMode.Page = 1;
+                    //            buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                    //            currentMode.Page = (ushort)(current_page - 1);
+                    //            buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                    //            buttons_builder.Append("</div>");
+                    //            LEFT_BUTTONS = buttons_builder.ToString();
+                    //            buttons_builder.Clear();
+                    //        }
+                    //        else
+                    //        {
+                    //            LEFT_BUTTONS = "<div class=\"sbkPrsw_NoLeftButtons\">&nbsp;</div>";
+                    //        }
+
+
+                    //        // Should the next and last buttons be enabled?
+                    //        if ((current_page * RESULTS_PER_PAGE) < resultWriter.Total_Results)
+                    //        {
+                    //            buttons_builder.Append("<div class=\"sbkPrsw_RightButtons\">");
+                    //            currentMode.Page = (ushort)(current_page + 1);
+                    //            buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                    //            currentMode.Page = (ushort)(resultWriter.Total_Results / RESULTS_PER_PAGE);
+                    //            if (resultWriter.Total_Results % RESULTS_PER_PAGE > 0)
+                    //                currentMode.Page = (ushort)(currentMode.Page + 1);
+                    //            buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                    //            buttons_builder.Append("</div>");
+                    //            RIGHT_BUTTONS = buttons_builder.ToString();
+                    //        }
+                    //        else
+                    //        {
+                    //            RIGHT_BUTTONS = "<div class=\"sbkPrsw_NoRightButtons\">&nbsp;</div>";
+                    //        }
+
+                    //        currentMode.Page = current_page;
+                    //    }
+                    //}
+
+
+                    //#endregion
                 }
                 else
                 {
@@ -2232,7 +2330,80 @@ namespace SobekCM.Library.HTML
           Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_aggre.js\"></script>");
             
             Output.WriteLine();
+
+            // Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
+            string LEFT_BUTTONS = String.Empty;
+            string RIGHT_BUTTONS = String.Empty;
+            string first_page = "First Page";
+            string previous_page = "Previous Page";
+            string next_page = "Next Page";
+            string last_page = "Last Page";
+            string first_page_text = "First";
+            string previous_page_text = "Previous";
+            string next_page_text = "Next";
+            string last_page_text = "Last";
+
+            if (resultsStatistics != null && resultsStatistics.Total_Items > 0)
+            {
+                #region Determine the Next, Last, First, Previous buttons display
+                //if(resultsStatistics.)
+                ushort current_page = currentMode.Page;
+                StringBuilder buttons_builder = new StringBuilder(1000);
+
+                if (current_page > 1)
+                {
+                    buttons_builder.Append("<div class=\"sbkPrsw_LeftButtons\">");
+                    currentMode.Page = 1;
+                    buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                    currentMode.Page = (ushort)(current_page - 1);
+                    buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                    buttons_builder.Append("</div>");
+                    LEFT_BUTTONS = buttons_builder.ToString();
+                    buttons_builder.Clear();
+                }
+                else
+                {
+                    LEFT_BUTTONS = "<div class=\"sbkPrsw_NoLeftButtons\">&nbsp;</div>";
+                }
+
+
+                // Should the next and last buttons be enabled?
+                if ((current_page * RESULTS_PER_PAGE) < resultsStatistics.Total_Titles)
+                {
+                    int total_titles = resultsStatistics.Total_Titles;
+                    buttons_builder.Append("<div class=\"sbkPrsw_RightButtons\">");
+                    currentMode.Page = (ushort)(current_page + 1);
+                    buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                    currentMode.Page = (ushort)(resultsStatistics.Total_Titles / RESULTS_PER_PAGE);
+                    if (resultsStatistics.Total_Titles % RESULTS_PER_PAGE > 0)
+                        currentMode.Page = (ushort)(currentMode.Page + 1);
+                    buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                    buttons_builder.Append("</div>");
+                    RIGHT_BUTTONS = buttons_builder.ToString();
+                }
+                else
+                {
+                    RIGHT_BUTTONS = "<div class=\"sbkPrsw_NoRightButtons\">&nbsp;</div>";
+                }
+                // Save the buttons for later, to be used at the bottom of the page
+                leftButtons = LEFT_BUTTONS;
+                rightButtons = RIGHT_BUTTONS;
+
+                currentMode.Page = current_page;
+
+                #endregion
+                Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">");
+                Output.Write(leftButtons);
+                //Output.WriteLine("  " + Showing_Text);
+                Output.Write(rightButtons);
+                Output.WriteLine("</div>");
+                Output.WriteLine("<br />");
+                Output.WriteLine();
+            }
+
         }
+        /// <summary> Text which indicates which values of the current result or browse are being shown</summary>
+        public string Showing_Text { get; private set; }
 
 		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
 		public override string Container_CssClass
