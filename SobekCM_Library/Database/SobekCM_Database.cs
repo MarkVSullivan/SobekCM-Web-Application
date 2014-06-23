@@ -9909,7 +9909,387 @@ namespace SobekCM.Library.Database
 
 		#endregion
 
-		public static List<string> Get_Viewer_Priority(Custom_Tracer Tracer)
+        #region Methods used to support the SobekCM_Project Element (saving, deleting, retrieving,...)
+
+        /// <summary> Save a new, or edit an existing Project in the database </summary>
+        /// <param name="ProjectID"></param>
+        /// <param name="ProjectCode"></param>
+        /// <param name="ProjectName"></param>
+        /// <param name="ProjectManager"></param>
+        /// <param name="GrantID"></param>
+        /// <param name="StartDate"></param>
+        /// <param name="EndDate"></param>
+        /// <param name="isActive"></param>
+        /// <param name="Description"></param>
+        /// <param name="Specifications"></param>
+        /// <param name="Priority"></param>
+        /// <param name="QC_Profile"></param>
+        /// <param name="TargetItemCount"></param>
+        /// <param name="TargetPageCount"></param>
+        /// <param name="Comments"></param>
+        /// <param name="CopyrightPermissions"></param>
+        /// <returns>The ProjectID of the inserted/edited row</returns>
+        public static int Save_Project(Custom_Tracer Tracer, int ProjectID, string ProjectCode, string ProjectName, string ProjectManager, string GrantID, DateTime StartDate, DateTime EndDate, bool isActive, string Description, string Specifications, string Priority, string QC_Profile, int TargetItemCount, int TargetPageCount, string Comments, string CopyrightPermissions)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Save_Project", "Saving to the database");
+            }
+
+            int New_ProjectID = ProjectID;
+           
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Open the connection
+                connect.Open();
+
+                //Create the command
+                SqlCommand cmd = new SqlCommand("SobekCM_Save_Project", connect) { CommandType = CommandType.StoredProcedure };
+                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
+                cmd.Parameters.AddWithValue("@ProjectCode", ProjectCode);
+                cmd.Parameters.AddWithValue("@ProjectName", ProjectName);
+                cmd.Parameters.AddWithValue("@ProjectManager", ProjectManager);
+                cmd.Parameters.AddWithValue("@GrantID", GrantID);
+                cmd.Parameters.AddWithValue("@StartDate", StartDate);
+                cmd.Parameters.AddWithValue("@EndDate", EndDate);
+                cmd.Parameters.AddWithValue("@isActive", isActive);
+                cmd.Parameters.AddWithValue("@Description", Description);
+                cmd.Parameters.AddWithValue("@Specifications", Specifications);
+                cmd.Parameters.AddWithValue("@Priority", Priority);
+                cmd.Parameters.AddWithValue("@QC_Profile", QC_Profile);
+                cmd.Parameters.AddWithValue("@TargetItemCount", TargetItemCount);
+                cmd.Parameters.AddWithValue("@TargetPageCount", TargetPageCount);
+                cmd.Parameters.AddWithValue("@Comments", Comments);
+                cmd.Parameters.AddWithValue("@CopyrightPermissions", CopyrightPermissions);
+                
+
+                //Add the output parameter to get back the new ProjectID for this newly added project, or existing ProjectID if this has been updated
+                SqlParameter outputParam = cmd.Parameters.Add("@New_ProjectID", SqlDbType.Int);
+                outputParam.Direction = ParameterDirection.Output;
+
+                cmd.ExecuteNonQuery();
+                New_ProjectID = Convert.ToInt32(outputParam.Value);
+
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error saving this Project to the database. " + ee.Message);
+            }
+            connect.Close();
+            return New_ProjectID;
+        }
+
+        /// <summary> Save the new Project-Aggregation link to the database. </summary>
+        /// <param name="Tracer"></param>
+        /// <param name="ProjectID"></param>
+        /// <param name="AggregationID"></param>
+        public static void Add_Project_Aggregation_Link(Custom_Tracer Tracer,int ProjectID, int AggregationID)
+        {
+               if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Add_Project_Aggregation_Link", "Saving link to the database");
+            }
+
+          // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Open the connection
+                connect.Open();
+
+                //Create the command
+                SqlCommand cmd = new SqlCommand("SobekCM_Save_Project_Aggregation_Link", connect) {CommandType = CommandType.StoredProcedure};
+                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
+                cmd.Parameters.AddWithValue("@AggregationID", AggregationID);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error adding Project-Aggregation link" + ee.Message);
+            }
+            connect.Close();
+        }
+
+        /// <summary> Save the Project_Default Metadata link to the database </summary>
+        /// <param name="Tracer"></param>
+        /// <param name="ProjectID"></param>
+        /// <param name="DefaultMetadataID"></param>
+        public static void Add_Project_DefaultMetadata_Link(Custom_Tracer Tracer, int ProjectID, int DefaultMetadataID)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Add_Project_DefaultMetadata_Link", "Saving link to the database");
+            }
+
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Open the connection
+                connect.Open();
+
+                //Create the command
+                SqlCommand cmd = new SqlCommand("SobekCM_Save_Project_DefaultMetadata_Link", connect) { CommandType = CommandType.StoredProcedure };
+                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
+                cmd.Parameters.AddWithValue("@DefaultMetadataID", DefaultMetadataID);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error adding Project-DefaultMetadata link" + ee.Message);
+            }
+            connect.Close();
+        }
+
+        /// <summary> Save Project, Input template link to the database </summary>
+        /// <param name="Tracer"></param>
+        /// <param name="ProjectID"></param>
+        /// <param name="TemplateID"></param>
+        public static void Add_Project_Template_Link(Custom_Tracer Tracer, int ProjectID, int TemplateID)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Add_Project_Template_Link", "Saving link to the database");
+            }
+
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Open the connection
+                connect.Open();
+
+                //Create the command
+                SqlCommand cmd = new SqlCommand("SobekCM_Save_Project_Template_Link", connect) { CommandType = CommandType.StoredProcedure };
+                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
+                cmd.Parameters.AddWithValue("@TemplateID", TemplateID);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error adding Project-TemplateID link" + ee.Message);
+            }
+            connect.Close();
+        }
+
+        /// <summary> Save Project, Item link to the database </summary>
+        /// <param name="Tracer"></param>
+        /// <param name="ProjectID"></param>
+        /// <param name="ItemID"></param>
+        public static void Add_Project_Item_Link(Custom_Tracer Tracer, int ProjectID, int ItemID)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Add_Project_Item_Link", "Saving link to the database");
+            }
+
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Open the connection
+                connect.Open();
+
+                //Create the command
+                SqlCommand cmd = new SqlCommand("SobekCM_Save_Project_Item_Link", connect) { CommandType = CommandType.StoredProcedure };
+                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
+                cmd.Parameters.AddWithValue("@ItemID", ItemID);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error adding Project-ItemID link" + ee.Message);
+            }
+            connect.Close();
+        }
+
+        /// <summary> Delete a Project, Item link from the database </summary>
+        /// <param name="Tracer"></param>
+        /// <param name="ProjectID"></param>
+        /// <param name="ItemID"></param>
+        public static void Delete_Project_Item_Link(Custom_Tracer Tracer, int ProjectID, int ItemID)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Delete_Project_Item_Link", "Deleting link from the database");
+            }
+
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Open the connection
+                connect.Open();
+
+                //Create the command
+                SqlCommand cmd = new SqlCommand("SobekCM_Delete_Project_Item_Link", connect) { CommandType = CommandType.StoredProcedure };
+                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
+                cmd.Parameters.AddWithValue("@ItemID", ItemID);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error deleting Project-ItemID link" + ee.Message);
+            }
+            connect.Close();
+        }
+
+        /// <summary> Delete a project, Template link from the database </summary>
+        /// <param name="Tracer"></param>
+        /// <param name="ProjectID"></param>
+        /// <param name="TemplateID"></param>
+        public static void Delete_Project_Template_Link(Custom_Tracer Tracer, int ProjectID, int TemplateID)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Delete_Project_Template_Link", "Deleting link from the database");
+            }
+
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Open the connection
+                connect.Open();
+
+                //Create the command
+                SqlCommand cmd = new SqlCommand("SobekCM_Delete_Project_Template_Link", connect) { CommandType = CommandType.StoredProcedure };
+                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
+                cmd.Parameters.AddWithValue("@TemplateID", TemplateID);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error deleting Project-Template link" + ee.Message);
+            }
+            connect.Close();
+        }
+
+        /// <summary> Delete the Project, default metadata link from the database </summary>
+        /// <param name="Tracer"></param>
+        /// <param name="ProjectID"></param>
+        /// <param name="DefaultMetadataID"></param>
+        public static void Delete_Project_DefaultMetadata_Link(Custom_Tracer Tracer, int ProjectID, int DefaultMetadataID)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Delete_Project_DefaultMetadata_Link", "Deleting link from the database");
+            }
+
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Open the connection
+                connect.Open();
+
+                //Create the command
+                SqlCommand cmd = new SqlCommand("SobekCM_Delete_Project_DefaultMetadata_Link", connect) { CommandType = CommandType.StoredProcedure };
+                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
+                cmd.Parameters.AddWithValue("@DefaultMetadataID", DefaultMetadataID);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error deleting Project-DefaultMetadata link" + ee.Message);
+            }
+            connect.Close();
+        }
+
+        /// <summary> Delete Project, Aggregation Link from the database </summary>
+        /// <param name="Tracer"></param>
+        /// <param name="ProjectID"></param>
+        /// <param name="AggregationID"></param>
+        public static void Delete_Project_Aggregation_Link(Custom_Tracer Tracer, int ProjectID, int AggregationID)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Delete_Project_Aggregation_Link", "Deleting link from the database");
+            }
+
+            // Create the connection
+            SqlConnection connect = new SqlConnection(connectionString);
+
+            try
+            {
+                //Open the connection
+                connect.Open();
+
+                //Create the command
+                SqlCommand cmd = new SqlCommand("SobekCM_Delete_Project_Aggregation_Link", connect) { CommandType = CommandType.StoredProcedure };
+                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
+                cmd.Parameters.AddWithValue("@AggregationID", AggregationID);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ee)
+            {
+                throw new ApplicationException("Error deleting Project-Aggregation link" + ee.Message);
+            }
+            connect.Close();
+        }
+
+        /// <summary> Get the list of Aggregation IDs associated with a project </summary>
+        /// <param name="Tracer"></param>
+        /// <param name="ProjectID"></param>
+        /// <returns></returns>
+        public static List<int> Get_Aggregations_By_ProjectID(Custom_Tracer Tracer, int ProjectID)
+        {
+            if (Tracer != null)
+			{
+                Tracer.Add_Trace("SobekCM_Database.Get_Aggregations_By_ProjectID", "Pulling from database");
+			}
+
+			try
+			{
+				List<int> returnValue = new List<int>();
+
+				// Define a temporary dataset
+                DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Aggregations_By_ProjectID");
+
+				// If there was no data for this collection and entry point, return null (an ERROR occurred)
+				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+				{
+					return returnValue;
+				}
+
+				// Return the first table from the returned dataset
+				foreach (DataRow thisRow in tempSet.Tables[0].Rows)
+				{
+					returnValue.Add(Convert.ToInt32(thisRow[0]));
+				}
+				return returnValue;
+			}
+			catch (Exception ee)
+			{
+				lastException = ee;
+				if (Tracer != null)
+				{
+                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregations_By_ProjectID", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregations_By_ProjectID", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregations_By_ProjectID", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+				}
+				return null;
+			}
+	}
+
+        //TODO: Add methods to get the default metadata, current input template
+        //TODO: Add the method to get the list of active, inactive projects
+
+        
+        #endregion
+
+
+        public static List<string> Get_Viewer_Priority(Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
