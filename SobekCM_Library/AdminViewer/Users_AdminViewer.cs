@@ -586,7 +586,7 @@ namespace SobekCM.Library.AdminViewer
 					if (action == "save")
 					{
 						// Save this user
-						SobekCM_Database.Save_User(editUser, String.Empty, Tracer);
+						SobekCM_Database.Save_User(editUser, String.Empty, user.Authentication_Type, Tracer);
 
 						// Update the basic user information
 						SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_System_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code, editUser.Edit_Template_MARC_Code, true, true, true, Tracer);

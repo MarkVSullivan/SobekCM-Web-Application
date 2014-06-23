@@ -406,7 +406,7 @@ namespace SobekCM.Library.MySobekViewer
 						user.UserID = -1;
 
 						// Save this new user
-						SobekCM_Database.Save_User(user, password, Tracer);
+						SobekCM_Database.Save_User(user, password, user.Authentication_Type, Tracer);
 
 						// Retrieve the user from the database
 						user = SobekCM_Database.Get_User(username, password, Tracer);
@@ -420,7 +420,7 @@ namespace SobekCM.Library.MySobekViewer
 							List<string> projects = (from DataRow thisProject in projectTemplateSet.Tables[0].Rows select thisProject["MetadataCode"].ToString()).ToList();
 
 							// Save the updates to this admin user
-							SobekCM_Database.Save_User(user, password, Tracer);
+							SobekCM_Database.Save_User(user, password, User_Authentication_Type_Enum.Sobek, Tracer);
 							SobekCM_Database.Update_SobekCM_User(user.UserID, true, true, true, true, true, true, true, "edit_internal", "editmarc_internal", true, true, true, Tracer);
                             SobekCM_Database.Update_SobekCM_User_DefaultMetadata(user.UserID, new ReadOnlyCollection<string>(projects), Tracer);
 							SobekCM_Database.Update_SobekCM_User_Templates(user.UserID, new ReadOnlyCollection<string>(templates), Tracer);
@@ -463,7 +463,7 @@ namespace SobekCM.Library.MySobekViewer
 					else
 					{
 						HttpContext.Current.Session["user"] = user;
-						SobekCM_Database.Save_User(user, String.Empty, Tracer);
+						SobekCM_Database.Save_User(user, String.Empty, user.Authentication_Type,  Tracer);
 
 						// Now, forward back to the My Sobek home page
 						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;

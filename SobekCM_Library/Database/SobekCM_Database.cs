@@ -4473,10 +4473,11 @@ namespace SobekCM.Library.Database
 		/// <summary> Saves information about a single user </summary>
 		/// <param name="User"> <see cref="Users.User_Object"/> with all the information about the single user</param>
 		/// <param name="Password"> Plain-text password, which is then encrypted prior to saving</param>
+        /// <param name="Authentication_Type"> String which indicates the type of authentication utilized, only important if this is the first time this user has authenticated/registered </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'mySobek_Save_User' stored procedure</remarks> 
-		public static bool Save_User(User_Object User, string Password, Custom_Tracer Tracer)
+		public static bool Save_User(User_Object User, string Password, User_Authentication_Type_Enum Authentication_Type, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -4486,10 +4487,18 @@ namespace SobekCM.Library.Database
 			const string SALT = "This is my salt to add to the password";
 			string encryptedPassword = SecurityInfo.SHA1_EncryptString(Password + SALT);
 
+            string auth_string = String.Empty;
+            if (Authentication_Type == User_Authentication_Type_Enum.Sobek)
+                auth_string = "sobek";
+            if (Authentication_Type == User_Authentication_Type_Enum.Shibboleth)
+                auth_string = "shibboleth";
+            if ((Authentication_Type == User_Authentication_Type_Enum.Windows) || (Authentication_Type == User_Authentication_Type_Enum.LDAP))
+                auth_string = "ldap";
+
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[20];
+				SqlParameter[] paramList = new SqlParameter[24];
 				paramList[0] = new SqlParameter("@userid", User.UserID);
 				paramList[1] = new SqlParameter("@ufid", User.ShibbID);
 				paramList[2] = new SqlParameter("@username", User.UserName);
@@ -4524,6 +4533,10 @@ namespace SobekCM.Library.Database
 				}
 				paramList[18] = new SqlParameter("@organization_code", User.Organization_Code);
 				paramList[19] = new SqlParameter("@receivestatsemail", User.Receive_Stats_Emails);
+                paramList[20] = new SqlParameter("@scanningtechnician", User.Scanning_Technician);
+                paramList[21] = new SqlParameter("@processingtechnician", User.Processing_Technician);
+                paramList[22] = new SqlParameter("@internalnotes", User.Internal_Notes);
+                paramList[23] = new SqlParameter("@authentication", auth_string);
 
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_User", paramList);
 				return true;
@@ -4756,9 +4769,9 @@ namespace SobekCM.Library.Database
 
 				// Execute this non-query stored procedure
 				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@ufid", Shibboleth_ID);
+				paramList[0] = new SqlParameter("@shibbid", Shibboleth_ID);
 
-				DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_User_By_UFID", paramList);
+				DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_User_By_ShibbID", paramList);
 
 				if ((resultSet.Tables.Count > 0) && (resultSet.Tables[0].Rows.Count > 0))
 				{
@@ -4863,6 +4876,9 @@ namespace SobekCM.Library.Database
 			user.Receive_Stats_Emails = Convert.ToBoolean(userRow["Receive_Stats_Emails"]);
 			user.Has_Item_Stats = Convert.ToBoolean(userRow["Has_Item_Stats"]);
             user.LoggedOn = true;
+            user.Internal_Notes = userRow["Internal_Notes"].ToString();
+            user.Processing_Technician = Convert.ToBoolean(userRow["ProcessingTechnician"]);
+            user.Scanning_Technician = Convert.ToBoolean(userRow["ScanningTechnician"]);
 
 			if (Convert.ToInt32(userRow["descriptions"]) > 0)
 				user.Has_Descriptive_Tags = true;
@@ -7572,7 +7588,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> UserGroupId for a new user group, if this was to save a new one </returns>
 		/// <remarks> This calls the 'mySobek_Save_User_Group' stored procedure</remarks> 
-		public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, bool Clear_Metadata_Templates, bool Clear_Aggregation_Links, bool Clear_Editable_Links, bool Auto_Assign_Users, Custom_Tracer Tracer)
+		public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, bool Clear_Metadata_Templates, bool Clear_Aggregation_Links, bool Clear_Editable_Links, bool Is_Sobek_Default, bool Is_Shibboleth_Default, bool Is_LDAP_Default, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -7582,7 +7598,7 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[15];
+				SqlParameter[] paramList = new SqlParameter[17];
 				paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
 				paramList[1] = new SqlParameter("@groupname", GroupName);
 				paramList[2] = new SqlParameter("@groupdescription", GroupDescription);
@@ -7595,8 +7611,10 @@ namespace SobekCM.Library.Database
 				paramList[10] = new SqlParameter("@clear_metadata_templates", Clear_Metadata_Templates);
 				paramList[11] = new SqlParameter("@clear_aggregation_links", Clear_Aggregation_Links);
 				paramList[12] = new SqlParameter("@clear_editable_links", Clear_Editable_Links);
-				paramList[13] = new SqlParameter("@autoAssignUsers", Auto_Assign_Users);
-				paramList[14] = new SqlParameter("@new_usergroupid", UserGroupID) {Direction = ParameterDirection.InputOutput};
+				paramList[13] = new SqlParameter("@is_sobek_default", Is_Sobek_Default);
+                paramList[14] = new SqlParameter("@is_shibboleth_default", Is_Shibboleth_Default);
+                paramList[15] = new SqlParameter("@is_ldap_default", Is_LDAP_Default);
+				paramList[16] = new SqlParameter("@new_usergroupid", UserGroupID) {Direction = ParameterDirection.InputOutput};
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Group", paramList);

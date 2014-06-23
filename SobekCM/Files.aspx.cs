@@ -187,8 +187,8 @@ namespace SobekCM
 									{
 										// If the user is Shibboleth authenticated, that is okay
 										User_Object possible_user = HttpContext.Current.Session["user"] as User_Object;
-										if (( possible_user == null ) || ( !possible_user.Shibboleth_Authenticated ))
-											isDark = true;
+										if (( possible_user == null ) || ( possible_user.Authentication_Type != User_Authentication_Type_Enum.Shibboleth ))
+                                            isDark = true;
 									}
 								}
 

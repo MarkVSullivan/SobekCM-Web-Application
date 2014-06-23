@@ -15,6 +15,26 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.Users
 {
+    /// <summary> Enumeration used to indicate the way the current user has authenticated </summary>
+    /// <remarks> This is primarily used the first time a user logs on and registers with the system </remarks>
+    public enum User_Authentication_Type_Enum : byte
+    {
+        /// <summary> No authentication (or not indicated) </summary>
+        NONE = 0,
+
+        /// <summary> Authentication occurred using the internal SobekCM authentication system </summary>
+        Sobek,
+
+        /// <summary> Authentication occurred using Shibboleth </summary>
+        Shibboleth,
+
+        /// <summary> Authentication occurred using LDAP, primarily using Active Directory and IIS challenge </summary>
+        LDAP,
+
+        /// <summary> Authentication occurred using the basic IIS windows authentication pop-up </summary>
+        Windows
+    }
+
     /// <summary> Represents a single mySobek user, including personal information, permissions,
     /// and preferences.  </summary>
     public class User_Object
@@ -81,7 +101,7 @@ namespace SobekCM.Library.Users
             Include_Tracking_In_Standard_Forms = true;
 			userSettings = new Dictionary<string, object>();
 	        Can_Delete_All = false;
-	        Shibboleth_Authenticated = false;
+            Authentication_Type = User_Authentication_Type_Enum.NONE;
 			defaultMetadataSets_from_groups = new List<string>();
 			templates_from_groups = new List<string>();
             LoggedOn = false;
@@ -93,6 +113,16 @@ namespace SobekCM.Library.Users
 		/// <summary> Flag indicates if this user is logged on, or if this represents
 		/// a non-logged on user's session-specific data </summary>
         public bool LoggedOn { get; set; }
+
+        /// <summary> Internal notes about this user, which are not viewable by the actual user </summary>
+        /// <remarks> This can be used, in part, to put data from Shibboleth or the LDAP authentication process </remarks>
+        public string Internal_Notes { get; set;  }
+
+        /// <summary> Flag indicates if this user should appear as a possible scanning technician </summary>
+        public bool Scanning_Technician { get; set; }
+
+        /// <summary> Flag indicates if this user should appear as a possible processing technician </summary>
+        public bool Processing_Technician { get; set; }
 
         /// <summary> Get the user option as an object, by option key </summary>
         /// <param name="Option_Key"> Key for the user option </param>
@@ -330,8 +360,8 @@ namespace SobekCM.Library.Users
         /// <summary> User's template code editing MARC records  </summary>
         public string Edit_Template_MARC_Code { get; set; }
 
-		/// <summary> Flag indicates the user was Shibboleth authenticated </summary>
-		public bool Shibboleth_Authenticated { get; set; }
+		/// <summary> Enumeration indicates how the user authenticated with the system ( i.e., Sobek, Shibboleth, or LDAP ) </summary>
+        public User_Authentication_Type_Enum Authentication_Type { get; set; }
 
         /// <summary> List of item aggregations associated with this user </summary>
         public ReadOnlyCollection<User_Editable_Aggregation> Aggregations
