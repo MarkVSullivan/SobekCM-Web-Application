@@ -4500,7 +4500,7 @@ namespace SobekCM.Library.Database
 				// Execute this non-query stored procedure
 				SqlParameter[] paramList = new SqlParameter[24];
 				paramList[0] = new SqlParameter("@userid", User.UserID);
-				paramList[1] = new SqlParameter("@ufid", User.ShibbID);
+				paramList[1] = new SqlParameter("@shibbid", User.ShibbID);
 				paramList[2] = new SqlParameter("@username", User.UserName);
 				paramList[3] = new SqlParameter("@password", encryptedPassword);
 				paramList[4] = new SqlParameter("@emailaddress", User.Email);
@@ -4849,7 +4849,7 @@ namespace SobekCM.Library.Database
 			User_Object user = new User_Object();
 
 			DataRow userRow = ResultSet.Tables[0].Rows[0];
-			user.ShibbID = userRow["UFID"].ToString();
+			user.ShibbID = userRow["ShibbID"].ToString();
 			user.UserID = Convert.ToInt32(userRow["UserID"]);
 			user.UserName = userRow["username"].ToString();
 			user.Email = userRow["EmailAddress"].ToString();
@@ -4876,7 +4876,7 @@ namespace SobekCM.Library.Database
 			user.Receive_Stats_Emails = Convert.ToBoolean(userRow["Receive_Stats_Emails"]);
 			user.Has_Item_Stats = Convert.ToBoolean(userRow["Has_Item_Stats"]);
             user.LoggedOn = true;
-            user.Internal_Notes = userRow["Internal_Notes"].ToString();
+            user.Internal_Notes = userRow["InternalNotes"].ToString();
             user.Processing_Technician = Convert.ToBoolean(userRow["ProcessingTechnician"]);
             user.Scanning_Technician = Convert.ToBoolean(userRow["ScanningTechnician"]);
 
