@@ -923,8 +923,8 @@ namespace SobekCM.Library.Navigation
 
 						case My_Sobek_Type_Enum.Shibboleth_Landing:
 							if (!String.IsNullOrEmpty(returnUrl))
-								return this_base_url + "my/gatorlink?return=" + HttpUtility.UrlEncode(returnUrl).Replace("%2c", ",") + urlOptions2;
-							return this_base_url + "my/gatorlink" + urlOptions1;
+								return this_base_url + "my/shibboleth?return=" + HttpUtility.UrlEncode(returnUrl).Replace("%2c", ",") + urlOptions2;
+							return this_base_url + "my/shibboleth" + urlOptions1;
 
 						case My_Sobek_Type_Enum.Saved_Searches:
 							return this_base_url + "my/searches" + urlOptions1;

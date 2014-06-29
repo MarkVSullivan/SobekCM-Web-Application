@@ -7,7 +7,7 @@ namespace SobekCM.Library.Configuration
     public static class MapSearch_Configuration
     {
         //assign config file
-        private static string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/sobekcm_mapsearch.config";
+        private static string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/default/sobekcm_mapsearch.config";
 
         //gets all settings from config file
         public static List<string>[] getSettings(List<string> IdsFromPage)

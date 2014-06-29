@@ -246,7 +246,6 @@ namespace SobekCM.Library.Navigation
 					{
 						switch ( url_relative_list[0] )
 						{
-							case "gatorlink":
 							case "shibboleth":
 								Navigator.Mode = Display_Mode_Enum.My_Sobek;
 								Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Shibboleth_Landing;
@@ -567,7 +566,6 @@ namespace SobekCM.Library.Navigation
 												Navigator.Return_URL = QueryString["return"];
 											break;
 
-										case "gatorlink":
 										case "shibboleth":
 											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Shibboleth_Landing;
 											if (QueryString["return"] != null)

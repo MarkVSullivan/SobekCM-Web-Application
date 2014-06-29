@@ -211,7 +211,7 @@ namespace SobekCM.Library.Settings
 					string node_name = xmlReader.Name.ToLower();
 					switch (node_name)
 					{
-						case "connection_string":
+						case "Connection_String":
 							Database_Instance_Configuration newDb = new Database_Instance_Configuration();
 							if (xmlReader.MoveToAttribute("type"))
 							{
