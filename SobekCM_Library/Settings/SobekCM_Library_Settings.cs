@@ -153,6 +153,7 @@ namespace SobekCM.Library.Settings
 				Builder_Logs_Publish_Directory = String.Empty;
 				collapsibleFacets = false;
 				canRemoveSingleSearchTerm = true;
+				isHosted = false;
 
 				// Define new empty collections
 				dispositionFutureTypes = new Dictionary<int, KeyValuePair<int, string>>();
@@ -211,7 +212,7 @@ namespace SobekCM.Library.Settings
 					string node_name = xmlReader.Name.ToLower();
 					switch (node_name)
 					{
-						case "Connection_String":
+						case "connection_string":
 							Database_Instance_Configuration newDb = new Database_Instance_Configuration();
 							if (xmlReader.MoveToAttribute("type"))
 							{
@@ -228,6 +229,11 @@ namespace SobekCM.Library.Settings
 								if (xmlReader.Value.ToLower() == "false")
 									newDb.Can_Abort = false;
 							}
+							if (xmlReader.MoveToAttribute("isHosted"))
+							{
+								if (xmlReader.Value.ToLower() == "true")
+									isHosted = true;
+							}
 							if (xmlReader.MoveToAttribute("name"))
 								newDb.Name = xmlReader.Value.Trim();
 
@@ -238,12 +244,12 @@ namespace SobekCM.Library.Settings
 							databaseInfo.Add(newDb);
 							break;
 
-						case "error_emails":
+						case "erroremails":
 							xmlReader.Read();
 							systemErrorEmail = xmlReader.Value;
 							break;
 
-						case "error_page":
+						case "errorpage":
 							xmlReader.Read();
 							System_Error_URL = xmlReader.Value;
 							break;
@@ -1271,6 +1277,13 @@ namespace SobekCM.Library.Settings
 		public static bool Detailed_User_Aggregation_Permissions
 		{
 			get { return useDetailedUserAggregationPermissions; }
+		}
+
+		/// <summary> Flag indicates if this is a 'hosted' solution of SobekCM, in which case
+		/// certain fields should not be made available, even to "system admins" </summary>
+		public static bool isHosted
+		{
+			get; internal set;
 		}
 
 		#region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
