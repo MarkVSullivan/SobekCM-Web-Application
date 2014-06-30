@@ -346,6 +346,13 @@ GO
 DROP PROCEDURE [dbo].[mySobek_Get_User_By_UFID];
 GO
 
+UPDATE mySobek_User set ProcessingTechnician='false' where ProcessingTechnician is null;
+UPDATE mySobek_User set ScanningTechnician='false' where ScanningTechnician is null;
+GO
+
+ALTER TABLE mySobek_User ALTER COLUMN ProcessingTechnician bit not null;
+ALTER TABLE mySobek_User ALTER COLUMN ScanningTechnician bit not null;
+GO
 
 
 

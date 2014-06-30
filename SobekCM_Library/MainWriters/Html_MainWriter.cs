@@ -1303,7 +1303,7 @@ namespace SobekCM.Library.MainWriters
 			}
 
             // Add the time and trace at the end
-            if (( currentMode.Trace_Flag_Simple ) || (( currentUser != null ) && ( currentUser.Is_System_Admin )))
+			if ((HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth")) || (currentMode.Trace_Flag_Simple) || ((currentUser != null) && (currentUser.Is_System_Admin)))
             {
                 Output.WriteLine("<style type=\"text/css\">");
                 Output.WriteLine("table.Traceroute { border-width: 2px; border-style: solid; border-color: gray; border-collapse: collapse; background-color: white; font-size: small; }");

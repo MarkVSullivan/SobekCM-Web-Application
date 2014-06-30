@@ -15,27 +15,120 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.Users
 {
-    /// <summary> Enumeration used to indicate the way the current user has authenticated </summary>
+	#region User_Authenticaion_Type_Enum
+
+	/// <summary> Enumeration used to indicate the way the current user has authenticated </summary>
     /// <remarks> This is primarily used the first time a user logs on and registers with the system </remarks>
     public enum User_Authentication_Type_Enum : byte
     {
         /// <summary> No authentication (or not indicated) </summary>
         NONE = 0,
 
-        /// <summary> Authentication occurred using the internal SobekCM authentication system </summary>
-        Sobek,
+		/// <summary> Authentication occurred using LDAP, primarily using Active Directory and IIS challenge </summary>
+		LDAP,
 
         /// <summary> Authentication occurred using Shibboleth </summary>
         Shibboleth,
 
-        /// <summary> Authentication occurred using LDAP, primarily using Active Directory and IIS challenge </summary>
-        LDAP,
+		/// <summary> Authentication occurred using the internal SobekCM authentication system </summary>
+		Sobek,
 
         /// <summary> Authentication occurred using the basic IIS windows authentication pop-up </summary>
         Windows
     }
 
-    /// <summary> Represents a single mySobek user, including personal information, permissions,
+	#endregion
+
+	#region User_Authentication_Type_Enum and helped class
+
+	/// <summary> Enumeration of the main public elements associated with a user </summary>
+	/// <remarks> This is used for mapping during authentication (usually the first time a user logs on) </remarks>
+	public enum User_Object_Attribute_Mapping_Enum : byte
+	{
+		/// <summary> No mapping defined </summary>
+		NONE = 0,
+
+		/// <summary> Maps to the COLLEGE this user is associated with </summary>
+		College,
+
+		/// <summary> Maps to the DEPARTMENT this user is associated with </summary>
+		Department,
+
+		/// <summary> Maps to the EMAIL address of this user </summary>
+		Email,
+
+		/// <summary> Maps to the FIRSTNAME address of this user </summary>
+		Firstname,
+
+		/// <summary> Maps to the LASTNAME address of this user </summary>
+		Lastname,
+
+		/// <summary> Maps to the NICKNAME address of this user </summary>
+		Nickname,
+
+		/// <summary> Maps to the NOTES for this user, which are only visible to system and portal admins </summary>
+		Notes,
+
+		/// <summary> Maps to the ORGANIZATION this user is associated with </summary>
+		Organization,
+
+		/// <summary> Maps to the CODE for the ORGANIZATION this user is associated with </summary>
+		OrgCode,
+
+		/// <summary> Maps to the USERNAME address of this user </summary>
+		Username
+	}
+
+	/// <summary> Static helper class is used to convert strings to the enumeration for
+	/// the user object attribute mapping </summary>
+	public static class User_Object_Attribute_Mapping_Enum_Converter
+	{
+		/// <summary> Convert a string to the enumeration for the user object attribute mapping </summary>
+		/// <param name="Value"> String value </param>
+		/// <returns> Enumeration value, or User_Object_Attribute_Mapping_Enum.NONE </returns>
+		public static User_Object_Attribute_Mapping_Enum ToEnum(string Value)
+		{
+			switch (Value)
+			{
+				case "USERNAME":
+					return User_Object_Attribute_Mapping_Enum.Username;
+					
+				case "EMAIL":
+					return User_Object_Attribute_Mapping_Enum.Email;
+
+				case "FIRSTNAME":
+					return User_Object_Attribute_Mapping_Enum.Firstname;
+
+				case "LASTNAME":
+					return User_Object_Attribute_Mapping_Enum.Lastname;
+
+				case "NICKNAME":
+					return User_Object_Attribute_Mapping_Enum.Nickname;
+
+				case "NOTES":
+					return User_Object_Attribute_Mapping_Enum.Notes;
+
+				case "ORGANIZATION":
+					return User_Object_Attribute_Mapping_Enum.Organization;
+
+				case "ORGCODE":
+					return User_Object_Attribute_Mapping_Enum.OrgCode;
+
+				case "COLLEGE":
+					return User_Object_Attribute_Mapping_Enum.College;
+
+				case "DEPARTMENT":
+					return User_Object_Attribute_Mapping_Enum.Department;
+
+				default:
+					return User_Object_Attribute_Mapping_Enum.NONE;
+			}
+		}
+	}
+
+	#endregion
+
+	/// <summary> Represents a single mySobek user, including personal information, permissions,
     /// and preferences.  </summary>
     public class User_Object
     {

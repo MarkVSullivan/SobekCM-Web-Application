@@ -413,7 +413,7 @@ namespace SobekCM.Library.Settings
 		{
 			if (Settings_Dictionary.ContainsKey(Key))
 			{
-				Setting = Settings_Dictionary[Key];
+				Setting = Settings_Dictionary[Key].Trim();
 				Settings_Dictionary.Remove(Key);
 			}
 			else
@@ -426,7 +426,7 @@ namespace SobekCM.Library.Settings
 		{
 			if (Settings_Dictionary.ContainsKey(Key))
 			{
-				Setting = Settings_Dictionary[Key];
+				Setting = Settings_Dictionary[Key].Trim();
 				Settings_Dictionary.Remove(Key);
 			}
 			else

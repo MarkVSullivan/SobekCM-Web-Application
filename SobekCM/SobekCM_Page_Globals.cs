@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -592,6 +593,15 @@ namespace SobekCM
 				if (shibboleth_id == null)
 				{
 					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", SobekCM_Library_Settings.Shibboleth_User_Identity_Attribute + " server variable NOT found");
+
+					// For debugging purposes, if this SHOULD have included SHibboleth information, show in the trace route
+					if (HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth"))
+					{
+						foreach (string var in HttpContext.Current.Request.ServerVariables)
+						{
+							tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variables: " + var + " --> " + HttpContext.Current.Request.ServerVariables[var]);
+						}
+					}
 				}
 				else
 				{

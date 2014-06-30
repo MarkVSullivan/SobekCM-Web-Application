@@ -859,7 +859,7 @@ namespace SobekCM.Library.AdminViewer
 				}
 				else
 				{
-					if (setting_value.Trim().Length == 0)
+					if (( setting_value == null ) || (setting_value.Trim().Length == 0))
 					{
 						Output.WriteLine("                    <em>( no value )</em>");
 					}

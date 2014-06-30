@@ -699,8 +699,6 @@
     <Content Include="config\sobekcm.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="config\sobekcm_metadata.config" />
-    <Content Include="config\sobekcm_qc.config" />
     <Content Include="default\images\bookturner\button.psd" />
     <Content Include="default\images\bookturner\headDept.psd" />
     <Content Include="default\images\bookturner\headLogo.psd" />
@@ -721,11 +719,16 @@
     <Content Include="mySobek\projects\ORAL.pmets" />
     <Content Include="mySobek\projects\UFIR.pmets" />
     <Content Include="mySobek\projects\VODOU2.pmets" />
-    <Content Include="config\sobekcm_mapedit.config" />
-    <Content Include="config\sobekcm_mapeditor.config" />
-    <Content Include="config\sobekcm_mapsearch.config" />
     <Content Include="default\scripts\sobekcm_full.min.js.map">
       <DependentUpon>sobekcm_full.js</DependentUpon>
+    </Content>
+    <Content Include="config\default\sobekcm_mapeditor.config" />
+    <Content Include="config\default\sobekcm_mapsearch.config" />
+    <Content Include="config\default\sobekcm_metadata.config" />
+    <Content Include="config\default\sobekcm_qc.config" />
+    <Content Include="config\default\sobekcm_qc_errors.config" />
+    <Content Include="config\default\sobekcm_shibboleth.config">
+      <SubType>Designer</SubType>
     </Content>
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
@@ -750,6 +753,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="config\user\" />
     <Folder Include="winauth\" />
   </ItemGroup>
   <PropertyGroup>

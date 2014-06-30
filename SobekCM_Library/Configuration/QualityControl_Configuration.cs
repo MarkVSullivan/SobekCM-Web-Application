@@ -12,7 +12,7 @@ namespace SobekCM.Library.Configuration
 {
     /// <summary> Class keeps all the system-wide quality control profiles which 
     /// can be used within the system  </summary>
-    public  static class QualityControl_Configuration
+    public static class QualityControl_Configuration
     {
         private static bool attemptedRead;
         private static Dictionary<string, QualityControl_Profile> profiles;
