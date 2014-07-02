@@ -81,6 +81,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			//Assign the current resource object to qc_item
 			qc_item = Current_Object;
+            //Save to the User's session
+		    HttpContext.Current.Session[Current_Object.BibID + "_" + Current_Object.VID + " QC Work"] = qc_item;
  
 			// If there is no user, send to the login
 			if (CurrentUser == null)
