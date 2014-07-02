@@ -351,14 +351,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					}
 				}
 
-				// If the thumbnail is not in the METS, just guess it's existence
+				// If the thumbnail is not in the METS, just guess its existence
 				if (thumbnail.Length == 0)
 					thumbnail = jpeg.ToLower().Replace(".jpg", "thm.jpg");
 
 				// Get the image URL
 				CurrentMode.Page = (ushort) (page_index + 1);
 				CurrentMode.ViewerCode = (page_index + 1).ToString();
-				string url = CurrentMode.Redirect_URL();
+                //string url = CurrentMode.Redirect_URL()
+				string url = CurrentMode.Redirect_URL()+"j";
 
                 // Determine the width information and the URL for the image
                 string image_url; // = (CurrentItem.Web.Source_URL + "/" + thumbnail).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
