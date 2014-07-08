@@ -2,7 +2,7 @@
 //Code using JQuery qTip
 $(document).ready(function() {
   //  alert('calling this function successfully');
-    $('[id*=sbkThumbnailImg').each(function () {
+    $('[id*=sbkThumbnailImg]').each(function () {
 
         var $this = $(this);
         var title_count = $this.attr('id').split('g')[1];
