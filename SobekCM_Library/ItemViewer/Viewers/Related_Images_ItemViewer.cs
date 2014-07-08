@@ -358,8 +358,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Get the image URL
 				CurrentMode.Page = (ushort) (page_index + 1);
 				CurrentMode.ViewerCode = (page_index + 1).ToString();
-                //string url = CurrentMode.Redirect_URL()
-				string url = CurrentMode.Redirect_URL()+"j";
+				string url = CurrentMode.Redirect_URL();
 
                 // Determine the width information and the URL for the image
                 string image_url; // = (CurrentItem.Web.Source_URL + "/" + thumbnail).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");

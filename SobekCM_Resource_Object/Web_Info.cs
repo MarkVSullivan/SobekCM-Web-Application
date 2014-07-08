@@ -215,10 +215,24 @@ namespace SobekCM.Resource_Object
                 // Check each page
                 if (viewer_to_file != null)
                 {
-                    if (viewer_to_file.ContainsKey(lower_code))
-                    {
-                        return lower_code;
-                    }
+					if (viewer_to_file.ContainsKey(lower_code))
+					{
+						return lower_code;
+					}
+					else
+					{
+						// TODO: This should not be hardcoded for JPEG, ZOOMABLE, and then TEXT priority. This should come from the item viewer priority table in the database.
+						int testInt;
+						if (Int32.TryParse(lower_code, out testInt))
+						{
+							if (viewer_to_file.ContainsKey(lower_code + "j"))
+								return lower_code + "j";
+							if (viewer_to_file.ContainsKey(lower_code + "x"))
+								return lower_code + "x";
+							if (viewer_to_file.ContainsKey(lower_code + "t"))
+								return lower_code + "t";
+						}
+					}
                 }
             }
 
