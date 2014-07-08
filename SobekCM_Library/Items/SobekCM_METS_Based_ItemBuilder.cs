@@ -1063,14 +1063,25 @@ namespace SobekCM.Library.Items
 				if (!views_by_view_name.ContainsKey(thisView.View_Type.ToString()))
 					views_by_view_name[thisView.View_Type.ToString()] = thisView;
 			}
-			foreach (string thisViewerType in Item_Viewer_Priority)
-			{
-				if (views_by_view_name.ContainsKey(thisViewerType))
-				{
-					Package_To_Finalize.Behaviors.Default_View = views_by_view_name[thisViewerType];
-					break;
-				}
-			}
+
+            //If no viewer priorities have been passed in, add the default one
+		    if (Item_Viewer_Priority == null)
+		    {
+                //TODO: Add default view here if present
+		       // if (views_by_view_name != null)
+		       //     Package_To_Finalize.Behaviors.Default_View =
+		    }
+		    else
+		    {
+		        foreach (string thisViewerType in Item_Viewer_Priority)
+		        {
+		            if (views_by_view_name.ContainsKey(thisViewerType))
+		            {
+		                Package_To_Finalize.Behaviors.Default_View = views_by_view_name[thisViewerType];
+		                break;
+		            }
+		        }
+		    }
 		}
 
 
