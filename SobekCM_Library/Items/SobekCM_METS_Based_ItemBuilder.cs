@@ -274,7 +274,7 @@ namespace SobekCM.Library.Items
 				bool multiple_volumes_exist = Convert.ToInt32(mainItemRow["Total_Volumes"]) > 1;
 
 				// Now finish building the object from the application state values
-				Finish_Building_Item(thisPackage, itemDetails, multiple_volumes_exist, Item_Viewer_Priority);              
+				Finish_Building_Item(thisPackage, itemDetails, multiple_volumes_exist, Item_Viewer_Priority, Tracer);              
 
 				return thisPackage;
 			}
@@ -329,7 +329,7 @@ namespace SobekCM.Library.Items
 				}
 
 				// Now finish building the object from the application state values
-				Finish_Building_Item(thisPackage, itemDetails, false, Item_Viewer_Priority);
+				Finish_Building_Item(thisPackage, itemDetails, false, Item_Viewer_Priority, Tracer);
 
 				return thisPackage;
 			}
@@ -393,8 +393,15 @@ namespace SobekCM.Library.Items
 
 		#region Private methods for finalizing builds
 
-		private void Finish_Building_Item(SobekCM_Item Package_To_Finalize, DataSet DatabaseInfo, bool Multiple, List<string> Item_Viewer_Priority )
+		private void Finish_Building_Item(SobekCM_Item Package_To_Finalize, DataSet DatabaseInfo, bool Multiple, List<string> Item_Viewer_Priority, Custom_Tracer Tracer )
 		{
+			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load the data from the database into the resource object");
+
+			if ((DatabaseInfo == null) || (DatabaseInfo.Tables[2] == null) || (DatabaseInfo.Tables[2].Rows.Count == 0))
+			{
+				Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Invalid data from the database, either not enough tables, or no rows in Tables[2]");
+			}
+
 			// Copy over some basic values
 			DataRow mainItemRow = DatabaseInfo.Tables[2].Rows[0];
 			Package_To_Finalize.Behaviors.Set_Primary_Identifier(mainItemRow["Primary_Identifier_Type"].ToString(), mainItemRow["Primary_Identifier"].ToString());
@@ -430,8 +437,6 @@ namespace SobekCM.Library.Items
 					Package_To_Finalize.Tracking.Tracking_Box= mainItemRow["Tracking_Box"].ToString();
 			}
 
-
-
 			// Set more of the sobekcm web portions in the item 
 			Package_To_Finalize.Web.Set_BibID_VID(Package_To_Finalize.BibID, Package_To_Finalize.VID);
 			Package_To_Finalize.Web.Image_Root = SobekCM_Library_Settings.Image_URL;
@@ -441,6 +446,8 @@ namespace SobekCM.Library.Items
 			// Set the serial hierarchy from the database (if multiple)
 			if ((Multiple) && (mainItemRow["Level1_Text"].ToString().Length > 0))
 			{
+				Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Assigning serial hierarchy from the database info");
+
 				bool found = false;
 
 				// Get the values from the database first
@@ -535,6 +542,7 @@ namespace SobekCM.Library.Items
 			Package_To_Finalize.Behaviors.Can_Be_Described = can_describe;
 
 			// Look for user descriptions
+			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Look for user descriptions (or tags)");
 			foreach (DataRow thisRow in DatabaseInfo.Tables[0].Rows)
 			{
 				string first_name = thisRow["FirstName"].ToString();
@@ -556,12 +564,14 @@ namespace SobekCM.Library.Items
 			}
 
 			// Look for ticklers
+			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load ticklers from the database info");
 			foreach (DataRow thisRow in DatabaseInfo.Tables[3].Rows)
 			{
 				Package_To_Finalize.Behaviors.Add_Tickler(thisRow["MetadataValue"].ToString().Trim());
 			}
 
 			// Set the aggregations in the package to the aggregation links from the database
+			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load the aggregations from the database info");
 			Package_To_Finalize.Behaviors.Clear_Aggregations();
 			foreach (DataRow thisRow in DatabaseInfo.Tables[1].Rows)
 			{
@@ -582,6 +592,8 @@ namespace SobekCM.Library.Items
 			}
 
 			// Step through each page and set the static page count
+			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Set the static page count");
+
 			pageseq = 0;
 			List<Page_TreeNode> pages_encountered = new List<Page_TreeNode>();
 			foreach (abstract_TreeNode rootNode in Package_To_Finalize.Divisions.Physical_Tree.Roots)
@@ -592,6 +604,7 @@ namespace SobekCM.Library.Items
 			Package_To_Finalize.Web.Static_Division_Count = divseq;
 
 			// Make sure no icons were retained from the METS file itself
+			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load the wordmarks/icons from the database info");
 			Package_To_Finalize.Behaviors.Clear_Wordmarks();
 
 			// Add the icons from the database information
@@ -626,6 +639,7 @@ namespace SobekCM.Library.Items
 			}
 
 			// Make sure no web skins were retained from the METS file itself
+			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load the web skins from the database info");
 			Package_To_Finalize.Behaviors.Clear_Web_Skins();
 
 			// Add the web skins from the database
@@ -633,6 +647,8 @@ namespace SobekCM.Library.Items
 			{
 				Package_To_Finalize.Behaviors.Add_Web_Skin(skinRow[0].ToString().ToUpper());
 			}
+
+			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Set the views from a combination of the METS and the database info");
 
 			// Make sure no views were retained from the METS file itself
 			Package_To_Finalize.Behaviors.Clear_Views();
@@ -1051,6 +1067,7 @@ namespace SobekCM.Library.Items
 			}
 
 			// Set the default views for this item
+			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Set the default view, if not already assigned");
 			Package_To_Finalize.Behaviors.Default_View = null;
 			Dictionary<string, View_Object> views_by_view_name = new Dictionary<string, View_Object>();
 			foreach (View_Object thisView in Package_To_Finalize.Behaviors.Views)
@@ -1082,6 +1099,9 @@ namespace SobekCM.Library.Items
 		            }
 		        }
 		    }
+
+			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Done merging the database information with the resource object");
+
 		}
 
 
