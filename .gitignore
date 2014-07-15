@@ -164,6 +164,11 @@ SobekCM Web.v11.suo
 SobekCM Builder.v11.suo
 
 # ====================================
+#  SMaRT files/folders to ignor
+# ====================================
+Other Tools/SMaRT/_ReSharper.SMART
+
+# ====================================
 #  Installer files/folders to ignore
 # ====================================
 Installer/SobekCM_Wix_Installer/Staging64/

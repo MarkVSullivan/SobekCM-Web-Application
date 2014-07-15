@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?define UpgradeCode="{9E8A3571-4980-42C2-BDB3-21B0D8EBC010}"?>
+<?define ProductCode="{39D36189-72AC-4E08-BCC6-7CE0D4E69DF8}"?>
+<?define ProductVersion="3.42.0.0"?>
+
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Product Id="$(var.ProductCode)" Name="SobekCM Management and Reporting Tool" Language="1033" Version="$(var.ProductVersion)" Manufacturer="SobekCM" UpgradeCode="$(var.UpgradeCode)">
+    <Package  Id="*"  Description="SMaRT UFDC Installer" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." AllowDowngrades="no" />
+
+    <Condition Message="You need to be an administrator to install this product.">Privileged</Condition>
+
+    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="PFiles">
+        <Directory Id="SobekCM" Name="SobekCM">
+          <Directory Id="INSTALLDIR" Name="SMaRT">
+            <Component Id="MainExecutable" Guid="3DAD761B-E587-4A36-A930-968F17213A5C">
+              <File Id="SobekMetsEditorExe" Name="SMaRT.exe" Source="..\SMaRT\bin\release\SMaRT.exe" KeyPath="yes">
+                <Shortcut Id="startMenuMetsIcon" Directory="ProgramMenuDir" Name="SMaRT" WorkingDirectory='INSTALLDIR' Icon="App.ico" IconIndex="0" Advertise="yes" />
+                <Shortcut Id="desktopMetsIcon" Directory="DesktopFolder" Name="SMaRT" WorkingDirectory='INSTALLDIR' Icon="App.ico" IconIndex="0" Advertise="yes" />
+              </File>
+            </Component>
+            <Component Id="MainExecutableConfig" Guid="DAD5294A-9171-467A-81C1-4498C6F0D501">
+              <File Id="SobekMetsEditorExeConfig" Name="SMaRT.exe.config" Source="..\SMaRT\bin\release\SMaRT.exe.config" KeyPath="yes" />
+            </Component>
+            <Component Id="CustomGridHelperLibrary" Guid="B9AE4E9C-01B2-42C6-A9CF-3AF8FADB1A98">
+              <File Id="CustomGridDll" Name="Custom_Grid_1_3.dll" Source="..\SMaRT\bin\release\Custom_Grid_1_3.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="SobekLibraryHelperLibrary" Guid="E94142D6-BACA-4899-999E-5E05670B1365">
+              <File Id="SobekLibraryDll" Name="SobekCM_Library.dll" Source="..\SMaRT\bin\release\SobekCM_Library.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="FileUploadHelperLibrary" Guid="D3B7E167-9BE8-4211-9EDF-A3E18A02655A">
+              <File Id="FileUploadLibraryDll" Name="FileUploadLibrary.dll" Source="..\SMaRT\bin\release\FileUploadLibrary.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="SobekResourceHelperLibrary" Guid="26A23AB0-9CB5-4718-84F8-92E8C053214C">
+              <File Id="SobekResourceDll" Name="SobekCM_Resource_Object.dll" Source="..\SMaRT\bin\release\SobekCM_Resource_Object.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="SobekToolsHelperLibrary" Guid="B6C7E800-A4AB-4164-873A-E289427695C3">
+              <File Id="SobekToolsDll" Name="SobekCM_Tools.dll" Source="..\SMaRT\bin\release\SobekCM_Tools.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="GemBoxSpreadsheetHelperLibrary" Guid="3C0AA27F-64D9-4962-A82B-10FE12CD906E">
+              <File Id="GemBoxSpreadsheetDll" Name="GemBox.Spreadsheet.dll" Source="..\DLLs\GemBox.Spreadsheet.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="MicrosoftApplicationBlocksData" Guid="17D5F50B-AA44-47E8-B668-2CD56A6F0239">
+              <File Id="MicrosoftApplicationBlocksDataDll" Name="Microsoft.ApplicationBlocks.Data.dll" Source="..\DLLs\Microsoft.ApplicationBlocks.Data.Dll" KeyPath="yes" />
+            </Component>
+            <Component Id="Z3950HelperLibraries" Guid="2234E846-B29C-4CF7-8FB2-800F0F53912A">
+              <File Id="ZoomNetDll" Name="Zoom.Net.dll" Source="..\DLLs\Zoom.Net\Zoom.Net.dll" KeyPath="yes" />
+              <File Id="ZoomNetYazSharpDll" Name="Zoom.Net.YazSharp.dll" Source="..\DLLs\Zoom.Net\Zoom.Net.YazSharp.dll" />
+              <File Id="Zlib1Dll" Name="zlib1.dll" Source="..\DLLs\Zoom.Net\zlib1.dll" />
+              <File Id="YazDll" Name="yaz.dll" Source="..\DLLs\Zoom.Net\yaz.dll" />
+              <File Id="IConvDll" Name="iconv.dll" Source="..\DLLs\Zoom.Net\iconv.dll" />
+              <File Id="LibXml2Dll" Name="libxml2.dll" Source="..\DLLs\Zoom.Net\libxml2.dll" />
+              <File Id="LibXsltDll" Name="libxslt.dll" Source="..\DLLs\Zoom.Net\libxslt.dll" />
+            </Component>
+            <Component Id="SolrNetHelperLibraries" Guid="43E81D97-3440-488C-B0F9-16667AAEBEAF">
+              <File Id="SolrNetDll" Name="SolrNet.dll" Source="..\DLLs\SolrNet\SolrNet.dll" KeyPath="yes" />
+              <File Id="MicrosoftPracticesServiceLocDll" Name="Microsoft.Practices.ServiceLocation.dll" Source="..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll" />
+            </Component>
+            <Component Id="GplLicense" Guid="BB59165D-3206-4BA7-A7C2-C60C75D8B7CD">
+              <File Id="LicenseTxt" Name="LICENSE.txt" Source="Files\LICENSE.txt" KeyPath="yes" />
+            </Component>
+            <Component Id="Readme" Guid="99975680-EFB4-47E6-BDD1-819D474DA3CD">
+              <File Id="ReadmeTxt" Name="README.txt" Source="Files\README.txt" KeyPath="yes" />
+            </Component>
+            <Directory Id="z3950SubDir" Name="z3950">
+              <Component Id="Z3950LicensesComponent" Guid="2AE134ED-1AE5-49CE-88BB-0C4282C0C965">
+                <File Id="LicenseNoExt" Name="LICENSE" Source="..\DLLs\Zoom.Net\LICENSE" KeyPath="yes" />
+                <File Id="LicenseIconv" Name="LICENSE.iconv" Source="..\DLLs\Zoom.Net\LICENSE.iconv" />
+                <File Id="LicenseLibXml2" Name="LICENSE.libxml2" Source="..\DLLs\Zoom.Net\LICENSE.libxml2" />
+                <File Id="LicenseYaz" Name="LICENSE.yaz" Source="..\DLLs\Zoom.Net\LICENSE.yaz" />
+                <File Id="LicenseZlib" Name="LICENSE.zlib" Source="..\DLLs\Zoom.Net\LICENSE.zlib" />
+                <File Id="LicenseZoomNet" Name="LICENSE.zoom.net" Source="..\DLLs\Zoom.Net\LICENSE.zoom.net" />
+                <File Id="LicenseZoomNetYazSharp" Name="LICENSE.zoom.net.yazsharp" Source="..\DLLs\Zoom.Net\LICENSE.zoom.net.yazsharp" />
+              </Component>
+            </Directory>
+            <Directory Id="configSubDir" Name="config">
+              <Component Id= "configSubDir" DiskId ="1" Guid="CF577E51-8911-4D85-AA5F-4D0836580061">
+                <File Id="UfdcConfig" Name="sobekcm.config" Source="..\Data\sobekcm.config" KeyPath="yes" />
+              </Component>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuDir" Name="SobekCM">
+          <Component Id="ProgramMenuDir" Guid="EF86A8BA-9172-402F-A57A-A424ABEE96A3">
+            <RemoveFolder Id='RemoveProgramMenuDir' Directory='ProgramMenuDir'  On='uninstall' />
+            <RegistryValue Root='HKCU' Key='Software\[Manufacturer]\[ProductName]' Type='string' Value='' KeyPath='yes' />
+          </Component>
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+
+
+
+    <Feature Id="Complete" Title="SobekCM METS Editor" Description="Complete Package" Display="expand" Level="1" ConfigurableDirectory="INSTALLDIR">
+      <Feature Id="MainProgram" Title="SobekCM METS Editor Executables" Description="Main Executable" Level="1">
+        <ComponentRef Id="MainExecutable" />
+        <ComponentRef Id="MainExecutableConfig" />
+        <ComponentRef Id="CustomGridHelperLibrary" />
+        <ComponentRef Id="SobekLibraryHelperLibrary" />
+        <ComponentRef Id="FileUploadHelperLibrary" />
+        <ComponentRef Id="SobekResourceHelperLibrary" />
+        <ComponentRef Id="SobekToolsHelperLibrary" />
+        <ComponentRef Id="GemBoxSpreadsheetHelperLibrary" />
+        <ComponentRef Id="MicrosoftApplicationBlocksData" />
+        <ComponentRef Id="Z3950HelperLibraries" />
+        <ComponentRef Id="SolrNetHelperLibraries" />
+        <ComponentRef Id="GplLicense" />
+        <ComponentRef Id="Readme" />
+        <ComponentRef Id="Z3950LicensesComponent" />
+        <ComponentRef Id="ProgramMenuDir" />
+        <ComponentRef Id="configSubDir" />
+        <!--        <ComponentGroupRef Id="Product.Generated" /> -->
+      </Feature>
+    </Feature>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <Icon Id="App.ico" SourceFile="..\SMaRT.ico" />
+    <Property Id="ARPPRODUCTICON" Value="App.ico" />
+    <Property Id="ARPHELPLINK" Value="http://ufdc.ufl.edu/smart" />
+
+  </Product>
+</Wix>
