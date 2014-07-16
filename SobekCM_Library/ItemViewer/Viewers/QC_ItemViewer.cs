@@ -68,7 +68,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    private bool volumeErrorPresent = false;
 	    private string volumeErrorCode = String.Empty;
 
-		/// <summary> Constructor for a new instance of the QC_ItemViewer class </summary>
+        /// <summary> Constructor for a new instance of the QC_ItemViewer class </summary>
 		/// <param name="Current_Object"> Digital resource to display </param>
 		/// <param name="Current_User"> Current user for this session </param>
 		/// <param name="Current_Mode"> Navigation object which encapsulates the user's current request </param>
@@ -176,6 +176,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		    allThumbnailsOuterDiv1Height = -1;
             string temp_width = HttpContext.Current.Request.Form["QC_window_width"] ?? String.Empty;
             string temp_height = HttpContext.Current.Request.Form["QC_window_height"] ?? String.Empty;
+           
             if ((temp_width.Length > 0) && (temp_height.Length > 0))
             {
                 // Parse the values and save to the session
