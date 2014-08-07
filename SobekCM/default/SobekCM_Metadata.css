@@ -370,6 +370,9 @@ input.etd_graduationsemester_input { width: 150px; margin-right: 10px; margin-to
 .bibid_div { padding-top: 8px; line-height: 1.5; } 
 .vid_div { padding-top: 8px; line-height: 1.5; } 
 
+/*.sbk_uf_rights_title{ color: gray !important;font-weight: bold;}*/
+
+.uf_rights_column:hover{cursor: hand;cursor: pointer;background-color: #dcdcdc; }
 
 input.download_input { width: 180px; margin-top: 6px; }
 input.download_input_focused { color:#0000a8; width: 180px; margin-top: 6px; background-color: #fbf7b4; }

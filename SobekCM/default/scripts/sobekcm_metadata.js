@@ -1901,6 +1901,18 @@ function close_name_form( windowname )
     return false;
 }
 
+function set_uf_rights(textarea_name, new_value) {
+    var textarea = document.getElementById(textarea_name);
+    textarea.value = new_value;
+
+    var rights_table = document.getElementById('uf_rights');
+    if (rights_table != null)
+        toggle('uf_rights');
+
+    return false;
+
+}
+
 function set_cc_rights( textarea_name, new_value )
 {
     var textarea = document.getElementById(textarea_name);  
@@ -1915,7 +1927,20 @@ function set_cc_rights( textarea_name, new_value )
 
 function open_cc_rights()
 {
+    //First ensure the uf_rights table is hidden
+    var uf_rights = document.getElementById('uf_rights');
+    uf_rights.style.display='none';
+
     toggle('cc_rights');	
+    return false;
+}
+
+function open_uf_rights() {
+    //First ensure the cc_rights table is hidden
+    var cc_rights = document.getElementById('cc_rights');
+    cc_rights.style.display = 'none';
+
+    toggle('uf_rights');
     return false;
 }
 
