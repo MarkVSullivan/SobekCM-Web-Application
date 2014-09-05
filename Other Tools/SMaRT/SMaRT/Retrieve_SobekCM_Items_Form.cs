@@ -11,6 +11,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using SobekCM.Library;
+using SobekCM.Library.Settings;
 
 #endregion
 
@@ -473,7 +474,7 @@ namespace SobekCM.Management_Tool
             {
                 try
                 {
-                    string[] dirs = Directory.GetDirectories(@"\\cns-uflib-ufdc\UFDC");
+                   // string[] dirs = Directory.GetDirectories(@"\\cns-uflib-ufdc\UFDC");
                 }
                 catch
                 {
