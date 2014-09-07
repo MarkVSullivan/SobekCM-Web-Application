@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 #endregion
 
@@ -11,6 +12,7 @@ namespace SobekCM.Resource_Object.Divisions
     /// TreeNode objects which represent divisions, pages, and files </summary>
     /// <remarks> Object created by Mark V Sullivan (2006) for University of Florida's Digital Library Center. </remarks>
     [Serializable]
+    [DataContract]
     public class Division_Tree
     {
         /// <summary> Stores the root node for this tree </summary>
@@ -23,6 +25,7 @@ namespace SobekCM.Resource_Object.Divisions
         }
 
         /// <summary> Gets the root nodes for this tree </summary>
+        [DataMember]
         public List<abstract_TreeNode> Roots
         {
             get { return rootNodes; }

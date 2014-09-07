@@ -637,7 +637,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             }
 
             // Now, add any unanalyzed DMD sections
-            if (Item_To_Save.Unanalyzed_DMDSEC_Count > 0)
+            if (( Item_To_Save.Unanalyzed_DMDSECs != null ) && ( Item_To_Save.Unanalyzed_DMDSECs.Count > 0 ))
             {
                 foreach (Unanalyzed_METS_Section thisSection in Item_To_Save.Unanalyzed_DMDSECs)
                 {
@@ -835,7 +835,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             }
 
             // Now, add any unanalyzed AMD sections
-            if (Item_To_Save.Unanalyzed_AMDSEC_Count > 0)
+            if (Item_To_Save.Unanalyzed_AMDSECs != null)
             {
                 foreach (Unanalyzed_METS_Section thisSection in Item_To_Save.Unanalyzed_AMDSECs)
                 {

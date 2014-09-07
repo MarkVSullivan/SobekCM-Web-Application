@@ -1,9 +1,7 @@
 #region Using directives
 
 using System;
-using System.Collections.Generic;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Metadata_Modules;
+using System.Runtime.Serialization;
 
 #endregion
 
@@ -12,6 +10,7 @@ namespace SobekCM.Resource_Object.Divisions
     /// <summary> Abstract class representing a single tree node in a structural map tree associated with a digital resource </summary>
     /// <remarks> Object created by Mark V Sullivan (2006) for University of Florida's Digital Library Center. </remarks>
     [Serializable]
+    [DataContract]
     public abstract class abstract_TreeNode : MetadataDescribableBase
     {
         /// <summary> Main label for this node, if there is one </summary>
@@ -43,6 +42,7 @@ namespace SobekCM.Resource_Object.Divisions
         }
 
         /// <summary> Label for this node, if there is one </summary>
+        [DataMember]
         public virtual string Label
         {
             get { return label; }
@@ -50,6 +50,7 @@ namespace SobekCM.Resource_Object.Divisions
         }
 
         /// <summary> Gets and sets the type of this node </summary>
+        [DataMember]
         public string Type
         {
             get { return type; }

@@ -24,12 +24,10 @@ namespace SobekCM.Resource_Object.Behaviors
 	[Serializable]
 	public class Behaviors_Info : XML_Writing_Base_Type
 	{
-		private List<Aggregation_Info> aggregations;
-		private List<string> ticklers;
-		private List<View_Object> views;
-		private View_Object defaultView;
+		private List<DisplayItem_Aggregation> aggregations;
+		private List<string> viewers;
 		private List<string> webskins;
-		private List<Wordmark_Info> wordmarks;
+		private List<DisplayItem_Wordmark> wordmarks;
 		private readonly Identifier_Info primaryIdentifier;
 		private List<Descriptive_Tag> tags;    
 

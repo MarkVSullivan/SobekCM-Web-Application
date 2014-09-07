@@ -103,7 +103,7 @@ namespace SobekCM.Builder
 	        {
 		        if ((!aborted) && (dbConfig.Is_Active) && (dbConfig.Can_Abort))
 		        {
-			        SobekCM_Database.Connection_String = dbConfig.Connection_String;
+			        Resource_Object.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 			        Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 
 			        // Check that this should not be skipped or aborted
@@ -492,7 +492,8 @@ namespace SobekCM.Builder
 			        }
 			        else
 			        {
-				        SobekCM_Database.Connection_String = dbConfig.Connection_String;
+				        SobekCM.Resource_Object.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
+			            SobekCM.Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 				        Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig.Name, dbConfig.Can_Abort);
 						newLoader.Perform_BulkLoader(Verbose);
 

@@ -679,9 +679,9 @@ namespace SobekCM.Resource_Object.Database
 			Save_Item_Metadata_Information(ThisPackage);
 
             // Step through all the metadata modules and allow the modules to save to the database
-            if (ThisPackage.Metadata_Modules_Count > 0)
+            if ( ThisPackage.Metadata_Modules != null ) 
             {
-	            foreach (iMetadata_Module thisModule in ThisPackage.All_Metadata_Modules)
+	            foreach (iMetadata_Module thisModule in ThisPackage.Metadata_Modules)
                 {
 	                string error_message;
 	                thisModule.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
@@ -701,9 +701,9 @@ namespace SobekCM.Resource_Object.Database
                 //geoInfo.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
 
                 //Step through all the metadata modules and allow the modules to save to the database
-                if (pages[i].Metadata_Modules_Count > 0)
+                if ( pages[i].Metadata_Modules != null )
                 {
-                    foreach (iMetadata_Module thisModule in pages[i].All_Metadata_Modules)
+                    foreach (iMetadata_Module thisModule in pages[i].Metadata_Modules)
                     {
                         GeoSpatial_Information geoInfo = pages[i].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
                         string error_message;
@@ -1973,9 +1973,9 @@ namespace SobekCM.Resource_Object.Database
             metadataTerms.AddRange(ThisPackage.Bib_Info.Metadata_Search_Terms);
 
             // Step through all the metadata modules and add any additional metadata search terms
-            if (ThisPackage.Metadata_Modules_Count > 0)
+            if (ThisPackage.Metadata_Modules != null )
             {
-                foreach (iMetadata_Module thisModule in ThisPackage.All_Metadata_Modules)
+                foreach (iMetadata_Module thisModule in ThisPackage.Metadata_Modules)
                 {
                     List<KeyValuePair<string, string>> moduleMetadata = thisModule.Metadata_Search_Terms;
                     if ( moduleMetadata != null )

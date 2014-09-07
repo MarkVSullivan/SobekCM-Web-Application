@@ -840,13 +840,11 @@ namespace SobekCM.Library.Items
 			// Add the thumbnail view, if requested and has multiple pages
 			if (Package_To_Finalize.Divisions.Page_Count > 1)
 			{
-				if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))
-				{
-					Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.RELATED_IMAGES]);
-					viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
-				}
-
-				Package_To_Finalize.Behaviors.Add_View(View_Enum.QUALITY_CONTROL);
+			    if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))
+			    {
+			        Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.RELATED_IMAGES]);
+			        viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
+			    }
 			}
 			else
 			{
@@ -855,6 +853,9 @@ namespace SobekCM.Library.Items
 					viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
 				}
 			}
+
+            // Always add the QC viewer ( the QC viewer will redirect to upload files if there are NO pages)
+            Package_To_Finalize.Behaviors.Add_View(View_Enum.QUALITY_CONTROL);
 
 			// If this item has more than one division, look for the TOC viewer
 			if ((Package_To_Finalize.Divisions.Has_Multiple_Divisions) && (!Package_To_Finalize.Bib_Info.ImageClass))

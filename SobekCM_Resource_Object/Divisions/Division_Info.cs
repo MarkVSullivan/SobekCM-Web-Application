@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
 
 #endregion
@@ -13,6 +14,7 @@ namespace SobekCM.Resource_Object.Divisions
     /// <summary> Stores information about the divisions and files associated with this resource </summary>
     /// <remarks> Object created by Mark V Sullivan (2006) for University of Florida's Digital Library Center.</remarks>
     [Serializable]
+    [DataContract]
     public class Division_Info : XML_Writing_Base_Type
     {
         private string source_directory;
@@ -48,13 +50,12 @@ namespace SobekCM.Resource_Object.Divisions
         }
 
         /// <summary> Returns the readonly collection of outer divisions  </summary>
+        [DataMember(EmitDefaultValue = false)]
         public ReadOnlyCollection<Outer_Division_Info> Outer_Divisions
         {
             get
             {
-                if (outerDivisions == null)
-                    return new ReadOnlyCollection<Outer_Division_Info>(new List<Outer_Division_Info>());
-                return new ReadOnlyCollection<Outer_Division_Info>(outerDivisions);
+                return outerDivisions == null ? null : new ReadOnlyCollection<Outer_Division_Info>(outerDivisions);
             }
         }
 
@@ -166,12 +167,14 @@ namespace SobekCM.Resource_Object.Divisions
 
         /// <summary> Gets the physical division hierarchy tree (analogous to the table of contents 
         /// for an original phyiscl object) </summary>
+        [DataMember(EmitDefaultValue = false)]
         public Division_Tree Physical_Tree
         {
             get { return physicalDivisionTree; }
         }
 
         /// <summary> Gets the division hierarchy tree which contains all other download files </summary>
+        [DataMember(EmitDefaultValue = false)]
         public Division_Tree Download_Tree
         {
             get { return downloadDivisionTree; }

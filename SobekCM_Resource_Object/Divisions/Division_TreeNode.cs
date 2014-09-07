@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 #endregion
 
@@ -11,6 +12,7 @@ namespace SobekCM.Resource_Object.Divisions
     /// <remarks> This class extends the <see cref="abstract_TreeNode"/> class. <br /> <br /> 
     /// Object created by Mark V Sullivan (2006) for University of Florida's Digital Library Center. </remarks>
     [Serializable]
+    [DataContract]
     public class Division_TreeNode : abstract_TreeNode
     {
         /// <summary> Stores the children for this node </summary>
@@ -34,6 +36,7 @@ namespace SobekCM.Resource_Object.Divisions
 
         /// <summary> Gets the flag indicating if this is a page node or not </summary>
         /// <value>Always returns 'FALSE'</value>
+        [DataMember]
         public override bool Page
         {
             get { return false; }
@@ -41,6 +44,7 @@ namespace SobekCM.Resource_Object.Divisions
 
         /// <summary> Gets the collection of child nodes </summary>
         /// <remarks> This returns a generic list which is a collection of <see cref="abstract_TreeNode"/> objects. </remarks>
+        [DataMember]
         public List<abstract_TreeNode> Nodes
         {
             get { return children; }
@@ -60,6 +64,7 @@ namespace SobekCM.Resource_Object.Divisions
         }
 
         /// <summary> Display label for this division, which is either the label, or the type if there is no label </summary>
+        [DataMember]
         public string Display_Label
         {
             get
@@ -114,24 +119,5 @@ namespace SobekCM.Resource_Object.Divisions
                 return longLabel;
             }
         }
-
-        #region Deprecated methods (perhaps used by SobekCM??)
-
-
-
-        ///// <summary> Stores the sequence for the first page in this division. Used when 
-        ///// building the tables in the SobekCM table </summary>
-        //private ushort temp_sequence = 0;
-
-        ///// <summary> Gets and sets the temporary sequence flag used during rendering </summary>
-        //internal int Temp_Sequence
-        //{
-        //    get { return temp_sequence; }
-        //    set { temp_sequence = value; }
-        //}
-
- 
-
-        #endregion
     }
 }

@@ -166,6 +166,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				throw new ApplicationException("Unable to retrieve the item for Quality Control in QC_ItemViewer.Constructor");
 			}
 
+            // If there are NO pages, then send this to the upload
+            if (qc_item.Divisions.Page_Count == 0)
+            {
+                CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
+                CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+                CurrentMode.Redirect();
+                return;
+            }
+
             // Get the default QC profile
 			qc_profile = QualityControl_Configuration.Default_Profile;
 

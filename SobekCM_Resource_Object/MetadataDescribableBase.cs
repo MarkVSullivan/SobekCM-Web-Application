@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
 
@@ -9,7 +10,10 @@ using SobekCM.Resource_Object.Metadata_Modules;
 
 namespace SobekCM.Resource_Object
 {
-    public class MetadataDescribableBase : iMetadataDescribable
+    /// <summary> Base class is used for any object that can be describable with either the
+    /// default bibliographic information, or a dictionary of bib objects </summary>
+    [DataContract]
+    public abstract class MetadataDescribableBase : iMetadataDescribable
     {
         protected Bibliographic_Info bibInfo;
         protected Dictionary<string, iMetadata_Module> metadataModules;
@@ -26,32 +30,19 @@ namespace SobekCM.Resource_Object
 
         #region Code to cover metadata module extensions
 
-        /// <summary> Gets the number of metadata module extensions included in this
-        /// digital resource  </summary>
-        /// <remarks> These methods allows extensibility since any metadata plug-in can implement
-        /// the iMetadata_Module interface and be added here. </remarks>
-        public int Metadata_Modules_Count
-        {
-            get
-            {
-                if (metadataModules == null)
-                    return 0;
-                else return metadataModules.Count;
-            }
-        }
-
         /// <summary> Gets the collection of all included metadata module extensions </summary>
         /// <remarks> These methods allows extensibility since any metadata plug-in can implement
         /// the iMetadata_Module interface and be added here. </remarks>
-        public ReadOnlyCollection<iMetadata_Module> All_Metadata_Modules
+        [DataMember(EmitDefaultValue = false)]
+        public ReadOnlyCollection<iMetadata_Module> Metadata_Modules
         {
             get
             {
+                if ((metadataModules == null) || ( metadataModules.Count == 0 ))
+                    return null;
+
                 List<iMetadata_Module> returnList = new List<iMetadata_Module>();
-                if (metadataModules != null)
-                {
-                    returnList.AddRange(metadataModules.Values);
-                }
+                returnList.AddRange(metadataModules.Values);
                 return new ReadOnlyCollection<iMetadata_Module>(returnList);
             }
         }
@@ -84,37 +75,15 @@ namespace SobekCM.Resource_Object
 
         #region Code to cover any unanalyzed DMDSEC or AMDSEC portions of the original METS file
 
-        /// <summary> Returns the number of unanalyzed DMDSECs (descriptive metadata sections) in the original METS file </summary>
-        public int Unanalyzed_DMDSEC_Count
-        {
-            get
-            {
-                if (unanalyzed_dmdsecs == null)
-                    return 0;
-                else
-                    return unanalyzed_dmdsecs.Count;
-            }
-        }
-
         /// <summary> Gets the collection of unanalyzed DMDSECs (descriptive metadata sections) in the original METS file </summary>
+        [DataMember(EmitDefaultValue = false)]
         public List<Unanalyzed_METS_Section> Unanalyzed_DMDSECs
         {
             get { return unanalyzed_dmdsecs; }
         }
 
-        /// <summary> Returns the number of unanalyzed AMDSECs (administrative metadata sections) in the original METS file </summary>
-        public int Unanalyzed_AMDSEC_Count
-        {
-            get
-            {
-                if (unanalyzed_amdsecs == null)
-                    return 0;
-                else
-                    return unanalyzed_amdsecs.Count;
-            }
-        }
-
         /// <summary> Gets the collection of unanalyzed AMDSECs (administrative metadata sections) in the original METS file </summary>
+        [DataMember(EmitDefaultValue = false)]
         public List<Unanalyzed_METS_Section> Unanalyzed_AMDSECs
         {
             get { return unanalyzed_amdsecs; }
@@ -175,12 +144,18 @@ namespace SobekCM.Resource_Object
         }
 
         /// <summary> Gets the bibliographic information associated with this node  </summary>
-        /// <remarks> NOTE!! Even if no bib info exists for this item, calling this method will
-        /// create the object, which is fairly memory intensive.  You should always call the
-        /// <see cref="hasBibliographicData" /> method first. </remarks>
+        /// <remarks> This can return a NULL if the object was never added to this class 
+        /// by calling the <see cref="Add_Bib_Info" /> method first. </remarks>
+        [DataMember(EmitDefaultValue = false)]
         public Bibliographic_Info Bib_Info
         {
-            get { return bibInfo ?? (bibInfo = new Bibliographic_Info()); }
+            get { return bibInfo; }
+        }
+
+        /// <summary> This class adds a bib info object to this class </summary>
+        public void Add_Bib_Info()
+        {
+            bibInfo = new Bibliographic_Info();
         }
 
         #endregion
