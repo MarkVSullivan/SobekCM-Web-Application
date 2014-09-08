@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 
 #endregion
 
-namespace SobekCM.Resource_Object.Behaviors
+namespace SobekCM_Rest_API.DisplayItem
 {
     /// <summary> Class represents the information about a single wordmark </summary>
     [DataContract]

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.VRACore;
@@ -14,12 +15,83 @@ using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 namespace SobekCM.Resource_Object.Bib_Info
 {
     /// <summary> Stores the descriptive metadata for the bibliographic resource </summary>
-    /// <remarks> This class extends the <see cref="MODS_Info"/> class and includes additional elements which 
-    /// can be expressed in the SobekCM custom schema within a METS file.<br /> <br /> 
-    /// Object created by Mark V Sullivan (2006) for University of Florida's Digital Library Center.</remarks>
-    [Serializable]
-    public class Bibliographic_Info : MODS_Info, iMetadata_Module
+    [DataContract]
+    public class DisplayItem_Description
     {
+        /// <summary> Protected field contains the collection of summary/abstracts associated with this digital resource </summary>
+        protected List<Abstract_Info> abstracts;
+
+        /// <summary> Protected field contains the rights associated with the use of this digital resource </summary>
+        protected AccessCondition_Info accessCondition;
+
+        /// <summary> Protected field contains the collection of classifications associated with this digital resource </summary>
+        protected List<Classification_Info> classifications;
+
+        /// <summary> Protected field contains the donor object for this material  </summary>
+        protected Name_Info donor;
+
+        ///// <summary> Protected field contains the physical description (extend and notes) contained within the resource itself, rather than refering to the original resource </summary>
+        //protected PhysicalDescription_Info physicalDesc;
+
+        /// <summary> Protected field contains the collection of genre terms associated with this digital resource </summary>
+        protected List<Genre_Info> genres;
+
+        /// <summary> Protected field contains the collection of subjects associated with this digital resource </summary>
+        protected List<Identifier_Info> identifiers;
+
+        /// <summary> Protected field contains the collection of languages associated with this digital resource </summary>
+        protected List<Language_Info> languages;
+
+        /// <summary> Protected field contains the location object that holds information about the physical location of the original document and
+        /// any URL information for the item or related EADs  </summary>
+        protected Location_Info locationInfo;
+
+        /// <summary> Protected field contains the main title associated with this digital resource </summary>
+        protected Title_Info mainTitle;
+
+        /// <summary> Protected field contains the main entity information (main author, etc..) for this digital resource </summary>
+        protected Name_Info main_entity_name;
+
+        /// <summary> Protected field contains the collection of names associated with this digital resource </summary>
+        protected List<Name_Info> names;
+
+        /// <summary> Protected field contains the collection of notes associated with this digital resource </summary>
+        protected List<Note_Info> notes;
+
+        /// <summary> Protected field contains the origination information ( publisher, years, frequency, etc..) associated with this digital resource </summary>
+        protected MODS_Origin_Info ModsOriginInfo;
+
+        /// <summary> Protected field contains the physical description (extent and notes) of the original resource, which is encoded as a related item in the MODS </summary>
+        protected PhysicalDescription_Info originalPhysicalDesc;
+
+        /// <summary> Protected field contains the collection of subjects associated with this digital resource </summary>
+        protected List<Title_Info> otherTitles;
+
+        /// <summary> Protected field contains the information about the actual record which describes the digital resource, including original source, cataloging language, main identifier, etc... </summary>
+        protected Record_Info recordInfo;
+
+        /// <summary> Protected field contains the collection of related items associated with this digital resource </summary>
+        protected List<Related_Item_Info> relatedItems;
+
+        /// <summary> Protected field contains the series part information for this resource </summary>
+        protected Part_Info seriesPartInfo;
+
+        /// <summary> Protected field contains the series title associated with this digital resource </summary>
+        protected Title_Info seriesTitle;
+
+        /// <summary> Protected field contains the collection of subjects associated with this digital resource </summary>
+        protected List<Subject_Info> subjects;
+
+        /// <summary> Protected field contains the table of contents value in this MODS portion of the metadata file </summary>
+        protected string tableOfContents;
+
+        /// <summary> Protected field contains the collection of subjects associated with this digital resource </summary>
+        protected List<TargetAudience_Info> targetAudiences;
+
+        /// <summary> Protected field contains the original resource type such as map, aerial photography, book, serial, etc..   </summary>
+        protected TypeOfResource_Info type;
+
+
         private List<Affiliation_Info> affiliations;
         private string bibID;
         private List<Finding_Guide_Container> containers;

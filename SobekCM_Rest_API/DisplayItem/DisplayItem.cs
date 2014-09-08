@@ -26,8 +26,13 @@ namespace SobekCM_Rest_API.DisplayItem
     public class DisplayItem : MetadataDescribableBase
     {
 
-        /// <summary> Basic information pertaining to the creation and modification of this resource </summary>
+        /// <summary> Creation and modification information for this resource </summary>
+        /// <remarks> This falls short of the full tracking informatio, and is just the basic 
+        /// information on when the item was created and last modified with some data from the METS header </remarks>
         public DisplayItem_CreationInfo creationInfo { get; set; }
+
+        /// <summary> Behavior information about how this item behaves in a digital repository </summary>
+        public DisplayItem_Behaviors behaviors { get; set; }
 
 
 
@@ -35,8 +40,7 @@ namespace SobekCM_Rest_API.DisplayItem
         protected Bibliographic_Info bibInfo;
 
         private Division_Info divInfo;        
-        private Behaviors_Info behaviorInfo;
-        private Tracking_Info trackingInfo;
+
         private Web_Info web;
 
         private int total_order;
