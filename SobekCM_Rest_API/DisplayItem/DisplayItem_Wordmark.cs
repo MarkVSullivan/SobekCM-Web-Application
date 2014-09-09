@@ -13,14 +13,14 @@ namespace SobekCM_Rest_API.DisplayItem
     {
         /// <summary> Name of the image file for this wordmark, from the database </summary>
         [DataMember(EmitDefaultValue = false)]
-        public string image { get; set; }
+        public string image { get; internal set; }
 
         /// <summary> Link related to this wordmark </summary>
         [DataMember(EmitDefaultValue = false)]
-        public string link { get; set; }
+        public string link { get; internal set; }
 
         /// <summary> Title of this wordmark, can be displayed as hover-over text </summary>
         [DataMember(EmitDefaultValue = false)]
-        public string title { get; set }
+        public string title { get; internal set; }
     }
 }

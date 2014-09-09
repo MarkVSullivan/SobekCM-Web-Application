@@ -5,10 +5,10 @@ using System.Runtime.Serialization;
 
 #endregion
 
-namespace SobekCM.Resource_Object.Behaviors
+namespace SobekCM_Rest_API.DisplayItem
 {
     /// <summary> Basic information (code and name) of aggregations linked to a digital object </summary>
-    [DataMember]
+    [DataContract]
     public class DisplayItem_Aggregation
     {
         /// <summary> Code associated with this aggregation </summary>

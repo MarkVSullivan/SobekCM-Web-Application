@@ -8,7 +8,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
-using SobekCM.Resource_Object.Bib_Info;
 
 #endregion
 

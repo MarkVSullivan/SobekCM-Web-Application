@@ -31,7 +31,7 @@ namespace SobekCM_Rest_API.DisplayItem
         public string creatorSoftware { get; set; }
 
         /// <summary> Date this item was last modified within this SobekCM library </summary>
-        [DataMember(EmitDefaultValue = false)]111
+        [DataMember(EmitDefaultValue = false)]
         public DateTime? lastModifyDate;      
     }
 }
