@@ -18,6 +18,7 @@ using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
+using SobekCM.Tools;
 
 #endregion
 
@@ -148,7 +149,7 @@ namespace SobekCM.Library.Items
 				Item_Group_Object.Behaviors.Add_Web_Skin(thisRow[0].ToString().ToUpper());
 			}
 
-			// Set the aggregations in the package to the aggregation links from the database
+			// Set the aggregationPermissions in the package to the aggregation links from the database
 			if (itemDetails.Tables.Count == 6)
 			{
 				Item_Group_Object.Behaviors.Clear_Aggregations();
@@ -570,7 +571,7 @@ namespace SobekCM.Library.Items
 				Package_To_Finalize.Behaviors.Add_Tickler(thisRow["MetadataValue"].ToString().Trim());
 			}
 
-			// Set the aggregations in the package to the aggregation links from the database
+			// Set the aggregationPermissions in the package to the aggregation links from the database
 			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load the aggregations from the database info");
 			Package_To_Finalize.Behaviors.Clear_Aggregations();
 			foreach (DataRow thisRow in DatabaseInfo.Tables[1].Rows)

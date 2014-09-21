@@ -7,7 +7,7 @@
     <ProjectGuid>{FBC16C4A-C543-4A74-9172-ABFE6FC0F96C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SobekCM_Rest_API</RootNamespace>
+    <RootNamespace>SobekCM.Rest_API</RootNamespace>
     <AssemblyName>SobekCM_Rest_API</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -75,6 +75,7 @@
     <Compile Include="DisplayItem\DisplayItem_Title.cs" />
     <Compile Include="DisplayItem\DisplayItem_Keys.cs" />
     <Compile Include="DisplayItem\DisplayItem_Wordmark.cs" />
+    <Compile Include="iPostSerialization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

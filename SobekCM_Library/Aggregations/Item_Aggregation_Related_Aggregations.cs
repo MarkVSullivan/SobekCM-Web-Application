@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 
 namespace SobekCM.Library.Aggregations
 {
-    /// <summary> Class contains very basic information about item aggregations which are related
+    /// <summary> Class contains very basic information about item aggregationPermissions which are related
     /// (either as parent or child) to the main item aggregation </summary>
     /// <remarks> This class is a helper class to the <see cref="Item_Aggregation"/> class. </remarks>
     [Serializable]
@@ -86,7 +86,7 @@ namespace SobekCM.Library.Aggregations
         /// <summary> External link for this institution </summary>
         public string External_Link { get; set; }
 
-        /// <summary> Gets the number of child item aggregations present </summary>
+        /// <summary> Gets the number of child item aggregationPermissions present </summary>
         /// <remarks>This should be used rather than the Count property of the <see cref="Children"/> property.  Even if 
         /// there are no children, the Children property creates a readonly collection to pass back out.</remarks>
         public int Children_Count

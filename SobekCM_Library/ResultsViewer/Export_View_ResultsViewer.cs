@@ -8,7 +8,7 @@ using System.Web.UI.WebControls;
 using GemBox.Spreadsheet;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Results;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Tools;
 
 #endregion

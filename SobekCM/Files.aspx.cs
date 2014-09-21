@@ -9,7 +9,8 @@ using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
 
 namespace SobekCM
 {
@@ -41,7 +42,7 @@ namespace SobekCM
 					Application_State_Builder.Build_Application_State(tracer, false, ref Global.Skins, ref Global.Translation,
 					                                                  ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
 					                                                  ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-					                                                  ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority);
+					                                                  ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority, ref Global.User_Groups);
 
 					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Application State validated or built");
 

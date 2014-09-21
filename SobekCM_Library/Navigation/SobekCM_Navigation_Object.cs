@@ -8,6 +8,8 @@ using System.Web;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Settings;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -62,7 +64,7 @@ namespace SobekCM.Library.Navigation
 		/// <param name="Base_URL"> Requested base URL (without query string, etc..)</param>
 		/// <param name="User_Languages"> Languages preferred by user, per their browser settings </param>
 		/// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </param>
-		/// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregations</param>
+		/// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions</param>
 		/// <param name="All_Items_Lookup"> [REF] Lookup object used to pull basic information about any item loaded into this library</param>
 		/// <param name="URL_Portals"> List of all web portals into this system </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -90,7 +92,7 @@ namespace SobekCM.Library.Navigation
 		/// all of the information about an individual request. </summary>
 		/// <param name="QueryString">Query string information for analysis</param>
 		/// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </param>
-		/// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregations</param>
+		/// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions</param>
 		/// <param name="All_Items_Lookup"> [REF] Lookup object used to pull basic information about any item loaded into this library</param>
 		/// <param name="URL_Portals"> List of all web portals into this system </param>
 		public SobekCM_Navigation_Object(NameValueCollection QueryString, Aggregation_Code_Manager Code_Manager, Dictionary<string, string> Aggregation_Aliases, ref Item_Lookup_Object All_Items_Lookup, Portal_List URL_Portals)
@@ -110,7 +112,7 @@ namespace SobekCM.Library.Navigation
 		/// <param name="User_Languages"> Languages preferred by user, per their browser settings </param>
 		/// <param name="Analyzer">Object to user for the URL analysis</param>
 		/// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </param>
-		/// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregations</param>
+		/// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions</param>
 		/// <param name="All_Items_Lookup"> [REF] Lookup object used to pull basic information about any item loaded into this library</param>
 		/// <param name="URL_Portals"> List of all web portals into this system </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -436,7 +438,7 @@ namespace SobekCM.Library.Navigation
 			set {   aggregationAlias = value;    }
 		}
 
-		/// <summary> Information about which sub aggregations to include or exclude
+		/// <summary> Information about which sub aggregationPermissions to include or exclude
 		/// during a collection group search</summary>
 		public string SubAggregation
 		{
@@ -787,6 +789,11 @@ namespace SobekCM.Library.Navigation
 							if (!String.IsNullOrEmpty(mysobekSubmode))
 								return this_base_url + "my/edit/" + BibID + "/" + VID + "/" + mysobekSubmode + urlOptions1;
 							return this_base_url + "my/edit/" + BibID + "/" + VID + urlOptions1;
+
+                        case My_Sobek_Type_Enum.Edit_Item_Permissions:
+                            if (!String.IsNullOrEmpty(mysobekSubmode))
+                                return this_base_url + "my/itempermissions/" + BibID + "/" + VID + "/" + mysobekSubmode + urlOptions1;
+                            return this_base_url + "my/itempermissions/" + BibID + "/" + VID + urlOptions1;
 
 						case My_Sobek_Type_Enum.File_Management:
 							return this_base_url + "my/files/" + BibID + "/" + VID + urlOptions1;

@@ -5,15 +5,16 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
-using SobekCM.Library.Settings;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Tools;
+using System.IO;
+using System.Security.Cryptography;
+using System.Security.Principal;
+using System.Text;
+
+
 
 #endregion
 
-namespace SobekCM.Library.Users
+namespace SobekCM.Core.Users
 {
 	#region User_Authenticaion_Type_Enum
 
@@ -134,7 +135,7 @@ namespace SobekCM.Library.Users
     {
         #region Private class members 
 
-        private readonly User_Editable_Collection aggregations;
+        private readonly User_Aggregation_Permissions aggregationPermissions;
         private readonly List<string> bibids;
         private readonly List<string> bookshelfObjectIds;
         private string currentMetadataSet;
@@ -181,7 +182,7 @@ namespace SobekCM.Library.Users
             Organization_Code = String.Empty;
             Edit_Template_Code = String.Empty;
             Edit_Template_MARC_Code = String.Empty;
-            aggregations = new User_Editable_Collection();
+            aggregationPermissions = new User_Aggregation_Permissions();
             editableRegexes = new List<string>();
             folders = new SortedList<string, User_Folder>();
             Default_Rights = "All rights reserved by the submitter.";
@@ -273,8 +274,8 @@ namespace SobekCM.Library.Users
 			if ((!userSettings.ContainsKey(Option_Key)) || (userSettings[Option_Key] != Option_Value))
 			{
 				userSettings[Option_Key] = Option_Value;
-				if ( Update_Database )
-					Database.SobekCM_Database.Set_User_Setting(UserID, Option_Key, Option_Value.ToString());
+                //if ( Update_Database )
+                //    Database.SobekCM_Database.Set_User_Setting(UserID, Option_Key, Option_Value.ToString());
 			}
 		}
 
@@ -291,7 +292,7 @@ namespace SobekCM.Library.Users
         {
             get
             {
-                return aggregations != null && aggregations.Collection.Any(Aggregation => Aggregation.IsCurator);
+                return aggregationPermissions != null && aggregationPermissions.Aggregations.Any(Aggregation => Aggregation.IsCurator);
             }
         }
 
@@ -456,10 +457,10 @@ namespace SobekCM.Library.Users
 		/// <summary> Enumeration indicates how the user authenticated with the system ( i.e., Sobek, Shibboleth, or LDAP ) </summary>
         public User_Authentication_Type_Enum Authentication_Type { get; set; }
 
-        /// <summary> List of item aggregations associated with this user </summary>
-        public ReadOnlyCollection<User_Editable_Aggregation> Aggregations
+        /// <summary> List of item aggregation permissions associated with this user </summary>
+        public List<User_Permissioned_Aggregation> PermissionedAggregations
         {
-            get { return aggregations.Collection; }
+            get { return aggregationPermissions.Aggregations; }
         }
 
         /// <summary> List of regular expressions for checking for edit by bibid </summary>
@@ -529,7 +530,7 @@ namespace SobekCM.Library.Users
         public void Set_Aggregation_Home_Page_Flag(string Code, string Name, bool Flag)
         {
             string aggrCodeUpper = Code.ToUpper();
-            foreach (User_Editable_Aggregation thisAggregation in aggregations.Collection.Where(ThisAggregation => ThisAggregation.Code == aggrCodeUpper))
+            foreach (User_Permissioned_Aggregation thisAggregation in aggregationPermissions.Aggregations.Where(ThisAggregation => ThisAggregation.Code == aggrCodeUpper))
             {
                 thisAggregation.OnHomePage = Flag;
                 return;
@@ -537,7 +538,7 @@ namespace SobekCM.Library.Users
 
             if (Flag)
             {
-                aggregations.Add(Code, Name, false, false, false, false, false, false, false, false, true, false, false );
+                aggregationPermissions.Add(Code, Name, false, false, false, false, false, false, false, false, true, false, false );
             }
         }
 
@@ -547,7 +548,9 @@ namespace SobekCM.Library.Users
         public bool Is_On_Home_Page(string AggregationCode)
         {
             string aggrCodeUpper = AggregationCode.ToUpper();
-            return (from thisAggregation in aggregations.Collection where thisAggregation.Code == aggrCodeUpper select thisAggregation.OnHomePage).FirstOrDefault();
+            if (aggregationPermissions.Aggregations != null)
+                return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.OnHomePage).FirstOrDefault();
+            else return false;
         }
 
         /// <summary> Checks to see if this user can perform curatorial tasks against an item aggregation </summary>
@@ -559,7 +562,7 @@ namespace SobekCM.Library.Users
                 return true;
 
             string aggrCodeUpper = AggregationCode.ToUpper();
-            return (from thisAggregation in aggregations.Collection where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsCurator).FirstOrDefault();
+            return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsCurator).FirstOrDefault();
         }
 
 		/// <summary> Checks to see if this user can perform administrative tasks against an item aggregation </summary>
@@ -571,7 +574,7 @@ namespace SobekCM.Library.Users
 				return true;
 
 			string aggrCodeUpper = AggregationCode.ToUpper();
-			return (from thisAggregation in aggregations.Collection where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsAdmin).FirstOrDefault();
+			return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsAdmin).FirstOrDefault();
 		}
 
         /// <summary> Checks to see if this user can edit all the items within this aggregation </summary>
@@ -583,7 +586,7 @@ namespace SobekCM.Library.Users
                 return true;
 
             string aggrCodeUpper = AggregationCode.ToUpper();
-            return (from thisAggregation in aggregations.Collection where thisAggregation.Code == aggrCodeUpper select thisAggregation.CanEditItems).FirstOrDefault();
+            return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.CanEditItems).FirstOrDefault();
         }
 
         /// <summary> This checks that the folder name exists, and returns the proper format </summary>
@@ -623,17 +626,17 @@ namespace SobekCM.Library.Users
 
         #endregion
 
-        #region Internal methods for modifying the collections of editable objects ( bibid, templates, projects, aggregations, etc..)
+        #region public methods for modifying the collections of editable objects ( bibid, templates, projects, aggregationPermissions, etc..)
 
         /// <summary> Clear all the user groups associated with this user  </summary>
-        internal void Clear_UserGroup_Membership()
+        public void Clear_UserGroup_Membership()
         {
             userGroups.Clear();
         }
 
         /// <summary> Adds a user group to the list of user groups this user belongs to </summary>
         /// <param name="GroupName"> Name of the user group</param>
-        internal void Add_User_Group(string GroupName)
+        public void Add_User_Group(string GroupName)
         {
             if ( !userGroups.Contains(GroupName ))
                 userGroups.Add(GroupName);
@@ -642,19 +645,19 @@ namespace SobekCM.Library.Users
         /// <summary> Add an item to the list of items on the bookshelf for this user </summary>
         /// <param name="BibID"> Bibliographic identifier (BibID) for this item </param>
         /// <param name="VID"> Volume identifier (VID) for this item </param>
-        internal void Add_Bookshelf_Item(string BibID, string VID)
+        public void Add_Bookshelf_Item(string BibID, string VID)
         {
             string objid = BibID.ToUpper() + "_" + VID;
             if (!bookshelfObjectIds.Contains(objid))
                 bookshelfObjectIds.Add(objid);
         }
 
-        internal void Clear_Aggregations()
+        public void Clear_Aggregations()
         {
-            aggregations.Clear();
+            aggregationPermissions.Clear();
         }
 
-        /// <summary> Add a new item aggregation to this user's collection of item aggregations </summary>
+        /// <summary> Add a new item aggregation to this user's collection of item aggregationPermissions </summary>
         /// <param name="Code">Code for this user editable item aggregation</param>
         /// <param name="Name">Name for this user editable item aggregation </param>
         /// <param name="CanSelect">Flag indicates if this user can add items to this item aggregation</param>
@@ -662,20 +665,20 @@ namespace SobekCM.Library.Users
         /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
         /// <param name="OnHomePage"> Flag indicates if this user has asked to have this aggregation appear on their personalized home page</param>
         /// <param name="IsAdmin"> Flag indicates if this user is listed athe admin for this aggregation </param>
-		internal void Add_Aggregation(string Code, string Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool OnHomePage, bool IsAdmin, bool GroupDefined )
+		public void Add_Aggregation(string Code, string Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool OnHomePage, bool IsAdmin, bool GroupDefined )
         {
-            aggregations.Add(Code, Name, CanSelect, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete, IsCurator, OnHomePage, IsAdmin, GroupDefined );
+            aggregationPermissions.Add(Code, Name, CanSelect, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete, IsCurator, OnHomePage, IsAdmin, GroupDefined );
         }
 
         /// <summary> Adds a BibID to the list of bibid's this user can edit </summary>
         /// <param name="BibID">New BibID this user can edit</param>
-        internal void Add_BibID(string BibID)
+        public void Add_BibID(string BibID)
         {
             bibids.Add(BibID);
         }
 
         /// <summary> Clears the list of templates associated with this user </summary>
-        internal void Clear_Templates()
+        public void Clear_Templates()
         {
             templates.Clear();
         }
@@ -683,7 +686,7 @@ namespace SobekCM.Library.Users
         /// <summary> Adds a template to the list of templates this user can select </summary>
         /// <param name="Template">Code for this template</param>
         /// <remarks>This must match the name of one of the template XML files in the mySobek\templates folder</remarks>
-        internal void Add_Template(string Template, bool Group_Defined)
+        public void Add_Template(string Template, bool Group_Defined)
         {
             templates.Add(Template);
 			if ( Group_Defined )
@@ -693,7 +696,7 @@ namespace SobekCM.Library.Users
         /// <summary> Sets the default template for this user </summary>
         /// <param name="Template">Code for this template</param>
         /// <remarks>This only sets this as the default template if it currently exists in the list of possible templates for this uers </remarks>
-        internal void Set_Default_Template(string Template)
+        public void Set_Default_Template(string Template)
         {
             if ((!templates.Contains(Template)) || (templates.IndexOf(Template) == 0)) return;
 
@@ -702,7 +705,7 @@ namespace SobekCM.Library.Users
         }
 
         /// <summary> Clears all default metadata sets associated with this user </summary>
-        internal void Clear_Default_Metadata_Sets()
+        public void Clear_Default_Metadata_Sets()
         {
             defaultMetadataSets.Clear();
         }
@@ -710,7 +713,7 @@ namespace SobekCM.Library.Users
         /// <summary> Adds a default metadata set to the list of sets this user can select </summary>
         /// <param name="MetadataSet">Code for this default metadata set</param>
         /// <remarks>This must match the name of one of the project METS (.pmets) files in the mySobek\projects folder</remarks>
-        internal void Add_Default_Metadata_Set(string MetadataSet, bool Group_Defined)
+        public void Add_Default_Metadata_Set(string MetadataSet, bool Group_Defined)
         {
             defaultMetadataSets.Add(MetadataSet);
 			if ( Group_Defined )
@@ -720,7 +723,7 @@ namespace SobekCM.Library.Users
         /// <summary> Sets the current default metadata set for this user </summary>
         /// <param name="MetadataSet">Code for this default metadata set</param>
         /// <remarks>This only sets this as the default metadata set if it currently exists in the list of possible projects for this uers </remarks>
-        internal void Set_Current_Default_Metadata(string MetadataSet)
+        public void Set_Current_Default_Metadata(string MetadataSet)
         {
             if ((!defaultMetadataSets.Contains(MetadataSet)) || (defaultMetadataSets.IndexOf(MetadataSet) == 0)) return;
 
@@ -730,14 +733,14 @@ namespace SobekCM.Library.Users
 
         /// <summary> Adds a regular expression to this user to determine which titles this user can edit </summary>
         /// <param name="Regular_Expression"> Regular expression used to compute if this user can edit a title, by BibID</param>
-        internal void Add_Editable_Regular_Expression(string Regular_Expression)
+        public void Add_Editable_Regular_Expression(string Regular_Expression)
         {
             editableRegexes.Add(Regular_Expression);
         }
 
         /// <summary> Adds a folder to the list of folders associated with this user </summary>
         /// <param name="Folder"> Built folder object </param>
-        internal void Add_Folder(User_Folder Folder)
+        public void Add_Folder(User_Folder Folder)
         {
             folders[Folder.Folder_Name] = Folder;
         }
@@ -745,14 +748,14 @@ namespace SobekCM.Library.Users
         /// <summary> Adds a folder name to the list of folders associated with this user </summary>
         /// <param name="Folder_Name"> Name of the folder to add </param>
         /// <param name="Folder_ID"> Primary key for this folder </param>
-        internal void Add_Folder(string Folder_Name, int Folder_ID )
+        public void Add_Folder(string Folder_Name, int Folder_ID )
         {
             folders[Folder_Name] = new User_Folder(Folder_Name, Folder_ID);
         }
 
         /// <summary> Removes a folder name from the list of folders associated with this user </summary>
         /// <param name="Folder_Name"> Name of the folder to remove </param>
-        internal void Remove_Folder(string Folder_Name)
+        public void Remove_Folder(string Folder_Name)
         {
             string delete_name_lower = Folder_Name.ToLower();
             for (int i = 0; i < folders.Count; i++)
@@ -765,7 +768,7 @@ namespace SobekCM.Library.Users
         }
 
         /// <summary> Clear all the folders linked to this user object </summary>
-        internal void Clear_Folders()
+        public void Clear_Folders()
         {
             folders.Clear();
         }
@@ -776,66 +779,60 @@ namespace SobekCM.Library.Users
         /// <summary> Determines if this user can edit this item, based on several different criteria </summary>
         /// <param name="Item">SobekCM Item to check</param>
         /// <returns>TRUE if the user can edit this item, otherwise FALSE</returns>
-        public bool Can_Edit_This_Item(SobekCM_Item Item)
+        public bool Can_Edit_This_Item( string BibID, string ItemType, string SourceCode, string HoldingCode, ICollection<string> Aggregations )
         {
-            if (!SobekCM_Library_Settings.Online_Edit_Submit_Enabled)
-                return false;
+            //if (!SobekCM_Library_Settings.Online_Edit_Submit_Enabled)
+            //    return false;
 
-            if (Item.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project )
+            if ( String.Compare(ItemType, "PROJECT", true ) == 0 )
 				return Is_Portal_Admin;
 
 	        if ((Is_Portal_Admin) || (Is_System_Admin))
 		        return true;
 
-            if (bibids.Contains( Item.BibID.ToUpper()))
+            if (bibids.Contains( BibID.ToUpper()))
                 return true;
 
-            if (aggregations.Can_Edit("i" + Item.Bib_Info.Source.Code.ToUpper()))
+            if ((aggregationPermissions[ "I" + SourceCode.ToUpper() ] != null ) && ( aggregationPermissions["I" + SourceCode.ToUpper()].CanEditMetadata ))
                 return true;
 
-            if (Item.Bib_Info.hasLocationInformation)
-            {
-                if (aggregations.Can_Edit("i" + Item.Bib_Info.Location.Holding_Code.ToUpper()))
-                    return true;
-            }
+            if ((aggregationPermissions["I" + HoldingCode.ToUpper()] != null) && (aggregationPermissions["I" + HoldingCode.ToUpper()].CanEditMetadata))
+                return true;
 
-            if (Item.Behaviors.Aggregation_Count > 0)
+            if ((aggregationPermissions.Aggregations != null) && ( Aggregations != null ))
             {
-                ReadOnlyCollection<Aggregation_Info> colls = Item.Behaviors.Aggregations;
-                if (colls.Any(ThisCollection => aggregations.Can_Edit(ThisCollection.Code.ToUpper())))
+                foreach (string thisAggr in Aggregations)
                 {
-                    return true;
+                    if (( aggregationPermissions[thisAggr] != null ) && ( aggregationPermissions[thisAggr].CanEditMetadata ))
+                        return true;
                 }
             }
 
-            return editableRegexes.Select(RegexString => new Regex(RegexString)).Any(MyReg => MyReg.IsMatch(Item.BibID.ToUpper()));
+            return editableRegexes.Select(RegexString => new Regex(RegexString)).Any(MyReg => MyReg.IsMatch(BibID.ToUpper()));
         }
 
 		/// <summary> Determines if this user can edit this item, based on several different criteria </summary>
 		/// <param name="Item">SobekCM Item to check</param>
 		/// <returns>TRUE if the user can edit this item, otherwise FALSE</returns>
-		public bool Can_Delete_This_Item(SobekCM_Item Item)
+        public bool Can_Delete_This_Item(string BibID, string SourceCode, string HoldingCode, ICollection<string> Aggregations)
 		{
 			if ((Can_Delete_All) || ( Is_System_Admin ))
 				return true;
 
-			if (aggregations.Can_Delete("i" + Item.Bib_Info.Source.Code))
-				return true;
+            if ((aggregationPermissions["I" + SourceCode.ToUpper()] != null) && (aggregationPermissions["I" + SourceCode.ToUpper()].CanDelete))
+                return true;
 
-			if (Item.Bib_Info.hasLocationInformation)
-			{
-				if (aggregations.Can_Delete("i" + Item.Bib_Info.Location.Holding_Code))
-					return true;
-			}
+            if ((aggregationPermissions["I" + HoldingCode.ToUpper()] != null) && (aggregationPermissions["I" + HoldingCode.ToUpper()].CanDelete))
+                return true;
 
-			if (Item.Behaviors.Aggregation_Count > 0)
-			{
-				ReadOnlyCollection<Aggregation_Info> colls = Item.Behaviors.Aggregations;
-				if (colls.Any(ThisCollection => aggregations.Can_Delete(ThisCollection.Code)))
-				{
-					return true;
-				}
-			}
+            if ((aggregationPermissions.Aggregations != null) && ( Aggregations != null ))
+            {
+                foreach (string thisAggr in Aggregations)
+                {
+                    if (( aggregationPermissions[thisAggr] != null ) && ( aggregationPermissions[thisAggr].CanDelete ))
+                        return true;
+                }
+            }
 
 			return false;
 		}
@@ -846,22 +843,59 @@ namespace SobekCM.Library.Users
         /// <remarks>This is used to add another level of security on cookies coming in from a user request </remarks>
         public string Security_Hash(string IP)
         {
-            return SecurityInfo.DES_EncryptString(Given_Name + "sobekh" + Family_Name, IP.Replace(".", "").PadRight(8, '%').Substring(0, 8), Email.Length > 8 ? Email.Substring(0, 8) : Email.PadLeft(8, 'd'));
+            return DES_EncryptString(Given_Name + "sobekh" + Family_Name, IP.Replace(".", "").PadRight(8, '%').Substring(0, 8), Email.Length > 8 ? Email.Substring(0, 8) : Email.PadLeft(8, 'd'));
         }
 
-        /// <summary> Gets the user-in-process directory </summary>
-        /// <param name="Directory_Name"> Subdirectory requested </param>
-        /// <returns> Full path to the requested user-in-process directory </returns>
-        public string User_InProcess_Directory(string Directory_Name)
-        {
-            // Determine the in process directory for this
-            string userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + UserName.Replace(".", "").Replace("@", "") + "\\" + Directory_Name;
-            if (ShibbID.Trim().Length > 0)
-                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + ShibbID + "\\" + Directory_Name;
+        ///// <summary> Gets the user-in-process directory </summary>
+        ///// <param name="Directory_Name"> Subdirectory requested </param>
+        ///// <returns> Full path to the requested user-in-process directory </returns>
+        //public string User_InProcess_Directory(string Directory_Name)
+        //{
+        //    /// TODO: This should not reference the settings (I think)
             
-            return userInProcessDirectory; 
+        //    // Determine the in process directory for this
+        //    string userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + UserName.Replace(".", "").Replace("@", "") + "\\" + Directory_Name;
+        //    if (ShibbID.Trim().Length > 0)
+        //        userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + ShibbID + "\\" + Directory_Name;
+
+        //    return userInProcessDirectory;
+        //}
+
+        /// <summary> Encrypt a string, given the string.  </summary>
+        /// <param name="Source"> String to encrypt </param>
+        /// <param name="Key"> Key for the encryption </param>
+        /// <param name="IV"> Initialization Vector for the encryption </param>
+        /// <returns> The encrypted string </returns>
+        public static string DES_EncryptString(string Source, string Key, string IV)
+        {
+            byte[] bytIn = Encoding.ASCII.GetBytes(Source);
+            // create a MemoryStream so that the process can be done without I/O files
+            MemoryStream ms = new MemoryStream();
+
+            // set the private key
+            DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider
+            {
+                Key = Encoding.ASCII.GetBytes(Key),
+                IV = Encoding.ASCII.GetBytes(IV)
+            };
+
+            // create an Encryptor from the Provider Service instance
+            ICryptoTransform encrypto = desProvider.CreateEncryptor();
+
+            // create Crypto Stream that transforms a stream using the encryption
+            CryptoStream cs = new CryptoStream(ms, encrypto, CryptoStreamMode.Write);
+
+            // write out encrypted content into MemoryStream
+            cs.Write(bytIn, 0, bytIn.Length);
+            cs.Close();
+
+            // Write out from the Memory stream to an array of bytes
+            byte[] bytOut = ms.ToArray();
+            ms.Close();
+
+            // convert into Base64 so that the result can be used in xml
+            return Convert.ToBase64String(bytOut, 0, bytOut.Length);
         }
-    
         
     }
 }

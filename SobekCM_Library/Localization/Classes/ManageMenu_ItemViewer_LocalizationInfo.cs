@@ -140,7 +140,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Add New Volume' localization string </remarks>
         public string AddNewVolume { get; private set; }
 
-        /// <remarks> '"Change the way this item behaves in this library, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible."' localization string </remarks>
+        /// <remarks> '"Change the way this item behaves in this library, including which aggregationPermissions it appears under, the wordmarks to the left, and which viewer types are publicly accessible."' localization string </remarks>
         public string ChangeTheWayThisItemBehavesInThisLibraryIncludingWhichAggregationsItAppearsUnderTheWordmarksToTheLeftAndWhichViewerTypesArePubliclyAccessible { get; private set; }
 
         /// <remarks> 'Edit Item Behaviors' localization string </remarks>
@@ -188,7 +188,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Set the title under which all of these items appear in search results and set the web skins under which all these items should appear.' localization string </remarks>
         public string SetTheTitleUnderWhichAllOfTheseItemsAppearInSearchResultsAndSetTheWebSkinsUnderWhichAllTheseItemsShouldAppear { get; private set; }
 
-        /// <remarks> '"This allows item-level behaviors to be set for all items within this item group, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible."' localization string </remarks>
+        /// <remarks> '"This allows item-level behaviors to be set for all items within this item group, including which aggregationPermissions it appears under, the wordmarks to the left, and which viewer types are publicly accessible."' localization string </remarks>
         public string ThisAllowsItemlevelBehaviorsToBeSetForAllItemsWithinThisItemGroupIncludingWhichAggregationsItAppearsUnderTheWordmarksToTheLeftAndWhichViewerTypesArePubliclyAccessible { get; private set; }
 
         /// <remarks> '"This can be used for printing the tracking sheet for this item, which can be used as part of the built-in digitization workflow."' localization string </remarks>

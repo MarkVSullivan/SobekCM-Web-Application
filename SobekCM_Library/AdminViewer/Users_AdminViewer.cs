@@ -16,7 +16,9 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -348,13 +350,13 @@ namespace SobekCM.Library.AdminViewer
 						case 2:
 							// Check the user groups for update
 							bool update_user_groups = false;
-							DataTable userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
+							List<User_Group> userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
 							List<string> newGroups = new List<string>();
-							foreach (DataRow thisRow in userGroup.Rows)
+                            foreach (User_Group thisRow in userGroup)
 							{
-								if (form["group_" + thisRow["UserGroupID"]] != null)
+								if (form["group_" + thisRow.UserGroupID] != null)
 								{
-									newGroups.Add(thisRow["GroupName"].ToString());
+									newGroups.Add(thisRow.Name);
 								}
 							}
 
@@ -383,7 +385,7 @@ namespace SobekCM.Library.AdminViewer
 							break;
 
 						case 3:
-							Dictionary<string, User_Editable_Aggregation> aggregations = new Dictionary<string, User_Editable_Aggregation>();
+							Dictionary<string, User_Permissioned_Aggregation> aggregations = new Dictionary<string, User_Permissioned_Aggregation>();
 
 							// Step through each key
 							foreach (string thisKey in getKeys)
@@ -397,7 +399,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, false, false, false, true, false));
+										aggregations.Add(select_project, new User_Permissioned_Aggregation(select_project, String.Empty, false, false, false, true, false));
 									}
 								}
 								if (thisKey.IndexOf("admin_project_select_") == 0)
@@ -409,7 +411,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, true, false, false, false, false));
+										aggregations.Add(select_project, new User_Permissioned_Aggregation(select_project, String.Empty, true, false, false, false, false));
 									}
 								}
 								if (thisKey.IndexOf("admin_project_editall_") == 0)
@@ -421,7 +423,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										aggregations.Add(edit_project, new User_Editable_Aggregation(edit_project, String.Empty, false, true, false, false, false));
+										aggregations.Add(edit_project, new User_Permissioned_Aggregation(edit_project, String.Empty, false, true, false, false, false));
 									}
 								}
 								if (thisKey.IndexOf("admin_project_edit_metadata_") == 0)
@@ -433,7 +435,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
 										thisAggrLink.CanEditMetadata = true;
 										aggregations.Add(edit_project, thisAggrLink);
 									}
@@ -447,7 +449,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
 										thisAggrLink.CanEditBehaviors = true;
 										aggregations.Add(edit_project, thisAggrLink);
 									}
@@ -461,7 +463,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
 										thisAggrLink.CanPerformQc = true;
 										aggregations.Add(edit_project, thisAggrLink);
 									}
@@ -475,7 +477,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
 										thisAggrLink.CanUploadFiles = true;
 										aggregations.Add(edit_project, thisAggrLink);
 									}
@@ -489,7 +491,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
 										thisAggrLink.CanChangeVisibility = true;
 										aggregations.Add(edit_project, thisAggrLink);
 									}
@@ -503,7 +505,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
 										thisAggrLink.CanDelete = true;
 										aggregations.Add(edit_project, thisAggrLink);
 									}
@@ -517,7 +519,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, true, false, false));
+										aggregations.Add(admin_project, new User_Permissioned_Aggregation(admin_project, String.Empty, false, false, true, false, false));
 									}
 								}
 								if (thisKey.IndexOf("admin_project_admin_") == 0)
@@ -529,24 +531,24 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, false, false, true));
+										aggregations.Add(admin_project, new User_Permissioned_Aggregation(admin_project, String.Empty, false, false, false, false, true));
 									}
 								}
 							}
 
-							// Determine if the aggregations need to be edited
+							// Determine if the aggregationPermissions need to be edited
 							bool update_aggregations = false;
-							if (aggregations.Count != editUser.Aggregations.Count)
+                            if (aggregations.Count != editUser.PermissionedAggregations.Count)
 							{
 								update_aggregations = true;
 							}
 							else
 							{
-								// Build a dictionary of the user aggregations as well
-								Dictionary<string, User_Editable_Aggregation> existingAggr = editUser.Aggregations.ToDictionary(thisAggr => thisAggr.Code);
+								// Build a dictionary of the user aggregationPermissions as well
+                                Dictionary<string, User_Permissioned_Aggregation> existingAggr = editUser.PermissionedAggregations.ToDictionary(thisAggr => thisAggr.Code);
 
-								// Check all the aggregations
-								foreach (User_Editable_Aggregation adminAggr in aggregations.Values)
+								// Check all the aggregationPermissions
+								foreach (User_Permissioned_Aggregation adminAggr in aggregations.Values)
 								{
 									if (existingAggr.ContainsKey(adminAggr.Code))
 									{
@@ -567,13 +569,13 @@ namespace SobekCM.Library.AdminViewer
 								}
 							}
 
-							// Update the aggregations, if requested
+							// Update the aggregationPermissions, if requested
 							if (update_aggregations)
 							{
 								editUser.Clear_Aggregations();
 								if (aggregations.Count > 0)
 								{
-									foreach (User_Editable_Aggregation dictionaryAggregation in aggregations.Values)
+									foreach (User_Permissioned_Aggregation dictionaryAggregation in aggregations.Values)
 									{
 										editUser.Add_Aggregation(dictionaryAggregation.Code, dictionaryAggregation.Name, dictionaryAggregation.CanSelect, dictionaryAggregation.CanEditMetadata, dictionaryAggregation.CanEditBehaviors, dictionaryAggregation.CanPerformQc, dictionaryAggregation.CanUploadFiles, dictionaryAggregation.CanChangeVisibility, dictionaryAggregation.CanDelete, dictionaryAggregation.IsCurator, dictionaryAggregation.OnHomePage, dictionaryAggregation.IsAdmin, false);
 									}
@@ -609,18 +611,18 @@ namespace SobekCM.Library.AdminViewer
 							}
 						}
 
-						// Save the aggregations linked to this user
-						if (!SobekCM_Database.Update_SobekCM_User_Aggregations(editUser.UserID, editUser.Aggregations, Tracer))
+						// Save the aggregationPermissions linked to this user
+                        if (!SobekCM_Database.Update_SobekCM_User_Aggregations(editUser.UserID, editUser.PermissionedAggregations, Tracer))
 						{
 							successful_save = false;
 						}
 
 						// Save the user group links
-						DataTable userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
+						List<User_Group> userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
 						Dictionary<string, int> groupnames_to_id = new Dictionary<string, int>();
-						foreach (DataRow thisRow in userGroup.Rows)
+						foreach (User_Group thisRow in userGroup)
 						{
-							groupnames_to_id[thisRow["GroupName"].ToString()] = Convert.ToInt32(thisRow["UserGroupID"]);
+							groupnames_to_id[thisRow.Name] = Convert.ToInt32(thisRow.UserGroupID);
 						}
 						foreach (string userGroupName in editUser.User_Groups)
 						{
@@ -846,7 +848,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <span class=\"SobekAdminTitle\">Aggregations</span>");
             Output.WriteLine("  <br />");
             Output.WriteLine("  <blockquote>");
-            if (editUser.Aggregations.Count == 0)
+            if (editUser.PermissionedAggregations.Count == 0)
             {
 
                 Output.WriteLine("<i> &nbsp;No special aggregation rights are assigned to this user</i>");
@@ -857,8 +859,8 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\">");
 
                 // Get the list of collections lists in the user object
-                ReadOnlyCollection<User_Editable_Aggregation> aggregations_in_editable_user = editUser.Aggregations;
-                Dictionary<string, User_Editable_Aggregation> lookup_aggs = aggregations_in_editable_user.ToDictionary(thisAggr => thisAggr.Code.ToLower());
+                List<User_Permissioned_Aggregation> aggregations_in_editable_user = editUser.PermissionedAggregations;
+                Dictionary<string, User_Permissioned_Aggregation> lookup_aggs = aggregations_in_editable_user.ToDictionary(thisAggr => thisAggr.Code.ToLower());
 
                 // Step through each aggregation type
                 foreach (string aggregationType in codeManager.All_Types)
@@ -1177,8 +1179,8 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("  <span class=\"SobekEditItemSectionTitle_first\"> &nbsp; User Group Membership</span>");
                     Output.WriteLine("  <blockquote>");
 
-                    DataTable userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
-                    if ((userGroup == null) || (userGroup.Rows.Count == 0))
+                    List<User_Group> userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
+                    if ((userGroup == null) || (userGroup.Count == 0))
                     {
                         Output.WriteLine("<br />");
                         Output.WriteLine("<b>No user groups exist within this library instance</b>");
@@ -1196,16 +1198,16 @@ namespace SobekCM.Library.AdminViewer
                         //Output.WriteLine("    <td width=\"300px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Description of this user group\">GROUP DESCRIPTION</acronym></span></td>");
                         //Output.WriteLine("   </tr>");
 
-                        foreach (DataRow thisRow in userGroup.Rows)
+                        foreach (User_Group thisRow in userGroup)
                         {
                             Output.WriteLine("  <tr align=\"left\" >");                         
 
-                            Output.Write("    <td width=\"50px\" ><input type=\"checkbox\" name=\"group_" + thisRow["UserGroupID"] + "\" id=\"group_" + thisRow["UserGroupID"] + "\" ");
-                            if ( editUser.User_Groups.Contains( thisRow["GroupName"] ))
+                            Output.Write("    <td width=\"50px\" ><input type=\"checkbox\" name=\"group_" + thisRow.UserGroupID + "\" id=\"group_" + thisRow.UserGroupID + "\" ");
+                            if ( editUser.User_Groups.Contains( thisRow.Name ))
                                 Output.Write(" checked=\"checked\"");
                             Output.WriteLine("/></td>");
-                            Output.WriteLine("    <td width=\"150px\" >" + thisRow["GroupName"] + "</td>");
-                            Output.WriteLine("    <td width=\"400px\">" + thisRow["GroupDescription"] + "</td>");
+                            Output.WriteLine("    <td width=\"150px\" >" + thisRow.Name + "</td>");
+                            Output.WriteLine("    <td width=\"400px\">" + thisRow.Description + "</td>");
                             Output.WriteLine("  </tr>");
                             Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
                         }
@@ -1220,10 +1222,10 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\">");
 
                     // Get the list of collections lists in the user object
-                    ReadOnlyCollection<User_Editable_Aggregation> aggregations_in_editable_user = editUser.Aggregations;
+                    List<User_Permissioned_Aggregation> aggregations_in_editable_user = editUser.PermissionedAggregations;
 
-                    Dictionary<string, List<User_Editable_Aggregation>> lookup_aggs = new Dictionary<string, List<User_Editable_Aggregation>>();
-					foreach (User_Editable_Aggregation thisAggr in aggregations_in_editable_user)
+                    Dictionary<string, List<User_Permissioned_Aggregation>> lookup_aggs = new Dictionary<string, List<User_Permissioned_Aggregation>>();
+					foreach (User_Permissioned_Aggregation thisAggr in aggregations_in_editable_user)
 					{
 						if (lookup_aggs.ContainsKey(thisAggr.Code.ToLower()))
 						{
@@ -1231,7 +1233,7 @@ namespace SobekCM.Library.AdminViewer
 						}
 						else
 						{
-							List<User_Editable_Aggregation> thisAggrList = new List<User_Editable_Aggregation>();
+							List<User_Permissioned_Aggregation> thisAggrList = new List<User_Permissioned_Aggregation>();
 							thisAggrList.Add(thisAggr);
 							lookup_aggs[thisAggr.Code.ToLower()] = thisAggrList;
 						}
@@ -1335,7 +1337,7 @@ namespace SobekCM.Library.AdminViewer
 								bool is_curator_from_group = false;
 								bool is_admin = false;
 								bool is_admin_from_group = false;
-								foreach (User_Editable_Aggregation thisAggrFromList in lookup_aggs[thisAggr.Code.ToLower()])
+								foreach (User_Permissioned_Aggregation thisAggrFromList in lookup_aggs[thisAggr.Code.ToLower()])
 								{
 									if (thisAggrFromList.CanSelect)
 									{
@@ -1600,7 +1602,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <br /><br />");
 
             // get the list of all user groups
-            DataTable userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
+            List<User_Group> userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
 
             // Get the redirect
             currentMode.My_Sobek_SubMode = "XXXXXXX";
@@ -1610,7 +1612,7 @@ namespace SobekCM.Library.AdminViewer
             currentMode.Admin_Type = Admin_Type_Enum.Users;
 
             // Show the user groups
-            if ((userGroup == null) || (userGroup.Rows.Count == 0))
+            if ((userGroup == null) || (userGroup.Count == 0))
             {
                 currentMode.My_Sobek_SubMode = "new";
                 currentMode.Admin_Type = Admin_Type_Enum.User_Groups;
@@ -1633,16 +1635,16 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">DESCRIPTION</span></th>");
                 Output.WriteLine("   </tr>");
 
-                foreach (DataRow thisRow in userGroup.Rows)
+                foreach (User_Group thisRow in userGroup)
                 {
                     Output.WriteLine("  <tr align=\"left\" >");
                     Output.Write("    <td class=\"SobekAdminActionLink\" >( ");
 
-                    Output.Write("<a title=\"Click to edit\" href=\"" + redirect.Replace("XXXXXXX", thisRow["UserGroupID"].ToString()) + "\">edit</a> | ");
-                    Output.Write("<a title=\"Click to view\" href=\"" + redirect.Replace("XXXXXXX", thisRow["UserGroupID"].ToString()) + "v\">view</a> ) </td>");
+                    Output.Write("<a title=\"Click to edit\" href=\"" + redirect.Replace("XXXXXXX", thisRow.UserGroupID.ToString()) + "\">edit</a> | ");
+                    Output.Write("<a title=\"Click to view\" href=\"" + redirect.Replace("XXXXXXX", thisRow.UserGroupID.ToString()) + "v\">view</a> ) </td>");
 
-                    Output.WriteLine("    <td>" + thisRow["GroupName"] + "</td>");
-                    Output.WriteLine("    <td>" + thisRow["GroupDescription"] + "</td>");
+                    Output.WriteLine("    <td>" + thisRow.Name + "</td>");
+                    Output.WriteLine("    <td>" + thisRow.Description + "</td>");
                     Output.WriteLine("  </tr>");
                     Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
                 }

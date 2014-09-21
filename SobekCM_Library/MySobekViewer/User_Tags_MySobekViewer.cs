@@ -7,7 +7,8 @@ using System.Linq;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
 
 #endregion
 
@@ -78,7 +79,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<br />Choose an aggregation below to view all tags for that aggregation:");
                 Output.WriteLine("<blockquote>");
 
-                foreach (User_Editable_Aggregation aggregation in user.Aggregations)
+                foreach (User_Permissioned_Aggregation aggregation in user.PermissionedAggregations)
                 {
                     if (aggregation.IsCurator )
                     {

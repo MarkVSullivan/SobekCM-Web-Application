@@ -6,7 +6,7 @@ using System.Text;
 
 #endregion
 
-namespace SobekCM.Library
+namespace SobekCM.Tools
 {
     /// <summary> Enumeration tells the type of trace message </summary>
     public enum Custom_Trace_Type_Enum : byte

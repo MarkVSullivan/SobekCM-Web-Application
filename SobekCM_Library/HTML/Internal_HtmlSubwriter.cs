@@ -14,7 +14,9 @@ using SobekCM.Library.Database;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -32,7 +34,7 @@ namespace SobekCM.Library.HTML
         /// <summary> Constructor for a new instance of the Internal_HtmlSubwriter class </summary>
         /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the wordmarks subpage </param>
         /// <param name="User"> Currently logged on user, which determines how some screens display (particularly the new items screen)</param>
-        /// <param name="Code_Manager"> Code manager has all the aggregation codes and some of the hierarchy for all aggregations in this system </param>
+        /// <param name="Code_Manager"> Code manager has all the aggregation codes and some of the hierarchy for all aggregationPermissions in this system </param>
         public Internal_HtmlSubwriter(Dictionary<string, Wordmark_Icon> Icon_Dictionary, User_Object User, Aggregation_Code_Manager Code_Manager )
         {
             iconList = Icon_Dictionary;
@@ -161,7 +163,7 @@ namespace SobekCM.Library.HTML
                 if ((type == Internal_Type_Enum.Aggregations) || ( type == Internal_Type_Enum.Aggregations_List ))
                 {
                     // Create the strings for the sub views
-                    const string aggregations = "MASTER LIST";
+                    const string aggregationPermissions = "MASTER LIST";
                     const string single = "SINGLE AGGREGATIONS";
                     string submode = currentMode.Info_Browse_Mode;
 
@@ -169,13 +171,13 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("<div class=\"ShowSelectRow\">");
                     if (type == Internal_Type_Enum.Aggregations_List)
                     {
-                        Output.WriteLine("  " + Down_Selected_Tab_Start + aggregations + Down_Selected_Tab_End);
+                        Output.WriteLine("  " + Down_Selected_Tab_Start + aggregationPermissions + Down_Selected_Tab_End);
                     }
                     else
                     {
                         currentMode.Internal_Type = Internal_Type_Enum.Aggregations_List;
                         currentMode.Info_Browse_Mode = String.Empty;
-                        Output.WriteLine("  <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + aggregations + Down_Tab_End + "</a>");
+                        Output.WriteLine("  <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + aggregationPermissions + Down_Tab_End + "</a>");
                         currentMode.Internal_Type = type;
                     }
 
@@ -843,10 +845,10 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("</div>");
             Output.WriteLine("</div> <!-- ends PageContainer div momentarily for this extra wide table -->");
 
-            // Get all the matching aggregations
+            // Get all the matching aggregationPermissions
             ReadOnlyCollection<Item_Aggregation_Related_Aggregations> aggregations = codeManager.Aggregations_By_Type(current_type);
 
-            // Get the relationships between aggregations
+            // Get the relationships between aggregationPermissions
             DataTable aggregationRelationships = SobekCM_Database.Get_Aggregation_Hierarchies(Tracer);
             DataColumn childCodeColumn = null;
             DataColumn childNameColumn = null;
@@ -1065,9 +1067,9 @@ namespace SobekCM.Library.HTML
 
         #endregion
 
-        #region Method to add the master list of ALL aggregations
+        #region Method to add the master list of ALL aggregationPermissions
 
-        /// <summary> Adds information about all aggregations to the response stream </summary>
+        /// <summary> Adds information about all aggregationPermissions to the response stream </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         protected internal void add_aggregations_master_list_html(TextWriter Output, Custom_Tracer Tracer)

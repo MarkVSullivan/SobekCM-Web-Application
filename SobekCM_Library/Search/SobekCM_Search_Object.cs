@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using SobekCM.Library.Database;
 using SobekCM.Library.Navigation;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 

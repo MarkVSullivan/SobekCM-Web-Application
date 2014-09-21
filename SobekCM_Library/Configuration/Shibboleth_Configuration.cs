@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 
 namespace SobekCM.Library.Configuration
 {

@@ -9,6 +9,7 @@ using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
+using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {

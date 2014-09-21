@@ -12,7 +12,7 @@ using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 
 #endregion
 

@@ -22,8 +22,10 @@ using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
 using SobekCM.Library.SiteMap;
 using SobekCM.Library.Skins;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Library.WebContent;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -79,7 +81,7 @@ namespace SobekCM
 				Application_State_Builder.Build_Application_State(tracer, false, ref Global.Skins, ref Global.Translation,
 				                                                  ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
 				                                                  ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-																  ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority);
+                                                                  ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority, ref Global.User_Groups);
 
 				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Application State validated or built");
 
@@ -269,8 +271,8 @@ namespace SobekCM
 				}
 
 				// Get the item now, so that you can set the collection code, if there was none listed
-				if ((currentMode.Mode == Display_Mode_Enum.Item_Display) || (currentMode.Mode == Display_Mode_Enum.Item_Print) || ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Behaviors)))
-					|| ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_AutoFill_Volumes) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Delete_Item))))
+                if ((currentMode.Mode == Display_Mode_Enum.Item_Display) || (currentMode.Mode == Display_Mode_Enum.Item_Print) || ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Behaviors) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Permissions)))
+					|| ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors) ||  (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_AutoFill_Volumes) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Delete_Item))))
 				{
 					Display_Item();
 				}
@@ -920,7 +922,7 @@ namespace SobekCM
 				                                 currentItem, currentPage, htmlSkin, currentUser, Global.Translation, Global.Codes,
 				                                 Global.Item_List, Global.Stats_Date_Range,
 				                                 Global.Search_History, Global.Icon_List, Global.Thematic_Headings, publicFolder, Global.Collection_Aliases, Global.Skins, Global.Checked_List,
-				                                 Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent, tracer);
+				                                 Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent, Global.User_Groups, tracer);
 			}
 
 			// Load the OAI writer
@@ -969,7 +971,7 @@ namespace SobekCM
 				                                 currentItem, currentPage, htmlSkin, currentUser, Global.Translation, Global.Codes,
 				                                 Global.Item_List,
 				                                 Global.Stats_Date_Range, Global.Search_History, Global.Icon_List, Global.Thematic_Headings, publicFolder,
-				                                 Global.Collection_Aliases, Global.Skins, Global.Checked_List, Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent, tracer);
+				                                 Global.Collection_Aliases, Global.Skins, Global.Checked_List, Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent, Global.User_Groups,  tracer);
 			}
 		}
 
@@ -982,7 +984,7 @@ namespace SobekCM
 			SobekCM_Assistant assistant = new SobekCM_Assistant();
 			bool result = assistant.Get_Public_User_Folder(currentMode.FolderID, currentMode.Page, tracer, out publicFolder, out searchResultStatistics, out pagedSearchResults);
 
-			if ((!result) || (!publicFolder.isPublic))
+			if ((!result) || (!publicFolder.IsPublic))
 			{
 				currentMode.Error_Message = "Invalid or private bookshelf";
 				currentMode.Mode = Display_Mode_Enum.Error;
@@ -1200,7 +1202,7 @@ namespace SobekCM
 			Application_State_Builder.Build_Application_State(tracer, true, ref Global.Skins, ref Global.Translation,
 			                                                  ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
 			                                                  ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-															  ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority);
+                                                              ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority, ref Global.User_Groups);
 
 			// Since this reset, send to the admin, memory management portion
 			currentMode.Mode = Display_Mode_Enum.Internal;

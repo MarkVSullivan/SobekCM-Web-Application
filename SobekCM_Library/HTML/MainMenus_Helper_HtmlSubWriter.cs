@@ -11,7 +11,8 @@ using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Search;
 using SobekCM.Library.Settings;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM_UI_Library.Navigation;
 
 namespace SobekCM.Library.HTML
 {
@@ -1127,7 +1128,7 @@ namespace SobekCM.Library.HTML
                     Mode.Admin_Type = Admin_Type_Enum.Aliases;
                     Output.WriteLine("      <li id=\"sbkUsm_AdminForwarding\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "forwarding.png\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Aliases</div></a></li>");
 
-                    // Edit item aggregations
+                    // Edit item aggregationPermissions
                     Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
                     Output.WriteLine("      <li id=\"sbkUsm_AdminAggr\"><a href=\"" + Mode.Redirect_URL() + "\"><img src=\"" + Mode.Default_Images_URL + "building.gif\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Management</div></a></li>");
 

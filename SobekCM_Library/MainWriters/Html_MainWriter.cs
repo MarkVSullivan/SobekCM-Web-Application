@@ -21,9 +21,10 @@ using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
 using SobekCM.Library.SiteMap;
 using SobekCM.Library.Skins;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Library.WebContent;
 using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -51,6 +52,7 @@ namespace SobekCM.Library.MainWriters
         private readonly Language_Support_Info translator;
         private readonly Portal_List urlPortals;
         private readonly SobekCM_Skin_Collection webSkins;
+        private readonly List<User_Group> userGroups;
 
         // Special HTML sub-writers that need to have some persistance between methods
         private readonly abstractHtmlSubwriter subwriter;
@@ -73,7 +75,7 @@ namespace SobekCM.Library.MainWriters
 	    /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the wordmarks subpage </param>
 	    /// <param name="Thematic_Headings"> Headings under which all the highlighted collections on the main home page are organized </param>
 	    /// <param name="Public_Folder"> Object contains the information about the public folder to display </param>
-	    /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregations </param>
+	    /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions </param>
 	    /// <param name="Web_Skin_Collection"> Collection of all the web skins </param>
 	    /// <param name="Checked_Items"> List of all items which are currently checked out for single fair use and the IP address currently viewing the item</param>
 	    /// <param name="IP_Restrictions"> Any possible restriction on item access by IP ranges </param>
@@ -107,6 +109,7 @@ namespace SobekCM.Library.MainWriters
             SobekCM_SiteMap Site_Map,
             SobekCM_Items_In_Title Items_In_Title,
             HTML_Based_Content Static_Web_Content,
+            List<User_Group> UserGroups,
             Custom_Tracer Tracer )
             : base(Current_Mode, Hierarchy_Object, Results_Statistics, Paged_Results, Browse_Object,  Current_Item, Current_Page, Static_Web_Content)
 	    {
@@ -128,6 +131,7 @@ namespace SobekCM.Library.MainWriters
             urlPortals = URL_Portals;
             siteMap = Site_Map;
             itemsInTitle = Items_In_Title;
+	        userGroups = UserGroups;
 
             // Set some defaults
 
@@ -253,7 +257,7 @@ namespace SobekCM.Library.MainWriters
                         break;
 
                     case Display_Mode_Enum.My_Sobek:
-                        subwriter = new MySobek_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, currentUser, iconList, statsDateRange, webSkins, Tracer);
+                        subwriter = new MySobek_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, currentUser, iconList, statsDateRange, webSkins, userGroups, ipRestrictionInfo, Tracer);
                         break;
 
                     case Display_Mode_Enum.Administrative:
@@ -865,7 +869,7 @@ namespace SobekCM.Library.MainWriters
                     switch ( currentMode.Mode )
                     {
                         case Display_Mode_Enum.Item_Display:
-                            if ( currentUser.Can_Edit_This_Item( currentItem ))
+                            if (currentUser.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
                                 displayHeader = true;
                             break;
 

@@ -153,7 +153,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Below is the list of all items linked to this aggregation which are either private (in process) or dark.' localization string </remarks>
         public string BelowIsTheListOfAllItemsLinkedToThisAggregationWhichAreEitherPrivateInProcessOrDark { get; private set; }
 
-        /// <remarks> "Sort by options for the administrative view on all non-public items, accessible from the internal header in aggregations" </remarks>
+        /// <remarks> "Sort by options for the administrative view on all non-public items, accessible from the internal header in aggregationPermissions" </remarks>
         public string BibidVID { get; private set; }
 
         /// <remarks> Used for publication date display ( to differentiate from milestone dates) </remarks>
@@ -168,19 +168,19 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Last Activity' localization string </remarks>
         public string LastActivity { get; private set; }
 
-        /// <remarks> "Sort by options for the administrative view on all non-public items, accessible from the internal header in aggregations" </remarks>
+        /// <remarks> "Sort by options for the administrative view on all non-public items, accessible from the internal header in aggregationPermissions" </remarks>
         public string LastActivityDateMostRecentFirst { get; private set; }
 
-        /// <remarks> "Sort by options for the administrative view on all non-public items, accessible from the internal header in aggregations" </remarks>
+        /// <remarks> "Sort by options for the administrative view on all non-public items, accessible from the internal header in aggregationPermissions" </remarks>
         public string LastActivityDateOldestFirst { get; private set; }
 
         /// <remarks> 'Last Milestone' localization string </remarks>
         public string LastMilestone { get; private set; }
 
-        /// <remarks> "Sort by options for the administrative view on all non-public items, accessible from the internal header in aggregations" </remarks>
+        /// <remarks> "Sort by options for the administrative view on all non-public items, accessible from the internal header in aggregationPermissions" </remarks>
         public string LastMilestoneDateMostRecentFirst { get; private set; }
 
-        /// <remarks> "Sort by options for the administrative view on all non-public items, accessible from the internal header in aggregations" </remarks>
+        /// <remarks> "Sort by options for the administrative view on all non-public items, accessible from the internal header in aggregationPermissions" </remarks>
         public string LastMilestoneDateOldestFirst { get; private set; }
 
         /// <remarks> 'Last Page' localization string </remarks>
@@ -228,7 +228,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Title' localization string </remarks>
         public string Title { get; private set; }
 
-        /// <remarks> "Sort by options for the administrative view on all non-public items, accessible from the internal header in aggregations" </remarks>
+        /// <remarks> "Sort by options for the administrative view on all non-public items, accessible from the internal header in aggregationPermissions" </remarks>
         public string TitleVID { get; private set; }
 
         /// <remarks> Name of the last milestons performed </remarks>

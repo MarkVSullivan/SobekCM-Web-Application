@@ -172,9 +172,9 @@ namespace SobekCM.Library.Application_State
         }
 
         /// <summary>
-        ///   Read-only collection of item aggregations matching a particular aggregation type
+        ///   Read-only collection of item aggregationPermissions matching a particular aggregation type
         /// </summary>
-        /// <param name = "AggregationType"> Type of aggregations to return </param>
+        /// <param name = "AggregationType"> Type of aggregationPermissions to return </param>
         /// <returns> Read-only collection of item aggregation relational objects </returns>
         public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> Aggregations_By_Type(string AggregationType)
         {
@@ -187,7 +187,7 @@ namespace SobekCM.Library.Application_State
         }
 
         /// <summary>
-        ///   Read-only collection of item aggregations matching a particular thematic heading id
+        ///   Read-only collection of item aggregationPermissions matching a particular thematic heading id
         /// </summary>
         /// <param name = "ThemeID"> Primary key for the thematic heading to pull </param>
         /// <returns> Read-only collection of item aggregation relational objects </returns>

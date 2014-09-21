@@ -11,7 +11,7 @@ using SobekCM.Library.Application_State;
 using SobekCM.Library.Citation.Elements;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 
 #endregion
 

@@ -10,7 +10,7 @@ using SobekCM.Resource_Object;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 
 #endregion
 
@@ -34,7 +34,7 @@ namespace SobekCM.Library.Citation.Elements
         }
 
         /// <summary> Sets the list of all valid codes for this element from the main aggregation table </summary>
-        /// <param name="codeManager"> Code manager with list of all aggregations </param>
+        /// <param name="codeManager"> Code manager with list of all aggregationPermissions </param>
         internal void Add_Codes(Aggregation_Code_Manager codeManager)
         {
             codeToNameDictionary = new Dictionary<string, string>();
@@ -127,10 +127,10 @@ namespace SobekCM.Library.Citation.Elements
             List<string> possibles = new List<string> {Bib.Bib_Info.Location.Holding_Code.ToUpper()};
             if (!Current_User.Is_Internal_User)
             {
-                // Are there aggregations set aside for the user?
-                ReadOnlyCollection<User_Editable_Aggregation> allAggrs = Current_User.Aggregations;
+                // Are there aggregationPermissions set aside for the user?
+                List<User_Permissioned_Aggregation> allAggrs = Current_User.PermissionedAggregations;
 
-                foreach (User_Editable_Aggregation thisAggr in allAggrs)
+                foreach (User_Permissioned_Aggregation thisAggr in allAggrs)
                 {
                     if (thisAggr.CanSelect)
                     {

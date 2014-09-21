@@ -1235,7 +1235,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> One of the geographic search location options for map searching </remarks>
         public string SouthAmerica { get; private set; }
 
-        /// <remarks> Title for Standard aggregations table </remarks>
+        /// <remarks> Title for Standard aggregationPermissions table </remarks>
         public string Standard { get; private set; }
 
         /// <remarks> 'Static' localization string </remarks>

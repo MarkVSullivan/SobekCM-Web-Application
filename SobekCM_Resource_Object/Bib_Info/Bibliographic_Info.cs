@@ -1327,6 +1327,18 @@ namespace SobekCM.Resource_Object.Bib_Info
 
 	    #endregion
 
+        
+        public string HoldingCode
+        {
+            get
+            {
+                if (this.Location != null)
+                    return Location.Holding_Code;
+
+                return String.Empty;
+            }
+        }
+
 
 	    /// <summary> Gets the controlled sobekcm type as an enumeration, based on the 
 	    /// type and genres listed within the metadata </summary>

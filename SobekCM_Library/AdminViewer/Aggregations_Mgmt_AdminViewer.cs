@@ -18,14 +18,15 @@ using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
 namespace SobekCM.Library.AdminViewer
 {
-    /// <summary> Class allows an authenticated system admin to view all existing item aggregations, select an item aggregation to edit, and add new aggregations </summary>
+    /// <summary> Class allows an authenticated system admin to view all existing item aggregationPermissions, select an item aggregation to edit, and add new aggregationPermissions </summary>
     /// <remarks> This class extends the <see cref="abstract_AdminViewer"/> class.<br /><br />
     /// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
@@ -35,7 +36,7 @@ namespace SobekCM.Library.AdminViewer
     /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
-    /// <li>The mySobek subwriter creates an instance of this viewer to view and edit existing item aggregations in this digital library</li>
+    /// <li>The mySobek subwriter creates an instance of this viewer to view and edit existing item aggregationPermissions in this digital library</li>
     /// </ul></remarks>
     public class Aggregations_Mgmt_AdminViewer : abstract_AdminViewer
     {

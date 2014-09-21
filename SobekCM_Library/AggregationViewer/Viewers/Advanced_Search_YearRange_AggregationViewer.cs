@@ -14,6 +14,8 @@ using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Search;
 using SobekCM.Library.Settings;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 

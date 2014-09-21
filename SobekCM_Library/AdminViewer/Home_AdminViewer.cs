@@ -8,7 +8,9 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -70,7 +72,7 @@ namespace SobekCM.Library.AdminViewer
 			currentMode.Admin_Type = Admin_Type_Enum.Aliases;
 			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "forwarding.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Aggregation Aliases</a></td></tr>");
 
-			// Edit item aggregations
+			// Edit item aggregationPermissions
 			currentMode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
 			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "building.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Aggregation Management</a></td></tr>");
 			

@@ -5,10 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using SobekCM.Library.Navigation;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Divisions;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -40,7 +42,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 			else
 			{
-				bool userCanEditItem = CurrentUser.Can_Edit_This_Item(CurrentItem);
+				bool userCanEditItem = CurrentUser.Can_Edit_This_Item( CurrentItem.BibID, CurrentItem.Bib_Info.SobekCM_Type_String, CurrentItem.Bib_Info.Source.Code, CurrentItem.Bib_Info.HoldingCode, CurrentItem.Behaviors.Aggregation_Code_List );
 				if (!userCanEditItem)
 				{
 					Current_Mode.ViewerCode = String.Empty;

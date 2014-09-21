@@ -16,7 +16,9 @@ using SobekCM.Library.MySobekViewer;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
 using SobekCM.Library.Skins;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -31,7 +33,7 @@ namespace SobekCM.Library.HTML
     /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create this necessary subwriter since this action requires authentication. </li>
-    /// <li>This class will create a mySobek subwriter (extending <see cref="MySobekViewer.abstract_MySobekViewer"/> ) for the specified task.The mySobek subwriter creates an instance of this viewer to view and edit existing item aggregations in this digital library</li>
+    /// <li>This class will create a mySobek subwriter (extending <see cref="MySobekViewer.abstract_MySobekViewer"/> ) for the specified task.The mySobek subwriter creates an instance of this viewer to view and edit existing item aggregationPermissions in this digital library</li>
     /// </ul></remarks>
     public class MySobek_HtmlSubwriter : abstractHtmlSubwriter
     {
@@ -77,6 +79,8 @@ namespace SobekCM.Library.HTML
                                      Dictionary<string, Wordmark_Icon> Icon_Table,
                                      Statistics_Dates Stats_Date_Range,
 									 SobekCM_Skin_Collection HTML_Skin_Collection,
+                                     List<User_Group> userGroups,
+                                     IP_Restriction_Ranges ipRestrictions,
                                      Custom_Tracer Tracer )
         {
 
@@ -157,6 +161,10 @@ namespace SobekCM.Library.HTML
 					mySobekViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, currentItem, codeManager, iconTable, htmlSkin, translator, HTML_Skin_Collection, Tracer);
                     break;
 
+                case My_Sobek_Type_Enum.Edit_Item_Permissions:
+                    mySobekViewer = new Edit_Item_Permissions_MySobekViewer(user, Current_Mode, currentItem, htmlSkin, translator, userGroups, ipRestrictions, Tracer );
+                    break;
+
                 case My_Sobek_Type_Enum.File_Management:
 					mySobekViewer = new File_Management_MySobekViewer(user, Current_Mode, Current_Item, itemList, codeManager, iconTable, htmlSkin, translator, HTML_Skin_Collection, Tracer);
                     break;
@@ -164,6 +172,8 @@ namespace SobekCM.Library.HTML
                 case My_Sobek_Type_Enum.Edit_Group_Behaviors:
                     mySobekViewer = new Edit_Group_Behaviors_MySobekViewer(user, Current_Mode, currentItem, codeManager, Tracer);
                     break;
+
+
 
                 case My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy:
                     mySobekViewer = new Edit_Serial_Hierarchy_MySobekViewer(user);

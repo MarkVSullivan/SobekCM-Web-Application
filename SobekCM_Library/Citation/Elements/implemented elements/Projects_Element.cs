@@ -10,13 +10,13 @@ using SobekCM.Resource_Object;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 
 #endregion
 
 namespace SobekCM.Library.Citation.Elements.implemented_elements
 {
-    /// <summary> Element allows entry of the aggregations for an item to be linked </summary>
+    /// <summary> Element allows entry of the aggregationPermissions for an item to be linked </summary>
     /// <remarks> This class extends the <see cref="multipleComboBox_Element"/> class. </remarks>
     public class Projects_Element : multipleComboBox_Element
     {
@@ -40,7 +40,7 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
         }
 
         /// <summary> Sets the list of all valid codes for this element from the main aggregation table </summary>
-        /// <param name="codeManager"> Code manager with list of all aggregations </param>
+        /// <param name="codeManager"> Code manager with list of all aggregationPermissions </param>
         internal void Add_Codes(Aggregation_Code_Manager codeManager)
         {
             //if (items.Count == 0)
@@ -112,10 +112,10 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
             //bool some_set_as_selectable = false;
             //if (!Current_User.Is_Internal_User)
             //{
-            //    // Are there aggregations set aside for the user?
-            //    ReadOnlyCollection<User_Editable_Aggregation> allAggrs = Current_User.Aggregations;
+            //    // Are there aggregationPermissions set aside for the user?
+            //    ReadOnlyCollection<User_Permissioned_Aggregation> allAggrs = Current_User.Aggregations;
 
-            //    foreach (User_Editable_Aggregation thisAggr in allAggrs)
+            //    foreach (User_Permissioned_Aggregation thisAggr in allAggrs)
             //    {
             //        if (thisAggr.CanSelect)
             //        {

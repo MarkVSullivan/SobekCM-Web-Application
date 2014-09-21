@@ -5,7 +5,8 @@ using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Library.ItemViewer.Viewers;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Fragments
 {

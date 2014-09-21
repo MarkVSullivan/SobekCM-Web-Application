@@ -17,11 +17,12 @@ using SobekCM.Library.Items;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using System.Xml;
-
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -94,7 +95,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 			// If the user cannot edit this item, go back
-			if (!CurrentUser.Can_Edit_This_Item(Current_Object))
+            if (!CurrentUser.Can_Edit_This_Item(Current_Object.BibID, Current_Object.Bib_Info.SobekCM_Type_String, Current_Object.Bib_Info.Source.Code, Current_Object.Bib_Info.HoldingCode, Current_Object.Behaviors.Aggregation_Code_List))
 			{
 				CurrentMode.ViewerCode = String.Empty;
 				CurrentMode.Redirect();

@@ -7,7 +7,8 @@ using SobekCM.Library.Aggregations;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Skins;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
 
 #endregion
 

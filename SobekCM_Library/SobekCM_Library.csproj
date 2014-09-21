@@ -373,6 +373,7 @@
     <Compile Include="Localization\SampleClass_LocalizationInfo.cs" />
     <Compile Include="Localization\SobekCM_LocalizationInfo.cs" />
     <Compile Include="MainWriters\DataProvider_MainWriter.cs" />
+    <Compile Include="MySobekViewer\Edit_Item_Permissions_MySobekViewer.cs" />
     <Compile Include="ResultsViewer\Google_Map_ResultsViewer_Beta.cs" />
     <Compile Include="UploadiFive\UploadiFive_Settings.cs" />
     <Compile Include="MySobekViewer\Page_Image_Upload_MySobekViewer.cs" />
@@ -568,7 +569,6 @@
     <Compile Include="AggregationViewer\Viewers\No_Search_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Static_Browse_Info_AggregationViewer.cs" />
     <Compile Include="Settings\SobekCM_Library_Settings.cs" />
-    <Compile Include="Custom_Tracer.cs" />
     <Compile Include="Database\SobekCM_Database.cs" />
     <Compile Include="HTML\Aggregation_HtmlSubwriter.cs" />
     <Compile Include="HTML\MySobek_HtmlSubwriter.cs" />
@@ -687,15 +687,17 @@
     <Compile Include="Text_Search_Term_Highlighter.cs" />
     <Compile Include="Email\URL_Email_Helper.cs" />
     <Compile Include="Email\Usage_Stats_Email_Helper.cs" />
-    <Compile Include="Users\Public_User_Folder.cs" />
-    <Compile Include="Users\User_Editable_Collection.cs" />
-    <Compile Include="Users\User_Editable_Aggregation.cs" />
-    <Compile Include="Users\User_Folder.cs" />
-    <Compile Include="Users\User_Group.cs" />
-    <Compile Include="Users\User_Object.cs" />
     <Compile Include="WebContent\HTML_Based_Content.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj">
+      <Project>{849c78a5-c60b-4faf-9efb-943753f64e56}</Project>
+      <Name>SobekCM_Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj">
+      <Project>{c5d75f1a-c5d8-428d-bba3-ea946fd539e1}</Project>
+      <Name>SobekCM_Engine_Library</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
       <Project>{395C2621-CE19-41E0-AA1A-ABDB37F6E815}</Project>
       <Name>SobekCM_Resource_Object</Name>
@@ -703,6 +705,10 @@
     <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj">
       <Project>{A511CE4C-7BD6-4446-BCA8-AB71F7AA8078}</Project>
       <Name>SobekCM_Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SobekCM_UI_Library\SobekCM_UI_Library.csproj">
+      <Project>{9eba10c0-170d-420d-888a-b1d180c3ce0c}</Project>
+      <Name>SobekCM_UI_Library</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -722,7 +728,9 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Users\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

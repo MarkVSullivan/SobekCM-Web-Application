@@ -160,6 +160,10 @@
     <Compile Include="Database\DataSets\SobekCM_All_Items.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="EntityTranslators\EntityTranslatorException.cs" />
+    <Compile Include="EntityTranslators\EntityTranslatorService.cs" />
+    <Compile Include="EntityTranslators\iEntityTranslator.cs" />
+    <Compile Include="EntityTranslators\IEntityTranslatorService.cs" />
     <Compile Include="Event_Delegates.cs" />
     <Compile Include="Generic_Reader.cs" />
     <Compile Include="Metadata_Modules\GeoSpatial\Coordinate_Circle.cs" />

@@ -10,6 +10,7 @@ using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Skins;
+using SobekCM.Core.Users;
 
 namespace SobekCM
 {
@@ -31,6 +32,7 @@ namespace SobekCM
 		public static Portal_List URL_Portals;
 		public static Dictionary<string, Mime_Type_Info> Mime_Types;
 		public static List<string> Item_Viewer_Priority;
+        public static List<User_Group> User_Groups;
 
 		protected void Application_Start(object sender, EventArgs e)
 		{

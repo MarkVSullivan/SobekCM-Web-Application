@@ -12,6 +12,8 @@ using SobekCM.Library.Database;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
 using SobekCM.Library.WebContent;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 

@@ -18,7 +18,9 @@ using SobekCM.Library.Results;
 using SobekCM.Library.SiteMap;
 using SobekCM.Library.Skins;
 using SobekCM.Library.Solr;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -1733,7 +1735,7 @@ namespace SobekCM.Library.MemoryMgmt
 						Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Item_Aggregation", "Found item aggregation on caching server");
 					}
 
-					// Check the number of item aggregations currently locally cached
+					// Check the number of item aggregationPermissions currently locally cached
 					if (( Possibly_Cache_Locally ) && (LOCALLY_CACHED_AGGREGATION_LIMIT > 0))
 					{
 						int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("AGGR_") == 0);
@@ -1779,7 +1781,7 @@ namespace SobekCM.Library.MemoryMgmt
 			if ((Language_Code.Length > 0) && (Language_Code != "en"))
 				key = key + "_" + Language_Code;
 
-			// Check the number of item aggregations currently locally cached
+			// Check the number of item aggregationPermissions currently locally cached
 			int items_cached = 0;
 			int local_expiration = 15;
 			if (Aggregation_Code != "all")
@@ -2102,7 +2104,7 @@ namespace SobekCM.Library.MemoryMgmt
 						Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Skin", "Found html skin on caching server");
 					}
 
-					// Check the number of item aggregations currently locally cached
+					// Check the number of item aggregationPermissions currently locally cached
 					if (LOCALLY_CACHED_SKINS_LIMIT > 0)
 					{
 						int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("SKIN_") == 0);
@@ -2149,7 +2151,7 @@ namespace SobekCM.Library.MemoryMgmt
 				key = key + "_" + Language_Code;
 
 
-			// Check the number of item aggregations currently locally cached
+			// Check the number of item aggregationPermissions currently locally cached
 			if ((LOCALLY_CACHED_SKINS_LIMIT > 0) || ( !caching_serving_enabled ))
 			{
 				int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("SKIN_") == 0);

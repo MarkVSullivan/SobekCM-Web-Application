@@ -16,8 +16,9 @@ using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
+using SobekCM.Tools;
 
 #endregion
 
@@ -81,7 +82,7 @@ namespace SobekCM.Library.MySobekViewer
 					try
 					{
 	//					SobekCM_Item testItem = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, null, Tracer);
-						if (User.Can_Delete_This_Item(item))
+                        if (User.Can_Edit_This_Item(item.BibID, item.Bib_Info.SobekCM_Type_String, item.Bib_Info.Source.Code, item.Bib_Info.HoldingCode, item.Behaviors.Aggregation_Code_List))
 							canDelete = true;
 					}
 					catch

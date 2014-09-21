@@ -9,10 +9,13 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
+
 #endregion
 
 namespace SobekCM.Library.MySobekViewer

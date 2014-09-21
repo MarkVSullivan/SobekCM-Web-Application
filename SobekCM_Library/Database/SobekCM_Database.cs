@@ -17,7 +17,7 @@ using SobekCM.Library.Items.Authority;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Results;
 using SobekCM.Library.Settings;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Tools;
 using SobekCM.Tools.FDA;
@@ -146,7 +146,7 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Connection string to the main SobekCM databaase </summary>
-		/// <remarks> This database hold all the information about items, item aggregations, statistics, and tracking information</remarks>
+		/// <remarks> This database hold all the information about items, item aggregationPermissions, statistics, and tracking information</remarks>
 		public static string Connection_String
 		{
 			set	{	connectionString = value;	}
@@ -258,7 +258,7 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Updates the cached links between aggregations and metadata, used by larger collections </summary>
+		/// <summary> Updates the cached links between aggregationPermissions and metadata, used by larger collections </summary>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'Admin_Update_Cached_Aggregation_Metadata_Links' stored procedure.<br /><br />This runs asychronously as this routine may run for a minute or more.</remarks>
 		public static bool Admin_Update_Cached_Aggregation_Metadata_Links()
@@ -537,7 +537,7 @@ namespace SobekCM.Library.Database
 		/// <param name="AggregationCode"> Code for the item aggregation of interest </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Month-by-month usage statistics for item aggregation of interest </returns>
-		/// <remarks> Passing 'ALL' in as the aggregation code returns the statistics for all item aggregations within this library <br /><br />
+		/// <remarks> Passing 'ALL' in as the aggregation code returns the statistics for all item aggregationPermissions within this library <br /><br />
 		/// This calls the 'SobekCM_Get_Collection_Statistics_History' stored procedure <br /><br />
 		/// This is used by the <see cref="Statistics_HtmlSubwriter"/> class</remarks>
 		public static DataTable Get_Aggregation_Statistics_History(string AggregationCode, Custom_Tracer Tracer)
@@ -709,9 +709,9 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary>Method used to get the hierarchical relationship between all aggregations, to be displayed in the 'aggregations' tab in the internal screen</summary>
+		/// <summary>Method used to get the hierarchical relationship between all aggregationPermissions, to be displayed in the 'aggregationPermissions' tab in the internal screen</summary>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> DataTable with relationships between all aggregations</returns>
+		/// <returns> DataTable with relationships between all aggregationPermissions</returns>
 		/// <remarks> This calls the 'SobekCM_Get_Collection_Hierarchies' stored procedure <br /><br />
 		/// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
 		public static DataTable Get_Aggregation_Hierarchies(Custom_Tracer Tracer)
@@ -1417,7 +1417,7 @@ namespace SobekCM.Library.Database
 		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
 		/// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
 		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
-		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregations )</param>
+		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
 		/// <param name="DateRange_Start"> If this search includes a date range search, start of the date range, or -1</param>
 		/// <param name="DateRange_End"> If this search includes a date range search, end of the date range, or -1</param>
 		/// <param name="Include_Facets"> Flag indicates whether to include facets </param>
@@ -1558,7 +1558,7 @@ namespace SobekCM.Library.Database
 				SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
 				totalTitlesParameter.Direction = ParameterDirection.InputOutput;
 
-				// Add parameters for items and titles if this search is expanded to include all aggregations
+				// Add parameters for items and titles if this search is expanded to include all aggregationPermissions
 				SqlParameter expandedItemsParameter = executeCommand.Parameters.AddWithValue("@all_collections_items", 0);
 				expandedItemsParameter.Direction = ParameterDirection.InputOutput;
 
@@ -1601,7 +1601,7 @@ namespace SobekCM.Library.Database
 		/// <summary> Performs a basic metadata search over the entire citation, given a search condition, and returns one page of results </summary>
 		/// <param name="Search_Condition"> Search condition string to be run against the databasse </param>
 		/// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
-		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregations )</param>
+		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
 		/// <param name="DateRange_Start"> If this search includes a date range search, start of the date range, or -1</param>
 		/// <param name="DateRange_End"> If this search includes a date range search, end of the date range, or -1</param>
 		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
@@ -1711,7 +1711,7 @@ namespace SobekCM.Library.Database
 				SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
 				totalTitlesParameter.Direction = ParameterDirection.InputOutput;
 
-				// Add parameters for items and titles if this search is expanded to include all aggregations
+				// Add parameters for items and titles if this search is expanded to include all aggregationPermissions
 				SqlParameter expandedItemsParameter = executeCommand.Parameters.AddWithValue("@all_collections_items", 0);
 				expandedItemsParameter.Direction = ParameterDirection.InputOutput;
 
@@ -1754,7 +1754,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Search_Term"> Search condition string to be run against the databasse </param>
 		/// <param name="FieldID"> Primary key for the field to search in the database </param>
 		/// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
-		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregations )</param>
+		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
 		/// <param name="DateRange_Start"> If this search includes a date range search, start of the date range, or -1</param>
 		/// <param name="DateRange_End"> If this search includes a date range search, end of the date range, or -1</param>
 		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
@@ -1865,7 +1865,7 @@ namespace SobekCM.Library.Database
 				SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
 				totalTitlesParameter.Direction = ParameterDirection.InputOutput;
 
-				// Add parameters for items and titles if this search is expanded to include all aggregations
+				// Add parameters for items and titles if this search is expanded to include all aggregationPermissions
 				SqlParameter expandedItemsParameter = executeCommand.Parameters.AddWithValue("@all_collections_items", 0);
 				expandedItemsParameter.Direction = ParameterDirection.InputOutput;
 
@@ -2970,7 +2970,7 @@ namespace SobekCM.Library.Database
 
 		#endregion
 
-		#region Methods to get the item aggregations
+		#region Methods to get the item aggregationPermissions
 
 		/// <summary> Adds the title, item, and page counts to this item aggregation object </summary>
 		/// <param name="Aggregation"> Mostly built item aggregation object </param>
@@ -3136,11 +3136,11 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Adds the entire collection hierarchy under the ALL aggregation object </summary>
-		/// <param name="AllInfoObject"> All aggregations object within which to populate the hierarchy </param>
+		/// <param name="AllInfoObject"> All aggregationPermissions object within which to populate the hierarchy </param>
 		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This is postponed until it is needed for the TREE VIEW on the home page, to allow the system to start
-		/// faster, even with a great number of item aggregations in the hierarchy </remarks>
+		/// faster, even with a great number of item aggregationPermissions in the hierarchy </remarks>
 		public static bool Add_Children_To_Main_Agg( Item_Aggregation AllInfoObject, Custom_Tracer Tracer )
 		{
 			DataTable childInfo = Get_Aggregation_Hierarchies(Tracer);
@@ -3424,7 +3424,7 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Populates the lookup tables for aliases which point to live aggregations </summary>
+		/// <summary> Populates the lookup tables for aliases which point to live aggregationPermissions </summary>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <param name="Aggregation_Alias_List"> List of aggregation aliases to populate from the database</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
@@ -3544,7 +3544,7 @@ namespace SobekCM.Library.Database
 									baseUrl = String.Empty;
 							}
 
-							// Get matching skins and aggregations
+							// Get matching skins and aggregationPermissions
 							DataRow[] aggrs = tempSet.Tables[1].Select("PortalID=" + portalId);
 							DataRow[] skins = tempSet.Tables[2].Select("PortalID=" + portalId);
 
@@ -3933,7 +3933,7 @@ namespace SobekCM.Library.Database
 		/// <summary> Gets complete information for an item which may be missing from the complete list of items </summary>
 		/// <param name="BibID"> Bibliographic identifiers for the item of interest </param>
 		/// <param name="VID"> Volume identifiers for the item of interest </param>
-		/// <param name="Include_Aggregations"> Flag indicates whether to include the aggregations </param>
+		/// <param name="Include_Aggregations"> Flag indicates whether to include the aggregationPermissions </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Datarow with additional information about an item, including spatial details, publisher, donor, etc.. </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Item_Brief_Info' stored procedure </remarks> 
@@ -4906,7 +4906,7 @@ namespace SobekCM.Library.Database
 				user.Add_Editable_Regular_Expression(thisRow["EditableRegex"].ToString());
 			}
 
-			// Add links to aggregations
+			// Add links to aggregationPermissions
 			foreach (DataRow thisRow in ResultSet.Tables[5 ].Rows)
 			{
 
@@ -4924,7 +4924,7 @@ namespace SobekCM.Library.Database
 				int parentid = Convert.ToInt32(folderRow["ParentFolderID"]);
 				bool isPublic = Convert.ToBoolean(folderRow["isPublic"]);
 
-				User_Folder newFolderNode = new User_Folder(folderName, folderid) {isPublic = isPublic};
+				User_Folder newFolderNode = new User_Folder(folderName, folderid) {IsPublic = isPublic};
 				if (parentid == -1)
 					parentNodes.Add(newFolderNode);
 				folderNodes.Add(folderid, newFolderNode);
@@ -5757,9 +5757,9 @@ namespace SobekCM.Library.Database
 					string description = userRow["GroupDescription"].ToString();
 					int usergroupid = Convert.ToInt32(userRow["UserGroupID"]);
 					User_Group group = new User_Group(name, description, usergroupid);
-					group.Can_Submit = Convert.ToBoolean(userRow["Can_Submit_Items"]);
-					group.Is_Internal_User = Convert.ToBoolean(userRow["Internal_User"]);
-					group.Is_System_Admin = Convert.ToBoolean(userRow["IsSystemAdmin"]);
+					group.CanSubmit = Convert.ToBoolean(userRow["Can_Submit_Items"]);
+					group.IsInternalUser = Convert.ToBoolean(userRow["Internal_User"]);
+					group.IsSystemAdmin = Convert.ToBoolean(userRow["IsSystemAdmin"]);
 
 					foreach (DataRow thisRow in resultSet.Tables[1].Rows)
 					{
@@ -5777,7 +5777,7 @@ namespace SobekCM.Library.Database
 						group.Add_Editable_Regular_Expression(thisRow["EditableRegex"].ToString());
 					}
 
-					// Add links to aggregations
+					// Add links to aggregationPermissions
 					foreach (DataRow thisRow in resultSet.Tables[4].Rows)
 					{
 						group.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditMetadata"]), Convert.ToBoolean(thisRow["CanEditBehaviors"]), Convert.ToBoolean(thisRow["CanPerformQc"]), Convert.ToBoolean(thisRow["CanUploadFiles"]), Convert.ToBoolean(thisRow["CanChangeVisibility"]), Convert.ToBoolean(thisRow["CanDelete"]), Convert.ToBoolean(thisRow["IsCurator"]), Convert.ToBoolean(thisRow["IsAdmin"]));
@@ -5820,6 +5820,58 @@ namespace SobekCM.Library.Database
 				return null;
 			}
 		}
+
+
+        /// <summary> Gets the list of all user groups </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> List of partly built <see cref="Users.User_Group"/> object </returns>
+        /// <remarks> This calls the 'mySobek_Get_All_User_Groups' stored procedure </remarks> 
+        public static List<User_Group> Get_All_User_Groups(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", String.Empty);
+            }
+
+            try
+            {
+                // Execute this non-query stored procedure
+                SqlParameter[] paramList = new SqlParameter[1];
+
+                DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_All_User_Groups", paramList);
+
+                List<User_Group> returnValue = new List<User_Group>();
+
+                foreach (DataRow thisRow in resultSet.Tables[0].Rows)
+                {
+                    string name = thisRow["GroupName"].ToString();
+                    string description = thisRow["GroupDescription"].ToString();
+                    int usergroupid = Convert.ToInt32(thisRow["UserGroupID"]);
+                    bool specialGroup = Convert.ToBoolean(thisRow["IsSpecialGroup"]);
+
+                    User_Group userGroup = new User_Group(name, description, usergroupid);
+                    userGroup.IsSpecialGroup = specialGroup;
+
+                    returnValue.Add(userGroup);
+
+                }
+
+
+                return returnValue;
+
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
 
 		#endregion
 
@@ -6740,7 +6792,7 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the datatable of all item aggregation codes </summary>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> DataTable with list of all item aggregations' code, type, name, and mapping to Greenstone </returns>
+		/// <returns> DataTable with list of all item aggregationPermissions' code, type, name, and mapping to Greenstone </returns>
 		/// <remarks> This calls the 'SobekCM_Get_Codes' stored procedure </remarks> 
 		public static DataTable Get_Codes_Item_Aggregations(Custom_Tracer Tracer)
 		{
@@ -6770,22 +6822,6 @@ namespace SobekCM.Library.Database
 			return tempSet.Tables[0];
 		}
 
-		/// <summary> Gets the datatable of all user groups from the mySobek / personalization database </summary>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> DataTable with list of all user groups' id, name, descriptiont, etc.. </returns>
-		/// <remarks> This calls the 'mySobek_Get_All_User_Groups' stored procedure</remarks> 
-		public static DataTable Get_All_User_Groups(Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", String.Empty);
-			}
-
-			// Define a temporary dataset
-			DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_All_User_Groups");
-			return tempSet.Tables[0];
-		}
-
 
 		/// <summary> Gets the dataset with all default metadata and all templates </summary>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -6809,7 +6845,7 @@ namespace SobekCM.Library.Database
 		/// <param name="ShortName"> Short version of this item aggregation </param>
 		/// <param name="IsActive"> Flag indicates if this item aggregation is active</param>
 		/// <param name="IsHidden"> Flag indicates if this item is hidden</param>
-		/// <param name="External_Link">External link for this item aggregation (usually used for institutional aggregations)</param>
+		/// <param name="External_Link">External link for this item aggregation (usually used for institutional aggregationPermissions)</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Update_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
@@ -6860,7 +6896,7 @@ namespace SobekCM.Library.Database
 		/// <param name="IsActive"> Flag indicates if this item aggregation is active</param>
 		/// <param name="IsHidden"> Flag indicates if this item is hidden</param>
 		/// <param name="ParentID"> ID for the item aggregation parent</param>
-		/// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregations to provide a link back to the institution's actual home page)</param>
+		/// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregationPermissions to provide a link back to the institution's actual home page)</param>
 		/// <param name="Username"> Username saving this new item aggregation, for the item aggregation milestones </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
@@ -6888,8 +6924,8 @@ namespace SobekCM.Library.Database
 		/// <param name="OAI_Flag"> Flag indicates if this item aggregation should be available via OAI-PMH </param>
 		/// <param name="OAI_Metadata"> Additional metadata about this collection, to be included in the set information in OAI-PMH</param>
 		/// <param name="ContactEmail"> Contact email for this item aggregation (can leave blank to use default)</param>
-		/// <param name="DefaultInterface"> Default interface for this item aggregation (particularly useful for institutional aggregations)</param>
-		/// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregations to provide a link back to the institution's actual home page)</param>
+		/// <param name="DefaultInterface"> Default interface for this item aggregation (particularly useful for institutional aggregationPermissions)</param>
+		/// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregationPermissions to provide a link back to the institution's actual home page)</param>
 		/// <param name="ParentID"> ID for the item aggregation parent</param>
 		/// <param name="Username"> Username saving this new item aggregation, for the item aggregation milestones </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -6955,7 +6991,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Username"> Name of the user that deleted this aggregation, for the milestones </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <param name="Error_Message"> [OUT] Error message, if there was an error</param>
-		/// <param name="Is_SysAdmin"> Flag indicates if this is a system admin, who can delete aggregations with items </param>
+		/// <param name="Is_SysAdmin"> Flag indicates if this is a system admin, who can delete aggregationPermissions with items </param>
 		/// <returns> Error code - 0 if there was no error </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Item_Aggregation' stored procedure</remarks> 
 		public static int Delete_Item_Aggregation(string Code, bool Is_SysAdmin, string Username, Custom_Tracer Tracer, out string Error_Message )
@@ -7097,7 +7133,7 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Sets some of the permissions values for a single user </summary>
 		/// <param name="UserID"> Primary key for this user from the database </param>
-		/// <param name="Can_Submit"> Flag indicates if this user can submit items </param>
+		/// <param name="canSubmit"> Flag indicates if this user can submit items </param>
 		/// <param name="Is_Internal"> Flag indicates if this user is considered an 'internal user'</param>
 		/// <param name="Can_Edit_All"> Flag indicates if this user is authorized to edit all items in the library</param>
 		/// <param name="Is_Portal_Admin"> Flag indicates if this user is a portal Administrator </param>
@@ -7107,7 +7143,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Edit_Template"> Template name for editing non-MARC records </param>
 		/// <param name="Edit_Template_MARC"> Template name for editing MARC-derived records </param>
 		/// <param name="Clear_Projects_Templates"> Flag indicates whether to clear projects and templates for this user </param>
-		/// <param name="Clear_Aggregation_Links"> Flag indicates whether to clear item aggregations linked to this user</param>
+		/// <param name="Clear_Aggregation_Links"> Flag indicates whether to clear item aggregationPermissions linked to this user</param>
 		/// <param name="Clear_User_Groups"> Flag indicates whether to clear user group membership for this user </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
@@ -7345,13 +7381,13 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Sets the list of aggregations and permissions tagged to a given user </summary>
+		/// <summary> Sets the list of aggregationPermissions and permissions tagged to a given user </summary>
 		/// <param name="UserID"> Primary key for this user from the database </param>
-		/// <param name="Aggregations"> List of aggregations and permissions to link to this user </param>
+		/// <param name="Aggregations"> List of aggregationPermissions and permissions to link to this user </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Add_User_Aggregations_Link' stored procedure</remarks> 
-		public static bool Update_SobekCM_User_Aggregations(int UserID, ReadOnlyCollection<User_Editable_Aggregation> Aggregations, Custom_Tracer Tracer)
+		public static bool Update_SobekCM_User_Aggregations(int UserID, List<User_Permissioned_Aggregation> Aggregations, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -7576,14 +7612,14 @@ namespace SobekCM.Library.Database
 		/// <param name="UserGroupID"> Primary key for this user group from the database, or -1 for a new user group </param>
 		/// <param name="GroupName"> Name of this user group </param>
 		/// <param name="GroupDescription"> Basic description of this user group </param>
-		/// <param name="Can_Submit"> Flag indicates if this user group can submit items </param>
+		/// <param name="canSubmit"> Flag indicates if this user group can submit items </param>
 		/// <param name="Is_Internal"> Flag indicates if this user group is considered an 'internal user'</param>
 		/// <param name="Can_Edit_All"> Flag indicates if this user group is authorized to edit all items in the library</param>
 		/// <param name="Is_System_Admin"> Flag indicates if this user group is a system Administrator</param>
 		/// <param name="Is_Portal_Admin"> Flag indicated if this user group is a portal administrator </param>
 		/// <param name="Include_Tracking_Standard_Forms"> Should this user's settings include the tracking form portions? </param>
 		/// <param name="Clear_Metadata_Templates"> Flag indicates whether to clear default metadata sets and templates for this user group </param>
-		/// <param name="Clear_Aggregation_Links"> Flag indicates whether to clear item aggregations linked to this user group </param>
+		/// <param name="Clear_Aggregation_Links"> Flag indicates whether to clear item aggregationPermissions linked to this user group </param>
 		/// <param name="Clear_Editable_Links"> Flag indicates whether to clear the link between this user group and editable regex expressions  </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> UserGroupId for a new user group, if this was to save a new one </returns>
@@ -7767,13 +7803,13 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Sets the list of aggregations and permissions tagged to a given user group</summary>
+		/// <summary> Sets the list of aggregationPermissions and permissions tagged to a given user group</summary>
 		/// <param name="UserGroupID"> Primary key for this user group from the database </param>
-		/// <param name="Aggregations"> List of aggregations and permissions to link to this user group </param>
+		/// <param name="Aggregations"> List of aggregationPermissions and permissions to link to this user group </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Add_User_Group_Aggregations_Link' stored procedure</remarks> 
-		public static bool Update_SobekCM_User_Group_Aggregations(int UserGroupID, List<User_Editable_Aggregation> Aggregations, Custom_Tracer Tracer)
+        public static bool Update_SobekCM_User_Group_Aggregations(int UserGroupID, List<User_Permissioned_Aggregation> Aggregations, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -8317,7 +8353,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Archival_Stats_Type"> Flag indicates if locally archived reporting should be included ( 0=skip, 1=summary, 2=details )</param>
 		/// <returns> Dataset with two tables, first is the online space, and second is the archived space </returns>
 		/// <remarks> If two codes are passed in, then the values returned is the size of all items which exist
-		///  in both the provided aggregations.  Otherwise, it is just the size of all items in the primary 
+		///  in both the provided aggregationPermissions.  Otherwise, it is just the size of all items in the primary 
 		///  aggregation. <br /><br /> This calls the 'SobekCM_Online_Archived_Space' stored procedure </remarks> 
 		public static DataSet Online_Archived_Space(string AggregationCode1, string AggregationCode2, short Online_Stats_Type, short Archival_Stats_Type)
 		{
@@ -8737,7 +8773,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Link10">Link between the ninth and tenth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
 		/// <param name="Term10"> Tenth search term for this metadata search </param>
 		/// <param name="Field10"> Field number to search for (or -1 to search all fields)</param>
-		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregations )</param>
+		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
 		/// <returns> Table with all of the item and item group information which matches the metadata search </returns>
 		/// <remarks> This calls the 'Tracking_Metadata_Search' stored procedure.</remarks>
 		public static DataSet Tracking_Metadata_Search(string Term1, int Field1,
@@ -8799,7 +8835,7 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Performs a basic metadata search over the entire citation, given a search condition </summary>
 		/// <param name="Search_Condition"> Search condition string to be run against the databasse </param>
-		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregations )</param>
+		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
 		/// <returns> Table with all of the item and item group information which matches the metadata search </returns>
 		/// <remarks> This calls the 'Tracking_Metadata_Basic_Search' stored procedure.</remarks>
 		public static DataSet Tracking_Metadata_Search(string Search_Condition, string AggregationCode )
@@ -8829,7 +8865,7 @@ namespace SobekCM.Library.Database
 		/// <summary> Performs a metadata search for a piece of metadata that EXACTLY matches the provided search term </summary>
 		/// <param name="Search_Term"> Search condition string to be run against the databasse </param>
 		/// <param name="FieldID"> Primary key for the field to search in the database </param>
-		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregations )</param>
+		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
 		/// <returns> Table with all of the item and item group information which matches the metadata search </returns>
 		/// <remarks> This calls the 'Tracking_Metadata_Exact_Search' stored procedure.</remarks>
 		public static DataSet Tracking_Metadata_Exact_Search(string Search_Term, int FieldID, string AggregationCode )
@@ -9428,8 +9464,8 @@ namespace SobekCM.Library.Database
 
 		#region Methods related to OAI-PMH
 
-		/// <summary> Gets the list of all OAI-enabled item aggregations </summary>
-		/// <returns> DataTable with all the data about the OAI-enabled item aggregations, including code, name, description, last item added date, and any aggregation-level OAI_Metadata  </returns>
+		/// <summary> Gets the list of all OAI-enabled item aggregationPermissions </summary>
+		/// <returns> DataTable with all the data about the OAI-enabled item aggregationPermissions, including code, name, description, last item added date, and any aggregation-level OAI_Metadata  </returns>
 		/// <remarks> This calls the 'SobekCM_Get_OAI_Sets' stored procedure  <br /><br />
 		/// This is called by the <see cref="Oai_MainWriter"/> class. </remarks> 
 		public static DataTable Get_OAI_Sets()
@@ -9536,7 +9572,7 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets all the tables ued during the process of reading the statistics 
 		/// from the web iis logs and creating the associated SQL commands  </summary>
-		/// <returns> Large dataset with several tables ( all items, all titles, aggregations, etc.. )</returns>
+		/// <returns> Large dataset with several tables ( all items, all titles, aggregationPermissions, etc.. )</returns>
 		public static DataSet Get_Statistics_Lookup_Tables()
 		{
 			// Create the connection

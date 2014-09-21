@@ -2,28 +2,30 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
 
 #endregion
 
-namespace SobekCM.Library.Users
+namespace SobekCM.Core.Users
 {
     /// <summary> Represents a mySobek user group, which allows some permissions and information to be assigned
-    /// to a collection of individual mySobek users.  </summary>
+    /// to a collection of individual mySobek users.  This contains all the information about a single user group </summary>
+    [DataContract]
     public class User_Group
     {
         #region Private class members
 
-        private readonly User_Editable_Collection aggregations;
-        private readonly List<string> editableRegexes;
-        private readonly List<string> defaultMetadataSets;
-        private readonly List<string> templates;
-        private readonly List<User_Group_Member> users;
+        private User_Aggregation_Permissions aggregations;
+        private List<string> editableRegexes;
+        private List<string> defaultMetadataSets;
+        private List<string> templates;
+        private List<User_Group_Member> users;
 
         #endregion
 
         #region Constructor
 
-        /// <summary> Constructor for a new instance of the User_Group class </summary>
+        /// <summary> Constructor for a new instance of the User_Group_Complete class </summary>
         /// <param name="Name">Name for this SobekCM user group</param>
         /// <param name="Description">Description for this SobekCM user group</param>
         /// <param name="UserGroupID">UserGroupID (or primary key) to this user group from the database</param>
@@ -32,14 +34,9 @@ namespace SobekCM.Library.Users
             this.Name = Name;
             this.Description = Description;
             this.UserGroupID = UserGroupID;
-            Can_Submit = false;
-            Is_Internal_User = false;
-            Is_System_Admin = false;
-            templates = new List<string>();
-            defaultMetadataSets = new List<string>();
-            aggregations = new User_Editable_Collection();
-            editableRegexes = new List<string>();
-            users = new List<User_Group_Member>();
+            CanSubmit = false;
+            IsInternalUser = false;
+            IsSystemAdmin = false;
         }
 
         #endregion
@@ -47,62 +44,79 @@ namespace SobekCM.Library.Users
         #region Public Properties
 
         /// <summary> Name for this SobekCM user group </summary>
+        [DataMember]
         public string Name { get; set; }
 
         /// <summary> Description for this SobekCM user group </summary>
+        [DataMember]
         public string Description { get; set; }
 
         /// <summary> UserGroupID (or primary key) to this user group from the database </summary>
+        [DataMember]
         public int UserGroupID { get; set; }
 
         /// <summary> Simple flag indicates if this user group can submit items </summary>
-        public bool Can_Submit { get; set; }
+        [DataMember]
+        public bool CanSubmit { get; set; }
 
         /// <summary> Flag indicates if this is an internal user group </summary>
         /// <remarks>This grants access to various tracking elements in SobekCM</remarks>
-        public bool Is_Internal_User { get; set; }
+        [DataMember]
+        public bool IsInternalUser { get; set; }
 
         /// <summary> Flag indicates if this user group has general admin rights over the entire system </summary>
-        public bool Is_System_Admin { get; set; }
+        [DataMember]
+        public bool IsSystemAdmin { get; set; }
+
+        /// <summary> Flag indicates if this is a special user group (reserved by the system), such as 'Everyone' </summary>
+        [DataMember]
+        public bool IsSpecialGroup { get; set;  }
 
         /// <summary> Ordered list of submittal templates this user group has access to </summary>
-        public ReadOnlyCollection<string> Templates
+        [DataMember(EmitDefaultValue = false)]
+        public List<string> Templates
         {
-            get { return new ReadOnlyCollection<string>(templates); }
+            get { return templates; }
         }
 
         /// <summary> Ordered list of default metadata sets this user group has access to </summary>
-        public ReadOnlyCollection<string> Default_Metadata_Sets
+        [DataMember(EmitDefaultValue = false)]
+        public List<string> Default_Metadata_Sets
         {
-            get { return new ReadOnlyCollection<string>(defaultMetadataSets); }
+            get { return defaultMetadataSets; }
         }
 
-        /// <summary> List of item aggregations associated with this user group </summary>
-        public ReadOnlyCollection<User_Editable_Aggregation> Aggregations
+        /// <summary> List of item aggregationPermissions associated with this user group </summary>
+        [DataMember(EmitDefaultValue = false)]
+        public List<User_Permissioned_Aggregation> Aggregations
         {
-            get { return aggregations.Collection; }
+            get { return aggregations.Aggregations; }
         }
 
         /// <summary> List of regular expressions for checking for edit by bibid </summary>
-        public ReadOnlyCollection<string> Editable_Regular_Expressions
+        [DataMember(EmitDefaultValue = false)]
+        public List<string> Editable_Regular_Expressions
         {
-            get { return new ReadOnlyCollection<string>(editableRegexes); }
+            get { return editableRegexes; }
         }
 
         /// <summary> Gets the list of users associated with this user group </summary>
-        public ReadOnlyCollection<User_Group_Member> Users
+        [DataMember(EmitDefaultValue = false)]
+        public List<User_Group_Member> Users
         {
-            get { return new ReadOnlyCollection<User_Group_Member>(users); }
+            get { return users; }
         }
 
         #endregion
 
-        #region Internal methods for modifying the collections of editable objects ( bibid, templates, projects, aggregations, etc..)
+        #region Methods for modifying the collections of editable objects ( bibid, templates, projects, aggregationPermissions, etc..)
 
         /// <summary> Adds a user to the list of users which belong to this user group </summary>
         /// <param name="User"> Small user object which holds the very basic information about this user </param>
-        internal void Add_User(User_Group_Member User)
+        public void Add_User(User_Group_Member User)
         {
+            if (users == null) users = new List<User_Group_Member>();
+
             users.Add(User);
         }
 
@@ -111,75 +125,57 @@ namespace SobekCM.Library.Users
         /// <param name="Full_Name">Returns the user's full name in [first name last name] order</param>
         /// <param name="Email">User's email address</param>
         /// <param name="UserID">serID (or primary key) to this user from the database</param>
-        internal void Add_User(string UserName, string Full_Name, string Email, int UserID)
+        public void Add_User(string UserName, string Full_Name, string Email, int UserID)
         {
+            if (users == null) users = new List<User_Group_Member>();
+
             users.Add(new User_Group_Member(UserName, Full_Name, Email, UserID));
         }
 
-        /// <summary> Add a new item aggregation to this user group's collection of item aggregations </summary>
+        /// <summary> Add a new item aggregation to this user group's collection of item aggregationPermissions </summary>
         /// <param name="Code">Code for this user editable item aggregation</param>
         /// <param name="Aggregation_Name">Name for this user editable item aggregation </param>
         /// <param name="CanSelect">Flag indicates if this user can add items to this item aggregation</param>
         /// <param name="CanEditItems">Flag indicates if this user can edit any items in this item aggregation</param>
         /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
-		internal void Add_Aggregation(string Code, string Aggregation_Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool IsAdmin)
+		public void Add_Aggregation(string Code, string Aggregation_Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool IsAdmin)
         {
+            if (aggregations == null) aggregations = new User_Aggregation_Permissions();
+
             aggregations.Add(Code, Aggregation_Name, CanSelect, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete, IsCurator, false, IsAdmin, true );
         }
 
         /// <summary> Adds a template to the list of templates this user group can select </summary>
         /// <param name="Template">Code for this template</param>
         /// <remarks>This must match the name of one of the template XML files in the mySobek\templates folder</remarks>
-        internal void Add_Template(string Template)
+        public void Add_Template(string Template)
         {
+            if (templates == null) templates = new List<string>();
+
             templates.Add(Template);
         }
 
         /// <summary> Adds a default metadata set to the list of sets this user group can select </summary>
         /// <param name="MetadataSet">Code for this default metadata set</param>
         /// <remarks>This must match the name of one of the project METS (.pmets) files in the mySobek\projects folder</remarks>
-        internal void Add_Default_Metadata_Set(string MetadataSet)
+        public void Add_Default_Metadata_Set(string MetadataSet)
         {
+            if (defaultMetadataSets == null) defaultMetadataSets = new List<string>();
+
             defaultMetadataSets.Add(MetadataSet);
         }
 
         /// <summary> Adds a regular expression to this user group to determine which titles this user can edit </summary>
         /// <param name="Regular_Expression"> Regular expression used to compute if this user group can edit a title, by BibID</param>
-        internal void Add_Editable_Regular_Expression(string Regular_Expression)
+        public void Add_Editable_Regular_Expression(string Regular_Expression)
         {
+            if (editableRegexes == null) editableRegexes = new List<string>();
+
             editableRegexes.Add(Regular_Expression);
         }
 
         #endregion
     }
 
-    /// <summary> Represents a single user which is part of a user group. This contains only the very
-    /// basic user information </summary>
-    public class User_Group_Member
-    {
-        /// <summary> User's email address </summary>
-        public readonly string Email;
 
-        /// <summary> Returns the user's full name in [first name last name] order</summary>
-        public readonly string Full_Name;
-
-        /// <summary> UserID (or primary key) to this user from the database </summary>
-        public readonly int UserID;
-
-        /// <summary> SobekCM username for this user </summary>
-        public readonly string UserName;
-
-        /// <summary> Constructor for a new instance of the User_Group_Member class </summary>
-        /// <param name="UserName">SobekCM username for this user</param>
-        /// <param name="Full_Name">Returns the user's full name in [first name last name] order</param>
-        /// <param name="Email">User's email address</param>
-        /// <param name="UserID">serID (or primary key) to this user from the database</param>
-        public User_Group_Member(string UserName, string Full_Name, string Email, int UserID)
-        {
-            this.UserName = UserName;
-            this.Full_Name = Full_Name;
-            this.Email = Email;
-            this.UserID = UserID;
-        }
-    }
 }

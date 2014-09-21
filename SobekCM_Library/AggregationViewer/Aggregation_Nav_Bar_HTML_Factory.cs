@@ -5,6 +5,7 @@ using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Navigation;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 

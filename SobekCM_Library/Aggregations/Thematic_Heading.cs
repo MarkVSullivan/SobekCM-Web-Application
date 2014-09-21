@@ -1,6 +1,6 @@
 ﻿namespace SobekCM.Library.Aggregations
 {
-    /// <summary> Data about a single thematic heading, used to organize item aggregations on the main home page </summary>
+    /// <summary> Data about a single thematic heading, used to organize item aggregationPermissions on the main home page </summary>
     public class Thematic_Heading
     {
         /// <summary> Primary key for this thematic heading in the database </summary>

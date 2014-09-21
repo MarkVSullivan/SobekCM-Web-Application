@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using SobekCM.Core.Users;
 
 namespace SobekCM.Library.Citation.Elements
 {
@@ -22,7 +23,7 @@ namespace SobekCM.Library.Citation.Elements
 		/// <param name="Bib"> Existing digital resource object which may already have values for this element's data field(s) </param>
 		/// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
 		/// <remarks> This does nothing </remarks>
-		public override void Prepare_For_Save(Resource_Object.SobekCM_Item Bib, Users.User_Object Current_User)
+		public override void Prepare_For_Save(Resource_Object.SobekCM_Item Bib, User_Object Current_User)
 		{
 			// do nothing
 		}
@@ -34,7 +35,7 @@ namespace SobekCM.Library.Citation.Elements
 			// do nothing
 		}
 
-		public override void Render_Template_HTML(System.IO.TextWriter Output, Resource_Object.SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, Users.User_Object Current_User, Configuration.Web_Language_Enum CurrentLanguage, Application_State.Language_Support_Info Translator, string Base_URL)
+		public override void Render_Template_HTML(System.IO.TextWriter Output, Resource_Object.SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Configuration.Web_Language_Enum CurrentLanguage, Application_State.Language_Support_Info Translator, string Base_URL)
 		{
 			Output.WriteLine("  <!-- Literal Element -->");
 			Output.WriteLine("  <tr>");

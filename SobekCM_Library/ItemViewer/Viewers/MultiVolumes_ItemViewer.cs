@@ -8,6 +8,7 @@ using SobekCM.Library.Settings;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Items;
+using SobekCM.Tools;
 
 #endregion
 
@@ -598,7 +599,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //DataColumn level5_index_column = Volumes.Columns[11];
 
             // Does this user have special rights on the item?
-            bool specialRights = ((CurrentUser != null) && ((CurrentUser.Is_System_Admin) || (CurrentUser.Is_Internal_User) || (CurrentUser.Can_Edit_This_Item(CurrentItem))));
+            bool specialRights = ((CurrentUser != null) && ((CurrentUser.Is_System_Admin) || (CurrentUser.Is_Internal_User) || (CurrentUser.Can_Edit_This_Item(CurrentItem.BibID, CurrentItem.Bib_Info.SobekCM_Type_String, CurrentItem.Bib_Info.Source.Code, CurrentItem.Bib_Info.HoldingCode, CurrentItem.Behaviors.Aggregation_Code_List))));
 
             foreach (DataRow thisItem in Volumes.Rows)
             {

@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using SobekCM.Core.Users;
 using SobekCM.Library.Builder;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
@@ -1353,5 +1354,20 @@ namespace SobekCM.Library.Settings
 				return returnValue;
 			}
 		}
+
+
+        /// <summary> Gets the user-in-process directory </summary>
+        /// <param name="CurrentUser"> Current user, for which to find the in-process directory </param>
+        /// <param name="DirectoryName"> Subdirectory requested </param>
+        /// <returns> Full path to the requested user-in-process directory </returns>
+        public static string User_InProcess_Directory(User_Object CurrentUser, string DirectoryName)
+        {
+            // Determine the in process directory for this
+            string userInProcessDirectory = In_Process_Submission_Location + "\\" + CurrentUser.UserName.Replace(".", "").Replace("@", "") + "\\" + DirectoryName;
+            if (CurrentUser.ShibbID.Trim().Length > 0)
+                userInProcessDirectory = In_Process_Submission_Location + "\\" + CurrentUser.ShibbID + "\\" + DirectoryName;
+
+            return userInProcessDirectory;
+        }
 	}
 }

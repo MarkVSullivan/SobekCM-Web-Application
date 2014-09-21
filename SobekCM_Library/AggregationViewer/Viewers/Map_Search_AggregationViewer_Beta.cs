@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Navigation;
+using SobekCM.Tools;
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {

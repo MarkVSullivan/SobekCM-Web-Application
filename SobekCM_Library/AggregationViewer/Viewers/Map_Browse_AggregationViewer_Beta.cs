@@ -13,6 +13,7 @@ using SobekCM.Library.Search;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Database;
+using SobekCM.Tools;
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {

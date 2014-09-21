@@ -24,8 +24,10 @@ using SobekCM.Library.Search;
 using SobekCM.Library.SiteMap;
 using SobekCM.Library.Skins;
 using SobekCM.Library.Solr;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Library.WebContent;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -306,14 +308,14 @@ namespace SobekCM.Library
             if (Folder_Info == null)
             {
                 Folder_Info = SobekCM_Database.Get_Public_User_Folder(UserFolderID, Tracer);
-                if ((Folder_Info != null) && (Folder_Info.isPublic))
+                if ((Folder_Info != null) && (Folder_Info.IsPublic))
                 {
                     Cached_Data_Manager.Store_Public_Folder_Info(Folder_Info, Tracer);
                 }
             }
 
             // If this folder is invalid or private, return false
-            if ((Folder_Info == null) || (!Folder_Info.isPublic))
+            if ((Folder_Info == null) || (!Folder_Info.IsPublic))
             {
                 return false;
             }

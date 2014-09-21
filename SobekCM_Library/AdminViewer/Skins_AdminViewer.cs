@@ -14,7 +14,9 @@ using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Skins;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -578,7 +580,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine();
             Output.WriteLine("  <h2>Existing Web Skins</h2>");
 
-            // Get the list of all aggregations
+            // Get the list of all aggregationPermissions
 			Output.WriteLine("  <table class=\"sbkSav_Table sbkAdm_Table\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th class=\"sbkSav_TableHeader1\">ACTIONS</th>");

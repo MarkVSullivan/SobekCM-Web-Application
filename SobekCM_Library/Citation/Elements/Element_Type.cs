@@ -28,7 +28,7 @@ namespace SobekCM.Library.Citation.Elements
         /// general or for the just a single named entity (FUTURE PLAN)</summary>
         Affiliation,
 
-        /// <summary> List of aggregations (non-institutional) to which material is linked </summary>
+        /// <summary> List of aggregationPermissions (non-institutional) to which material is linked </summary>
         Aggregations,
 
         /// <summary> This special note field maps to <see cref="Attribution_Element"/> and is generally reserved from editing by users </summary>

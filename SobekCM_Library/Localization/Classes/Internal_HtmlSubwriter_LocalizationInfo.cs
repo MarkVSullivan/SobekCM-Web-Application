@@ -255,7 +255,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> Used when no matching value in the cache </remarks>
         public string None { get; private set; }
 
-        /// <remarks> For dividing list between active and inactive aggregations </remarks>
+        /// <remarks> For dividing list between active and inactive aggregationPermissions </remarks>
         public string ActiveAggregations { get; private set; }
 
         /// <remarks> "Internal view, must be logged on as internal user." </remarks>
@@ -270,7 +270,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> When displaying the list of items in the local web server cache </remarks>
         public string APPLICATIONSTATEVALUES { get; private set; }
 
-        /// <remarks> For listing all aggregations in the system </remarks>
+        /// <remarks> For listing all aggregationPermissions in the system </remarks>
         public string BelowIsTheCompleteMasterListOfAllAggregationsWithinThisLibraryThisIncludesAllActiveAggregationsAsWellAsAllHiddenOrInactiveCollections { get; private set; }
 
         /// <remarks> "Internal view, must be logged on as internal user." </remarks>
@@ -285,16 +285,16 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> List of all recently added or changed items in system </remarks>
         public string BULKLOADED { get; private set; }
 
-        /// <remarks> Header for listing all child aggregations </remarks>
+        /// <remarks> Header for listing all child aggregationPermissions </remarks>
         public string ChildAggregations { get; private set; }
 
         /// <remarks> 'Click here to return to the digital library home page.' localization string </remarks>
         public string ClickHereToReturnToTheDigitalLibraryHomePage { get; private set; }
 
-        /// <remarks> For listing all aggregations in the system </remarks>
+        /// <remarks> For listing all aggregationPermissions in the system </remarks>
         public string ClickHereToSortByCODE { get; private set; }
 
-        /// <remarks> For listing all aggregations in the system </remarks>
+        /// <remarks> For listing all aggregationPermissions in the system </remarks>
         public string ClickHereToSortByDATEADDED { get; private set; }
 
         /// <remarks> "Internal view, must be logged on as internal user." </remarks>
@@ -303,7 +303,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> "Internal view, must be logged on as internal user." </remarks>
         public string CurrentMemoryProfile { get; private set; }
 
-        /// <remarks> For listing all aggregations in the system </remarks>
+        /// <remarks> For listing all aggregationPermissions in the system </remarks>
         public string DateAdded { get; private set; }
 
         /// <remarks> Header for the column describing the failure </remarks>
@@ -315,7 +315,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> When displaying the list of items in the local web server cache </remarks>
         public string GLOBALVALUES { get; private set; }
 
-        /// <remarks> For dividing list between active and inactive aggregations </remarks>
+        /// <remarks> For dividing list between active and inactive aggregationPermissions </remarks>
         public string InactiveAggregations { get; private set; }
 
         /// <remarks> When displaying the list of items in the local web server cache </remarks>
@@ -339,7 +339,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> "Type of METS file ( i.e., New, Delete, etc..) - List of all recently added or changed items in system" </remarks>
         public string METSTYPE { get; private set; }
 
-        /// <remarks> For listing all aggregations in the system </remarks>
+        /// <remarks> For listing all aggregationPermissions in the system </remarks>
         public string Name { get; private set; }
 
         /// <remarks> "Internal view, must be logged on as internal user." </remarks>
@@ -387,7 +387,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> When displaying the list of items in the local web server cache </remarks>
         public string SESSIONSTATEVALUES { get; private set; }
 
-        /// <remarks> For listing all aggregations in the system </remarks>
+        /// <remarks> For listing all aggregationPermissions in the system </remarks>
         public string SobekcmCode { get; private set; }
 
         /// <remarks> When listing build failures within the internal view </remarks>
@@ -405,7 +405,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> When listing build failures within the internal view </remarks>
         public string To { get; private set; }
 
-        /// <remarks> For listing all aggregations in the system </remarks>
+        /// <remarks> For listing all aggregationPermissions in the system </remarks>
         public string Type { get; private set; }
 
         /// <remarks> When displaying the list of items in the local web server cache </remarks>

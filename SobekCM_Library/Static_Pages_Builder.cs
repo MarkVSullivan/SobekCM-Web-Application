@@ -22,7 +22,9 @@ using SobekCM.Library.Items;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Skins;
+using SobekCM.Tools;
 using SobekCM.Tools.Logs;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -1345,7 +1347,7 @@ namespace SobekCM.Library
 	    /// <summary> Writes the static header to go at the top of the static digital resource page </summary>
 	    /// <param name="Writer"> Open stream to write the HTML header to </param>
 	    /// <param name="HTMLSkin"> Default html web skin/interface</param>
-	    /// <param name="CurrentItem"> Current item, to include the aggregations in the breadcrumbs </param>
+	    /// <param name="CurrentItem"> Current item, to include the aggregationPermissions in the breadcrumbs </param>
 	    public void Display_Header(TextWriter Writer, SobekCM_Skin_Object HTMLSkin, SobekCM_Item CurrentItem )
         {
 			StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + currentMode.Base_URL + "\">" + SobekCM_Library_Settings.System_Abbreviation + " Home</a>");

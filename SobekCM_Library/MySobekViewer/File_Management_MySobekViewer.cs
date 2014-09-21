@@ -18,7 +18,9 @@ using SobekCM.Resource_Object.Divisions;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Skins;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -78,7 +80,7 @@ namespace SobekCM.Library.MySobekViewer
 			skins = HTML_Skin_Collection;
 
             // If the user cannot edit this item, go back
-            if (!user.Can_Edit_This_Item(item))
+            if (!User.Can_Edit_This_Item( Current_Item.BibID, Current_Item.Bib_Info.SobekCM_Type_String, Current_Item.Bib_Info.Source.Code, Current_Item.Bib_Info.HoldingCode, Current_Item.Behaviors.Aggregation_Code_List ))
             {
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                 currentMode.Redirect();

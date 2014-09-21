@@ -11,6 +11,8 @@ using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 namespace SobekCM.Library.AggregationViewer.Viewers

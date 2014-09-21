@@ -9,6 +9,8 @@ using SobekCM.Library.Aggregations;
 using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Skins;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
 
 #endregion
 
@@ -68,7 +70,7 @@ namespace SobekCM.Library.Application_State
         /// <param name="Icon_Dictionary"> [REF] Dictionary of information about every wordmark/icon in this digital library </param>
         /// <param name="Stats_Date_Range"> [REF] Object contains the start and end dates for the statistical data in the database </param>
         /// <param name="Thematic_Headings"> [REF] Headings under which all the highlighted collections on the main home page are organized </param>
-        /// <param name="Aggregation_Aliases"> [REF] List of all existing aliases for existing aggregations </param>
+        /// <param name="Aggregation_Aliases"> [REF] List of all existing aliases for existing aggregationPermissions </param>
         /// <param name="IP_Restrictions"> [REF] List of all IP Restriction ranges in use by this digital library </param>
         /// <param name="URL_Portals"> [REF] List of all web portals into this system </param>
         /// <param name="Mime_Types">[REF] Dictionary of MIME types by extension</param>
@@ -82,7 +84,8 @@ namespace SobekCM.Library.Application_State
             ref IP_Restriction_Ranges IP_Restrictions,
             ref Portal_List URL_Portals,
             ref Dictionary<string, Mime_Type_Info> Mime_Types,
-			ref List<string> Item_Viewer_Priority )
+			ref List<string> Item_Viewer_Priority,
+            ref List<User_Group> User_Groups )
 		{
             // Should we reload the data from the exteral configuraiton file?
             if (Reload_All)
@@ -312,7 +315,7 @@ namespace SobekCM.Library.Application_State
                 }
             }
 
-			// Check the list of forwardings
+			// Check the list of item view priority list
 			if ((Item_Viewer_Priority == null) || (Reload_All))
 			{
 				if (Item_Viewer_Priority != null)
@@ -327,6 +330,22 @@ namespace SobekCM.Library.Application_State
 					Item_Viewer_Priority = SobekCM_Database.Get_Viewer_Priority(Tracer);
 				}
 			}
+
+            // Check the list of user groups list
+            if ((User_Groups == null) || (Reload_All))
+            {
+                if (User_Groups != null)
+                {
+                    lock (User_Groups)
+                    {
+                        User_Groups = SobekCM_Database.Get_All_User_Groups(Tracer);
+                    }
+                }
+                else
+                {
+                    User_Groups = SobekCM_Database.Get_All_User_Groups(Tracer);
+                }
+            }
 
 			// Check the IE hack CSS is loaded
 			if ((HttpContext.Current.Application["NonIE_Hack_CSS"] == null) || (Reload_All))

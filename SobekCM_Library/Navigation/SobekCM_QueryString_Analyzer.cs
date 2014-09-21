@@ -11,6 +11,8 @@ using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -36,7 +38,7 @@ namespace SobekCM.Library.Navigation
 		/// <param name="Base_URL">Requested base URL (without query string, etc..)</param>
 		/// <param name="User_Languages"> Languages preferred by user, per their browser settings </param>
 		/// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </param>
-		/// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregations</param>
+		/// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions</param>
 		/// <param name="All_Items_Lookup"> [REF] Lookup object used to pull basic information about any item loaded into this library</param>
 		/// <param name="URL_Portals"> List of all web portals into this system </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -415,6 +417,16 @@ namespace SobekCM.Library.Navigation
 											if (url_relative_list.Count > 2)
 												Navigator.My_Sobek_SubMode = url_relative_list[2];
 											break;
+
+                                        case "itempermissions":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.BibID = url_relative_list[2].ToUpper();
+                                            if (url_relative_list.Count > 3)
+                                                Navigator.VID = url_relative_list[3];
+                                            if (url_relative_list.Count > 4)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[4];
+                                            break;
 
 										case "behaviors":
 											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;

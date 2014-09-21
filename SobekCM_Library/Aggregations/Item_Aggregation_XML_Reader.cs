@@ -6,6 +6,7 @@ using System.IO;
 using System.Xml;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 

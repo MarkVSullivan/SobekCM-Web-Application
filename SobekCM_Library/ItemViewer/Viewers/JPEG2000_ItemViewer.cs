@@ -4,6 +4,7 @@ using System.IO;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
+using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {

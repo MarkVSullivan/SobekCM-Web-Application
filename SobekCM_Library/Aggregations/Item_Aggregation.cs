@@ -9,6 +9,8 @@ using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Skins;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -35,7 +37,7 @@ namespace SobekCM.Library.Aggregations
         public enum CollectionViewsAndSearchesEnum : byte
         {
             /// <summary> No collcetion view or search </summary>
-            /// <remarks> This enum value is needed for serialization of some item aggregations </remarks>
+            /// <remarks> This enum value is needed for serialization of some item aggregationPermissions </remarks>
             NONE = 0,
 
             /// <summary> Admin view gives access to aggregation administrative features  </summary>
@@ -428,7 +430,7 @@ namespace SobekCM.Library.Aggregations
         public string Load_Email { get; set; }
 
         /// <summary> Directory where all design information for this object is found </summary>
-        /// <remarks> This always returns the string 'aggregations/[Code]/' with the code for this item aggregation </remarks>
+        /// <remarks> This always returns the string 'aggregationPermissions/[Code]/' with the code for this item aggregation </remarks>
         public string ObjDirectory
         {
             get { return "aggregations/" + Code + "/"; }
@@ -483,7 +485,7 @@ namespace SobekCM.Library.Aggregations
         public string Contact_Email { get; set; }
 
         /// <summary> Default interface to be used for this item aggregation </summary>
-        /// <remarks> This is primarily used for institutional aggregations, but can be utilized anywhere </remarks>
+        /// <remarks> This is primarily used for institutional aggregationPermissions, but can be utilized anywhere </remarks>
         public string Default_Skin { get; set; }
 
 		/// <summary> Aggregation-level CSS file, if one exists </summary>
@@ -577,7 +579,7 @@ namespace SobekCM.Library.Aggregations
         /// <remarks> This flag is used by the builder to determine if the static collection level pages should be recreated and if the search index for this aggregation should be rebuilt. </remarks>
         public bool Has_New_Items { get; set; }
 
-        /// <summary> Gets the number of child item aggregations present </summary>
+        /// <summary> Gets the number of child item aggregationPermissions present </summary>
         /// <remarks> This should be used rather than the Count property of the <see cref = "Children" /> property.  Even if 
         ///   there are no children, the Children property creates a readonly collection to pass back out. </remarks>
         public int Children_Count
@@ -616,7 +618,7 @@ namespace SobekCM.Library.Aggregations
 			}
 		}
 
-        /// <summary> Gets the number of parent item aggregations present </summary>
+        /// <summary> Gets the number of parent item aggregationPermissions present </summary>
         /// <remarks> This should be used rather than the Count property of the <see cref = "Parents" /> property.  Even if 
         ///   there are no parents, the Parent property creates a readonly collection to pass back out. </remarks>
         public int Parent_Count
@@ -929,7 +931,7 @@ namespace SobekCM.Library.Aggregations
         /// <returns> Either the language-specific special front banner image, or else the default front banner image</returns>
         /// <remarks>
         ///   If NO special front banner images were included in the aggregation XML, then this could be NULL. <br /><br />
-        ///   This is a special front banner image used for aggregations that show the highlighted
+        ///   This is a special front banner image used for aggregationPermissions that show the highlighted
         ///   item and the search box in the main banner at the top on the front page
         /// </remarks>
 		public Item_Aggregation_Front_Banner Front_Banner_Image(Web_Language_Enum Language)

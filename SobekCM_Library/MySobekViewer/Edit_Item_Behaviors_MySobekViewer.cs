@@ -13,7 +13,9 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -53,7 +55,7 @@ namespace SobekCM.Library.MySobekViewer
             item = Current_Item;
 
             // If the user cannot edit this item, go back
-            if (!user.Can_Edit_This_Item(item))
+            if (!user.Can_Edit_This_Item(item.BibID, item.Bib_Info.SobekCM_Type_String, item.Bib_Info.Source.Code, item.Bib_Info.HoldingCode, item.Behaviors.Aggregation_Code_List))
             {
                 currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                 currentMode.Redirect();

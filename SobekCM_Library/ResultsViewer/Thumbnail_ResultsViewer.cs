@@ -7,6 +7,8 @@ using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
 using SobekCM.Library.Search;
 using SobekCM.Library.Settings;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 

@@ -116,7 +116,7 @@ namespace SobekCM.Library.Solr
                                     item.Bib_Info.OCLC_Record = oclc.ToString();
                                 }
 
-                                // Set the aggregations
+                                // Set the aggregationPermissions
                                 item.Behaviors.Clear_Aggregations();
                                 foreach (DataRow thisAggrRow in itemInfoSet.Tables[1].Rows)
                                 {

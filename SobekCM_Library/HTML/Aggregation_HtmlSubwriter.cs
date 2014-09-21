@@ -22,14 +22,16 @@ using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Skins;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Library.WebContent;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
 namespace SobekCM.Library.HTML
 {
-    /// <summary> Aggregation html subwriter renders all views of item aggregations, including home pages, searches, and browses </summary>
+    /// <summary> Aggregation html subwriter renders all views of item aggregationPermissions, including home pages, searches, and browses </summary>
     /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. </remarks>
     public class Aggregation_HtmlSubwriter : abstractHtmlSubwriter
     {
@@ -144,7 +146,7 @@ namespace SobekCM.Library.HTML
                 {
                     User_Folder thisFolder = currentUser.Get_Folder(form["aggregation"]);
                     if (SobekCM_Database.Edit_User_Folder(thisFolder.Folder_ID, currentUser.UserID, -1, thisFolder.Folder_Name, false, String.Empty, Tracer) >= 0)
-                        thisFolder.isPublic = false;
+                        thisFolder.IsPublic = false;
                 }
 
 
@@ -1107,7 +1109,7 @@ namespace SobekCM.Library.HTML
             {
                 Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Controls", "Adding tree view of collection hierarchy");
 
-                // Make sure the ALL aggregations has the collection hierarchies
+                // Make sure the ALL aggregationPermissions has the collection hierarchies
                 if (Current_Aggregation.Children_Count == -1)
                 {
                     // Get the collection hierarchy information
@@ -1269,7 +1271,7 @@ namespace SobekCM.Library.HTML
 		            }
 	            }
 
-	            // If there are sub aggregations here, show them
+	            // If there are sub aggregationPermissions here, show them
 	            if (Current_Aggregation.Children_Count > 0)
 	            {
 		            // Verify some of the children are active and not hidden
@@ -1312,7 +1314,7 @@ namespace SobekCM.Library.HTML
 			            string childTypes = Current_Aggregation.Child_Types.Trim();
 			            if (childTypes.IndexOf(" ") > 0)
 			            {
-				            // Write the name of the sub aggregations
+				            // Write the name of the sub aggregationPermissions
 				            StringBuilder aggregationTypeBuilder = new StringBuilder(30);
 				            string[] splitter = childTypes.Trim().Split(" ".ToCharArray());
 				            foreach (string thisSplit in splitter.Where(ThisSplit => ThisSplit.Length > 0))
@@ -1479,7 +1481,7 @@ namespace SobekCM.Library.HTML
 
                 if (currentMode.Home_Type != Home_Type_Enum.Personalized)
                 {
-                    // See if there are actually aggregations linked to the  thematic headings
+                    // See if there are actually aggregationPermissions linked to the  thematic headings
                     bool aggrsLinkedToThemes = false;
                     if ((!SobekCM_Library_Settings.Include_TreeView_On_System_Home) && ( thematicHeadings.Count > 0 ))
                     {
@@ -1489,7 +1491,7 @@ namespace SobekCM.Library.HTML
                         } 
                     }
 
-                    // If aggregations are linked to themes, or if the tree view should always be displayed on home
+                    // If aggregationPermissions are linked to themes, or if the tree view should always be displayed on home
                     if ((aggrsLinkedToThemes) || (SobekCM_Library_Settings.Include_TreeView_On_System_Home))
                     {
                         string listText = "LIST VIEW";
@@ -1987,9 +1989,9 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.hovercard.min.js\"></script>");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
             Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_aggre.js\"></script>");
-            
 
-            foreach (User_Editable_Aggregation thisAggregation in currentUser.Aggregations.Where(ThisAggregation => ThisAggregation.OnHomePage))
+
+            foreach (User_Permissioned_Aggregation thisAggregation in currentUser.PermissionedAggregations.Where(ThisAggregation => ThisAggregation.OnHomePage))
             {
                 currentMode.Aggregation = thisAggregation.Code.ToLower();
                 string image_url = currentMode.Base_URL + "design/aggregations/" + thisAggregation.Code + "/images/buttons/coll.gif";
@@ -2067,7 +2069,7 @@ namespace SobekCM.Library.HTML
             currentMode.Mode = Display_Mode_Enum.Public_Folder;
             currentMode.Result_Display_Type = Result_Display_Type_Enum.Brief;
             currentMode.Aggregation = String.Empty;
-            foreach (User_Folder thisFolder in currentUser.All_Folders.Where(ThisFolder => ThisFolder.isPublic))
+            foreach (User_Folder thisFolder in currentUser.All_Folders.Where(ThisFolder => ThisFolder.IsPublic))
             {
                 currentMode.FolderID = thisFolder.Folder_ID;
                 if ((thisFolder.Folder_Name.IndexOf("The ") == 0) && (thisFolder.Folder_Name.Length > 4))

@@ -23,7 +23,9 @@ using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Navigation;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -80,7 +82,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 			    if (value == null) return;
 
-			    userCanEditItem = value.Can_Edit_This_Item(CurrentItem);
+                userCanEditItem = value.Can_Edit_This_Item(CurrentItem.BibID, CurrentItem.Bib_Info.SobekCM_Type_String, CurrentItem.Bib_Info.Source.Code, CurrentItem.Bib_Info.HoldingCode, CurrentItem.Behaviors.Aggregation_Code_List); ;
 			    currentUser = value;
 			}
 		}

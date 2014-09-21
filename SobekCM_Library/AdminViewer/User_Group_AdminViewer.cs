@@ -16,7 +16,9 @@ using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -122,7 +124,7 @@ namespace SobekCM.Library.AdminViewer
                     List<string> projects = new List<string>();
                     List<string> templates = new List<string>();
 
-                    Dictionary<string, User_Editable_Aggregation> aggregations = new Dictionary<string, User_Editable_Aggregation>();
+                    Dictionary<string, User_Permissioned_Aggregation> aggregations = new Dictionary<string, User_Permissioned_Aggregation>();
 
                     // Step through each key
                     foreach (string thisKey in getKeys)
@@ -175,7 +177,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, false, false, false, true, false));
+                                        aggregations.Add(select_project, new User_Permissioned_Aggregation(select_project, String.Empty, false, false, false, true, false));
                                     }
                                 }
                                 if (thisKey.IndexOf("admin_project_select_") == 0)
@@ -187,7 +189,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        aggregations.Add(select_project, new User_Editable_Aggregation(select_project, String.Empty, true, false, false, false, false));
+                                        aggregations.Add(select_project, new User_Permissioned_Aggregation(select_project, String.Empty, true, false, false, false, false));
                                     }
                                 }
                                 if (thisKey.IndexOf("admin_project_editall_") == 0)
@@ -199,7 +201,7 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        aggregations.Add(edit_project, new User_Editable_Aggregation(edit_project, String.Empty, false, true, false, false, false));
+                                        aggregations.Add(edit_project, new User_Permissioned_Aggregation(edit_project, String.Empty, false, true, false, false, false));
                                     }
                                 }
 								if (thisKey.IndexOf("admin_project_edit_metadata_") == 0)
@@ -211,7 +213,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
 										thisAggrLink.CanEditMetadata = true;
 										aggregations.Add(edit_project, thisAggrLink);
 									}
@@ -225,7 +227,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
 										thisAggrLink.CanEditBehaviors = true;
 										aggregations.Add(edit_project, thisAggrLink);
 									}
@@ -239,7 +241,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
 										thisAggrLink.CanPerformQc = true;
 										aggregations.Add(edit_project, thisAggrLink);
 									}
@@ -253,7 +255,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
 										thisAggrLink.CanUploadFiles = true;
 										aggregations.Add(edit_project, thisAggrLink);
 									}
@@ -267,7 +269,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
 										thisAggrLink.CanChangeVisibility = true;
 										aggregations.Add(edit_project, thisAggrLink);
 									}
@@ -281,7 +283,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										User_Editable_Aggregation thisAggrLink = new User_Editable_Aggregation(edit_project, String.Empty, false, false, false, false, false);
+										User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
 										thisAggrLink.CanDelete = true;
 										aggregations.Add(edit_project, thisAggrLink);
 									}
@@ -295,7 +297,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, true, false, false));
+										aggregations.Add(admin_project, new User_Permissioned_Aggregation(admin_project, String.Empty, false, false, true, false, false));
 									}
 								}
 								if (thisKey.IndexOf("admin_project_admin_") == 0)
@@ -307,7 +309,7 @@ namespace SobekCM.Library.AdminViewer
 									}
 									else
 									{
-										aggregations.Add(admin_project, new User_Editable_Aggregation(admin_project, String.Empty, false, false, false, false, true));
+										aggregations.Add(admin_project, new User_Permissioned_Aggregation(admin_project, String.Empty, false, false, false, false, true));
 									}
 								}
                                 break;
@@ -338,7 +340,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                     }
 
-                    // Determine if the aggregations need to be edited
+                    // Determine if the aggregationPermissions need to be edited
                     bool update_aggregations = false;
                     if (aggregations.Count != editGroup.Aggregations.Count)
                     {
@@ -346,11 +348,11 @@ namespace SobekCM.Library.AdminViewer
                     }
                     else
                     {
-                        // Build a dictionary of the user aggregations as well
-                        Dictionary<string, User_Editable_Aggregation> existingAggr = editGroup.Aggregations.ToDictionary(thisAggr => thisAggr.Code);
+                        // Build a dictionary of the user aggregationPermissions as well
+                        Dictionary<string, User_Permissioned_Aggregation> existingAggr = editGroup.Aggregations.ToDictionary(thisAggr => thisAggr.Code);
 
-                        // Check all the aggregations
-                        foreach (User_Editable_Aggregation adminAggr in aggregations.Values)
+                        // Check all the aggregationPermissions
+                        foreach (User_Permissioned_Aggregation adminAggr in aggregations.Values)
                         {
                             if (existingAggr.ContainsKey(adminAggr.Code))
                             {
@@ -405,12 +407,12 @@ namespace SobekCM.Library.AdminViewer
                                 }
                             }
 
-                            // Update the aggregations, if requested
+                            // Update the aggregationPermissions, if requested
                             if (update_aggregations)
                             {
                                 if (aggregations.Count > 0)
                                 {
-                                    List<User_Editable_Aggregation> aggregationList = aggregations.Values.ToList();
+                                    List<User_Permissioned_Aggregation> aggregationList = aggregations.Values.ToList();
                                     if (!SobekCM_Database.Update_SobekCM_User_Group_Aggregations(editGroup.UserGroupID, aggregationList, Tracer))
                                     {
                                         successful_save = false;
@@ -544,15 +546,15 @@ namespace SobekCM.Library.AdminViewer
 
             // Build the rights statement
             StringBuilder text_builder = new StringBuilder();
-            if (editGroup.Can_Submit)
+            if (editGroup.CanSubmit)
                 text_builder.Append("Can submit items<br />");
-            if (editGroup.Is_Internal_User)
+            if (editGroup.IsInternalUser)
                 text_builder.Append("Is internal user<br />");     
             if (editGroup.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}"))
             {
                 text_builder.Append("Can edit all items<br />");
             }
-            if (editGroup.Is_System_Admin)
+            if (editGroup.IsSystemAdmin)
                 text_builder.Append("Is system administrator<br />");
             if (text_builder.Length == 0)
             {
@@ -628,8 +630,8 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\">");
 
                 // Get the list of collections lists in the user object
-                ReadOnlyCollection<User_Editable_Aggregation> aggregations_in_editable_user = editGroup.Aggregations;
-                Dictionary<string, User_Editable_Aggregation> lookup_aggs = aggregations_in_editable_user.ToDictionary(thisAggr => thisAggr.Code.ToLower());
+                List<User_Permissioned_Aggregation> aggregations_in_editable_user = editGroup.Aggregations;
+                Dictionary<string, User_Permissioned_Aggregation> lookup_aggs = aggregations_in_editable_user.ToDictionary(thisAggr => thisAggr.Code.ToLower());
 
                 // Step through each aggregation type
                 foreach (string aggregationType in codeManager.All_Types)
@@ -735,11 +737,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <br />");
 
             Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; Global Permissions</span><br />");
-            Output.WriteLine(editGroup.Can_Submit
+            Output.WriteLine(editGroup.CanSubmit
                                  ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_submit\" id=\"admin_user_submit\" checked=\"checked\" /> <label for=\"admin_user_submit\">Can submit items</label> <br />"
                                  : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_submit\" id=\"admin_user_submit\" /> <label for=\"admin_user_submit\">Can submit items</label> <br />");
 
-            Output.WriteLine(editGroup.Is_Internal_User
+            Output.WriteLine(editGroup.IsInternalUser
                                  ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_internal\" id=\"admin_user_internal\" checked=\"checked\" /> <label for=\"admin_user_internal\">Is internal user</label> <br />"
                                  : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_internal\" id=\"admin_user_internal\" /> <label for=\"admin_user_internal\">Is internal user</label> <br />");
 
@@ -748,7 +750,7 @@ namespace SobekCM.Library.AdminViewer
                                  ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_editall\" id=\"admin_user_editall\" checked=\"checked\" /> <label for=\"admin_user_editall\">Can edit <u>all</u> items</label> <br />"
                                  : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_editall\" id=\"admin_user_editall\" /> <label for=\"admin_user_editall\">Can edit <u>all</u> items</label> <br />");
 
-            Output.WriteLine(editGroup.Is_System_Admin
+            Output.WriteLine(editGroup.IsSystemAdmin
                                  ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_admin\" id=\"admin_user_admin\" checked=\"checked\" /> <label for=\"admin_user_admin\">Is system administrator</label> <br />"
                                  : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_admin\" id=\"admin_user_admin\" /> <label for=\"admin_user_admin\">Is system administrator</label> <br />");
 
@@ -770,7 +772,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("   </tr>");
             Output.WriteLine("  <tr ><td bgcolor=\"#e7e7e7\"></td></tr>");
 
-            ReadOnlyCollection<string> user_templates = editGroup.Templates;
+            List<string> user_templates = editGroup.Templates;
             foreach (DataRow thisTemplate in projectTemplateSet.Tables[1].Rows)
             {
                 string template_name = thisTemplate["TemplateName"].ToString();
@@ -801,7 +803,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("   </tr>");
             Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\"></td></tr>");
 
-            ReadOnlyCollection<string> user_projects = editGroup.Default_Metadata_Sets;
+            List<string> user_projects = editGroup.Default_Metadata_Sets;
             foreach (DataRow thisProject in projectTemplateSet.Tables[0].Rows)
             {
                 string project_name = thisProject["MetadataName"].ToString();
@@ -839,8 +841,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\">");
 
             // Get the list of collections lists in the user object
-            ReadOnlyCollection<User_Editable_Aggregation> aggregations_in_editable_user = editGroup.Aggregations;
-            Dictionary<string, User_Editable_Aggregation> lookup_aggs = aggregations_in_editable_user.ToDictionary(thisAggr => thisAggr.Code.ToLower());
+            List<User_Permissioned_Aggregation> aggregations_in_editable_user = editGroup.Aggregations;
+            Dictionary<string, User_Permissioned_Aggregation> lookup_aggs = aggregations_in_editable_user.ToDictionary(thisAggr => thisAggr.Code.ToLower());
 
 
 			// Determine if this is a detailed view of rights

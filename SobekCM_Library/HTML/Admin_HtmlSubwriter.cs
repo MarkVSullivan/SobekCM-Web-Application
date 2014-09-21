@@ -19,7 +19,9 @@ using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.MySobekViewer;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Skins;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -33,7 +35,7 @@ namespace SobekCM.Library.HTML
 	/// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
 	/// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
 	/// <li>The HTML writer will create this necessary subwriter since this action requires administrative rights. </li>
-	/// <li>This class will create a admin subwriter (extending <see cref="AdminViewer.abstract_AdminViewer"/> ) for the specified task.The admin subwriter creates an instance of this viewer to view and edit existing item aggregations in this digital library</li>
+	/// <li>This class will create a admin subwriter (extending <see cref="AdminViewer.abstract_AdminViewer"/> ) for the specified task.The admin subwriter creates an instance of this viewer to view and edit existing item aggregationPermissions in this digital library</li>
 	/// </ul></remarks>
     public class Admin_HtmlSubwriter: abstractHtmlSubwriter
     {
@@ -55,7 +57,7 @@ namespace SobekCM.Library.HTML
         /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregations </param>
+        /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions </param>
         /// <param name="Web_Skin_Collection"> Collection of all the web skins </param>
         /// <param name="Current_User"> Currently logged on user </param>
         /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>

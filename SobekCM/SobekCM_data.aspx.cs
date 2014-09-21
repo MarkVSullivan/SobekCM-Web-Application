@@ -1,5 +1,6 @@
 ﻿using System;
 using SobekCM.Library.Navigation;
+using SobekCM_UI_Library.Navigation;
 
 namespace SobekCM
 {

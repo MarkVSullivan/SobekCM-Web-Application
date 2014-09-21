@@ -8,6 +8,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
 using SobekCM.Library.Navigation;
+using SobekCM.Tools;
 
 namespace SobekCM.Library.ResultsViewer
 {
@@ -173,7 +174,7 @@ namespace SobekCM.Library.ResultsViewer
             
             #endregion
 
-            #region search the database for all items in all of the provided aggregations and merge them into one datatable
+            #region search the database for all items in all of the provided aggregationPermissions and merge them into one datatable
 
             //define MSR support objects
             DataTable searchResults = new DataTable();
@@ -222,13 +223,13 @@ namespace SobekCM.Library.ResultsViewer
                 double nex = -1;
                 double ney = -1;
 
-                //search for all items in each collection (handles multiple aggregations)
+                //search for all items in each collection (handles multiple aggregationPermissions)
                 foreach (string aggregationId in aggregationIds)
                 {
                     temp_Tables.Add(SobekCM_Database.Get_All_Items_By_AggregationID(aggregationId, temp_FIDs, Tracer));
                 }
 
-                //merge the tables if there are multiple aggregations
+                //merge the tables if there are multiple aggregationPermissions
                 foreach (DataTable temp_Table in temp_Tables)
                 {
                     temp_searchResults.Merge(temp_Table);
@@ -347,13 +348,13 @@ namespace SobekCM.Library.ResultsViewer
                         double nex = -1;
                         double ney = -1;
 
-                        //search for all items in each collection (handles multiple aggregations)
+                        //search for all items in each collection (handles multiple aggregationPermissions)
                         foreach (string aggregationId in aggregationIds)
                         {
                             temp_Tables.Add(SobekCM_Database.Get_All_Items_By_AggregationID(aggregationId, temp_FIDs, Tracer));
                         }
 
-                        //merge the tables if there are multiple aggregations
+                        //merge the tables if there are multiple aggregationPermissions
                         foreach (DataTable temp_Table in temp_Tables)
                         {
                             temp_searchResults.Merge(temp_Table);

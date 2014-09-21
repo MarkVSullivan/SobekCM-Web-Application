@@ -2,13 +2,14 @@
 using System;
 using System.Security.Cryptography;
 using SobekCM.Library.Settings;
+using SobekCM.Tools;
 using Zen.Barcode;
 using System.Collections.Generic;
 using System.IO;
 using System.Data;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Navigation;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 #endregion
 
@@ -46,7 +47,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Get aggregation info
             aggregations = track_item.Behaviors.Aggregation_Codes;
 
-            //If no aggregations present, display "none"
+            //If no aggregationPermissions present, display "none"
             aggregations = aggregations.Length>0 ? aggregations.ToUpper() : "(none)";
             aggregations = aggregations.Replace(";", "; ");
 

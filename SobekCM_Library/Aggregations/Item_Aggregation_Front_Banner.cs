@@ -31,11 +31,11 @@
 		/// <summary> Name of the image file used in this front banner </summary>
 		public string Image_File { get; set;  }
 
-		/// <summary> Width of the special front banner image used for aggregations that show the highlighted
+		/// <summary> Width of the special front banner image used for aggregationPermissions that show the highlighted
 		/// item and the search box in the main banner at the top on the front page  </summary>
 		public ushort Width { get; set; }
 
-		/// <summary> Height of the special front banner image used for aggregations that show the highlighted
+		/// <summary> Height of the special front banner image used for aggregationPermissions that show the highlighted
 		/// item and the search box in the main banner at the top on the front page </summary>
 		public ushort Height { get; set; }
 

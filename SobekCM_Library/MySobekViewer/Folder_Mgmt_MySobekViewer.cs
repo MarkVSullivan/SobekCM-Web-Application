@@ -24,7 +24,9 @@ using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
 using SobekCM.Library.Skins;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -174,7 +176,7 @@ namespace SobekCM.Library.MySobekViewer
                         if (bookshelf_params.ToUpper() == "PRIVATE")
                         {
                             if (SobekCM_Database.Edit_User_Folder(thisFolder.Folder_ID, user.UserID, -1, thisFolder.Folder_Name, false, String.Empty, Tracer) >= 0)
-                                thisFolder.isPublic = false;
+                                thisFolder.IsPublic = false;
 
                             Cached_Data_Manager.Clear_Public_Folder_Info(thisFolder.Folder_ID, Tracer);
                         }
@@ -182,7 +184,7 @@ namespace SobekCM.Library.MySobekViewer
                         if (bookshelf_params.ToUpper() == "PUBLIC")
                         {
                             if (SobekCM_Database.Edit_User_Folder(thisFolder.Folder_ID, user.UserID, -1, thisFolder.Folder_Name, true, String.Empty, Tracer) >= 0 )
-                                thisFolder.isPublic = true;
+                                thisFolder.IsPublic = true;
                         }                        
                     }
 
@@ -323,7 +325,7 @@ namespace SobekCM.Library.MySobekViewer
                 int parentid = Convert.ToInt32(folderRow["ParentFolderID"]);
                 bool isPublic = Convert.ToBoolean(folderRow["isPublic"]);
 
-                User_Folder newFolderNode = new User_Folder(folder_name, folderid) {isPublic = isPublic};
+                User_Folder newFolderNode = new User_Folder(folder_name, folderid) {IsPublic = isPublic};
                 if (parentid == -1)
                     parentNodes.Add(newFolderNode);
                 folderNodes.Add(folderid, newFolderNode);
@@ -626,7 +628,7 @@ namespace SobekCM.Library.MySobekViewer
                         if (thisFolder.Folder_Name == properFolderName)
                         {
                             selectedNodes.Add(folderNode);
-                            if (thisFolder.isPublic)
+                            if (thisFolder.IsPublic)
                             {
                                 folderNode.ImageUrl = currentMode.Base_URL + "default/images/open_folder_public.jpg";
                                 folderNode.ImageToolTip = "Public folder";
@@ -640,7 +642,7 @@ namespace SobekCM.Library.MySobekViewer
                         }
                         else
                         {
-                            if (thisFolder.isPublic)
+                            if (thisFolder.IsPublic)
                             {
                                 folderNode.ImageUrl = currentMode.Base_URL + "default/images/closed_folder_public.jpg";
                                 folderNode.ImageToolTip = "Public folder";
@@ -786,7 +788,7 @@ namespace SobekCM.Library.MySobekViewer
                         {
                             bookshelfManageBuilder.Append("<a title=\"Click to delete this bookshelf\" id=\"DELETE_" + folder_number + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You cannot delete bookshelves which contain other bookshelves');return false;\">delete</a> | ");
                         }
-                        if (thisFolder.isPublic)
+                        if (thisFolder.IsPublic)
                         {
                             bookshelfManageBuilder.Append("<a title=\"Make this bookshelf private\" id=\"PUBLIC_" + folder_number + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return change_folder_visibility('" + thisFolder.Folder_Name_Encoded + "', 'private');\">make private</a> | ");
                         }
@@ -795,7 +797,7 @@ namespace SobekCM.Library.MySobekViewer
                             bookshelfManageBuilder.Append("<a title=\"Make this bookshelf public\" id=\"PUBLIC_" + folder_number + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return change_folder_visibility('" + thisFolder.Folder_Name_Encoded + "', 'public');\">make public</a> | ");
                         }
                         bookshelfManageBuilder.AppendLine("<a title=\"Click to manage this bookshelf\" href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", thisFolder.Folder_Name_Encoded) + "\">manage</a> )</td>");
-                        if (thisFolder.isPublic)
+                        if (thisFolder.IsPublic)
                         {
                             currentMode.Mode = Display_Mode_Enum.Public_Folder;
                             currentMode.FolderID = thisFolder.Folder_ID;
@@ -835,7 +837,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (childFolders.Folder_Name == SelectedFolder)
                 {
                     SelectedNodes.Add(folderNode);
-                    if (childFolders.isPublic)
+                    if (childFolders.IsPublic)
                     {
                         folderNode.ImageUrl = currentMode.Base_URL + "default/images/open_folder_public.jpg";
                         folderNode.ImageToolTip = "Public folder";
@@ -850,7 +852,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
                 else
                 {
-                    if (childFolders.isPublic)
+                    if (childFolders.IsPublic)
                     {
                         folderNode.ImageUrl = currentMode.Base_URL + "default/images/closed_folder_public.jpg";
                         folderNode.ImageToolTip = "Public folder";

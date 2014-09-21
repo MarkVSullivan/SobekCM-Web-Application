@@ -7,13 +7,15 @@ using System.Web.UI.WebControls;
 using System.IO;
 using System.Xml;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Library.Navigation;
 using SobekCM.Resource_Object;
 using SobekCM.Library.Settings;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -437,7 +439,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			#region prep saving dir
 			//create inprocessing directory
-			string userInProcessDirectory = CurrentUser.User_InProcess_Directory("mapwork");
+			string userInProcessDirectory = Settings.SobekCM_Library_Settings.User_InProcess_Directory( CurrentUser, "mapwork");
 			string backupDirectory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME;
 
 			//ensure the user's process directory exists

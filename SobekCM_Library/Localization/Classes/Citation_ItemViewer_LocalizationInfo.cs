@@ -176,7 +176,7 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> %1=abbrevation of system.  Lists aggregations under which this item appears </remarks>
+        /// <remarks> %1=abbrevation of system.  Lists aggregationPermissions under which this item appears </remarks>
         public string XXXMembership { get; private set; }
 
         /// <remarks> '%1 STATISTICS' localization string </remarks>

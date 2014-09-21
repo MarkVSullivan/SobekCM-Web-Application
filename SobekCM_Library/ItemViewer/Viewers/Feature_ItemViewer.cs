@@ -6,6 +6,8 @@ using System.Web.UI.WebControls;
 using SobekCM.Library.Database;
 using SobekCM.Library.Items.Authority;
 using SobekCM.Library.Navigation;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 

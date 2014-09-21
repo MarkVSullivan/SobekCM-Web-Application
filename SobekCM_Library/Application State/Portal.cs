@@ -18,7 +18,7 @@ namespace SobekCM.Library.Application_State
         /// <param name="ID"> Primary key for this portal in the database </param>
         /// <param name="Name"> Name for the library when viewed through this portal </param>
         /// <param name="Abbreviation"> Abbreviation used for the library when viewed through this portal </param>
-        /// <param name="Default_Aggregation"> Default aggregation, or 'all' if all aggregations are available </param>
+        /// <param name="Default_Aggregation"> Default aggregation, or 'all' if all aggregationPermissions are available </param>
         /// <param name="Default_Web_Skin"> Default web skin used when displayed through this portal </param>
         /// <param name="URL_Segment"> URL segment used to determine if a request comes from this portal </param>
         /// <param name="Base_PURL"> Base PURL to used when constructing a PURL for items within this portal, if it is different than the standard base URL </param>
@@ -51,7 +51,7 @@ namespace SobekCM.Library.Application_State
         /// <summary> Abbreviation used for the library when viewed through this portal </summary>
         public string Abbreviation { get; set; }
 
-        /// <summary> Default aggregation, or 'all' if all aggregations are available </summary>
+        /// <summary> Default aggregation, or 'all' if all aggregationPermissions are available </summary>
         public string Default_Aggregation { get; set; }
 
         /// <summary> Default web skin used when displayed through this portal </summary>
@@ -65,7 +65,7 @@ namespace SobekCM.Library.Application_State
             }
         }
 
-        /// <summary> Flag indicates if this portal limits the aggregations which can be displayed </summary>
+        /// <summary> Flag indicates if this portal limits the aggregationPermissions which can be displayed </summary>
         public bool Aggregation_Limiting
         {
             get {

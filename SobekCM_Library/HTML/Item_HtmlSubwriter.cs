@@ -26,7 +26,9 @@ using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.Items;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Navigation;
-using SobekCM.Library.Users;
+using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -104,7 +106,7 @@ namespace SobekCM.Library.HTML
 			// Determine if this user can edit this item
 			if (currentUser != null)
             {
-				userCanEditItem = currentUser.Can_Edit_This_Item(currentItem);
+                userCanEditItem = currentUser.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List);
             }
 
             // If this item is restricted by IP than alot of the upcoming code is unnecessary
@@ -688,10 +690,15 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
 					}
 
+                    // Get ready to send to item permissions
+                    currentMode.Mode = Display_Mode_Enum.My_Sobek;
+                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
+                    currentMode.My_Sobek_SubMode = "1";
+
                     // Check if this item is DARK first
                     if (currentItem.Behaviors.Dark_Flag)
                     {
-                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"return false;\"></button>");
+                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
                     }
                     else
                     {
@@ -702,20 +709,19 @@ namespace SobekCM.Library.HTML
                             {
                                 allow_access_change = true;
                                 Output.WriteLine(currentItem.Behaviors.IP_Restriction_Membership == 0
-                                                     ? "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button public_resource_button\" onclick=\"open_access_restrictions(); return false;\"></button>"
-                                                     : "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button restricted_resource_button\" onclick=\"open_access_restrictions(); return false;\"></button>");
+                                                     ? "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button public_resource_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>"
+                                                     : "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button restricted_resource_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
                             }
                             else
                             {
                                 Output.WriteLine(currentItem.Behaviors.IP_Restriction_Membership == 0
-                                                     ? "          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"return false;\"></button>"
-                                                     : "          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"return false;\"></button>");
+                                                     ? "          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>"
+                                                     : "          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
                             }
                         }
                         else
                         {
-                            allow_access_change = true;
-                            Output.WriteLine("          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button private_resource_button\" onclick=\"open_access_restrictions(); return false;\"></button>");
+                            Output.WriteLine("          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button private_resource_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
                         }
                     }
                 }
@@ -724,7 +730,7 @@ namespace SobekCM.Library.HTML
                     // Check if this item is DARK first
                     if (currentItem.Behaviors.Dark_Flag)
                     {
-                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"return false;\"></button>");
+                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
                     }
                     else
                     {
@@ -799,41 +805,6 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
                     Output.WriteLine("            <td>");
                     Output.WriteLine("              <textarea readonly=\"readonly\" rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + HttpUtility.HtmlEncode(currentItem.Tracking.Internal_Comments) + "</textarea>");
-                    Output.WriteLine("            </td>");
-                    Output.WriteLine("          </tr>");
-                    Output.WriteLine("        </table>");
-                    Output.WriteLine("      </td>");
-                    Output.WriteLine("    </tr>");
-                }
-
-          
-                if (allow_access_change)
-                {
-                    // Add the access restriction row ( hidden content initially )
-                    Output.WriteLine("    <tr style=\"text-align:center;\">");
-                    Output.WriteLine("      <td colspan=\"3\">");
-                    Output.WriteLine("        <table id=\"access_restrictions_div\" style=\"display:none;\">");
-                    Output.WriteLine("          <tr style=\"text-align:left;\">");
-                    Output.WriteLine("            <td style=\"vertical-align:top\" class=\"intheader_label\">SET ACCESS RESTRICTIONS: </td>");
-                    Output.WriteLine("            <td>");
-                    Output.WriteLine("              <button title=\"Make item public\" class=\"sbkIsw_intheader_button public_resource_button\" onclick=\"set_item_access('public'); return false;\"></button>");
-                    Output.WriteLine("              <button title=\"Add IP restriction to this item\" class=\"sbkIsw_intheader_button restricted_resource_button\" onclick=\"set_item_access('restricted'); return false;\"></button>");
-                    Output.WriteLine("              <button title=\"Make item private\" class=\"sbkIsw_intheader_button private_resource_button\" onclick=\"set_item_access('private'); return false;\"></button>");
-
-                    // Should we add ability to delete this item?
-                    if (currentUser.Can_Delete_This_Item(currentItem))
-                    {
-                        // Determine the delete URL
-                        currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                        currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Delete_Item;
-                        string delete_url = currentMode.Redirect_URL();
-                        currentMode.Mode = Display_Mode_Enum.Item_Display;
-                        Output.WriteLine("              <button title=\"Delete this item\" class=\"sbkIsw_intheader_button delete_button\" onclick=\"if(confirm('Delete this item completely?')) window.location.href = '" + delete_url + "'; return false;\"></button>");
-                    }
-
-                    Output.WriteLine("            </td>");
-                    Output.WriteLine("            <td style=\"vertical-align:top\">");
-                    Output.WriteLine("              <button title=\"Cancel changes\" class=\"internalheader_button\" onclick=\"open_access_restrictions(); return false;\">CANCEL</button>");
                     Output.WriteLine("            </td>");
                     Output.WriteLine("          </tr>");
                     Output.WriteLine("        </table>");
@@ -1091,7 +1062,7 @@ namespace SobekCM.Library.HTML
 		    if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu))
 		    {
 			    // Can this user (if there is one) edit this item?
-			    bool canManage = (currentUser != null) && (currentUser.Can_Edit_This_Item(currentItem));
+                bool canManage = (currentUser != null) && (currentUser.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List));
 
 
 			    // Add the item views
