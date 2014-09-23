@@ -542,6 +542,33 @@ namespace SobekCM.Library.Items
 			}
 			Package_To_Finalize.Behaviors.Can_Be_Described = can_describe;
 
+            // Look for rights information to add
+            if (mainItemRow["EmbargoEnd"] != DBNull.Value)
+		    {
+		        try
+		        {
+		            DateTime embargoEnd = DateTime.Parse(mainItemRow["EmbargoEnd"].ToString());
+                    string origAccessCode = mainItemRow["Original_AccessCode"].ToString();
+
+                    // Is there already a RightsMD module in the item?
+                    // Ensure this metadata module extension exists
+                    RightsMD_Info rightsInfo = Package_To_Finalize.Get_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY) as RightsMD_Info;
+                    if (rightsInfo == null)
+                    {
+                        rightsInfo = new RightsMD_Info();
+                        Package_To_Finalize.Add_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY, rightsInfo);
+                    }
+
+                    // Add the data
+		            rightsInfo.Access_Code_String = origAccessCode;
+		            rightsInfo.Embargo_End = embargoEnd;
+		        }
+		        catch (Exception)
+		        {
+		            
+		        }
+		    }
+
 			// Look for user descriptions
 			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Look for user descriptions (or tags)");
 			foreach (DataRow thisRow in DatabaseInfo.Tables[0].Rows)

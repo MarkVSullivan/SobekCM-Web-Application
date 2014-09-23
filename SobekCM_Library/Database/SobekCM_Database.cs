@@ -8,6 +8,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.ApplicationBlocks.Data;
+using SobekCM.Core.Results;
 using SobekCM.Resource_Object;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
@@ -8648,14 +8649,14 @@ namespace SobekCM.Library.Database
 			{
 
 				// Create the return argument object
-				returnArgs = new Private_Items_List {Title_Results = DataReader_To_Private_Items_List(reader)};
+				returnArgs = new Private_Items_List {TitleResults = DataReader_To_Private_Items_List(reader)};
 
 				// Close the reader
 				reader.Close();
 
 				// Store the total items/titles
-				returnArgs.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
-				returnArgs.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
+				returnArgs.TotalItems = Convert.ToInt32(totalItemsParameter.Value);
+				returnArgs.TotalTitles = Convert.ToInt32(totalTitlesParameter.Value);
 			}
 			connect.Close();
 
@@ -8682,13 +8683,11 @@ namespace SobekCM.Library.Database
 														  BibID = Reader.GetString(1),
 														  Group_Title = Reader.GetString(2),
 														  Type = Reader.GetString(3),
-														  ALEPH_Number = Reader.GetInt32(4),
-														  OCLC_Number = Reader.GetInt64(5),
-														  Last_Activity_Date = Reader.GetDateTime(6),
-														  Last_Milestone_Date = Reader.GetDateTime(7),
-														  Complete_Item_Count = Reader.GetInt32(8),
-														  Primary_Identifier_Type = Reader.GetString(9),
-														  Primary_Identifier = Reader.GetString(10)
+														  LastActivityDate = Reader.GetDateTime(6),
+														  LastMilestoneDate = Reader.GetDateTime(7),
+														  CompleteItemCount = Reader.GetInt32(8),
+														  PrimaryIdentifierType = Reader.GetString(9),
+														  PrimaryIdentifier = Reader.GetString(10)
 													  };
 
 				returnValue.Add(result);
@@ -8722,16 +8721,31 @@ namespace SobekCM.Library.Database
 													 {
 														 VID = Reader.GetString(1),
 														 Title = Reader.GetString(2),
-														 Internal_Comments = Reader.GetString(3),
-														 PubDate = Reader.GetString(4),
-														 Locally_Archived = Reader.GetBoolean(5),
-														 Remotely_Archived = Reader.GetBoolean(6),
-														 Aggregation_Codes = Reader.GetString(7),
-														 Last_Activity_Date = Reader.GetDateTime(8),
-														 Last_Activity_Type = Reader.GetString(9),
-														 Last_Milestone = Reader.GetInt32(10),
-														 Last_Milestone_Date = Reader.GetDateTime(11)
+														 LocallyArchived = Reader.GetBoolean(5),
+														 RemotelyArchived = Reader.GetBoolean(6),
+														 AggregationCodes = Reader.GetString(7),
+														 LastActivityDate = Reader.GetDateTime(8),
+														 LastActivityType = Reader.GetString(9),
+														 LastMilestone = Reader.GetInt32(10),
+														 LastMilestoneDate = Reader.GetDateTime(11)
 													 };
+
+                // Pull the values that are nullable
+			    string comments = Reader.GetString(3);
+			    string pubdate = Reader.GetString(4);
+			    
+			    string creator = Reader.GetString(13);
+
+                // Assign the values if there are values
+			    if (comments.Length > 0) result.Internal_Comments = comments;
+                if (pubdate.Length > 0) result.PubDate = pubdate;
+                if (creator.Length > 0) result.Creator = creator;
+
+				// Assign the embargo end
+                string embargoEnd_string = Reader.GetString(5);
+			    DateTime embargoEnd;
+			    if ((DateTime.TryParse(embargoEnd_string, out embargoEnd)) && (embargoEnd.Year < 9999))
+			        result.EmbargoDate = embargoEnd;
 
 				// Add this to the title object
 				titleResult.Add_Item_Result(result);

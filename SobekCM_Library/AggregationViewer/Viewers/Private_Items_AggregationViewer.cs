@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using SobekCM.Core.Results;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
@@ -73,6 +74,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This adds the title of the into the box </remarks>
         public override void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
+
             // Get the URL for the sort options
             short sort = currentMode.Sort;
             currentMode.Sort = 0;
@@ -135,12 +137,21 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 Output.WriteLine("      <option value=\"5\">" + translator.Get_Translation("Last Milestone Date (oldest first)", currentMode.Language) + "</option>" + Environment.NewLine );
             }
+
+            if (currentMode.Sort == 6)
+            {
+                Output.WriteLine("      <option value=\"6\" selected=\"selected\">" + translator.Get_Translation("Embargo Date", currentMode.Language) + "</option>" + Environment.NewLine);
+            }
+            else
+            {
+                Output.WriteLine("      <option value=\"6\">" + translator.Get_Translation("Embargo Date", currentMode.Language) + "</option>" + Environment.NewLine);
+            }
             Output.WriteLine("    </select>");
             Output.WriteLine("</span>");
             Output.WriteLine("<h1>Private and Dark Items</h1>");
 
             // Should buttons be added here for additional pages?
-            if (privateItems.Total_Titles > RESULTS_PER_PAGE)
+            if (privateItems.TotalTitles > RESULTS_PER_PAGE)
             {
                 // Get the language suffix for the buttons
                 string language_suffix = currentMode.Language_Code;
@@ -188,7 +199,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("  </span>");
 
                 // Calculate the maximum number of pages
-                ushort pages = (ushort)(Math.Ceiling(privateItems.Total_Titles / RESULTS_PER_PAGE));
+                ushort pages = (ushort)(Math.Ceiling(privateItems.TotalTitles / RESULTS_PER_PAGE));
 
 
                 // Should the next and last buttons be enabled?
@@ -219,6 +230,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
+
+            const string EMBARGO_DATE_STRING = "Embargoed until {0}";
+
+
             if (Tracer != null)
             {
                 Tracer.Add_Trace("Private_Items_AggregationViewer.Add_Secondary_HTML", "Adding HTML");
@@ -232,7 +247,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 return;
             }
 
-            if (privateItems.Total_Items == 0)
+            if (privateItems.TotalItems == 0)
             {
                 Output.WriteLine("<div class=\"SobekText\">");
                 Output.WriteLine("<br />");
@@ -245,21 +260,21 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<br />");
             Output.WriteLine("<p>Below is the list of all items linked to this aggregation which are either private (in process) or dark.</p>");
-            if (privateItems.Total_Items == 1)
+            if (privateItems.TotalItems == 1)
                 Output.WriteLine("<p>There is only one matching item.</p>");
             else
             {
-                if (privateItems.Total_Titles == privateItems.Total_Items)
+                if (privateItems.TotalTitles == privateItems.TotalItems)
                 {
-                    Output.WriteLine("<p>There are a total of " + privateItems.Total_Items + " titles.</p>");
+                    Output.WriteLine("<p>There are a total of " + privateItems.TotalItems + " titles.</p>");
                 }
                 else
                 {
-                    Output.Write("<p>There are a total of " + privateItems.Total_Items + " items in ");
-                    if (privateItems.Total_Titles == 1)
+                    Output.Write("<p>There are a total of " + privateItems.TotalItems + " items in ");
+                    if (privateItems.TotalTitles == 1)
                         Output.WriteLine("one title.</p>");
                     else
-                        Output.WriteLine(privateItems.Total_Titles + " titles.</p>");
+                        Output.WriteLine(privateItems.TotalTitles + " titles.</p>");
                 }
             }
 
@@ -279,7 +294,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("  </tr>");
 
             // Draw each title/item in this page of results
-            foreach (Private_Items_List_Title thisTitle in privateItems.Title_Results)
+            foreach (Private_Items_List_Title thisTitle in privateItems.TitleResults)
             {
                 // Is this a single item, or are there multiple items under this title?
                 if (thisTitle.Item_Count > 1)
@@ -289,11 +304,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("    <td width=\"700px\" colspan=\"2\">");
                     Output.WriteLine("      <table>");
                     Output.WriteLine("        <tr><td colspan=\"3\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "\"><span class=\"privateTableBibTitle\">" + thisTitle.Group_Title + "</span></a></td></tr>");
-                    Output.WriteLine("        <tr><td width=\"180px\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "\">" + thisTitle.BibID + "</a></td><td width=\"180px\">" + thisTitle.Type + "</td><td>( " + thisTitle.Item_Count + " volumes out of " + thisTitle.Complete_Item_Count + " total volumes )</td></tr>");
+                    Output.WriteLine("        <tr><td width=\"180px\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "\">" + thisTitle.BibID + "</a></td><td width=\"180px\">" + thisTitle.Type + "</td><td>( " + thisTitle.Item_Count + " volumes out of " + thisTitle.CompleteItemCount + " total volumes )</td></tr>");
                     Output.WriteLine("      </table>");
                     Output.WriteLine("    </td>");
-                    Output.WriteLine("    <td align=\"center\" width=\"200px\"><span class=\"privateTableBibDaysNumber\">" + Math.Floor( DateTime.Now.Subtract( thisTitle.Last_Activity_Date ).TotalDays ) + "</span><br />days ago</td>");
-                    Output.WriteLine("    <td align=\"center\" width=\"200px\"><span class=\"privateTableBibDaysNumber\">" + Math.Floor(DateTime.Now.Subtract(thisTitle.Last_Milestone_Date).TotalDays) + "</span><br />days ago</td>");
+                    Output.WriteLine("    <td align=\"center\" width=\"200px\"><span class=\"privateTableBibDaysNumber\">" + Math.Floor( DateTime.Now.Subtract( thisTitle.LastActivityDate ).TotalDays ) + "</span><br />days ago</td>");
+                    Output.WriteLine("    <td align=\"center\" width=\"200px\"><span class=\"privateTableBibDaysNumber\">" + Math.Floor(DateTime.Now.Subtract(thisTitle.LastMilestoneDate).TotalDays) + "</span><br />days ago</td>");
                     Output.WriteLine("  </tr>");
 
                     // Now, draw each item row
@@ -304,18 +319,25 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         Output.WriteLine("    <td width=\"125px\">");
                         Output.WriteLine("    <td width=\"575px\">");
                         Output.WriteLine("      <table>");
-                        Output.WriteLine("        <tr><td colspan=\"3\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\"><span class=\"privateTableItemTitle\">" + thisItem.Title + "</span></a></td></tr>");
+                        Output.Write("        <tr><td colspan=\"3\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\"><span class=\"privateTableItemTitle\">" + thisItem.Title + "</span></a>");
+
+                        if ( !String.IsNullOrEmpty(thisItem.Creator) )
+                            Output.Write(" ( " + thisItem.Creator + " )");
+                        
+                        Output.WriteLine("</td></tr>");
                         Output.Write("        <tr><td width=\"180px\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\">" + thisTitle.BibID + " : " + thisItem.VID + "</a></td>");
-                        if (thisItem.PubDate.Length > 0)
+                        if ( !String.IsNullOrEmpty(thisItem.PubDate))
                             Output.WriteLine("<td>Dated " + thisItem.PubDate + "</td><td></td></tr>");
                         else
                             Output.WriteLine("<td></td><td></td></tr>");
-                        if (thisItem.Internal_Comments.Length > 0)
+                        if ( !String.IsNullOrEmpty(thisItem.Internal_Comments))
                             Output.WriteLine("              <tr><td colspan=\"3\">&ldquo;" + thisItem.Internal_Comments + "&rdquo;</td></tr>");
+                        if ( thisItem.EmbargoDate.HasValue )
+                            Output.WriteLine("              <tr><td colspan=\"3\">" + String.Format(EMBARGO_DATE_STRING , thisItem.EmbargoDate.Value.ToShortDateString()) + "</td></tr>");
                         Output.WriteLine("      </table>");
                         Output.WriteLine("    </td>");
-                        Output.WriteLine("    <td align=\"center\" width=\"200px\">" + thisItem.Last_Activity_Type.ToLower() + "<br /><span class=\"privateTableItemDaysNumber\">" + Math.Floor( DateTime.Now.Subtract( thisItem.Last_Activity_Date ).TotalDays ) + "</span><br />days ago</td>");
-                        Output.WriteLine("    <td align=\"center\" width=\"200px\">" + thisItem.Last_Milestone_String + "<br /><span class=\"privateTableItemDaysNumber\">" + Math.Floor(DateTime.Now.Subtract(thisItem.Last_Milestone_Date).TotalDays) + "</span><br />days ago</td>");
+                        Output.WriteLine("    <td align=\"center\" width=\"200px\">" + thisItem.LastActivityType.ToLower() + "<br /><span class=\"privateTableItemDaysNumber\">" + Math.Floor( DateTime.Now.Subtract( thisItem.LastActivityDate ).TotalDays ) + "</span><br />days ago</td>");
+                        Output.WriteLine("    <td align=\"center\" width=\"200px\">" + thisItem.Last_Milestone_String + "<br /><span class=\"privateTableItemDaysNumber\">" + Math.Floor(DateTime.Now.Subtract(thisItem.LastMilestoneDate).TotalDays) + "</span><br />days ago</td>");
                         Output.WriteLine("  </tr>");                    }
                 }
                 else
@@ -327,18 +349,30 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("  <tr align=\"left\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onmousedown=\"window.location.href='" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "'\">");
                     Output.WriteLine("      <td width=\"700px\" colspan=\"2\">");
                     Output.WriteLine("          <table>");
-                    Output.WriteLine("              <tr><td colspan=\"3\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\"><span class=\"privateTableBibTitle\">" + thisItem.Title + "</span></a></td></tr>");
+                    Output.WriteLine("              <tr><td colspan=\"3\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\"><span class=\"privateTableBibTitle\">" + thisItem.Title + "</span></a>");
+
+
+                    if (!String.IsNullOrEmpty(thisItem.Creator))
+                        Output.Write(" ( " + thisItem.Creator + " )");
+
+                    Output.WriteLine("</td></tr>");
+
                     Output.Write("              <tr><td width=\"180px\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\">" + thisTitle.BibID + " : " + thisItem.VID + "</a></td><td width=\"180px\">" + thisTitle.Type + "</td>");
-                    if ( thisItem.PubDate.Length > 0 )
+
+
+                    if (!String.IsNullOrEmpty(thisItem.PubDate))
                         Output.WriteLine("<td>Dated " + thisItem.PubDate + "</td></tr>");
                     else
                         Output.WriteLine("<td></td></tr>");
-                    if ( thisItem.Internal_Comments.Length > 0 )
+                    if (!String.IsNullOrEmpty(thisItem.Internal_Comments))
                         Output.WriteLine("              <tr><td colspan=\"3\">&ldquo;" + thisItem.Internal_Comments + "&rdquo;</td></tr>");
+                    if (thisItem.EmbargoDate.HasValue)
+                        Output.WriteLine("              <tr><td colspan=\"3\">" + String.Format(EMBARGO_DATE_STRING, thisItem.EmbargoDate.Value.ToShortDateString()) + "</td></tr>");
+
                     Output.WriteLine("          </table>");
                     Output.WriteLine("      </td>");
-                    Output.WriteLine("      <td align=\"center\" width=\"200px\">" + thisItem.Last_Activity_Type.ToLower() + "<br /><span class=\"privateTableItemDaysNumber\">" + Math.Floor(DateTime.Now.Subtract(thisItem.Last_Activity_Date).TotalDays) + "</span><br />days ago</td>");
-                    Output.WriteLine("      <td align=\"center\" width=\"200px\">" + thisItem.Last_Milestone_String + "<br /><span class=\"privateTableItemDaysNumber\">" + Math.Floor(DateTime.Now.Subtract(thisItem.Last_Milestone_Date).TotalDays) + "</span><br />days ago</td>");
+                    Output.WriteLine("      <td align=\"center\" width=\"200px\">" + thisItem.LastActivityType.ToLower() + "<br /><span class=\"privateTableItemDaysNumber\">" + Math.Floor(DateTime.Now.Subtract(thisItem.LastActivityDate).TotalDays) + "</span><br />days ago</td>");
+                    Output.WriteLine("      <td align=\"center\" width=\"200px\">" + thisItem.Last_Milestone_String + "<br /><span class=\"privateTableItemDaysNumber\">" + Math.Floor(DateTime.Now.Subtract(thisItem.LastMilestoneDate).TotalDays) + "</span><br />days ago</td>");
                     Output.WriteLine("    </tr>");
 
                 }

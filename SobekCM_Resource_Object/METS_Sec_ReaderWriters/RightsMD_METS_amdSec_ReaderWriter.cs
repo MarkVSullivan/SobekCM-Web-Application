@@ -85,7 +85,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             if (rightsInfo == null)
             {
                 rightsInfo = new RightsMD_Info();
-                Return_Package.Add_Metadata_Module("PalmmRightsMD", rightsInfo);
+                Return_Package.Add_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY, rightsInfo);
             }
 
             // Loop through reading each XML node

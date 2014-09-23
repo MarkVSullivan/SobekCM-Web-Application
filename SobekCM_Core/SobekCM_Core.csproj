@@ -41,6 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Results\Private_Items_List.cs" />
+    <Compile Include="Results\Private_Items_List_Item.cs" />
+    <Compile Include="Results\Private_Items_List_Title.cs" />
     <Compile Include="Users\Public_User_Folder.cs" />
     <Compile Include="Users\User_Permissioned_Aggregation.cs" />
     <Compile Include="Users\User_Aggregation_Permissions.cs" />
@@ -55,6 +58,7 @@
       <Name>SobekCM_Rest_API</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

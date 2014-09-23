@@ -757,6 +757,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		    GeoSpatial_Information geoInfo = CurrentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
 		    LearningObjectMetadata lomInfo = CurrentItem.Get_Metadata_Module(GlobalVar.IEEE_LOM_METADATA_MODULE_KEY) as LearningObjectMetadata;
 			Thesis_Dissertation_Info thesisInfo = CurrentItem.Get_Metadata_Module(GlobalVar.THESIS_METADATA_MODULE_KEY) as Thesis_Dissertation_Info;
+            RightsMD_Info rightsInfo = CurrentItem.Get_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY) as RightsMD_Info;
 
 			// Compute the URL to use for all searches from the citation
 			Display_Mode_Enum lastMode = CurrentMode.Mode;
@@ -2141,6 +2142,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			}
 			result.AppendLine(rights_statement + "</dd>");
+
+            // Add eembargo date, if there is one
+		    if ((rightsInfo != null) && ( rightsInfo.Has_Embargo_End ))
+		    {
+                result.Append(Single_Citation_HTML_Row("Embargo Date", rightsInfo.Embargo_End.ToShortDateString(), INDENT));
+		    }
 
 			// Add the IDENTIFIERS
 			tempList.Clear();

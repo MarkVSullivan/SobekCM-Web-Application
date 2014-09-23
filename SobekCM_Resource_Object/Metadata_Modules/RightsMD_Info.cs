@@ -91,6 +91,24 @@ namespace SobekCM.Resource_Object.Metadata_Modules
                         return String.Empty;
                 }
             }
+		    set
+		    {
+		        switch (value.ToLower())
+		        {
+		            case "public":
+                        accessCode = AccessCode_Enum.Public;
+		                break;
+
+                    case "campus":
+                        accessCode = AccessCode_Enum.Campus;
+                        break;
+
+                    case "private":
+                        accessCode = AccessCode_Enum.Private;
+                        break;
+
+		        }
+		    }
         }
 
 		/// <summary> Flag indicates if this item has an end embargo date </summary>
