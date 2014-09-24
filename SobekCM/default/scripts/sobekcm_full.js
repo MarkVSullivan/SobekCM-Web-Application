@@ -100,9 +100,9 @@ function open_access_restrictions() {
 }
 
 function set_item_access(new_value) {
-	var hidden_value = document.getElementById("internal_header_action");
+	var hidden_value = document.getElementById("permissions_action");
 	hidden_value.value = new_value;
-	document.internalHeaderForm.submit();
+	document.itemNavForm.submit();
 	return false;
 }
 

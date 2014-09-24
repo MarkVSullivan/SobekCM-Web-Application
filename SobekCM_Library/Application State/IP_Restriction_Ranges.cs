@@ -13,13 +13,13 @@ namespace SobekCM.Library.Application_State
     /// to digital resources within this library </summary>
     public class IP_Restriction_Ranges
     {
-        private readonly List<IP_Restriction_Range> ipRanges;
-
         /// <summary> Constructor for a new instance of the IP_Restriction_Ranges class </summary>
         public IP_Restriction_Ranges(  )
         {
-            ipRanges = new List<IP_Restriction_Range>();
+            IpRanges = new List<IP_Restriction_Range>();
         }
+
+        public List<IP_Restriction_Range> IpRanges { get; set; }
 
         /// <summary> Gets an IP restriction range by index from this collection </summary>
         /// <param name="index"> Index of the restriction range to get </param>
@@ -28,7 +28,7 @@ namespace SobekCM.Library.Application_State
         {
             get
             {
-                return index < ipRanges.Count ? ipRanges[index] : null;
+                return index < IpRanges.Count ? IpRanges[index] : null;
             }
         }
 
@@ -37,7 +37,7 @@ namespace SobekCM.Library.Application_State
         {
             get
             {
-                return ipRanges.Count;
+                return IpRanges.Count;
             }
         }
 
@@ -48,7 +48,7 @@ namespace SobekCM.Library.Application_State
             DataColumn startColumn = All_Ranges.Columns["StartIP"];
             DataColumn endColumn = All_Ranges.Columns["EndIP"];
 
-            ipRanges.Clear();
+            IpRanges.Clear();
             IP_Restriction_Range currentRange = null;
             foreach (DataRow thisRow in All_Ranges.Rows)
             {
@@ -57,7 +57,7 @@ namespace SobekCM.Library.Application_State
                 if ((currentRange == null) || (currentRange.RangeID != ipRangeId))
                 {
                     currentRange = new IP_Restriction_Range(ipRangeId, thisRow[0].ToString(), thisRow[2].ToString());
-                    ipRanges.Add(currentRange);
+                    IpRanges.Add(currentRange);
                 }
 
                 // Add all the IP addresses to this
@@ -88,7 +88,7 @@ namespace SobekCM.Library.Application_State
                 byte firstIpByte = Convert.ToByte(ipSplitString[0]);
 
                 // Step through each IP Restrictive range
-                returnMask += ipRanges.Where(thisRange => thisRange.Contains(ipAsNumber, firstIpByte)).Sum(thisRange => (int) Math.Pow(2, thisRange.RangeID - 1));
+                returnMask += IpRanges.Where(thisRange => thisRange.Contains(ipAsNumber, firstIpByte)).Sum(thisRange => (int) Math.Pow(2, thisRange.RangeID - 1));
             }
 
             return returnMask;

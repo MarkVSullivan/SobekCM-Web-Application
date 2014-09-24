@@ -321,8 +321,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         Output.WriteLine("      <table>");
                         Output.Write("        <tr><td colspan=\"3\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\"><span class=\"privateTableItemTitle\">" + thisItem.Title + "</span></a>");
 
-                        if ( !String.IsNullOrEmpty(thisItem.Creator) )
-                            Output.Write(" ( " + thisItem.Creator + " )");
+                        if (( !String.IsNullOrEmpty(thisItem.Creator) ) && ( thisItem.Creator.Length > 2 ))
+                            Output.Write(" ( " + thisItem.Creator.Substring(2) + " )");
                         
                         Output.WriteLine("</td></tr>");
                         Output.Write("        <tr><td width=\"180px\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\">" + thisTitle.BibID + " : " + thisItem.VID + "</a></td>");
@@ -352,8 +352,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("              <tr><td colspan=\"3\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\"><span class=\"privateTableBibTitle\">" + thisItem.Title + "</span></a>");
 
 
-                    if (!String.IsNullOrEmpty(thisItem.Creator))
-                        Output.Write(" ( " + thisItem.Creator + " )");
+                    if ((!String.IsNullOrEmpty(thisItem.Creator)) && (thisItem.Creator.Length > 2))
+                        Output.Write(" ( " + thisItem.Creator.Substring(2) + " )");
 
                     Output.WriteLine("</td></tr>");
 

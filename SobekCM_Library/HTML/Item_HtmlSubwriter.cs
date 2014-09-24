@@ -750,6 +750,7 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
+                currentMode.Mode = Display_Mode_Enum.Item_Display;
                 currentMode.ViewerCode = "tracking";
                 Output.WriteLine("          <button title=\"View Work Log\" class=\"sbkIsw_intheader_button view_worklog_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
                 currentMode.ViewerCode = currentViewerCode;
@@ -782,7 +783,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
                     Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
                     Output.WriteLine("            <td>");
-					Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input sbkIsw_Focusable\" \">" + HttpUtility.HtmlEncode(currentItem.Tracking.Internal_Comments) + "</textarea>");
+					Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input sbkIsw_Focusable\">" + HttpUtility.HtmlEncode(currentItem.Tracking.Internal_Comments) + "</textarea>");
                     Output.WriteLine("            </td>");
                     Output.WriteLine("            <td>");
                     Output.WriteLine("              <button title=\"Save new internal comments\" class=\"internalheader_button\" onclick=\"save_internal_notes(); return false;\">SAVE</button>");

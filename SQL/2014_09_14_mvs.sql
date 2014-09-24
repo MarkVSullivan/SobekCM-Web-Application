@@ -348,7 +348,7 @@ begin
 
 	-- Get the maximum possible date
 	declare @maxDate datetime;
-	set @maxDate = cast('12/31/9999 23:59:59.9999' as datetime);
+	set @maxDate = cast('12/31/9999' as datetime);
 	  
 	-- Populate the entire temporary item list	
 	insert into @TEMP_ITEMS ( ItemID, fk_TitleID, LastMilestone, LastMilestone_Date, EmbargoDate )
@@ -417,7 +417,8 @@ begin
 				ROW_NUMBER() OVER (order by case when @sort=0 THEN G.BibID end,
 											case when @sort=1 THEN G.SortTitle end,
 											case when @sort=2 THEN MAX(I.LastActivityDate) end DESC,
-											case when @sort=3 THEN MAX(I.LastMilestone_Date) end DESC) as RowNumber
+											case when @sort=3 THEN MAX(I.LastMilestone_Date) end DESC,
+											case when @sort=6 THEN MIN(I.EmbargoDate) end ASC) as RowNumber
 				from @TEMP_ITEMS I, SobekCM_Item_Group G
 				where ( I.fk_TitleID = G.GroupID )
 				group by fk_TitleID, G.BibID, G.SortTitle )
@@ -436,8 +437,7 @@ begin
 		with TITLES_SELECT AS
 		 (	select fk_TitleID, MIN(I.LastActivityDate) as MaxActivityDate, MIN(I.LastMilestone_Date) as MaxMilestoneDate,
 				ROW_NUMBER() OVER (order by case when @sort=4 THEN MIN(I.LastActivityDate) end ASC,
-											case when @sort=5 THEN MIN(I.LastMilestone_Date) end ASC,
-											case when @sort=6 THEN MIN(I.EmbargoDate) end ASC) as RowNumber
+											case when @sort=5 THEN MIN(I.LastMilestone_Date) end ASC ) as RowNumber
 				from @TEMP_ITEMS I, SobekCM_Item_Group G
 				where ( I.fk_TitleID = G.GroupID )
 				group by fk_TitleID, G.BibID, G.SortTitle )
@@ -478,3 +478,67 @@ begin
 end;
 GO
 
+CREATE PROCEDURE SobekCM_Set_Item_Visibility 
+	@ItemID int,
+	@IpRestrictionMask smallint,
+	@DarkFlag bit,
+	@EmbargoDate datetime,
+	@User varchar(255)
+AS 
+BEGIN
+
+	-- Build the note text and value
+	declare @noteText varchar(200);
+	set @noteText = '';
+
+	-- Set the embargo date
+	if ( @EmbargoDate is null )
+	begin
+		if ( exists ( select 1 from Tracking_Item where ItemID=@ItemID and EmbargoEnd is not null ))
+		begin
+			update Tracking_Item set EmbargoEnd=null where ItemID=@ItemID;
+
+			set @noteText = 'Embargo date removed.  ';
+		end;
+	end
+	else
+	begin
+		if ( exists ( select 1 from Tracking_Item where ItemID=@ItemID ))
+		begin
+			update Tracking_Item set EmbargoEnd=@EmbargoDate where ItemID=@ItemID;
+		end
+		else
+		begin
+			insert into Tracking_Item ( ItemID, Original_EmbargoEnd, EmbargoEnd )
+			values ( @ItemID, @EmbargoDate, @EmbargoDate );
+		end;
+
+		set @noteText = 'Embargo date of ' + convert(varchar(20), @EmbargoDate, 102) + '.  ';
+	end;
+
+	-- Set the workflow id
+	declare @workflowId int;
+	set @workflowId = 34;
+	if ( @IpRestrictionMask < 0 )
+		set @workflowId = 35;
+	if ( @IpRestrictionMask < 0 )
+		set @workflowId = 36;
+	if ( @DarkFlag = 'true' )
+	begin
+		set @workflowId = 35;
+		set @noteText = @noteText + 'Item made dark.';
+	end;
+
+	-- Update the main item table ( and set for the builder to review this)
+	update SobekCM_Item 
+	set IP_Restriction_Mask = @IpRestrictionMask, Dark = @DarkFlag, AdditionalWorkNeeded = 'true' 
+	where ItemID=@ItemID;
+
+	insert into Tracking_Progress ( ItemID, WorkFlowID, DateCompleted, WorkPerformedBy, ProgressNote, DateStarted )
+	values ( @ItemID, @workflowId, getdate(), @User, @noteText, getdate() );
+END;
+GO
+
+GRANT EXECUTE ON SobekCM_Set_Item_Visibility to sobek_user;
+GRANT EXECUTE ON SobekCM_Set_Item_Visibility to sobek_builder;
+GO

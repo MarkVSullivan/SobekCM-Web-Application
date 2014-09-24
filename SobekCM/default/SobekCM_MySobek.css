@@ -92,6 +92,20 @@ h1 { margin-left: auto; margin-right: auto; width: 710px; background-color: #eee
 .sbkDimv_SuccessMsg { color:Blue; font-size:1.3em; width:100%; text-align:center; font-weight:bold; }
 .sbkDimv_ErrorMsg { color:Red; font-size:1.3em; width:100%; text-align:center; font-weight:bold; }
 
+/** Edit_Item_Permissions_MySobekViewer **/
+.sbkMyEip_SetAccessText { text-align: left; font-weight:bold; font-size: 1.05em; margin-bottom: 30px;}
+.sbkMyEip_VisButton {width: 150px; height: 53px; background-color: white; color:#444444; font-weight:bolder; font-size: 1.15em; text-align:left; padding: 1px 1px 1px 52px; border: 2px solid darkgray;  } 
+.sbkMyEip_VisButtonPublic {  background: url("images/public_resource_icon.png") no-repeat white; } 
+.sbkMyEip_VisButtonRestricted { background: url("images/restricted_resource_icon.png") no-repeat white; } 
+.sbkMyEip_VisButtonPrivate {  background: url("images/private_resource_icon.png") no-repeat white;  } 
+.sbkMyEip_VisButtonDark { background-color: #444444; color: white; }
+.sbkMyEip_VisButtonDelete {  background: url("images/delete_item_icon.png") no-repeat white;  } 
+.sbkMyEip_VisButton:hover { border: 2px solid purple; }
+.sbkMyEip_VisButtonCurrent { border: 2px solid blue; }
+.sbkMyEip_EntryTable tr { vertical-align: top; }
+.sbkMyEip_EntryTable th { width: 160px; text-align: left; }
+
+
 
 /** Folder_Mgmt_MySobekViewer **/
 .sbkFmsv_EmailPopup { width:480px; } 

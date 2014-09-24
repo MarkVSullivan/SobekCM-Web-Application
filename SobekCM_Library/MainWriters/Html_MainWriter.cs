@@ -313,7 +313,10 @@ namespace SobekCM.Library.MainWriters
                                             restriction = restriction >> 1;
                                             restriction_counter++;
                                         }
-                                        restriction_message = ipRestrictionInfo[restriction_counter].Item_Restricted_Statement;
+                                        if (ipRestrictionInfo.Count > 0)
+                                            restriction_message = ipRestrictionInfo[restriction_counter].Item_Restricted_Statement;
+                                        else
+                                            restriction_message = "Restricted Item";
                                     }
                                 }
                             }

@@ -8734,7 +8734,7 @@ namespace SobekCM.Library.Database
 			    string comments = Reader.GetString(3);
 			    string pubdate = Reader.GetString(4);
 			    
-			    string creator = Reader.GetString(13);
+			    string creator = Reader.GetString(19);
 
                 // Assign the values if there are values
 			    if (comments.Length > 0) result.Internal_Comments = comments;
@@ -8742,12 +8742,14 @@ namespace SobekCM.Library.Database
                 if (creator.Length > 0) result.Creator = creator;
 
 				// Assign the embargo end
-                string embargoEnd_string = Reader.GetString(5);
-			    DateTime embargoEnd;
-			    if ((DateTime.TryParse(embargoEnd_string, out embargoEnd)) && (embargoEnd.Year < 9999))
-			        result.EmbargoDate = embargoEnd;
+			    if (!Reader.IsDBNull(18))
+			    {
+                    DateTime embargoEnd = Reader.GetDateTime(18);
+			        if (embargoEnd.Year < 9999)
+			            result.EmbargoDate = embargoEnd;
+			    }
 
-				// Add this to the title object
+			    // Add this to the title object
 				titleResult.Add_Item_Result(result);
 			}
 

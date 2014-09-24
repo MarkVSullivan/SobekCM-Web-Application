@@ -3056,6 +3056,46 @@ namespace SobekCM.Resource_Object.Database
 		        return false;
 		    }
 		}
+
+
+        /// <summary> Sets the general visibility and embargo information for a single item </summary>
+        /// <param name="ItemID"></param>
+        /// <param name="NewRestrictionMask"></param>
+        /// <param name="DarkFlag"></param>
+        /// <param name="EmbargoDate"></param>
+        /// <param name="UserName"></param>
+        /// <returns></returns>
+        /// <remarks> This method calls the stored procedure 'SobekCM_Set_Item_Visibility'. </remarks>
+        public static bool Set_Item_Visibility(int ItemID, int NewRestrictionMask, bool DarkFlag, DateTime? EmbargoDate, string UserName)
+		{
+			try
+			{
+				// Build the parameter list
+				SqlParameter[] param_list = new SqlParameter[5];
+				param_list[0] = new SqlParameter("@ItemID", ItemID);
+				param_list[1] = new SqlParameter("@IpRestrictionMask", NewRestrictionMask);
+                param_list[2] = new SqlParameter("@DarkFlag", DarkFlag);
+
+                if ( EmbargoDate.HasValue )
+                    param_list[3] = new SqlParameter("@EmbargoDate", EmbargoDate.Value);
+                else
+                    param_list[3] = new SqlParameter("@EmbargoDate", DBNull.Value);
+
+				param_list[4] = new SqlParameter("@User", UserName);
+
+
+				// Execute this non-query stored procedure
+				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Set_Item_Visibility", param_list);
+
+				return true;
+			}
+			catch (Exception ee)
+			{
+				// Pass this exception onto the method to handle it
+				exception_caught("SobekCM_Set_IP_Restriction_Mask", ee);
+				return false;
+			}
+		}
         
         
         /// <summary> Saves the IP Restriction mask which determines public, private, or restricted by IP </summary>
