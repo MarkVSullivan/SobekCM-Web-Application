@@ -600,10 +600,13 @@ namespace SobekCM.Core.Users
 
         private void recurse_through_children(User_Folder ParentFolder, SortedList<string, User_Folder> FolderBuilder)
         {
-            foreach (User_Folder thisFolder in ParentFolder.Children)
+            if(ParentFolder.Child_Count>0)
             {
+                foreach (User_Folder thisFolder in ParentFolder.Children)
+               {
                 FolderBuilder.Add(thisFolder.Folder_Name, thisFolder);
                 recurse_through_children(thisFolder, FolderBuilder);
+                }
             }
         }
 
