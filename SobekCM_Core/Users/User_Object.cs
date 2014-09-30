@@ -292,7 +292,7 @@ namespace SobekCM.Core.Users
         {
             get
             {
-                return aggregationPermissions != null && aggregationPermissions.Aggregations.Any(Aggregation => Aggregation.IsCurator);
+                return aggregationPermissions != null && (aggregationPermissions.Aggregations !=null) && aggregationPermissions.Aggregations.Any(Aggregation => Aggregation.IsCurator);
             }
         }
 
