@@ -848,7 +848,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <span class=\"SobekAdminTitle\">Aggregations</span>");
             Output.WriteLine("  <br />");
             Output.WriteLine("  <blockquote>");
-            if (editUser.PermissionedAggregations.Count == 0)
+            if (editUser.PermissionedAggregations==null || editUser.PermissionedAggregations.Count == 0)
             {
 
                 Output.WriteLine("<i> &nbsp;No special aggregation rights are assigned to this user</i>");
