@@ -548,7 +548,7 @@ namespace SobekCM.Core.Users
         public bool Is_On_Home_Page(string AggregationCode)
         {
             string aggrCodeUpper = AggregationCode.ToUpper();
-            if (aggregationPermissions.Aggregations != null && aggregationPermissions.Aggregations!=null)
+            if (aggregationPermissions != null && aggregationPermissions.Aggregations!=null)
                 return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.OnHomePage).FirstOrDefault();
             else return false;
         }
