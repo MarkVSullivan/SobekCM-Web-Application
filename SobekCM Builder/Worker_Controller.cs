@@ -278,11 +278,6 @@ namespace SobekCM.Builder
 								Static_Pages_Builder builder = new Static_Pages_Builder(SobekCM_Library_Settings.Application_Server_URL, SobekCM_Library_Settings.Static_Pages_Location, SobekCM_Library_Settings.Application_Server_Network);
 								builder.Rebuild_All_Static_Pages(preloader_logger, false, SobekCM_Library_Settings.Local_Log_Directory, dbInstance.Name, staticRebuildLogId);
 
-
-
-								// Process any pending FDA reports from the FDA Report DropBox
-								Process_Any_Pending_FDA_Reports(loaders[i]);
-
 							}
 
 							Run_BulkLoader(loaders[i], verbose);
@@ -298,13 +293,6 @@ namespace SobekCM.Builder
 								}
 								break;
 							}
-
-
-							if (rebuildRssFeeds)
-								loaders[i].Build_Feeds();
-
-							// Clear memory from this loader 
-							loaders[i].Clear_Item_List();
 						}
 						else
 						{
@@ -357,7 +345,7 @@ namespace SobekCM.Builder
 				        }
 
 				        // Clear the memory
-				        loaders[i].Clear_Item_List();
+				        loaders[i].ReleaseResources();
 			        }
 		        }
 	        }
@@ -427,22 +415,6 @@ namespace SobekCM.Builder
 				// Not critical error
 			}
 		}
-
-        private void Process_Any_Pending_FDA_Reports( Worker_BulkLoader Prebuilder )
-        {
-
-            try
-            {
-                Prebuilder.Process_Any_Pending_FDA_Reports();
-
-                if (Prebuilder.Aborted)
-                    aborted = true;
-            }
-            catch 
-            {
-
-            }
-        }
 
         private void Run_BulkLoader(Worker_BulkLoader Prebuilder, bool Verbose)
         {

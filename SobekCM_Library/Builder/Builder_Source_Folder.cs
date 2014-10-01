@@ -16,6 +16,7 @@ namespace SobekCM.Library.Builder
     /// network locations, archiving instructions, and what type of packages are permissable </summary>
     public class Builder_Source_Folder
     {
+
         /// <summary> Constructor for a new instance of the Builder_Source_Folder class </summary>
         /// <param name="Source_Data_Row"> Data row from the builder settings procedure which contains all the specifications 
         /// for this incoming source folder, including network locations, archiving instructions, and what type of packages are permissable </param>
