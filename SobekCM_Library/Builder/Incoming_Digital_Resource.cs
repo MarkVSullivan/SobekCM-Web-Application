@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using SobekCM.Library.Settings;
@@ -61,7 +60,7 @@ namespace SobekCM.Library.Builder
 	    private Incoming_Digital_Resource_Type type;
         private string vid;
 	    private string metsTypeOverride;
-
+ 
         /// <summary> Constructor for a new instance of the Incoming_Digital_Resource class </summary>
         /// <param name="Resource_Folder"> Folder for this incoming digital resource </param>
         /// <param name="Source_Folder"> Parent source folder </param>
@@ -76,6 +75,8 @@ namespace SobekCM.Library.Builder
             vid = String.Empty;
             packageTime = DateTime.Now;
 	        metsTypeOverride = String.Empty;
+            NewImageFiles = new List<string>();
+            NewPackage = false;
 
             fileRoot = "collect/image_files/";
         }
@@ -88,6 +89,14 @@ namespace SobekCM.Library.Builder
 
 		/// <summary> Primary key for the main builder log entry for this item </summary>
 		public long BuilderLogId { get; set;  }
+
+        /// <summary> List of new image files  </summary>
+        public List<string> NewImageFiles { get; set; }
+
+        /// <summary> Flag indicates if this a brand new item  </summary>
+        public bool NewPackage { get; set; }
+    
+    
 
 	    /// <summary> Gets the file hashtable to allow checking for the file object from the METS
         /// file by the name of the file </summary>
@@ -225,184 +234,76 @@ namespace SobekCM.Library.Builder
             Metadata = null;
         }
 
-        /// <summary> Load all the file attributes into this wrapper class </summary>
-        /// <param name="Directory"> Directory to find the metadata and files </param>
-        /// <remarks> This reads the width and height of all the page image files and stores this 
-        /// in the internal SobekCM_Item object </remarks>
-        public void Load_File_Attributes( string Directory )
-        {
-            Load_File_Attributes(Directory, Directory);
-        }
+        ///// <summary> Load all the file attributes into this wrapper class </summary>
+        ///// <param name="Directory"> Directory to find the metadata and files </param>
+        ///// <remarks> This reads the width and height of all the page image files and stores this 
+        ///// in the internal SobekCM_Item object </remarks>
+        //public void Load_File_Attributes( string Directory )
+        //{
+        //    Load_File_Attributes(Directory, Directory);
+        //}
 
-        /// <summary> Load all the file attributes into this wrapper class </summary>
-        /// <param name="Metadata_Location"> Directory to find the metadata for this package </param>
-        /// <param name="File_Location"> Directory to fine the files for this package </param>
-        /// <remarks> This reads the width and height of all the page image files and stores this 
-        /// in the internal SobekCM_Item object </remarks>
-        public void Load_File_Attributes(string Metadata_Location, string File_Location )
-        {
-            // First, check to see if there is an existing service METS
-            if (( Metadata_Location.Length > 0 ) && (Directory.Exists(Metadata_Location)) && (File.Exists(Metadata_Location + "/" + bibid + "_" + vid + ".mets.xml")))
-            {
-                try
-                {
-                    SobekCM_Item serviceMETS = SobekCM_Item.Read_METS(Metadata_Location + "/" + bibid + "_" + vid + ".mets.xml");
+        ///// <summary> Load all the file attributes into this wrapper class </summary>
+        ///// <param name="Metadata_Location"> Directory to find the metadata for this package </param>
+        ///// <param name="File_Location"> Directory to fine the files for this package </param>
+        ///// <remarks> This reads the width and height of all the page image files and stores this 
+        ///// in the internal SobekCM_Item object </remarks>
+        //public void Load_File_Attributes(string Metadata_Location, string File_Location )
+        //{
+        //    // First, check to see if there is an existing service METS
+        //    if (( Metadata_Location.Length > 0 ) && (Directory.Exists(Metadata_Location)) && (File.Exists(Metadata_Location + "/" + bibid + "_" + vid + ".mets.xml")))
+        //    {
+        //        try
+        //        {
+        //            SobekCM_Item serviceMETS = SobekCM_Item.Read_METS(Metadata_Location + "/" + bibid + "_" + vid + ".mets.xml");
 
-                    // Create a hashtable of all the files in the service METS and tep through each file in this mets and look for attributes in the other
-                    Dictionary<string, SobekCM_File_Info> serviceMetsFiles = serviceMETS.Divisions.Files.ToDictionary(ThisFile => ThisFile.System_Name);
+        //            // Create a hashtable of all the files in the service METS and tep through each file in this mets and look for attributes in the other
+        //            Dictionary<string, SobekCM_File_Info> serviceMetsFiles = serviceMETS.Divisions.Files.ToDictionary(ThisFile => ThisFile.System_Name);
 
-                    // Now, step through each file in this mets and look for attributes in the other
-                    foreach (SobekCM_File_Info thisFile in Metadata.Divisions.Files)
-                    {
-                        // Is there a match?
-                        if (serviceMetsFiles.ContainsKey(thisFile.System_Name))
-                        {
-                            // Get the match
-                            SobekCM_File_Info serviceFile = serviceMetsFiles[thisFile.System_Name];
+        //            // Now, step through each file in this mets and look for attributes in the other
+        //            foreach (SobekCM_File_Info thisFile in Metadata.Divisions.Files)
+        //            {
+        //                // Is there a match?
+        //                if (serviceMetsFiles.ContainsKey(thisFile.System_Name))
+        //                {
+        //                    // Get the match
+        //                    SobekCM_File_Info serviceFile = serviceMetsFiles[thisFile.System_Name];
 
-                            // Copy the data over
-                            thisFile.Width = serviceFile.Width;
-                            thisFile.Height = serviceFile.Height;
-                            thisFile.System_Name = serviceFile.System_Name;
-                        }
-                    }
-                }
-                catch(Exception)
-                {
-                    // No need to do anything here.. can still function without this information being saved
-                }
-            }
+        //                    // Copy the data over
+        //                    thisFile.Width = serviceFile.Width;
+        //                    thisFile.Height = serviceFile.Height;
+        //                    thisFile.System_Name = serviceFile.System_Name;
+        //                }
+        //            }
+        //        }
+        //        catch(Exception)
+        //        {
+        //            // No need to do anything here.. can still function without this information being saved
+        //        }
+        //    }
 
-            // Now, just look for the data being present in each file
-            if (Directory.Exists(File_Location))
-            {
-                foreach (SobekCM_File_Info thisFile in Metadata.Divisions.Files)
-                {
-                    // Is this a jpeg?
-                    if (thisFile.System_Name.ToUpper().IndexOf(".JPG") > 0)
-                    {
-                        if ( thisFile.System_Name.ToUpper().IndexOf("THM.JPG") < 0 )
-                            Compute_Jpeg_Attributes(thisFile, File_Location);
-                    }
+        //    // Now, just look for the data being present in each file
+        //    if (Directory.Exists(File_Location))
+        //    {
+        //        foreach (SobekCM_File_Info thisFile in Metadata.Divisions.Files)
+        //        {
+        //            // Is this a jpeg?
+        //            if (thisFile.System_Name.ToUpper().IndexOf(".JPG") > 0)
+        //            {
+        //                if ( thisFile.System_Name.ToUpper().IndexOf("THM.JPG") < 0 )
+        //                    Compute_Jpeg_Attributes(thisFile, File_Location);
+        //            }
 
-                    // Is this a jpeg2000?
-                    if (thisFile.System_Name.ToUpper().IndexOf("JP2") > 0 )
-                    {
-                        Compute_Jpeg2000_Attributes(thisFile, File_Location);
-                    }
-                }
-            }
-        }
+        //            // Is this a jpeg2000?
+        //            if (thisFile.System_Name.ToUpper().IndexOf("JP2") > 0 )
+        //            {
+        //                Compute_Jpeg2000_Attributes(thisFile, File_Location);
+        //            }
+        //        }
+        //    }
+        //}
 
-        /// <summary> Computes the attributes (width, height) for a JPEG file </summary>
-        /// <param name="JPEG_File"> METS SobekCM_File_Info object for this jpeg file </param>
-        /// <param name="File_Location"> Location where this file exists </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> The attribute information is computed and then stored in the provided METS SobekCM_File_Info object </remarks>
-        public bool Compute_Jpeg_Attributes(SobekCM_File_Info JPEG_File, string File_Location)
-        {
-            // If the width and height are already determined, done!
-            if ((JPEG_File.Width > 0) && (JPEG_File.Height > 0))
-                return true;
-
-            // Does this file exist?
-            if (File.Exists(File_Location + "/" + JPEG_File.System_Name))
-            {
-                try
-                {
-                    // Get the height and width of this JPEG file
-                    Bitmap image = (Bitmap)Image.FromFile(File_Location + "/" + JPEG_File.System_Name);
-                    JPEG_File.Width = (ushort) image.Width;
-                    JPEG_File.Height = (ushort) image.Height;
-                    image.Dispose();
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary> Computes the attributes (width, height) for a JPEG2000 file </summary>
-        /// <param name="JPEG2000_File"> METS SobekCM_File_Info object for this jpeg2000 file </param>
-        /// <param name="File_Location"> Location where this file exists </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> The attribute information is computed and then stored in the provided METS SobekCM_File_Info object </remarks>
-        public bool Compute_Jpeg2000_Attributes(SobekCM_File_Info JPEG2000_File, string File_Location)
-        {
-            // If the width and height are already determined, done!
-            if ((JPEG2000_File.Width > 0) && (JPEG2000_File.Height > 0) && (JPEG2000_File.System_Name.Length > 0))
-                return true;
-
-            // Does this file exist?
-            if (File.Exists(File_Location + "/" + JPEG2000_File.System_Name))
-            {
-                return get_attributes_from_jpeg2000(JPEG2000_File, File_Location + "/" + JPEG2000_File.System_Name);
-            }
-
-            if ((JPEG2000_File.System_Name.Length > 0) && (File.Exists(JPEG2000_File.System_Name)))
-            {
-                return get_attributes_from_jpeg2000(JPEG2000_File, JPEG2000_File.System_Name);
-            }
-
-            return false;
-        }
-
-        private bool get_attributes_from_jpeg2000(SobekCM_File_Info JPEG2000_File, string File)
-        {
-            try
-            {
-                // Get the height and width of this JPEG file
-                FileStream reader = new FileStream(File, FileMode.Open, FileAccess.Read);
-                int[] previousValues = new[] { 0, 0, 0, 0 };
-                int bytevalue = reader.ReadByte();
-                int count = 1;
-                while (bytevalue != -1)
-                {
-                    // Move this value into the array
-                    previousValues[0] = previousValues[1];
-                    previousValues[1] = previousValues[2];
-                    previousValues[2] = previousValues[3];
-                    previousValues[3] = bytevalue;
-
-                    // Is this IHDR?
-                    if ((previousValues[0] == 105) && (previousValues[1] == 104) &&
-                        (previousValues[2] == 100) && (previousValues[3] == 114))
-                    {
-                        break;
-                    }
-                    
-                    // Is this the first four bytes and does it match the output from Kakadu 3-2?
-                    if ((count == 4) && (previousValues[0] == 255) && (previousValues[1] == 79) &&
-                        (previousValues[2] == 255) && (previousValues[3] == 81))
-                    {
-                        reader.ReadByte();
-                        reader.ReadByte();
-                        reader.ReadByte();
-                        reader.ReadByte();
-                        break;
-                    }
-                    
-                    // Read the next byte
-                    bytevalue = reader.ReadByte();
-                    count++;
-                }
-
-                // Now, read ahead for the height and width
-                JPEG2000_File.Height = (ushort) ((((((reader.ReadByte() * 256) + reader.ReadByte()) * 256) + reader.ReadByte()) * 256) + reader.ReadByte());
-                JPEG2000_File.Width = (ushort) ((((((reader.ReadByte() * 256) + reader.ReadByte()) * 256) + reader.ReadByte()) * 256) + reader.ReadByte());
-                reader.Close();
-
-                return true;
-            }
-            catch 
-            {
-                return false;
-            }
-        }
+   
 
         /// <summary> Saves the SobekCM Service METS file for this incoming digital resource </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
@@ -476,10 +377,9 @@ namespace SobekCM.Library.Builder
         }
 
         /// <summary> Saves this item to the SobekCM database </summary>
-        /// <param name="Item_List"> Item list datatable for pulling out the original creation date for this resource </param>
-        /// <param name="New_Item"> Flag indicates this is an entirely new item </param>
+         /// <param name="New_Item"> Flag indicates this is an entirely new item </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public bool Save_to_Database(DataTable Item_List, bool New_Item)
+        public bool Save_to_Database(bool New_Item)
         {
             if (Metadata == null)
                 return false;
@@ -488,15 +388,8 @@ namespace SobekCM.Library.Builder
             {
 
                 // save the bib package to the SobekCM database
-                bool existed = false;
+                bool existed = !New_Item;
                 DateTime createTime = packageTime;
-                DataRow[] check = Item_List.Select("BibID='" + bibid + "' and VID='" + vid + "'");
-                if (check.Length > 0)
-                {
-                    existed = true;
-                    if (Item_List.Columns.Contains("CreateDate"))
-                        createTime = Convert.ToDateTime(check[0]["CreateDate"]);
-                }
 
                 // Set the file root again
                 Metadata.Web.File_Root = fileRoot;

@@ -306,7 +306,7 @@ namespace SobekCM.Library.MySobekViewer
             if ((ipRestrictions.Count > 0) && (ipRestrictionMask > 0) && ( !isDark))
             {
                 Output.WriteLine("         <tr>");
-                Output.WriteLine("           <th>Restriction Ranges:</th>");
+                Output.WriteLine("           <th>Restriction Ranges:-</th>");
                 Output.WriteLine("           <td>");
 
                 foreach (IP_Restriction_Range thisRange in ipRestrictions.IpRanges)

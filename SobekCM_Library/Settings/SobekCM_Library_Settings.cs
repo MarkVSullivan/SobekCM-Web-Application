@@ -1193,6 +1193,7 @@ namespace SobekCM.Library.Settings
 		public static bool Builder_Verbose_Flag
 		{
 			get { return builderVerbose; }
+            set { builderVerbose = value;  }
 		}
 
 		/// <summary> Number of minutes clients are suggested to cache the web output </summary>
