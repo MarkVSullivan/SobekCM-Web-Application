@@ -1990,9 +1990,9 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
             Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_aggre.js\"></script>");
 
-
-            foreach (User_Permissioned_Aggregation thisAggregation in currentUser.PermissionedAggregations.Where(ThisAggregation => ThisAggregation.OnHomePage))
-            {
+            if(currentUser.PermissionedAggregations !=null )
+              foreach (User_Permissioned_Aggregation thisAggregation in currentUser.PermissionedAggregations.Where(ThisAggregation => ThisAggregation.OnHomePage))
+              {
                 currentMode.Aggregation = thisAggregation.Code.ToLower();
                 string image_url = currentMode.Base_URL + "design/aggregations/" + thisAggregation.Code + "/images/buttons/coll.gif";
 
