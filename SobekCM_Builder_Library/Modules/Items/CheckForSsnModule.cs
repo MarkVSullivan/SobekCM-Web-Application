@@ -1,0 +1,58 @@
+﻿#region Using directives
+
+using System;
+using System.IO;
+using SobekCM.Library.Database;
+using SobekCM.Library.Settings;
+
+#endregion
+
+namespace SobekCM.Builder_Library.Modules.Items
+{
+    public class CheckForSsnModule : abstractSubmissionPackageModule
+    {
+        public override void DoWork(Incoming_Digital_Resource Resource)
+        {
+            string resourceFolder = Resource.Resource_Folder;
+            string bibID = Resource.BibID;
+            string vid = Resource.VID;
+
+            // Look for SSN in text
+            string ssn_text_file_name = String.Empty;
+            string ssn_match = String.Empty;
+            try
+            {
+                // Get the list of all text files here
+                string[] text_files = Directory.GetFiles(resourceFolder, "*.txt");
+                if (text_files.Length > 0)
+                {
+                    // Step through each text file
+                    foreach (string textFile in text_files)
+                    {
+                        // If no SSN possibly found, look for one
+                        if (ssn_match.Length == 0)
+                        {
+                            ssn_match = Text_Cleaner.Has_SSN(textFile);
+                            if (ssn_match.Length > 0)
+                                ssn_text_file_name = (new FileInfo(textFile)).Name;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+
+            // Send a database email if there appears to have been a SSN
+            if (ssn_match.Length > 0)
+            {
+                if (SobekCM_Library_Settings.Privacy_Email_Address.Length > 0)
+                {
+                    SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.Privacy_Email_Address, "Possible Social Security Number Located", "A string which appeared to be a possible social security number was found while bulk loading or post-processing an item.\n\nThe SSN was found in package " + bibID + ":" + vid + " in file '" + ssn_text_file_name + "'.\n\nThe text which may be a SSN is '" + ssn_match + "'.\n\nPlease review this item and remove any private information which should not be on the web server.", false, false, -1, -1);
+                }
+                OnProcess("Possible SSN Located (" + ssn_text_file_name + ")", "Privacy Checking", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+            }
+        }
+    }
+}

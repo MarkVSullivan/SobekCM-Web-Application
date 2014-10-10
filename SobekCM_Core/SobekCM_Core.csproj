@@ -44,6 +44,8 @@
     <Compile Include="Results\Private_Items_List.cs" />
     <Compile Include="Results\Private_Items_List_Item.cs" />
     <Compile Include="Results\Private_Items_List_Title.cs" />
+    <Compile Include="Serialization\iSerializationEvents.cs" />
+    <Compile Include="Settings\Builder_Source_Folder.cs" />
     <Compile Include="Users\Public_User_Folder.cs" />
     <Compile Include="Users\User_Permissioned_Aggregation.cs" />
     <Compile Include="Users\User_Aggregation_Permissions.cs" />
@@ -51,12 +53,6 @@
     <Compile Include="Users\User_Group.cs" />
     <Compile Include="Users\User_Group_Member.cs" />
     <Compile Include="Users\User_Object.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SobekCM_Rest_API\SobekCM_Rest_API.csproj">
-      <Project>{fbc16c4a-c543-4a74-9172-abfe6fc0f96c}</Project>
-      <Name>SobekCM_Rest_API</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

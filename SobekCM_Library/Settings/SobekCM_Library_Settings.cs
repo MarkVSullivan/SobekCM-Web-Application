@@ -7,7 +7,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using SobekCM.Core.Users;
-using SobekCM.Library.Builder;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Search;

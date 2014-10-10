@@ -3,29 +3,20 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using SobekCM.Builder.Modules;
-using SobekCM.Builder.Modules.Folders;
-using SobekCM.Builder.Modules.Items;
-using SobekCM.Builder.Modules.PostProcess;
-using SobekCM.Builder.Modules.PreProcess;
-using SobekCM.Library;
-using SobekCM.Library.Aggregations;
+using SobekCM.Core.Settings;
+using SobekCM.Builder_Library.Modules;
+using SobekCM.Builder_Library.Modules.Folders;
+using SobekCM.Builder_Library.Modules.Items;
+using SobekCM.Builder_Library.Modules.PostProcess;
+using SobekCM.Builder_Library.Modules.PreProcess;
 using SobekCM.Library.Application_State;
-using SobekCM.Library.Builder;
 using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
 using SobekCM.Library.Solr;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Resource_Object.Divisions;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools.Logs;
+using SobekCM.Builder_Library;
 
 #endregion
 
@@ -266,6 +257,8 @@ namespace SobekCM.Builder
 
                 foreach (Builder_Source_Folder folder in SobekCM_Library_Settings.Incoming_Folders)
                 {
+                    Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder);
+
                     foreach (iFolderModule thisModule in folderModules)
                     {
                         // Check for abort
@@ -276,7 +269,7 @@ namespace SobekCM.Builder
                             return;
                         }
 
-                        thisModule.DoWork(folder, incoming_packages, deletes);
+                        thisModule.DoWork(actionFolder, incoming_packages, deletes);
                     }
                 }
 
@@ -416,7 +409,7 @@ namespace SobekCM.Builder
 	            Add_NonError_To_Log("Processing recently loaded items needing additional work", "Standard", String.Empty, String.Empty, -1);
 
                 // Create the incoming digital folder object which will be used for all these
-                Builder_Source_Folder sourceFolder = new Builder_Source_Folder();
+                Actionable_Builder_Source_Folder sourceFolder = new Actionable_Builder_Source_Folder();
 
                 // Step through each one
                 foreach (DataRow thisRow in additionalWorkRequired.Rows)

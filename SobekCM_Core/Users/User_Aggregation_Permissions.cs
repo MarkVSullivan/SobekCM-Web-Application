@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
-using SobekCM.Rest_API;
+using SobekCM.Core.Serialization;
 
 #endregion
 
