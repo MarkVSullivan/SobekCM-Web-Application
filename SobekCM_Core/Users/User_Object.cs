@@ -548,7 +548,7 @@ namespace SobekCM.Core.Users
         public bool Is_On_Home_Page(string AggregationCode)
         {
             string aggrCodeUpper = AggregationCode.ToUpper();
-            if (aggregationPermissions.Aggregations != null)
+            if (aggregationPermissions != null && aggregationPermissions.Aggregations!=null)
                 return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.OnHomePage).FirstOrDefault();
             else return false;
         }
@@ -562,7 +562,10 @@ namespace SobekCM.Core.Users
                 return true;
 
             string aggrCodeUpper = AggregationCode.ToUpper();
-            return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsCurator).FirstOrDefault();
+            if (aggregationPermissions != null && aggregationPermissions.Aggregations != null)
+                return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsCurator).FirstOrDefault();
+            else 
+                return false;
         }
 
 		/// <summary> Checks to see if this user can perform administrative tasks against an item aggregation </summary>
@@ -574,8 +577,12 @@ namespace SobekCM.Core.Users
 				return true;
 
 			string aggrCodeUpper = AggregationCode.ToUpper();
-			return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsAdmin).FirstOrDefault();
-		}
+
+            if(aggregationPermissions !=null && aggregationPermissions.Aggregations!=null)
+			  return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsAdmin).FirstOrDefault();
+            else
+               return false;
+        }
 
         /// <summary> Checks to see if this user can edit all the items within this aggregation </summary>
         /// <param name="AggregationCode"> Code for this item aggregation </param>
@@ -586,7 +593,11 @@ namespace SobekCM.Core.Users
                 return true;
 
             string aggrCodeUpper = AggregationCode.ToUpper();
-            return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.CanEditItems).FirstOrDefault();
+
+            if (aggregationPermissions != null && aggregationPermissions.Aggregations != null)
+                return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.CanEditItems).FirstOrDefault();
+            else
+                return false;
         }
 
         /// <summary> This checks that the folder name exists, and returns the proper format </summary>
@@ -623,8 +634,9 @@ namespace SobekCM.Core.Users
         {
             if ( ParentFolder.Folder_Name.ToLower() == FolderName )
                 return ParentFolder;
-
-            return ParentFolder.Children.Select(ChildFolder => recurse_to_get_folder(ChildFolder, FolderName)).FirstOrDefault(ReturnValue => ReturnValue != null);
+            if (ParentFolder.Children != null)
+                return ParentFolder.Children.Select(ChildFolder => recurse_to_get_folder(ChildFolder, FolderName)).FirstOrDefault(ReturnValue => ReturnValue != null);
+            else return null;
         }
 
         #endregion
