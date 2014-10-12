@@ -1,5 +1,10 @@
 
 
+ALTER TABLE SobekCM_Builder_Incoming_Folders ADD ModuleConfig varchar(max) null;
+GO
+
+
+
 -- Procedure looks for items to unembargo, and then sends emails out and unembargos them
 CREATE PROCEDURE dbo.Admin_Unembargo_Items_Past_Embargo_Date 
 	@subject_line varchar(500),
@@ -167,3 +172,82 @@ GO
 grant execute on dbo.Admin_Unembargo_Items_Past_Embargo_Date to sobek_admin;
 grant execute on dbo.Admin_Unembargo_Items_Past_Embargo_Date to sobek_builder;
 GO
+
+
+
+
+-- Gets the list of all system-wide settings from the database, including the full list of all
+-- metadata search fields, possible workflows, and all disposition data
+ALTER PROCEDURE [dbo].[SobekCM_Get_Settings]
+AS
+begin
+
+	-- No need to perform any locks here.  A slightly dirty read won't hurt much
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+	
+	-- Get all the standard SobekCM settings
+	select Setting_Key, Setting_Value
+	from SobekCM_Settings;
+
+	-- Return all the builder folders
+	select IncomingFolderId, NetworkFolder, ErrorFolder, ProcessingFolder, Perform_Checksum_Validation, Archive_TIFF, Archive_All_Files,
+		   Allow_Deletes, Allow_Folders_No_Metadata, Allow_Metadata_Updates, FolderName, Can_Move_To_Content_Folder, BibID_Roots_Restrictions,
+		   ModuleConfig
+	from SobekCM_Builder_Incoming_Folders F;
+
+	-- Return all the metadata search fields
+	select MetadataTypeID, MetadataName, SobekCode, SolrCode, DisplayTerm, FacetTerm, CustomField, canFacetBrowse
+	from SobekCM_Metadata_Types
+	order by DisplayTerm;
+
+	-- Return all the possible workflow types
+	select WorkFlowID, WorkFlowName, WorkFlowNotes, Start_Event_Number, End_Event_Number, Start_And_End_Event_Number, Start_Event_Desc, End_Event_Desc
+	from Tracking_WorkFlow;
+
+	-- Return all the possible disposition options
+	select DispositionID, DispositionFuture, DispositionPast, DispositionNotes
+	from Tracking_Disposition_Type;
+
+end;
+GO
+
+
+-- Gets a list of items and groups which exist within this instance
+CREATE PROCEDURE [dbo].[SobekCM_Item_List]
+	@include_private bit
+as
+begin
+
+	-- No need to perform any locks here
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	-- Set value for filtering privates
+	declare @lower_mask int;
+	set @lower_mask = 0;
+	if ( @include_private = 'true' )
+	begin
+		set @lower_mask = -256;
+	end;
+
+	-- Return the item group / item information in one large table
+	select G.BibID, I.VID, IP_Restriction_Mask, I.Title, G.[Type], I.Dark
+	from SobekCM_Item I, SobekCM_Item_Group G
+	where ( I.GroupID = G.GroupID )
+	  and ( G.Deleted = CONVERT(bit,0) )
+	  and ( I.Deleted = CONVERT(bit,0) )
+	  and ( I.IP_Restriction_Mask >= @lower_mask )
+	order by BibID, VID;
+
+end;
+GO
+
+GRANT EXECUTE ON SobekCM_Item_List to sobek_builder;
+GRANT EXECUTE ON SobekCM_Item_List to sobek_user;
+GO
+
+
+
+DROP PROCEDURE SobekCM_Item_List_Web;
+DROP PROCEDURE SobekCM_Get_Builder_Settings;
+GO
+

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Configuration;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;

@@ -33,7 +33,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<span style=\"font-size:1.2em\">");
                 Output.WriteLine("  <br /><br />");
                 Output.WriteLine("The URL you entered is a legacy URL.  Support for this URL will end shortly.<br /><br />Please update your records to the new URL below:<br /><br />");
-                Output.WriteLine("<a href=\"" + currentMode.Error_Message + "\">" + currentMode.Error_Message + "</a>");
+                Output.WriteLine("<a href=\"" + Mode.Error_Message + "\">" + Mode.Error_Message + "</a>");
                 Output.WriteLine("  <br /><br /><br /><br />");
                 Output.WriteLine("</span>");
                 Output.WriteLine("</center>");

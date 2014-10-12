@@ -1,6 +1,7 @@
 ﻿#region Using directives
 using System;
 using System.Security.Cryptography;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
 using Zen.Barcode;
@@ -87,7 +88,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 
 
             //Create the temporary location for saving the barcode images
-           image_location = SobekCM_Library_Settings.Base_Temporary_Directory + "tsBarcodes\\" + itemID.ToString();
+           image_location = InstanceWide_Settings_Singleton.Settings.Base_Temporary_Directory + "tsBarcodes\\" + itemID.ToString();
 
 
             // Create the folder for the user in the temp directory

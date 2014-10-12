@@ -7,6 +7,8 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Web;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -384,9 +386,9 @@ namespace SobekCM.Library.MySobekViewer
                     if ((!registration) && (user.Default_Metadata_Sets[0] != project.Trim()))
 					{
 						// Determine the in process directory for this
-						string user_in_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UserName;
+						string user_in_process_directory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.UserName;
 						if (user.ShibbID.Trim().Length > 0)
-							user_in_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.ShibbID;
+							user_in_process_directory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.ShibbID;
 						if (Directory.Exists(user_in_process_directory))
 						{
 							if (File.Exists(user_in_process_directory + "\\TEMP000001_00001.mets"))
@@ -437,7 +439,7 @@ namespace SobekCM.Library.MySobekViewer
 						// If they want to be able to contribue, send an email
 						if (desire_to_upload)
 						{
-							SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>Name: " + user.Full_Name + "<br />Email: " + user.Email + "<br />Organization: " + user.Organization + "<br />User ID: " + user.UserID + "</blockquote>", true, false, -1, -1);
+							SobekCM_Database.Send_Database_Email(InstanceWide_Settings_Singleton.Settings.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>Name: " + user.Full_Name + "<br />Email: " + user.Email + "<br />Organization: " + user.Organization + "<br />User ID: " + user.UserID + "</blockquote>", true, false, -1, -1);
 						}
 
 						// Email the user their registation information
@@ -571,7 +573,7 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + userNameLabel + ":</td><td>" + user.UserName + "</td></tr>");
 				if (user.ShibbID.Trim().Length > 0)
 				{
-					Output.WriteLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + SobekCM_Library_Settings.Shibboleth_System_Name + ":</td><td>" + user.ShibbID + "</td></tr>");
+					Output.WriteLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name + ":</td><td>" + user.ShibbID + "</td></tr>");
 				}
 			}
 
@@ -601,9 +603,9 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefDepartment\">" + departmentLabel + ":</label></td><td><input id=\"prefDepartment\" name=\"prefDepartment\" class=\"preferences_large_input sbk_Focusable\" value=\"" + department + "\"type=\"text\" /></td></tr>");
 			Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefUnit\">" + unitLabel + ":</label></td><td><input id=\"prefUnit\" name=\"prefUnit\" class=\"preferences_large_input sbk_Focusable\" value=\"" + unit + "\" type=\"text\" /></td></tr>");
 
-			if ((registration) && (SobekCM_Library_Settings.Shibboleth_System_URL.Length > 0))
+			if ((registration) && (InstanceWide_Settings_Singleton.Settings.Shibboleth_System_URL.Length > 0))
 			{
-				Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefUfid\">" + SobekCM_Library_Settings.Shibboleth_System_Name + ":</label></td><td><input id=\"prefUfid\" name=\"prefUfid\" class=\"preferences_small_input sbk_Focusable\" value=\"" + ufid + "\" type=\"text\" />    &nbsp; &nbsp; (optionally provides access through Gatorlink)</td></tr>");
+				Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefUfid\">" + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name + ":</label></td><td><input id=\"prefUfid\" name=\"prefUfid\" class=\"preferences_small_input sbk_Focusable\" value=\"" + ufid + "\" type=\"text\" />    &nbsp; &nbsp; (optionally provides access through Gatorlink)</td></tr>");
 			}
 
 

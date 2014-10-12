@@ -3,6 +3,7 @@
 using System;
 using System.Data;
 using System.IO;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -540,7 +541,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         private void add_usage_definitions(TextWriter Output, Custom_Tracer Tracer)
         {
             // See if the FAQ is present for this collection
-            string directory = SobekCM_Library_Settings.Base_Design_Location + "\\extra\\stats";
+            string directory = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "\\extra\\stats";
             string usageDefinitions = String.Empty;
             if (Directory.Exists(directory))
             {

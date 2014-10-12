@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Configuration;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;

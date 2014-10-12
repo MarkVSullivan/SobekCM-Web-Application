@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -461,8 +462,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             try
             {
-                string directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
-                string url = SobekCM_Library_Settings.Image_URL + CurrentItem.Web.AssocFilePath;
+                string directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+                string url = InstanceWide_Settings_Singleton.Settings.Image_URL + CurrentItem.Web.AssocFilePath;
 
                 FileInfo[] files = (new DirectoryInfo(directory)).GetFiles();
 
@@ -534,7 +535,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     string thisFileUpper = thisFile.System_Name.ToUpper();
                                     if (sortedFiles.ContainsKey(thisFileUpper))
                                     {
-                                       // string file = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + thisFile.System_Name;
+                                       // string file = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + thisFile.System_Name;
                                         Add_File_HTML(sortedFiles[thisFileUpper], builder, url, true);
                                         sortedFiles.Remove(thisFileUpper);
                                     }
@@ -546,7 +547,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 {
                                     if (sortedFiles.ContainsKey(fileName.ToUpper() + thisFileEnder))
                                     {
-                                        //string file = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + fileName + thisFileEnder.ToLower();
+                                        //string file = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + fileName + thisFileEnder.ToLower();
                                         Add_File_HTML(sortedFiles[fileName.ToUpper() + thisFileEnder], builder, url, true);
                                         sortedFiles.Remove(fileName.ToUpper() + thisFileEnder);
                                     }

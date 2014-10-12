@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Web;
 using System.Xml;
+using SobekCM.Core.Configuration;
 using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;

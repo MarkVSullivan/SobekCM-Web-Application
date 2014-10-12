@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Settings;
@@ -669,7 +671,7 @@ namespace SobekCM.Library.Navigation
 					return this_base_url + "reports" + urlOptions1;
 
 				case Display_Mode_Enum.Error:
-					return SobekCM_Library_Settings.System_Error_URL;
+					return InstanceWide_Settings_Singleton.Settings.System_Error_URL;
 
 				case Display_Mode_Enum.Internal:
 					switch (Internal_Type)

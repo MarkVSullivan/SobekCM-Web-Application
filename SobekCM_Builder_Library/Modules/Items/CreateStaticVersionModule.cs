@@ -23,16 +23,16 @@ namespace SobekCM.Builder_Library.Modules.Items
             if (staticBuilder == null)
             {
                 // Create the new statics page builder
-                staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.Application_Server_URL, SobekCM_Library_Settings.Static_Pages_Location, SobekCM_Library_Settings.Application_Server_Network);
+                staticBuilder = new Static_Pages_Builder(InstanceWide_Settings_Singleton.Settings.Application_Server_URL, InstanceWide_Settings_Singleton.Settings.Static_Pages_Location, InstanceWide_Settings_Singleton.Settings.Application_Server_Network);
             }
 
             // Save the static page and then copy to all the image servers
             try
             {
-                if (!Directory.Exists(Resource.Resource_Folder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME))
-                    Directory.CreateDirectory(Resource.Resource_Folder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME);
+                if (!Directory.Exists(Resource.Resource_Folder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name))
+                    Directory.CreateDirectory(Resource.Resource_Folder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name);
 
-                string static_file = Resource.Resource_Folder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME + "\\" + Resource.Metadata.BibID + "_" + Resource.Metadata.VID + ".html";
+                string static_file = Resource.Resource_Folder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name + "\\" + Resource.Metadata.BibID + "_" + Resource.Metadata.VID + ".html";
                 staticBuilder.Create_Item_Citation_HTML(Resource.Metadata, static_file, Resource.Resource_Folder);
 
                 if (!File.Exists(static_file))
@@ -42,9 +42,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                 else
                 {
                     // Also copy to the static page location server
-                    string web_server_file_version = SobekCM_Library_Settings.Static_Pages_Location + Resource.File_Root + "\\" + Resource.BibID + "_" + Resource.VID + ".html";
-                    if (!Directory.Exists(SobekCM_Library_Settings.Static_Pages_Location + Resource.File_Root))
-                        Directory.CreateDirectory(SobekCM_Library_Settings.Static_Pages_Location + Resource.File_Root);
+                    string web_server_file_version = InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + Resource.File_Root + "\\" + Resource.BibID + "_" + Resource.VID + ".html";
+                    if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + Resource.File_Root))
+                        Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + Resource.File_Root);
                     File.Copy(static_file, web_server_file_version, true);
                 }
             }

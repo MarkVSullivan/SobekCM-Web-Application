@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.UI.WebControls;
 using System.IO;
 using System.Xml;
+using SobekCM.Core.Settings;
 using SobekCM.Library.HTML;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object.Divisions;
@@ -44,7 +45,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			CurrentItem = Current_Item;
 			CurrentMode = Current_Mode;
 
-			//string resource_directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+			//string resource_directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
 			//string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
 
 			// If there is no user, send to the login
@@ -69,7 +70,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 			////create a backup of the mets
-			//string backup_directory = SobekCM_Library_Settings.Image_Server_Network + Current_Item.Web.AssocFilePath + SobekCM_Library_Settings.Backup_Files_Folder_Name;
+			//string backup_directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + Current_Item.Web.AssocFilePath + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name;
 			//string backup_mets_name = backup_directory + "\\" + CurrentItem.METS_Header.ObjectID + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + ".mets.bak";
 			//File.Copy(current_mets, backup_mets_name);
 
@@ -439,8 +440,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			#region prep saving dir
 			//create inprocessing directory
-			string userInProcessDirectory = Settings.SobekCM_Library_Settings.User_InProcess_Directory( CurrentUser, "mapwork");
-			string backupDirectory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME;
+			string userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.User_InProcess_Directory( CurrentUser, "mapwork");
+            string backupDirectory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name;
 
 			//ensure the user's process directory exists
 			if (!Directory.Exists(userInProcessDirectory))
@@ -449,7 +450,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (!Directory.Exists(backupDirectory))
 				Directory.CreateDirectory(backupDirectory);
 
-			string resource_directory = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+			string resource_directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
 			string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
 			string backup_mets = backupDirectory + "\\" + CurrentItem.METS_Header.ObjectID + "_" + DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + "_" + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + ".mets.xml.BAK";
 			string metsInProcessFile = userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -34,7 +35,7 @@ namespace SobekCM.Library.HTML
             Language_Support_Info Translator,
             SobekCM_Navigation_Object Current_Mode )
         {
-            currentMode = Current_Mode;
+            Mode = Current_Mode;
             currentItem = Current_Item;
             codeManager = Code_Manager;
             translations = Translator;
@@ -50,7 +51,7 @@ namespace SobekCM.Library.HTML
 
             // Determine some variables
             bool include_brief_citation = false;
-            string mode = currentMode.ViewerCode.ToLower();
+            string mode = Mode.ViewerCode.ToLower();
             if (mode.Length < 2 )
                 mode = "jj1";
             if (mode[0] == '1')
@@ -130,22 +131,22 @@ namespace SobekCM.Library.HTML
 
         private void print_brief_citation( string image_width, TextWriter Output)
         {
-            if (currentMode.Base_Skin == "ufdc")
+            if (Mode.Base_Skin == "ufdc")
             {
-                Output.WriteLine("<img src=\"" + currentMode.Default_Images_URL + "ufdc_banner_" + image_width + ".jpg\" />");
+                Output.WriteLine("<img src=\"" + Mode.Default_Images_URL + "ufdc_banner_" + image_width + ".jpg\" />");
                 Output.WriteLine("<br />");
             }
 
-            if (currentMode.Base_Skin == "dloc")
+            if (Mode.Base_Skin == "dloc")
             {
-                Output.WriteLine("<img src=\"" + currentMode.Default_Images_URL + "dloc_banner_" + image_width + ".jpg\" />");
+                Output.WriteLine("<img src=\"" + Mode.Default_Images_URL + "dloc_banner_" + image_width + ".jpg\" />");
                 Output.WriteLine("<br />");
             }
 
             Output.WriteLine("<table cellspacing=\"5px\" class=\"citation\" width=\"550px\" >");
             Output.WriteLine("  <tr align=\"left\"><td><b>Title:</b> &nbsp; </td><td>" + currentItem.Bib_Info.Main_Title + "</td></tr>");
-            Output.WriteLine("  <tr align=\"left\"><td><b>URL:</b> &nbsp; </td><td>" + currentMode.Base_URL + "/" + currentItem.BibID + "/" + currentItem.VID + "</td></tr>");
-            Output.WriteLine("  <tr align=\"left\"><td><b>Site:</b> &nbsp; </td><td>" + currentMode.SobekCM_Instance_Name + "</td></tr>");
+            Output.WriteLine("  <tr align=\"left\"><td><b>URL:</b> &nbsp; </td><td>" + Mode.Base_URL + "/" + currentItem.BibID + "/" + currentItem.VID + "</td></tr>");
+            Output.WriteLine("  <tr align=\"left\"><td><b>Site:</b> &nbsp; </td><td>" + Mode.SobekCM_Instance_Name + "</td></tr>");
             Output.WriteLine("</table>");
         }
 
@@ -163,10 +164,10 @@ namespace SobekCM.Library.HTML
                 if (thisFile.System_Name.ToUpper().IndexOf(".JP2") > 0)
                 {
                     int zoomlevels = zoom_levels( thisFile.Width, thisFile.Height );
-                    int size_pixels = 512 + (currentMode.Viewport_Size * 256);
-                    if (currentMode.Viewport_Size == 3)
+                    int size_pixels = 512 + (Mode.Viewport_Size * 256);
+                    if (Mode.Viewport_Size == 3)
                         size_pixels = 1536;
-                    int rotation = (currentMode.Viewport_Rotation % 4) * 90;
+                    int rotation = (Mode.Viewport_Rotation % 4) * 90;
 
                     string jpeg2000_filename = thisFile.System_Name;
                     if ((jpeg2000_filename.Length > 0) && (jpeg2000_filename[0] != '/'))
@@ -175,9 +176,9 @@ namespace SobekCM.Library.HTML
                     }
 
                     // Build the source URL
-                    Output.Write("<img src=\"" + SobekCM_Library_Settings.JP2ServerUrl + "imageserver?res=" + (zoomlevels - currentMode.Viewport_Zoom + 1) + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
-                    if (currentMode.Viewport_Zoom != 1)
-                        Output.Write("&x=" + currentMode.Viewport_Point_X + "&y=" + currentMode.Viewport_Point_Y);
+                    Output.Write("<img src=\"" + InstanceWide_Settings_Singleton.Settings.JP2ServerUrl + "imageserver?res=" + (zoomlevels - Mode.Viewport_Zoom + 1) + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
+                    if (Mode.Viewport_Zoom != 1)
+                        Output.Write("&x=" + Mode.Viewport_Point_X + "&y=" + Mode.Viewport_Point_Y);
                     Output.WriteLine("&rotation=" + rotation + "&filename=" + jpeg2000_filename + "\" />");
                     break;
                 }
@@ -187,8 +188,8 @@ namespace SobekCM.Library.HTML
         private int zoom_levels( int width, int height )
         {
             // Get the current portal size in pixels
-            float size_pixels = 512 + (currentMode.Viewport_Size * 256);
-            if (currentMode.Viewport_Size == 3)
+            float size_pixels = 512 + (Mode.Viewport_Size * 256);
+            if (Mode.Viewport_Size == 3)
                 size_pixels = 1536;
 
             // Get the factor 
@@ -285,21 +286,21 @@ namespace SobekCM.Library.HTML
         private void print_full_citation(TextWriter Output)
         {
             Output.WriteLine("</center>");
-            if (currentMode.Base_Skin == "ufdc")
+            if (Mode.Base_Skin == "ufdc")
             {
-                Output.WriteLine("<img src=\"" + currentMode.Default_Images_URL + "ufdc_banner_700.jpg\" />");
+                Output.WriteLine("<img src=\"" + Mode.Default_Images_URL + "ufdc_banner_700.jpg\" />");
                 Output.WriteLine("<br />");
             }
 
-            if (currentMode.Base_Skin == "dloc")
+            if (Mode.Base_Skin == "dloc")
             {
-                Output.WriteLine("<img src=\"" + currentMode.Default_Images_URL + "dloc_banner_700.jpg\" />");
+                Output.WriteLine("<img src=\"" + Mode.Default_Images_URL + "dloc_banner_700.jpg\" />");
                 Output.WriteLine("<br />");
             }
 
             Output.WriteLine("<div class=\"SobekCitation\">");
             Citation_ItemViewer citationViewer = new Citation_ItemViewer(translations, codeManager, false)
-                                                     {CurrentItem = currentItem, CurrentMode = currentMode};
+                                                     {CurrentItem = currentItem, CurrentMode = Mode};
             Output.WriteLine(citationViewer.Standard_Citation_String(false,null));
             Output.WriteLine("</div>");
         }
@@ -341,13 +342,13 @@ namespace SobekCM.Library.HTML
 
             // Write the style sheet to use 
 #if DEBUG
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 #endif
  
             // Write the style sheet to use 
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Print.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+            Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Print.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
         }
 
         /// <summary> Gets the collection of special behaviors which this subwriter

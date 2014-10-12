@@ -16,7 +16,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
 
             // Run OCR for any TIFF files that do not have any corresponding TXT files
-            if (SobekCM_Library_Settings.OCR_Command_Prompt.Length > 0)
+            if (InstanceWide_Settings_Singleton.Settings.OCR_Command_Prompt.Length > 0)
             {
                 string[] ocr_tiff_files = Directory.GetFiles(resourceFolder, "*.tif");
                 foreach (string thisTiffFile in ocr_tiff_files)
@@ -27,7 +27,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     {
                         try
                         {
-                            string command = String.Format(SobekCM_Library_Settings.OCR_Command_Prompt, thisTiffFile, text_file);
+                            string command = String.Format(InstanceWide_Settings_Singleton.Settings.OCR_Command_Prompt, thisTiffFile, text_file);
                             Process ocrProcess = new Process { StartInfo = { FileName = command } };
                             ocrProcess.Start();
                             ocrProcess.WaitForExit();

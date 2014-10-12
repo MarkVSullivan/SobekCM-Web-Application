@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
@@ -42,7 +43,7 @@ namespace SobekCM
 					Application_State_Builder.Build_Application_State(tracer, false, ref Global.Skins, ref Global.Translation,
 					                                                  ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
 					                                                  ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-					                                                  ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority, ref Global.User_Groups);
+                                                                      ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority, ref Global.User_Groups, ref Global.Search_Stop_Words);
 
 					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Application State validated or built");
 
@@ -57,7 +58,7 @@ namespace SobekCM
 					{
 						// Create an error message 
 						string errorMessage;
-						if ((SobekCM_Library_Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(SobekCM_Library_Settings.Database_Connections[0].Connection_String)))
+						if ((InstanceWide_Settings_Singleton.Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String)))
 						{
 							errorMessage = "No database connection string found!";
 							string configFileLocation = AppDomain.CurrentDomain.BaseDirectory + "config/sobekcm.xml";
@@ -83,7 +84,7 @@ namespace SobekCM
 							}
 							else
 							{
-								errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + SobekCM_Library_Settings.Database_Connections[0].Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
+								errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
 							}
 						}
 						// Wrap this into the SobekCM Exception
@@ -143,7 +144,7 @@ namespace SobekCM
 					if ((!String.IsNullOrEmpty(bibID)) && (!String.IsNullOrEmpty(vid)))
 					{
 						// Determine the new URL
-						StringBuilder urlBuilder = new StringBuilder(SobekCM_Library_Settings.Image_Server_Network + bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8) + "\\" + vid + "\\" + url_relative_list[4], 250);
+						StringBuilder urlBuilder = new StringBuilder(InstanceWide_Settings_Singleton.Settings.Image_Server_Network + bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8) + "\\" + vid + "\\" + url_relative_list[4], 250);
 						for (int i = 5; i < url_relative_list.Count; i++)
 						{
 							urlBuilder.Append("\\" + url_relative_list[i]);
@@ -198,7 +199,7 @@ namespace SobekCM
 									// Should this be forwarded for this mimetype?
 									if (mimeType.shouldForward)
 									{
-										StringBuilder forwardBuilder = new StringBuilder(SobekCM_Library_Settings.Image_URL + bibID.Substring(0, 2) + "/" + bibID.Substring(2, 2) + "/" + bibID.Substring(4, 2) + "/" + bibID.Substring(6, 2) + "/" + bibID.Substring(8) + "/" + vid + "/" + url_relative_list[4], 250);
+										StringBuilder forwardBuilder = new StringBuilder(InstanceWide_Settings_Singleton.Settings.Image_URL + bibID.Substring(0, 2) + "/" + bibID.Substring(2, 2) + "/" + bibID.Substring(4, 2) + "/" + bibID.Substring(6, 2) + "/" + bibID.Substring(8) + "/" + vid + "/" + url_relative_list[4], 250);
 										for (int i = 5; i < url_relative_list.Count; i++)
 										{
 											forwardBuilder.Append("/" + url_relative_list[i]);

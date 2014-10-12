@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.UI.WebControls;
 using System.Xml;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
 using SobekCM.Library.Navigation;
@@ -30,7 +31,7 @@ namespace SobekCM.Library.MainWriters
         private readonly DataTable oaiSets;
         private readonly NameValueCollection queryString;
         private readonly string root;
-        private readonly string url = SobekCM_Library_Settings.System_Base_URL;
+        private readonly string url = InstanceWide_Settings_Singleton.Settings.System_Base_URL;
         private readonly List<string> validArgs;
 
         private const int RECORDS_PER_PAGE = 100;
@@ -63,7 +64,7 @@ namespace SobekCM.Library.MainWriters
 
             itemLookupObj = All_Items_Lookup;
 
-            root = SobekCM_Library_Settings.Base_Data_Directory;
+            root = InstanceWide_Settings_Singleton.Settings.Base_Data_Directory;
         }
 
         /// <summary> Gets the enumeration of the type of main writer </summary>
@@ -319,8 +320,8 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("<setName>" + thisRow["Name"].ToString().Replace("&","&amp;").Replace("\"", "&quot;") + "</setName>");
                 Output.WriteLine("<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">");
                 Output.WriteLine("\t<dc:title>" + thisRow["Name"].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</dc:title> ");
-                Output.WriteLine("\t<dc:identifier>" + SobekCM_Library_Settings.OAI_Resource_Identifier_Base + ":" + thisRow["Code"].ToString().ToLower() + "</dc:identifier>");
-                Output.WriteLine("\t<dc:identifier>" + SobekCM_Library_Settings.System_Base_URL + "?a=" + thisRow["Code"].ToString().ToLower() + "</dc:identifier>");
+                Output.WriteLine("\t<dc:identifier>" + InstanceWide_Settings_Singleton.Settings.OAI_Resource_Identifier_Base + ":" + thisRow["Code"].ToString().ToLower() + "</dc:identifier>");
+                Output.WriteLine("\t<dc:identifier>" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "?a=" + thisRow["Code"].ToString().ToLower() + "</dc:identifier>");
                 if ( thisRow["Description"].ToString().Length > 0 )
                     Output.WriteLine("\t<dc:description>" + thisRow["Description"].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</dc:description>");
                 if (thisRow["OAI_Metadata"].ToString().Length > 0)
@@ -373,7 +374,7 @@ namespace SobekCM.Library.MainWriters
                 try
                 {
                     string page_string = resumptionToken.Substring(0, 10);
-                    string set_name = resumptionToken.Substring(10 + SobekCM_Library_Settings.OAI_Repository_Identifier.Length);
+                    string set_name = resumptionToken.Substring(10 + InstanceWide_Settings_Singleton.Settings.OAI_Repository_Identifier.Length);
                     int i = 0;
                     foreach (char thisChar in set_name)
                     {
@@ -493,9 +494,9 @@ namespace SobekCM.Library.MainWriters
             // Step through each record
             foreach (OAI_Record thisRecord in records)
             {
-                Output.Write("<record><header><identifier>" + SobekCM_Library_Settings.OAI_Resource_Identifier_Base + thisRecord.BibID + "</identifier><datestamp>" + thisRecord.Last_Modified_Date.Year + "-" + thisRecord.Last_Modified_Date.Month.ToString().PadLeft(2, '0') + "-" + thisRecord.Last_Modified_Date.Day.ToString().PadLeft(2, '0') + "</datestamp>");
+                Output.Write("<record><header><identifier>" + InstanceWide_Settings_Singleton.Settings.OAI_Resource_Identifier_Base + thisRecord.BibID + "</identifier><datestamp>" + thisRecord.Last_Modified_Date.Year + "-" + thisRecord.Last_Modified_Date.Month.ToString().PadLeft(2, '0') + "-" + thisRecord.Last_Modified_Date.Day.ToString().PadLeft(2, '0') + "</datestamp>");
                 if (set_code.Length > 0)
-                    Output.Write("<setSpec>" + SobekCM_Library_Settings.OAI_Resource_Identifier_Base + set_code + "</setSpec>");
+                    Output.Write("<setSpec>" + InstanceWide_Settings_Singleton.Settings.OAI_Resource_Identifier_Base + set_code + "</setSpec>");
                 Output.Write("</header>");
                 if (!headers_only)
                 {
@@ -512,7 +513,7 @@ namespace SobekCM.Library.MainWriters
             {
                 DateTime expDate = DateTime.Now.AddDays(1).ToUniversalTime();
                 string expirationDateString = expDate.Year + "-" + expDate.Month.ToString().PadLeft(2, '0') + "-" + expDate.Day.ToString().PadLeft(2, '0') + "T" + expDate.Hour.ToString().PadLeft(2, '0') + ":" + expDate.Minute.ToString().PadLeft(2, '0') + ":00Z";
-                Output.WriteLine("<resumptionToken expirationDate=\"" + expirationDateString + "\">" + (Current_Page + 1).ToString().PadLeft(10, '0') + SobekCM_Library_Settings.OAI_Repository_Identifier + set_code +  from.Year + from.Month.ToString().PadLeft(2,'0') + from.Day.ToString().PadLeft(2,'0') + until.Year + until.Month.ToString().PadLeft(2,'0') + until.Day.ToString().PadLeft(2,'0') + "</resumptionToken>");
+                Output.WriteLine("<resumptionToken expirationDate=\"" + expirationDateString + "\">" + (Current_Page + 1).ToString().PadLeft(10, '0') + InstanceWide_Settings_Singleton.Settings.OAI_Repository_Identifier + set_code +  from.Year + from.Month.ToString().PadLeft(2,'0') + from.Day.ToString().PadLeft(2,'0') + until.Year + until.Month.ToString().PadLeft(2,'0') + until.Day.ToString().PadLeft(2,'0') + "</resumptionToken>");
             }
 
             // Write the response
@@ -557,7 +558,7 @@ namespace SobekCM.Library.MainWriters
                 try
                 {
                     string page_string = resumptionToken.Substring(0, 10);
-                    string set_name = resumptionToken.Substring(10 + SobekCM_Library_Settings.OAI_Repository_Identifier.Length);
+                    string set_name = resumptionToken.Substring(10 + InstanceWide_Settings_Singleton.Settings.OAI_Repository_Identifier.Length);
                     int i = 0;
                     foreach (char thisChar in set_name)
                     {
@@ -657,19 +658,19 @@ namespace SobekCM.Library.MainWriters
             Output.WriteLine("<responseDate>" + date_in_utc(DateTime.Now) + "</responseDate>");
             Output.WriteLine("<request verb=\"Identify\">" + url + "</request>");
             Output.WriteLine("<Identify>");
-            Output.WriteLine("<repositoryName>" + SobekCM_Library_Settings.OAI_Repository_Name + "</repositoryName>");
+            Output.WriteLine("<repositoryName>" + InstanceWide_Settings_Singleton.Settings.OAI_Repository_Name + "</repositoryName>");
             Output.WriteLine("\t<baseURL>" + url + "</baseURL>");
             Output.WriteLine("\t<protocolVersion>2.0</protocolVersion>");
-            Output.WriteLine("\t<adminEmail>" + SobekCM_Library_Settings.System_Email + "</adminEmail>");
+            Output.WriteLine("\t<adminEmail>" + InstanceWide_Settings_Singleton.Settings.System_Email + "</adminEmail>");
             Output.WriteLine("\t<earliestDatestamp>2005-12-15</earliestDatestamp>");
             Output.WriteLine("\t<deletedRecord>transient</deletedRecord>");
             Output.WriteLine("\t<granularity>YYYY-MM-DD</granularity>");
             Output.WriteLine("<description>");
             Output.WriteLine("\t<oai-identifier xmlns=\"http://www.openarchives.org/OAI/2.0/oai-identifier\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai-identifier http://www.openarchives.org/OAI/2.0/oai-identifier.xsd\">");
             Output.WriteLine("\t\t<scheme>oai</scheme>");
-            Output.WriteLine("\t\t<repositoryIdentifier>" + SobekCM_Library_Settings.OAI_Repository_Identifier + "</repositoryIdentifier>");
+            Output.WriteLine("\t\t<repositoryIdentifier>" + InstanceWide_Settings_Singleton.Settings.OAI_Repository_Identifier + "</repositoryIdentifier>");
             Output.WriteLine("\t\t<delimiter>:</delimiter>");
-            Output.WriteLine("\t\t<sampleIdentifier>" + SobekCM_Library_Settings.OAI_Resource_Identifier_Base + "AB12345678</sampleIdentifier>");
+            Output.WriteLine("\t\t<sampleIdentifier>" + InstanceWide_Settings_Singleton.Settings.OAI_Resource_Identifier_Base + "AB12345678</sampleIdentifier>");
             Output.WriteLine("\t</oai-identifier>");
             Output.WriteLine("</description>");
             Output.WriteLine("</Identify>");
@@ -695,14 +696,14 @@ namespace SobekCM.Library.MainWriters
 
             // Ensure the identifier is in basic correct form
             OAI_Record thisTitle = null;
-            if (identifier.IndexOf( SobekCM_Library_Settings.OAI_Resource_Identifier_Base ) != 0)
+            if (identifier.IndexOf( InstanceWide_Settings_Singleton.Settings.OAI_Resource_Identifier_Base ) != 0)
             {
                 valid = false;
             }
             else
             {
                 // Get the bib id and vid
-                string bibid = identifier.Substring(SobekCM_Library_Settings.OAI_Resource_Identifier_Base.Length);
+                string bibid = identifier.Substring(InstanceWide_Settings_Singleton.Settings.OAI_Resource_Identifier_Base.Length);
                 if (bibid.Length != 10)
                     valid = false;
                 else
@@ -727,7 +728,7 @@ namespace SobekCM.Library.MainWriters
             Output.WriteLine("<request identifier=\"" + identifier + "\" metadataPrefix=\"" + metadata_prefix + "\" verb=\"GetRecord\">" + url + "</request>");
             Output.WriteLine("<GetRecord>");
 
-            Output.Write("<record><header><identifier>" + SobekCM_Library_Settings.OAI_Resource_Identifier_Base + thisTitle.BibID + "</identifier><datestamp>" + thisTitle.Last_Modified_Date.Year + "-" + thisTitle.Last_Modified_Date.Month.ToString().PadLeft(2, '0') + "-" + thisTitle.Last_Modified_Date.Day.ToString().PadLeft(2, '0') + "</datestamp></header>");
+            Output.Write("<record><header><identifier>" + InstanceWide_Settings_Singleton.Settings.OAI_Resource_Identifier_Base + thisTitle.BibID + "</identifier><datestamp>" + thisTitle.Last_Modified_Date.Year + "-" + thisTitle.Last_Modified_Date.Month.ToString().PadLeft(2, '0') + "-" + thisTitle.Last_Modified_Date.Day.ToString().PadLeft(2, '0') + "</datestamp></header>");
             Output.WriteLine("<metadata><oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">" + thisTitle.Record + "</oai_dc:dc></metadata></record>");
 
             Output.WriteLine("</GetRecord>");

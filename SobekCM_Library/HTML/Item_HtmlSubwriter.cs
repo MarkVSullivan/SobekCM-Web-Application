@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
@@ -175,7 +177,7 @@ namespace SobekCM.Library.HTML
                 #endregion
 
                 // Is this a postback?
-                if (currentMode.isPostBack) 
+                if (Mode.isPostBack) 
                 {
                     // Handle any actions from standard user action (i.e., email, add to bookshelf, etc.. )
                     if (HttpContext.Current.Request.Form["item_action"] != null)
@@ -198,7 +200,7 @@ namespace SobekCM.Library.HTML
                                     cc_list = String.Empty;
 
                                 // Send the email
-                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, currentUser.Full_Name,currentMode.SobekCM_Instance_Abbreviation,currentItem,is_html_format,HttpContext.Current.Items["Original_URL"].ToString(), currentUser.UserID)
+                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, currentUser.Full_Name,Mode.SobekCM_Instance_Abbreviation,currentItem,is_html_format,HttpContext.Current.Items["Original_URL"].ToString(), currentUser.UserID)
                                     ? "Error encountered while sending email" : "Your email has been sent");
 
                                 HttpContext.Current.Response.Redirect( HttpContext.Current.Items["Original_URL"].ToString(), false);
@@ -349,32 +351,32 @@ namespace SobekCM.Library.HTML
             }
 
             // Set the code for bib level mets to show the volume tree by default
-            if ((currentItem.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL) && (currentMode.ViewerCode.Length == 0))
+            if ((currentItem.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL) && (Mode.ViewerCode.Length == 0))
             {
-                currentMode.ViewerCode = "allvolumes1";
+                Mode.ViewerCode = "allvolumes1";
             }
 
             // If there is a file name included, look for the sequence of that file
-            if (currentMode.Page_By_FileName.Length > 0)
+            if (Mode.Page_By_FileName.Length > 0)
             {
-                int page_sequence = currentItem.Divisions.Physical_Tree.Page_Sequence_By_FileName(currentMode.Page_By_FileName);
+                int page_sequence = currentItem.Divisions.Physical_Tree.Page_Sequence_By_FileName(Mode.Page_By_FileName);
                 if (page_sequence > 0)
                 {
-                    currentMode.ViewerCode = page_sequence.ToString();
-                    currentMode.Page = (ushort) page_sequence;
+                    Mode.ViewerCode = page_sequence.ToString();
+                    Mode.Page = (ushort) page_sequence;
                 }
             }
 
             // Get the valid viewer code
             Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Getting the appropriate item viewer");
 
-            if ((currentMode.ViewerCode.Length == 0) && (currentMode.Coordinates.Length > 0))
+            if ((Mode.ViewerCode.Length == 0) && (Mode.Coordinates.Length > 0))
             {
-                currentMode.ViewerCode = "map";
+                Mode.ViewerCode = "map";
             }
-            currentMode.ViewerCode = currentItem.Web.Get_Valid_Viewer_Code(currentMode.ViewerCode, currentMode.Page);
-            View_Object viewObject = currentItem.Web.Get_Viewer(currentMode.ViewerCode);
-            PageViewer = ItemViewer_Factory.Get_Viewer(viewObject, currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), currentItem, currentUser, currentMode);
+            Mode.ViewerCode = currentItem.Web.Get_Valid_Viewer_Code(Mode.ViewerCode, Mode.Page);
+            View_Object viewObject = currentItem.Web.Get_Viewer(Mode.ViewerCode);
+            PageViewer = ItemViewer_Factory.Get_Viewer(viewObject, currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), currentItem, currentUser, Mode);
 
             // If this was in fact restricted by IP address, restrict now
             if (itemRestrictedFromUserByIp)
@@ -384,12 +386,12 @@ namespace SobekCM.Library.HTML
                     (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Related_Images))
                 {
                     PageViewer = new Restricted_ItemViewer(Item_Restricted_Message);
-                    currentMode.ViewerCode = "res";
+                    Mode.ViewerCode = "res";
                 }
             }
 
             // If execution should end, do it now
-            if (currentMode.Request_Completed)
+            if (Mode.Request_Completed)
                 return;
 
             Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Created " + PageViewer.GetType().ToString().Replace("SobekCM.Library.ItemViewer.Viewers.", ""));
@@ -398,7 +400,7 @@ namespace SobekCM.Library.HTML
             if (PageViewer != null)
             {
                 PageViewer.CurrentItem = currentItem;
-                PageViewer.CurrentMode = currentMode; 
+                PageViewer.CurrentMode = Mode; 
                 PageViewer.Translator = Translator;
                 PageViewer.CurrentUser = currentUser;
 
@@ -482,7 +484,7 @@ namespace SobekCM.Library.HTML
             get
             {
                 // If this is for a fragment, do nothing
-                if (!String.IsNullOrEmpty(currentMode.Fragment))
+                if (!String.IsNullOrEmpty(Mode.Fragment))
                     return false;
 
                 if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar))
@@ -557,13 +559,13 @@ namespace SobekCM.Library.HTML
                 string table_of_contents = "TABLE OF CONTENTS";
                 string hide_toc = "HIDE TABLE OF CONTENTS";
 
-                if (currentMode.Language == Web_Language_Enum.French)
+                if (Mode.Language == Web_Language_Enum.French)
                 {
                     table_of_contents = "TABLE DES MATIERES";
                     hide_toc = "MASQUER L'INDEX";
                 }
 
-                if (currentMode.Language == Web_Language_Enum.Spanish)
+                if (Mode.Language == Web_Language_Enum.Spanish)
                 {
                     table_of_contents = "INDICE";
                     hide_toc = "ESCONDA INDICE";
@@ -571,7 +573,7 @@ namespace SobekCM.Library.HTML
 
                 // Add the HTML to start this menu section
                 Literal menuStartLiteral = new Literal();
-                string redirect_url = currentMode.Redirect_URL().Replace("&","&amp;");
+                string redirect_url = Mode.Redirect_URL().Replace("&","&amp;");
                 if (redirect_url.IndexOf("?") < 0)
                     redirect_url = redirect_url + "?toc=n";
                 else
@@ -579,8 +581,8 @@ namespace SobekCM.Library.HTML
 
                 
                 menuStartLiteral.Text = string.Format("        <div class=\"sbkIsw_ShowTocRow\">" + Environment.NewLine +
-                    "          <a href=\"{1}\"><div class=\"sbkIsw_UpToc\">{4}<img src=\"" + currentMode.Base_URL + "default/images/button_up_arrow.png\" alt=\"\" /></div></a>" + Environment.NewLine + 
-                    "        </div>", table_of_contents, redirect_url, currentMode.Base_URL, htmlSkin.Base_Skin_Code, hide_toc);
+                    "          <a href=\"{1}\"><div class=\"sbkIsw_UpToc\">{4}<img src=\"" + Mode.Base_URL + "default/images/button_up_arrow.png\" alt=\"\" /></div></a>" + Environment.NewLine + 
+                    "        </div>", table_of_contents, redirect_url, Mode.Base_URL, Skin.Base_Skin_Code, hide_toc);
                 TocPlaceHolder.Controls.Add(menuStartLiteral);
 
                 // Create the treeview
@@ -609,18 +611,18 @@ namespace SobekCM.Library.HTML
                 string currentNodeID = treeView1.SelectedNode.Value;
                 if ((currentNodeID.Length > 0) && (Convert.ToInt32(currentNodeID) > 0))
                 {
-                    currentMode.Page = Convert.ToUInt16(currentNodeID);
-                    currentMode.ViewerCode = currentNodeID;
+                    Mode.Page = Convert.ToUInt16(currentNodeID);
+                    Mode.ViewerCode = currentNodeID;
                 }
                 else
                 {
-                    currentMode.Page = 0;
-                    currentMode.ViewerCode = "1";
+                    Mode.Page = 0;
+                    Mode.ViewerCode = "1";
                 }
 
                 // Redirect
                 if (HttpContext.Current != null)
-                    currentMode.Redirect();
+                    Mode.Redirect();
             }
         }
 
@@ -632,10 +634,10 @@ namespace SobekCM.Library.HTML
         public override void Write_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
         {
             // If this is for a fragment, do nothing
-            if (!String.IsNullOrEmpty(currentMode.Fragment))
+            if (!String.IsNullOrEmpty(Mode.Fragment))
                 return;
 
-            string currentViewerCode = currentMode.ViewerCode;
+            string currentViewerCode = Mode.ViewerCode;
 
             Output.WriteLine("  <table id=\"sbk_InternalHeader\">");
             Output.WriteLine("    <tr style=\"height:30px;\">");
@@ -648,7 +650,7 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                Output.WriteLine("      <td style=\"text-align:center;\"><h2><a href=\"" + currentMode.Base_URL + currentItem.BibID + "/00000\">" + currentItem.BibID + "</a> : " + currentItem.VID + "</h2></td>");
+                Output.WriteLine("      <td style=\"text-align:center;\"><h2><a href=\"" + Mode.Base_URL + currentItem.BibID + "/00000\">" + currentItem.BibID + "</a> : " + currentItem.VID + "</h2></td>");
             }
 
             Write_Internal_Header_Search_Box(Output);
@@ -664,41 +666,41 @@ namespace SobekCM.Library.HTML
                 if (userCanEditItem)
                 {
                     // Add ability to edit metadata for this item
-                    currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
-                    currentMode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("          <button title=\"Edit Metadata\" class=\"sbkIsw_intheader_button edit_metadata_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+                    Mode.My_Sobek_SubMode = "1";
+                    Output.WriteLine("          <button title=\"Edit Metadata\" class=\"sbkIsw_intheader_button edit_metadata_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
 
                     // Add ability to edit behaviors for this item
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
-                    currentMode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
-                    currentMode.Mode = Display_Mode_Enum.Item_Display;
+                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
+                    Mode.My_Sobek_SubMode = "1";
+                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                    Mode.Mode = Display_Mode_Enum.Item_Display;
 
 
                     // Add ability to edit behaviors for this item
                     if (currentItem.Web.Static_PageCount == 0)
                     {
-                        currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                        currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
-                        currentMode.Mode = Display_Mode_Enum.Item_Display;
+                        Mode.Mode = Display_Mode_Enum.My_Sobek;
+                        Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                        Mode.Mode = Display_Mode_Enum.Item_Display;
                     }
                     else
                     {
-                        currentMode.ViewerCode = "qc";
-                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                        Mode.ViewerCode = "qc";
+                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
 					}
 
                     // Get ready to send to item permissions
-                    currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
-                    currentMode.My_Sobek_SubMode = "1";
+                    Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
+                    Mode.My_Sobek_SubMode = "1";
 
                     // Check if this item is DARK first
                     if (currentItem.Behaviors.Dark_Flag)
                     {
-                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
                     }
                     else
                     {
@@ -709,19 +711,19 @@ namespace SobekCM.Library.HTML
                             {
                                 allow_access_change = true;
                                 Output.WriteLine(currentItem.Behaviors.IP_Restriction_Membership == 0
-                                                     ? "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button public_resource_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>"
-                                                     : "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button restricted_resource_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                                                     ? "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button public_resource_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>"
+                                                     : "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button restricted_resource_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
                             }
                             else
                             {
                                 Output.WriteLine(currentItem.Behaviors.IP_Restriction_Membership == 0
-                                                     ? "          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>"
-                                                     : "          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                                                     ? "          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>"
+                                                     : "          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
                             }
                         }
                         else
                         {
-                            Output.WriteLine("          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button private_resource_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                            Output.WriteLine("          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button private_resource_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
                         }
                     }
                 }
@@ -730,7 +732,7 @@ namespace SobekCM.Library.HTML
                     // Check if this item is DARK first
                     if (currentItem.Behaviors.Dark_Flag)
                     {
-                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
                     }
                     else
                     {
@@ -750,22 +752,22 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                currentMode.Mode = Display_Mode_Enum.Item_Display;
-                currentMode.ViewerCode = "tracking";
-                Output.WriteLine("          <button title=\"View Work Log\" class=\"sbkIsw_intheader_button view_worklog_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
-                currentMode.ViewerCode = currentViewerCode;
+                Mode.Mode = Display_Mode_Enum.Item_Display;
+                Mode.ViewerCode = "tracking";
+                Output.WriteLine("          <button title=\"View Work Log\" class=\"sbkIsw_intheader_button view_worklog_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                Mode.ViewerCode = currentViewerCode;
 
                 // Add ability to edit behaviors for this item
                 if (userCanEditItem)
                 {
-                    currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
-                    Output.WriteLine("          <button title=\"Manage Files\" class=\"sbkIsw_intheader_button manage_files_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
-                    currentMode.Mode = Display_Mode_Enum.Item_Display;
+                    Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+                    Output.WriteLine("          <button title=\"Manage Files\" class=\"sbkIsw_intheader_button manage_files_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                    Mode.Mode = Display_Mode_Enum.Item_Display;
                 }
 
                 // Add the HELP icon next
-				Output.WriteLine("<span id=\"sbk_InternalHeader_Help\"><a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/itemheader\" title=\"Help regarding this header\"><img src=\"" + currentMode.Base_URL + "default/images/help_button_darkgray.jpg\" alt=\"?\" title=\"Help regarding this header\" /></a></span>");
+				Output.WriteLine("<span id=\"sbk_InternalHeader_Help\"><a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(Mode.Base_URL) + "help/itemheader\" title=\"Help regarding this header\"><img src=\"" + Mode.Base_URL + "default/images/help_button_darkgray.jpg\" alt=\"?\" title=\"Help regarding this header\" /></a></span>");
 
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
@@ -822,26 +824,26 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;vertical-align:middle;\">");
 
                     // Add ability to edit behaviors for this item group
-                    currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
-                    currentMode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
+                    Mode.My_Sobek_SubMode = "1";
+                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
 
                     // Add ability to add a new item/volume to this title
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
-                    Output.WriteLine("          <button title=\"Add Volume\" class=\"sbkIsw_intheader_button add_volume_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
+                    Output.WriteLine("          <button title=\"Add Volume\" class=\"sbkIsw_intheader_button add_volume_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
 
                     // Add ability to auto-fill a number of new items/volumes to this title
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_AutoFill_Volumes;
-                    Output.WriteLine("          <button title=\"Auto-Fill Volumes\" class=\"sbkIsw_intheader_button autofill_volumes_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_AutoFill_Volumes;
+                    Output.WriteLine("          <button title=\"Auto-Fill Volumes\" class=\"sbkIsw_intheader_button autofill_volumes_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
 
                     // Add ability to edit the serial hierarchy online
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy;
-                    Output.WriteLine("          <button title=\"Edit Serial Hierarchy\" class=\"sbkIsw_intheader_button serial_hierarchy_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy;
+                    Output.WriteLine("          <button title=\"Edit Serial Hierarchy\" class=\"sbkIsw_intheader_button serial_hierarchy_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
 
                     // Add ability to mass update the items behaviors under this title
-                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
-                    Output.WriteLine("          <button title=\"Mass Update Volumes\" class=\"sbkIsw_intheader_button mass_update_button\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"></button>");
+                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
+                    Output.WriteLine("          <button title=\"Mass Update Volumes\" class=\"sbkIsw_intheader_button mass_update_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
 
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
@@ -851,8 +853,8 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("  </table>");
 
-            currentMode.Mode = Display_Mode_Enum.Item_Display;
-            currentMode.ViewerCode = currentViewerCode;
+            Mode.Mode = Display_Mode_Enum.Item_Display;
+            Mode.ViewerCode = currentViewerCode;
         }
 
         //public void Set_Text_Language(Application_State.Language_Enum Language)
@@ -913,7 +915,7 @@ namespace SobekCM.Library.HTML
 
 
 		    // If this is for a fragment, do nothing
-		    if (!String.IsNullOrEmpty(currentMode.Fragment))
+		    if (!String.IsNullOrEmpty(Mode.Fragment))
 			    return false;
 
 
@@ -975,7 +977,7 @@ namespace SobekCM.Library.HTML
 	                    bool newspaper = currentItem.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
 
 						// Does a custom setting override the default behavior to add a date?
-						if ((newspaper) && (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (SobekCM_Library_Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
+						if ((newspaper) && (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (InstanceWide_Settings_Singleton.Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
 			                newspaper = false;
 
 						// Add the date if it should be added
@@ -1017,10 +1019,10 @@ namespace SobekCM.Library.HTML
 
 
 	                        // Determine the type of link
-	                        string type = translations.Get_Translation("Related Link", currentMode.Language);
+	                        string type = translations.Get_Translation("Related Link", Mode.Language);
 	                        if (currentItem.Bib_Info.Location.Other_URL_Display_Label.Length > 0)
 	                        {
-	                            type = translations.Get_Translation(currentItem.Bib_Info.Location.Other_URL_Display_Label, currentMode.Language);
+	                            type = translations.Get_Translation(currentItem.Bib_Info.Location.Other_URL_Display_Label, Mode.Language);
 	                        }
 
 
@@ -1047,7 +1049,7 @@ namespace SobekCM.Library.HTML
 	                    {
 	                        if (thisIdentifier.Type.ToUpper().IndexOf("ACCESSION") >= 0)
 	                        {
-	                            Output.WriteLine("\t" + translations.Get_Translation("Accession number", currentMode.Language) + " " + thisIdentifier.Identifier + "<br />");
+	                            Output.WriteLine("\t" + translations.Get_Translation("Accession number", Mode.Language) + " " + thisIdentifier.Identifier + "<br />");
 	                            break;
 	                        }
 	                    }
@@ -1072,7 +1074,7 @@ namespace SobekCM.Library.HTML
 
 
 			    // Add the sharing buttons if this is not restricted by IP address or checked out
-			    if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!currentMode.Is_Robot))
+			    if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!Mode.Is_Robot))
 			    {
 					string add_text = "Add";
 					string remove_text = "Remove";
@@ -1091,11 +1093,11 @@ namespace SobekCM.Library.HTML
 
 					if (currentItem.Web.ItemID > 0)
 					{
-						Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
+						Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open();\"><img src=\"" + Mode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
 					}
 					else
 					{
-						Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.print();return false;\"><img src=\"" + currentMode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
+						Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.print();return false;\"><img src=\"" + Mode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
 					}
 
 
@@ -1115,29 +1117,29 @@ namespace SobekCM.Library.HTML
 
 				    if ((currentUser != null))
 				    {
-						Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
+						Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + Mode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
 
 
 					    if (currentItem.Web.ItemID > 0)
 					    {
 						    if (currentUser.Is_In_Bookshelf(currentItem.BibID, currentItem.VID))
 						    {
-							    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"return remove_item_itemviewer();\"><img src=\"" + currentMode.Base_URL + "default/images/minussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + remove_text + "</span></span>");
+							    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"return remove_item_itemviewer();\"><img src=\"" + Mode.Base_URL + "default/images/minussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + remove_text + "</span></span>");
 						    }
 						    else
 						    {
-							    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();\"><img src=\"" + currentMode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
+							    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();\"><img src=\"" + Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
 						    }
 					    }
 				    }
 				    else
 				    {
 
-						Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
+						Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + Mode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
 
 
 					    if (currentItem.Web.ItemID > 0)
-						    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + currentMode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
+						    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
 
 				    }
 
@@ -1153,21 +1155,21 @@ namespace SobekCM.Library.HTML
 
 
 			    // Save the current view type
-			    ushort page = currentMode.Page;
-			    ushort subpage = currentMode.SubPage;
-			    string viewerCode = currentMode.ViewerCode;
-			    currentMode.SubPage = 0;
+			    ushort page = Mode.Page;
+			    ushort subpage = Mode.SubPage;
+			    string viewerCode = Mode.ViewerCode;
+			    Mode.SubPage = 0;
 
 				// Add any PRE-MENU instance options
 				string first_pre_menu_option = String.Empty;
 				string second_pre_menu_option = String.Empty;
 				string third_pre_menu_option = String.Empty;
-				if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Static First Menu Item"))
-					first_pre_menu_option = SobekCM_Library_Settings.Additional_Settings["Item Viewer.Static First Menu Item"];
-				if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Static Second Menu Item"))
-					second_pre_menu_option = SobekCM_Library_Settings.Additional_Settings["Item Viewer.Static Second Menu Item"];
-				if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Item Viewer.Static Third Menu Item"))
-					third_pre_menu_option = SobekCM_Library_Settings.Additional_Settings["Item Viewer.Static Third Menu Item"];
+				if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Item Viewer.Static First Menu Item"))
+					first_pre_menu_option = InstanceWide_Settings_Singleton.Settings.Additional_Settings["Item Viewer.Static First Menu Item"];
+				if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Item Viewer.Static Second Menu Item"))
+					second_pre_menu_option = InstanceWide_Settings_Singleton.Settings.Additional_Settings["Item Viewer.Static Second Menu Item"];
+				if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Item Viewer.Static Third Menu Item"))
+					third_pre_menu_option = InstanceWide_Settings_Singleton.Settings.Additional_Settings["Item Viewer.Static Third Menu Item"];
 				if ((first_pre_menu_option.Length > 0) || (second_pre_menu_option.Length > 0) || ( third_pre_menu_option.Length > 0 ))
 				{
 					if (first_pre_menu_option.Length > 0)
@@ -1206,48 +1208,48 @@ namespace SobekCM.Library.HTML
 					    // Special code for the CITATION view (TEMPORARY - v.3.2)
 					    if (thisView.View_Type == View_Enum.CITATION)
 					    {
-						    if (currentMode.Is_Robot)
+						    if (Mode.Is_Robot)
 						    {
 								Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"\">Description</a></li>");
 						    }
 						    else
 						    {
-							    currentMode.ViewerCode = "citation";
+							    Mode.ViewerCode = "citation";
 							    if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
-								    currentMode.ViewerCode = "description";
+								    Mode.ViewerCode = "description";
 							    if ((viewerCode == "citation") || (viewerCode == "marc") || (viewerCode == "metadata") ||
 							        (viewerCode == "usage") || (viewerCode == "description"))
 							    {
-								    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + currentMode.Redirect_URL() + "\">Description</a>");
+								    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + Mode.Redirect_URL() + "\">Description</a>");
 							    }
 							    else
 							    {
-								    Output.Write("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Description</a>");
+								    Output.Write("\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Description</a>");
 							    }
 							    Output.WriteLine("<ul>");
 
 
 							    if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
-								    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Archival Description</a></li>");
+								    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Archival Description</a></li>");
 							    else
-								    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Standard View</a></li>");
+								    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Standard View</a></li>");
 
 
 
-							    currentMode.ViewerCode = "marc";
-							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">MARC View</a></li>");
+							    Mode.ViewerCode = "marc";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">MARC View</a></li>");
 
 
-							    currentMode.ViewerCode = "metadata";
-							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Metadata</a></li>");
+							    Mode.ViewerCode = "metadata";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Metadata</a></li>");
 
 
-							    currentMode.ViewerCode = "usage";
-							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Usage Statistics</a></li>");
+							    Mode.ViewerCode = "usage";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Usage Statistics</a></li>");
 
 
 							    Output.WriteLine("\t\t</ul></li>");
-							    currentMode.ViewerCode = viewerCode;
+							    Mode.ViewerCode = viewerCode;
 						    }
 					    }
 					    else if (thisView.View_Type == View_Enum.ALL_VOLUMES)
@@ -1267,48 +1269,48 @@ namespace SobekCM.Library.HTML
 								all_volumes = "Related Flights";
 							}
 
-						    if (currentMode.Is_Robot)
+						    if (Mode.Is_Robot)
 						    {
-								Output.Write("\t\t<li><a href=\"" + SobekCM_Library_Settings.Base_URL + "\\" + currentItem.BibID + "\">" + all_volumes + "</a></li>");
+								Output.Write("\t\t<li><a href=\"" + InstanceWide_Settings_Singleton.Settings.Base_URL + "\\" + currentItem.BibID + "\">" + all_volumes + "</a></li>");
 						    }
 						    else
 						    {
 
-							    currentMode.ViewerCode = "allvolumes";
+							    Mode.ViewerCode = "allvolumes";
 							    if ((viewerCode == "allvolumes") || (viewerCode == "allvolumes2") ||
 							        (viewerCode == "allvolumes3"))
 							    {
-								    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + currentMode.Redirect_URL() + "\">" + all_volumes + "</a>");
+								    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + Mode.Redirect_URL() + "\">" + all_volumes + "</a>");
 							    }
 							    else
 							    {
-								    Output.Write("\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">" + all_volumes + "</a>");
+								    Output.Write("\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">" + all_volumes + "</a>");
 							    }
 							    Output.WriteLine("<ul>");
 
 
-							    currentMode.ViewerCode = "allvolumes";
-							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Tree View</a></li>");
+							    Mode.ViewerCode = "allvolumes";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Tree View</a></li>");
 
 
-							    currentMode.ViewerCode = "allvolumes2";
-							    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Thumbnails</a></li>");
+							    Mode.ViewerCode = "allvolumes2";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Thumbnails</a></li>");
 
 
-							    if (currentMode.Internal_User)
+							    if (Mode.Internal_User)
 							    {
-								    currentMode.ViewerCode = "allvolumes3";
-								    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">List View</a></li>");
+								    Mode.ViewerCode = "allvolumes3";
+								    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">List View</a></li>");
 							    }
 
 
 							    Output.WriteLine("\t\t</ul></li>");
-							    currentMode.ViewerCode = viewerCode;
+							    Mode.ViewerCode = viewerCode;
 						    }
 					    }
 					    else
 					    {
-						    List<string> item_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisView, currentItem.Bib_Info.SobekCM_Type_String, htmlSkin.Base_Skin_Code, currentMode, -1, translations, showZoomable, currentItem);
+						    List<string> item_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisView, currentItem.Bib_Info.SobekCM_Type_String, Skin.Base_Skin_Code, Mode, -1, translations, showZoomable, currentItem);
 
 
 						    // Add each nav bar link
@@ -1323,9 +1325,9 @@ namespace SobekCM.Library.HTML
 
 			    // If this is citation or index mode, the number may be an invalid page sequence
 			    if ((page <= 0) ||
-			        (currentMode.ViewerCode == View_Object.Viewer_Code_By_Type(View_Enum.RELATED_IMAGES)[0]))
+			        (Mode.ViewerCode == View_Object.Viewer_Code_By_Type(View_Enum.RELATED_IMAGES)[0]))
 			    {
-				    currentMode.Page = 1;
+				    Mode.Page = 1;
 			    }
 
 
@@ -1338,7 +1340,7 @@ namespace SobekCM.Library.HTML
 			    // Add each page display type
 			    if ((currentPage != null) && (!itemRestrictedFromUserByIp))
 			    {
-				    int page_seq = currentMode.Page;
+				    int page_seq = Mode.Page;
 				    string resourceType = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
 				    if (currentItem.Behaviors.Item_Level_Page_Views_Count > 0)
 				    {
@@ -1352,7 +1354,7 @@ namespace SobekCM.Library.HTML
 							    View_Object fileObject = thisFile.Get_Viewer();
 							    if ((fileObject != null) && (fileObject.View_Type == thisViewType))
 							    {
-								    pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisFile.Get_Viewer(), resourceType, htmlSkin.Base_Skin_Code, currentMode, page_seq, translations, showZoomable, currentItem));
+								    pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisFile.Get_Viewer(), resourceType, Skin.Base_Skin_Code, Mode, page_seq, translations, showZoomable, currentItem));
 							    }
 						    }
 					    }
@@ -1362,7 +1364,7 @@ namespace SobekCM.Library.HTML
 					    {
 						    string filename = currentPage.Files[0].File_Name_Sans_Extension + ".txt";
 						    SobekCM_File_Info newFile = new SobekCM_File_Info(filename);
-						    pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(newFile.Get_Viewer(), resourceType, htmlSkin.Base_Skin_Code, currentMode, page_seq, translations, showZoomable, currentItem));
+						    pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(newFile.Get_Viewer(), resourceType, Skin.Base_Skin_Code, Mode, page_seq, translations, showZoomable, currentItem));
 					    }
 
 					    // Only continue if there were views
@@ -1388,7 +1390,7 @@ namespace SobekCM.Library.HTML
 
 
 						    // Was this a match?
-						    if ((currentMode.ViewerCode == page_seq + "t") || (currentMode.ViewerCode == page_seq + "x") || (currentMode.ViewerCode == page_seq + "j"))
+						    if ((Mode.ViewerCode == page_seq + "t") || (Mode.ViewerCode == page_seq + "x") || (Mode.ViewerCode == page_seq + "j"))
 						    {
 							    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + link + "\">" + menu_title + "</a>");
 						    }
@@ -1413,7 +1415,7 @@ namespace SobekCM.Library.HTML
 
 			    if (itemRestrictedFromUserByIp)
 			    {
-				    List<string> restricted_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(new View_Object(View_Enum.RESTRICTED), currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), htmlSkin.Base_Skin_Code, currentMode, 0, translations, showZoomable, currentItem);
+				    List<string> restricted_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(new View_Object(View_Enum.RESTRICTED), currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), Skin.Base_Skin_Code, Mode, 0, translations, showZoomable, currentItem);
 				    Output.WriteLine("\t\t" + restricted_nav_bar_link[0] + "");
 			    }
 
@@ -1422,24 +1424,24 @@ namespace SobekCM.Library.HTML
 			    if (userCanEditItem)
 			    {
 					// Get the MANAGE URL (which is actually an item view)
-				    currentMode.ViewerCode = "manage";
-				    string manage_menu_url = currentMode.Redirect_URL();
+				    Mode.ViewerCode = "manage";
+				    string manage_menu_url = Mode.Redirect_URL();
 
 				    if (currentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
 				    {
 
 					    // Get all the mySObek URLs
-					    currentMode.Mode = Display_Mode_Enum.My_Sobek;
-					    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
-					    string edit_metadata_url = currentMode.Redirect_URL();
-					    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
-					    string edit_behaviors_url = currentMode.Redirect_URL();
-					    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-					    string page_images_url = currentMode.Redirect_URL();
-					    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
-					    string manage_downloads = currentMode.Redirect_URL();
+					    Mode.Mode = Display_Mode_Enum.My_Sobek;
+					    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+					    string edit_metadata_url = Mode.Redirect_URL();
+					    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
+					    string edit_behaviors_url = Mode.Redirect_URL();
+					    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+					    string page_images_url = Mode.Redirect_URL();
+					    Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+					    string manage_downloads = Mode.Redirect_URL();
 
-					    currentMode.Mode = Display_Mode_Enum.Item_Display;
+					    Mode.Mode = Display_Mode_Enum.Item_Display;
 
 
 					    Output.WriteLine("\t\t<li><a href=\"" + manage_menu_url + "\">Manage</a><ul>");
@@ -1452,30 +1454,30 @@ namespace SobekCM.Library.HTML
 						    Output.WriteLine("\t\t\t<li><a href=\"" + page_images_url + "\">Manage Pages and Divisions</a></li>");
 					    else
 					    {
-						    currentMode.ViewerCode = "qc";
-						    Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Manage Pages and Divisions</a></li>");
+						    Mode.ViewerCode = "qc";
+						    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Manage Pages and Divisions</a></li>");
 					    }
 
-					    currentMode.ViewerCode = "mapedit";
-						Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">Manage Geo-Spatial Data (beta)</a></li>");
+					    Mode.ViewerCode = "mapedit";
+						Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Manage Geo-Spatial Data (beta)</a></li>");
 
-						currentMode.ViewerCode = "ts";
-						Output.WriteLine("\t\t\t<li><a href=\"" + currentMode.Redirect_URL() + "\">View Tracking Sheet</a></li>");
+						Mode.ViewerCode = "ts";
+						Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">View Tracking Sheet</a></li>");
 
 					    Output.WriteLine("\t\t</ul></li>");
 				    }
 				    else
 				    {
 						// Get all the mySObek URLs
-						currentMode.Mode = Display_Mode_Enum.My_Sobek;
-						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
-						string edit_behaviors_url = currentMode.Redirect_URL();
-						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
-						string add_volume_url = currentMode.Redirect_URL();
-						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
-						string mass_update_url = currentMode.Redirect_URL();
+						Mode.Mode = Display_Mode_Enum.My_Sobek;
+						Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
+						string edit_behaviors_url = Mode.Redirect_URL();
+						Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
+						string add_volume_url = Mode.Redirect_URL();
+						Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
+						string mass_update_url = Mode.Redirect_URL();
 
-						currentMode.Mode = Display_Mode_Enum.Item_Display;
+						Mode.Mode = Display_Mode_Enum.Item_Display;
 
 
 						Output.WriteLine("\t\t<li><a href=\"" + manage_menu_url + "\">Manage</a><ul>");
@@ -1490,9 +1492,9 @@ namespace SobekCM.Library.HTML
 
 
 			    // Set current submode back
-			    currentMode.Page = page;
-			    currentMode.ViewerCode = viewerCode;
-			    currentMode.SubPage = subpage;
+			    Mode.Page = page;
+			    Mode.ViewerCode = viewerCode;
+			    Mode.SubPage = subpage;
 
 
 
@@ -1565,22 +1567,22 @@ namespace SobekCM.Library.HTML
                 {
                     string show_toc_text = "SHOW TABLE OF CONTENTS";
 
-                    if (currentMode.Language == Web_Language_Enum.French)
+                    if (Mode.Language == Web_Language_Enum.French)
                     {
                         show_toc_text = "VOIR L'INDEX";
                     }
-                    if (currentMode.Language == Web_Language_Enum.Spanish)
+                    if (Mode.Language == Web_Language_Enum.Spanish)
                     {
                         show_toc_text = "MOSTRAR INDICE";
                     }
 
                     Output.WriteLine("\t<div class=\"sbkIsw_ShowTocRow\">");
-                    string redirect_url = currentMode.Redirect_URL().Replace("&", "&amp;");
+                    string redirect_url = Mode.Redirect_URL().Replace("&", "&amp;");
                     if (redirect_url.IndexOf("?") < 0)
                         redirect_url = redirect_url + "?toc=y";
                     else
                         redirect_url = redirect_url + "&toc=y";
-                    Output.WriteLine("\t\t<div class=\"sbkIsw_DownTOC\"><a href=\"" + redirect_url + "\">" + show_toc_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_down_arrow.png\" alt=\"\" /></a></div>");
+                    Output.WriteLine("\t\t<div class=\"sbkIsw_DownTOC\"><a href=\"" + redirect_url + "\">" + show_toc_text + "<img src=\"" + Mode.Base_URL + "default/images/button_down_arrow.png\" alt=\"\" /></a></div>");
                     // Output.WriteLine("\t\t<a href=\"" + redirect_url + "\">" + show_toc_text + "<div class=\"downarrow\"></div></a>");
                     Output.WriteLine("\t</div>");
                 }
@@ -1599,7 +1601,7 @@ namespace SobekCM.Library.HTML
         public override void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             // If this is for a fragment, do nothing
-            if (!String.IsNullOrEmpty(currentMode.Fragment))
+            if (!String.IsNullOrEmpty(Mode.Fragment))
                 return;
 
             Tracer.Add_Trace("Item_HtmlSubwriter.Write_Additional_HTML", "Rendering HTML ( finish left navigation bar, begin main viewer section )");
@@ -1629,13 +1631,13 @@ namespace SobekCM.Library.HTML
                     {
                         // Determine the URL to use for most of these
                         string description_link = String.Empty;
-                        if (currentMode.ViewerCode != "description")
-                            description_link = currentMode.Redirect_URL("description");
+                        if (Mode.ViewerCode != "description")
+                            description_link = Mode.Redirect_URL("description");
 
                         // Add the TOC as a floating DIV
                         Output.WriteLine("      <div id=\"sbkEad_FloatingTOC\">");
                         Output.WriteLine("      <ul class=\"sbkEad_TocMenu\">");
-                        Output.WriteLine("        <li class=\"sbkEad_TocHeader\">TABLE OF CONTENTS &nbsp; <span style=\"color:#eeeeee\"><a href=\"#\" title=\"Return to the top of this document\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/up_arrow.gif\" /></a></span></li>");
+                        Output.WriteLine("        <li class=\"sbkEad_TocHeader\">TABLE OF CONTENTS &nbsp; <span style=\"color:#eeeeee\"><a href=\"#\" title=\"Return to the top of this document\"><img src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/buttons/up_arrow.gif\" /></a></span></li>");
 
                         foreach (EAD_TOC_Included_Section thisMatch in eadInfo.TOC_Included_Sections)
                         {
@@ -1645,7 +1647,7 @@ namespace SobekCM.Library.HTML
                         // Add the container list if there is one
                         if (eadInfo.Container_Hierarchy.Containers.Count > 0)
                         {
-                            Output.WriteLine("        <li><a href=\"" + currentMode.Redirect_URL("container") + "\">Container List</a></li>");
+                            Output.WriteLine("        <li><a href=\"" + Mode.Redirect_URL("container") + "\">Container List</a></li>");
                         }
 
                         Output.WriteLine("      </ul>");
@@ -1658,7 +1660,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("\t<div id=\"sbkIsw_Wordmarks\">");
 
                     // Compute the URL options which may be needed
-                    string url_options = currentMode.URL_Options();
+                    string url_options = Mode.URL_Options();
                     string urlOptions1 = String.Empty;
                     string urlOptions2 = String.Empty;
                     if (url_options.Length > 0)
@@ -1671,7 +1673,7 @@ namespace SobekCM.Library.HTML
                     {
                         foreach (Wordmark_Info thisIcon in currentItem.Behaviors.Wordmarks)
                         {
-                            Output.WriteLine("\t\t" + thisIcon.HTML.Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
+                            Output.WriteLine("\t\t" + thisIcon.HTML.Replace("<%BASEURL%>", Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
                         }
                     }
 
@@ -1756,7 +1758,7 @@ namespace SobekCM.Library.HTML
                         string next_page_text = "Next";
                         string last_page_text = "Last";
 
-                        if (currentMode.Language == Web_Language_Enum.Spanish)
+                        if (Mode.Language == Web_Language_Enum.Spanish)
                         {
                             go_to = "Ir a:";
                             first_page = "Primera Página";
@@ -1769,7 +1771,7 @@ namespace SobekCM.Library.HTML
                             last_page_text = "Último";
                         }
 
-                        if (currentMode.Language == Web_Language_Enum.French) 
+                        if (Mode.Language == Web_Language_Enum.French) 
                         {
                             go_to = "Aller à:";
                             first_page = "Première Page";
@@ -1793,8 +1795,8 @@ namespace SobekCM.Library.HTML
                         if ((PageViewer.Current_Page > 1) && ((firstButtonURL.Length > 0) || (prevButtonURL.Length > 0)))
                         {
                             buttonsHtmlBuilder.AppendLine("\t\t\t\t<span class=\"sbkIsw_LeftPaginationButtons\">");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + Mode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
                             buttonsHtmlBuilder.AppendLine("\t\t\t\t</span>");
                         }
                          
@@ -1806,8 +1808,8 @@ namespace SobekCM.Library.HTML
                         if ((PageViewer.Current_Page < PageViewer.PageCount) && ((lastButtonURL.Length > 0) || (nextButtonURL.Length > 0)))
                         {
                             buttonsHtmlBuilder.AppendLine("\t\t\t\t<span class=\"sbkIsw_RightPaginationButtons\">");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + Mode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                             buttonsHtmlBuilder.AppendLine("\t\t\t\t</span>");
                         }
 
@@ -1831,11 +1833,11 @@ namespace SobekCM.Library.HTML
                                     }
 
                                     Output.WriteLine("\t\t\t\t<span id=\"sbkIsw_GoToSpan\">" + go_to + "</span>");
-                                    string orig_viewercode = currentMode.ViewerCode;
-                                    string viewercode_only = currentMode.ViewerCode.Replace(currentMode.Page.ToString(), "");
-                                    currentMode.ViewerCode = "XX1234567890XX";
-                                    string url = currentMode.Redirect_URL();
-                                    currentMode.ViewerCode = orig_viewercode;
+                                    string orig_viewercode = Mode.ViewerCode;
+                                    string viewercode_only = Mode.ViewerCode.Replace(Mode.Page.ToString(), "");
+                                    Mode.ViewerCode = "XX1234567890XX";
+                                    string url = Mode.Redirect_URL();
+                                    Mode.ViewerCode = orig_viewercode;
 
                                     Output.WriteLine("\t\t\t\t<select id=\"page_select\" name=\"page_select\" onchange=\"javascript:item_jump_sobekcm('" + url + "')\">");
 
@@ -1845,7 +1847,7 @@ namespace SobekCM.Library.HTML
                                     {
 	                                    if (thisName.Length > 75)
 	                                    {
-		                                    if (currentMode.Page == page_index)
+		                                    if (Mode.Page == page_index)
 		                                    {
 			                                    Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\" selected=\"selected\" >" + thisName.Substring(0,75) + "...</option>");
 		                                    }
@@ -1856,7 +1858,7 @@ namespace SobekCM.Library.HTML
 	                                    }
 	                                    else
 	                                    {
-											if (currentMode.Page == page_index)
+											if (Mode.Page == page_index)
 											{
 												Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\" selected=\"selected\" >" + thisName + "</option>");
 											}
@@ -1960,7 +1962,7 @@ namespace SobekCM.Library.HTML
 
             // Add the HTML from the pageviewer
             // Add the main viewer section
-            if ((PageViewer != null) && (String.IsNullOrEmpty(currentMode.Fragment)))
+            if ((PageViewer != null) && (String.IsNullOrEmpty(Mode.Fragment)))
             {
                 Tracer.Add_Trace("Item_MainWriter.Write_Additional_HTML", "Allowing page viewer to write directly to the output to add main viewer section");
                 PageViewer.Write_Main_Viewer_Section(Output, Tracer);
@@ -1978,27 +1980,27 @@ namespace SobekCM.Library.HTML
             if ( PageViewer != null)
             {
                 // Was this to draw a fragment?
-                if ( !String.IsNullOrEmpty(currentMode.Fragment))
+                if ( !String.IsNullOrEmpty(Mode.Fragment))
                 {
-                    switch( currentMode.Fragment )
+                    switch( Mode.Fragment )
                     {
                         case "printform":
-                            PrintForm_Fragment_ItemViewer printform_viewer = new PrintForm_Fragment_ItemViewer(currentPage, PageViewer) {CurrentItem = currentItem, CurrentMode = currentMode, Translator = PageViewer.Translator, CurrentUser = currentUser};
+                            PrintForm_Fragment_ItemViewer printform_viewer = new PrintForm_Fragment_ItemViewer(currentPage, PageViewer) {CurrentItem = currentItem, CurrentMode = Mode, Translator = PageViewer.Translator, CurrentUser = currentUser};
                             printform_viewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                             break;
 
                         case "shareform":
-                            Share_Fragment_ItemViewer share_viewer = new Share_Fragment_ItemViewer {CurrentItem = currentItem, CurrentMode = currentMode, Translator = PageViewer.Translator, CurrentUser = currentUser};
+                            Share_Fragment_ItemViewer share_viewer = new Share_Fragment_ItemViewer {CurrentItem = currentItem, CurrentMode = Mode, Translator = PageViewer.Translator, CurrentUser = currentUser};
                             share_viewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                             break;
 
                         case "addform":
-                            AddRemove_Fragment_ItemViewer add_viewer = new AddRemove_Fragment_ItemViewer {CurrentItem = currentItem, CurrentMode = currentMode, Translator = PageViewer.Translator, CurrentUser = currentUser};
+                            AddRemove_Fragment_ItemViewer add_viewer = new AddRemove_Fragment_ItemViewer {CurrentItem = currentItem, CurrentMode = Mode, Translator = PageViewer.Translator, CurrentUser = currentUser};
                             add_viewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                             break;
 
                         case "sendform":
-                            Send_Fragment_ItemViewer send_viewer = new Send_Fragment_ItemViewer {CurrentItem = currentItem, CurrentMode = currentMode, Translator = PageViewer.Translator, CurrentUser = currentUser};
+                            Send_Fragment_ItemViewer send_viewer = new Send_Fragment_ItemViewer {CurrentItem = currentItem, CurrentMode = Mode, Translator = PageViewer.Translator, CurrentUser = currentUser};
                             send_viewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                             break;
                     }
@@ -2072,7 +2074,7 @@ namespace SobekCM.Library.HTML
 
             // None of the sharing options are available if the user is restricted from this item
             // or if we are generating this as a static page source for robots
-	        if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!currentMode.Is_Robot))
+	        if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!Mode.Is_Robot))
 	        {
 		        // Add the hidden field
 		        Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -2090,9 +2092,9 @@ namespace SobekCM.Library.HTML
 	        if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Full_JQuery_UI))
 	        {
 #if DEBUG
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.js\"></script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.js\"></script>");
 #else
-		        Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.min.js\"></script>");
+		        Output.WriteLine("<script type=\"text/javascript\" src=\"" + Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.min.js\"></script>");
 #endif
 	        }
         }
@@ -2144,7 +2146,7 @@ namespace SobekCM.Library.HTML
                     {
                         thisNode.Value = Sequence.ToString();
                     }
-                    if (Sequence >= currentMode.Page)
+                    if (Sequence >= Mode.Page)
                     {
                         if (!tocSelectedComplete)
                         {
@@ -2153,7 +2155,7 @@ namespace SobekCM.Library.HTML
                         }
                         else
                         {
-                            if (Sequence == currentMode.Page)
+                            if (Sequence == Mode.Page)
                             {
                                 SelectedNodes.AddRange(PathNodes);
                             }
@@ -2217,9 +2219,9 @@ namespace SobekCM.Library.HTML
 
             // Write the main SobekCM item style sheet to use 
 #if DEBUG
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 #endif
 
             // Add any viewer specific tags that need to reside within the HTML head
@@ -2229,7 +2231,7 @@ namespace SobekCM.Library.HTML
             // Add a thumbnail to this item
             if (currentItem != null)
             {
-                string image_src = currentMode.Base_URL + "/" + currentItem.Web.AssocFilePath + "/" + currentItem.Behaviors.Main_Thumbnail;
+                string image_src = Mode.Base_URL + "/" + currentItem.Web.AssocFilePath + "/" + currentItem.Behaviors.Main_Thumbnail;
 
                 Output.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\" />");
             }

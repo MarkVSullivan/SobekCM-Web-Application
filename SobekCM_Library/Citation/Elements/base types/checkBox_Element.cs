@@ -2,6 +2,7 @@
 
 using System.IO;
 using System.Xml;
+using SobekCM.Core.Configuration;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Core.Users;

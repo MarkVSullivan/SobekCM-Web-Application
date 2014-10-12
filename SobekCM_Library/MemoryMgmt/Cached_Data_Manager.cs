@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Library.Aggregations;
@@ -37,7 +38,7 @@ namespace SobekCM.Library.MemoryMgmt
 		/// <summary> Static constructor initializes several variables </summary>
 		static Cached_Data_Manager()
 		{
-			caching_serving_enabled = SobekCM_Library_Settings.Caching_Server.Length > 0;
+			caching_serving_enabled = InstanceWide_Settings_Singleton.Settings.Caching_Server.Length > 0;
 			Disabled = false;
 		}
 

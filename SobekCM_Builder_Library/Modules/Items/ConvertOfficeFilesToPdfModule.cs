@@ -15,7 +15,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
 
             // Should we try to convert office files?
-            if (SobekCM_Library_Settings.Convert_Office_Files_To_PDF)
+            if (InstanceWide_Settings_Singleton.Settings.Convert_Office_Files_To_PDF)
             {
                 try
                 {

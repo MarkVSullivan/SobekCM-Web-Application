@@ -15,15 +15,6 @@ namespace SobekCM.Builder_Library
     public class Actionable_Builder_Source_Folder : Builder_Source_Folder
     {
         /// <summary> Constructor for a new instance of the Actionable_Builder_Source_Folder class </summary>
-        /// <param name="Source_Data_Row"> Data row from the builder settings procedure which contains all the specifications 
-        /// for this incoming source folder, including network locations, archiving instructions, and what type of packages are permissable </param>
-        /// <remarks> This extends the core class <see cref="Builder_Source_Folder"/> and adds some methods to perform work </remarks>
-        public Actionable_Builder_Source_Folder(DataRow Source_Data_Row) : base ( Source_Data_Row )
-        {
-            // Everything handled in the base class
-        }
-
-        /// <summary> Constructor for a new instance of the Actionable_Builder_Source_Folder class </summary>
         /// <remarks> This extends the core class <see cref="Builder_Source_Folder"/> and adds some methods to perform work </remarks>
         public Actionable_Builder_Source_Folder() 
         {
@@ -219,7 +210,7 @@ namespace SobekCM.Builder_Library
             {
                 // Is this resource a candidate to move for continued processing?
                 long resource_age = resource.AgeInTicks;
-                if ((resource_age > SobekCM_Library_Settings.Complete_Package_Required_Aging) || ((resource_age > SobekCM_Library_Settings.METS_Only_Package_Required_Aging) && (resource.METS_Only_Package)))
+                if ((resource_age > InstanceWide_Settings_Singleton.Settings.Complete_Package_Required_Aging) || ((resource_age > InstanceWide_Settings_Singleton.Settings.METS_Only_Package_Required_Aging) && (resource.METS_Only_Package)))
                 {
                     if (!resource.Move(Processing_Folder))
                         returnVal = false;

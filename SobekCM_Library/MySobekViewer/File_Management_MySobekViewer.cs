@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Settings;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UploadiFive;
@@ -226,7 +227,7 @@ namespace SobekCM.Library.MySobekViewer
                     else
                     {
                         // If this does not match the exclusion regular expression, than add this
-                        if ((!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && ( String.Compare(thisFileInfo.Name, Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0 ))
+                        if ((!Regex.Match(thisFileInfo.Name, InstanceWide_Settings_Singleton.Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && ( String.Compare(thisFileInfo.Name, Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0 ))
                         {
 							// Also, exclude files that are .XML and marc.xml, or doc.xml, or have the bibid in the name
 							if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
@@ -315,19 +316,19 @@ namespace SobekCM.Library.MySobekViewer
                 string base_url = currentMode.Base_URL;
                 try
                 {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
-	                if (!Directory.Exists(digitalResourceDirectory + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME))
-		                Directory.CreateDirectory(digitalResourceDirectory + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME);
-                    string filename = digitalResourceDirectory + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
+                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(InstanceWide_Settings_Singleton.Settings.System_Base_URL, InstanceWide_Settings_Singleton.Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
+                    if (!Directory.Exists(digitalResourceDirectory + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name))
+                        Directory.CreateDirectory(digitalResourceDirectory + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name);
+                    string filename = digitalResourceDirectory + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
                     staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
 
 					// Copy the static HTML file to the web server
 					try
 					{
-						if (!Directory.Exists(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
-							Directory.CreateDirectory(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
+						if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
+							Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
 						if (File.Exists(filename))
-							File.Copy(filename, SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
+							File.Copy(filename, InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
 					}
 					catch (Exception)
 					{
@@ -356,9 +357,9 @@ namespace SobekCM.Library.MySobekViewer
 
                 string error_body = "<strong>ERROR ENCOUNTERED DURING ONLINE FILE MANAGEMENT</strong><br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Permanent Link: <a href=\"" + currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "</a><br />User: " + user.Full_Name + "<br /><br /></blockquote>" + ee.ToString().Replace("\n", "<br />");
                 string error_subject = "Error during file management for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
-                string email_to = SobekCM_Library_Settings.System_Error_Email;
+                string email_to = InstanceWide_Settings_Singleton.Settings.System_Error_Email;
                 if (email_to.Length == 0)
-                    email_to = SobekCM_Library_Settings.System_Email;
+                    email_to = InstanceWide_Settings_Singleton.Settings.System_Email;
                 Database.SobekCM_Database.Send_Database_Email(email_to, error_subject, error_body, true, false, -1, -1);
             }
 
@@ -506,7 +507,7 @@ namespace SobekCM.Library.MySobekViewer
                     else
                     {
                         // If this does not match the exclusion regular expression, than add this
-                        if ((!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, item.BibID + "_" + item.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
+                        if ((!Regex.Match(thisFileInfo.Name, InstanceWide_Settings_Singleton.Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, item.BibID + "_" + item.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
                         {
 							if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("_ingest.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
 	                            ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(item.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
@@ -624,7 +625,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<br />");
             Output.WriteLine("The following extensions are accepted:");
             Output.WriteLine("<blockquote>");
-            Output.WriteLine(SobekCM_Library_Settings.Upload_File_Types.Replace(",",", "));
+            Output.WriteLine(InstanceWide_Settings_Singleton.Settings.Upload_File_Types.Replace(",",", "));
             Output.WriteLine("</blockquote>");
 
             Output.WriteLine("</div>");
@@ -668,7 +669,7 @@ namespace SobekCM.Library.MySobekViewer
 	        uploadControl.RemoveCompleted = true;
 			uploadControl.Swf = currentMode.Base_URL + "default/scripts/uploadify/uploadify.swf";
 			uploadControl.RevertToFlashVersion = true;
-	        uploadControl.AllowedFileExtensions = SobekCM_Library_Settings.Upload_File_Types;
+	        uploadControl.AllowedFileExtensions = InstanceWide_Settings_Singleton.Settings.Upload_File_Types;
 			MainPlaceHolder.Controls.Add(uploadControl);
 
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using SobekCM.Core.Configuration;
 using SobekCM.Resource_Object.Configuration;
 using SobekCM.Library.Navigation;
 

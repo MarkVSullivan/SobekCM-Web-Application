@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Results;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
@@ -47,7 +48,7 @@ namespace SobekCM.Library.Solr
 					Page_Number = 1;
 
 				// Create the solr worker to query the document index
-				var solrWorker = Solr_Operations_Cache<Solr_Document_Result>.GetSolrOperations(SobekCM_Library_Settings.Document_Solr_Index_URL);
+				var solrWorker = Solr_Operations_Cache<Solr_Document_Result>.GetSolrOperations(InstanceWide_Settings_Singleton.Settings.Document_Solr_Index_URL);
 
 				// Create the query options
 				QueryOptions options = new QueryOptions

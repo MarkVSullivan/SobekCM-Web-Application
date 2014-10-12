@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.ApplicationBlocks.Data;
 using SobekCM.Core.Results;
+using SobekCM.Core.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
@@ -4041,7 +4042,7 @@ namespace SobekCM.Library.Database
 				using (SqlConnection connect = new SqlConnection(connectionString + "Connection Timeout=45"))
 				{
 
-					SqlCommand executeCommand = new SqlCommand("SobekCM_Item_List_Web", connect)
+                    SqlCommand executeCommand = new SqlCommand("SobekCM_Item_List", connect)
 													{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
 					executeCommand.Parameters.AddWithValue("@include_private", Include_Private);
 
@@ -6055,41 +6056,18 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Gets all the data necessary for the Builder, including file destination information,
-		/// general settings, server information, and the list of each BibID and File_Root </summary>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> DataSet with all the data necessary for the Builder, including file destination information,
-		/// general settings, server information, and the list of each BibID and File_Root</returns>
-		/// <remarks> This calls the 'SobekCM_Get_Builder_Settings' stored procedure </remarks> 
-		public static DataSet Get_Builder_Settings_Complete(Custom_Tracer Tracer)
-		{
-			try
-			{
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@include_items", true);
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Builder_Settings", paramList);
-				return tempSet;
-			}
-			catch (Exception ee)
-			{
-				lastException = ee;
-				return null;
-			}
-		}
 
 		/// <summary> Gets all the data necessary for the Builder, including file destination information,
 		/// general settings, server information, and the list of each BibID and File_Root </summary>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataSet with all the data necessary for the Builder, including file destination information,
-		/// general settings, server information, and the list of each BibID and File_Root</returns>
+		/// general settings, server information</returns>
 		/// <remarks> This calls the 'SobekCM_Get_Settings' stored procedure </remarks> 
 		public static DataSet Get_Settings_Complete(Custom_Tracer Tracer)
 		{
 			try
 			{
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@include_items", true);
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Settings", paramList);
+				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Settings");
 				return tempSet;
 			}
 			catch (Exception ee)

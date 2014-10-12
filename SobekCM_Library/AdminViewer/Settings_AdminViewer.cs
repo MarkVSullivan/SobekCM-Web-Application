@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -101,12 +103,12 @@ namespace SobekCM.Library.AdminViewer
 			Add_Setting_UI("Can Submit Edit Online", "Resource Files", 70, boolean_options, "Flag dictates if users can submit items online, or if this is disabled in this system.", false);
             Add_Setting_UI("Convert Office Files to PDF", "Resource Files", 70, boolean_options, "Flag dictates if users can submit items online, or if this is disabled in this system.", false, "false");
             Add_Setting_UI("Create MARC Feed By Default", "Interoperability", 70, boolean_options, "Flag indicates if the builder/bulk loader should create the MARC feed by default when operating in background mode.", false );
-			Add_Config_Setting("Database Type", "Server Configuration", SobekCM_Library_Settings.Database_Connections[0].Database_Type_String, "Type of database used to drive the SobekCM system.\n\nCurrently, only Microsoft SQL Server is allowed with plans to add PostgreSQL to the supported database system.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.");
-			Add_Config_Setting("Database Connection String", "Server Configuration", SobekCM_Library_Settings.Database_Connections[0].Connection_String, "Connection string used to connect to the SobekCM database\n\nThis value resides in the configuration file on the web server.  See your database and web server administrator to change this value.");
+			Add_Config_Setting("Database Type", "Server Configuration", InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Database_Type_String, "Type of database used to drive the SobekCM system.\n\nCurrently, only Microsoft SQL Server is allowed with plans to add PostgreSQL to the supported database system.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.");
+			Add_Config_Setting("Database Connection String", "Server Configuration", InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String, "Connection string used to connect to the SobekCM database\n\nThis value resides in the configuration file on the web server.  See your database and web server administrator to change this value.");
 			Add_Setting_UI("Detailed User Permissions", "System Configuration", -1, boolean_options, "Flag indicates if more refined user permissions can be assigned, such as if a user can edit behaviors of an item in a collection vs. a more general flag that says a user can make all changes to an item in a collection.", false);
 			Add_Setting_UI("Document Solr Index URL", "Server Configuration", -1, empty_options, "URL for the document-level solr index.\n\nExample: 'http://localhost:8080/documents'", false);
-            Add_Config_Setting("Error Emails", "Emails", SobekCM_Library_Settings.System_Error_Email, "Email address for the web application to mail for any errors encountered while executing requests.\n\nThis account will be notified of inabilities to connect to servers, potential attacks, missing files, etc..\n\nIf the system is able to connect to the database, the 'System Error Email' address listed there, if there is one, will be used instead.\n\nUse a semi-colon betwen email addresses if multiple addresses are included.\n\nExample: 'person1@corp.edu;person2@corp2.edu'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.");
-			Add_Config_Setting("Error HTML Page", "System Configuration", SobekCM_Library_Settings.System_Error_URL, "Static page the user should be redirected towards if an unexpected exception occurs which cannot be handled by the web application.\n\nExample: 'http://ufdc.ufl.edu/error.html'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.");
+            Add_Config_Setting("Error Emails", "Emails", InstanceWide_Settings_Singleton.Settings.System_Error_Email, "Email address for the web application to mail for any errors encountered while executing requests.\n\nThis account will be notified of inabilities to connect to servers, potential attacks, missing files, etc..\n\nIf the system is able to connect to the database, the 'System Error Email' address listed there, if there is one, will be used instead.\n\nUse a semi-colon betwen email addresses if multiple addresses are included.\n\nExample: 'person1@corp.edu;person2@corp2.edu'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.");
+			Add_Config_Setting("Error HTML Page", "System Configuration", InstanceWide_Settings_Singleton.Settings.System_Error_URL, "Static page the user should be redirected towards if an unexpected exception occurs which cannot be handled by the web application.\n\nExample: 'http://ufdc.ufl.edu/error.html'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.");
 			Add_Setting_UI("Facets Collapsible", "General Appearance", 70, boolean_options, "Flag determines if the facets are collapsible like an accordian, or if they all start fully expanded.", false);
             Add_Setting_UI("FDA Report DropBox", "Florida SUS", -1, empty_options, "Location for the builder/bulk loader to look for incoming Florida Dark Archive XML reports to process and add to the history of digital resources.", true );
             Add_Setting_UI("Files To Exclude From Downloads", "Resource Files", -1, empty_options, "Regular expressions used to exclude files from being added by default to the downloads of resources.\n\nExample: '((.*?)\\.(jpg|tif|jp2|jpx|bmp|jpeg|gif|png|txt|pro|mets|db|xml|bak|job)$|qc_error.html)'", false );
@@ -234,11 +236,8 @@ namespace SobekCM.Library.AdminViewer
                         else
                             actionMessage = "Settings saved";
 
-                        // Get the current settings from the database
-                        settings = SobekCM_Database.Get_Settings(Tracer);
-
                         // Assign this to be used by the system
-                        SobekCM_Library_Settings.Refresh(SobekCM_Database.Get_Settings_Complete(null));
+                        InstanceWide_Settings_Singleton.Refresh();
                     }
                     else
                     {
@@ -506,7 +505,7 @@ namespace SobekCM.Library.AdminViewer
 
 	        Output.WriteLine("  <div id=\"sbkSeav_Explanation\">");
 	        Output.WriteLine("    <p>This form allows a user to view and edit all the main system-wide settings which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.</p>");
-            Output.WriteLine("    <p>For more information about these settings, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("    <p>For more information about these settings, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 	        Output.WriteLine("  </div>");
             Output.WriteLine();
 

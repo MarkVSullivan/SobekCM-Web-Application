@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Settings;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.Settings;
@@ -89,9 +90,9 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Determine the in process directory for this
-            digitalResourceDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + User.UserName.Replace(".", "").Replace("@", "") + "\\uploadimages\\" + Current_Item.METS_Header.ObjectID;
+            digitalResourceDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + User.UserName.Replace(".", "").Replace("@", "") + "\\uploadimages\\" + Current_Item.METS_Header.ObjectID;
             if (User.ShibbID.Trim().Length > 0)
-                digitalResourceDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + User.ShibbID + "\\uploadimages\\" + Current_Item.METS_Header.ObjectID;
+                digitalResourceDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + User.ShibbID + "\\uploadimages\\" + Current_Item.METS_Header.ObjectID;
 
             // Make the folder for the user in process directory
             if (!Directory.Exists(digitalResourceDirectory))
@@ -115,7 +116,7 @@ namespace SobekCM.Library.MySobekViewer
 							try
 							{
 								var tiffImg = System.Drawing.Image.FromFile(thisFile);
-								var mainImg = ScaleImage(tiffImg, SobekCM_Library_Settings.JPEG_Width, SobekCM_Library_Settings.JPEG_Height);
+								var mainImg = ScaleImage(tiffImg, InstanceWide_Settings_Singleton.Settings.JPEG_Width, InstanceWide_Settings_Singleton.Settings.JPEG_Height);
 								mainImg.Save(jpeg, ImageFormat.Jpeg);
 								var thumbnailImg = ScaleImage(tiffImg, 150, 400);
 								thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
@@ -410,9 +411,9 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // This may be called from QC, so check on that as well
-                string userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
+                string userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
                 if (user.ShibbID.Trim().Length > 0)
-                    userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
+                    userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
 
                 // Make the folder for the user in process directory
                 if (Directory.Exists(userInProcessDirectory))
@@ -442,9 +443,9 @@ namespace SobekCM.Library.MySobekViewer
 
                 string error_body = "<strong>ERROR ENCOUNTERED DURING ONLINE PAGE IMAGE UPLOAD</strong><br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Permanent Link: <a href=\"" + base.currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + base.currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "</a><br />User: " + user.Full_Name + "<br /><br /></blockquote>" + ee.ToString().Replace("\n", "<br />");
                 string error_subject = "Error during file management for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
-                string email_to = SobekCM_Library_Settings.System_Error_Email;
+                string email_to = InstanceWide_Settings_Singleton.Settings.System_Error_Email;
                 if (email_to.Length == 0)
-                    email_to = SobekCM_Library_Settings.System_Email;
+                    email_to = InstanceWide_Settings_Singleton.Settings.System_Email;
                 Database.SobekCM_Database.Send_Database_Email(email_to, error_subject, error_body, true, false, -1, -1);
             }
 
@@ -616,7 +617,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<br />");
             Output.WriteLine("The following extensions are accepted:");
             Output.WriteLine("<blockquote>");
-            Output.WriteLine(SobekCM_Library_Settings.Upload_Image_Types.Replace(",", ", "));
+            Output.WriteLine(InstanceWide_Settings_Singleton.Settings.Upload_Image_Types.Replace(",", ", "));
             Output.WriteLine("</blockquote>");
             Output.WriteLine("</div>");
 			Output.WriteLine("</div>");
@@ -652,7 +653,7 @@ namespace SobekCM.Library.MySobekViewer
 			UploadiFiveControl uploadControl = new UploadiFiveControl();
 			uploadControl.UploadPath = digitalResourceDirectory;
 			uploadControl.UploadScript = currentMode.Base_URL + "UploadiFiveFileHandler.ashx";
-			uploadControl.AllowedFileExtensions = SobekCM_Library_Settings.Upload_Image_Types;
+			uploadControl.AllowedFileExtensions = InstanceWide_Settings_Singleton.Settings.Upload_Image_Types;
 			uploadControl.SubmitWhenQueueCompletes = true;
 	        uploadControl.RemoveCompleted = true;
 			uploadControl.Swf = currentMode.Base_URL + "default/scripts/uploadify/uploadify.swf";

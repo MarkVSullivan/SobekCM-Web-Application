@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
@@ -84,7 +85,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Read this template
                 Template_XML_Reader reader = new Template_XML_Reader();
                 template = new Template();
-                reader.Read_XML(SobekCM_Library_Settings.Base_MySobek_Directory + "templates\\defaults\\" + TEMPLATE_CODE + ".xml", template, true);
+                reader.Read_XML(InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "templates\\defaults\\" + TEMPLATE_CODE + ".xml", template, true);
 
                 // Add the current codes to this template
                 template.Add_Codes(Code_Manager);
@@ -192,7 +193,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <ul>");
             Output.WriteLine("      <li>Enter any behaviors you would like to have propogate through all the items within this item group.and press the SAVE button when complete.</li>");
             Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
-            Output.WriteLine("      <li>Click <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/behaviors\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on mass updating behaviors online.</li>");
+            Output.WriteLine("      <li>Click <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "help/behaviors\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on mass updating behaviors online.</li>");
 
             Output.WriteLine("     </ul>");
             Output.WriteLine("</div>");

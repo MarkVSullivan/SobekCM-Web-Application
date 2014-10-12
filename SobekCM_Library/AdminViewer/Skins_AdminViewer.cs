@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -191,7 +192,7 @@ namespace SobekCM.Library.AdminViewer
                                     // Ensure a folder exists for this, otherwise create one
                                     try
                                     {
-                                        string folder = SobekCM_Library_Settings.Base_Design_Location + "skins/" + save_value.ToLower();
+                                        string folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + save_value.ToLower();
                                         if (!Directory.Exists(folder))
                                         {
                                             // Create this directory and the necessary subdirectories
@@ -291,7 +292,7 @@ namespace SobekCM.Library.AdminViewer
                                             {
                                                 // Copy the web skin information over?
                                                 string current_web_skin = currentMode.Skin;
-                                                string current_web_folder = SobekCM_Library_Settings.Base_Design_Location + "skins/" + current_web_skin;
+                                                string current_web_folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + current_web_skin;
                                                 copy_entire_folder(current_web_folder, folder);
                                                 //if (File.Exists(current_web_folder + "\\" + current_web_skin + ".css"))
                                                 //{
@@ -327,7 +328,7 @@ namespace SobekCM.Library.AdminViewer
                                             if (new_base_code.Length == 0)
                                             {
                                                 // What is the current base skin folder then?
-                                                string base_skin_folder = SobekCM_Library_Settings.Base_Design_Location + "skins/" + currentMode.Base_Skin;
+                                                string base_skin_folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + currentMode.Base_Skin;
                                                 copy_entire_folder(base_skin_folder + "/buttons", folder + "/buttons");
                                                 copy_entire_folder(base_skin_folder + "/tabs", folder + "/tabs");
                                                 copy_entire_folder(base_skin_folder + "/zoom_controls", folder + "/zoom_controls");
@@ -358,27 +359,27 @@ namespace SobekCM.Library.AdminViewer
                                 // Try to create the directory
                                 try
                                 {
-                                    if (!Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + "skins\\" + save_value))
+                                    if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value))
                                     {
-                                        Directory.CreateDirectory(SobekCM_Library_Settings.Base_Design_Location + "skins\\" + save_value);
+                                        Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value);
                                     }
-                                    if (!Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + "skins\\" + save_value + "\\html"))
+                                    if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\html"))
                                     {
-                                        Directory.CreateDirectory(SobekCM_Library_Settings.Base_Design_Location + "skins\\" + save_value + "\\html");
+                                        Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\html");
                                     }
                                     if (new_base_code.Length == 0)
                                     {
-                                        if (!Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons"))
+                                        if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons"))
                                         {
-                                            Directory.CreateDirectory(SobekCM_Library_Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons");
+                                            Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons");
                                         }
-                                        if (!Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs"))
+                                        if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs"))
                                         {
-                                            Directory.CreateDirectory(SobekCM_Library_Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs");
+                                            Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs");
                                         }
-                                        if (!Directory.Exists(SobekCM_Library_Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls"))
+                                        if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls"))
                                         {
-                                            Directory.CreateDirectory(SobekCM_Library_Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls");
+                                            Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls");
                                         }
                                     }
                                 }
@@ -549,7 +550,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
 			}
 
-            Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/webskins\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/webskins\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
 
             Output.WriteLine("  <h2>New Web Skin</h2>");
 			Output.WriteLine("  <div class=\"sbkSav_NewDiv\">");

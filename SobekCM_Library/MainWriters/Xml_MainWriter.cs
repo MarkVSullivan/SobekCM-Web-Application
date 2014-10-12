@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -73,8 +74,8 @@ namespace SobekCM.Library.MainWriters
         protected internal void display_search_results(TextWriter Output )
         {
             // Get the URL and network roots
-            string url = SobekCM_Library_Settings.Image_URL;
-            string network = SobekCM_Library_Settings.Image_Server_Network;
+            string url = InstanceWide_Settings_Singleton.Settings.Image_URL;
+            string network = InstanceWide_Settings_Singleton.Settings.Image_Server_Network;
             string base_url = currentMode.Base_URL.Replace("sobekcm_data.aspx", "");
 
             // Write the header first

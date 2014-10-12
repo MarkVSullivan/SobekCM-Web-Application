@@ -16,15 +16,15 @@ namespace SobekCM.Builder_Library.Modules.Folders
             try
             {
                 // Move all eligible packages from the FTP folders to the processing folders
-                if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+                if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                     OnProcess("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: Checking incoming folder " + BuilderFolder.Inbound_Folder, String.Empty, String.Empty, String.Empty, -1);
 
                 if (BuilderFolder.Items_Exist_In_Inbound)
                 {
-                    if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+                    if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                         OnProcess("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: Found either files or subdirectories in " + BuilderFolder.Inbound_Folder, String.Empty, String.Empty, String.Empty, -1);
 
-                    if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+                    if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                         OnProcess("Checking inbound packages for aging and possibly moving to processing", String.Empty, String.Empty, String.Empty, -1);
 
                     String outMessage;
@@ -35,12 +35,12 @@ namespace SobekCM.Builder_Library.Modules.Folders
                     }
                     else
                     {
-                        if ((SobekCM_Library_Settings.Builder_Verbose_Flag) && (outMessage.Length > 0))
+                        if ((InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag) && (outMessage.Length > 0))
                             OnProcess(outMessage, String.Empty, String.Empty, String.Empty, -1);
                     }
 
                 }
-                else if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+                else if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                     OnProcess("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: No subdirectories or files found in incoming folder " + BuilderFolder.Inbound_Folder, String.Empty, String.Empty, String.Empty, -1);
             }
             catch (Exception ee)

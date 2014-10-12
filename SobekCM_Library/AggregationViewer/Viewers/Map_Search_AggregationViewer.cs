@@ -3,6 +3,8 @@
 using System;
 using System.IO;
 using System.Text;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
@@ -383,7 +385,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string language_code = currentMode.Language_Code;
             if (language_code.Length > 0)
                 language_code = "_" + language_code;
-            string directory = SobekCM_Library_Settings.Base_Design_Location + "\\aggregations\\" + currentMode.Aggregation + "\\extra";
+            string directory = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "\\aggregations\\" + currentMode.Aggregation + "\\extra";
             string aggregation_specific_faq = String.Empty;
             if ( Directory.Exists( directory ))
             {
@@ -410,7 +412,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // If no aggregation level FAQ was found, look for a collection wide
             if (aggregation_specific_faq.Length == 0)
             {
-                directory = SobekCM_Library_Settings.Base_Design_Location + "\\extra\\searchtips";
+                directory = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "\\extra\\searchtips";
                 if (Directory.Exists(directory))
                 {
                     if (File.Exists(directory + "\\map_faq" + language_code + ".txt"))

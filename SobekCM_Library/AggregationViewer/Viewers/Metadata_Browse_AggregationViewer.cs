@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -153,7 +155,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if ((currentUser != null) && ((currentUser.Is_Internal_User) || (currentUser.Is_Aggregation_Curator(currentMode.Aggregation))))
             {
                 // Just add every metadata field here
-                foreach (Metadata_Search_Field field in SobekCM_Library_Settings.All_Metadata_Fields)
+                foreach (Metadata_Search_Field field in InstanceWide_Settings_Singleton.Settings.Metadata_Search_Fields)
                 {
                     if (( field.Web_Code.Length > 0 ) && ( currentCollection.Browseable_Fields.Contains(field.ID)))
                         internal_browses.Add(field.Display_Term);
@@ -192,7 +194,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                         else
                         {
-                            Metadata_Search_Field facetField = SobekCM_Library_Settings.Metadata_Search_Field_By_Name(thisBrowse.Code);
+                            Metadata_Search_Field facetField = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Name(thisBrowse.Code);
                             if (facetField != null)
                             {
 								string facetName = facetField.Display_Term;
@@ -225,7 +227,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         }
                         else
                         {
-                            Metadata_Search_Field facetField = SobekCM_Library_Settings.Metadata_Search_Field_By_Display_Name(thisBrowse.Code);
+                            Metadata_Search_Field facetField = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Display_Name(thisBrowse.Code);
 							if (thisBrowse.Code.ToLower().Replace("_", " ") != original_browse_mode.Replace("_", " "))
                             {
                                 currentMode.Info_Browse_Mode = thisBrowse.Code.ToLower().Replace(" ", "_");
@@ -249,7 +251,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                     foreach (string thisShort in internal_browses)
                     {
-                        Metadata_Search_Field facetField = SobekCM_Library_Settings.Metadata_Search_Field_By_Facet_Name(thisShort);
+                        Metadata_Search_Field facetField = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Facet_Name(thisShort);
 	                    if (facetField != null)
 	                    {
 		                    if (thisShort.ToLower() != original_browse_mode)
@@ -284,7 +286,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (( browseObject != null ) && ( browseObject.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML))
             {
                 // Read the content file for this browse
-                HTML_Based_Content staticBrowseContent = browseObject.Get_Static_Content(currentMode.Language, currentMode.Base_URL, SobekCM_Library_Settings.Base_Design_Location + currentCollection.ObjDirectory, Tracer);
+                HTML_Based_Content staticBrowseContent = browseObject.Get_Static_Content(currentMode.Language, currentMode.Base_URL, InstanceWide_Settings_Singleton.Settings.Base_Design_Location + currentCollection.ObjDirectory, Tracer);
            
                 // Apply current user settings for this
                 string browseInfoDisplayText = staticBrowseContent.Apply_Settings_To_Static_Text(staticBrowseContent.Static_Text, currentCollection, htmlSkin.Skin_Code, htmlSkin.Base_Skin_Code, currentMode.Base_URL, currentMode.URL_Options(), Tracer);
@@ -331,7 +333,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     currentMode.Mode = Display_Mode_Enum.Results;
                     currentMode.Search_Precision = Search_Precision_Type_Enum.Exact_Match;
                     currentMode.Search_Type = Search_Type_Enum.Advanced;
-                    Metadata_Search_Field facetField = SobekCM_Library_Settings.Metadata_Search_Field_By_Display_Name(original_browse_mode);
+                    Metadata_Search_Field facetField = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Display_Name(original_browse_mode);
                     currentMode.Search_Fields = facetField.Web_Code;
                     currentMode.Search_String = "\"<%TERM%>\"";
                     string search_url = currentMode.Redirect_URL();

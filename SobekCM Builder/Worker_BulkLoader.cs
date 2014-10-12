@@ -66,7 +66,7 @@ namespace SobekCM.Builder
             verbose = Verbose;
 	        instanceName = InstanceName;
 		    canAbort = Can_Abort;
-		    multiInstanceBuilder = SobekCM_Library_Settings.Database_Connections.Count > 1;
+		    multiInstanceBuilder = InstanceWide_Settings_Singleton.Settings.Database_Connections.Count > 1;
 
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Start", verbose, String.Empty, String.Empty, -1);
 
@@ -81,9 +81,9 @@ namespace SobekCM.Builder
 
 			// Ensure there is SOME instance name
 	        if (instanceName.Length == 0)
-		        instanceName = SobekCM_Library_Settings.System_Name;
+		        instanceName = InstanceWide_Settings_Singleton.Settings.System_Name;
             if (verbose)
-                SobekCM_Library_Settings.Builder_Verbose_Flag = true;
+                InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag = true;
 
 
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Created Static Pages Builder", verbose, String.Empty, String.Empty, -1);
@@ -191,7 +191,7 @@ namespace SobekCM.Builder
             // If not already verbose, check settings
             if (!verbose)
             {
-                verbose = SobekCM_Library_Settings.Builder_Verbose_Flag;
+                verbose = InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag;
             }
 
             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Refreshed settings and item list", verbose, String.Empty, String.Empty, -1);
@@ -247,7 +247,7 @@ namespace SobekCM.Builder
             List<Incoming_Digital_Resource> deletes = new List<Incoming_Digital_Resource>();
 
             // Step through all the incoming folders, and run the folder modules
-            if (SobekCM_Library_Settings.Incoming_Folders.Count == 0)
+            if (InstanceWide_Settings_Singleton.Settings.Incoming_Folders.Count == 0)
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: There are no incoming folders set in the database", "Standard", String.Empty, String.Empty, -1);
             }
@@ -255,7 +255,7 @@ namespace SobekCM.Builder
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Begin processing builder folders", verbose, String.Empty, String.Empty, -1);
 
-                foreach (Builder_Source_Folder folder in SobekCM_Library_Settings.Incoming_Folders)
+                foreach (Builder_Source_Folder folder in InstanceWide_Settings_Singleton.Settings.Incoming_Folders)
                 {
                     Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder);
 
@@ -379,18 +379,15 @@ namespace SobekCM.Builder
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
         public bool Refresh_Settings_And_Item_List()
         {
-            // Pull the settings again
-            incomingFileInstructions = SobekCM_Database.Get_Builder_Settings_Complete(null);
-
             // Reload the settings
-            if ((incomingFileInstructions == null) || (!SobekCM_Library_Settings.Refresh(incomingFileInstructions)))
+            if (!InstanceWide_Settings_Singleton.Refresh())
             {
 	            Add_Error_To_Log("Unable to pull the newest settings from the database", String.Empty, String.Empty, -1);
                 return false;
             }
 
             // Save the item table
-            itemTable = incomingFileInstructions.Tables[2];
+		    itemTable = SobekCM_Database.Get_Item_List(true, null).Tables[0];
 
             return true;
         }
@@ -422,7 +419,7 @@ namespace SobekCM.Builder
                     string file_root = bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8, 2);
 
                     // Determine the source folder for this resource
-                    string resource_folder = SobekCM_Library_Settings.Image_Server_Network + file_root + "\\" + vid;
+                    string resource_folder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + file_root + "\\" + vid;
 
                     // Determine the METS file name
                     string mets_file = resource_folder + "\\" + bibID + "_" + vid + ".mets.xml";
@@ -644,7 +641,7 @@ namespace SobekCM.Builder
                 if (itemTable.Select("BibID='" + deleteResource.BibID + "' and VID='" + deleteResource.VID + "'").Length > 0)
                 {
                     deleteResource.File_Root = deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8);
-                    string existing_folder = SobekCM_Library_Settings.Image_Server_Network + deleteResource.File_Root + "\\" + deleteResource.VID;
+                    string existing_folder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + deleteResource.File_Root + "\\" + deleteResource.VID;
 
                     // Remove from the primary collection area
                     try
@@ -652,13 +649,13 @@ namespace SobekCM.Builder
                         if (Directory.Exists(existing_folder))
                         {
                             // Make sure the delete folder exists
-							if (!Directory.Exists(SobekCM_Library_Settings.Image_Server_Network + "\\RECYCLE BIN"))
+							if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Image_Server_Network + "\\RECYCLE BIN"))
                             {
-								Directory.CreateDirectory(SobekCM_Library_Settings.Image_Server_Network + "\\RECYCLE BIN");
+								Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Image_Server_Network + "\\RECYCLE BIN");
                             }
 
                             // Create the final directory
-							string final_folder = SobekCM_Library_Settings.Image_Server_Network + "\\RECYCLE BIN\\" + deleteResource.File_Root + "\\" + deleteResource.VID;
+							string final_folder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + "\\RECYCLE BIN\\" + deleteResource.File_Root + "\\" + deleteResource.VID;
                             if (!Directory.Exists(final_folder))
                             {
                                 Directory.CreateDirectory(final_folder);
@@ -681,12 +678,12 @@ namespace SobekCM.Builder
                     }
 
                     // Delete the static page
-	                string static_page1 = SobekCM_Library_Settings.Static_Pages_Location + deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8) + "\\" + deleteResource.VID + "\\" + deleteResource.BibID + "_" + deleteResource.VID + ".html";
+	                string static_page1 = InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8) + "\\" + deleteResource.VID + "\\" + deleteResource.BibID + "_" + deleteResource.VID + ".html";
 					if (File.Exists(static_page1))
                     {
 						File.Delete(static_page1);
                     }
-					string static_page2 = SobekCM_Library_Settings.Static_Pages_Location + deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8) + "\\" + deleteResource.BibID + "_" + deleteResource.VID + ".html";
+					string static_page2 = InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8) + "\\" + deleteResource.BibID + "_" + deleteResource.VID + ".html";
 					if (File.Exists(static_page2))
 					{
 						File.Delete(static_page2);
@@ -696,11 +693,11 @@ namespace SobekCM.Builder
                     SobekCM_Database.Delete_SobekCM_Item(deleteResource.BibID, deleteResource.VID, true, "Deleted upon request by builder");
 
                     // Delete from the solr/lucene indexes
-                    if (SobekCM_Library_Settings.Document_Solr_Index_URL.Length > 0)
+                    if (InstanceWide_Settings_Singleton.Settings.Document_Solr_Index_URL.Length > 0)
                     {
                         try
                         {
-                            Solr_Controller.Delete_Resource_From_Index(SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, deleteResource.BibID, deleteResource.VID);
+                            Solr_Controller.Delete_Resource_From_Index(InstanceWide_Settings_Singleton.Settings.Document_Solr_Index_URL, InstanceWide_Settings_Singleton.Settings.Page_Solr_Index_URL, deleteResource.BibID, deleteResource.VID);
                         }
                         catch (Exception ee)
                         {
@@ -802,7 +799,7 @@ namespace SobekCM.Builder
 
 
             // Save the exception to an exception file
-            StreamWriter exception_writer = new StreamWriter(SobekCM_Library_Settings.Local_Log_Directory + "\\exceptions_log.txt", true);
+            StreamWriter exception_writer = new StreamWriter(InstanceWide_Settings_Singleton.Settings.Local_Log_Directory + "\\exceptions_log.txt", true);
             exception_writer.WriteLine(String.Empty);
             exception_writer.WriteLine(String.Empty);
             exception_writer.WriteLine("----------------------------------------------------------");

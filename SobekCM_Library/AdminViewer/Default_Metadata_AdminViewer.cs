@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -87,7 +88,7 @@ namespace SobekCM.Library.AdminViewer
 							actionMessage = "Deletes default metadata '" + delete_value + "'";
 
 							// Look for the file to delete as well
-							string pmets_file = SobekCM_Library_Settings.Base_MySobek_Directory + "projects\\" + delete_value + ".pmets";
+							string pmets_file = InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "projects\\" + delete_value + ".pmets";
 							if (File.Exists(pmets_file))
 							{
 								try
@@ -130,8 +131,8 @@ namespace SobekCM.Library.AdminViewer
 							{
 								if (new_base_code.Length > 0)
 								{
-									string pmets_file = SobekCM_Library_Settings.Base_MySobek_Directory + "projects\\" + code_value + ".pmets";
-									string base_pmets_file = SobekCM_Library_Settings.Base_MySobek_Directory + "projects\\" + new_base_code + ".pmets";
+									string pmets_file = InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "projects\\" + code_value + ".pmets";
+									string base_pmets_file = InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "projects\\" + new_base_code + ".pmets";
 
 									if (File.Exists(base_pmets_file))
 										File.Copy(base_pmets_file, pmets_file, true);
@@ -246,7 +247,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
 			}
 
-			Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/projects\" target=\"PROJECTS_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
+			Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/projects\" target=\"PROJECTS_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
 
 			Output.WriteLine("  <h2>New Default Metadata</h2>");
 			Output.WriteLine("  <div class=\"sbkPav_NewDiv\">");

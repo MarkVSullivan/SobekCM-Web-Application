@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace SobekCM.Library.Configuration
+namespace SobekCM.Core.Configuration
 {
     /// <summary> Enumeration of all the most commonly supported languages by 
     /// major browsers  </summary>
@@ -396,7 +393,7 @@ namespace SobekCM.Library.Configuration
     }
 
     /// <summary> Static class is used to change between codes and language names to the language enumeration  </summary>
-    static class Web_Language_Enum_Converter
+    public static class Web_Language_Enum_Converter
     {
         /// <summary> Gets the array of different language names supported by this system </summary>
         public static string[] Language_Name_Array

@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -100,7 +102,7 @@ namespace SobekCM.Library.Citation.Elements
             }
 
             // Now, add all the other download-eligible files
-            ReadOnlyCollection<string> otherFiles = Bib.Web.Get_Download_Eligible_Files(SobekCM_Library_Settings.Image_Server_Network + Bib.Web.AssocFilePath);
+            ReadOnlyCollection<string> otherFiles = Bib.Web.Get_Download_Eligible_Files(InstanceWide_Settings_Singleton.Settings.Image_Server_Network + Bib.Web.AssocFilePath);
             foreach (string thisOtherFile in otherFiles)
             {
                 if (!possible_select_items.Contains(thisOtherFile))
@@ -206,7 +208,7 @@ namespace SobekCM.Library.Citation.Elements
             if (different)
             {
                 // Get the directory for this package
-                string directory = SobekCM_Library_Settings.Image_Server_Network + Bib.Web.AssocFilePath;
+                string directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + Bib.Web.AssocFilePath;
 
                 // Clear existing
                 Bib.Divisions.Download_Tree.Clear();

@@ -6,6 +6,8 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
@@ -27,11 +29,11 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = false;
             possible_select_items.Clear();
 
-            List<string> futureTypes = SobekCM_Library_Settings.Disposition_Types_Future;
+            List<Disposition_Option> futureTypes = InstanceWide_Settings_Singleton.Settings.Disposition_Options;
             possible_select_items.Add(String.Empty);
-            foreach (string thisType in futureTypes)
+            foreach (Disposition_Option thisType in futureTypes)
             {
-                possible_select_items.Add(thisType);
+                possible_select_items.Add(thisType.Future);
             }
             Type = Element_Type.Disposition_Advice;
             second_label = "Notes";
@@ -77,7 +79,7 @@ namespace SobekCM.Library.Citation.Elements
 
             string term = String.Empty;
             if ( Bib.Tracking.Disposition_Advice > 0 )
-                term =  SobekCM_Library_Settings.Disposition_Term_Future( Bib.Tracking.Disposition_Advice);
+                term =  InstanceWide_Settings_Singleton.Settings.Disposition_Term_Future( Bib.Tracking.Disposition_Advice);
             render_helper(Output, term, Bib.Tracking.Disposition_Advice_Notes, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, false);
         }
 
@@ -116,7 +118,7 @@ namespace SobekCM.Library.Citation.Elements
 
             if (advice.Length > 0)
             {
-                Bib.Tracking.Disposition_Advice = (short) SobekCM_Library_Settings.Disposition_ID_Future(advice);
+                Bib.Tracking.Disposition_Advice = (short) InstanceWide_Settings_Singleton.Settings.Disposition_ID_Future(advice);
                 Bib.Tracking.Disposition_Advice_Notes = notes;
 
             }

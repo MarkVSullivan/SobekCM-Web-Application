@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
@@ -811,7 +813,7 @@ namespace SobekCM.Library.Aggregations
             // If no language code, then always use this as the default
             if (Language == Web_Language_Enum.DEFAULT)
             {
-                homeFilesByLanguage[SobekCM_Library_Settings.Default_UI_Language] = Home_Page_File;
+                homeFilesByLanguage[InstanceWide_Settings_Singleton.Settings.Default_UI_Language] = Home_Page_File;
             }
             else
             {
@@ -828,7 +830,7 @@ namespace SobekCM.Library.Aggregations
             // If no language code, then always use this as the default
             if (Language == Web_Language_Enum.DEFAULT)
             {
-                bannerImagesByLanguage[SobekCM_Library_Settings.Default_UI_Language] = Banner_Image;
+                bannerImagesByLanguage[InstanceWide_Settings_Singleton.Settings.Default_UI_Language] = Banner_Image;
             }
             else
             {
@@ -850,7 +852,7 @@ namespace SobekCM.Library.Aggregations
             // If no language code, then always use this as the default
             if (Language == Web_Language_Enum.DEFAULT)
             {
-				frontBannerImageByLanguage[SobekCM_Library_Settings.Default_UI_Language] = banner;
+				frontBannerImageByLanguage[InstanceWide_Settings_Singleton.Settings.Default_UI_Language] = banner;
             }
             else
             {
@@ -908,9 +910,9 @@ namespace SobekCM.Library.Aggregations
             }
 
             // Default to the system language then
-            if (bannerImagesByLanguage.ContainsKey(SobekCM_Library_Settings.Default_UI_Language))
+            if (bannerImagesByLanguage.ContainsKey(InstanceWide_Settings_Singleton.Settings.Default_UI_Language))
             {
-                return "design/" + ObjDirectory + bannerImagesByLanguage[SobekCM_Library_Settings.Default_UI_Language];
+                return "design/" + ObjDirectory + bannerImagesByLanguage[InstanceWide_Settings_Singleton.Settings.Default_UI_Language];
             }
 
             // Just return the first, assuming one exists
@@ -943,9 +945,9 @@ namespace SobekCM.Library.Aggregations
             }
 
             // Default to the system language then
-            if (frontBannerImageByLanguage.ContainsKey(SobekCM_Library_Settings.Default_UI_Language))
+            if (frontBannerImageByLanguage.ContainsKey(InstanceWide_Settings_Singleton.Settings.Default_UI_Language))
             {
-                return frontBannerImageByLanguage[SobekCM_Library_Settings.Default_UI_Language];
+                return frontBannerImageByLanguage[InstanceWide_Settings_Singleton.Settings.Default_UI_Language];
             }
 
             // Just return the first, assuming one exists
@@ -989,9 +991,9 @@ namespace SobekCM.Library.Aggregations
             }
 
             // Default to the system language then
-            if (homeFilesByLanguage.ContainsKey(SobekCM_Library_Settings.Default_UI_Language))
+            if (homeFilesByLanguage.ContainsKey(InstanceWide_Settings_Singleton.Settings.Default_UI_Language))
             {
-                return homeFilesByLanguage[SobekCM_Library_Settings.Default_UI_Language];
+                return homeFilesByLanguage[InstanceWide_Settings_Singleton.Settings.Default_UI_Language];
             }
 
             // Just return the first, assuming one exists
@@ -1012,7 +1014,7 @@ namespace SobekCM.Library.Aggregations
             }
 
             // Get the home file source
-            string homeFileSource = SobekCM_Library_Settings.Base_Design_Location + ObjDirectory +
+            string homeFileSource = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + ObjDirectory +
                                     Home_Page_File(Language);
 
             // If no home file source even found, return a message to that affect

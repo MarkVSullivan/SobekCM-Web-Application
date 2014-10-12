@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using SobekCM.Core.Configuration;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
 using SobekCM_UI_Library.Navigation;

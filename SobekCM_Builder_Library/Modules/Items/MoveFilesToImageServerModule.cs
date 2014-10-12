@@ -18,7 +18,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             Resource.File_Root = Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8, 2);
 
             // Determine the destination folder for this resource
-            string serverPackageFolder = SobekCM_Library_Settings.Image_Server_Network + Resource.File_Root + "\\" + Resource.VID;
+            string serverPackageFolder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + Resource.File_Root + "\\" + Resource.VID;
 
             throw new NotImplementedException();
 
@@ -60,7 +60,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     string new_file = ServerPackageFolder + "/" + thisFileInfo.Name;
 
                     // Keep the list of new image files being copied, which may be used later
-                    if (SobekCM_Library_Settings.PAGE_IMAGE_EXTENSIONS.Contains(thisFileInfo.Extension.ToUpper().Replace(".", "")))
+                    if (InstanceWide_Settings_Singleton.Settings.Page_Image_Extensions.Contains(thisFileInfo.Extension.ToUpper().Replace(".", "")))
                         NewImageFiles.Add(thisFileInfo.Name);
 
                     // If the file exists, delete it, 

@@ -47,9 +47,9 @@ namespace SobekCM.Builder_Library.Modules.Items
             // Send a database email if there appears to have been a SSN
             if (ssn_match.Length > 0)
             {
-                if (SobekCM_Library_Settings.Privacy_Email_Address.Length > 0)
+                if (InstanceWide_Settings_Singleton.Settings.Privacy_Email_Address.Length > 0)
                 {
-                    SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.Privacy_Email_Address, "Possible Social Security Number Located", "A string which appeared to be a possible social security number was found while bulk loading or post-processing an item.\n\nThe SSN was found in package " + bibID + ":" + vid + " in file '" + ssn_text_file_name + "'.\n\nThe text which may be a SSN is '" + ssn_match + "'.\n\nPlease review this item and remove any private information which should not be on the web server.", false, false, -1, -1);
+                    SobekCM_Database.Send_Database_Email(InstanceWide_Settings_Singleton.Settings.Privacy_Email_Address, "Possible Social Security Number Located", "A string which appeared to be a possible social security number was found while bulk loading or post-processing an item.\n\nThe SSN was found in package " + bibID + ":" + vid + " in file '" + ssn_text_file_name + "'.\n\nThe text which may be a SSN is '" + ssn_match + "'.\n\nPlease review this item and remove any private information which should not be on the web server.", false, false, -1, -1);
                 }
                 OnProcess("Possible SSN Located (" + ssn_text_file_name + ")", "Privacy Checking", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
             }

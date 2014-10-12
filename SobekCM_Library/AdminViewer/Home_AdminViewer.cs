@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using SobekCM.Core.Settings;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
@@ -126,8 +127,8 @@ namespace SobekCM.Library.AdminViewer
 
 			Output.WriteLine("  </table>");
 
-			Output.WriteLine("  <p>For clarification on any of these options, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/tasks\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
-			Output.WriteLine("  <p>You are currently running version " + SobekCM_Library_Settings.CURRENT_WEB_VERSION + ". ( <a href=\"http://ufdc.ufl.edu/sobekcm/development/history\">see release notes</a> )</p>");
+			Output.WriteLine("  <p>For clarification on any of these options, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/tasks\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+			Output.WriteLine("  <p>You are currently running version " + InstanceWide_Settings_Singleton.Settings.Current_Web_Version + ". ( <a href=\"http://ufdc.ufl.edu/sobekcm/development/history\">see release notes</a> )</p>");
 			Output.WriteLine("</div>");
 		}
 	}

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -120,9 +121,9 @@ namespace SobekCM.Library.MainWriters
                 {
                     // Get the list of all TEXT files
                     List<string> existing_text_files = new List<string>();
-                    if (Directory.Exists(SobekCM_Library_Settings.Image_Server_Network + currentItem.Web.AssocFilePath))
+                    if (Directory.Exists(InstanceWide_Settings_Singleton.Settings.Image_Server_Network + currentItem.Web.AssocFilePath))
                     {
-                        string[] allFiles = Directory.GetFiles(SobekCM_Library_Settings.Image_Server_Network + currentItem.Web.AssocFilePath, "*.txt");
+                        string[] allFiles = Directory.GetFiles(InstanceWide_Settings_Singleton.Settings.Image_Server_Network + currentItem.Web.AssocFilePath, "*.txt");
                         existing_text_files.AddRange(allFiles.Select(thisFile => (new FileInfo(thisFile)).Name.ToUpper()));
                     }
 
@@ -193,7 +194,7 @@ namespace SobekCM.Library.MainWriters
                 // Was a previous item/title included here?
                 if (i > 1)
                     Output.Write(",");
-                Output.Write("{\"collection_item\":{\"name\":\"" + firstItemResult.Title.Trim().Replace("\"", "'") + "\",\"url\":\"" + SobekCM_Library_Settings.System_Base_URL + titleResult.BibID + "/" + firstItemResult.VID + "\",\"collection_code\":\"\",\"id\":\"" + titleResult.BibID + "_" + firstItemResult.VID + "\",\"thumb_url\":\"" + thumb + "\"}}");
+                Output.Write("{\"collection_item\":{\"name\":\"" + firstItemResult.Title.Trim().Replace("\"", "'") + "\",\"url\":\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + titleResult.BibID + "/" + firstItemResult.VID + "\",\"collection_code\":\"\",\"id\":\"" + titleResult.BibID + "_" + firstItemResult.VID + "\",\"thumb_url\":\"" + thumb + "\"}}");
 
                 i++;
             }

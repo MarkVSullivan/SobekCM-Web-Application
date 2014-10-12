@@ -1,25 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#region Using directives
 
-namespace SobekCM.Library.Settings
+using System.Runtime.Serialization;
+
+#endregion
+
+namespace SobekCM.Core.Settings
 {
     /// <summary> Information about a single file extension, associated MIME type, and related
     /// system settings </summary>
+    [DataContract]
     public class Mime_Type_Info
     {
         /// <summary> File extension for this MIME type  </summary>
+        [DataMember(EmitDefaultValue = false)]
         public string Extension { get; private set; }
 
         /// <summary> MIME type for files of this extension </summary>
+        [DataMember(EmitDefaultValue = false)]
         public string MIME_Type { get; private set; }
 
         /// <summary> Flag indicates files of this extension are explicitly blocked </summary>
+        [DataMember]
         public bool isBlocked { get; private set; }
 
         /// <summary> Flag indicates if there are special features within IIS for which
         /// files of this type should be handed to IIS to handle (for example, byte-enabled video) </summary>
+        [DataMember]
         public bool shouldForward { get; private set; }
 
         /// <summary> Constructor for a new instance of the Mime_Type_Info class </summary>

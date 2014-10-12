@@ -2,6 +2,7 @@
 
 using System;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library;
 using SobekCM.Library.Database;
 using SobekCM.Library.MainWriters;
@@ -58,7 +59,7 @@ namespace SobekCM
 					}
 				}
 
-				if ((SobekCM_Library_Settings.Web_Output_Caching_Minutes > 0) && (String.IsNullOrEmpty(Request.QueryString["refresh"])))
+				if ((InstanceWide_Settings_Singleton.Settings.Web_Output_Caching_Minutes > 0) && (String.IsNullOrEmpty(Request.QueryString["refresh"])))
 				{
 					if ((pageGlobals.currentMode.Mode != Display_Mode_Enum.Error) &&
 						(pageGlobals.currentMode.Mode != Display_Mode_Enum.My_Sobek) &&
@@ -77,7 +78,7 @@ namespace SobekCM
 						((pageGlobals.currentMode.Mode != Display_Mode_Enum.Item_Display) || ((pageGlobals.currentMode.ViewerCode.Length > 0) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("citation") < 0) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("allvolumes3") < 0))))
 					{
 						Response.Cache.SetCacheability(HttpCacheability.Private);
-						Response.Cache.SetMaxAge(new TimeSpan(0, SobekCM_Library_Settings.Web_Output_Caching_Minutes, 0));
+						Response.Cache.SetMaxAge(new TimeSpan(0, InstanceWide_Settings_Singleton.Settings.Web_Output_Caching_Minutes, 0));
 					}
 					else
 					{
@@ -290,8 +291,8 @@ namespace SobekCM
 			if ((pageGlobals.currentMode == null) || (pageGlobals.currentMode.Request_Completed))
 				return;
 
-			if (!String.IsNullOrEmpty(SobekCM_Library_Settings.System_Name))
-				Response.Output.Write(SobekCM_Library_Settings.System_Name + " : SobekCM Digital Repository");
+			if (!String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.System_Name))
+				Response.Output.Write(InstanceWide_Settings_Singleton.Settings.System_Name + " : SobekCM Digital Repository");
 			else
 				Response.Output.Write("SobekCM Digital Repository");
 		}

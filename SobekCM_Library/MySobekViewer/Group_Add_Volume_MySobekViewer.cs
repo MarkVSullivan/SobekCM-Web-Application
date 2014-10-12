@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
@@ -149,7 +150,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Read this template
                 Template_XML_Reader reader = new Template_XML_Reader();
                 template = new Template();
-                reader.Read_XML(SobekCM_Library_Settings.Base_MySobek_Directory + "templates\\defaults\\" + template_code + ".xml", template, true);
+                reader.Read_XML(InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "templates\\defaults\\" + template_code + ".xml", template, true);
 
                 // Add the current codes to this template
                 template.Add_Codes(Code_Manager);
@@ -343,9 +344,9 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Determine the in process directory for this
-            string user_in_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".", "").Replace("@", "") + "\\newitem";
+            string user_in_process_directory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".", "").Replace("@", "") + "\\newitem";
             if (user.ShibbID.Trim().Length > 0)
-                user_in_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\newitem";
+                user_in_process_directory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\newitem";
 
             // Ensure this directory exists
             if (!Directory.Exists(user_in_process_directory))
@@ -369,17 +370,17 @@ namespace SobekCM.Library.MySobekViewer
             string base_url = currentMode.Base_URL;
             try
             {
-                Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
+                Static_Pages_Builder staticBuilder = new Static_Pages_Builder(InstanceWide_Settings_Singleton.Settings.System_Base_URL, InstanceWide_Settings_Singleton.Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
                 string filename = user_in_process_directory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
                 staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
 
 				// Copy the static HTML file to the web server
 				try
 				{
-					if (!Directory.Exists(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
-						Directory.CreateDirectory(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
+					if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
+						Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
 					if (File.Exists(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
-						File.Copy(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
+						File.Copy(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
 				}
 				catch (Exception)
 				{
@@ -416,27 +417,22 @@ namespace SobekCM.Library.MySobekViewer
             MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
             string errorMessage;
             Dictionary<string, object> options = new Dictionary<string, object>();
-            options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
-            marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);
-
-
-            // Copy this to all the image servers
-            SobekCM_Library_Settings.Refresh(Database.SobekCM_Database.Get_Settings_Complete(Tracer));
-            
+            options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, InstanceWide_Settings_Singleton.Settings.System_Name, InstanceWide_Settings_Singleton.Settings.System_Abbreviation);
+            marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);          
 
             // Copy all the files over to the server 
-            string serverNetworkFolder = SobekCM_Library_Settings.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
+            string serverNetworkFolder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
 
             // Create the folder
             if (!Directory.Exists(serverNetworkFolder))
                 Directory.CreateDirectory(serverNetworkFolder);
-			if (!Directory.Exists(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME))
-				Directory.CreateDirectory(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME);
+            if (!Directory.Exists(serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name))
+                Directory.CreateDirectory(serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name);
 
 			// Copy the static HTML page over first
 			if (File.Exists(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
 			{
-				File.Copy(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME + "\\" + item.BibID + "_" + item.VID + ".html", true);
+                File.Copy(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name + "\\" + item.BibID + "_" + item.VID + ".html", true);
 				File.Delete(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html");
 			}
 
@@ -531,7 +527,7 @@ namespace SobekCM.Library.MySobekViewer
 		    Output.WriteLine("    <ul>");
 		    Output.WriteLine("      <li>Only enter data that you wish to override the data in the existing base volume.</li>");
 		    //Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
-		    Output.WriteLine("      <li>Click <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/addvolume\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on adding new volumes online.</li>");
+		    Output.WriteLine("      <li>Click <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "help/addvolume\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on adding new volumes online.</li>");
 		    Output.WriteLine("     </ul>");
 		    Output.WriteLine("</div>");
 		    Output.WriteLine();

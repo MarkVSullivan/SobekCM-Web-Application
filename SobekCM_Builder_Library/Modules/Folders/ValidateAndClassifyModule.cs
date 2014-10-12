@@ -22,7 +22,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
 
         public override void DoWork(Actionable_Builder_Source_Folder BuilderFolder, List<Incoming_Digital_Resource> IncomingPackages, List<Incoming_Digital_Resource> Deletes)
         {
-            if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+            if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                 OnProcess("ValidateAndClassifyModule.Perform_BulkLoader: Begin validating and classifying packages in incoming/process folders", "Verbose", String.Empty, String.Empty, -1);
 
             try
@@ -31,7 +31,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                 if ((Directory.Exists(BuilderFolder.Processing_Folder)) && (Directory.GetDirectories(BuilderFolder.Processing_Folder).Length > 0))
                 {
                     // Get the list of all packages in the processing folder
-                    if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+                    if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                         OnProcess("....Validate packages for " + BuilderFolder.Folder_Name, "Verbose", String.Empty, String.Empty, -1);
 
                     List<Incoming_Digital_Resource> packages = BuilderFolder.Packages_For_Processing;
@@ -40,7 +40,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                         // Create the METS validation objects
                         if (thisMetsValidator == null)
                         {
-                            if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+                            if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                                 OnProcess("ValidateAndClassifyModule.Constructor: Created Validators", "Verbose", String.Empty, String.Empty, -1);
 
                             thisMetsValidator = new SobekCM_METS_Validator(String.Empty);
@@ -51,7 +51,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                         foreach (Incoming_Digital_Resource resource in packages)
                         {
                             // Validate the categorize the package
-                            if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+                            if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                                 OnProcess("........Checking '" + resource.Folder_Name + "'", "Verbose", resource.Folder_Name.Replace("_", ":"), String.Empty, -1);
 
                             // If there is no METS file, use special code to check this
@@ -73,17 +73,17 @@ namespace SobekCM.Builder_Library.Modules.Folders
                                     {
                                         if (itemTable == null)
                                         {
-                                            DataSet incomingFileInstructions = SobekCM_Database.Get_Builder_Settings_Complete(null);
+                                            DataSet itemListFromDb = SobekCM_Database.Get_Item_List(true, null);
 
                                             // Reload the settings
-                                            if (incomingFileInstructions == null)
+                                            if (itemListFromDb == null)
                                             {
                                                 OnError("ValidateAndClassifyModule : Unable to pull the item table from the database", String.Empty, String.Empty, -1);
                                                 return;
                                             }
 
                                             // Save the item table
-                                            itemTable = incomingFileInstructions.Tables[2];
+                                            itemTable = itemListFromDb.Tables[0];
                                         }
 
 
@@ -207,7 +207,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
         /// <returns></returns>
         public string Validate_and_Read_METS(Incoming_Digital_Resource Resource, SobekCM_METS_Validator ThisMetsValidator, METS_Validator_Object MetsSchemeValidator)
         {
-            if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+            if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                 OnProcess("ValidateAndClassifyModule.Validate_and_Read_METS: Start ( " + Resource.Folder_Name + " )", "Verbose", String.Empty, String.Empty, -1);
 
             // Determine invalid bib id and vid for any errors
@@ -228,7 +228,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
             }
 
             // Verify that a METS file exists
-            if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+            if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                 OnProcess("ValidateAndClassifyModule.Validate_and_Read_METS: Check for METS existence", "Verbose", bib_vid, String.Empty, -1);
 
             if (ThisMetsValidator.METS_Existence_Check(Resource.Resource_Folder) == false)
@@ -257,7 +257,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
 
             // check the mets file against the scheme
             FileInfo metsFileInfo = new FileInfo(mets_file);
-            if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+            if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                 OnProcess("ValidateAndClassifyModule.Validate_and_Read_METS: Validate against " + metsFileInfo.Name + " against the schema", "Verbose", bib_vid, String.Empty, -1);
 
             if (MetsSchemeValidator.Validate_Against_Schema(mets_file) == false)
@@ -270,7 +270,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
             SobekCM_Item returnValue;
             try
             {
-                if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+                if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                     OnProcess("ValidateAndClassifyModule.Validate_and_Read_METS: Read validated METS file", "Verbose", Resource.Folder_Name.Replace("_", ":"), "UNKNOWN", -1);
                 returnValue = SobekCM_Item.Read_METS(mets_file);
             }
@@ -307,7 +307,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
 
 
                 // Do the basic check first
-                if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+                if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                     OnProcess("ValidateAndClassifyModule.Validate_and_Read_METS: Perform basic check", "Verbose", Resource.Resource_Folder.Replace("_", ":"), Resource.METS_Type_String, -1);
 
                 if (!ThisMetsValidator.SobekCM_Standard_Check(returnValue, Resource.Resource_Folder))
@@ -320,11 +320,11 @@ namespace SobekCM.Builder_Library.Modules.Folders
                 // If this is a COMPLETE package, check files
                 if (returnValue.METS_Header.RecordStatus_Enum == METS_Record_Status.COMPLETE)
                 {
-                    if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+                    if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                         OnProcess("ValidateAndClassifyModule.Validate_and_Read_METS: Check resource files (existence and checksum)", "Verbose", Resource.Resource_Folder.Replace("_", ":"), Resource.METS_Type_String, -1);
 
                     // check if all files exist in the package and the MD5 checksum if the checksum flag is true		
-                    if (!ThisMetsValidator.Check_Files(Resource.Resource_Folder, SobekCM_Library_Settings.VerifyCheckSum))
+                    if (!ThisMetsValidator.Check_Files(Resource.Resource_Folder, InstanceWide_Settings_Singleton.Settings.VerifyCheckSum))
                     {
                         // Save this error log and return null
                         Create_Error_Log(Resource.Resource_Folder, Resource.Folder_Name, ThisMetsValidator.ValidationError, Resource.METS_Type_String);
@@ -359,7 +359,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                         break;
                 }
 
-                if (SobekCM_Library_Settings.Builder_Verbose_Flag)
+                if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
                     OnProcess("ValidateAndClassifyModule.Validate_and_Read_METS: Complete - validated", "Verbose", Resource.Resource_Folder.Replace("_", ":"), Resource.METS_Type_String, -1);
                 return String.Empty;
             }

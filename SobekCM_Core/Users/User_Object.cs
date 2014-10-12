@@ -796,7 +796,7 @@ namespace SobekCM.Core.Users
         /// <returns>TRUE if the user can edit this item, otherwise FALSE</returns>
         public bool Can_Edit_This_Item( string BibID, string ItemType, string SourceCode, string HoldingCode, ICollection<string> Aggregations )
         {
-            //if (!SobekCM_Library_Settings.Online_Edit_Submit_Enabled)
+            //if (!InstanceWide_Settings_Singleton.Settings.Online_Edit_Submit_Enabled)
             //    return false;
 
             if ( String.Compare(ItemType, "PROJECT", true ) == 0 )
@@ -869,9 +869,9 @@ namespace SobekCM.Core.Users
         //    /// TODO: This should not reference the settings (I think)
             
         //    // Determine the in process directory for this
-        //    string userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + UserName.Replace(".", "").Replace("@", "") + "\\" + Directory_Name;
+        //    string userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + UserName.Replace(".", "").Replace("@", "") + "\\" + Directory_Name;
         //    if (ShibbID.Trim().Length > 0)
-        //        userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + ShibbID + "\\" + Directory_Name;
+        //        userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + ShibbID + "\\" + Directory_Name;
 
         //    return userInProcessDirectory;
         //}

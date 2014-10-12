@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
@@ -123,8 +125,8 @@ namespace SobekCM.Library
 			SobekCM_Skin_Collection_Builder.Populate_Default_Skins(skinsCollection, null);
 
             // Set some constant settings
-            // SobekCM.Library.SobekCM_Library_Settings.Watermarks_URL = primary_web_server_url + "/design/wordmarks/";
-            SobekCM_Library_Settings.Base_SobekCM_Location_Relative = primaryWebServerUrl;
+            // SobekCM.Library.InstanceWide_Settings_Singleton.Settings.Watermarks_URL = primary_web_server_url + "/design/wordmarks/";
+            InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative = primaryWebServerUrl;
 
             // Create the mode object
             currentMode = new SobekCM_Navigation_Object
@@ -278,7 +280,7 @@ namespace SobekCM.Library
 
 	        // Set the correct base directory
 			if (staticSobekcmLocation.Length > 0)
-				SobekCM_Library_Settings.Base_Directory = staticSobekcmLocation;
+				InstanceWide_Settings_Singleton.Settings.Base_Directory = staticSobekcmLocation;
 
             // Set the item for the current mode
 	        errors = 0;
@@ -304,8 +306,8 @@ namespace SobekCM.Library
                     //}
                     string bibid = thisRow["BibID"].ToString();
                     string vid = thisRow["VID"].ToString();
-	                string itemDirectory = SobekCM_Library_Settings.Image_Server_Network + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
-	                string staticDirectory = itemDirectory + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME;
+	                string itemDirectory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
+	                string staticDirectory = itemDirectory + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name;
 
 
 					// ********** TEMPORARY CLEAN UP ***********************//
@@ -405,7 +407,7 @@ namespace SobekCM.Library
 						if (Create_Item_Citation_HTML(bibid, vid, static_file, itemDirectory, itemList))
 						{
 							// Also copy to the static page location server
-							string web_server_directory = SobekCM_Library_Settings.Static_Pages_Location + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
+							string web_server_directory = InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
 							if (!Directory.Exists(web_server_directory))
 								Directory.CreateDirectory(web_server_directory);
 
@@ -538,7 +540,7 @@ namespace SobekCM.Library
             Logger.AddNonError(InstanceName + ".....Building RSS feeds for ALL ITEMS");
 			SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building RSS feeds for ALL ITEMS", String.Empty);
 
-            Create_RSS_Feed("all", staticSobekcmDataLocation + "rss\\", "All " + SobekCM_Library_Settings.System_Abbreviation + " Items", items);
+            Create_RSS_Feed("all", staticSobekcmDataLocation + "rss\\", "All " + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + " Items", items);
 
             // Build the site maps
             Logger.AddNonError(InstanceName + ".....Building site maps");
@@ -556,13 +558,13 @@ namespace SobekCM.Library
             allListWriter.WriteLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
             allListWriter.WriteLine("<html xmlns=\"http://www.w3.org/1999/xhtml\" >");
             allListWriter.WriteLine("<head>");
-            allListWriter.WriteLine("  <title>" + SobekCM_Library_Settings.System_Name + " Site Map Links</title>");
+            allListWriter.WriteLine("  <title>" + InstanceWide_Settings_Singleton.Settings.System_Name + " Site Map Links</title>");
             allListWriter.WriteLine();
             allListWriter.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
             allListWriter.WriteLine("  <link href=\"" + primaryWebServerUrl + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 			if (defaultSkinObject.CSS_Style.Length > 0)
 			{
-				allListWriter.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+				allListWriter.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}
 
             allListWriter.WriteLine("</head>");
@@ -573,7 +575,7 @@ namespace SobekCM.Library
 			string banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"All Collections\" href=\"" + primaryWebServerUrl + "\" style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + primaryWebServerUrl + "design/aggregations/all/images/banners/coll.jpg\" alt=\"\" /></a></div>";
 			Display_Header(allListWriter, defaultSkinObject, banner);
 
-            allListWriter.WriteLine("<br /><br />This page is to provide static links to all resources in " + SobekCM_Library_Settings.System_Abbreviation + ". <br />");
+            allListWriter.WriteLine("<br /><br />This page is to provide static links to all resources in " + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + ". <br />");
             allListWriter.WriteLine("Click <a href=\"" + primaryWebServerUrl + "\">HERE</a> to return to main library. <br />");
             allListWriter.WriteLine("<br />");
             allListWriter.WriteLine("<br />");
@@ -612,13 +614,13 @@ namespace SobekCM.Library
                 writer.WriteLine("<!DOCTYPE html>");
                 writer.WriteLine("<html>");
                 writer.WriteLine("<head>");
-				writer.WriteLine("  <title>RSS Feeds for " + SobekCM_Library_Settings.System_Abbreviation + "</title>");
+				writer.WriteLine("  <title>RSS Feeds for " + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + "</title>");
                 writer.WriteLine();
                 writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
                 writer.WriteLine("  <link href=\"" + primaryWebServerUrl + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 				if (defaultSkinObject.CSS_Style.Length > 0)
 				{
-					writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+					writer.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 				}
                 writer.WriteLine("</head>");
                 writer.WriteLine("<body>");
@@ -633,13 +635,13 @@ namespace SobekCM.Library
 
                 writer.WriteLine("<div class=\"ViewsBrowsesRow\">");
 				writer.WriteLine("  <ul class=\"sbk_FauxUpwardTabsList\">");
-				writer.WriteLine("    <li><a href=\"" + primaryWebServerUrl + "\">" + SobekCM_Library_Settings.System_Abbreviation + " HOME</a></li>");
+				writer.WriteLine("    <li><a href=\"" + primaryWebServerUrl + "\">" + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + " HOME</a></li>");
 				writer.WriteLine("    <li class=\"current\">RSS FEEDS</li>");
 				writer.WriteLine("  </ul>");
                 writer.WriteLine("</div>");
                 writer.WriteLine();
                 writer.WriteLine("<div class=\"SobekSearchPanel\">");
-                writer.WriteLine("  <h1>RSS Feeds for the " + SobekCM_Library_Settings.System_Name + "</h1>");
+                writer.WriteLine("  <h1>RSS Feeds for the " + InstanceWide_Settings_Singleton.Settings.System_Name + "</h1>");
                 writer.WriteLine("</div>");
                 writer.WriteLine();
 
@@ -648,12 +650,12 @@ namespace SobekCM.Library
                 writer.WriteLine("  <tr>");
                 writer.WriteLine("    <td>");
                 writer.WriteLine("      <br />");
-				writer.WriteLine("      This page provides links to RSS feeds for items within " + SobekCM_Library_Settings.System_Name + ".  The first group of RSS feeds below contains the last 20 items added to the collection.  The second group of items contains links to every item in a collection.  These rss feeds can grow quite lengthy and the load time is often non-trivial.<br />");
+				writer.WriteLine("      This page provides links to RSS feeds for items within " + InstanceWide_Settings_Singleton.Settings.System_Name + ".  The first group of RSS feeds below contains the last 20 items added to the collection.  The second group of items contains links to every item in a collection.  These rss feeds can grow quite lengthy and the load time is often non-trivial.<br />");
                 writer.WriteLine("      <br />");
                 writer.WriteLine("      In addition, the following three RSS feeds are provided:");
                 writer.WriteLine("      <blockquote>");
-                writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_rss.xml\">All items in " + SobekCM_Library_Settings.System_Abbreviation + "</a><br />");
-				writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_short_rss.xml\">Most recently added items in " + SobekCM_Library_Settings.System_Abbreviation + " (last 100)</a><br />");
+                writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_rss.xml\">All items in " + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + "</a><br />");
+				writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_short_rss.xml\">Most recently added items in " + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + " (last 100)</a><br />");
                 writer.WriteLine("      </blockquote>");
                 writer.WriteLine("      RSS feeds	are a way to keep up-to-date on new materials that are added to the Digital Collections. RSS feeds are written in XML    and require a news reader to access.<br />");
                 writer.WriteLine("      <br />");
@@ -750,7 +752,7 @@ namespace SobekCM.Library
 	        currentMode.Is_Robot = true;
 
 			if (staticSobekcmLocation.Length > 0)
-				SobekCM_Library_Settings.Base_Directory = staticSobekcmLocation;
+				InstanceWide_Settings_Singleton.Settings.Base_Directory = staticSobekcmLocation;
 
             // Pull the item aggregation object
 	        if (Aggregation.Web_Skins.Count > 0)
@@ -768,17 +770,17 @@ namespace SobekCM.Library
 			writer.WriteLine("<!DOCTYPE html>");
 			writer.WriteLine("<html>");
 			writer.WriteLine("<head>");
-	        writer.WriteLine("  <title>" + SobekCM_Library_Settings.System_Abbreviation + " - " + Aggregation.Name + "</title>");
+	        writer.WriteLine("  <title>" + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + " - " + Aggregation.Name + "</title>");
 			writer.WriteLine();
-			writer.WriteLine("  <!-- " + SobekCM_Library_Settings.System_Name + " : SobekCM Digital Repository -->");
+			writer.WriteLine("  <!-- " + InstanceWide_Settings_Singleton.Settings.System_Name + " : SobekCM Digital Repository -->");
 			writer.WriteLine();
-			writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
-			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + SobekCM_Library_Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
-			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + SobekCM_Library_Settings.System_Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
+			writer.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
 	        writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
 			if (skinObject.CSS_Style.Length > 0)
 			{
-				writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+				writer.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}
 			if (Aggregation.CSS_File.Length > 0)
 			{
@@ -897,7 +899,7 @@ namespace SobekCM.Library
             // Finish writing this
             Finish_writing_html(Current_Item, currentPage, Static_FileName, Text_File_Directory);
 
-            SobekCM_Library_Settings.Base_SobekCM_Location_Relative = String.Empty;
+            InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative = String.Empty;
             return true;
 
         }
@@ -931,7 +933,7 @@ namespace SobekCM.Library
                 SobekCM_Item currentItem;
                 Page_TreeNode currentPage;
                 SobekCM_Items_In_Title itemsInTitle;
-				assistant.Get_Item(String.Empty, currentMode, Item_List, SobekCM_Library_Settings.Image_URL, iconList, null, tracer, null, out currentItem, out currentPage, out itemsInTitle);
+				assistant.Get_Item(String.Empty, currentMode, Item_List, InstanceWide_Settings_Singleton.Settings.Image_URL, iconList, null, tracer, null, out currentItem, out currentPage, out itemsInTitle);
                 currentMode.Aggregation = String.Empty;
                 if (currentItem == null)
                     return false;
@@ -945,7 +947,7 @@ namespace SobekCM.Library
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
                 Dictionary<string, object> options = new Dictionary<string, object>();
-                options["MarcXML_File_ReaderWriter:Additional_Tags"] = currentItem.MARC_Sobek_Standard_Tags(codeManager.Get_Collection_Short_Name(currentMode.Aggregation), true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
+                options["MarcXML_File_ReaderWriter:Additional_Tags"] = currentItem.MARC_Sobek_Standard_Tags(codeManager.Get_Collection_Short_Name(currentMode.Aggregation), true, InstanceWide_Settings_Singleton.Settings.System_Name, InstanceWide_Settings_Singleton.Settings.System_Abbreviation);
                 return marcWriter.Write_Metadata(marcFile, currentItem, options, out errorMessage);
             }
             catch
@@ -981,7 +983,7 @@ namespace SobekCM.Library
             SobekCM_Item currentItem;
             Page_TreeNode currentPage;
             SobekCM_Items_In_Title itemsInTitle;
-			assistant.Get_Item(String.Empty, currentMode, Item_List, SobekCM_Library_Settings.Image_URL, iconList, null,  tracer, null, out currentItem, out currentPage, out itemsInTitle);
+			assistant.Get_Item(String.Empty, currentMode, Item_List, InstanceWide_Settings_Singleton.Settings.Image_URL, iconList, null,  tracer, null, out currentItem, out currentPage, out itemsInTitle);
 		    if (currentItem == null)
 			    return false;
 
@@ -1002,7 +1004,7 @@ namespace SobekCM.Library
 	        bool textSearchable = CurrentItem.Behaviors.Text_Searchable;
 	        CurrentItem.Behaviors.Text_Searchable = false;
 			if (staticSobekcmLocation.Length > 0)
-		        SobekCM_Library_Settings.Base_Directory = staticSobekcmLocation;
+		        InstanceWide_Settings_Singleton.Settings.Base_Directory = staticSobekcmLocation;
 
 			// Get the skin
 	        if ((CurrentItem.Behaviors.Web_Skin_Count > 0) && ( !CurrentItem.Behaviors.Web_Skins.Contains( defaultSkin.ToUpper())))
@@ -1018,11 +1020,11 @@ namespace SobekCM.Library
 
             // Create the HTML writer
             Item_HtmlSubwriter itemWriter = new Item_HtmlSubwriter(CurrentItem, CurrentPage, null, codeManager, translations, true, true, currentMode, null, String.Empty, null, tracer) { Mode = currentMode, Skin = skinObject };
-            SobekCM_Library_Settings.Base_SobekCM_Location_Relative = currentMode.Base_URL;
-            if ((SobekCM_Library_Settings.Base_SobekCM_Location_Relative.Length == 0) || (SobekCM_Library_Settings.Base_SobekCM_Location_Relative.Contains("localhost")))
+            InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative = currentMode.Base_URL;
+            if ((InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative.Length == 0) || (InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative.Contains("localhost")))
             {
-                SobekCM_Library_Settings.Base_SobekCM_Location_Relative = primaryWebServerUrl;
-                currentMode.Base_URL = SobekCM_Library_Settings.Base_SobekCM_Location_Relative;
+                InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative = primaryWebServerUrl;
+                currentMode.Base_URL = InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative;
             }
 
             // Now that the item viewer is built, set the robot flag to suppress some checks
@@ -1036,17 +1038,17 @@ namespace SobekCM.Library
 			writer.WriteLine("<head>");
 			writer.WriteLine("  <title>" + CurrentItem.Bib_Info.Main_Title + "</title>");
 			writer.WriteLine();
-			writer.WriteLine("  <!-- " + SobekCM_Library_Settings.System_Name + " : SobekCM Digital Repository -->");
+			writer.WriteLine("  <!-- " + InstanceWide_Settings_Singleton.Settings.System_Name + " : SobekCM Digital Repository -->");
 			writer.WriteLine();
-			writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
-			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + SobekCM_Library_Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
-			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + SobekCM_Library_Settings.System_Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
-			writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			writer.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
+			writer.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 
 			writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
 			if (skinObject.CSS_Style.Length > 0)
 			{
-				writer.WriteLine("  <link href=\"" + SobekCM_Library_Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+				writer.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}
 
 			string image_src = currentMode.Base_URL + "/" + CurrentItem.Web.AssocFilePath + "/" + CurrentItem.Behaviors.Main_Thumbnail;
@@ -1350,7 +1352,7 @@ namespace SobekCM.Library
 	    /// <param name="CurrentItem"> Current item, to include the aggregationPermissions in the breadcrumbs </param>
 	    public void Display_Header(TextWriter Writer, SobekCM_Skin_Object HTMLSkin, SobekCM_Item CurrentItem )
         {
-			StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + currentMode.Base_URL + "\">" + SobekCM_Library_Settings.System_Abbreviation + " Home</a>");
+			StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + currentMode.Base_URL + "\">" + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + " Home</a>");
 
 			int codes_added = 0;
 				if (CurrentItem.Behaviors.Aggregation_Count > 0)
@@ -1452,7 +1454,7 @@ namespace SobekCM.Library
 		/// <param name="Banner"> Banner HTML</param>
 		public void Display_Header(TextWriter Writer, SobekCM_Skin_Object HTMLSkin, string Banner)
 		{
-			string breadcrumbs = "<a href=\"" + currentMode.Base_URL + "\">" + SobekCM_Library_Settings.System_Name + " Home</a>";
+			string breadcrumbs = "<a href=\"" + currentMode.Base_URL + "\">" + InstanceWide_Settings_Singleton.Settings.System_Name + " Home</a>";
 			Writer.WriteLine(HTMLSkin.Header_Item_HTML.Replace("<%URLOPTS%>", "").Replace("<%?URLOPTS%>", "").Replace("<%&URLOPTS%>", "").Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", "").Replace("<%ENGLISH%>", "").Replace("<%FRENCH%>", "").Replace("<%SPANISH%>", "").Replace("<%LOWGRAPHICS%>", "").Replace("<%HIGHGRAPHICS%>", "").Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%BANNER%>", Banner));
 			Writer.WriteLine(String.Empty);
 		}
