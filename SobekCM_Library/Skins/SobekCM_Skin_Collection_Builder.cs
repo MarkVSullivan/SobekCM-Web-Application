@@ -3,6 +3,7 @@
 using System;
 using System.Data;
 using System.IO;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
@@ -58,7 +59,7 @@ namespace SobekCM.Library.Skins
 	        bool override_banner = Convert.ToBoolean(Skin_Row["OverrideBanner"]);
             string banner_link = Skin_Row["BannerLink"].ToString();
             string this_style = "design/skins/" + code + "/" + code + ".css";
-            if (!File.Exists(SobekCM_Library_Settings.Base_Design_Location + "skins\\" + code + "\\" + code + ".css"))
+            if (!File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + code + "\\" + code + ".css"))
                 this_style = String.Empty;
 
             // Build the interface, along with any overriding banner
@@ -68,7 +69,7 @@ namespace SobekCM.Library.Skins
                 string this_banner = String.Empty;
 
                 // Find the LANGUAGE-SPECIFIC high-bandwidth banner image
-                string[] banner_file = Directory.GetFiles(SobekCM_Library_Settings.Base_Design_Location + "skins/" + code, "banner_" + Language_Code + ".*");
+                string[] banner_file = Directory.GetFiles(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code, "banner_" + Language_Code + ".*");
                 if (banner_file.Length > 0)
                 {
                     if (banner_link.Length > 0)
@@ -84,7 +85,7 @@ namespace SobekCM.Library.Skins
                 // If nothing was gotten, look for the ENGLISH banner image and use that
                 if ((this_banner.Length == 0) && (Language_Code.Length > 0) && (Language_Code != "en"))
                 {
-                    banner_file = Directory.GetFiles(SobekCM_Library_Settings.Base_Design_Location + "skins/" + code, "banner.*");
+                    banner_file = Directory.GetFiles(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code, "banner.*");
                     if (banner_file.Length > 0)
                     {
                         if (banner_link.Length > 0)
@@ -120,38 +121,38 @@ namespace SobekCM.Library.Skins
             if ((Language_Code.Length > 0) && (Language_Code != "en"))
             {
                 // Assign the default locations for the banners
-                this_header = SobekCM_Library_Settings.Base_Design_Location + "skins/" + code + "/html/header_" + Language_Code + ".html";
-                this_footer = SobekCM_Library_Settings.Base_Design_Location + "skins/" + code + "/html/footer_" + Language_Code + ".html";
-                this_item_header = SobekCM_Library_Settings.Base_Design_Location + "skins/" + code + "/html/header_item_" + Language_Code + ".html";
-                this_item_footer = SobekCM_Library_Settings.Base_Design_Location + "skins/" + code + "/html/footer_item_" + Language_Code + ".html";
+                this_header = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/header_" + Language_Code + ".html";
+                this_footer = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/footer_" + Language_Code + ".html";
+                this_item_header = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/header_item_" + Language_Code + ".html";
+                this_item_footer = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/footer_item_" + Language_Code + ".html";
 
                 if (!File.Exists(this_header))
                 {
-                    this_header = SobekCM_Library_Settings.Base_Design_Location + "skins/" + code + "/html/header.html";
+                    this_header = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/header.html";
                 }
 
                 if (!File.Exists(this_footer))
                 {
-                    this_footer = SobekCM_Library_Settings.Base_Design_Location + "skins/" + code + "/html/footer.html";
+                    this_footer = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/footer.html";
                 }
 
                 if (!File.Exists(this_item_header))
                 {
-                    this_item_header = SobekCM_Library_Settings.Base_Design_Location + "skins/" + code + "/html/header_item.html";
+                    this_item_header = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/header_item.html";
                 }
 
                 if (!File.Exists(this_item_footer))
                 {
-                    this_item_footer = SobekCM_Library_Settings.Base_Design_Location + "skins/" + code + "/html/footer_item.html";
+                    this_item_footer = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/footer_item.html";
                 }
             }
             else
             {
                 // Assign the default locations for the banners
-                this_header = SobekCM_Library_Settings.Base_Design_Location + "skins/" + code + "/html/header.html";
-                this_footer = SobekCM_Library_Settings.Base_Design_Location + "skins/" + code + "/html/footer.html";
-                this_item_header = SobekCM_Library_Settings.Base_Design_Location + "skins/" + code + "/html/header_item.html";
-                this_item_footer = SobekCM_Library_Settings.Base_Design_Location + "skins/" + code + "/html/footer_item.html";
+                this_header = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/header.html";
+                this_footer = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/footer.html";
+                this_item_header = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/header_item.html";
+                this_item_footer = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/footer_item.html";
             }
 
             // If the item specific stuff doesn't exist, use the regular 

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
@@ -120,7 +121,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Read this template
                 Template_XML_Reader reader = new Template_XML_Reader();
                 template = new Template();
-                reader.Read_XML( SobekCM_Library_Settings.Base_MySobek_Directory + "templates\\edit\\" + template_code + ".xml", template, true);
+                reader.Read_XML( InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "templates\\edit\\" + template_code + ".xml", template, true);
 
                 // Add the current codes to this template
                 template.Add_Codes(Code_Manager);
@@ -328,7 +329,7 @@ namespace SobekCM.Library.MySobekViewer
 				{
 					Output.WriteLine("      <li>To open detailed edit forms, click on the linked metadata values.</li>");
 				}
-				Output.WriteLine("      <li>Click <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/editinstructions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing metadata online.</li>");
+				Output.WriteLine("      <li>Click <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "help/editinstructions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing metadata online.</li>");
 			}
 			else
 			{
@@ -547,9 +548,9 @@ namespace SobekCM.Library.MySobekViewer
             else
             {
                 // Determine the in process directory for this
-                string user_bib_vid_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\metadata_updates\\" + item.BibID + "_" + item.VID;
+                string user_bib_vid_process_directory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\metadata_updates\\" + item.BibID + "_" + item.VID;
                 if (user.ShibbID.Trim().Length == 0)
-                    user_bib_vid_process_directory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".", "").Replace("@", "") + "\\metadata_updates\\" + item.BibID + "_" + item.VID;
+                    user_bib_vid_process_directory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".", "").Replace("@", "") + "\\metadata_updates\\" + item.BibID + "_" + item.VID;
 
                 // Ensure the folder exists and is empty to start with
                 if (!Directory.Exists(user_bib_vid_process_directory))
@@ -591,17 +592,17 @@ namespace SobekCM.Library.MySobekViewer
                 string base_url = currentMode.Base_URL;
                 try
                 {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
+                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(InstanceWide_Settings_Singleton.Settings.System_Base_URL, InstanceWide_Settings_Singleton.Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
                     string filename = user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html";
-                    staticBuilder.Create_Item_Citation_HTML(item, filename, SobekCM_Library_Settings.Image_Server_Network + item.Web.AssocFilePath);
+                    staticBuilder.Create_Item_Citation_HTML(item, filename, InstanceWide_Settings_Singleton.Settings.Image_Server_Network + item.Web.AssocFilePath);
 
 					// Copy the static HTML file to the web server
 					try
 					{
-						if (!Directory.Exists(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
-							Directory.CreateDirectory(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
+						if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
+							Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
 						if (File.Exists(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
-							File.Copy(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
+							File.Copy(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
 					}
 					catch
 					{
@@ -641,40 +642,37 @@ namespace SobekCM.Library.MySobekViewer
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
                 Dictionary<string, object> options = new Dictionary<string, object>();
-                options["MarcXML_File_ReaderWriter:Additional_Tags"] = item.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
+                options["MarcXML_File_ReaderWriter:Additional_Tags"] = item.MARC_Sobek_Standard_Tags(collectionnames, true, InstanceWide_Settings_Singleton.Settings.System_Name, InstanceWide_Settings_Singleton.Settings.System_Abbreviation);
                 marcWriter.Write_Metadata(item.Source_Directory + "\\marc.xml", item, options, out errorMessage);
 
-                // Copy this to all the image servers
-                SobekCM_Library_Settings.Refresh(Database.SobekCM_Database.Get_Settings_Complete(null));
-
 				// Determine the server folder
-                string serverNetworkFolder = SobekCM_Library_Settings.Image_Server_Network + item.Web.AssocFilePath;
+                string serverNetworkFolder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + item.Web.AssocFilePath;
 
                 // Create the folder
 	            if (!Directory.Exists(serverNetworkFolder))
 	            {
 		            Directory.CreateDirectory(serverNetworkFolder);
-		            if (!Directory.Exists(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME))
-			            Directory.CreateDirectory(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME);
+                    if (!Directory.Exists(serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name))
+                        Directory.CreateDirectory(serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name);
 	            }
 	            else
 	            {
-					if (!Directory.Exists(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME))
-						Directory.CreateDirectory(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME);
+                    if (!Directory.Exists(serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name))
+                        Directory.CreateDirectory(serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name);
 
 		            // Rename any existing standard mets to keep a backup
 		            if (File.Exists(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml"))
 		            {
 			            FileInfo currentMetsFileInfo = new FileInfo(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml");
 			            DateTime lastModDate = currentMetsFileInfo.LastWriteTime;
-			            File.Copy(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml", serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME + "\\" + item.BibID + "_" + item.VID + "_" + lastModDate.Year + "_" + lastModDate.Month + "_" + lastModDate.Day + ".mets.bak", true);
+                        File.Copy(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml", serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name + "\\" + item.BibID + "_" + item.VID + "_" + lastModDate.Year + "_" + lastModDate.Month + "_" + lastModDate.Day + ".mets.bak", true);
 		            }
 	            }
 
 				// Copy the static HTML page over first
 	            if (File.Exists(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
 	            {
-					File.Copy(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME + "\\" + item.BibID + "_" + item.VID + ".html", true);
+                    File.Copy(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name + "\\" + item.BibID + "_" + item.VID + ".html", true);
 					File.Delete(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html");
 	            }
 

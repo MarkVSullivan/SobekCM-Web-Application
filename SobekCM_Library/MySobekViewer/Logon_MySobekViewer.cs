@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -163,16 +164,16 @@ namespace SobekCM.Library.MySobekViewer
 			{
 				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid myDLOC logon</span>, <a id=\"form_logon_term\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with myDLOC authentication</a>.</li>");
 
-				if ((SobekCM_Library_Settings.Shibboleth_System_URL.Length > 0) && (SobekCM_Library_Settings.Shibboleth_System_Name.Length > 0))
+				if ((InstanceWide_Settings_Singleton.Settings.Shibboleth_System_URL.Length > 0) && (InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name.Length > 0))
 				{
-					Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + SobekCM_Library_Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + SobekCM_Library_Settings.Shibboleth_System_URL + "\">Sign on with your " + SobekCM_Library_Settings.Shibboleth_System_Name + " here</a>.</li>");
+					Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_URL + "\">Sign on with your " + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name + " here</a>.</li>");
 				}
 			}
 			else
 			{
-				if ((SobekCM_Library_Settings.Shibboleth_System_URL.Length > 0) && (SobekCM_Library_Settings.Shibboleth_System_Name.Length > 0))
+				if ((InstanceWide_Settings_Singleton.Settings.Shibboleth_System_URL.Length > 0) && (InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name.Length > 0))
 				{
-					Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + SobekCM_Library_Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + SobekCM_Library_Settings.Shibboleth_System_URL + "\">Sign on with your " + SobekCM_Library_Settings.Shibboleth_System_Name + " here</a>.</li>");
+					Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_URL + "\">Sign on with your " + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name + " here</a>.</li>");
 				}
 
 				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid my" + currentMode.SobekCM_Instance_Abbreviation + " logon</span>, <a id=\"form_logon_term\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with my" + currentMode.SobekCM_Instance_Abbreviation + " authentication here</a>.</li>");

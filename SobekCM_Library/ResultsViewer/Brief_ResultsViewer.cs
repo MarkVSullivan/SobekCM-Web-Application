@@ -2,6 +2,8 @@
 
 using System.Text;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Results;
@@ -103,7 +105,7 @@ namespace SobekCM.Library.ResultsViewer
                 }
                 else
                 {
-                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" +SobekCM_Library_Settings.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></td>");
+                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" +InstanceWide_Settings_Singleton.Settings.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></td>");
                 }
                 resultsBldr.AppendLine("\t\t<td>");
 
@@ -152,7 +154,7 @@ namespace SobekCM.Library.ResultsViewer
 				{
 					string field = Results_Statistics.Metadata_Labels[i];
 					string value = titleResult.Metadata_Display_Values[i];
-					Metadata_Search_Field thisField = SobekCM_Library_Settings.Metadata_Search_Field_By_Name(field);
+					Metadata_Search_Field thisField = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Name(field);
 					string display_field = string.Empty;
 					if ( thisField != null )
 						display_field = thisField.Display_Term;

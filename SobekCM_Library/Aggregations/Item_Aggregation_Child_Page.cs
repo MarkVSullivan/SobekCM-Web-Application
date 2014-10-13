@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SobekCM.Core.Configuration;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.WebContent;
 using SobekCM.Tools;

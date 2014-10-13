@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -126,9 +128,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// If the QC work is already in process, we may find a temporary METS file to read.
 
 			// Determine the in process directory for this
-            userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
+            userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
 			if (Current_User.ShibbID.Trim().Length > 0)
-                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + Current_User.ShibbID + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
+                userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + Current_User.ShibbID + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
 
 			// Make the folder for the user in process directory
 			if (!Directory.Exists(userInProcessDirectory))
@@ -1263,8 +1265,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    {
 	        if (File.Exists(metsInProcessFile))
 	        {
-	            string resource_directory = SobekCM_Library_Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
-                string backup_directory = SobekCM_Library_Settings.Image_Server_Network + qc_item.Web.AssocFilePath + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME;
+	            string resource_directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
+                string backup_directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + qc_item.Web.AssocFilePath + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name;
 
 	            // Ensure the backup directory exists
 	            if (!Directory.Exists(backup_directory))
@@ -1341,9 +1343,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	    private void Delete_Resource_File(string FilenameToDelete)
 	    {
-	        string resource_directory = SobekCM_Library_Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
+	        string resource_directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
             string[] files = Directory.GetFiles(resource_directory, FilenameToDelete + ".*");
-	        string recycle_bin = SobekCM_Library_Settings.Recycle_Bin + "\\" + qc_item.METS_Header.ObjectID;
+	        string recycle_bin = InstanceWide_Settings_Singleton.Settings.Recycle_Bin + "\\" + qc_item.METS_Header.ObjectID;
 	        if (!Directory.Exists(recycle_bin))
 	            Directory.CreateDirectory(recycle_bin);
 

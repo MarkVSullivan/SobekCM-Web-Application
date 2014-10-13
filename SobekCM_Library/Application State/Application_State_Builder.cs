@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
@@ -59,22 +60,25 @@ namespace SobekCM.Library.Application_State
                 return false;
             }
         }
-    
-        /// <summary> Verifies that each global object is built and builds them upon request </summary>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="Reload_All"> Flag indicates if everything should be reloaded/repopulated</param>
-        /// <param name="Skins"> [REF] Collection of all the web skins </param>
-        /// <param name="Translator"> [REF] Language support object which handles simple translational duties </param>
-        /// <param name="Code_Manager"> [REF] List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-        /// <param name="All_Items_Lookup"> [REF] Lookup object used to pull basic information about any item loaded into this library </param>
-        /// <param name="Icon_Dictionary"> [REF] Dictionary of information about every wordmark/icon in this digital library </param>
-        /// <param name="Stats_Date_Range"> [REF] Object contains the start and end dates for the statistical data in the database </param>
-        /// <param name="Thematic_Headings"> [REF] Headings under which all the highlighted collections on the main home page are organized </param>
-        /// <param name="Aggregation_Aliases"> [REF] List of all existing aliases for existing aggregationPermissions </param>
-        /// <param name="IP_Restrictions"> [REF] List of all IP Restriction ranges in use by this digital library </param>
-        /// <param name="URL_Portals"> [REF] List of all web portals into this system </param>
-        /// <param name="Mime_Types">[REF] Dictionary of MIME types by extension</param>
-        public static void Build_Application_State(Custom_Tracer Tracer, bool Reload_All,
+
+	    /// <summary> Verifies that each global object is built and builds them upon request </summary>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+	    /// <param name="Reload_All"> Flag indicates if everything should be reloaded/repopulated</param>
+	    /// <param name="Skins"> [REF] Collection of all the web skins </param>
+	    /// <param name="Translator"> [REF] Language support object which handles simple translational duties </param>
+	    /// <param name="Code_Manager"> [REF] List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
+	    /// <param name="All_Items_Lookup"> [REF] Lookup object used to pull basic information about any item loaded into this library </param>
+	    /// <param name="Icon_Dictionary"> [REF] Dictionary of information about every wordmark/icon in this digital library </param>
+	    /// <param name="Stats_Date_Range"> [REF] Object contains the start and end dates for the statistical data in the database </param>
+	    /// <param name="Thematic_Headings"> [REF] Headings under which all the highlighted collections on the main home page are organized </param>
+	    /// <param name="Aggregation_Aliases"> [REF] List of all existing aliases for existing aggregationPermissions </param>
+	    /// <param name="IP_Restrictions"> [REF] List of all IP Restriction ranges in use by this digital library </param>
+	    /// <param name="URL_Portals"> [REF] List of all web portals into this system </param>
+	    /// <param name="Mime_Types">[REF] Dictionary of MIME types by extension</param>
+        /// <param name="Item_Viewer_Priority">[REF] List of the item viewer priorities </param>
+        /// <param name="User_Groups">[REF] List of user groups </param>
+	    /// <param name="Search_Stop_Words"> List of search stop words (which are avoided when sending queries to the database) </param>
+	    public static void Build_Application_State(Custom_Tracer Tracer, bool Reload_All,
             ref SobekCM_Skin_Collection Skins, ref Language_Support_Info Translator,
             ref Aggregation_Code_Manager Code_Manager, ref Item_Lookup_Object All_Items_Lookup,
             ref Dictionary<string, Wordmark_Icon> Icon_Dictionary, 
@@ -85,43 +89,41 @@ namespace SobekCM.Library.Application_State
             ref Portal_List URL_Portals,
             ref Dictionary<string, Mime_Type_Info> Mime_Types,
 			ref List<string> Item_Viewer_Priority,
-            ref List<User_Group> User_Groups )
+            ref List<User_Group> User_Groups,
+            ref List<string> Search_Stop_Words )
 		{
             // Should we reload the data from the exteral configuraiton file?
             if (Reload_All)
             {
-                SobekCM_Library_Settings.Read_Configuration_File();
-				if ( SobekCM_Library_Settings.Database_Connections.Count > 0 )
-	                SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
-                SobekCM_Library_Settings.Refresh(SobekCM_Database.Get_Settings_Complete(null));
+                InstanceWide_Settings_Singleton.Refresh();
+				if ( InstanceWide_Settings_Singleton.Settings.Database_Connections.Count > 0 )
+	                SobekCM_Database.Connection_String = InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String;
             }
 
             // If there is no database connection string, there is a problem
-			if ((SobekCM_Library_Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(SobekCM_Library_Settings.Database_Connections[0].Connection_String)))
+			if ((InstanceWide_Settings_Singleton.Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String)))
             {
                 throw new ApplicationException("Missing database connection string!");
             }
 
             // Set the database connection strings
-			Resource_Object.Database.SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
-			SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
-
-            // Set the workflow and disposition types
-            if ((SobekCM_Library_Settings.Need_Workflow_And_Disposition_Types) || ( Reload_All ))
-            {
-                SobekCM_Library_Settings.Set_Workflow_And_Disposition_Types(SobekCM_Database.All_WorkFlow_Types, SobekCM_Database.All_Possible_Disposition_Types);
-            }
-
-            // Set the metadata types
-            if ((SobekCM_Library_Settings.Need_Metadata_Types) || ( Reload_All ))
-            {
-                SobekCM_Library_Settings.Set_Metadata_Types(SobekCM_Database.Get_Metadata_Fields(null) );
-            }
+			Resource_Object.Database.SobekCM_Database.Connection_String = InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String;
+			SobekCM_Database.Connection_String = InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String;
 
             // Set the search stop words
-            if ((SobekCM_Library_Settings.Need_Search_Stop_Words) || (Reload_All))
+            if ((Search_Stop_Words == null ) || ( Search_Stop_Words.Count == 0 ) || (Reload_All))
             {
-                SobekCM_Library_Settings.Search_Stop_Words = SobekCM_Database.Search_Stop_Words(Tracer);
+                if (Search_Stop_Words != null)
+                {
+                    lock (Search_Stop_Words)
+                    {
+                        Search_Stop_Words = SobekCM_Database.Search_Stop_Words(Tracer);
+                    }
+                }
+                else
+                {
+                    Search_Stop_Words = SobekCM_Database.Search_Stop_Words(Tracer);
+                }
             }
             
             // Check the list of thematic headings

@@ -8,6 +8,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -167,7 +168,7 @@ namespace SobekCM.Library.MySobekViewer
 			//	{
 			//		// Get the location for this METS file from the returned value
 			//		DataRow mainItemRow = itemDetails.Tables[2].Rows[0];
-			//		bib_location = SobekCM_Library_Settings.Image_Server_Network + mainItemRow["File_Location"].ToString().Replace("/", "\\");
+			//		bib_location = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + mainItemRow["File_Location"].ToString().Replace("/", "\\");
 			//		vid_location = bib_location + "\\" + currentMode.VID;
 			//	}
 			//}     
@@ -178,7 +179,7 @@ namespace SobekCM.Library.MySobekViewer
 
 			// Perform the SOLR delete
 			Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform solr delete");
-			Solr.Solr_Controller.Delete_Resource_From_Index(SobekCM_Library_Settings.Document_Solr_Index_URL, SobekCM_Library_Settings.Page_Solr_Index_URL, currentMode.BibID, currentMode.VID);
+			Solr.Solr_Controller.Delete_Resource_From_Index(InstanceWide_Settings_Singleton.Settings.Document_Solr_Index_URL, InstanceWide_Settings_Singleton.Settings.Page_Solr_Index_URL, currentMode.BibID, currentMode.VID);
 
 			if (!database_result2)
 			{
@@ -193,17 +194,17 @@ namespace SobekCM.Library.MySobekViewer
 					Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Move resource files to RECYCLE BIN folder");
 
 					// Make sure upper RECYCLE BIN folder exists, or create it
-					string delete_folder = SobekCM_Library_Settings.Image_Server_Network + "RECYCLE BIN";
+					string delete_folder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + "RECYCLE BIN";
 					if (!Directory.Exists(delete_folder))
 						Directory.CreateDirectory(delete_folder);
 
 					// Create the bib level folder next
-					string bib_folder = SobekCM_Library_Settings.Image_Server_Network + "RECYCLE BIN\\" + currentMode.BibID;
+					string bib_folder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + "RECYCLE BIN\\" + currentMode.BibID;
 					if (!Directory.Exists(bib_folder))
 						Directory.CreateDirectory(bib_folder);
 
 					// Ensure the VID folder does not exist
-					string vid_folder = SobekCM_Library_Settings.Image_Server_Network + "RECYCLE BIN\\" + currentMode.BibID + "\\" + currentMode.VID;
+					string vid_folder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + "RECYCLE BIN\\" + currentMode.BibID + "\\" + currentMode.VID;
 					if (Directory.Exists(vid_folder))
 						Directory.Move(vid_folder, vid_folder + "_OLD");
 

@@ -11,6 +11,7 @@ using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
+using SobekCM.Builder_Library;
 using Microsoft.Win32;
 
 #endregion
@@ -61,7 +62,7 @@ namespace SobekCM.Builder
                 // Check for versioning option
                 if (thisArgs == "--version")
                 {
-                    Console.WriteLine("You are running version " + SobekCM_Library_Settings.CURRENT_BUILDER_VERSION + " of the SobekCM Builder.");
+                    Console.WriteLine("You are running version " + InstanceWide_Settings_Singleton.Settings.Current_Builder_Version + " of the SobekCM Builder.");
                     return;
                 }
 
@@ -210,8 +211,7 @@ namespace SobekCM.Builder
             }
 
             // Should be a config file now, so read it
-            SobekCM_Library_Settings.Read_Configuration_File(config_file);
-            if (( SobekCM_Library_Settings.Database_Connections.Count == 0 ) || (SobekCM_Library_Settings.Database_Connections[0].Connection_String.Length == 0))
+            if (( InstanceWide_Settings_Singleton.Settings.Database_Connections.Count == 0 ) || (InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String.Length == 0))
             {
                 Console.WriteLine("Missing database connection string!!\n");
                 Console.Write("Would you like to run the configuration tool? [Y/N]: ");
@@ -247,9 +247,9 @@ namespace SobekCM.Builder
             }
 
             // Assign the connection string and test the connection (if only a single connection listed)
-	        if (SobekCM_Library_Settings.Database_Connections.Count == 1)
+	        if (InstanceWide_Settings_Singleton.Settings.Database_Connections.Count == 1)
 	        {
-		        SobekCM_Database.Connection_String = SobekCM_Library_Settings.Database_Connections[0].Connection_String;
+		        SobekCM_Database.Connection_String = InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String;
 		        if (!SobekCM_Database.Test_Connection())
 		        {
 			        Console.WriteLine("Unable to connect to the database using provided connection string:");
@@ -262,54 +262,54 @@ namespace SobekCM.Builder
 	        }
 
             // Verify connectivity and rights on the logs subfolder
-            SobekCM_Library_Settings.Local_Log_Directory = Application.StartupPath + "\\logs";
-			if (!Directory.Exists(SobekCM_Library_Settings.Local_Log_Directory))
+            InstanceWide_Settings_Singleton.Settings.Local_Log_Directory = Application.StartupPath + "\\logs";
+			if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Local_Log_Directory))
             {
                 try
                 {
-					Directory.CreateDirectory(SobekCM_Library_Settings.Local_Log_Directory);
+					Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Local_Log_Directory);
                 }
                 catch
                 {
                     Console.WriteLine("Error creating necessary logs subfolder under the application folder.\n");
                     Console.WriteLine("Please create manually.\n");
-					Console.WriteLine(SobekCM_Library_Settings.Local_Log_Directory);
+					Console.WriteLine(InstanceWide_Settings_Singleton.Settings.Local_Log_Directory);
                     return;
                 }
             }
             try
             {
-				StreamWriter testWriter = new StreamWriter(SobekCM_Library_Settings.Local_Log_Directory + "\\test.log", false);
+				StreamWriter testWriter = new StreamWriter(InstanceWide_Settings_Singleton.Settings.Local_Log_Directory + "\\test.log", false);
                 testWriter.WriteLine("TEST");
                 testWriter.Flush();
                 testWriter.Close();
 
-				File.Delete(SobekCM_Library_Settings.Local_Log_Directory + "\\test.log");
+				File.Delete(InstanceWide_Settings_Singleton.Settings.Local_Log_Directory + "\\test.log");
             }
             catch
             {
                 Console.WriteLine("The service account needs modify rights on the logs subfolder.\n");
                 Console.WriteLine("Please correct manually.\n");
-				Console.WriteLine(SobekCM_Library_Settings.Local_Log_Directory);
+				Console.WriteLine(InstanceWide_Settings_Singleton.Settings.Local_Log_Directory);
                 return;
             }
 
             // Look for Ghostscript from the registry, if not provided in the config file
-            if (SobekCM_Library_Settings.Ghostscript_Executable.Length == 0)
+            if (InstanceWide_Settings_Singleton.Settings.Ghostscript_Executable.Length == 0)
             {
                 // LOOK FOR THE GHOSTSCRIPT DIRECTORY
                 string possible_ghost = Look_For_Variable_Registry_Key("SOFTWARE\\GPL Ghostscript", "GS_DLL");
                 if (!String.IsNullOrEmpty(possible_ghost))
-                   SobekCM_Library_Settings.Ghostscript_Executable = possible_ghost;
+                   InstanceWide_Settings_Singleton.Settings.Ghostscript_Executable = possible_ghost;
             }
 
             // Look for Imagemagick from the registry, if not provided in the config file
             string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
             if (!String.IsNullOrEmpty(possible_imagemagick))
-                SobekCM_Library_Settings.ImageMagick_Executable = possible_imagemagick;
+                InstanceWide_Settings_Singleton.Settings.ImageMagick_Executable = possible_imagemagick;
 
             // If this is to refresh the OAI, don't use the worker controller
-            if (( refresh_oai ) &&  (SobekCM_Library_Settings.Database_Connections.Count == 1))
+            if (( refresh_oai ) &&  (InstanceWide_Settings_Singleton.Settings.Database_Connections.Count == 1))
             {
                 // Set the item for the current mode
                 int successes = 0;
@@ -321,7 +321,7 @@ namespace SobekCM.Builder
                     string vid = thisRow["VID"].ToString();
                     int groupid = Convert.ToInt32(thisRow["groupid"]);
 
-                    string directory = SobekCM_Library_Settings.Image_Server_Network + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
+                    string directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
                     string mets = directory + "\\" + bibid + "_" + vid + ".mets.xml";
 
                     try
@@ -334,7 +334,7 @@ namespace SobekCM.Builder
                             StringWriter writer = new StringWriter(oaiDataBuilder);
                             DC_METS_dmdSec_ReaderWriter.Write_Simple_Dublin_Core(writer, thisItem.Bib_Info);
                             // Also add the URL as identifier
-                            oaiDataBuilder.AppendLine("<dc:identifier>" + SobekCM_Library_Settings.System_Base_URL + bibid + "</dc:identifier>");
+                            oaiDataBuilder.AppendLine("<dc:identifier>" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + bibid + "</dc:identifier>");
                             Resource_Object.Database.SobekCM_Database.Save_Item_Group_OAI(groupid, oaiDataBuilder.ToString(), "oai_dc", true);
                             writer.Flush();
                             writer.Close();

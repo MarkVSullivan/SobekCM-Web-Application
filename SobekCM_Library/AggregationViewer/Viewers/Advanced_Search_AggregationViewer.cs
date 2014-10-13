@@ -3,6 +3,9 @@
 using System;
 using System.IO;
 using System.Linq;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
@@ -317,7 +320,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         private void add_drop_down_options(TextWriter Output, string DropValue )
         {
-            foreach (Metadata_Search_Field searchField in currentCollection.Advanced_Search_Fields.Select(SobekCM_Library_Settings.Metadata_Search_Field_By_ID).Where(SearchField => SearchField != null))
+            foreach (Metadata_Search_Field searchField in currentCollection.Advanced_Search_Fields.Select(InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID).Where(SearchField => SearchField != null))
             {
                 if (searchField.Web_Code == DropValue)
                 {

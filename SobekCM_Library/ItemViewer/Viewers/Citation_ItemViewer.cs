@@ -8,6 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
@@ -637,7 +639,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             builder.AppendLine("<div id=\"sbkCiv_MarcXmlDownload\" class=\"sbCiv_DownloadSection\">");
             builder.AppendLine("  <a href=\"" + marc_xml + "\" target=\"_blank\">View MARC XML File</a>");
-            builder.AppendLine("  <p>The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + CurrentMode.Redirect_URL("FC2") + "\">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=\"http://www.loc.gov/standards/marcxml/\">MarcXML Schema</a>.</p>");
+            builder.AppendLine("  <p>The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=\"" + InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative + CurrentMode.Redirect_URL("FC2") + "\">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=\"http://www.loc.gov/standards/marcxml/\">MarcXML Schema</a>.</p>");
 		    builder.AppendLine("</div>");
 
             // Should the TEI be added here?
@@ -727,7 +729,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 builder.AppendLine("<br />");
 			}
 
-            builder.AppendLine(CurrentItem.Get_MARC_HTML(collections, CurrentMode.Internal_User, Width, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation));
+            builder.AppendLine(CurrentItem.Get_MARC_HTML(collections, CurrentMode.Internal_User, Width, InstanceWide_Settings_Singleton.Settings.System_Name, InstanceWide_Settings_Singleton.Settings.System_Abbreviation));
 
             builder.AppendLine("<br />");
             builder.AppendLine("<br />");

@@ -4,6 +4,9 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Library.AggregationViewer;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
@@ -103,10 +106,10 @@ namespace SobekCM.Library.HTML
             bool pre_menu_options_exist = false;
             string first_pre_menu_option = String.Empty;
             string second_pre_menu_option = String.Empty;
-            if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Aggregation Viewer.Static First Menu Item"))
-                first_pre_menu_option = SobekCM_Library_Settings.Additional_Settings["Aggregation Viewer.Static First Menu Item"];
-            if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Aggregation Viewer.Static Second Menu Item"))
-                second_pre_menu_option = SobekCM_Library_Settings.Additional_Settings["Aggregation Viewer.Static Second Menu Item"];
+            if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Aggregation Viewer.Static First Menu Item"))
+                first_pre_menu_option = InstanceWide_Settings_Singleton.Settings.Additional_Settings["Aggregation Viewer.Static First Menu Item"];
+            if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Aggregation Viewer.Static Second Menu Item"))
+                second_pre_menu_option = InstanceWide_Settings_Singleton.Settings.Additional_Settings["Aggregation Viewer.Static Second Menu Item"];
             if ((first_pre_menu_option.Length > 0) || (second_pre_menu_option.Length > 0))
             {
                 pre_menu_options_exist = true;
@@ -165,7 +168,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("      <li id=\"sbkAgm_HomeListView\"><a href=\"" + Mode.Redirect_URL() + "\">" + list_view_text + "</a></li>");
                     Mode.Home_Type = Home_Type_Enum.Descriptions;
                     Output.WriteLine("      <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + Mode.Redirect_URL() + "\">" + brief_view_text + "</a></li>");
-                    if (SobekCM_Library_Settings.Include_TreeView_On_System_Home)
+                    if (InstanceWide_Settings_Singleton.Settings.Include_TreeView_On_System_Home)
                     {
                         Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
                         Output.WriteLine("      <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + Mode.Redirect_URL() + "\">" + tree_view_text + "</a></li>");
@@ -222,7 +225,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("        <li id=\"sbkAgm_HomeListView\"><a href=\"" + Mode.Redirect_URL() + "\">" + list_view_text + "</a></li>");
                     Mode.Home_Type = Home_Type_Enum.Descriptions;
                     Output.WriteLine("        <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + Mode.Redirect_URL() + "\">" + brief_view_text + "</a></li>");
-                    if (SobekCM_Library_Settings.Include_TreeView_On_System_Home)
+                    if (InstanceWide_Settings_Singleton.Settings.Include_TreeView_On_System_Home)
                     {
                         Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
                         Output.WriteLine("        <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + Mode.Redirect_URL() + "\">" + tree_view_text + "</a></li>");
@@ -232,7 +235,7 @@ namespace SobekCM.Library.HTML
                         Mode.Home_Type = Home_Type_Enum.Personalized;
                         Output.WriteLine("        <li id=\"sbkAgm_HomePersonalized\"><a href=\"" + Mode.Redirect_URL() + "\">" + myCollections + "</a></li>");
                     }
-                    if (SobekCM_Library_Settings.Include_Partners_On_System_Home)
+                    if (InstanceWide_Settings_Singleton.Settings.Include_Partners_On_System_Home)
                     {
                         Mode.Home_Type = Home_Type_Enum.Partners_List;
                         Output.WriteLine("        <li id=\"sbkAgm_HomePartners\"><a href=\"" + Mode.Redirect_URL() + "\">" + partners_text + "</a></li>");
@@ -285,7 +288,7 @@ namespace SobekCM.Library.HTML
                         }
                         else
                         {
-                            Metadata_Search_Field facetField = SobekCM_Library_Settings.Metadata_Search_Field_By_Display_Name(thisBrowse.Code);
+                            Metadata_Search_Field facetField = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Display_Name(thisBrowse.Code);
                             if (facetField != null)
                             {
                                 Mode.Info_Browse_Mode = thisBrowse.Code.ToLower().Replace(" ", "_");
@@ -464,7 +467,7 @@ namespace SobekCM.Library.HTML
             if (Current_Aggregation.Code == "all")
             {
                 // Is this library set to show the partners tab?
-                if (SobekCM_Library_Settings.Include_Partners_On_System_Home)
+                if (InstanceWide_Settings_Singleton.Settings.Include_Partners_On_System_Home)
                 {
                     Mode.Mode = Display_Mode_Enum.Aggregation;
                     Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
@@ -639,10 +642,10 @@ namespace SobekCM.Library.HTML
             bool pre_menu_options_exist = false;
             string first_pre_menu_option = String.Empty;
             string second_pre_menu_option = String.Empty;
-            if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Aggregation Viewer.Static First Menu Item"))
-                first_pre_menu_option = SobekCM_Library_Settings.Additional_Settings["Aggregation Viewer.Static First Menu Item"];
-            if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("Aggregation Viewer.Static Second Menu Item"))
-                second_pre_menu_option = SobekCM_Library_Settings.Additional_Settings["Aggregation Viewer.Static Second Menu Item"];
+            if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Aggregation Viewer.Static First Menu Item"))
+                first_pre_menu_option = InstanceWide_Settings_Singleton.Settings.Additional_Settings["Aggregation Viewer.Static First Menu Item"];
+            if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Aggregation Viewer.Static Second Menu Item"))
+                second_pre_menu_option = InstanceWide_Settings_Singleton.Settings.Additional_Settings["Aggregation Viewer.Static Second Menu Item"];
             if ((first_pre_menu_option.Length > 0) || (second_pre_menu_option.Length > 0))
             {
                 pre_menu_options_exist = true;
@@ -690,7 +693,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("      <li id=\"sbkAgm_HomeListView\"><a href=\"" + Mode.Redirect_URL() + "\">" + list_view_text + "</a></li>");
                     Mode.Home_Type = Home_Type_Enum.Descriptions;
                     Output.WriteLine("      <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + Mode.Redirect_URL() + "\">" + brief_view_text + "</a></li>");
-                    if (SobekCM_Library_Settings.Include_TreeView_On_System_Home)
+                    if (InstanceWide_Settings_Singleton.Settings.Include_TreeView_On_System_Home)
                     {
                         Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
                         Output.WriteLine("      <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + Mode.Redirect_URL() + "\">" + tree_view_text + "</a></li>");
@@ -733,7 +736,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("        <li id=\"sbkAgm_HomeListView\"><a href=\"" + Mode.Redirect_URL() + "\">" + list_view_text + "</a></li>");
                     Mode.Home_Type = Home_Type_Enum.Descriptions;
                     Output.WriteLine("        <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + Mode.Redirect_URL() + "\">" + brief_view_text + "</a></li>");
-                    if (SobekCM_Library_Settings.Include_TreeView_On_System_Home)
+                    if (InstanceWide_Settings_Singleton.Settings.Include_TreeView_On_System_Home)
                     {
                         Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
                         Output.WriteLine("        <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + Mode.Redirect_URL() + "\">" + tree_view_text + "</a></li>");
@@ -743,7 +746,7 @@ namespace SobekCM.Library.HTML
                         Mode.Home_Type = Home_Type_Enum.Personalized;
                         Output.WriteLine("        <li id=\"sbkAgm_HomePersonalized\"><a href=\"" + Mode.Redirect_URL() + "\">" + myCollections + "</a></li>");
                     }
-                    if (SobekCM_Library_Settings.Include_Partners_On_System_Home)
+                    if (InstanceWide_Settings_Singleton.Settings.Include_Partners_On_System_Home)
                     {
                         Mode.Home_Type = Home_Type_Enum.Partners_List;
                         Output.WriteLine("        <li id=\"sbkAgm_HomePartners\"><a href=\"" + Mode.Redirect_URL() + "\">" + partners_text + "</a></li>");
@@ -981,7 +984,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("      <li id=\"sbkUsm_HomeListView\"><a href=\"" + Mode.Redirect_URL() + "\">" + list_view_text + "</a></li>");
             Mode.Home_Type = Home_Type_Enum.Descriptions;
             Output.WriteLine("      <li id=\"sbkUsm_HomeBriefView\"><a href=\"" + Mode.Redirect_URL() + "\">" + brief_view_text + "</a></li>");
-            if (SobekCM_Library_Settings.Include_TreeView_On_System_Home)
+            if (InstanceWide_Settings_Singleton.Settings.Include_TreeView_On_System_Home)
             {
                 Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
                 Output.WriteLine("      <li id=\"sbkUsm_HomeTreeView\"><a href=\"" + Mode.Redirect_URL() + "\">" + tree_view_text + "</a></li>");
@@ -991,7 +994,7 @@ namespace SobekCM.Library.HTML
                 Mode.Home_Type = Home_Type_Enum.Personalized;
                 Output.WriteLine("      <li id=\"sbkUsm_HomePersonalized\"><a href=\"" + Mode.Redirect_URL() + "\">" + myCollections + "</a></li>");
             }
-            if (SobekCM_Library_Settings.Include_Partners_On_System_Home)
+            if (InstanceWide_Settings_Singleton.Settings.Include_Partners_On_System_Home)
             {
                 Mode.Home_Type = Home_Type_Enum.Partners_List;
                 Output.WriteLine("      <li id=\"sbkUsm_HomePartners\"><a href=\"" + Mode.Redirect_URL() + "\">" + partners_text + "</a></li>");
@@ -1008,7 +1011,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("    <li><a href=\"" + Mode.Redirect_URL() + "\">" + my_sobek_home_text + "</a><ul id=\"sbkUsm_MySubMenu\">");
 
                 // If a user can submit, add a link to start a new item
-                if ((User.Can_Submit) && (SobekCM_Library_Settings.Online_Edit_Submit_Enabled))
+                if ((User.Can_Submit) && (InstanceWide_Settings_Singleton.Settings.Online_Edit_Submit_Enabled))
                 {
                     Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                     Mode.My_Sobek_SubMode = "1";

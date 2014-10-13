@@ -6,6 +6,8 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Web;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
@@ -828,7 +830,7 @@ namespace SobekCM.Library.Navigation
 	        navigator.Aggregation = String.Empty;
 	        navigator.SubAggregation = String.Empty;
 
-	        string base_source = SobekCM_Library_Settings.Base_Directory + "design\\webcontent";
+	        string base_source = InstanceWide_Settings_Singleton.Settings.Base_Directory + "design\\webcontent";
 	        string source = base_source;
 	        string possible_info_mode = mode.Substring(2).Replace("_", "/");
 	        string filename = possible_info_mode;

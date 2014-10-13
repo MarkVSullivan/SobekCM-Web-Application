@@ -7,6 +7,8 @@ using System.Data;
 using System.IO;
 using System.Web;
 using System.Web.SessionState;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
@@ -62,7 +64,7 @@ namespace SobekCM.Library.HTML
             const string buildFailures = "BUILD FAILURES";
             const string buildFailuresTitle = "Build Failure Log";
             const string unauthorizedTitle = "Internal Users Only";
-             string my_sobek_home = "my" + currentMode.SobekCM_Instance_Abbreviation.ToUpper() + " HOME";
+             string my_sobek_home = "my" + Mode.SobekCM_Instance_Abbreviation.ToUpper() + " HOME";
             const string myLibrary = "MY LIBRARY";
             const string myPreferences = "MY ACCOUNT";
             const string internalTab = "INTERNAL";
@@ -70,7 +72,7 @@ namespace SobekCM.Library.HTML
             if ((user.Is_Portal_Admin) && (!user.Is_System_Admin))
                 sobek_admin = "PORTAL ADMIN";
 
-            if (currentMode.Language == Web_Language_Enum.Spanish)
+            if (Mode.Language == Web_Language_Enum.Spanish)
             {
                 title = "INICIO";
                 collection_details = "DETALLES DE LA COLECCIÓN";
@@ -81,7 +83,7 @@ namespace SobekCM.Library.HTML
                 memory_mgmt_title = "Actual del uso de la memoria";
             }
 
-            if (currentMode.Language == Web_Language_Enum.French)
+            if (Mode.Language == Web_Language_Enum.French)
             {
                 title = "PAGE D'ACCUEIL";
                 collection_details = "DETAILS DE LA COLLECTION";
@@ -96,10 +98,10 @@ namespace SobekCM.Library.HTML
             bool isAuthorized = (user != null) && ((user.Is_Internal_User) || ( user.Is_Portal_Admin ) || ( user.Is_System_Admin ));
 
             // Save the current type
-            Internal_Type_Enum type = currentMode.Internal_Type;
+            Internal_Type_Enum type = Mode.Internal_Type;
 
             // Add the banner
-            Add_Banner(Output, "sbkAhs_BannerDiv", currentMode, htmlSkin, Current_Aggregation);
+            Add_Banner(Output, "sbkAhs_BannerDiv", Mode, Skin, Current_Aggregation);
 
             if (!isAuthorized)
             {
@@ -112,7 +114,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<blockquote>");
                 Output.WriteLine("You are not authorized to access this view.");
                 Output.WriteLine("<br /><br />");
-                Output.WriteLine("<a href=\"" + currentMode.Base_URL + "l\"> Click here to return to the digital library home page. </a>");
+                Output.WriteLine("<a href=\"" + Mode.Base_URL + "l\"> Click here to return to the digital library home page. </a>");
                 Output.WriteLine("</blockquote>");
                 Output.WriteLine("<br /><br />");
                 Output.WriteLine("</div>");
@@ -121,7 +123,7 @@ namespace SobekCM.Library.HTML
             else
             {
                 // Add the user-specific main menu
-                MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, currentMode, user);
+                MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, Mode, user);
 
                 // Start the page container
                 Output.WriteLine("<div id=\"pagecontainer\">");
@@ -177,7 +179,7 @@ namespace SobekCM.Library.HTML
                     {
                         currentMode.Internal_Type = Internal_Type_Enum.Aggregations_List;
                         currentMode.Info_Browse_Mode = String.Empty;
-                        Output.WriteLine("  <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + aggregationPermissions + Down_Tab_End + "</a>");
+                        Output.WriteLine("  <a href=\"" + InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + aggregationPermissions + Down_Tab_End + "</a>");
                         currentMode.Internal_Type = type;
                     }
 
@@ -192,7 +194,7 @@ namespace SobekCM.Library.HTML
                         {
                             currentMode.Internal_Type = Internal_Type_Enum.Aggregations;
                             currentMode.Info_Browse_Mode = codeManager.All_Types[0];
-                            Output.WriteLine("  <a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + single + Down_Tab_End + "</a>");
+                            Output.WriteLine("  <a href=\"" + InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + single + Down_Tab_End + "</a>");
                             currentMode.Internal_Type = type;
                         }
                     }
@@ -204,7 +206,7 @@ namespace SobekCM.Library.HTML
                 } */
 
                 // Set the type back
-                currentMode.Internal_Type = type;
+                Mode.Internal_Type = type;
 
                 // Add the appropriate text
                 switch (type)
@@ -232,12 +234,12 @@ namespace SobekCM.Library.HTML
                         int start_year = DateTime.Now.Year;
                         int end_month = DateTime.Now.Month;
                         int end_year = DateTime.Now.Year;
-                        if (currentMode.Info_Browse_Mode.Length == 12)
+                        if (Mode.Info_Browse_Mode.Length == 12)
                         {
-                            Int32.TryParse(currentMode.Info_Browse_Mode.Substring(0, 4), out start_year);
-                            Int32.TryParse(currentMode.Info_Browse_Mode.Substring(4, 2), out start_month);
-                            Int32.TryParse(currentMode.Info_Browse_Mode.Substring(6, 4), out end_year);
-                            Int32.TryParse(currentMode.Info_Browse_Mode.Substring(10, 2), out end_month);
+                            Int32.TryParse(Mode.Info_Browse_Mode.Substring(0, 4), out start_year);
+                            Int32.TryParse(Mode.Info_Browse_Mode.Substring(4, 2), out start_month);
+                            Int32.TryParse(Mode.Info_Browse_Mode.Substring(6, 4), out end_year);
+                            Int32.TryParse(Mode.Info_Browse_Mode.Substring(10, 2), out end_month);
 
                             if (start_year > end_year)
                             {
@@ -297,7 +299,7 @@ namespace SobekCM.Library.HTML
                 Output.Write("    <td width=\"200px\">");
                 if (thisIcon.Link.Length > 0)
                     Output.Write("<a href=\"" + thisIcon.Link + "\" target=\"_blank\">");
-                Output.Write("<img border=\"0px\" class=\"SobekcmItemWorkdmark\" src=\"" + currentMode.Base_URL + "design/wordmarks/" +thisIcon.Image_FileName + "\"");
+                Output.Write("<img border=\"0px\" class=\"SobekcmItemWorkdmark\" src=\"" + Mode.Base_URL + "design/wordmarks/" +thisIcon.Image_FileName + "\"");
                 if ( thisIcon.Title.Length > 0)
                     Output.Write(" title=\"" + thisIcon.Title + "\"");
                 Output.Write(" />");
@@ -337,14 +339,14 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         protected internal void add_build_failures(TextWriter Output, int first_month, int first_year, int second_month, int second_year, Custom_Tracer Tracer)
         {
-            currentMode.Internal_Type = Internal_Type_Enum.Build_Failures;
+            Mode.Internal_Type = Internal_Type_Enum.Build_Failures;
 
             Tracer.Add_Trace("Internal_HtmlSubwriter.add_build_failures", "Rendering HTML");
 
-            string currentInfoBrowseMode = currentMode.Info_Browse_Mode;
-            currentMode.Info_Browse_Mode = String.Empty;
-            string redirect_url = currentMode.Redirect_URL();
-            currentMode.Info_Browse_Mode = currentInfoBrowseMode;
+            string currentInfoBrowseMode = Mode.Info_Browse_Mode;
+            Mode.Info_Browse_Mode = String.Empty;
+            string redirect_url = Mode.Redirect_URL();
+            Mode.Info_Browse_Mode = currentInfoBrowseMode;
 
             Output.WriteLine("<br />");
             Output.WriteLine("");
@@ -507,7 +509,7 @@ namespace SobekCM.Library.HTML
             string key = "KEY";
             string objectTitle = "OBJECT";
 
-                if (currentMode.Language == Web_Language_Enum.French)
+                if (Mode.Language == Web_Language_Enum.French)
                 {
                     global_values = "VALEURS MONIDAL";
                     application_state = "APPLICATAION LES VALEURS DE L'ÉTAT";
@@ -519,7 +521,7 @@ namespace SobekCM.Library.HTML
                     objectTitle = "Objet";
                 }
 
-                if (currentMode.Language == Web_Language_Enum.Spanish)
+                if (Mode.Language == Web_Language_Enum.Spanish)
                 {
                     global_values = "GLOBAL VALORES";
                     application_state = "APLICACIÓN ESTADO VALORES";
@@ -814,8 +816,8 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<blockquote>");
 
             // Now, add each individual aggregation type
-            currentMode.Internal_Type = Internal_Type_Enum.Aggregations;
-            string curentSubMode = currentMode.Info_Browse_Mode;
+            Mode.Internal_Type = Internal_Type_Enum.Aggregations;
+            string curentSubMode = Mode.Info_Browse_Mode;
             ReadOnlyCollection<string> allTypes = codeManager.All_Types;
             SortedList<string, string> sortedTypes = new SortedList<string, string>();
             foreach (string t in allTypes)
@@ -830,11 +832,11 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    currentMode.Info_Browse_Mode = thisType;
-                    Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + "\">" + thisType + "</a><br />");
+                    Mode.Info_Browse_Mode = thisType;
+                    Output.WriteLine("<a href=\"" + Mode.Redirect_URL() + "\">" + thisType + "</a><br />");
                 }
             }
-            currentMode.Info_Browse_Mode = curentSubMode;
+            Mode.Info_Browse_Mode = curentSubMode;
             Output.WriteLine("</blockquote>");
             Output.WriteLine("<h2>All " + current_type + "s</h2>");
 
@@ -905,7 +907,7 @@ namespace SobekCM.Library.HTML
 
                         Output.WriteLine("  <tr align=\"left\" valign=\"top\">");
 
-                        Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisAggregation.Code + "\">" + thisAggregation.Code + "</a></td>");
+                        Output.WriteLine("    <td><a href=\"" + Mode.Base_URL + thisAggregation.Code + "\">" + thisAggregation.Code + "</a></td>");
 
                         //Output.WriteLine("    <td>" + thisAggregation.Code + "</td>");
 
@@ -929,7 +931,7 @@ namespace SobekCM.Library.HTML
                                             Output.Write("<br />");
                                         Item_Aggregation_Related_Aggregations parentAggr = codeManager[code];
                                         if ((parentAggr != null) && (parentAggr.Active))
-                                            Output.Write("<a href=\"" + currentMode.Base_URL + code + "\">" + code + "</a> (" + parentAggr.ShortName + ")");
+                                            Output.Write("<a href=\"" + Mode.Base_URL + code + "\">" + code + "</a> (" + parentAggr.ShortName + ")");
                                         else
                                             Output.Write(code + " (" + thisRow[parentNameColumn] + ")");
                                         parent_count++;
@@ -955,7 +957,7 @@ namespace SobekCM.Library.HTML
                                         Output.Write("<br />");
                                     Item_Aggregation_Related_Aggregations childAggr = codeManager[code];
                                     if ((childAggr != null) && (childAggr.Active))
-                                        Output.Write("<a href=\"" + currentMode.Base_URL + code + "\">" + code + "</a> (" + childAggr.ShortName + ")");
+                                        Output.Write("<a href=\"" + Mode.Base_URL + code + "\">" + code + "</a> (" + childAggr.ShortName + ")");
                                     else
                                         Output.Write(thisRow[childCodeColumn] + " (" + thisRow[childNameColumn] + ")");
                                     child_count++;
@@ -988,7 +990,7 @@ namespace SobekCM.Library.HTML
                     {
                         Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
                         Output.WriteLine("  <tr align=\"left\" valign=\"top\">");
-                        Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisAggregation.Code + "\">" + thisAggregation.Code + "</a></td>");
+                        Output.WriteLine("    <td><a href=\"" + Mode.Base_URL + thisAggregation.Code + "\">" + thisAggregation.Code + "</a></td>");
                         Output.WriteLine("    <td>" + thisAggregation.ShortName + "</td>");
 
                         // Add relationship information
@@ -1009,7 +1011,7 @@ namespace SobekCM.Library.HTML
                                             Output.Write("<br />");
                                         Item_Aggregation_Related_Aggregations parentAggr = codeManager[code];
                                         if ((parentAggr != null) && (parentAggr.Active))
-                                            Output.Write("<a href=\"" + currentMode.Base_URL + code + "\">" + code + "</a> (" + parentAggr.ShortName + ")");
+                                            Output.Write("<a href=\"" + Mode.Base_URL + code + "\">" + code + "</a> (" + parentAggr.ShortName + ")");
                                         else
                                             Output.Write(code + " (" + thisRow[parentNameColumn] + ")");
                                         parent_count++;
@@ -1035,7 +1037,7 @@ namespace SobekCM.Library.HTML
                                         Output.Write("<br />");
                                     Item_Aggregation_Related_Aggregations childAggr = codeManager[code];
                                     if ((childAggr != null) && (childAggr.Active))
-                                        Output.Write("<a href=\"" + currentMode.Base_URL + code + "\">" + code + "</a> (" + childAggr.ShortName + ")");
+                                        Output.Write("<a href=\"" + Mode.Base_URL + code + "\">" + code + "</a> (" + childAggr.ShortName + ")");
                                     else
                                         Output.Write(thisRow[childCodeColumn] + " (" + thisRow[childNameColumn] + ")");
                                     child_count++;
@@ -1094,17 +1096,17 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<br />");
             Output.WriteLine("<p>Below is the complete master list of all aggregations within this library.  This includes all active aggregations, as well as all hidden or inactive collections.</p>");
-            if (( currentMode.Info_Browse_Mode.Length == 0 ) || ( currentMode.Info_Browse_Mode.ToUpper() != "DATE" ))
+            if (( Mode.Info_Browse_Mode.Length == 0 ) || ( Mode.Info_Browse_Mode.ToUpper() != "DATE" ))
             {
-                currentMode.Info_Browse_Mode = "date";
-                Output.WriteLine("<p><a href=\"" + currentMode.Redirect_URL() + "\">Click here to sort by DATE ADDED</a></p>");
-                currentMode.Info_Browse_Mode = String.Empty;
+                Mode.Info_Browse_Mode = "date";
+                Output.WriteLine("<p><a href=\"" + Mode.Redirect_URL() + "\">Click here to sort by DATE ADDED</a></p>");
+                Mode.Info_Browse_Mode = String.Empty;
             }
             else
             {
-                currentMode.Info_Browse_Mode = String.Empty;
-                Output.WriteLine("<p><a href=\"" + currentMode.Redirect_URL() + "\">Click here to sort by CODE</a></p>");
-                currentMode.Info_Browse_Mode = "date";
+                Mode.Info_Browse_Mode = String.Empty;
+                Output.WriteLine("<p><a href=\"" + Mode.Redirect_URL() + "\">Click here to sort by CODE</a></p>");
+                Mode.Info_Browse_Mode = "date";
 
                 collInfoView.Sort = "DateAdded DESC, Code ASC";
             }
@@ -1135,7 +1137,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
 
                     Output.WriteLine("  <tr align=\"left\">");
-                    Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + code + "\">" + code + "</a></td>");
+                    Output.WriteLine("    <td><a href=\"" + Mode.Base_URL + code + "\">" + code + "</a></td>");
                     Output.WriteLine("    <td>" + thisRow.Row["Type"] + "</td>");
                     Output.WriteLine("    <td>" + thisRow.Row["ShortName"] + "</td>");
 
@@ -1185,7 +1187,7 @@ namespace SobekCM.Library.HTML
             string post_processed = "POST-PROCESSED";
 
 
-            switch (currentMode.Language)
+            switch (Mode.Language)
             {
                 case Web_Language_Enum.French:
                     last_event = "Dernière année de construction";
@@ -1206,7 +1208,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Get the submode
-            string type = currentMode.Info_Browse_Mode;
+            string type = Mode.Info_Browse_Mode;
 
             // Make sure the value is one of the set values
             if ((type != String.Empty) && (type != "all") && (type != "edit") && (type != "submit") && (type != "visibility") && (type != "bulkloaded") && (type != "postprocessed"))
@@ -1235,8 +1237,8 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                currentMode.Info_Browse_Mode = "all";
-                Output.WriteLine("    <li><a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + allTypes + "</a></li>");
+                Mode.Info_Browse_Mode = "all";
+                Output.WriteLine("    <li><a href=\"" + InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative + Mode.Redirect_URL() + "\">" + allTypes + "</a></li>");
             }
 
             if (type == "edit")
@@ -1245,8 +1247,8 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                currentMode.Info_Browse_Mode = "edit";
-				Output.WriteLine("    <li><a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + online_edits + "</a></li>");
+                Mode.Info_Browse_Mode = "edit";
+				Output.WriteLine("    <li><a href=\"" + InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative + Mode.Redirect_URL() + "\">" + online_edits + "</a></li>");
             }
 
             if (type == "submit")
@@ -1255,8 +1257,8 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                currentMode.Info_Browse_Mode = "submit";
-				Output.WriteLine("    <li><a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + online_submits + "</a></li>");
+                Mode.Info_Browse_Mode = "submit";
+				Output.WriteLine("    <li><a href=\"" + InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative + Mode.Redirect_URL() + "\">" + online_submits + "</a></li>");
             }
 
             if (type == "visibility")
@@ -1265,8 +1267,8 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                currentMode.Info_Browse_Mode = "visibility";
-				Output.WriteLine("    <li><a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + visibility + "</a></li>");
+                Mode.Info_Browse_Mode = "visibility";
+				Output.WriteLine("    <li><a href=\"" + InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative + Mode.Redirect_URL() + "\">" + visibility + "</a></li>");
             }
 
             if (type == "bulkloaded")
@@ -1275,8 +1277,8 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                currentMode.Info_Browse_Mode = "bulkloaded";
-				Output.WriteLine("    <li><a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + bulk_loaded + "</a></li>");
+                Mode.Info_Browse_Mode = "bulkloaded";
+				Output.WriteLine("    <li><a href=\"" + InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative + Mode.Redirect_URL() + "\">" + bulk_loaded + "</a></li>");
             }
 
             if (type == "postprocessed")
@@ -1285,12 +1287,12 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                currentMode.Info_Browse_Mode = "postprocessed";
-				Output.WriteLine("    <li><a href=\"" + SobekCM_Library_Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + post_processed + "</a></li>");
+                Mode.Info_Browse_Mode = "postprocessed";
+				Output.WriteLine("    <li><a href=\"" + InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative + Mode.Redirect_URL() + "\">" + post_processed + "</a></li>");
             }
 			Output.WriteLine("</ul>");
             Output.WriteLine("</div>");
-            currentMode.Info_Browse_Mode = type;
+            Mode.Info_Browse_Mode = type;
 
             Output.WriteLine("<br />");
             Output.WriteLine("");
@@ -1355,7 +1357,7 @@ namespace SobekCM.Library.HTML
 
                         Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + columns + "\"></td></tr>");
                         Output.WriteLine("  <tr align=\"left\">");
-                        Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[0] + "/" + thisRow[1] + "\">" + thisRow[0] + " : " + thisRow[1] + "</a></td>");
+                        Output.WriteLine("    <td><a href=\"" + Mode.Base_URL + thisRow[0] + "/" + thisRow[1] + "\">" + thisRow[0] + " : " + thisRow[1] + "</a></td>");
                         Output.WriteLine("    <td>" + thisRow[2] + "</td>");
                         Output.WriteLine("    <td>" + thisRow[3] + "</td>");
 
@@ -1432,7 +1434,7 @@ namespace SobekCM.Library.HTML
 
                         Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"" + columns + "\"></td></tr>");
                         Output.WriteLine("  <tr align=\"left\">");
-                        Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[0] + "/" + thisRow[1] + "\">" + thisRow[0] + " : " + thisRow[1] + "</a></td>");
+                        Output.WriteLine("    <td><a href=\"" + Mode.Base_URL + thisRow[0] + "/" + thisRow[1] + "\">" + thisRow[0] + " : " + thisRow[1] + "</a></td>");
                         Output.WriteLine("    <td>" + thisRow[2] + "</td>");
                         Output.WriteLine("    <td>" + thisRow[3] + "</td>");
 
@@ -1554,10 +1556,10 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
-				if (currentMode.Internal_Type == Internal_Type_Enum.Wordmarks)
+				if (Mode.Internal_Type == Internal_Type_Enum.Wordmarks)
 					return "container-inner1000";
 
-				if (currentMode.Internal_Type == Internal_Type_Enum.Aggregations)
+				if (Mode.Internal_Type == Internal_Type_Enum.Aggregations)
 					return "container-inner1215";
 
 				return base.Container_CssClass;

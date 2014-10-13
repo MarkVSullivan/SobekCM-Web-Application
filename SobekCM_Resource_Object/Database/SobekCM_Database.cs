@@ -2021,52 +2021,8 @@ namespace SobekCM.Resource_Object.Database
 				}
 			}
 
-			// Add any download MIME Types
-			if ( ThisPackage.Divisions.Download_Tree.Has_Files )
-			{
-				List<string> mimeTypes = new List<string>();
-				List<SobekCM_File_Info> allDownloads = ThisPackage.Divisions.Download_Tree.All_Files;
-				foreach (SobekCM_File_Info thisDownload in allDownloads)
-				{
-					string thisMimeType = thisDownload.MIME_Type(thisDownload.File_Extension);
-					if (( thisMimeType.Length > 0 ) && ( !mimeTypes.Contains ( thisMimeType )))
-					{
-						mimeTypes.Add( thisMimeType );
-					}
-				}
-				foreach( string thisMimeType in mimeTypes )
-				{
-                    metadataTerms.Add(new KeyValuePair<string, string>("MIME Type", thisMimeType));
-				}
-			}
-
-			// Add all the TOC here
-			List<string> tocterms = new List<string>();
-			List<SobekCM.Resource_Object.Divisions.abstract_TreeNode> divsAndPages = ThisPackage.Divisions.Physical_Tree.Divisions_PreOrder;
-			foreach (SobekCM.Resource_Object.Divisions.abstract_TreeNode thisNode in divsAndPages)
-			{
-				if (thisNode.Page)
-				{
-					// Cast to a page to continnue
-					SobekCM.Resource_Object.Divisions.Page_TreeNode pageNode = (SobekCM.Resource_Object.Divisions.Page_TreeNode)thisNode;
-
-					// If this is a unique page label, add it
-					if (pageNode.Label.Length > 0) 
-					{
-						if ((pageNode.Label.ToUpper().IndexOf("PAGE ") < 0) && ( tocterms.Contains(pageNode.Label )))
-							tocterms.Add(pageNode.Label);
-					}
-				}
-				else
-				{
-					// Add the label or type for this division
-					if ((thisNode.Label.Length > 0) && ( tocterms.Contains(thisNode.Label )))
-						tocterms.Add(thisNode.Label);
-					else if ((thisNode.Type.Length > 0) && ( tocterms.Contains(thisNode.Type )))
-						tocterms.Add(thisNode.Type);
-				}
-			}
-			metadataTerms.AddRange(tocterms.Select(ThisTocTerm => new KeyValuePair<string, string>("TOC", ThisTocTerm)));
+			// Allow the division/file tree to save metadata here 
+            metadataTerms.AddRange(ThisPackage.Divisions.Metadata_Search_Terms);
 
 			// Just add blanks in at the end to get this to an increment of ten
             while ((metadataTerms.Count % 10) != 0)

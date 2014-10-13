@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -104,7 +105,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
             Output.WriteLine("  <p>The SobekCM builder is constantly loading new items and updates and building the full text indexes.  This page can be used to view and update the current status as well as view the most recent log files.</p>");
-            Output.WriteLine("  <p>For more information about the builder and possible actions from this screen, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/builder\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>For more information about the builder and possible actions from this screen, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/builder\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 			Output.WriteLine();
 
             // If missing values, display an error
@@ -158,7 +159,7 @@ namespace SobekCM.Library.AdminViewer
 
                 Output.WriteLine("  <h2>Recent Incoming Logs</h2>");
 
-				string logDirectory = SobekCM_Library_Settings.Base_Design_Location + "extra\\logs";
+				string logDirectory = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "extra\\logs";
 				string[] logFiles = Directory.GetFiles(logDirectory, "incoming*.html");
 
 	            if (logFiles.Length > 0)

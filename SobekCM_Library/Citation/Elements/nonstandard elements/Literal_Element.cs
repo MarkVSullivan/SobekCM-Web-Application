@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using SobekCM.Core.Configuration;
 using SobekCM.Core.Users;
 
 namespace SobekCM.Library.Citation.Elements
@@ -35,7 +36,7 @@ namespace SobekCM.Library.Citation.Elements
 			// do nothing
 		}
 
-		public override void Render_Template_HTML(System.IO.TextWriter Output, Resource_Object.SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Configuration.Web_Language_Enum CurrentLanguage, Application_State.Language_Support_Info Translator, string Base_URL)
+		public override void Render_Template_HTML(System.IO.TextWriter Output, Resource_Object.SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Application_State.Language_Support_Info Translator, string Base_URL)
 		{
 			Output.WriteLine("  <!-- Literal Element -->");
 			Output.WriteLine("  <tr>");

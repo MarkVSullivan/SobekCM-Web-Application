@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using SobekCM.Core.Configuration;
 using SobekCM.Library.Configuration;
 
 #endregion

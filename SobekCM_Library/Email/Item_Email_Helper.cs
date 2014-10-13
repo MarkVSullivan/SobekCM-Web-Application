@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
@@ -105,7 +106,7 @@ namespace SobekCM.Library.Email
 
                 messageBuilder.AppendLine("<table cellspacing=\"0px\" cellpadding=\"0px\">\n");
                 messageBuilder.AppendLine("<tr><td colspan=\"2\" style=\"background: black; color: white; font-family:Arial, Helvetica, sans-serif;\"><b>ITEM INFORMATION</b></td></tr>\n");
-                messageBuilder.AppendLine("<tr valign=\"top\"><td><a href=\"" + URL + "\"><img src=\"" + SobekCM_Library_Settings.Image_URL + Item.Web.AssocFilePath.Replace("\\", "/") + "/" + Item.Behaviors.Main_Thumbnail + "\" alt=\"BLOCKED THUMBNAIL IMAGE\" border=\"1px\" /></a></td>\n");
+                messageBuilder.AppendLine("<tr valign=\"top\"><td><a href=\"" + URL + "\"><img src=\"" + InstanceWide_Settings_Singleton.Settings.Image_URL + Item.Web.AssocFilePath.Replace("\\", "/") + "/" + Item.Behaviors.Main_Thumbnail + "\" alt=\"BLOCKED THUMBNAIL IMAGE\" border=\"1px\" /></a></td>\n");
                 messageBuilder.AppendLine("<td>");
                 messageBuilder.AppendLine("<table style=\"font-family:Arial, Helvetica, sans-serif; font-size:smaller;\">");
                 messageBuilder.AppendLine("<tr><td>Title:</td><td><a href=\"" + URL + "\"><b>" + Item.Bib_Info.Main_Title + "</b></a></td></tr>");

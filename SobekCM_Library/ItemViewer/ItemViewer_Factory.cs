@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using SobekCM.Core.Settings;
 using SobekCM.Library.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Core.Users;
@@ -84,13 +85,13 @@ namespace SobekCM.Library.ItemViewer
 					return jpegTextViewer;
 
                 case View_Enum.JPEG2000:
-					if ( SobekCM_Library_Settings.JP2ServerType == "Built-In IIPImage")
+					if ( InstanceWide_Settings_Singleton.Settings.JP2ServerType == "Built-In IIPImage")
 					{
 						abstractItemViewer newJp2Viewer = new JPEG2000_ItemViewer();
 						newJp2Viewer.FileName = viewObject.FileName;
 						return newJp2Viewer;
 					}
-					else if ( SobekCM_Library_Settings.JP2ServerType == "Aware")
+					else if ( InstanceWide_Settings_Singleton.Settings.JP2ServerType == "Aware")
 					{
                         abstractItemViewer jpeg2000Viewer = new Aware_JP2_ItemViewer(Resource_Type, viewObject.Attributes, Current_Mode);
                         jpeg2000Viewer.FileName = viewObject.FileName;

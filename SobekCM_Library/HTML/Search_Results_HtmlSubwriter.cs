@@ -64,8 +64,8 @@ namespace SobekCM.Library.HTML
             {
                 Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Controls", "Building Result DataSet Writer");
 
-                writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translations, allItemsTable, currentUser, currentMode, Tracer)
-                                  {Current_Aggregation = Current_Aggregation, Skin = htmlSkin, Mode = currentMode};
+                writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translations, allItemsTable, currentUser, Mode, Search_Stop_Words, Tracer)
+                                  {Current_Aggregation = Current_Aggregation, Skin = Skin, Mode = Mode};
             }
 
             Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Controls", "Add controls");
@@ -96,14 +96,14 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Search_Results_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
             // If this skin has top-level navigation suppressed, skip the top tabs
-            if (htmlSkin.Suppress_Top_Navigation)
+            if (Skin.Suppress_Top_Navigation)
             {
                 Output.WriteLine("<br />");
             }
             else
             {
 				// Add the main aggrgeation menu here
-				MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, currentMode, currentUser, Current_Aggregation, translations, codeManager, false);
+				MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, Mode, currentUser, Current_Aggregation, translations, codeManager, false);
 
             }
            
@@ -112,8 +112,8 @@ namespace SobekCM.Library.HTML
                 if (writeResult == null)
                 {
                     Tracer.Add_Trace("Search_Results_HtmlSubwriter.Write_HTML", "Building Result DataSet Writer");
-                    writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translations, allItemsTable, currentUser, currentMode, Tracer)
-                                      {Current_Aggregation = Current_Aggregation, Skin = htmlSkin, Mode = currentMode};
+                    writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translations, allItemsTable, currentUser, Mode, Search_Stop_Words, Tracer)
+                                      {Current_Aggregation = Current_Aggregation, Skin = Skin, Mode = Mode};
                 }
                 writeResult.Write_HTML(Output, Tracer);
             }
@@ -127,7 +127,7 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map)
+                if (Mode.Result_Display_Type == Result_Display_Type_Enum.Map)
                 {
                     List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
 
@@ -135,7 +135,7 @@ namespace SobekCM.Library.HTML
 
                     return returnValue;
                 }
-                if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
+                if (Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
                 {
                     List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
 

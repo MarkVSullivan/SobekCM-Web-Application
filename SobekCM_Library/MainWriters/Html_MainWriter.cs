@@ -7,6 +7,8 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -53,6 +55,7 @@ namespace SobekCM.Library.MainWriters
         private readonly Portal_List urlPortals;
         private readonly SobekCM_Skin_Collection webSkins;
         private readonly List<User_Group> userGroups;
+        private readonly List<string> searchStopWords;
 
         // Special HTML sub-writers that need to have some persistance between methods
         private readonly abstractHtmlSubwriter subwriter;
@@ -110,6 +113,7 @@ namespace SobekCM.Library.MainWriters
             SobekCM_Items_In_Title Items_In_Title,
             HTML_Based_Content Static_Web_Content,
             List<User_Group> UserGroups,
+            List<string> Search_Stop_Words,
             Custom_Tracer Tracer )
             : base(Current_Mode, Hierarchy_Object, Results_Statistics, Paged_Results, Browse_Object,  Current_Item, Current_Page, Static_Web_Content)
 	    {
@@ -132,6 +136,7 @@ namespace SobekCM.Library.MainWriters
             siteMap = Site_Map;
             itemsInTitle = Items_In_Title;
 	        userGroups = UserGroups;
+            searchStopWords = Search_Stop_Words;
 
             // Set some defaults
 
@@ -322,7 +327,7 @@ namespace SobekCM.Library.MainWriters
                             }
 
                             // Create the item viewer writer
-                            subwriter = new Item_HtmlSubwriter(currentItem, currentPage, currentUser, codeManager, translator, show_toc, (SobekCM_Library_Settings.JP2ServerUrl.Length > 0), currentMode, hierarchyObject, restriction_message, itemsInTitle, Tracer);
+                            subwriter = new Item_HtmlSubwriter(currentItem, currentPage, currentUser, codeManager, translator, show_toc, (InstanceWide_Settings_Singleton.Settings.JP2ServerUrl.Length > 0), currentMode, hierarchyObject, restriction_message, itemsInTitle, Tracer);
                             ((Item_HtmlSubwriter)subwriter).Item_Checked_Out_By_Other_User = itemCheckedOutByOtherUser;
                         }
                         else
@@ -365,6 +370,7 @@ namespace SobekCM.Library.MainWriters
                 subwriter.Mode = currentMode;
                 subwriter.Skin = htmlSkin;
                 subwriter.Current_Aggregation = hierarchyObject;
+                subwriter.Search_Stop_Words = searchStopWords;
             }
         }
 
@@ -1283,7 +1289,7 @@ namespace SobekCM.Library.MainWriters
 
 	        bool end_div = !(( currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS ) && ( siteMap != null ));
 
-	        string VERSION = SobekCM_Library_Settings.CURRENT_WEB_VERSION;
+	        string VERSION = InstanceWide_Settings_Singleton.Settings.Current_Web_Version;
 	        if (VERSION.IndexOf(" ") > 0)
 		        VERSION = VERSION.Split(" ".ToCharArray())[0];
 
@@ -1343,7 +1349,7 @@ namespace SobekCM.Library.MainWriters
         private static void Email_Information(string EmailTitle, Exception ObjErr, Custom_Tracer Tracer, bool Redirect )
         {
             // Is ther an error email address in the configuration?
-            if (SobekCM_Library_Settings.System_Error_Email.Length > 0)
+            if (InstanceWide_Settings_Singleton.Settings.System_Error_Email.Length > 0)
             {
                 try
                 {
@@ -1379,11 +1385,11 @@ namespace SobekCM.Library.MainWriters
                     // Email the error message
                     if (Tracer != null)
                     {
-                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, EmailTitle, err + "<br /><br />" + Tracer.Text_Trace, true, false, -1, -1);
+                        SobekCM_Database.Send_Database_Email(InstanceWide_Settings_Singleton.Settings.System_Error_Email, EmailTitle, err + "<br /><br />" + Tracer.Text_Trace, true, false, -1, -1);
                     }
                     else
                     {
-                        SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, EmailTitle, err, true, false, -1, -1);
+                        SobekCM_Database.Send_Database_Email(InstanceWide_Settings_Singleton.Settings.System_Error_Email, EmailTitle, err, true, false, -1, -1);
                     }
                 }
                 catch (Exception)
@@ -1395,7 +1401,7 @@ namespace SobekCM.Library.MainWriters
             // Forward to our error message
             if (Redirect)
             {
-                HttpContext.Current.Response.Redirect(SobekCM_Library_Settings.System_Error_URL, false);
+                HttpContext.Current.Response.Redirect(InstanceWide_Settings_Singleton.Settings.System_Error_URL, false);
                 HttpContext.Current.ApplicationInstance.CompleteRequest();
             }
         }

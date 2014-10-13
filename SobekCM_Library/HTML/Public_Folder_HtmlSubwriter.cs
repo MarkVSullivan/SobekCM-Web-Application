@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Configuration;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Navigation;
@@ -65,11 +66,11 @@ namespace SobekCM.Library.HTML
                 {
                     Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_Controls", "Building Result DataSet Writer");
 
-                    writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translations, allItemsTable, currentUser, currentMode, Tracer)
+                    writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translations, allItemsTable, currentUser, Mode, Search_Stop_Words, Tracer)
                                       {
                                           Current_Aggregation = Current_Aggregation,
-                                          Skin = htmlSkin,
-                                          Mode = currentMode,
+                                          Skin = Skin,
+                                          Mode = Mode,
                                           Browse_Title = publicFolder.FolderName,
                                           Folder_Owner_Name = publicFolder.Name,
                                           Folder_Owner_Email = publicFolder.Email
@@ -107,12 +108,12 @@ namespace SobekCM.Library.HTML
             const string publicFolderText = "PUBLIC BOOKSHELF";
             string homeText = "HOME";
 
-            if (currentMode.Language == Web_Language_Enum.French)
+            if (Mode.Language == Web_Language_Enum.French)
             {
                 homeText = "PAGE D'ACCUEIL";
             }
 
-            if (currentMode.Language == Web_Language_Enum.Spanish)
+            if (Mode.Language == Web_Language_Enum.Spanish)
             {
                 homeText = "INICIO";
             }
@@ -151,11 +152,11 @@ namespace SobekCM.Library.HTML
                 if (writeResult == null)
                 {
                     Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Write_HTML", "Building Result DataSet Writer");
-                    writeResult = new PagedResults_HtmlSubwriter(null, null, codeManager, translations, allItemsTable, currentUser, currentMode, Tracer)
+                    writeResult = new PagedResults_HtmlSubwriter(null, null, codeManager, translations, allItemsTable, currentUser, Mode, Search_Stop_Words, Tracer)
                                       {
                                           Current_Aggregation = Current_Aggregation,
-                                          Skin = htmlSkin,
-                                          Mode = currentMode,
+                                          Skin = Skin,
+                                          Mode = Mode,
                                           Browse_Title = publicFolder.FolderName,
                                           Folder_Owner_Name = publicFolder.Name,
                                           Folder_Owner_Email = publicFolder.Email

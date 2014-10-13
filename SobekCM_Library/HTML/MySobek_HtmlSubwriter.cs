@@ -90,7 +90,7 @@ namespace SobekCM.Library.HTML
             pagedResults = Paged_Results;
             codeManager = Code_Manager;
             itemList = All_Items_Lookup;
-            htmlSkin = HTML_Skin;
+            Skin = HTML_Skin;
             translator = Translator;
             currentCollection = Hierarchy_Object;
             currentItem = Current_Item;
@@ -126,11 +126,11 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case My_Sobek_Type_Enum.New_Item:
-                    mySobekViewer = new New_Group_And_Item_MySobekViewer(user, Current_Mode, itemList, codeManager, iconTable, htmlSkin, translator, HTML_Skin_Collection, Tracer);
+                    mySobekViewer = new New_Group_And_Item_MySobekViewer(user, Current_Mode, itemList, codeManager, iconTable, Skin, translator, HTML_Skin_Collection, Tracer);
                     break;
 
                 case My_Sobek_Type_Enum.Folder_Management:
-                    mySobekViewer = new Folder_Mgmt_MySobekViewer(user, resultsStatistics, pagedResults, codeManager, itemList, currentCollection, htmlSkin, translator, Current_Mode, Tracer);
+                    mySobekViewer = new Folder_Mgmt_MySobekViewer(user, resultsStatistics, pagedResults, codeManager, itemList, currentCollection, Skin, translator, Current_Mode, Tracer);
                     break;
 
                 case My_Sobek_Type_Enum.Saved_Searches:
@@ -158,15 +158,15 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case My_Sobek_Type_Enum.Edit_Item_Metadata:
-					mySobekViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, currentItem, codeManager, iconTable, htmlSkin, translator, HTML_Skin_Collection, Tracer);
+					mySobekViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, currentItem, codeManager, iconTable, Skin, translator, HTML_Skin_Collection, Tracer);
                     break;
 
                 case My_Sobek_Type_Enum.Edit_Item_Permissions:
-                    mySobekViewer = new Edit_Item_Permissions_MySobekViewer(user, Current_Mode, currentItem, htmlSkin, translator, userGroups, ipRestrictions, Tracer );
+                    mySobekViewer = new Edit_Item_Permissions_MySobekViewer(user, Current_Mode, currentItem, Skin, translator, userGroups, ipRestrictions, Tracer );
                     break;
 
                 case My_Sobek_Type_Enum.File_Management:
-					mySobekViewer = new File_Management_MySobekViewer(user, Current_Mode, Current_Item, itemList, codeManager, iconTable, htmlSkin, translator, HTML_Skin_Collection, Tracer);
+					mySobekViewer = new File_Management_MySobekViewer(user, Current_Mode, Current_Item, itemList, codeManager, iconTable, Skin, translator, HTML_Skin_Collection, Tracer);
                     break;
 
                 case My_Sobek_Type_Enum.Edit_Group_Behaviors:
@@ -195,7 +195,7 @@ namespace SobekCM.Library.HTML
                         // Store in cache if retrieved
                         Cached_Data_Manager.Store_Items_In_Title(currentItem.BibID, itemsInTitle, Tracer);
                     }
-					mySobekViewer = new Group_Add_Volume_MySobekViewer(user, Current_Mode, itemList, currentItem, codeManager, iconTable, htmlSkin, itemsInTitle, translator, HTML_Skin_Collection, Tracer);
+					mySobekViewer = new Group_Add_Volume_MySobekViewer(user, Current_Mode, itemList, currentItem, codeManager, iconTable, Skin, itemsInTitle, translator, HTML_Skin_Collection, Tracer);
                     break;
 
                 case My_Sobek_Type_Enum.Group_AutoFill_Volumes:
@@ -207,7 +207,7 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case My_Sobek_Type_Enum.Page_Images_Management:
-                    mySobekViewer = new Page_Image_Upload_MySobekViewer(user, Current_Mode, Current_Item, itemList, codeManager, iconTable, htmlSkin, translator, Tracer );
+                    mySobekViewer = new Page_Image_Upload_MySobekViewer(user, Current_Mode, Current_Item, itemList, codeManager, iconTable, Skin, translator, Tracer );
                     break;
 
                 case My_Sobek_Type_Enum.User_Tags:
@@ -257,11 +257,11 @@ namespace SobekCM.Library.HTML
 				if (user == null)
 					return false;
 
-				if (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management)
+				if (Mode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management)
 					return false;
 
-				if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) ||
-				    (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
+				if (((Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (Mode.My_Sobek_SubMode.Length > 0) && (Mode.My_Sobek_SubMode[0] == '8')) ||
+				    (Mode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
 					return true;
 
 				return false;
@@ -278,35 +278,35 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
 #if DEBUG
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_MySobek.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 #else
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_MySobek.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 #endif
 
 
 			// If we are currently uploading files, add those specific upload styles 
-			if (((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (currentMode.My_Sobek_SubMode.Length > 0) && (currentMode.My_Sobek_SubMode[0] == '8')) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
+			if (((Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (Mode.My_Sobek_SubMode.Length > 0) && (Mode.My_Sobek_SubMode[0] == '8')) || (Mode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
 			{
 #if DEBUG
-				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
-				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadify/jquery.uploadify.js\" type=\"text/javascript\"></script>");
+                Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
+                Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadify/jquery.uploadify.js\" type=\"text/javascript\"></script>");
 #else
-				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.min.js\" type=\"text/javascript\"></script>");
-				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadify/jquery.uploadify.min.js\" type=\"text/javascript\"></script>");
+				Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.min.js\" type=\"text/javascript\"></script>");
+				Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadify/jquery.uploadify.min.js\" type=\"text/javascript\"></script>");
 #endif
 
-				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/uploadifive/uploadifive.css\">");
-				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/uploadify/uploadify.css\">");
+				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Mode.Base_URL + "default/scripts/uploadifive/uploadifive.css\">");
+				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Mode.Base_URL + "default/scripts/uploadify/uploadify.css\">");
 			}
 
 			if (( mySobekViewer != null ) && ( mySobekViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)))
 			{
 #if DEBUG
-				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 #endif
 			}
 		}
@@ -320,15 +320,15 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
-            if ((HttpContext.Current.Session["agreement_date"] == null) && (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item ) && ((currentMode.My_Sobek_SubMode.Length == 0) || (currentMode.My_Sobek_SubMode[0] != '1')))
+            if ((HttpContext.Current.Session["agreement_date"] == null) && (Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item ) && ((Mode.My_Sobek_SubMode.Length == 0) || (Mode.My_Sobek_SubMode[0] != '1')))
             {
-                currentMode.My_Sobek_SubMode = "1";
+                Mode.My_Sobek_SubMode = "1";
             }
                 // A few cases skip the view selectors at the top entirely
 	        if (mySobekViewer.Standard_Navigation_Type == MySobek_Included_Navigation_Enum.Standard)
 	        {
 		        // Add the user-specific main menu
-		        MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, currentMode, user);
+		        MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, Mode, user);
 
 		        // Start the page container
 		        Output.WriteLine("<div id=\"pagecontainer\">");
@@ -360,7 +360,7 @@ namespace SobekCM.Library.HTML
 				Output.WriteLine();
 
 				// Restore the current view information type
-				currentMode.Mode = Display_Mode_Enum.My_Sobek;
+				Mode.Mode = Display_Mode_Enum.My_Sobek;
 
 				// Start the page container
 				Output.WriteLine("<div id=\"pagecontainer\">");
@@ -399,7 +399,7 @@ namespace SobekCM.Library.HTML
 		public override void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
 		{
 			Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_Additional_HTML", "Adding any form elements popup divs");
-			if ((currentMode.Logon_Required) || (mySobekViewer.Contains_Popup_Forms))
+			if ((Mode.Logon_Required) || (mySobekViewer.Contains_Popup_Forms))
 			{
 				mySobekViewer.Add_Popup_HTML(Output, Tracer);
 			}
@@ -449,12 +449,12 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
-				if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (currentMode.My_Sobek_SubMode.IndexOf("0.2") == 0))
+				if ((Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (Mode.My_Sobek_SubMode.IndexOf("0.2") == 0))
 					return "container-inner1000";
 
-				if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Behaviors) ||
-				    (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume) ||
-				    (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item))
+				if ((Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors) || (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Behaviors) ||
+				    (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume) ||
+				    (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items) || (Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item))
 				{
 					return "container-inner1000";
 				}

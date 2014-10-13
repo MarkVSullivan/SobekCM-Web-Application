@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
+using SobekCM.Core.Settings;
 using SobekCM.Library;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
@@ -33,6 +34,9 @@ namespace SobekCM
 		public static Dictionary<string, Mime_Type_Info> Mime_Types;
 		public static List<string> Item_Viewer_Priority;
         public static List<User_Group> User_Groups;
+
+        // the list of all stop words ignored during metadata searching (such as 'The', 'A', etc..) 
+	    public static List<string> Search_Stop_Words;
 
 		protected void Application_Start(object sender, EventArgs e)
 		{
@@ -135,9 +139,9 @@ namespace SobekCM
 					else
 					{
 						// Forward if there is a place to forward to.
-						if (!String.IsNullOrEmpty(SobekCM_Library_Settings.System_Error_URL))
+						if (!String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.System_Error_URL))
 						{
-							Response.Redirect(SobekCM_Library_Settings.System_Error_URL, false);
+							Response.Redirect(InstanceWide_Settings_Singleton.Settings.System_Error_URL, false);
 						}
 						else
 						{

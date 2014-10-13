@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using System.Web.Caching;
+using SobekCM.Core.Configuration;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;

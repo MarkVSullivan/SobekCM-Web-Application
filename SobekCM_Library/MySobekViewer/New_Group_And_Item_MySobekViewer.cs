@@ -11,6 +11,8 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UploadiFive;
 using SobekCM.Resource_Object;
@@ -109,9 +111,9 @@ namespace SobekCM.Library.MySobekViewer
 
             // Determine the in process directory for this
             if (user.ShibbID.Trim().Length > 0)
-                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\newgroup";
+                userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\newgroup";
             else
-                userInProcessDirectory = SobekCM_Library_Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".","").Replace("@","") + "\\newgroup";
+                userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".","").Replace("@","") + "\\newgroup";
 
             // Handle postback for changing the template or project
             templateCode = user.Current_Template;
@@ -150,7 +152,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Read this template
                 Template_XML_Reader reader = new Template_XML_Reader();
                 template = new Template();
-                reader.Read_XML( SobekCM_Library_Settings.Base_MySobek_Directory + "templates\\" + templateCode + ".xml", template, true);
+                reader.Read_XML( InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "templates\\" + templateCode + ".xml", template, true);
 
                 // Add the current codes to this template
                 template.Add_Codes(Code_Manager);
@@ -283,7 +285,7 @@ namespace SobekCM.Library.MySobekViewer
 							{
 								try
 								{
-									var mainImg = ScaleImage(tiffImg, SobekCM_Library_Settings.JPEG_Width, SobekCM_Library_Settings.JPEG_Height);
+									var mainImg = ScaleImage(tiffImg, InstanceWide_Settings_Singleton.Settings.JPEG_Width, InstanceWide_Settings_Singleton.Settings.JPEG_Height);
 									mainImg.Save(jpeg, ImageFormat.Jpeg);
 									mainImg.Dispose();
 									var thumbnailImg = ScaleImage(tiffImg, 150, 400);
@@ -688,7 +690,7 @@ namespace SobekCM.Library.MySobekViewer
                     else
                     {
                         // If this does not match the exclusion regular expression, than add this
-                        if (!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success)
+                        if (!Regex.Match(thisFileInfo.Name, InstanceWide_Settings_Singleton.Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success)
                         {
 							// Also, exclude files that are .XML and marc.xml, or doc.xml, or have the bibid in the name
 	                        if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0))
@@ -862,17 +864,17 @@ namespace SobekCM.Library.MySobekViewer
                 string base_url = currentMode.Base_URL;
                 try
                 {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(SobekCM_Library_Settings.System_Base_URL, SobekCM_Library_Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
+                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(InstanceWide_Settings_Singleton.Settings.System_Base_URL, InstanceWide_Settings_Singleton.Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
                     string filename = userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
                     staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
 
 					// Copy the static HTML file to the web server
 					try
 					{
-						if (!Directory.Exists(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
-							Directory.CreateDirectory(SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
+						if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
+							Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
 						if (File.Exists(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html"))
-							File.Copy(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html", SobekCM_Library_Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
+							File.Copy(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html", InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
 					}
 					catch (Exception)
 					{
@@ -905,7 +907,7 @@ namespace SobekCM.Library.MySobekViewer
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
                 Dictionary<string, object> options = new Dictionary<string, object>();
-                options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, SobekCM_Library_Settings.System_Name, SobekCM_Library_Settings.System_Abbreviation);
+                options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, InstanceWide_Settings_Singleton.Settings.System_Name, InstanceWide_Settings_Singleton.Settings.System_Abbreviation);
                 marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);
 
                 // Delete the TEMP mets file
@@ -919,23 +921,18 @@ namespace SobekCM.Library.MySobekViewer
                     File.Move(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".mets", userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".mets.xml");
                 }
 
-                // Copy this to all the image servers
-                SobekCM_Library_Settings.Refresh(Database.SobekCM_Database.Get_Settings_Complete(Tracer));
-                
-
-
-                string serverNetworkFolder = SobekCM_Library_Settings.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
+                string serverNetworkFolder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
 
                 // Create the folder
                 if (!Directory.Exists(serverNetworkFolder))
                     Directory.CreateDirectory(serverNetworkFolder);
-				if (!Directory.Exists(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME))
-					Directory.CreateDirectory(serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME);
+                if (!Directory.Exists(serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name))
+                    Directory.CreateDirectory(serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name);
 
 				// Copy the static HTML page over first
 				if (File.Exists(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html"))
 				{
-					File.Copy(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + SobekCM_Library_Settings.BACKUP_FILES_FOLDER_NAME + "\\" + item.BibID + "_" + item.VID + ".html", true);
+                    File.Copy(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name + "\\" + item.BibID + "_" + item.VID + ".html", true);
 					File.Delete(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html");
 				}
 
@@ -984,9 +981,9 @@ namespace SobekCM.Library.MySobekViewer
 
                 string error_body = "<strong>ERROR ENCOUNTERED DURING ONLINE SUBMITTAL PROCESS</strong><br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Permanent Link: <a href=\"" + currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "</a><br />User: " + user.Full_Name + "<br /><br /></blockquote>" + ee.ToString().Replace("\n", "<br />");
                 string error_subject = "Error during submission for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
-                string email_to = SobekCM_Library_Settings.System_Error_Email;
+                string email_to = InstanceWide_Settings_Singleton.Settings.System_Error_Email;
                 if (email_to.Length == 0)
-                    email_to = SobekCM_Library_Settings.System_Email;
+                    email_to = InstanceWide_Settings_Singleton.Settings.System_Email;
                 Database.SobekCM_Database.Send_Database_Email(email_to, error_subject, error_body, true, false, -1, -1);
             }
 
@@ -1369,7 +1366,7 @@ namespace SobekCM.Library.MySobekViewer
                             else
                             {
                                 // If this does not match the exclusion regular expression, than add this
-                                if (!Regex.Match(thisFileInfo.Name, SobekCM_Library_Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success)
+                                if (!Regex.Match(thisFileInfo.Name, InstanceWide_Settings_Singleton.Settings.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success)
                                 {
 	                                if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0))
 	                                {
@@ -1635,7 +1632,7 @@ namespace SobekCM.Library.MySobekViewer
 				UploadiFiveControl uploadControl = new UploadiFiveControl();
 				uploadControl.UploadPath = userInProcessDirectory;
 				uploadControl.UploadScript = currentMode.Base_URL + "UploadiFiveFileHandler.ashx";
-				uploadControl.AllowedFileExtensions = SobekCM_Library_Settings.Upload_Image_Types + "," + SobekCM_Library_Settings.Upload_File_Types;
+				uploadControl.AllowedFileExtensions = InstanceWide_Settings_Singleton.Settings.Upload_Image_Types + "," + InstanceWide_Settings_Singleton.Settings.Upload_File_Types;
 				uploadControl.SubmitWhenQueueCompletes = true;
 	            uploadControl.RemoveCompleted = true;
 				uploadControl.Swf = currentMode.Base_URL + "default/scripts/uploadify/uploadify.swf";
@@ -1733,7 +1730,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 if (project_code.Length > 0)
                 {
-                    string project_name = SobekCM_Library_Settings.Base_MySobek_Directory + "projects\\" + project_code + ".pmets";
+                    string project_name = InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "projects\\" + project_code + ".pmets";
 
                     if (Tracer != null)
                     {

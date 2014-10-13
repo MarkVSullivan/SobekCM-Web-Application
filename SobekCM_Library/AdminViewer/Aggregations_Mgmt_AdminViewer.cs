@@ -10,6 +10,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
@@ -118,7 +119,7 @@ namespace SobekCM.Library.AdminViewer
 						int errorCode = SobekCM_Database.Delete_Item_Aggregation(delete_aggregation_code, user.Is_System_Admin, user.Full_Name, Tracer, out delete_error);
 						if (errorCode <= 0)
 						{
-							string delete_folder = SobekCM_Library_Settings.Base_Design_Location + "aggregations\\" + delete_aggregation_code;
+							string delete_folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "aggregations\\" + delete_aggregation_code;
 							if (SobekCM_File_Utilities.Delete_Folders_Recursively(delete_folder))
 								actionMessage = "Deleted '" + delete_aggregation_code + "' aggregation<br /><br />Unable to remove aggregation directory<br /><br />Some of the files may be in use";
 							else
@@ -209,7 +210,7 @@ namespace SobekCM.Library.AdminViewer
 							{
 								errors.Add("New code must be unique... <i>" + new_aggregation_code + "</i> already exists");
 							}
-							else if (SobekCM_Library_Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
+							else if (InstanceWide_Settings_Singleton.Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
 							{
 								errors.Add("That code is a system-reserved keyword.  Try a different code.");
 							}
@@ -301,7 +302,7 @@ namespace SobekCM.Library.AdminViewer
                                     // Ensure a folder exists for this, otherwise create one
                                     try
                                     {
-	                                    string folder = SobekCM_Library_Settings.Base_Design_Location + "aggregations\\" + new_aggregation_code.ToLower();
+	                                    string folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "aggregations\\" + new_aggregation_code.ToLower();
 	                                    if (!Directory.Exists(folder))
 	                                    {
 		                                    // Create this directory and all the subdirectories
@@ -319,19 +320,19 @@ namespace SobekCM.Library.AdminViewer
 		                                    writer.Close();
 
 		                                    // Copy the default banner and buttons from images
-		                                    if (File.Exists(SobekCM_Library_Settings.Base_Directory + "default/images/default_button.png"))
-			                                    File.Copy(SobekCM_Library_Settings.Base_Directory + "default/images/default_button.png", folder + "/images/buttons/coll.png");
-		                                    if (File.Exists(SobekCM_Library_Settings.Base_Directory + "default/images/default_button.gif"))
-			                                    File.Copy(SobekCM_Library_Settings.Base_Directory + "default/images/default_button.gif", folder + "/images/buttons/coll.gif");
+		                                    if (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_button.png"))
+			                                    File.Copy(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_button.png", folder + "/images/buttons/coll.png");
+		                                    if (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_button.gif"))
+			                                    File.Copy(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_button.gif", folder + "/images/buttons/coll.gif");
 
                                             // Try to create a new custom banner
                                             bool custom_banner_created = false;
                                             // Create the banner with the name of the collection
-                                            if (Directory.Exists(SobekCM_Library_Settings.Application_Server_Network + "\\default\\banner_images"))
+                                            if (Directory.Exists(InstanceWide_Settings_Singleton.Settings.Application_Server_Network + "\\default\\banner_images"))
                                             {
                                                 try
                                                 {
-                                                    string[] banners = Directory.GetFiles(SobekCM_Library_Settings.Application_Server_Network + "\\default\\banner_images", "*.jpg");
+                                                    string[] banners = Directory.GetFiles(InstanceWide_Settings_Singleton.Settings.Application_Server_Network + "\\default\\banner_images", "*.jpg");
                                                     if (banners.Length > 0)
                                                     {
                                                         Random randomizer = new Random();
@@ -362,13 +363,13 @@ namespace SobekCM.Library.AdminViewer
 
                                             if ((!custom_banner_created) && (!File.Exists(folder + "/images/banners/coll.jpg")))
                                             {
-                                                if (File.Exists(SobekCM_Library_Settings.Base_Directory + "default/images/default_banner.jpg"))
-                                                    File.Copy(SobekCM_Library_Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
+                                                if (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_banner.jpg"))
+                                                    File.Copy(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
                                             }
 
 		                                    // Now, try to create the item aggregation and write the configuration file
 		                                    Item_Aggregation itemAggregation = Item_Aggregation_Builder.Get_Item_Aggregation(new_aggregation_code, String.Empty, null, false, false, Tracer);
-		                                    itemAggregation.Write_Configuration_File(SobekCM_Library_Settings.Base_Design_Location + itemAggregation.ObjDirectory);
+		                                    itemAggregation.Write_Configuration_File(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + itemAggregation.ObjDirectory);
 	                                    }
                                     }
                                     catch
@@ -443,7 +444,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
 			}
 
-            Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/aggregations\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/aggregations\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
 
 
             // Find the matching type to display

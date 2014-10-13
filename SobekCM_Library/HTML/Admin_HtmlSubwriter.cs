@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Settings;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
@@ -85,7 +86,7 @@ namespace SobekCM.Library.HTML
 
 	        codeManager = Code_Manager;
             itemList = All_Items_Lookup;
-            htmlSkin = HTML_Skin;
+            Skin = HTML_Skin;
             translator = Translator;
             currentCollection = Hierarchy_Object;
 	        user = Current_User;
@@ -179,26 +180,26 @@ namespace SobekCM.Library.HTML
                             if (projectObject != null)
                             {
                                 Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Valid default metadata set found in cache");
-                                adminViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, projectObject, codeManager, iconTable, htmlSkin, null, null, Tracer);
+                                adminViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, projectObject, codeManager, iconTable, Skin, null, null, Tracer);
                             }
                             else
                             {
                                 if (SobekCM_Database.Get_All_Template_DefaultMetadatas(Tracer).Tables[0].Select("MetadataCode='" + project_code + "'").Length > 0)
                                 {
                                     Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building default metadata set from (possible) PMETS");
-                                    string pmets_file = SobekCM_Library_Settings.Base_MySobek_Directory + "projects\\" + Current_Mode.My_Sobek_SubMode.Substring(1) + ".pmets";
+                                    string pmets_file = InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "projects\\" + Current_Mode.My_Sobek_SubMode.Substring(1) + ".pmets";
                                     SobekCM_Item pmets_item = File.Exists(pmets_file) ? SobekCM_Item.Read_METS(pmets_file) : new SobekCM_Item();
                                     pmets_item.Bib_Info.Main_Title.Title = "Default metadata set for '" + project_code + "'";
                                     pmets_item.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Project;
                                     pmets_item.BibID = project_code.ToUpper();
                                     pmets_item.VID = "00001";
-                                    pmets_item.Source_Directory = SobekCM_Library_Settings.Base_MySobek_Directory +  "projects\\";
+                                    pmets_item.Source_Directory = InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory +  "projects\\";
 
                                     Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Adding project file to cache");
 
                                     Cached_Data_Manager.Store_Project(user.UserID, project_code, pmets_item, Tracer);
 
-                                    adminViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, pmets_item, codeManager, iconTable, htmlSkin, null, null, Tracer);
+                                    adminViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, pmets_item, codeManager, iconTable, Skin, null, null, Tracer);
                                 }
                             }
                         }
@@ -257,7 +258,7 @@ namespace SobekCM.Library.HTML
 				if (user == null)
 					return false;
 
-				if (( currentMode.Admin_Type == Admin_Type_Enum.Wordmarks ) || ( currentMode.Admin_Type == Admin_Type_Enum.Aggregation_Single ))
+				if (( Mode.Admin_Type == Admin_Type_Enum.Wordmarks ) || ( Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single ))
 					return true;
 
 
@@ -271,7 +272,7 @@ namespace SobekCM.Library.HTML
         public override void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Admin_HtmlSubwriter.Write_Additional_HTML", "Adding any form elements popup divs");
-            if ((currentMode.Logon_Required) || (adminViewer.Contains_Popup_Forms))
+            if ((Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms))
             {
                 adminViewer.Add_Popup_HTML(Output, Tracer);
             }
@@ -301,22 +302,22 @@ namespace SobekCM.Library.HTML
 	       // if (CurrentMode.Admin_Type == Admin_Type_Enum.Wordmarks)
 		   //     return false;
 
-            if ((!adminViewer.Contains_Popup_Forms) && (!currentMode.Logon_Required))
+            if ((!adminViewer.Contains_Popup_Forms) && (!Mode.Logon_Required))
             {
-                if ( currentMode.Admin_Type != Admin_Type_Enum.Aggregation_Single )
+                if ( Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single )
                 {
                     // Add the banner
-                    Add_Banner(Output, "sbkAhs_BannerDiv", currentMode, htmlSkin, currentCollection);
+                    Add_Banner(Output, "sbkAhs_BannerDiv", Mode, Skin, currentCollection);
 
                     // Add the user-specific main menu
-                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, currentMode, user);
+                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, Mode, user);
 
                     // Start the page container
                     Output.WriteLine("<div id=\"pagecontainer\">");
                     Output.WriteLine("<br />");
 
                     // Add the box with the title
-                    if ((currentMode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (currentMode.My_Sobek_SubMode != "submitted items"))
+                    if ((Mode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (Mode.My_Sobek_SubMode != "submitted items"))
                     {
                         Output.WriteLine("<div class=\"SobekSearchPanel\">");
                         if (adminViewer != null)
@@ -353,12 +354,12 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Admin_HtmlSubwriter.Add_Controls", "Build admin viewer and add controls");
 
             // Add the banner now
-            if ((currentMode.Logon_Required) || (adminViewer.Contains_Popup_Forms))
+            if ((Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms))
             {
                 // Start to build the result to write, with the banner
                 StringBuilder header_builder = new StringBuilder();
                 StringWriter header_writer = new StringWriter(header_builder);
-                Add_Banner(header_writer, "sbkAhs_BannerDiv", currentMode, htmlSkin, currentCollection);
+                Add_Banner(header_writer, "sbkAhs_BannerDiv", Mode, Skin, currentCollection);
 
                 // Now, add this literal
                 LiteralControl header_literal = new LiteralControl(header_builder.ToString());
@@ -386,34 +387,34 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
 #if DEBUG
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Admin.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Admin.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Admin.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Admin.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #endif
 
             // If editing projects, add the mySobek stylesheet as well
-            if ((currentMode.Admin_Type == Admin_Type_Enum.Default_Metadata) && (currentMode.My_Sobek_SubMode.Length > 0))
+            if ((Mode.Admin_Type == Admin_Type_Enum.Default_Metadata) && (Mode.My_Sobek_SubMode.Length > 0))
             {
 #if DEBUG
-				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+				Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #endif
             }
 
 			// Add the uploader libraries if editing an item
-	        if (currentMode.Admin_Type == Admin_Type_Enum.Aggregation_Single)
+	        if (Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single)
 	        {
 #if DEBUG
-				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
-				Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadify/jquery.uploadify.js\" type=\"text/javascript\"></script>");
+                Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
+                Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadify/jquery.uploadify.js\" type=\"text/javascript\"></script>");
 #else
-		        Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.min.js\" type=\"text/javascript\"></script>");
-		        Output.WriteLine("  <script src=\"" + currentMode.Base_URL + "default/scripts/uploadify/jquery.uploadify.min.js\" type=\"text/javascript\"></script>");
+		        Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.min.js\" type=\"text/javascript\"></script>");
+		        Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadify/jquery.uploadify.min.js\" type=\"text/javascript\"></script>");
 #endif
 
-		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/uploadifive/uploadifive.css\">");
-		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/uploadify/uploadify.css\">");
+		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Mode.Base_URL + "default/scripts/uploadifive/uploadifive.css\">");
+		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Mode.Base_URL + "default/scripts/uploadify/uploadify.css\">");
 	        }
         }
 
@@ -432,7 +433,7 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
-				switch (currentMode.Admin_Type)
+				switch (Mode.Admin_Type)
 				{
 					case Admin_Type_Enum.Wordmarks:
 						return "sbkWav_ContainerInner";

@@ -8,6 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -127,7 +130,7 @@ namespace SobekCM.Library
 
                 // Remove the include and either place in the text from the indicated file, 
                 // or just remove
-                if ((filename_to_include.Length > 0 ) && (File.Exists(SobekCM_Library_Settings.Base_Directory + "design\\webcontent\\" + filename_to_include)))
+                if ((filename_to_include.Length > 0 ) && (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "design\\webcontent\\" + filename_to_include)))
                 {
                     // Define the value for the include text
                     string include_text;
@@ -143,7 +146,7 @@ namespace SobekCM.Library
                         try
                         {
                             // Pull from the file
-                            StreamReader reader = new StreamReader(SobekCM_Library_Settings.Base_Directory + "design\\webcontent\\" + filename_to_include);
+                            StreamReader reader = new StreamReader(InstanceWide_Settings_Singleton.Settings.Base_Directory + "design\\webcontent\\" + filename_to_include);
                             include_text = reader.ReadToEnd();
                             reader.Close();
 
@@ -179,7 +182,7 @@ namespace SobekCM.Library
                 if (Site_Map == null)
                 {
                     // Only continue if the file exists
-                    if (File.Exists(SobekCM_Library_Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap))
+                    if (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap))
                     {
                         if (Tracer != null)
                         {
@@ -187,7 +190,7 @@ namespace SobekCM.Library
                         }
 
                         // Try to read this sitemap file
-                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(SobekCM_Library_Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap);
+                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(InstanceWide_Settings_Singleton.Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap);
 
                         // If the sitemap file was succesfully read, cache it
                         if (Site_Map != null)
@@ -380,7 +383,7 @@ namespace SobekCM.Library
         /// <returns> File name to read for the static browse HTML to display </returns>
         public string Get_All_Browse_Static_HTML(SobekCM_Navigation_Object Current_Mode, Custom_Tracer Tracer)
         {
-            string base_image_url = SobekCM_Library_Settings.Base_Data_Directory + Current_Mode.Aggregation + "_all.html";
+            string base_image_url = InstanceWide_Settings_Singleton.Settings.Base_Data_Directory + Current_Mode.Aggregation + "_all.html";
             return base_image_url;
         }
 
@@ -548,7 +551,7 @@ namespace SobekCM.Library
                     break;
 
                 case Item_Aggregation_Child_Page.Result_Data_Type.Text:
-                    Browse_Info_Display_Text = Browse_Object.Get_Static_Content(Current_Mode.Language, Current_Mode.Base_URL, SobekCM_Library_Settings.Base_Design_Location + Aggregation_Object.ObjDirectory, Tracer);
+                    Browse_Info_Display_Text = Browse_Object.Get_Static_Content(Current_Mode.Language, Current_Mode.Base_URL, InstanceWide_Settings_Singleton.Settings.Base_Design_Location + Aggregation_Object.ObjDirectory, Tracer);
                     break;
             }
             return true;
@@ -609,7 +612,7 @@ namespace SobekCM.Library
             string bibid = Current_Mode.BibID;
             string vid = selected_item.VID.PadLeft(5, '0');
             Current_Mode.VID = vid;
-            string base_image_url = SobekCM_Library_Settings.Base_Data_Directory + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + bibid + "_" + vid + ".html";
+            string base_image_url = InstanceWide_Settings_Singleton.Settings.Base_Data_Directory + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + bibid + "_" + vid + ".html";
             return base_image_url;
         }
 
@@ -864,7 +867,7 @@ namespace SobekCM.Library
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         public void Get_Search_Results(SobekCM_Navigation_Object Current_Mode,
                                        Item_Lookup_Object All_Items_Lookup,
-                                       Item_Aggregation Aggregation_Object,
+                                       Item_Aggregation Aggregation_Object, List<string> Search_Stop_Words,
                                        Custom_Tracer Tracer,
                                        out Search_Results_Statistics Complete_Result_Set_Info,
                                        out List<iSearch_Title_Result> Paged_Results )
@@ -984,7 +987,7 @@ namespace SobekCM.Library
 		        }
 		        else
 		        {
-			        Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, SobekCM_Library_Settings.Search_Stop_Words, Current_Mode.Search_Precision, ',');
+                    Split_Clean_Search_Terms_Fields(Current_Mode.Search_String, Current_Mode.Search_Fields, Current_Mode.Search_Type, terms, web_fields, Search_Stop_Words, Current_Mode.Search_Precision, ',');
 		        }
 
 		        // Get the count that will be used
@@ -1556,7 +1559,7 @@ namespace SobekCM.Library
 
         private static short Metadata_Field_Number( string FieldCode )
         {
-            Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_Code(FieldCode);
+            Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Code(FieldCode);
             return (field == null) ? (short) -1 : field.ID;
         }
 
@@ -1590,7 +1593,7 @@ namespace SobekCM.Library
                     }
                     else
                     {
-                        Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
+                        Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
                         if (field != null)
                         {
                             solr_field = field.Solr_Field + ":";
@@ -1648,7 +1651,7 @@ namespace SobekCM.Library
                     }
                     else
                     {
-                        Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
+                        Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
                         if (field != null)
                         {
                             solr_field = field.Solr_Field + ":";

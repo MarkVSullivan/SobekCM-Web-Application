@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -81,7 +82,7 @@ namespace SobekCM
 				Application_State_Builder.Build_Application_State(tracer, false, ref Global.Skins, ref Global.Translation,
 				                                                  ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
 				                                                  ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-                                                                  ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority, ref Global.User_Groups);
+                                                                  ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority, ref Global.User_Groups, ref Global.Search_Stop_Words);
 
 				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Application State validated or built");
 
@@ -96,7 +97,7 @@ namespace SobekCM
 				{
 					// Create an error message 
 					string errorMessage = "Error caught while validating application state";
-					if ((SobekCM_Library_Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(SobekCM_Library_Settings.Database_Connections[0].Connection_String)))
+					if ((InstanceWide_Settings_Singleton.Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String)))
 					{
 						errorMessage = "No database connection string found!";
 						string configFileLocation = AppDomain.CurrentDomain.BaseDirectory + "config/sobekcm.xml";
@@ -122,7 +123,7 @@ namespace SobekCM
 						}
 						else
 						{
-							errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + SobekCM_Library_Settings.Database_Connections[0].Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
+							errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
 						}
 					}
 					// Wrap this into the SobekCM Exception
@@ -591,10 +592,10 @@ namespace SobekCM
 			if (HttpContext.Current.Session["user"] == null)
 			{
 				// If this is a responce from Shibboleth/Gatorlink, get the user information and register them if necessary
-				string shibboleth_id = HttpContext.Current.Request.ServerVariables[SobekCM_Library_Settings.Shibboleth_User_Identity_Attribute];
+				string shibboleth_id = HttpContext.Current.Request.ServerVariables[InstanceWide_Settings_Singleton.Settings.Shibboleth_User_Identity_Attribute];
 				if (shibboleth_id == null)
 				{
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", SobekCM_Library_Settings.Shibboleth_User_Identity_Attribute + " server variable NOT found");
+					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", InstanceWide_Settings_Singleton.Settings.Shibboleth_User_Identity_Attribute + " server variable NOT found");
 
 					// For debugging purposes, if this SHOULD have included SHibboleth information, show in the trace route
 					if (HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth"))
@@ -607,9 +608,9 @@ namespace SobekCM
 				}
 				else
 				{
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", SobekCM_Library_Settings.Shibboleth_User_Identity_Attribute + " server variable found");
+					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", InstanceWide_Settings_Singleton.Settings.Shibboleth_User_Identity_Attribute + " server variable found");
 
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", SobekCM_Library_Settings.Shibboleth_User_Identity_Attribute + " server variable = '" + shibboleth_id + "'");
+					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", InstanceWide_Settings_Singleton.Settings.Shibboleth_User_Identity_Attribute + " server variable = '" + shibboleth_id + "'");
 
 					if (shibboleth_id.Length > 0)
 					{
@@ -922,7 +923,7 @@ namespace SobekCM
 				                                 currentItem, currentPage, htmlSkin, currentUser, Global.Translation, Global.Codes,
 				                                 Global.Item_List, Global.Stats_Date_Range,
 				                                 Global.Search_History, Global.Icon_List, Global.Thematic_Headings, publicFolder, Global.Collection_Aliases, Global.Skins, Global.Checked_List,
-				                                 Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent, Global.User_Groups, tracer);
+				                                 Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent, Global.User_Groups, Global.Search_Stop_Words, tracer);
 			}
 
 			// Load the OAI writer
@@ -952,7 +953,7 @@ namespace SobekCM
 			// Load the JSON writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.JSON)
 			{
-				mainWriter = new Json_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject, currentItem, currentPage, Global.Item_List, SobekCM_Library_Settings.Image_URL);
+				mainWriter = new Json_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject, currentItem, currentPage, Global.Item_List, InstanceWide_Settings_Singleton.Settings.Image_URL);
 			}
 
 			// Load the HTML ECHO writer
@@ -971,7 +972,7 @@ namespace SobekCM
 				                                 currentItem, currentPage, htmlSkin, currentUser, Global.Translation, Global.Codes,
 				                                 Global.Item_List,
 				                                 Global.Stats_Date_Range, Global.Search_History, Global.Icon_List, Global.Thematic_Headings, publicFolder,
-				                                 Global.Collection_Aliases, Global.Skins, Global.Checked_List, Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent, Global.User_Groups,  tracer);
+				                                 Global.Collection_Aliases, Global.Skins, Global.Checked_List, Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent, Global.User_Groups, Global.Search_Stop_Words, tracer);
 			}
 		}
 
@@ -1012,7 +1013,7 @@ namespace SobekCM
 			}
 			else
 			{
-				if (!assistant.Get_Item(currentMode, Global.Item_List, SobekCM_Library_Settings.Image_URL,
+				if (!assistant.Get_Item(currentMode, Global.Item_List, InstanceWide_Settings_Singleton.Settings.Image_URL,
 				                        Global.Icon_List, Global.Item_Viewer_Priority, currentUser, tracer, out currentItem, out currentPage, out itemsInTitle))
 				{
 					if ((currentMode.Mode == Display_Mode_Enum.Legacy_URL) || (currentMode.Invalid_Item))
@@ -1044,7 +1045,7 @@ namespace SobekCM
 			tracer.Add_Trace("SobekCM_Page_Globals.Simple_Web_Content_Text_Block", "Retrieiving Simple Web Content Object");
 
 			SobekCM_Assistant assistant = new SobekCM_Assistant();
-			if (!assistant.Get_Simple_Web_Content_Text(currentMode, SobekCM_Library_Settings.Base_Directory, tracer,
+			if (!assistant.Get_Simple_Web_Content_Text(currentMode, InstanceWide_Settings_Singleton.Settings.Base_Directory, tracer,
 			                                           out staticWebContent, out siteMap))
 			{
 				currentMode.Mode = Display_Mode_Enum.Error;
@@ -1077,7 +1078,7 @@ namespace SobekCM
 			}
 			else
 			{
-				if (!assistant.Get_Browse_Info(currentMode, hierarchyObject, SobekCM_Library_Settings.Base_Directory, tracer, out thisBrowseObject, out searchResultStatistics, out pagedSearchResults, out staticWebContent))
+				if (!assistant.Get_Browse_Info(currentMode, hierarchyObject, InstanceWide_Settings_Singleton.Settings.Base_Directory, tracer, out thisBrowseObject, out searchResultStatistics, out pagedSearchResults, out staticWebContent))
 				{
 					currentMode.Mode = Display_Mode_Enum.Error;
 				}
@@ -1104,7 +1105,7 @@ namespace SobekCM
 				}
 
 				SobekCM_Assistant assistant = new SobekCM_Assistant();
-				assistant.Get_Search_Results(currentMode, Global.Item_List, hierarchyObject, tracer, out searchResultStatistics, out pagedSearchResults);
+				assistant.Get_Search_Results(currentMode, Global.Item_List, hierarchyObject,  Global.Search_Stop_Words, tracer, out searchResultStatistics, out pagedSearchResults);
 
 				if ((!currentMode.isPostBack) && (Global.Search_History != null))
 				{
@@ -1196,13 +1197,13 @@ namespace SobekCM
 			HttpContext.Current.Application.RemoveAll();
 
 			// Refresh the application settings
-			SobekCM_Library_Settings.Refresh(SobekCM_Database.Get_Settings_Complete(tracer));
+		    InstanceWide_Settings_Singleton.Refresh();
 
 			// Reload all the information
 			Application_State_Builder.Build_Application_State(tracer, true, ref Global.Skins, ref Global.Translation,
 			                                                  ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
 			                                                  ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-                                                              ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority, ref Global.User_Groups);
+                                                              ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority, ref Global.User_Groups, ref Global.Search_Stop_Words);
 
 			// Since this reset, send to the admin, memory management portion
 			currentMode.Mode = Display_Mode_Enum.Internal;
@@ -1275,7 +1276,7 @@ namespace SobekCM
 					      "Error Message: " + EmailTitle;
 				}
 
-				SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, EmailTitle, err, true, false, -1, -1);
+				SobekCM_Database.Send_Database_Email(InstanceWide_Settings_Singleton.Settings.System_Error_Email, EmailTitle, err, true, false, -1, -1);
 
 			}
 			catch (Exception)
@@ -1287,7 +1288,7 @@ namespace SobekCM
 			if (Redirect)
 			{
 				// Forward to our error message
-				HttpContext.Current.Response.Redirect(SobekCM_Library_Settings.System_Error_URL, false);
+				HttpContext.Current.Response.Redirect(InstanceWide_Settings_Singleton.Settings.System_Error_URL, false);
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				if (currentMode != null)
 					currentMode.Request_Completed = true;
@@ -1341,7 +1342,7 @@ namespace SobekCM
 				// Send this email
 				try
 				{
-					SobekCM_Database.Send_Database_Email(SobekCM_Library_Settings.System_Error_Email, "SobekCM Exception Caught  [Invalid Item Requested]", builder.ToString(), false, false, -1, -1);
+					SobekCM_Database.Send_Database_Email(InstanceWide_Settings_Singleton.Settings.System_Error_Email, "SobekCM Exception Caught  [Invalid Item Requested]", builder.ToString(), false, false, -1, -1);
 				}
 				catch (Exception)
 				{
@@ -1355,7 +1356,7 @@ namespace SobekCM
 			}
 
 			// Forward to our error message
-			HttpContext.Current.Response.Redirect(SobekCM_Library_Settings.System_Error_URL, false);
+			HttpContext.Current.Response.Redirect(InstanceWide_Settings_Singleton.Settings.System_Error_URL, false);
 			HttpContext.Current.ApplicationInstance.CompleteRequest();
 			if (currentMode != null)
 				currentMode.Request_Completed = true;

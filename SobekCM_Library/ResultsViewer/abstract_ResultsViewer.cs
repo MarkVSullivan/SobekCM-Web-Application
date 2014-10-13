@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Navigation;
@@ -26,11 +27,9 @@ namespace SobekCM.Library.ResultsViewer
         /// <value> This currently always contains the constant value 20.</value>
         protected int Results_Per_Page = 20;
 
-        /// <summary> Protected field contains the list of valid collection codes, including mapping from the Sobek collections to Greenstone collections </summary>
-        protected Aggregation_Code_Manager codeManager;
-
         /// <summary> Protected field contains the current user information for the current request </summary>
         protected User_Object currentUser;
+
 
         /// <summary> Protected field contains the current user IP restriction mask, used to determine
         /// if this use has access to IP restricted items </summary>
@@ -51,11 +50,11 @@ namespace SobekCM.Library.ResultsViewer
             }
         }
 
+        /// <summary> Complete list of search stop words, from the database </summary>
+        public List<string> Search_Stop_Words { get; set;  }
+
         /// <summary> Sets the list of valid collection codes, including mapping from the Sobek collections to Greenstone collections </summary>
-        public Aggregation_Code_Manager Code_Manager
-        {
-            set	{	codeManager = value;		}
-        }
+        public Aggregation_Code_Manager Code_Manager { protected get; set; }
 
         /// <summary> Calculates the index for the last row to be displayed on the current result page </summary>
         public int LastRow
@@ -176,7 +175,7 @@ namespace SobekCM.Library.ResultsViewer
             List<string> fields = new List<string>();
 
             // Split the terms correctly
-            SobekCM_Assistant.Split_Clean_Search_Terms_Fields(CurrentMode.Search_String, CurrentMode.Search_Fields, CurrentMode.Search_Type, terms, fields, SobekCM_Library_Settings.Search_Stop_Words, CurrentMode.Search_Precision, ',');
+            SobekCM_Assistant.Split_Clean_Search_Terms_Fields(CurrentMode.Search_String, CurrentMode.Search_Fields, CurrentMode.Search_Type, terms, fields, Search_Stop_Words, CurrentMode.Search_Precision, ',');
 
             // See about a text search string 
             StringBuilder textSearcher = new StringBuilder();

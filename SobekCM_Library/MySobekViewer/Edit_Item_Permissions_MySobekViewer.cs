@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.HTML;
@@ -215,7 +216,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <ul>");
             Output.WriteLine("    <li>Use this form to change visibility (and related embargo dates) on this currentItem </li>");
             Output.WriteLine("    <li>This form also allows ip restriction and user group permissions to be set </li>");
-            Output.WriteLine("    <li>Click <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "help/itempermissions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing permissions online.</li>");
+            Output.WriteLine("    <li>Click <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "help/itempermissions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing permissions online.</li>");
             Output.WriteLine("  </ul>");
             Output.WriteLine("</div>");
             Output.WriteLine();

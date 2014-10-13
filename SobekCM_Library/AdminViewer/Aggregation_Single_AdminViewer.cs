@@ -10,6 +10,9 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
@@ -223,7 +226,7 @@ namespace SobekCM.Library.AdminViewer
 					if (action == "save")
 					{
 						// Save the new configuration file
-						bool successful_save = (itemAggregation.Write_Configuration_File(SobekCM_Library_Settings.Base_Design_Location + itemAggregation.ObjDirectory));
+						bool successful_save = (itemAggregation.Write_Configuration_File(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + itemAggregation.ObjDirectory));
 
 						// Save to the database
 						if (!itemAggregation.Save_To_Database(user.Full_Name,null))
@@ -574,7 +577,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Basic Information</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The information in this section is the basic information about the aggregation, such as the full name, the shortened name used for breadcrumbs, the description, and the email contact.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The information in this section is the basic information about the aggregation, such as the full name, the shortened name used for breadcrumbs, the description, and the email contact.</p><p>For more information about the settings on this tab, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 			// Add the parent code(s)
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
@@ -637,7 +640,7 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Collection Visibility</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The values in this section determine if the collection is currently visible at all, whether it is eligible to appear on the collection list at the bottom of the parent page, and the collection button used in that case.  Thematic headings are used to place this collection on the main home page.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The values in this section determine if the collection is currently visible at all, whether it is eligible to appear on the collection list at the bottom of the parent page, and the collection button used in that case.  Thematic headings are used to place this collection on the main home page.</p><p>For more information about the settings on this tab, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 
 			// Add the behavior lines
@@ -774,7 +777,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Search Options</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>These options control how searching works within this aggregation, such as which search options are made publicly available.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>These options control how searching works within this aggregation, such as which search options are made publicly available.</p><p>For more information about the settings on this tab, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 			// Add line for basic search type
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
@@ -1093,7 +1096,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Results Options</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The information in this section controls how search results or item browses appears.  The facet options control which metadata values appear to the left of the results, to allow users to narrow their results.  The search results values determine which options are available for viewing the results and what are the aggregation defaults.  Finally, the result fields determines which values are displayed with each individual result in the result set.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The information in this section controls how search results or item browses appears.  The facet options control which metadata values appear to the left of the results, to allow users to narrow their results.  The search results values determine which options are available for viewing the results and what are the aggregation defaults.  Finally, the result fields determines which values are displayed with each individual result in the result set.</p><p>For more information about the settings on this tab, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
 			Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
@@ -1202,7 +1205,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.Write(FacetID == - 1 ? "<option value=\"-1\" selected=\"selected\" ></option>" : "<option value=\"-1\"></option>");
 
 			// Add each metadata field to the select boxes
-			foreach (Metadata_Search_Field metadataField in SobekCM_Library_Settings.Metadata_Search_Fields )
+			foreach (Metadata_Search_Field metadataField in InstanceWide_Settings_Singleton.Settings.Metadata_Search_Fields )
 			{
 				if (metadataField.Web_Code.Length > 0)
 				{
@@ -1229,7 +1232,7 @@ namespace SobekCM.Library.AdminViewer
 		private void Save_Page_4_Postback(NameValueCollection Form)
 		{
 			// Get the metadata browses
-			List<Item_Aggregation_Child_Page> metadata_browse_bys = itemAggregation.Browse_By_Pages(SobekCM_Library_Settings.Default_UI_Language).Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY).Where(ThisBrowse => ThisBrowse.Source == Item_Aggregation_Child_Page.Source_Type.Database).ToList();
+			List<Item_Aggregation_Child_Page> metadata_browse_bys = itemAggregation.Browse_By_Pages(InstanceWide_Settings_Singleton.Settings.Default_UI_Language).Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY).Where(ThisBrowse => ThisBrowse.Source == Item_Aggregation_Child_Page.Source_Type.Database).ToList();
 
 			// Remove all these browse by's
 			foreach (Item_Aggregation_Child_Page browseBy in metadata_browse_bys)
@@ -1247,7 +1250,7 @@ namespace SobekCM.Library.AdminViewer
 				{
 					if (default_browseby_id > 0)
 					{
-						Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(default_browseby_id);
+						Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(default_browseby_id);
 						if (field != null)
 						{
 							Item_Aggregation_Child_Page newBrowse = new Item_Aggregation_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY, Item_Aggregation_Child_Page.Source_Type.Database, field.Display_Term, String.Empty, field.Display_Term);
@@ -1270,7 +1273,7 @@ namespace SobekCM.Library.AdminViewer
 					short browseby_id = Convert.ToInt16(Form["admin_aggr_browseby_" + i]);
 					if ((browseby_id > 0) && (default_browseby_id != browseby_id))
 					{
-						Metadata_Search_Field field = SobekCM_Library_Settings.Metadata_Search_Field_By_ID(browseby_id);
+						Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(browseby_id);
 						if (field != null)
 						{
 							Item_Aggregation_Child_Page newBrowse = new Item_Aggregation_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY, Item_Aggregation_Child_Page.Source_Type.Database, field.Display_Term, String.Empty, field.Display_Term);
@@ -1292,7 +1295,7 @@ namespace SobekCM.Library.AdminViewer
 			List<string> metadata_browse_bys = new List<string>();
 			string default_browse_by = itemAggregation.Default_BrowseBy;
 			List<string> otherBrowseBys = new List<string>();
-			foreach (Item_Aggregation_Child_Page thisBrowse in itemAggregation.Browse_By_Pages(SobekCM_Library_Settings.Default_UI_Language))
+			foreach (Item_Aggregation_Child_Page thisBrowse in itemAggregation.Browse_By_Pages(InstanceWide_Settings_Singleton.Settings.Default_UI_Language))
 			{
 				if (thisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY)
 				{
@@ -1317,7 +1320,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Metadata Browses</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The metadata browses can be used to expose all the metadata of the resources within this aggregation for public browsing.  Select the metadata fields you would like have available below.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The metadata browses can be used to expose all the metadata of the resources within this aggregation for public browsing.  Select the metadata fields you would like have available below.</p><p>For more information about the settings on this tab, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 			// Add the default metadata browse view view
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
@@ -1374,7 +1377,7 @@ namespace SobekCM.Library.AdminViewer
 
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">OAI-PMH Settings</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can use OAI-PMH to expose all the metadata of the resources within this aggregation for automatic harvesting by other repositories.  Additionally, you can choose to attach metadata to the collection-level OAI-PMH record.  This should be coded as dublin core tags.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can use OAI-PMH to expose all the metadata of the resources within this aggregation for automatic harvesting by other repositories.  Additionally, you can choose to attach metadata to the collection-level OAI-PMH record.  This should be coded as dublin core tags.</p><p>For more information about the settings on this tab, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 
 			// Add the oai-pmh enabled flag
@@ -1445,7 +1448,7 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 			// Add each metadata field to the select boxes
-			foreach (Metadata_Search_Field metadataField in SobekCM_Library_Settings.Metadata_Search_Fields)
+			foreach (Metadata_Search_Field metadataField in InstanceWide_Settings_Singleton.Settings.Metadata_Search_Fields)
 			{
 				if (metadataField.Web_Code.Length > 0)
 				{
@@ -1636,7 +1639,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Appearance Options</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>These three settings have the most profound affects on the appearance of this aggregation, by forcing it to appear under a particular web skin, allowing a custom aggregation-level stylesheet, or completely overriding the system-generated home page for a custom home page HTML source file.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>These three settings have the most profound affects on the appearance of this aggregation, by forcing it to appear under a particular web skin, allowing a custom aggregation-level stylesheet, or completely overriding the system-generated home page for a custom home page HTML source file.</p><p>For more information about the settings on this tab, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 			// Add the web skin code
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" >");
@@ -1734,7 +1737,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  </tr>");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Home Page Text</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section controls all the language-specific (and default) text which appears on the home page.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section controls all the language-specific (and default) text which appears on the home page.</p><p>For more information about the settings on this tab, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 			// Add all the existing home page information
 			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
@@ -1760,10 +1763,10 @@ namespace SobekCM.Library.AdminViewer
 			{
 				Output.WriteLine("        <tr>");
 				bool canDelete = true;
-				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED ) || (thisHomeSource.Key == SobekCM_Library_Settings.Default_UI_Language))
+				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED ) || (thisHomeSource.Key == InstanceWide_Settings_Singleton.Settings.Default_UI_Language))
 				{
 					canDelete = false;
-					existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(SobekCM_Library_Settings.Default_UI_Language));
+					existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(InstanceWide_Settings_Singleton.Settings.Default_UI_Language));
 					Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
 				}
 				else
@@ -1843,9 +1846,9 @@ namespace SobekCM.Library.AdminViewer
 			Output.Write("<option value=\"\" selected=\"selected\"></option>");
 			foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
 			{
-				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == SobekCM_Library_Settings.Default_UI_Language))
+				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == InstanceWide_Settings_Singleton.Settings.Default_UI_Language))
 				{
-					Output.Write("<option value=\"" + thisHomeSource.Value  + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(SobekCM_Library_Settings.Default_UI_Language)) + "</option>");
+					Output.Write("<option value=\"" + thisHomeSource.Value  + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(InstanceWide_Settings_Singleton.Settings.Default_UI_Language)) + "</option>");
 				}
 				else
 				{
@@ -1862,7 +1865,7 @@ namespace SobekCM.Library.AdminViewer
 
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Banners</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section shows all the existing language-specific banners for this aggregation and allows you upload new banners for this aggregation.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section shows all the existing language-specific banners for this aggregation and allows you upload new banners for this aggregation.</p><p>For more information about the settings on this tab, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 
 			// Add all the EXISTING banner information
@@ -1885,7 +1888,7 @@ namespace SobekCM.Library.AdminViewer
 			foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> thisBannerInfo in itemAggregation.Front_Banner_Dictionary)
 			{
 				Output.WriteLine("        <tr>");
-				if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == SobekCM_Library_Settings.Default_UI_Language))
+				if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == InstanceWide_Settings_Singleton.Settings.Default_UI_Language))
 				{
 					Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
 				}
@@ -1925,7 +1928,7 @@ namespace SobekCM.Library.AdminViewer
 			{
 				Output.WriteLine("        <tr>");
 				bool canDelete = true;
-				if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == SobekCM_Library_Settings.Default_UI_Language))
+				if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == InstanceWide_Settings_Singleton.Settings.Default_UI_Language))
 				{
 					canDelete = false;
 					Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
@@ -2159,7 +2162,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.Write(Max_Text == 1 ? "<tr><td> &nbsp; &nbsp; Text:</td><td>" : "<tr valign=\"top\"><td><br /> &nbsp; &nbsp; Text:</td><td>");
 			for (int j = 0; j < Max_Text; j++)
 			{
-				Web_Language_Enum language = SobekCM_Library_Settings.Default_UI_Language;
+				Web_Language_Enum language = InstanceWide_Settings_Singleton.Settings.Default_UI_Language;
 				string text = String.Empty;
 				if (j < Highlight.Text_Dictionary.Count)
 				{
@@ -2195,7 +2198,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.Write(Max_Tooltips == 1 ? "<tr><td> &nbsp; &nbsp; Tooltip:</td><td>" : "<tr valign=\"top\"><td><br /> &nbsp; &nbsp; Tooltip:</td><td>");
 			for (int j = 0; j < Max_Tooltips; j++)
 			{
-				Web_Language_Enum language = SobekCM_Library_Settings.Default_UI_Language;
+				Web_Language_Enum language = InstanceWide_Settings_Singleton.Settings.Default_UI_Language;
 				string text = String.Empty;
 				if (j < Highlight.Tooltip_Dictionary.Count)
 				{
@@ -2270,7 +2273,7 @@ namespace SobekCM.Library.AdminViewer
 						errors.Add("You must enter a CODE for this child page");
 
 					}
-					else if (SobekCM_Library_Settings.Reserved_Keywords.Contains(childPageCode.ToLower()))
+					else if (InstanceWide_Settings_Singleton.Settings.Reserved_Keywords.Contains(childPageCode.ToLower()))
 					{
 						errors.Add("That code is a system-reserved keyword.  Try a different code.");
 					}
@@ -2295,7 +2298,7 @@ namespace SobekCM.Library.AdminViewer
 					else
 					{
 						Item_Aggregation_Child_Page newPage = new Item_Aggregation_Child_Page {Code = childPageCode, Parent_Code = childPageParent, Source = Item_Aggregation_Child_Page.Source_Type.Static_HTML };
-						newPage.Add_Label(childPageLabel, SobekCM_Library_Settings.Default_UI_Language);
+						newPage.Add_Label(childPageLabel, InstanceWide_Settings_Singleton.Settings.Default_UI_Language);
 						switch (childPageVisibility)
 						{
 							case "none":
@@ -2313,7 +2316,7 @@ namespace SobekCM.Library.AdminViewer
 						string html_source_dir = aggregationDirectory + "\\html\\browse";
 						if (!Directory.Exists(html_source_dir))
 							Directory.CreateDirectory(html_source_dir);
-						string html_source_file = html_source_dir + "\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(SobekCM_Library_Settings.Default_UI_Language) + ".html";
+						string html_source_file = html_source_dir + "\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(InstanceWide_Settings_Singleton.Settings.Default_UI_Language) + ".html";
 						if (!File.Exists(html_source_file))
 						{
 							HTML_Based_Content htmlContent = new HTML_Based_Content();
@@ -2323,7 +2326,7 @@ namespace SobekCM.Library.AdminViewer
 							htmlContent.Title = childPageLabel;
 							htmlContent.Save_To_File(html_source_file);
 						}
-						newPage.Add_Static_HTML_Source("html\\browse\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(SobekCM_Library_Settings.Default_UI_Language) + ".html", SobekCM_Library_Settings.Default_UI_Language);
+						newPage.Add_Static_HTML_Source("html\\browse\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(InstanceWide_Settings_Singleton.Settings.Default_UI_Language) + ".html", InstanceWide_Settings_Singleton.Settings.Default_UI_Language);
 
 						itemAggregation.Add_Child_Page(newPage);
 
@@ -2352,7 +2355,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Child Pages</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Child pages are pages related to the aggregation and allow additional information to be presented within the same aggregational branding.  These can appear in the aggregation main menu, with any metadata browses pulled from the database, or you can set them to for no automatic visibility, in which case they are only accessible by links in the home page or other child pages.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Child pages are pages related to the aggregation and allow additional information to be presented within the same aggregational branding.  These can appear in the aggregation main menu, with any metadata browses pulled from the database, or you can set them to for no automatic visibility, in which case they are only accessible by links in the home page or other child pages.</p><p>For more information about the settings on this tab, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 			// Put in alphabetical order
 			SortedList<string, Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Item_Aggregation_Child_Page>();
@@ -2410,7 +2413,7 @@ namespace SobekCM.Library.AdminViewer
 					Output.WriteLine("<a title=\"Click to delete this subcollection\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return edit_aggr_delete_child_page('" + childPage.Code + "');\">delete</a> )</td>");
 
 					Output.WriteLine("          <td>" + childPage.Code + "</td>");
-					Output.WriteLine("          <td>" + childPage.Get_Label(SobekCM_Library_Settings.Default_UI_Language) + "</td>");
+					Output.WriteLine("          <td>" + childPage.Get_Label(InstanceWide_Settings_Singleton.Settings.Default_UI_Language) + "</td>");
 
 					switch (childPage.Browse_Type)
 					{
@@ -2573,7 +2576,7 @@ namespace SobekCM.Library.AdminViewer
 				int errorCode = SobekCM_Database.Delete_Item_Aggregation(code_to_delete, user.Is_System_Admin, user.Full_Name, null, out delete_error);
 				if (errorCode <= 0)
 				{
-					string delete_folder = SobekCM_Library_Settings.Base_Design_Location + "aggregations\\" + code_to_delete;
+					string delete_folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "aggregations\\" + code_to_delete;
 					if (SobekCM_File_Utilities.Delete_Folders_Recursively(delete_folder))
 						actionMessage = "Deleted '" + code_to_delete + "' subcollection<br /><br />Unable to remove subcollection directory<br /><br />Some of the files may be in use";
 					else
@@ -2641,7 +2644,7 @@ namespace SobekCM.Library.AdminViewer
 			{
 				errors.Add("New code must be unique... <i>" + new_aggregation_code + "</i> already exists");
 			}
-			else if (SobekCM_Library_Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
+			else if (InstanceWide_Settings_Singleton.Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
 			{
 				errors.Add("That code is a system-reserved keyword.  Try a different code.");
 			}
@@ -2728,7 +2731,7 @@ namespace SobekCM.Library.AdminViewer
 					// Ensure a folder exists for this, otherwise create one
 					try
 					{
-						string folder = SobekCM_Library_Settings.Base_Design_Location + "aggregations\\" + new_aggregation_code.ToLower();
+						string folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "aggregations\\" + new_aggregation_code.ToLower();
 						if (!Directory.Exists(folder))
 						{
 							// Create this directory and all the subdirectories
@@ -2746,16 +2749,16 @@ namespace SobekCM.Library.AdminViewer
 							writer.Close();
 
 							// Copy the default banner and buttons from images
-							if (File.Exists(SobekCM_Library_Settings.Base_Directory + "default/images/default_button.png"))
-								File.Copy(SobekCM_Library_Settings.Base_Directory + "default/images/default_button.png", folder + "/images/buttons/coll.png");
-							if (File.Exists(SobekCM_Library_Settings.Base_Directory + "default/images/default_button.gif"))
-								File.Copy(SobekCM_Library_Settings.Base_Directory + "default/images/default_button.gif", folder + "/images/buttons/coll.gif");
-							if (File.Exists(SobekCM_Library_Settings.Base_Directory + "default/images/default_banner.jpg"))
-								File.Copy(SobekCM_Library_Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
+							if (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_button.png"))
+								File.Copy(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_button.png", folder + "/images/buttons/coll.png");
+							if (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_button.gif"))
+								File.Copy(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_button.gif", folder + "/images/buttons/coll.gif");
+							if (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_banner.jpg"))
+								File.Copy(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
 
 							// Now, try to create the item aggregation and write the configuration file
 							Item_Aggregation childAggregation = Item_Aggregation_Builder.Get_Item_Aggregation(new_aggregation_code, String.Empty, null, false, false, null);
-							childAggregation.Write_Configuration_File(SobekCM_Library_Settings.Base_Design_Location + childAggregation.ObjDirectory);
+							childAggregation.Write_Configuration_File(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + childAggregation.ObjDirectory);
 						}
 					}
 					catch
@@ -2793,7 +2796,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">SubCollections</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can view existing subcollections or add new subcollections to this aggregation from this tab.  You will have full curatorial rights over any new subcollections you add.  Currently, only system administrators can DELETE subcollections.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can view existing subcollections or add new subcollections to this aggregation from this tab.  You will have full curatorial rights over any new subcollections you add.  Currently, only system administrators can DELETE subcollections.</p><p>For more information about the settings on this tab, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 			if (itemAggregation.Children_Count <= 0)
 			{
@@ -3094,7 +3097,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Edit Child Page Details : " + code.ToUpper() + "</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This page allows you to edit the basic information about a single child page and add the ability to display this child page in alternate languages.</p><p>For more information about the settings on this tab, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This page allows you to edit the basic information about a single child page and add the ability to display this child page in alternate languages.</p><p>For more information about the settings on this tab, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 
 			// Add the visibility line
@@ -3211,10 +3214,10 @@ namespace SobekCM.Library.AdminViewer
 
 				Output.WriteLine("        <tr>");
 				bool canDelete = true;
-				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED) || (thisHomeSource.Key == SobekCM_Library_Settings.Default_UI_Language))
+				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED) || (thisHomeSource.Key == InstanceWide_Settings_Singleton.Settings.Default_UI_Language))
 				{
 					canDelete = false;
-					existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(SobekCM_Library_Settings.Default_UI_Language));
+					existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(InstanceWide_Settings_Singleton.Settings.Default_UI_Language));
 					Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
 				}
 				else
@@ -3307,9 +3310,9 @@ namespace SobekCM.Library.AdminViewer
 			Output.Write("<option value=\"\" selected=\"selected\"></option>");
 			foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in childPage.Source_Dictionary)
 			{
-				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == SobekCM_Library_Settings.Default_UI_Language))
+				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == InstanceWide_Settings_Singleton.Settings.Default_UI_Language))
 				{
-					Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(SobekCM_Library_Settings.Default_UI_Language)) + "</option>");
+					Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(InstanceWide_Settings_Singleton.Settings.Default_UI_Language)) + "</option>");
 				}
 				else
 				{

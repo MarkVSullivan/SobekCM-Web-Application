@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
+using SobekCM.Core.Settings;
 using SobekCM.Library;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
@@ -44,6 +45,7 @@ namespace SobekCM.Library.Statistics
 	    private static List<string> Item_Viewer_Priority;
         private static List<User_Group> User_Groups;
 
+
         private List<string> dloc_ips;
         private SortedList<SobekCM_Hit, SobekCM_Hit> hits;
         private DataTable itemList;
@@ -64,13 +66,13 @@ namespace SobekCM.Library.Statistics
                                                               ref Codes, ref Item_Lookup_Object, ref Icon_List,
                                                               ref Stats_Date_Range, ref Thematic_Headings,
                                                               ref Collection_Aliases, ref IP_Restrictions,
-                                                              ref URL_Portals, ref Mime_Types, ref Item_Viewer_Priority, ref User_Groups);
+                                                              ref URL_Portals, ref Mime_Types, ref Item_Viewer_Priority, ref User_Groups, ref Search_Stop_Words);
 
             // The cache needs to be disabled
             Cached_Data_Manager.Disabled = true;
 
             // Set the constant settings base directory value to the production location
-            SobekCM_Library_Settings.Base_Directory = SobekCM_Web_App_Directory;
+            InstanceWide_Settings_Singleton.Settings.Base_Directory = SobekCM_Web_App_Directory;
         }
 
         /// <summary> Read a IIS web log, analyze completely, and return the corresponding <see cref="SobekCM_Stats_DataSet"/> object </summary>

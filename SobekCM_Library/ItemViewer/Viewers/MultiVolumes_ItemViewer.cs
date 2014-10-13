@@ -4,6 +4,8 @@ using System;
 using System.Data;
 using System.Text;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Library.Configuration;
@@ -453,7 +455,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<div style=\"margin:5px;text-align:center;\">");
 
             // Find the base address for this thumbnail
-            string jpeg_base = (SobekCM_Library_Settings.Image_URL + CurrentItem.Web.File_Root + "/").Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+            string jpeg_base = (InstanceWide_Settings_Singleton.Settings.Image_URL + CurrentItem.Web.File_Root + "/").Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
 
             // Compute the base redirect URL
             string current_vid = CurrentMode.VID;

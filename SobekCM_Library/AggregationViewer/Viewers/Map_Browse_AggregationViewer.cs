@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -190,7 +191,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 string link = Current_Mode.Base_URL + thisBibId;
 
                 // Calculate the thumbnail
-                string thumb = SobekCM_Library_Settings.Image_URL + groupThumbnail.Replace("\\", "/").Replace("//", "/");
+                string thumb = InstanceWide_Settings_Singleton.Settings.Image_URL + groupThumbnail.Replace("\\", "/").Replace("//", "/");
                 if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
                     thumb = currentMode.Default_Images_URL + "NoThumb.jpg";

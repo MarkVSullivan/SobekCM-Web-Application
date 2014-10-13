@@ -86,7 +86,7 @@ namespace SobekCM.Library.ResultsViewer
 
             //// Read this item information
             //Item.SobekCM_METS_Based_ItemBuilder builder = new SobekCM.Library.Items.SobekCM_METS_Based_ItemBuilder();
-            //string mets_location = SobekCM_Library_Settings.Image_URL + dbTitle.File_Root + "/" + dbItem.VID_String;
+            //string mets_location = InstanceWide_Settings_Singleton.Settings.Image_URL + dbTitle.File_Root + "/" + dbItem.VID_String;
             //SobekCM.Resource_Object.SobekCM_Item thisItem = builder.Build_Brief_Item(mets_location, Tracer);
 
             //if (thisItem != null)
@@ -95,7 +95,7 @@ namespace SobekCM.Library.ResultsViewer
             //    thisItem.Behaviors.GroupTitle = dbTitle.GroupTitle;
             //    thisItem.Web.AssocFilePath = dbTitle.File_Root + "/" + dbItem.VID_String;
             //    thisItem.Web.File_Root = String.Empty;
-            //    thisItem.Behaviors.Image_Root = SobekCM_Library_Settings.Image_URL;
+            //    thisItem.Behaviors.Image_Root = InstanceWide_Settings_Singleton.Settings.Image_URL;
             //    thisItem.Behaviors.IP_Restriction_Membership = dbItem.IP_Range_Membership;
 
             //    string preview_citation = "PREVIEW CITATION";
@@ -210,7 +210,7 @@ namespace SobekCM.Library.ResultsViewer
             //        else
             //        {
             //            resultsBldr.AppendLine("    <td align=\"center\" colspan=\"3\">");
-            //            string image_link = SobekCM_Library_Settings.Image_URL + thisItem.Web.AssocFilePath + "/" + thisItem.Behaviors.Main_Page.FileName;
+            //            string image_link = InstanceWide_Settings_Singleton.Settings.Image_URL + thisItem.Web.AssocFilePath + "/" + thisItem.Behaviors.Main_Page.FileName;
             //            resultsBldr.AppendLine("      <a href=\"" + full_item_link + "\"><img border=\"0\" src=\"" + image_link + "\" /></a>");
             //            resultsBldr.AppendLine("    </td>");
             //        }

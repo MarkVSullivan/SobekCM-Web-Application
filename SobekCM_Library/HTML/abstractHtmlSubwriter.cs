@@ -65,38 +65,21 @@ namespace SobekCM.Library.HTML
 		/// <remarks> This just prevents an empty set from having to be created over and over </remarks>
 		protected List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
 
-		/// <summary> Protected field contains the mode / navigation information for the current request</summary>
-		protected SobekCM_Navigation_Object currentMode;
-
-		/// <summary> Protected field contains the HTML Web skin which controls the overall appearance of this digital library </summary>
-		protected SobekCM_Skin_Object htmlSkin;
-
-		/// <summary> Current item aggregation object  </summary>
+	    /// <summary> Current item aggregation object  </summary>
 		public Item_Aggregation Current_Aggregation { get; set; }
 
-		/// <summary> HTML Web skin which controls the overall appearance of this digital library </summary>
-		/// <remarks> This also sets all of the protected tab html strings </remarks>
-		public SobekCM_Skin_Object Skin
-		{
-			get { return htmlSkin; }
-			set
-			{
-				htmlSkin = value;
-			}
-		}
+	    /// <summary> HTML Web skin which controls the overall appearance of this digital library </summary>
+	    /// <remarks> This also sets all of the protected tab html strings </remarks>
+	    public SobekCM_Skin_Object Skin { get; set; }
 
-		/// <summary>  Mode / navigation information for the current request </summary>
-		/// <remarks> This also sets all of the protected tab html strings </remarks>
-		public SobekCM_Navigation_Object Mode
-		{
-			get { return currentMode; }
-			set
-			{
-				currentMode = value;
-			}
-		}
+	    /// <summary>  Mode / navigation information for the current request </summary>
+	    /// <remarks> This also sets all of the protected tab html strings </remarks>
+	    public SobekCM_Navigation_Object Mode { get; set; }
 
-		/// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+        /// <summary> Complete list of search stop words, from the database </summary>
+        public List<string> Search_Stop_Words { get; set; }
+
+	    /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
 		/// for the current request, or if it can be hidden. </summary>
 		/// <value> This value can be override by child classes, but by default this returns FALSE </value>
 		public virtual bool Upload_File_Possible
@@ -138,10 +121,10 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("          <tr style=\"vertical-align:top; height: 16px;\">");
 			Output.WriteLine("            <td valign=\"top\">");
 			Output.Write("              <input name=\"internalSearchTextBox\" type=\"text\" id=\"internalSearchTextBox\" class=\"SobekInternalSearchBox\" value=\"\" onfocus=\"javascript:textbox_enter('internalSearchTextBox', 'SobekInternalSearchBox_focused')\" onblur=\"javascript:textbox_leave('internalSearchTextBox', 'SobekInternalSearchBox')\"");
-			if (currentMode.Browser_Type.IndexOf("IE") >= 0)
-				Output.WriteLine(" onkeydown=\"internalTrapKD(event, '" + currentMode.Base_URL + "contains');\" />");
+			if (Mode.Browser_Type.IndexOf("IE") >= 0)
+				Output.WriteLine(" onkeydown=\"internalTrapKD(event, '" + Mode.Base_URL + "contains');\" />");
 			else
-				Output.WriteLine(" onkeydown=\"return internalTrapKD(event, '" + currentMode.Base_URL + "contains');\" />");
+				Output.WriteLine(" onkeydown=\"return internalTrapKD(event, '" + Mode.Base_URL + "contains');\" />");
 			Output.WriteLine("              <select name=\"internalDropDownList\" id=\"internalDropDownList\" class=\"SobekInternalSelectBox\" >");
 			Output.WriteLine("                <option value=\"BI\" selected=\"selected\">BibID</option>");
 			Output.WriteLine("                <option value=\"OC\">OCLC Number</option>");
@@ -171,7 +154,7 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("              </select>");
 			Output.WriteLine("            </td>");
 			Output.WriteLine("            <td>");
-			Output.WriteLine("              <a onclick=\"internal_search('" + currentMode.Base_URL + "contains')\"><img src=\"" + currentMode.Base_URL + "default/images/go_gray.gif\" title=\"Perform search\" alt=\"Perform search\" style=\"margin-top: 1px\" /></a>");
+			Output.WriteLine("              <a onclick=\"internal_search('" + Mode.Base_URL + "contains')\"><img src=\"" + Mode.Base_URL + "default/images/go_gray.gif\" title=\"Perform search\" alt=\"Perform search\" style=\"margin-top: 1px\" /></a>");
 			Output.WriteLine("              &nbsp;");
 			Output.WriteLine("            </td>");
 			Output.WriteLine("          </tr>");

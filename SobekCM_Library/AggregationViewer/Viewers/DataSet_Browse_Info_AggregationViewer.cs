@@ -124,7 +124,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("DataSet_Browse_Info_AggregationViewer.Add_Secondary_Controls", "Adding HTML");
             }
 
-            writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translator, itemList, currentUser, currentMode, Tracer)
+            writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translator, itemList, currentUser, currentMode, null, Tracer)
                               {
                                   Skin = htmlSkin,
                                   Mode = currentMode,

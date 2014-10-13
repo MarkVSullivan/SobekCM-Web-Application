@@ -6,9 +6,11 @@ using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using GemBox.Spreadsheet;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Results;
 using SobekCM.Core.Users;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion
@@ -103,11 +105,11 @@ namespace SobekCM.Library.ResultsViewer
 	           
 	            string from_db = String.Empty;
 	            string key = String.Empty;
-				if (Settings.SobekCM_Library_Settings.Additional_Settings.ContainsKey("Spreadsheet Library License"))
+				if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Spreadsheet Library License"))
 				{
 					try
 					{
-						key = Settings.SobekCM_Library_Settings.Additional_Settings["Spreadsheet Library License"];
+						key = InstanceWide_Settings_Singleton.Settings.Additional_Settings["Spreadsheet Library License"];
 
 						SecurityInfo thisDecryptor = new SecurityInfo();
 						string encryptedPassword = thisDecryptor.DecryptString(from_db, "*h3kj(83", "unsalted");

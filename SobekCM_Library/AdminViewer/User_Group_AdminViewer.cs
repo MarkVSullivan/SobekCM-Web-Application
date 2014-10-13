@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
@@ -700,7 +701,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <b>Edit this user group's permissions and abilities</b>");
             Output.WriteLine("    <ul>");
             Output.WriteLine("      <li>Enter the permissions for this user group below and press the SAVE button when all your edits are complete.</li>");
-            Output.WriteLine("      <li>For clarification of any terms on this form, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/users\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</li>");
+            Output.WriteLine("      <li>For clarification of any terms on this form, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/users\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</li>");
             Output.WriteLine("     </ul>");
             Output.WriteLine("  </div>");
 			Output.WriteLine();
@@ -847,7 +848,7 @@ namespace SobekCM.Library.AdminViewer
 
 			// Determine if this is a detailed view of rights
 			int columns = 7;
-			if (SobekCM_Library_Settings.Detailed_User_Aggregation_Permissions)
+			if (InstanceWide_Settings_Singleton.Settings.Detailed_User_Aggregation_Permissions)
 			{
 				columns = 12;
 			}
@@ -870,7 +871,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\" >");
                 Output.WriteLine("    <td width=\"57px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can select this aggregation when editing or submitting an item\">CAN<br />SELECT</acronym></span></td>");
 
-				if (SobekCM_Library_Settings.Detailed_User_Aggregation_Permissions)
+				if (InstanceWide_Settings_Singleton.Settings.Detailed_User_Aggregation_Permissions)
 				{
 					Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">ITEM<br />EDIT<br />METADATA</acronym></span></td>");
 					Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">ITEM<br />EDIT<br />BEHAVIORS</acronym></span></td>");
@@ -895,7 +896,7 @@ namespace SobekCM.Library.AdminViewer
                     if (!lookup_aggs.ContainsKey(thisAggr.Code.ToLower()))
                     {
                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" /></td>");
-						if (SobekCM_Library_Settings.Detailed_User_Aggregation_Permissions)
+						if (InstanceWide_Settings_Singleton.Settings.Detailed_User_Aggregation_Permissions)
 						{
 							Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_metadata_" + thisAggr.Code + "\" id=\"admin_project_edit_metadata_" + thisAggr.Code + "\" /></td>");
 							Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_behavior_" + thisAggr.Code + "\" id=\"admin_project_edit_behavior_" + thisAggr.Code + "\" /></td>");
@@ -918,7 +919,7 @@ namespace SobekCM.Library.AdminViewer
                         else
                             Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" /></td>");
 
-						if (SobekCM_Library_Settings.Detailed_User_Aggregation_Permissions)
+						if (InstanceWide_Settings_Singleton.Settings.Detailed_User_Aggregation_Permissions)
 						{
 							if (lookup_aggs[thisAggr.Code.ToLower()].CanEditMetadata)
 								Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_metadata_" + thisAggr.Code + "\" id=\"admin_project_edit_metadata_" + thisAggr.Code + "\" checked=\"checked\" /></td>");

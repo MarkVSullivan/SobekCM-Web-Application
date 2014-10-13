@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
@@ -22,9 +24,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			suppressNavigator = false;
 
 			// Look for a width in the settings
-			if (SobekCM_Library_Settings.Additional_Settings.ContainsKey("JPEG2000 ItemViewer.Suppress Navigator"))
+			if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("JPEG2000 ItemViewer.Suppress Navigator"))
 			{
-				if ( SobekCM_Library_Settings.Additional_Settings["JPEG2000 ItemViewer.Suppress Navigator"].ToLower().Trim() != "false")
+				if ( InstanceWide_Settings_Singleton.Settings.Additional_Settings["JPEG2000 ItemViewer.Suppress Navigator"].ToLower().Trim() != "false")
 					suppressNavigator = true;
 			}
 		}
@@ -92,7 +94,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("   });");
             Output.WriteLine();
-            Output.WriteLine("   viewer.open(\"" + CurrentMode.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + SobekCM_Library_Settings.Image_Server_Network.Replace("\\","/") + CurrentItem.Web.AssocFilePath.Replace("\\","/") +  FileName + ".dzi\");");
+            Output.WriteLine("   viewer.open(\"" + CurrentMode.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + InstanceWide_Settings_Singleton.Settings.Image_Server_Network.Replace("\\","/") + CurrentItem.Web.AssocFilePath.Replace("\\","/") +  FileName + ".dzi\");");
             Output.WriteLine("</script>");
             Output.WriteLine("</td>");
         }

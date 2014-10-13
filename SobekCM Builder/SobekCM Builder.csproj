@@ -56,9 +56,6 @@
       <HintPath>..\DLLs\SolrNet\SolrNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -70,61 +67,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Abort_Database_Mechanism.cs" />
-    <Compile Include="HTML_XML_Text_Extractor.cs" />
-    <Compile Include="MarcXML_Load_Creator.cs" />
-    <Compile Include="FDA_Report_Processor.cs" />
-    <Compile Include="Modules\BibVidStruct.cs" />
-    <Compile Include="Modules\Folders\abstractFolderModule.cs" />
-    <Compile Include="Modules\Folders\ApplyBibIdRestrictionModule.cs" />
-    <Compile Include="Modules\Folders\MoveAgedPackagesToProcessModule.cs" />
-    <Compile Include="Modules\Folders\ValidateAndClassifyModule.cs" />
-    <Compile Include="Modules\Items\AddNewImagesAndViewsModule.cs" />
-    <Compile Include="Modules\Items\AddTrackingWorkflowModule.cs" />
-    <Compile Include="Modules\Items\AttachAllNonImageFilesModule.cs" />
-    <Compile Include="Modules\Items\EnsureMainThumbnailModule.cs" />
-    <Compile Include="Modules\Items\GetPageCountFromPdfModule.cs" />
-    <Compile Include="Modules\Items\MoveFilesToImageServerModule.cs" />
-    <Compile Include="Modules\Items\ReloadMetsAndBasicDbInfoModule.cs" />
-    <Compile Include="Modules\Items\UpdateJpegAttributesModule.cs" />
-    <Compile Include="Modules\Items\UpdateWebConfigModule.cs" />
-    <Compile Include="Modules\ModuleStandardLoggingDelegate.cs" />
-    <Compile Include="Modules\Folders\iFolderModule.cs" />
-    <Compile Include="Modules\Items\abstractSubmissionPackageModule.cs" />
-    <Compile Include="Modules\Items\CheckForSsnModule.cs" />
-    <Compile Include="Modules\Items\CleanDirtyOcrModule.cs" />
-    <Compile Include="Modules\Items\CleanWebResourceFolderModule.cs" />
-    <Compile Include="Modules\Items\ConvertOfficeFilesToPdfModule.cs" />
-    <Compile Include="Modules\Items\CopyToArchiveFolderModule.cs" />
-    <Compile Include="Modules\Items\CreateImageDerivativesModule.cs" />
-    <Compile Include="Modules\Items\CreatePdfThumbnailModule.cs" />
-    <Compile Include="Modules\Items\CreateStaticVersionModule.cs" />
-    <Compile Include="Modules\Items\ExtractTextFromHtmlModule.cs" />
-    <Compile Include="Modules\Items\ExtractTextFromPdfModule.cs" />
-    <Compile Include="Modules\Items\ExtractTextFromXmlModule.cs" />
-    <Compile Include="Modules\Items\iSubmissionPackageModule.cs" />
-    <Compile Include="Modules\Items\OcrTiffsModule.cs" />
-    <Compile Include="Modules\Items\SaveMarcXmlModule.cs" />
-    <Compile Include="Modules\Items\SaveServiceMetsModule.cs" />
-    <Compile Include="Modules\Items\SaveToDatabaseModule.cs" />
-    <Compile Include="Modules\Items\SaveToSolrLuceneModule.cs" />
-    <Compile Include="Modules\ModuleErrorLoggingDelegate.cs" />
-    <Compile Include="Modules\PostProcess\abstractPostProcessModule.cs" />
-    <Compile Include="Modules\PostProcess\BuildAggregationBrowsesModule.cs" />
-    <Compile Include="Modules\PostProcess\iPostProcessModule.cs" />
-    <Compile Include="Modules\PreProcess\abstractPreProcessModule.cs" />
-    <Compile Include="Modules\PreProcess\iPreProcessModule.cs" />
-    <Compile Include="Modules\PreProcess\ProcessPendingFdaReportsModule.cs" />
-    <Compile Include="Modules\Schedulable\abstractSchedulableModule.cs" />
-    <Compile Include="Modules\Schedulable\ExpireOldLogEntriesModule.cs" />
-    <Compile Include="Modules\Schedulable\iSchedulableModule.cs" />
-    <Compile Include="Modules\Schedulable\RebuildAllAggregationBrowsesModule.cs" />
-    <Compile Include="Modules\Schedulable\SendNewItemEmailsModule.cs" />
-    <Compile Include="Modules\Schedulable\SolrLuceneIndexOptimizationModule.cs" />
-    <Compile Include="Modules\Schedulable\UpdatedCachedAggreagtionMetadataModule.cs" />
-    <Compile Include="PDF_Tools.cs" />
-    <Compile Include="Text_Cleaner.cs" />
-    <Compile Include="Word_Powerpoint_to_PDF_Converter.cs" />
     <Compile Include="Worker_BulkLoader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -134,6 +76,14 @@
     <Content Include="Sobek_Builder.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SobekCM_Builder_Library\SobekCM_Builder_Library.csproj">
+      <Project>{211c5d6b-f983-4cff-ab58-302a6ecfe14f}</Project>
+      <Name>SobekCM_Builder_Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj">
+      <Project>{849c78a5-c60b-4faf-9efb-943753f64e56}</Project>
+      <Name>SobekCM_Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SobekCM_Library\SobekCM_Library.csproj">
       <Project>{4426FF50-74C7-4B88-878B-EFB9BC2317BD}</Project>
       <Name>SobekCM_Library</Name>

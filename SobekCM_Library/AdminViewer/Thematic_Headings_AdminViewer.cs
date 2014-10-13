@@ -8,6 +8,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Web;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
@@ -298,7 +299,7 @@ namespace SobekCM.Library.AdminViewer
 			}
 
             Output.WriteLine("  <p>Thematic headings are the headings on the main library home page, under which all the item aggregation icons appear.</p>");
-            Output.WriteLine("  <p>For more information about thematic headings, <a href=\"" + SobekCM_Library_Settings.Help_URL(currentMode.Base_URL) + "adminhelp/headings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>For more information about thematic headings, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/headings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
             Output.WriteLine();
 
             Output.WriteLine("  <h2>New Thematic Heading</h2>");

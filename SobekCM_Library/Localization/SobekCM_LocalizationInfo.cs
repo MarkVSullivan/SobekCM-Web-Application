@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using SobekCM.Core.Configuration;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Localization.Classes;
 

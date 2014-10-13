@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using SobekCM.Core.Settings;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Navigation;
@@ -77,7 +78,7 @@ namespace SobekCM.Library.MySobekViewer
             // If a user can submit, add a link to start a new item
             if (user.Can_Submit)
             {
-                if (SobekCM_Library_Settings.Online_Edit_Submit_Enabled)
+                if (InstanceWide_Settings_Singleton.Settings.Online_Edit_Submit_Enabled)
                 {
                     currentMode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                     currentMode.My_Sobek_SubMode = "1";

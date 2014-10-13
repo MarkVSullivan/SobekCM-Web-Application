@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using SobekCM.Core.Configuration;
 using SobekCM.Core.Results;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Application_State;

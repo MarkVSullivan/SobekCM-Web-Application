@@ -8,6 +8,8 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.HTML;
@@ -553,7 +555,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        // If no attributes exist, read it from the JPEG2000 file
 	        if ((width <= 0) || (height <= 0))
 	        {
-	            string network_jpeg2000 = SobekCM_Library_Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath.Replace("/", "\\") + FileName;
+	            string network_jpeg2000 = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath.Replace("/", "\\") + FileName;
 	            if (File.Exists(network_jpeg2000))
 	            {
 	                Tracer.Add_Trace("Aware_JP2_ItemViewer.Add_Nav_Bar_Menu_Section", "Parsing JPEG2000 file for image attributes");
@@ -679,7 +681,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        StringBuilder url_builder = new StringBuilder(500);
 	        if (string.IsNullOrEmpty(featureType))
 	        {
-	            url_builder.Append(SobekCM_Library_Settings.JP2ServerUrl + "thumbnailserver?res=" + (zoom_levels() - CurrentMode.Viewport_Zoom + 1));
+	            url_builder.Append(InstanceWide_Settings_Singleton.Settings.JP2ServerUrl + "thumbnailserver?res=" + (zoom_levels() - CurrentMode.Viewport_Zoom + 1));
 	            if (CurrentMode.Viewport_Zoom != 1)
 	                url_builder.Append("&viewwidth=" + size_pixels + "&viewheight=" + size_pixels + "&x=" + CurrentMode.Viewport_Point_X + "&y=" + CurrentMode.Viewport_Point_Y);
 	            url_builder.Append("&rotation=" + rotation + "&filename=" + jpeg2000_filename + "&maxthumbnailwidth=200&maxthumbnailheight=300");
@@ -688,7 +690,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        else
 	        {
 	            // Determine the actual location on the viewport for the feature
-	            url_builder.Append( SobekCM_Library_Settings.SobekCM_ImageServer + "?z=" + actualZoomLevel + "&w=" + size_pixels + "&h=" + size_pixels);
+	            url_builder.Append( InstanceWide_Settings_Singleton.Settings.SobekCM_ImageServer + "?z=" + actualZoomLevel + "&w=" + size_pixels + "&h=" + size_pixels);
 	            url_builder.Append("&r=" + rotation + "&file=" + jpeg2000_filename);
 	            if (CurrentMode.Viewport_Zoom != 1)
 	                url_builder.Append("&x=" + CurrentMode.Viewport_Point_X + "&y=" + CurrentMode.Viewport_Point_Y);
@@ -852,7 +854,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            int actual_zoom_level = (zoomlevels - CurrentMode.Viewport_Zoom + 1);
 	            if ((string.IsNullOrEmpty(featureType) || ( actual_zoom_level == 1 )))
 	            {
-	                url_builder.Append(SobekCM_Library_Settings.JP2ServerUrl + "imageserver?res=" + actual_zoom_level + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
+	                url_builder.Append(InstanceWide_Settings_Singleton.Settings.JP2ServerUrl + "imageserver?res=" + actual_zoom_level + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
 	                if (CurrentMode.Viewport_Zoom != 1)
 	                    url_builder.Append("&x=" + CurrentMode.Viewport_Point_X + "&y=" + CurrentMode.Viewport_Point_Y);
 	                url_builder.Append("&rotation=" + rotation + "&filename=" + jpeg2000_filename);
@@ -860,7 +862,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            else
 	            {
 	                // Determine the actual location on the viewport for the feature
-	                url_builder.Append(SobekCM_Library_Settings.SobekCM_ImageServer + "?z=" + actual_zoom_level + "&w=" + size_pixels + "&h=" + size_pixels);
+	                url_builder.Append(InstanceWide_Settings_Singleton.Settings.SobekCM_ImageServer + "?z=" + actual_zoom_level + "&w=" + size_pixels + "&h=" + size_pixels);
 	                url_builder.Append("&r=" + rotation + "&file=" + jpeg2000_filename);
 	                if (CurrentMode.Viewport_Zoom != 1)
 	                    url_builder.Append("&x=" + CurrentMode.Viewport_Point_X + "&y=" + CurrentMode.Viewport_Point_Y);

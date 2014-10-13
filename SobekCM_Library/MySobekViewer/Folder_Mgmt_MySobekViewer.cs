@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -255,7 +256,7 @@ namespace SobekCM.Library.MySobekViewer
                                 SobekCM_Item newItem;
                                 Page_TreeNode newPage;
                                 SobekCM_Items_In_Title itemsInTitle;
-	                            newAssistant.Get_Item(currentMode, Item_List, SobekCM_Library_Settings.Image_URL, null, null, user, Tracer, out newItem, out newPage, out itemsInTitle );
+	                            newAssistant.Get_Item(currentMode, Item_List, InstanceWide_Settings_Singleton.Settings.Image_URL, null, null, user, Tracer, out newItem, out newPage, out itemsInTitle );
                                 SobekCM_Database.Add_Item_To_User_Folder(user.UserID, add_bookshelf, split[0], split[1], 1, comments, Tracer);
 
                                 // Determine the email format
@@ -704,7 +705,7 @@ namespace SobekCM.Library.MySobekViewer
                 else
                 {
 
-                    writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, Translator, itemList, user, currentMode, Tracer)
+                    writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, Translator, itemList, user, currentMode, null, Tracer)
                                       {
                                           Current_Aggregation = currentCollection,
                                           Skin = htmlSkin,

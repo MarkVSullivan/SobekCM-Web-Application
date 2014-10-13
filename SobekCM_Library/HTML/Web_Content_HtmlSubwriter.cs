@@ -38,7 +38,7 @@ namespace SobekCM.Library.HTML
         public Web_Content_HtmlSubwriter(Item_Aggregation Hierarchy_Object, SobekCM_Navigation_Object Current_Mode, SobekCM_Skin_Object HTML_Skin, HTML_Based_Content Static_Web_Content, SobekCM_SiteMap Site_Map)
         {
             base.Current_Aggregation = Hierarchy_Object;
-            currentMode = Current_Mode;
+            Mode = Current_Mode;
             Skin = HTML_Skin;
 
             thisStaticBrowseObject = Static_Web_Content;
@@ -46,17 +46,17 @@ namespace SobekCM.Library.HTML
 
             // If there is a sitemap, check if this is a robot request and then if the URL
             // for the sitemap pages is URL restricted
-            if ((siteMap != null) && (siteMap.Is_URL_Restricted_For_Robots) && (currentMode.Is_Robot))
+            if ((siteMap != null) && (siteMap.Is_URL_Restricted_For_Robots) && (Mode.Is_Robot))
             {
-                if (currentMode.Base_URL != siteMap.Restricted_Robot_URL)
+                if (Mode.Base_URL != siteMap.Restricted_Robot_URL)
                 {
-                    currentMode.Base_URL = siteMap.Restricted_Robot_URL;
-                    string redirect_url = currentMode.Redirect_URL();
+                    Mode.Base_URL = siteMap.Restricted_Robot_URL;
+                    string redirect_url = Mode.Redirect_URL();
 
                     HttpContext.Current.Response.Status = "301 Moved Permanently";
                     HttpContext.Current.Response.AddHeader("Location", redirect_url);
                     HttpContext.Current.ApplicationInstance.CompleteRequest();
-                    currentMode.Request_Completed = true;
+                    Mode.Request_Completed = true;
                     return;
                 }
             }
@@ -81,7 +81,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public void Add_Controls(PlaceHolder placeHolder, Custom_Tracer Tracer)
         {
-            if ((siteMap == null) || (currentMode.Is_Robot))
+            if ((siteMap == null) || (Mode.Is_Robot))
                 return;
 
             Tracer.Add_Trace("Web_Content_HtmlSubwriter.Add_Controls", "Adding site map tree nav view");
@@ -102,14 +102,14 @@ namespace SobekCM.Library.HTML
 
 
             // Determine the base URL
-            string base_url = currentMode.Base_URL;
-            if (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+            string base_url = Mode.Base_URL;
+            if (Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
             {
                 base_url = base_url + "l/";
             }
 
             // Find the selected node
-            int selected_node = siteMap.Selected_NodeValue(currentMode.Info_Browse_Mode);
+            int selected_node = siteMap.Selected_NodeValue(Mode.Info_Browse_Mode);
 
             foreach (SobekCM_SiteMap_Node rootSiteMapNode in siteMap.RootNodes)
             {
@@ -122,7 +122,7 @@ namespace SobekCM.Library.HTML
                 treeView1.Nodes.Add(rootNode);
 
                 // Was this node currently selected?
-                if (rootSiteMapNode.URL == currentMode.Info_Browse_Mode)
+                if (rootSiteMapNode.URL == Mode.Info_Browse_Mode)
                 {
                     rootNode.Text = string.Format("<span Title='{0}'>{1}</span>", rootSiteMapNode.Description, rootSiteMapNode.Title);
                     rootNode.Expand();
@@ -207,7 +207,7 @@ namespace SobekCM.Library.HTML
                             {
                                 string text = selectedNodeExpander.Parent.Text.Replace(" Namespace</a>","</a>").Replace(" Sub-Namespace</a>","</a>");
 
-                                breadcrumbBuilder.Insert(0, text + " <img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/breadcrumbimg.gif\" alt=\">\" /><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/breadcrumbimg.gif\" alt=\">\" /> ");
+                                breadcrumbBuilder.Insert(0, text + " <img src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/breadcrumbimg.gif\" alt=\">\" /><img src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/breadcrumbimg.gif\" alt=\">\" /> ");
                             }
 
                             // step up another level
@@ -230,8 +230,8 @@ namespace SobekCM.Library.HTML
             SobekCM_SiteMap_Node retrieved_node = siteMap.Node_By_Value(Convert.ToInt32(e.Node.Value));
 
             // Determine the base URL
-            string base_url = currentMode.Base_URL;
-            if (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+            string base_url = Mode.Base_URL;
+            if (Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
             {
                 base_url = base_url + "l/";
             }
@@ -289,7 +289,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // If this is a robot, just draw the links
-                if (currentMode.Is_Robot)
+                if (Mode.Is_Robot)
                 {
                     Output.WriteLine("<div class=\"SobekSiteMapTreeView\">");
                     foreach (SobekCM_SiteMap_Node rootNode in siteMap.RootNodes)
@@ -307,9 +307,9 @@ namespace SobekCM.Library.HTML
         {
 
             // Add this text
-            if ((Node.URL.Length > 0) && (Node.URL != currentMode.Info_Browse_Mode))
+            if ((Node.URL.Length > 0) && (Node.URL != Mode.Info_Browse_Mode))
             {
-                Output.WriteLine(Indent + "<a href='" + currentMode.Base_URL + Node.URL + "' title='" + Node.Description + "'>" + Node.Title + "</a><br />");
+                Output.WriteLine(Indent + "<a href='" + Mode.Base_URL + Node.URL + "' title='" + Node.Description + "'>" + Node.Title + "</a><br />");
             }
             else
             {
@@ -343,27 +343,27 @@ namespace SobekCM.Library.HTML
             }
 
             // Save the current mode and browse
-            Display_Mode_Enum thisMode = currentMode.Mode;
+            Display_Mode_Enum thisMode = Mode.Mode;
 
             if ((thisStaticBrowseObject.Banner.Length > 0) && (thisStaticBrowseObject.Banner.ToUpper().Trim() != "NONE"))
             {
                 if (thisStaticBrowseObject.Banner.ToUpper().Trim() == "DEFAULT")
                 {
-                    if ((htmlSkin != null) && (htmlSkin.Banner_HTML.Length > 0))
+                    if ((Skin != null) && (Skin.Banner_HTML.Length > 0))
                     {
-                        Output.WriteLine(htmlSkin.Banner_HTML);
+                        Output.WriteLine(Skin.Banner_HTML);
                     }
                     else
                     {
                         if (Current_Aggregation != null)
                         {
-                            Output.WriteLine("<img id=\"mainBanner\" src=\"" + currentMode.Base_URL + Current_Aggregation.Banner_Image(currentMode.Language, htmlSkin) + "\" alt=\"MISSING BANNER\" /><br />");
+                            Output.WriteLine("<img id=\"mainBanner\" src=\"" + Mode.Base_URL + Current_Aggregation.Banner_Image(Mode.Language, Skin) + "\" alt=\"MISSING BANNER\" /><br />");
                         }
                     }
                 }
                 else
                 {
-                    Output.WriteLine("<img id=\"mainBanner\" src=\"" + thisStaticBrowseObject.Banner.Replace("<%BASEURL%>", currentMode.Base_URL) + "\" alt=\"MISSING BANNER\" /><br />");
+                    Output.WriteLine("<img id=\"mainBanner\" src=\"" + thisStaticBrowseObject.Banner.Replace("<%BASEURL%>", Mode.Base_URL) + "\" alt=\"MISSING BANNER\" /><br />");
                 }
             }
 
@@ -425,9 +425,9 @@ namespace SobekCM.Library.HTML
 
 			// Write the style sheet to use 
 #if DEBUG
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #endif
 
             // If this is the static html web content view, add any special text which came from the original

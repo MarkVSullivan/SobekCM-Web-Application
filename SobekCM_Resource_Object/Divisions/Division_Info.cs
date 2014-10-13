@@ -98,6 +98,81 @@ namespace SobekCM.Resource_Object.Divisions
 
         #endregion
 
+        #region Method to provide some metadata to be saved with the item
+
+        /// <summary> Gets the metadata search terms and values to be saved to the database
+        /// to allow searching to occur over the data in this metadata module </summary>
+        public List<KeyValuePair<string, string>> Metadata_Search_Terms
+        {
+            get
+            {
+                List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
+
+
+
+                // Add any other division or page names 
+                List<string> tocterms = new List<string>();
+                foreach (abstract_TreeNode thisNode in downloadDivisionTree.Divisions_PreOrder)
+                {
+                    if ((thisNode.Label.Length > 0) &&
+                        (((thisNode.Label.IndexOf("Page ", StringComparison.InvariantCultureIgnoreCase) != 0) &&
+                          (thisNode.Label.IndexOf("Chapter ", StringComparison.InvariantCultureIgnoreCase) != 0)) ||
+                         (thisNode.Label.Length > 10)))
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", thisNode.Label));
+                    }
+                }
+                foreach (abstract_TreeNode thisNode in this.physicalDivisionTree.Divisions_PreOrder)
+                {
+                    if ((thisNode.Label.Length > 0) &&
+                        (((thisNode.Label.IndexOf("Page ", StringComparison.InvariantCultureIgnoreCase) != 0) &&
+                          (thisNode.Label.IndexOf("Chapter ", StringComparison.InvariantCultureIgnoreCase) != 0)) ||
+                         (thisNode.Label.Length > 10)))
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("TOC", thisNode.Label));
+                    }
+                }
+
+                // Add all the MIME types
+                if ((downloadDivisionTree.Has_Files) || (physicalDivisionTree.Has_Files))
+                {
+                    List<string> mimeTypes = new List<string>();
+                    List<SobekCM_File_Info> allDownloads = downloadDivisionTree.All_Files;
+                    foreach (SobekCM_File_Info thisDownload in allDownloads)
+                    {
+                        string thisMimeType = thisDownload.MIME_Type(thisDownload.File_Extension);
+                        if ((thisMimeType.Length > 0) && (!mimeTypes.Contains(thisMimeType)))
+                        {
+                            mimeTypes.Add(thisMimeType);
+                        }
+                    }
+                    List<SobekCM_File_Info> allImages = physicalDivisionTree.All_Files;
+                    foreach (SobekCM_File_Info thisImage in allImages)
+                    {
+                        string thisMimeType = thisImage.MIME_Type(thisImage.File_Extension);
+                        if ((thisMimeType.Length > 0) && (!mimeTypes.Contains(thisMimeType)))
+                        {
+                            mimeTypes.Add(thisMimeType);
+                        }
+                    }
+                    if (mimeTypes.Count > 0)
+                    {
+                        foreach (string thisMimeType in mimeTypes)
+                        {
+                            metadataTerms.Add(new KeyValuePair<string, string>("MIME Type", thisMimeType));
+                        }
+                    }
+                    else
+                        metadataTerms.Add(new KeyValuePair<string, string>("MIME Type", "NONE"));
+                }
+
+
+                return metadataTerms;
+            }
+        }
+
+        #endregion
+
         /// <summary> Method removes many of the string values that are loaded while reading the metadata
         /// but are not needed for general use of the item in the SobekCM web application  </summary>
         public void Minimize_File_Size()

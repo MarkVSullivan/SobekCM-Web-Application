@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SolrNet;
 using SolrNet.Commands.Parameters;
@@ -76,7 +77,7 @@ namespace SobekCM.Library.Solr
                 ResultsPage = 1;
 
             // Create the solr worker to query the page index
-            var solrWorker = Solr_Operations_Cache<Solr_Page_Result>.GetSolrOperations( SobekCM_Library_Settings.Page_Solr_Index_URL);
+            var solrWorker = Solr_Operations_Cache<Solr_Page_Result>.GetSolrOperations( InstanceWide_Settings_Singleton.Settings.Page_Solr_Index_URL);
 
             // Create the query options
             QueryOptions options = new QueryOptions

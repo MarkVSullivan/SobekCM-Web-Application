@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Library.Application_State;
@@ -69,7 +71,7 @@ namespace SobekCM.Library.Citation.Elements
 
             // Add all the possible thumbnail files
             items.Clear();
-            ReadOnlyCollection<string> files = Bib.Web.Get_Thumbnail_Files(SobekCM_Library_Settings.Image_Server_Network + Bib.Web.AssocFilePath);
+            ReadOnlyCollection<string> files = Bib.Web.Get_Thumbnail_Files(InstanceWide_Settings_Singleton.Settings.Image_Server_Network + Bib.Web.AssocFilePath);
             foreach (string thisFile in files)
             {
                 items.Add(thisFile);

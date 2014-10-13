@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
@@ -46,7 +47,7 @@ namespace SobekCM.Library.ResultsViewer
             {
                 // the html retrieved from the page
                 String strResult;
-                WebRequest objRequest = WebRequest.Create( SobekCM_Library_Settings.Mango_Union_Search_Base_URL + "&term=" + terms );
+                WebRequest objRequest = WebRequest.Create( InstanceWide_Settings_Singleton.Settings.Mango_Union_Search_Base_URL + "&term=" + terms );
                 objRequest.Timeout = 2000;
                 WebResponse objResponse = objRequest.GetResponse();
 

@@ -4,6 +4,8 @@ using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Aggregations;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
@@ -55,7 +57,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			NameValueCollection form = HttpContext.Current.Request.Form;
 			if ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (form["sbkSbia_ChildTextEdit"] != null) && ( currentUser != null ))
 			{
-				string aggregation_folder = SobekCM_Library_Settings.Base_Design_Location + "aggregations\\" + currentCollection.Code + "\\";
+				string aggregation_folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "aggregations\\" + currentCollection.Code + "\\";
 				string file = aggregation_folder + browseObject.Get_Static_HTML_Source(currentMode.Language);
 
 				// Get the header information as well

@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Settings;
 using SobekCM.Library.Application_State;
 using SobekCM.Library.Configuration;
 using SobekCM.Library.Database;
@@ -1073,7 +1075,7 @@ namespace SobekCM.Library.Navigation
 
 									string possible_info_mode = possibleInfoModeBuilder.ToString().Replace("'", "").Replace("\"", "");
 									string filename = possible_info_mode;
-									string base_source = SobekCM_Library_Settings.Base_Directory + "design\\webcontent";
+									string base_source = InstanceWide_Settings_Singleton.Settings.Base_Directory + "design\\webcontent";
 									string source = base_source;
 
 									if ((possible_info_mode.IndexOf("\\") > 0) || (possible_info_mode.IndexOf("/") > 0))
