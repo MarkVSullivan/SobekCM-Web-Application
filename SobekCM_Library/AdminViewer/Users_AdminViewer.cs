@@ -1225,7 +1225,8 @@ namespace SobekCM.Library.AdminViewer
                     List<User_Permissioned_Aggregation> aggregations_in_editable_user = editUser.PermissionedAggregations;
 
                     Dictionary<string, List<User_Permissioned_Aggregation>> lookup_aggs = new Dictionary<string, List<User_Permissioned_Aggregation>>();
-					foreach (User_Permissioned_Aggregation thisAggr in aggregations_in_editable_user)
+                    if(aggregations_in_editable_user!=null)
+                     foreach (User_Permissioned_Aggregation thisAggr in aggregations_in_editable_user)
 					{
 						if (lookup_aggs.ContainsKey(thisAggr.Code.ToLower()))
 						{
