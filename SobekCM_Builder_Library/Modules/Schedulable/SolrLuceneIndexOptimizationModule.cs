@@ -1,8 +1,10 @@
-﻿namespace SobekCM.Builder_Library.Modules.Schedulable
+﻿using SobekCM.Core.Settings;
+
+namespace SobekCM.Builder_Library.Modules.Schedulable
 {
     public class SolrLuceneIndexOptimizationModule : abstractSchedulableModule
     {
-        public override void DoWork()
+        public override void DoWork(InstanceWide_Settings Settings)
         {
             //// Initiate a solr/lucene index optimization since we are done loading for a while
             //if (DateTime.Now.Day % 2 == 0)

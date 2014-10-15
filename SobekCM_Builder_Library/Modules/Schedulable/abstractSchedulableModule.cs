@@ -1,9 +1,14 @@
 ﻿
+using System.Collections.Generic;
+using SobekCM.Core.Settings;
+
 namespace SobekCM.Builder_Library.Modules.Schedulable
 {
     public abstract class abstractSchedulableModule : iSchedulableModule
     {
-        public abstract void DoWork();
+        public List<string> Arguments { get; set; }
+
+        public abstract void DoWork( InstanceWide_Settings Settings );
 
         public event ModuleErrorLoggingDelegate Error;
         public event ModuleStandardLoggingDelegate Process;

@@ -93,7 +93,7 @@ namespace SobekCM.Library.Application_State
             ref List<string> Search_Stop_Words )
 		{
             // Should we reload the data from the exteral configuraiton file?
-            if (Reload_All)
+            if (Reload_All) 
             {
                 InstanceWide_Settings_Singleton.Refresh();
 				if ( InstanceWide_Settings_Singleton.Settings.Database_Connections.Count > 0 )

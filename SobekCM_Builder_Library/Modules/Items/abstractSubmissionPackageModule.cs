@@ -1,12 +1,19 @@
-﻿namespace SobekCM.Builder_Library.Modules.Items
+﻿using System.Collections.Generic;
+using SobekCM.Core.Settings;
+
+namespace SobekCM.Builder_Library.Modules.Items
 {
     public abstract class abstractSubmissionPackageModule : iSubmissionPackageModule
     {
+        public List<string> Arguments { get; set; }
+
+        public InstanceWide_Settings Settings { get; set; }
+
         public abstract void DoWork(Incoming_Digital_Resource Resource);
 
         public virtual void ReleaseResources()
         {
-            // By default, do nothing
+            Settings = null;
         }
 
         public event ModuleErrorLoggingDelegate Error;

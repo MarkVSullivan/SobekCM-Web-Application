@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using Microsoft.Win32;
 using SobekCM.Core.Configuration;
 using SobekCM.Library;
 using SobekCM.Library.Configuration;
@@ -28,6 +29,11 @@ namespace SobekCM.Builder
         private DateTime feedNextBuildTime;
         private readonly bool verbose;
 
+        private string imageMagickProgram;
+        private string ghostscriptProgram;
+        private List<Database_Instance_Configuration> instances;
+        private List<Worker_BulkLoader> loaders;
+
         /// <summary> Constructor for a new instance of the Worker_Controller class </summary>
         /// <param name="Verbose"> Flag indicates if this should be verbose in the log file and console </param>
         public Worker_Controller( bool Verbose )
@@ -39,6 +45,13 @@ namespace SobekCM.Builder
             // Assign the database connection strings
             SobekCM_Database.Connection_String = InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String;
             Library.Database.SobekCM_Database.Connection_String = InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String;
+
+            // Save the list of instances
+            instances = new List<Database_Instance_Configuration>();
+            foreach (Database_Instance_Configuration dbInfo in InstanceWide_Settings_Singleton.Settings.Database_Connections)
+            {
+                instances.Add(dbInfo);
+            }
 
             // Pull the values from the database and assign other setting values
             InstanceWide_Settings_Singleton.Settings.Local_Log_Directory = Application.StartupPath + "\\Logs\\";
@@ -80,15 +93,54 @@ namespace SobekCM.Builder
             LogFileXHTML preloader_logger = new LogFileXHTML(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
 
             // start with warnings on imagemagick and ghostscript not being installed
-            if (InstanceWide_Settings_Singleton.Settings.ImageMagick_Executable.Length == 0)
+            if ((String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.ImageMagick_Executable)) || (!File.Exists(InstanceWide_Settings_Singleton.Settings.ImageMagick_Executable)))
             {
-                Console.WriteLine("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
-                preloader_logger.AddNonError("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
+                string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
+                if ((!String.IsNullOrEmpty(possible_imagemagick)) && ( Directory.Exists(possible_imagemagick)) && ( File.Exists( Path.Combine(possible_imagemagick, "convert.exe"))))
+                {
+                    imageMagickProgram = Path.Combine(possible_imagemagick, "convert.exe");
+                }
+                else
+                {
+                    Console.WriteLine("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
+                    preloader_logger.AddNonError("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
+                }
+
+
             }
-            if (InstanceWide_Settings_Singleton.Settings.Ghostscript_Executable.Length == 0)
+            else
             {
-                Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
-                preloader_logger.AddNonError("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
+                imageMagickProgram = InstanceWide_Settings_Singleton.Settings.ImageMagick_Executable;
+            }
+
+            if ((String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.Ghostscript_Executable)) || (!File.Exists(InstanceWide_Settings_Singleton.Settings.Ghostscript_Executable)))
+            {
+                string possible_ghost = Look_For_Variable_Registry_Key("SOFTWARE\\GPL Ghostscript", "GS_DLL");
+                if (!String.IsNullOrEmpty(possible_ghost))
+                {
+                    string gsPath = Path.GetDirectoryName( possible_ghost );
+                    if ((Directory.Exists(gsPath)) && ((File.Exists(Path.Combine(gsPath, "gswin32c.exe"))) || (File.Exists(Path.Combine(gsPath, "gswin64c.exe")))))
+                    {
+                        if (File.Exists(Path.Combine(gsPath, "gswin64c.exe")))
+                            ghostscriptProgram = Path.Combine(gsPath, "gswin64c.exe");
+                        else
+                            ghostscriptProgram = Path.Combine(gsPath, "gswin32c.exe");
+                    }
+                    else
+                    {
+                        Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
+                        preloader_logger.AddNonError("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
+                    preloader_logger.AddNonError("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
+                }
+            }
+            else
+            {
+                ghostscriptProgram = InstanceWide_Settings_Singleton.Settings.Ghostscript_Executable;
             }
 
 			// Set the time for the next feed building event to 10 minutes from now
@@ -101,7 +153,7 @@ namespace SobekCM.Builder
 			preloader_logger.AddNonError("Checking for initial abort condition");
 	        string abort_message = String.Empty;
 			Builder_Operation_Flag_Enum abort_flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
-	        foreach (Database_Instance_Configuration dbConfig in InstanceWide_Settings_Singleton.Settings.Database_Connections)
+	        foreach (Database_Instance_Configuration dbConfig in instances)
 	        {
 		        if ((!aborted) && (dbConfig.Is_Active) && (dbConfig.Can_Abort))
 		        {
@@ -137,7 +189,7 @@ namespace SobekCM.Builder
 			if (aborted)
 			{
 				// Add messages in each active instance
-				foreach (Database_Instance_Configuration dbConfig in InstanceWide_Settings_Singleton.Settings.Database_Connections)
+				foreach (Database_Instance_Configuration dbConfig in instances)
 				{
 					if (dbConfig.Is_Active) 
 					{
@@ -165,7 +217,7 @@ namespace SobekCM.Builder
 	        // Build all the bulk loader objects
 	        List<Worker_BulkLoader> loaders = new List<Worker_BulkLoader>();
 	        bool activeInstanceFound = false;
-			foreach (Database_Instance_Configuration dbConfig in InstanceWide_Settings_Singleton.Settings.Database_Connections)
+			foreach (Database_Instance_Configuration dbConfig in instances)
 			{
 				if (!dbConfig.Is_Active)
 				{
@@ -181,11 +233,11 @@ namespace SobekCM.Builder
 
 
                     // At this point warn on mossing the Ghostscript and ImageMagick
-                    if (InstanceWide_Settings_Singleton.Settings.ImageMagick_Executable.Length == 0)
+                    if ( String.IsNullOrEmpty(imageMagickProgram))
                     {
                         Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.", String.Empty);
                     }
-                    if (InstanceWide_Settings_Singleton.Settings.Ghostscript_Executable.Length == 0)
+                    if ( String.IsNullOrEmpty(ghostscriptProgram))
                     {
                         Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.", String.Empty);
                     }
@@ -194,7 +246,7 @@ namespace SobekCM.Builder
 					preloader_logger.AddNonError(dbConfig.Name + " - Preparing to begin polling");
 					Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
 
-					Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig.Name, dbConfig.Can_Abort);
+					Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1 ), imageMagickProgram, ghostscriptProgram );
 					loaders.Add(newLoader);
 				}
 			}
@@ -222,12 +274,12 @@ namespace SobekCM.Builder
 				}
 
 				// Step through each instance
-				for (int i = 0; i < InstanceWide_Settings_Singleton.Settings.Database_Connections.Count; i++)
+				for (int i = 0; i < instances.Count; i++)
 				{
 					if (loaders[i] != null)
 					{
 						// Get the instance
-						Database_Instance_Configuration dbInstance = InstanceWide_Settings_Singleton.Settings.Database_Connections[i];
+						Database_Instance_Configuration dbInstance = instances[i];
 
 						// Set the database connection strings
 						SobekCM_Database.Connection_String = dbInstance.Connection_String;
@@ -244,6 +296,8 @@ namespace SobekCM.Builder
 							}
 							break;
 						}
+
+
 
 						// Refresh all settings, etc..
 						loaders[i].Refresh_Settings_And_Item_List();
@@ -323,15 +377,16 @@ namespace SobekCM.Builder
 			// Do the final work for all of the different dbInstances
 	        if (!aborted)
 	        {
-		        for (int i = 0; i < InstanceWide_Settings_Singleton.Settings.Database_Connections.Count; i++)
+		        for (int i = 0; i < instances.Count; i++)
 		        {
 			        if (loaders[i] != null)
 			        {
 				        // Get the instance
-				        Database_Instance_Configuration dbInstance = InstanceWide_Settings_Singleton.Settings.Database_Connections[i];
+				        Database_Instance_Configuration dbInstance = instances[i];
 
 				        // Set the database flag
-				        SobekCM_Database.Connection_String = dbInstance.Connection_String;
+				        Resource_Object.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
+			            Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
 
 				        // Pull the abort/pause flag
 				        Builder_Operation_Flag_Enum currentPauseFlag2 = Abort_Database_Mechanism.Builder_Operation_Flag;
@@ -339,9 +394,6 @@ namespace SobekCM.Builder
 				        // If not paused, run the prebuilder
 				        if (currentPauseFlag2 != Builder_Operation_Flag_Enum.PAUSE_REQUESTED)
 				        {
-					        // Refresh all settings, etc..
-					        loaders[i].Refresh_Settings_And_Item_List();
-
 					        // Initiate the recreation of the links between metadata and collections
 					        Library.Database.SobekCM_Database.Admin_Update_Cached_Aggregation_Metadata_Links();
 				        }
@@ -354,13 +406,13 @@ namespace SobekCM.Builder
 	        else
 	        {
 		        // Mark the aborted in each instance
-		        foreach (Database_Instance_Configuration dbConfig in InstanceWide_Settings_Singleton.Settings.Database_Connections)
+		        foreach (Database_Instance_Configuration dbConfig in instances )
 		        {
 					if (dbConfig.Is_Active)
 					{
 						Console.WriteLine("Setting abort flag message in " + dbConfig.Name);
 						preloader_logger.AddNonError("Setting abort flag message in " + dbConfig.Name);
-						SobekCM_Database.Connection_String = dbConfig.Connection_String;
+						Resource_Object.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 						Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 						Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building ABORTED per request from database key", String.Empty);
 
@@ -468,7 +520,7 @@ namespace SobekCM.Builder
 			        {
 				        SobekCM.Resource_Object.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 			            SobekCM.Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
-				        Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig.Name, dbConfig.Can_Abort);
+                        Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1), imageMagickProgram, ghostscriptProgram);
 						newLoader.Perform_BulkLoader(Verbose);
 
 						// Save information about this last run
@@ -621,5 +673,68 @@ namespace SobekCM.Builder
         }
 
         #endregion
+
+
+        #region Code to read registry values
+
+        private static string Look_For_Variable_Registry_Key(string Manufacturer, string KeyName)
+        {
+            RegistryKey localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+            localKey = localKey.OpenSubKey(Manufacturer);
+            if (localKey != null)
+            {
+                string[] subkeys = localKey.GetSubKeyNames();
+                foreach (string thisSubKey in subkeys)
+                {
+                    RegistryKey subKey = localKey.OpenSubKey(thisSubKey);
+                    string value64 = subKey.GetValue(KeyName) as string;
+                    if (!String.IsNullOrEmpty(value64))
+                        return value64;
+                }
+            }
+            RegistryKey localKey32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            localKey32 = localKey32.OpenSubKey(Manufacturer);
+            if (localKey32 != null)
+            {
+                string[] subkeys = localKey32.GetSubKeyNames();
+                foreach (string thisSubKey in subkeys)
+                {
+                    RegistryKey subKey = localKey32.OpenSubKey(thisSubKey);
+                    string value32 = subKey.GetValue(KeyName) as string;
+                    if (!String.IsNullOrEmpty(value32))
+                        return value32;
+                }
+            }
+            return null;
+        }
+
+        private static string Get_Registry_Value(string KeyPath, string KeyName)
+        {
+            RegistryKey localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+            localKey = localKey.OpenSubKey(KeyPath);
+            if (localKey != null)
+            {
+                string tomcat6_value64 = localKey.GetValue(KeyName) as string;
+                if (tomcat6_value64 != null)
+                {
+                    return tomcat6_value64;
+                }
+            }
+            RegistryKey localKey32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            localKey32 = localKey32.OpenSubKey(KeyPath);
+            if (localKey32 != null)
+            {
+                string tomcat6_value32 = localKey32.GetValue(KeyName) as string;
+                if (tomcat6_value32 != null)
+                {
+                    return tomcat6_value32;
+                }
+            }
+
+            return null;
+        }
+
+        #endregion
+
     }
 }

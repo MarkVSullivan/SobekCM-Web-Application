@@ -1,8 +1,10 @@
-﻿namespace SobekCM.Builder_Library.Modules.Schedulable
+﻿using SobekCM.Core.Settings;
+
+namespace SobekCM.Builder_Library.Modules.Schedulable
 {
     public class SendNewItemEmailsModule : abstractSchedulableModule
     {
-        public override void DoWork()
+        public override void DoWork(InstanceWide_Settings Settings)
         {
             // NOTE: This was all brought over from the BulkLoader this way, it had been commented out ther as well.
             //       To get this to work, will need to do some development here, pull the list of impacted items, etc..

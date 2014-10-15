@@ -4,7 +4,13 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE dbo.mySobek_Get_All_User_Groups AS
+
+alter table mySobek_User_Group add IsSpecialGroup bit not null default('false');
+GO
+
+
+
+ALTER PROCEDURE dbo.mySobek_Get_All_User_Groups AS
 BEGIN
 
 	with linked_users_cte ( UserGroupID, UserCount ) AS
@@ -27,18 +33,7 @@ GO
 drop table mySobek_User_Item_Permissions;
 go
 
-USE [AurariaDev]
-GO
 
-/****** Object:  Table [dbo].[mySobek_User_Item_Permissions]    Script Date: 9/15/2014 6:48:47 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-SET ANSI_PADDING ON
-GO
 
 CREATE TABLE [dbo].[mySobek_User_Item_Permissions](
 	[UserPermissionID] [int] IDENTITY(1,1) NOT NULL,
@@ -114,8 +109,6 @@ REFERENCES SobekCM_Item(ItemID);
 GO
 
 
-alter table mySobek_User_Group add IsSpecialGroup bit not null default('false');
-GO
 
 
 SET IDENTITY_INSERT mySobek_User_Group ON;

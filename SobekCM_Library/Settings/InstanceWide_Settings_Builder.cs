@@ -12,7 +12,7 @@ using SobekCM.Library.Database;
 
 namespace SobekCM.Library.Settings
 {
-    static  class InstanceWide_Settings_Builder
+    public static  class InstanceWide_Settings_Builder
     {
         #region Constant values 
 
@@ -45,13 +45,11 @@ namespace SobekCM.Library.Settings
             InstanceWide_Settings returnValue = new InstanceWide_Settings();
 
             // Should we read the configuration file?
-            if (String.IsNullOrEmpty(SobekCM_Database.Connection_String))
-            {
-                returnValue.Base_Directory = AppDomain.CurrentDomain.BaseDirectory;
-                Read_Configuration_File(returnValue, returnValue.Base_Directory + "\\config\\sobekcm.config");
 
-                SobekCM_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
-            }
+            returnValue.Base_Directory = AppDomain.CurrentDomain.BaseDirectory;
+            Read_Configuration_File(returnValue, returnValue.Base_Directory + "\\config\\sobekcm.config");
+
+            SobekCM_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
 
             DataSet sobekCMSettings = SobekCM_Database.Get_Settings_Complete(null);
             Refresh(returnValue, sobekCMSettings);
@@ -59,7 +57,23 @@ namespace SobekCM.Library.Settings
             return returnValue;
         }
 
+        /// <summary> Refreshes the values from the database settings </summary>
+        /// <returns> A fully builder instance-wide setting object </returns>
+        public static InstanceWide_Settings Build_Settings( Database_Instance_Configuration DbInstance )
+        {
+            InstanceWide_Settings returnValue = new InstanceWide_Settings();
 
+            // Don't read the configuration file now.. we already have the db data
+            SobekCM_Database.Connection_String = DbInstance.Connection_String;
+
+            DataSet sobekCMSettings = SobekCM_Database.Get_Settings_Complete(null);
+            if (sobekCMSettings == null)
+                return null;
+
+            Refresh(returnValue, sobekCMSettings);
+
+            return returnValue;
+        }
 
         public static bool Refresh( InstanceWide_Settings SettingsObject, DataSet SobekCM_Settings )
         {
@@ -162,9 +176,8 @@ namespace SobekCM.Library.Settings
 
 
                 // Pull the language last, since it must be converted into a Language_Enum
-                const string DEFAULT_UI_LANGUAGE_STRING = "English";
-                Get_String_Value(settingsDictionary, "System Default Language", SettingsObject, X => DEFAULT_UI_LANGUAGE_STRING, "English");
-                SettingsObject.Default_UI_Language = Web_Language_Enum_Converter.Code_To_Enum(Web_Language_Enum_Converter.Name_To_Code(DEFAULT_UI_LANGUAGE_STRING));
+                Get_String_Value(settingsDictionary, "System Default Language", SettingsObject, X => X.Default_UI_Language_String, "English");
+                
 
                 // Pull out some values, which are stored in this portion of the database, 
                 // but are not really setting values
@@ -195,8 +208,9 @@ namespace SobekCM.Library.Settings
 
                 return true;
             }
-            catch
+            catch ( Exception ee )
             {
+                return (ee.Message.Length > 0);
                 return false;
             }
         }

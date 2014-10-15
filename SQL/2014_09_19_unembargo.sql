@@ -169,7 +169,7 @@ BEGIN
 END;
 GO
 
-grant execute on dbo.Admin_Unembargo_Items_Past_Embargo_Date to sobek_admin;
+grant execute on dbo.Admin_Unembargo_Items_Past_Embargo_Date to sobek_user;
 grant execute on dbo.Admin_Unembargo_Items_Past_Embargo_Date to sobek_builder;
 GO
 
@@ -249,5 +249,87 @@ GO
 
 DROP PROCEDURE SobekCM_Item_List_Web;
 DROP PROCEDURE SobekCM_Get_Builder_Settings;
+GO
+
+/****** Object:  StoredProcedure [dbo].[Tracking_Add_Workflow_By_ItemID]    Script Date: 12/20/2013 05:43:38 ******/
+ALTER PROCEDURE [dbo].[Tracking_Add_Workflow_By_ItemID]
+	@itemid int,
+	@user varchar(50),
+	@progressnote varchar(1000),
+	@workflow varchar(100),
+	@storagelocation varchar(255)
+AS
+begin transaction
+	    
+	-- continue if an itemid was located
+	if ( isnull( @itemid, -1 ) > 0 )
+	begin
+		-- Get the workflow id
+		declare @workflowid int;
+		if ( ( select COUNT(*) from Tracking_WorkFlow where ( WorkFlowName=@workflow)) > 0 )
+		begin
+			-- Get the existing ID for this workflow
+			select @workflowid = workflowid from Tracking_WorkFlow where WorkFlowName=@workflow;
+		end
+		else
+		begin 
+			-- Create the workflow for this
+			insert into Tracking_WorkFlow ( WorkFlowName, WorkFlowNotes )
+			values ( @workflow, 'Added ' + CONVERT(VARCHAR(10), GETDATE(), 101) + ' by ' + @user );
+			
+			-- Get this ID
+			set @workflowid = SCOPE_IDENTITY();
+		end;
+	
+		-- Just add this new progress then
+		insert into Tracking_Progress ( ItemID, WorkFlowID, DateCompleted, WorkPerformedBy, ProgressNote, WorkingFilePath )
+		values ( @itemid, @workflowid, GETDATE(), @user, @progressnote, @storagelocation );
+	end;
+commit transaction;
+GO
+
+ALTER PROCEDURE [dbo].[Tracking_Add_Workflow]
+	@bibid varchar(10),
+	@vid varchar(5),
+	@user varchar(50),
+	@progressnote varchar(1000),
+	@workflow varchar(100),
+	@storagelocation varchar(255)
+AS
+begin transaction
+
+	-- Get the volume id
+	declare @itemid int
+	select @itemid = ItemID
+	from SobekCM_Item_Group G, SobekCM_Item I
+	where ( BibID = @bibid )
+	    and ( I.GroupID = G.GroupID ) 
+	    and ( VID = @vid);
+	    
+	-- continue if an itemid was located
+	if ( isnull( @itemid, -1 ) > 0 )
+	begin
+		-- Get the workflow id
+		declare @workflowid int;
+		if ( ( select COUNT(*) from Tracking_WorkFlow where ( WorkFlowName=@workflow)) > 0 )
+		begin
+			-- Get the existing ID for this workflow
+			select @workflowid = workflowid from Tracking_WorkFlow where WorkFlowName=@workflow;
+		end
+		else
+		begin 
+			-- Create the workflow for this
+			insert into Tracking_WorkFlow ( WorkFlowName, WorkFlowNotes )
+			values ( @workflow, 'Added ' + CONVERT(VARCHAR(10), GETDATE(), 101) + ' by ' + @user );
+			
+			-- Get this ID
+			set @workflowid = SCOPE_IDENTITY();
+		end;
+	
+		-- Just add this new progress then
+		insert into Tracking_Progress ( ItemID, WorkFlowID, DateCompleted, WorkPerformedBy, ProgressNote, WorkingFilePath )
+		values ( @itemid, @workflowid, GETDATE(), @user, @progressnote, @storagelocation );
+	end;
+commit transaction;
 GO
 

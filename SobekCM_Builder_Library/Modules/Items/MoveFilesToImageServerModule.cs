@@ -18,9 +18,11 @@ namespace SobekCM.Builder_Library.Modules.Items
             Resource.File_Root = Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8, 2);
 
             // Determine the destination folder for this resource
-            string serverPackageFolder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + Resource.File_Root + "\\" + Resource.VID;
+            string serverPackageFolder = Settings.Image_Server_Network + Resource.File_Root + "\\" + Resource.VID;
 
-            throw new NotImplementedException();
+            // If this is re-processing the resource in situ, then just return.. nothing to move
+            if (NormalizePath(Resource.Resource_Folder) == NormalizePath(serverPackageFolder))
+                return;
 
             // Clear the list of new images files here, since moving the package will recalculate this
             Resource.NewImageFiles.Clear();
@@ -30,6 +32,13 @@ namespace SobekCM.Builder_Library.Modules.Items
             {
                 OnError("Error moving some files to the image server for " + Resource.BibID + ":" + Resource.VID, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
             }
+        }
+
+        public static string NormalizePath(string path)
+        {
+            return Path.GetFullPath(new Uri(path).LocalPath)
+                       .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                       .ToUpperInvariant();
         }
 
 
@@ -60,7 +69,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     string new_file = ServerPackageFolder + "/" + thisFileInfo.Name;
 
                     // Keep the list of new image files being copied, which may be used later
-                    if (InstanceWide_Settings_Singleton.Settings.Page_Image_Extensions.Contains(thisFileInfo.Extension.ToUpper().Replace(".", "")))
+                    if (Settings.Page_Image_Extensions.Contains(thisFileInfo.Extension.ToUpper().Replace(".", "")))
                         NewImageFiles.Add(thisFileInfo.Name);
 
                     // If the file exists, delete it, 

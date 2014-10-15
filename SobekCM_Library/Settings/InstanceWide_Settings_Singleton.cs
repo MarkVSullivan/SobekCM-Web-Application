@@ -20,6 +20,10 @@ namespace SobekCM.Library.Settings
                     return settingsObject ?? (settingsObject = InstanceWide_Settings_Builder.Build_Settings());
                 }
             }
+            set
+            {
+                settingsObject = value;
+            }
         }
 
         /// <summary> Force a refresh of the settings objec </summary>

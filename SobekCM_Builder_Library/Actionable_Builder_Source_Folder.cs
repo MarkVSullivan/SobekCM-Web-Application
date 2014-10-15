@@ -213,7 +213,9 @@ namespace SobekCM.Builder_Library
                 if ((resource_age > InstanceWide_Settings_Singleton.Settings.Complete_Package_Required_Aging) || ((resource_age > InstanceWide_Settings_Singleton.Settings.METS_Only_Package_Required_Aging) && (resource.METS_Only_Package)))
                 {
                     if (!resource.Move(Processing_Folder))
+                    {
                         returnVal = false;
+                    }
                 }
                 else
                 {

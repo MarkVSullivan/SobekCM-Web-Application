@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
+using SobekCM.Core.Configuration;
 using SobekCM.Core.Settings;
 using SobekCM.Builder_Library.Modules;
 using SobekCM.Builder_Library.Modules.Folders;
@@ -25,10 +26,17 @@ namespace SobekCM.Builder
     /// <summary> Class is the worker thread for the main bulk loader processor </summary>
     public class Worker_BulkLoader
     {
+        private Database_Instance_Configuration dbInstance;
+        private InstanceWide_Settings settings;
+        private DataTable itemTable;
+
+        private string imageMagickExecutable;
+        private string ghostscriptExecutable;
+        
         private DataSet incomingFileInstructions;
         private readonly Aggregation_Code_Manager codeManager;
         private readonly LogFileXHTML logger;
-        private DataTable itemTable;
+        
         
 	    private readonly bool canAbort;
         private bool aborted;
@@ -57,17 +65,19 @@ namespace SobekCM.Builder
 	    ///  <summary> Constructor for a new instance of the Worker_BulkLoader class </summary>
 	    ///  <param name="Logger"> Log file object for logging progress </param>
 	    ///  <param name="Verbose"> Flag indicates if the builder is in verbose mode, where it should log alot more information </param>
-	    ///  <param name="InstanceName"> Name of this instance, likely from the Builder config </param>
-	    /// <param name="Can_Abort"></param>
-	    public Worker_BulkLoader(LogFileXHTML Logger, bool Verbose, string InstanceName, bool Can_Abort )
+        ///  <param name="DbInstance"> This database instance </param>
+	    public Worker_BulkLoader(LogFileXHTML Logger, bool Verbose, Database_Instance_Configuration DbInstance, bool MultiInstanceBuilder, string ImageMagickExecutable, string GhostscriptExecutable )
         {
             // Save the log file and verbose flag
             logger = Logger;
             verbose = Verbose;
-	        instanceName = InstanceName;
-		    canAbort = Can_Abort;
-		    multiInstanceBuilder = InstanceWide_Settings_Singleton.Settings.Database_Connections.Count > 1;
-
+	        instanceName = DbInstance.Name;
+		    canAbort = DbInstance.Can_Abort;
+	        multiInstanceBuilder = MultiInstanceBuilder;
+	        dbInstance = DbInstance;
+	        ghostscriptExecutable = GhostscriptExecutable;
+	        imageMagickExecutable = ImageMagickExecutable;
+ 
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Start", verbose, String.Empty, String.Empty, -1);
 
 
@@ -77,13 +87,14 @@ namespace SobekCM.Builder
 	        deleted_items = new List<BibVidStruct>();
 
 			// get all the info
-	        Refresh_Settings_And_Item_List();
+	        settings = InstanceWide_Settings_Builder.Build_Settings(dbInstance);
+
 
 			// Ensure there is SOME instance name
 	        if (instanceName.Length == 0)
-		        instanceName = InstanceWide_Settings_Singleton.Settings.System_Name;
+		        instanceName = settings.System_Name;
             if (verbose)
-                InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag = true;
+                settings.Builder_Verbose_Flag = true;
 
 
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Created Static Pages Builder", verbose, String.Empty, String.Empty, -1);
@@ -102,14 +113,14 @@ namespace SobekCM.Builder
 
             // Create the default list of pre-processor modules
             preProcessModules = new List<iPreProcessModule> { new ProcessPendingFdaReportsModule() };
-            foreach (iPostProcessModule thisModule in postProcessModules)
+            foreach (iPreProcessModule thisModule in preProcessModules)
             {
                 thisModule.Error += module_Error;
                 thisModule.Process += module_Process;
             }
 
             // Create the default list of folder modules
-	        folderModules = new List<iFolderModule> { new MoveAgedPackagesToProcessModule(), new ApplyBibIdRestrictionModule() };
+	        folderModules = new List<iFolderModule> { new MoveAgedPackagesToProcessModule(), new ApplyBibIdRestrictionModule(), new ValidateAndClassifyModule() };
             foreach (iFolderModule thisModule in folderModules)
             {
                 thisModule.Error += module_Error;
@@ -164,10 +175,7 @@ namespace SobekCM.Builder
 	        }
 
 	        Add_NonError_To_Log("Worker_BulkLoader.Constructor: Done", verbose, String.Empty, String.Empty, -1);
-
         }
-
-
 
         #region Main Method that steps through each package and performs work
 
@@ -191,7 +199,7 @@ namespace SobekCM.Builder
             // If not already verbose, check settings
             if (!verbose)
             {
-                verbose = InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag;
+                verbose = settings.Builder_Verbose_Flag;
             }
 
             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Refreshed settings and item list", verbose, String.Empty, String.Empty, -1);
@@ -222,9 +230,17 @@ namespace SobekCM.Builder
                         break;
                     }
 
-                    thisModule.DoWork();
+                    thisModule.DoWork(settings);
                 }
             }
+
+            // Load the settings into thall the item and folder processors
+            foreach (iSubmissionPackageModule thisModule in processItemModules)
+                thisModule.Settings = settings;
+            foreach (iSubmissionPackageModule thisModule in deleteItemModules)
+                thisModule.Settings = settings;
+            foreach (iFolderModule thisModule in folderModules)
+                thisModule.Settings = settings;
 
 
             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Begin completing any recent loads requiring additional work", verbose, String.Empty, String.Empty, -1);
@@ -239,6 +255,7 @@ namespace SobekCM.Builder
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Aborted (line 151)", verbose, String.Empty, String.Empty, -1);
                 finalmessage = "Aborted per database request";
+                ReleaseResources();
                 return;
             }
 
@@ -247,7 +264,7 @@ namespace SobekCM.Builder
             List<Incoming_Digital_Resource> deletes = new List<Incoming_Digital_Resource>();
 
             // Step through all the incoming folders, and run the folder modules
-            if (InstanceWide_Settings_Singleton.Settings.Incoming_Folders.Count == 0)
+            if (settings.Incoming_Folders.Count == 0)
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: There are no incoming folders set in the database", "Standard", String.Empty, String.Empty, -1);
             }
@@ -255,7 +272,7 @@ namespace SobekCM.Builder
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Begin processing builder folders", verbose, String.Empty, String.Empty, -1);
 
-                foreach (Builder_Source_Folder folder in InstanceWide_Settings_Singleton.Settings.Incoming_Folders)
+                foreach (Builder_Source_Folder folder in settings.Incoming_Folders)
                 {
                     Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder);
 
@@ -266,6 +283,7 @@ namespace SobekCM.Builder
                         {
                             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Aborted (line 151)", verbose, String.Empty, String.Empty, -1);
                             finalmessage = "Aborted per database request";
+                            ReleaseResources();
                             return;
                         }
 
@@ -284,6 +302,7 @@ namespace SobekCM.Builder
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Aborted (line 179)", verbose, String.Empty, String.Empty, -1);
                 finalmessage = "Aborted per database request";
+                ReleaseResources();
                 return;
             }
 
@@ -293,7 +312,7 @@ namespace SobekCM.Builder
 	            Add_Complete_To_Log("No New Packages - Process Complete", "No Work", String.Empty, String.Empty, -1);
                 if (finalmessage.Length == 0)
                     finalmessage = "No New Packages - Process Complete";
-
+                ReleaseResources();
                 return;
             }
 
@@ -301,13 +320,22 @@ namespace SobekCM.Builder
             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Process any incoming packages", verbose, String.Empty, String.Empty, -1);
             Process_All_Incoming_Packages(incoming_packages);
 
+            // Can now release these resources
+            foreach (iSubmissionPackageModule thisModule in processItemModules)
+            {
+                thisModule.ReleaseResources();
+            }
+
             // Process any delete requests ( iterate through all deletes )
             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Process any deletes", verbose, String.Empty, String.Empty, -1);
             Process_All_Deletes(deletes);
 
-            // Do any releasing of resources on the item processing modeuls
-            foreach (iSubmissionPackageModule itemModule in processItemModules)
-                itemModule.ReleaseResources();
+            // Can now release these resources
+            foreach (iSubmissionPackageModule thisModule in deleteItemModules)
+            {
+                thisModule.ReleaseResources();
+            }
+
 
             // RUN ANY POST-PROCESSING MODULES HERE 
             if (postProcessModules.Count > 0)
@@ -322,7 +350,7 @@ namespace SobekCM.Builder
                         break;
                     }
 
-                    thisModule.DoWork(aggregations_to_refresh, processed_items, deleted_items);
+                    thisModule.DoWork(aggregations_to_refresh, processed_items, deleted_items, settings);
                 }
             }
 
@@ -380,14 +408,23 @@ namespace SobekCM.Builder
         public bool Refresh_Settings_And_Item_List()
         {
             // Reload the settings
-            if (!InstanceWide_Settings_Singleton.Refresh())
-            {
+            settings = InstanceWide_Settings_Builder.Build_Settings(dbInstance);
+
+		    if (settings == null)
+		    {
 	            Add_Error_To_Log("Unable to pull the newest settings from the database", String.Empty, String.Empty, -1);
                 return false;
-            }
+		    }
+		    settings.ImageMagick_Executable = imageMagickExecutable;
+		    settings.Ghostscript_Executable = ghostscriptExecutable;
+
+            Resource_Object.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
+            Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
 
             // Save the item table
 		    itemTable = SobekCM_Database.Get_Item_List(true, null).Tables[0];
+
+
 
             return true;
         }
@@ -419,7 +456,7 @@ namespace SobekCM.Builder
                     string file_root = bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8, 2);
 
                     // Determine the source folder for this resource
-                    string resource_folder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + file_root + "\\" + vid;
+                    string resource_folder = settings.Image_Server_Network + file_root + "\\" + vid;
 
                     // Determine the METS file name
                     string mets_file = resource_folder + "\\" + bibID + "_" + vid + ".mets.xml";
@@ -641,7 +678,7 @@ namespace SobekCM.Builder
                 if (itemTable.Select("BibID='" + deleteResource.BibID + "' and VID='" + deleteResource.VID + "'").Length > 0)
                 {
                     deleteResource.File_Root = deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8);
-                    string existing_folder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + deleteResource.File_Root + "\\" + deleteResource.VID;
+                    string existing_folder = settings.Image_Server_Network + deleteResource.File_Root + "\\" + deleteResource.VID;
 
                     // Remove from the primary collection area
                     try
@@ -649,13 +686,13 @@ namespace SobekCM.Builder
                         if (Directory.Exists(existing_folder))
                         {
                             // Make sure the delete folder exists
-							if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Image_Server_Network + "\\RECYCLE BIN"))
+							if (!Directory.Exists(settings.Image_Server_Network + "\\RECYCLE BIN"))
                             {
-								Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Image_Server_Network + "\\RECYCLE BIN");
+								Directory.CreateDirectory(settings.Image_Server_Network + "\\RECYCLE BIN");
                             }
 
                             // Create the final directory
-							string final_folder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + "\\RECYCLE BIN\\" + deleteResource.File_Root + "\\" + deleteResource.VID;
+							string final_folder = settings.Image_Server_Network + "\\RECYCLE BIN\\" + deleteResource.File_Root + "\\" + deleteResource.VID;
                             if (!Directory.Exists(final_folder))
                             {
                                 Directory.CreateDirectory(final_folder);
@@ -678,12 +715,12 @@ namespace SobekCM.Builder
                     }
 
                     // Delete the static page
-	                string static_page1 = InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8) + "\\" + deleteResource.VID + "\\" + deleteResource.BibID + "_" + deleteResource.VID + ".html";
+	                string static_page1 = settings.Static_Pages_Location + deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8) + "\\" + deleteResource.VID + "\\" + deleteResource.BibID + "_" + deleteResource.VID + ".html";
 					if (File.Exists(static_page1))
                     {
 						File.Delete(static_page1);
                     }
-					string static_page2 = InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8) + "\\" + deleteResource.BibID + "_" + deleteResource.VID + ".html";
+					string static_page2 = settings.Static_Pages_Location + deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8) + "\\" + deleteResource.BibID + "_" + deleteResource.VID + ".html";
 					if (File.Exists(static_page2))
 					{
 						File.Delete(static_page2);
@@ -693,11 +730,11 @@ namespace SobekCM.Builder
                     SobekCM_Database.Delete_SobekCM_Item(deleteResource.BibID, deleteResource.VID, true, "Deleted upon request by builder");
 
                     // Delete from the solr/lucene indexes
-                    if (InstanceWide_Settings_Singleton.Settings.Document_Solr_Index_URL.Length > 0)
+                    if (settings.Document_Solr_Index_URL.Length > 0)
                     {
                         try
                         {
-                            Solr_Controller.Delete_Resource_From_Index(InstanceWide_Settings_Singleton.Settings.Document_Solr_Index_URL, InstanceWide_Settings_Singleton.Settings.Page_Solr_Index_URL, deleteResource.BibID, deleteResource.VID);
+                            Solr_Controller.Delete_Resource_From_Index(settings.Document_Solr_Index_URL, settings.Page_Solr_Index_URL, deleteResource.BibID, deleteResource.VID);
                         }
                         catch (Exception ee)
                         {
@@ -799,7 +836,7 @@ namespace SobekCM.Builder
 
 
             // Save the exception to an exception file
-            StreamWriter exception_writer = new StreamWriter(InstanceWide_Settings_Singleton.Settings.Local_Log_Directory + "\\exceptions_log.txt", true);
+            StreamWriter exception_writer = new StreamWriter(settings.Local_Log_Directory + "\\exceptions_log.txt", true);
             exception_writer.WriteLine(String.Empty);
             exception_writer.WriteLine(String.Empty);
             exception_writer.WriteLine("----------------------------------------------------------");

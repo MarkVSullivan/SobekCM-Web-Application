@@ -16,7 +16,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
             string bibID = Resource.BibID;
             string vid = Resource.VID;
-            string imagemagick_executable = InstanceWide_Settings_Singleton.Settings.ImageMagick_Executable;
+            string imagemagick_executable = Settings.ImageMagick_Executable;
 
 
             // Are there images that need to be processed here?
@@ -32,7 +32,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     string startupPath = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
 
                     // Create the image process object for creating 
-                    Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, Path.Combine(startupPath,  "Kakadu"), true, true, InstanceWide_Settings_Singleton.Settings.JPEG_Width, InstanceWide_Settings_Singleton.Settings.JPEG_Height, false, InstanceWide_Settings_Singleton.Settings.Thumbnail_Width, InstanceWide_Settings_Singleton.Settings.Thumbnail_Height);
+                    Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, Path.Combine(startupPath,  "Kakadu"), true, true, Settings.JPEG_Width, Settings.JPEG_Height, false, Settings.Thumbnail_Width, Settings.Thumbnail_Height);
                     imageProcessor.New_Task_String += imageProcessor_New_Task_String;
                     imageProcessor.Error_Encountered += imageProcessor_Error_Encountered;
 
@@ -49,7 +49,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                                 string name_sans_extension = jpegFileInfo.Name.Replace(jpegFileInfo.Extension, "");
                                 if (!File.Exists(resourceFolder + "\\" + name_sans_extension + "thm.jpg"))
                                 {
-                                    imageProcessor.ImageMagick_Create_JPEG(jpegFile, resourceFolder + "\\" + name_sans_extension + "thm.jpg", InstanceWide_Settings_Singleton.Settings.Thumbnail_Width, InstanceWide_Settings_Singleton.Settings.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
+                                    imageProcessor.ImageMagick_Create_JPEG(jpegFile, resourceFolder + "\\" + name_sans_extension + "thm.jpg", Settings.Thumbnail_Width, Settings.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
                                 }
                             }
                         }
@@ -78,7 +78,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                             {
                                 // If this is a page image type file, add it
                                 FileInfo derivativeFileInfo = new FileInfo(derivativeFile);
-                                if (InstanceWide_Settings_Singleton.Settings.Page_Image_Extensions.Contains(derivativeFileInfo.Extension.ToUpper().Replace(".", "")))
+                                if (Settings.Page_Image_Extensions.Contains(derivativeFileInfo.Extension.ToUpper().Replace(".", "")))
                                     Resource.NewImageFiles.Add(derivativeFileInfo.Name);
                             }
                         }

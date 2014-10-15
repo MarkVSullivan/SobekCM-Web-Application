@@ -6087,9 +6087,8 @@ namespace SobekCM.Library.Database
 
 			try
 			{
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@include_items", false);
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Settings", paramList);
+
+				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Settings");
 				if ((tempSet.Tables.Count > 0) && (tempSet.Tables[0].Rows.Count > 0))
 				{
 					foreach (DataRow thisRow in tempSet.Tables[0].Rows)
