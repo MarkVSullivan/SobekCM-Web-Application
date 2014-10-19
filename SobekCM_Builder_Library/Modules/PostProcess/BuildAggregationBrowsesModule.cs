@@ -4,11 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Settings;
+using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library;
-using SobekCM.Library.Aggregations;
+
 using SobekCM.Library.Database;
-using SobekCM.Library.Settings;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -26,7 +29,7 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
             // Create the new statics page builder
             // IN THIS CASE, WE DO NEED TO SET THE SINGLETON, SINCE THIS CALLS THE LIBRARIES
             /// TODO: Start to pull this page directly from the web server, not builder here
-            InstanceWide_Settings_Singleton.Settings = Settings;
+            Engine_ApplicationCache_Gateway.Settings = Settings;
             Static_Pages_Builder staticBuilder = new Static_Pages_Builder(Settings.Application_Server_URL, Settings.Static_Pages_Location, Settings.Application_Server_Network);
 
             // Step through each aggregation with new items
@@ -41,10 +44,10 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
                         display_code = 'i' + display_code.Substring(1);
 
                     // Get this item aggregations
-                    Item_Aggregation aggregationObj = SobekCM_Database.Get_Item_Aggregation(thisAggrCode, false, false, null);
+                    Item_Aggregation aggregationObj = Engine_Database.Get_Item_Aggregation(thisAggrCode, false, false, null);
 
                     // Get the list of items for this aggregation
-                    DataSet aggregation_items = SobekCM_Database.Simple_Item_List(thisAggrCode, null);
+                    DataSet aggregation_items = Engine_Database.Simple_Item_List(thisAggrCode, null);
 
                     // Create the XML list for this aggregation
                     OnProcess("........Building XML item list for " + display_code, "Aggregation Updates", String.Empty, String.Empty, updatedId);
@@ -113,7 +116,7 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
             OnProcess("........Building XML list for all digital resources", "Aggregation Updates", String.Empty, String.Empty, Builderid);
             try
             {
-                DataSet simple_list = SobekCM_Database.Simple_Item_List(String.Empty, null);
+                DataSet simple_list = Engine_Database.Simple_Item_List(String.Empty, null);
                 if (simple_list != null)
                 {
                     try
@@ -138,7 +141,7 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
             try
             {
                 OnProcess("........Building RSS feed for all digital resources", "Aggregation Updates", String.Empty, String.Empty, Builderid);
-                DataSet complete_list = SobekCM_Database.Simple_Item_List(String.Empty, null);
+                DataSet complete_list = Engine_Database.Simple_Item_List(String.Empty, null);
 
                 StaticBuilder.Create_RSS_Feed("all", Settings.Local_Log_Directory, "All Items", complete_list);
                 try

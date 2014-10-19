@@ -1,10 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿#region Using directives
+
+using System;
+using System.IO;
 using System.Text;
 using System.Xml;
+using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Users;
+using SobekCM.Resource_Object;
+
+#endregion
 
 namespace SobekCM.Library.Citation.Elements
 {
@@ -24,19 +29,19 @@ namespace SobekCM.Library.Citation.Elements
 		/// <param name="Bib"> Existing digital resource object which may already have values for this element's data field(s) </param>
 		/// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
 		/// <remarks> This does nothing </remarks>
-		public override void Prepare_For_Save(Resource_Object.SobekCM_Item Bib, User_Object Current_User)
+		public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
 		{
 			// do nothing
 		}
 
 		/// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
 		/// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
-		public override void Save_To_Bib(Resource_Object.SobekCM_Item Bib)
+		public override void Save_To_Bib(SobekCM_Item Bib)
 		{
 			// do nothing
 		}
 
-		public override void Render_Template_HTML(System.IO.TextWriter Output, Resource_Object.SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Application_State.Language_Support_Info Translator, string Base_URL)
+		public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
 		{
 			Output.WriteLine("  <!-- Literal Element -->");
 			Output.WriteLine("  <tr>");
@@ -45,7 +50,7 @@ namespace SobekCM.Library.Citation.Elements
 			Output.WriteLine("  </tr>");
 		}
 
-		protected override void Inner_Read_Data(System.Xml.XmlTextReader XMLReader)
+		protected override void Inner_Read_Data(XmlTextReader XMLReader)
 		{
 			while (XMLReader.Read())
 			{

@@ -1,10 +1,10 @@
 ﻿#region Using directives
 
 using System.IO;
-using SobekCM.Library.Aggregations;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
 using SobekCM.Tools;
 
 #endregion
@@ -25,7 +25,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     public class No_Search_AggregationViewer : abstractAggregationViewer
     {
         /// <summary> Constructor for a new instance of the No_Search_AggregationViewer class </summary>
-        public No_Search_AggregationViewer():base(null,null)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public No_Search_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Do nothing
         }
@@ -57,7 +58,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("No_Search_AggregationViewer.Add_Search_Box_HTML", "Adding html for search box");
             }
 
-            Output.WriteLine("<h1>" + currentCollection.Name + " Home</h1>");
+            Output.WriteLine("<h1>" + RequestSpecificValues.Hierarchy_Object.Name + " Home</h1>");
 
         }
     }

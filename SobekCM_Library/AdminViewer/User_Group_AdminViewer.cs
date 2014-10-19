@@ -2,24 +2,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -40,7 +37,6 @@ namespace SobekCM.Library.AdminViewer
     public class User_Group_AdminViewer : abstract_AdminViewer
     {
         private readonly string actionMessage;
-        private readonly Aggregation_Code_Manager codeManager;
         private readonly User_Group editGroup;
         private readonly Users_Group_Admin_Mode_Enum mode;
 
@@ -48,32 +44,30 @@ namespace SobekCM.Library.AdminViewer
 
         /// <summary> Constructor for a new instance of the User_Group_AdminViewer class </summary>
         /// <param name="User"> Authenticated user information </param>
-        /// <param name="currentMode"> Mode / navigation information for the current request</param>
+        /// <param name="RequestSpecificValues.Current_Mode"> Mode / navigation information for the current request</param>
         /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> Postback from a user group edit is handled here in the constructor </remarks>
-        public User_Group_AdminViewer(User_Object User, SobekCM_Navigation_Object currentMode, Aggregation_Code_Manager Code_Manager, Custom_Tracer Tracer)
-            : base(User)
+        public User_Group_AdminViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("User_Group_AdminViewer.Constructor", String.Empty);
+            RequestSpecificValues.Tracer.Add_Trace("User_Group_AdminViewer.Constructor", String.Empty);
 
             // Set the action message to clear initially
             actionMessage = String.Empty;
-            codeManager = Code_Manager;
 
             // Get the user to edit, if there was a user id in the submode
             int edit_usergroupid = -100;
             editGroup = null;
-            if (currentMode.My_Sobek_SubMode.Length > 0)
+            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
             {
-                if (currentMode.My_Sobek_SubMode == "new")
+                if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "new")
                 {
                     edit_usergroupid = -1;
                 }
                 else
                 {
-                    if (Int32.TryParse(currentMode.My_Sobek_SubMode.Replace("a", "").Replace("b", "").Replace("c", "").Replace("v", ""), out edit_usergroupid))
-                        editGroup = SobekCM_Database.Get_User_Group(edit_usergroupid, Tracer);
+                    if (Int32.TryParse(RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Replace("a", "").Replace("b", "").Replace("c", "").Replace("v", ""), out edit_usergroupid))
+                        editGroup = SobekCM_Database.Get_User_Group(edit_usergroupid, RequestSpecificValues.Tracer);
                 }
             }
 
@@ -81,16 +75,16 @@ namespace SobekCM.Library.AdminViewer
             mode = Users_Group_Admin_Mode_Enum.Error;
             if ((editGroup != null) || (edit_usergroupid == -1))
             {
-                if ((currentMode.My_Sobek_SubMode.IndexOf("v") > 0) && (edit_usergroupid > 0))
+                if ((RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("v") > 0) && (edit_usergroupid > 0))
                     mode = Users_Group_Admin_Mode_Enum.View_User_Group;
                 else
                     mode = Users_Group_Admin_Mode_Enum.Edit_User_Group;
             }
             else
             {
-                currentMode.My_Sobek_SubMode = String.Empty;
-                currentMode.Admin_Type = Admin_Type_Enum.Users;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
@@ -101,7 +95,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Perform post back work
-            if (currentMode.isPostBack)
+            if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 if ((mode == Users_Group_Admin_Mode_Enum.Edit_User_Group) && (editGroup != null))
                 {
@@ -378,7 +372,7 @@ namespace SobekCM.Library.AdminViewer
                     if (name.Length > 0)
                     {
                         // Update the basic user information
-                        int newid = SobekCM_Database.Save_User_Group(editGroup.UserGroupID, name, description, can_submit, is_internal, can_editall, is_admin, is_portal, false, update_templates_projects, update_aggregations, false, is_sobek_default, is_shibboleth_default, is_ldap_default, Tracer);
+                        int newid = SobekCM_Database.Save_User_Group(editGroup.UserGroupID, name, description, can_submit, is_internal, can_editall, is_admin, is_portal, false, update_templates_projects, update_aggregations, false, is_sobek_default, is_shibboleth_default, is_ldap_default, RequestSpecificValues.Tracer);
                         if (editGroup.UserGroupID < 0)
                         {
                             editGroup.UserGroupID = newid;
@@ -392,7 +386,7 @@ namespace SobekCM.Library.AdminViewer
                                 // Update projects, if necessary
                                 if (projects.Count > 0)
                                 {
-                                    if (!SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata(editGroup.UserGroupID, projects, Tracer))
+                                    if (!SobekCM_Database.Update_SobekCM_User_Group_DefaultMetadata(editGroup.UserGroupID, projects, RequestSpecificValues.Tracer))
                                     {
                                         successful_save = false;
                                     }
@@ -401,7 +395,7 @@ namespace SobekCM.Library.AdminViewer
                                 // Update templates, if necessary
                                 if (templates.Count > 0)
                                 {
-                                    if (!SobekCM_Database.Update_SobekCM_User_Group_Templates(editGroup.UserGroupID, templates, Tracer))
+                                    if (!SobekCM_Database.Update_SobekCM_User_Group_Templates(editGroup.UserGroupID, templates, RequestSpecificValues.Tracer))
                                     {
                                         successful_save = false;
                                     }
@@ -414,7 +408,7 @@ namespace SobekCM.Library.AdminViewer
                                 if (aggregations.Count > 0)
                                 {
                                     List<User_Permissioned_Aggregation> aggregationList = aggregations.Values.ToList();
-                                    if (!SobekCM_Database.Update_SobekCM_User_Group_Aggregations(editGroup.UserGroupID, aggregationList, Tracer))
+                                    if (!SobekCM_Database.Update_SobekCM_User_Group_Aggregations(editGroup.UserGroupID, aggregationList, RequestSpecificValues.Tracer))
                                     {
                                         successful_save = false;
                                     }
@@ -435,8 +429,8 @@ namespace SobekCM.Library.AdminViewer
                     // Forward back to the list of users, if this was successful
                     if (successful_save)
                     {
-                        currentMode.My_Sobek_SubMode = String.Empty;
-                        currentMode.Redirect();
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     }
                 }
             }
@@ -454,7 +448,7 @@ namespace SobekCM.Library.AdminViewer
         //{
         //    get
         //    {
-        //        if ((currentMode.My_Sobek_SubMode.Length == 0) || (currentMode.My_Sobek_SubMode.IndexOf("v") > 0))
+        //        if ((RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length == 0) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("v") > 0))
         //            return MySobek_Included_Navigation_Enum.System_Admin;
         //        else
         //            return MySobek_Included_Navigation_Enum.NONE;
@@ -505,7 +499,7 @@ namespace SobekCM.Library.AdminViewer
             Tracer.Add_Trace("User_Group_AdminViewer.Write_ItemNavForm_Closing", "Add the rest of the form");
 
             Output.WriteLine("<!-- User_Group_AdminViewer.Write_ItemNavForm_Closing -->");
-            Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 
 
             // Is this for a single user edit more, or to list all the users
@@ -526,13 +520,13 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<div class=\"SobekHomeText\">");
             Output.WriteLine("  <br />");
             Output.WriteLine("  <blockquote>");
-            currentMode.My_Sobek_SubMode = String.Empty;
-            currentMode.Admin_Type = Admin_Type_Enum.Users;
-            Output.WriteLine("    <a href=\"" + currentMode.Redirect_URL() + "\">Return to user group list</a><br /><br />");
-            currentMode.Admin_Type = Admin_Type_Enum.User_Groups;
-            currentMode.My_Sobek_SubMode = editGroup.UserGroupID.ToString();
-            Output.WriteLine("    <a href=\"" + currentMode.Redirect_URL() + "\">Edit this user group</a>");
-            currentMode.My_Sobek_SubMode = editGroup.UserGroupID.ToString() +"v";
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+            Output.WriteLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Return to user group list</a><br /><br />");
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Groups;
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = editGroup.UserGroupID.ToString();
+            Output.WriteLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Edit this user group</a>");
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = editGroup.UserGroupID.ToString() +"v";
             Output.WriteLine("  </blockquote>");
 
             if ( !String.IsNullOrEmpty(actionMessage) )
@@ -635,12 +629,12 @@ namespace SobekCM.Library.AdminViewer
                 Dictionary<string, User_Permissioned_Aggregation> lookup_aggs = aggregations_in_editable_user.ToDictionary(thisAggr => thisAggr.Code.ToLower());
 
                 // Step through each aggregation type
-                foreach (string aggregationType in codeManager.All_Types)
+                foreach (string aggregationType in UI_ApplicationCache_Gateway.Aggregations.All_Types)
                 {
                     bool type_label_drawn = false;
 
                     // Show all matching rows
-                    foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.Aggregations_By_Type(aggregationType).Where(thisAggr => lookup_aggs.ContainsKey(thisAggr.Code)))
+                    foreach (Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_Type(aggregationType).Where(thisAggr => lookup_aggs.ContainsKey(thisAggr.Code)))
                     {
                         if (!type_label_drawn)
                         {
@@ -701,7 +695,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <b>Edit this user group's permissions and abilities</b>");
             Output.WriteLine("    <ul>");
             Output.WriteLine("      <li>Enter the permissions for this user group below and press the SAVE button when all your edits are complete.</li>");
-            Output.WriteLine("      <li>For clarification of any terms on this form, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/users\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</li>");
+            Output.WriteLine("      <li>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/users\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</li>");
             Output.WriteLine("     </ul>");
             Output.WriteLine("  </div>");
 			Output.WriteLine();
@@ -716,16 +710,16 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <div class=\"SobekEditPanel\">");
 
             // Add the buttons
-            string last_mode = currentMode.My_Sobek_SubMode;
-            currentMode.My_Sobek_SubMode = String.Empty;
-            currentMode.Admin_Type = Admin_Type_Enum.Users;
+            string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
 			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
-			Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine();
-            currentMode.My_Sobek_SubMode = last_mode;
-            currentMode.Admin_Type = Admin_Type_Enum.User_Groups;
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Groups;
 
 
             Output.WriteLine("  <span class=\"SobekEditItemSectionTitle_first\"> &nbsp; Basic Information</span>");
@@ -848,14 +842,14 @@ namespace SobekCM.Library.AdminViewer
 
 			// Determine if this is a detailed view of rights
 			int columns = 7;
-			if (InstanceWide_Settings_Singleton.Settings.Detailed_User_Aggregation_Permissions)
+			if (UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions)
 			{
 				columns = 12;
 			}
 
 
             // Step through each aggregation type
-            foreach (string aggregationType in codeManager.All_Types)
+            foreach (string aggregationType in UI_ApplicationCache_Gateway.Aggregations.All_Types)
             {
                 Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
                 if ((aggregationType.Length > 0) && (aggregationType[aggregationType.Length - 1] != 'S'))
@@ -871,7 +865,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\" >");
                 Output.WriteLine("    <td width=\"57px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can select this aggregation when editing or submitting an item\">CAN<br />SELECT</acronym></span></td>");
 
-				if (InstanceWide_Settings_Singleton.Settings.Detailed_User_Aggregation_Permissions)
+				if (UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions)
 				{
 					Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">ITEM<br />EDIT<br />METADATA</acronym></span></td>");
 					Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">ITEM<br />EDIT<br />BEHAVIORS</acronym></span></td>");
@@ -890,13 +884,13 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("   </tr>");
 
                 // Show all matching rows
-                foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.Aggregations_By_Type(aggregationType))
+                foreach (Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_Type(aggregationType))
                 {
                     Output.WriteLine("  <tr align=\"left\" >");
                     if (!lookup_aggs.ContainsKey(thisAggr.Code.ToLower()))
                     {
                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" /></td>");
-						if (InstanceWide_Settings_Singleton.Settings.Detailed_User_Aggregation_Permissions)
+						if (UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions)
 						{
 							Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_metadata_" + thisAggr.Code + "\" id=\"admin_project_edit_metadata_" + thisAggr.Code + "\" /></td>");
 							Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_behavior_" + thisAggr.Code + "\" id=\"admin_project_edit_behavior_" + thisAggr.Code + "\" /></td>");
@@ -919,7 +913,7 @@ namespace SobekCM.Library.AdminViewer
                         else
                             Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" /></td>");
 
-						if (InstanceWide_Settings_Singleton.Settings.Detailed_User_Aggregation_Permissions)
+						if (UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions)
 						{
 							if (lookup_aggs[thisAggr.Code.ToLower()].CanEditMetadata)
 								Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_metadata_" + thisAggr.Code + "\" id=\"admin_project_edit_metadata_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
@@ -984,16 +978,16 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<br />");
 
 			// Add the buttons
-			last_mode = currentMode.My_Sobek_SubMode;
-			currentMode.My_Sobek_SubMode = String.Empty;
-			currentMode.Admin_Type = Admin_Type_Enum.Users;
+			last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+			RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
 			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
-			Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine();
-			currentMode.My_Sobek_SubMode = last_mode;
-			currentMode.Admin_Type = Admin_Type_Enum.User_Groups;
+			RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Groups;
 
 			Output.WriteLine("<br />");
 			Output.WriteLine("<br />");

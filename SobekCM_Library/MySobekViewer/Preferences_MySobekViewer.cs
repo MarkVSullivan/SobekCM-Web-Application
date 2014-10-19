@@ -8,16 +8,14 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Configuration;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -38,7 +36,7 @@ namespace SobekCM.Library.MySobekViewer
     public class Preferences_MySobekViewer : abstract_MySobekViewer
     {
         private readonly List<string> validationErrors;
-
+        private User_Object user;
 
 		private readonly bool registration;
 		private readonly bool desire_to_upload;
@@ -91,18 +89,15 @@ namespace SobekCM.Library.MySobekViewer
 		private readonly string col3Width;
 
 	    /// <summary> Constructor for a new instance of the Preferences_MySobekViewer class </summary>
-	    /// <param name="User"> Authenticated user information </param>
-		/// <param name="CurrentMode"> Mode / navigation information for the current request</param>
-	    /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-	    public Preferences_MySobekViewer(User_Object User, SobekCM_Navigation_Object CurrentMode, Custom_Tracer Tracer) : base(User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Preferences_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Preferences_MySobekViewer.Constructor", String.Empty);
+            RequestSpecificValues.Tracer.Add_Trace("Preferences_MySobekViewer.Constructor", String.Empty);
 
-	        currentMode = CurrentMode;
             validationErrors = new List<string>();
 
 			// Set the text to use for each value (since we use if for the validation errors as well)
-			mySobekText = "my" + currentMode.SobekCM_Instance_Abbreviation;
+			mySobekText = "my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
 
 			// Get the labels to use, by language
 			accountInfoLabel = "Account Information";
@@ -133,7 +128,7 @@ namespace SobekCM.Library.MySobekViewer
 			col2Width = "100px";
 			col3Width = "605px";
 
-			if (currentMode.Language == Web_Language_Enum.French)
+			if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
 			{
 				accountInfoLabel = "Informations sur le Compte";
 				userNameLabel = "Nom du Compte";
@@ -163,7 +158,7 @@ namespace SobekCM.Library.MySobekViewer
 				col3Width = "490px";
 			}
 
-			if (currentMode.Language == Web_Language_Enum.Spanish)
+			if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
 			{
 				accountInfoLabel = "Información de la Cuenta";
 				userNameLabel = "Nombre de la Cuenta";
@@ -194,6 +189,7 @@ namespace SobekCM.Library.MySobekViewer
 			}
 
 			// Is this for registration
+            user = RequestSpecificValues.Current_User;
 			registration = (HttpContext.Current.Session["user"] == null);
 			if (registration)
 			{
@@ -221,7 +217,7 @@ namespace SobekCM.Library.MySobekViewer
 			default_rights = String.Empty;
 
 			// Handle post back
-			if (currentMode.isPostBack)
+			if (RequestSpecificValues.Current_Mode.isPostBack)
 			{
 				// Loop through and get the dataa
 				string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
@@ -360,7 +356,7 @@ namespace SobekCM.Library.MySobekViewer
 				{
 					bool email_exists;
 					bool username_exists;
-					SobekCM_Database.UserName_Exists(username, email, out username_exists, out email_exists, Tracer);
+                    SobekCM_Database.UserName_Exists(username, email, out username_exists, out email_exists, RequestSpecificValues.Tracer);
 					if (email_exists)
 					{
 						validationErrors.Add("An account for that email address already exists.");
@@ -386,9 +382,9 @@ namespace SobekCM.Library.MySobekViewer
                     if ((!registration) && (user.Default_Metadata_Sets[0] != project.Trim()))
 					{
 						// Determine the in process directory for this
-						string user_in_process_directory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.UserName;
+						string user_in_process_directory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + user.UserName;
 						if (user.ShibbID.Trim().Length > 0)
-							user_in_process_directory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.ShibbID;
+							user_in_process_directory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + user.ShibbID;
 						if (Directory.Exists(user_in_process_directory))
 						{
 							if (File.Exists(user_in_process_directory + "\\TEMP000001_00001.mets"))
@@ -410,27 +406,27 @@ namespace SobekCM.Library.MySobekViewer
 						user.UserID = -1;
 
 						// Save this new user
-						SobekCM_Database.Save_User(user, password, user.Authentication_Type, Tracer);
+                        SobekCM_Database.Save_User(user, password, user.Authentication_Type, RequestSpecificValues.Tracer);
 
 						// Retrieve the user from the database
-						user = SobekCM_Database.Get_User(username, password, Tracer);
+                        user = SobekCM_Database.Get_User(username, password, RequestSpecificValues.Tracer);
 
 						// Special code in case this is the very first user
 						if (user.UserID == 1)
 						{
 							// Add each template and project
-                            DataSet projectTemplateSet = SobekCM_Database.Get_All_Template_DefaultMetadatas(Tracer);
+                            DataSet projectTemplateSet = SobekCM_Database.Get_All_Template_DefaultMetadatas(RequestSpecificValues.Tracer);
 							List<string> templates = (from DataRow thisTemplate in projectTemplateSet.Tables[1].Rows select thisTemplate["TemplateCode"].ToString()).ToList();
 							List<string> projects = (from DataRow thisProject in projectTemplateSet.Tables[0].Rows select thisProject["MetadataCode"].ToString()).ToList();
 
 							// Save the updates to this admin user
-							SobekCM_Database.Save_User(user, password, User_Authentication_Type_Enum.Sobek, Tracer);
-							SobekCM_Database.Update_SobekCM_User(user.UserID, true, true, true, true, true, true, true, "edit_internal", "editmarc_internal", true, true, true, Tracer);
-                            SobekCM_Database.Update_SobekCM_User_DefaultMetadata(user.UserID, new ReadOnlyCollection<string>(projects), Tracer);
-							SobekCM_Database.Update_SobekCM_User_Templates(user.UserID, new ReadOnlyCollection<string>(templates), Tracer);
+                            SobekCM_Database.Save_User(user, password, User_Authentication_Type_Enum.Sobek, RequestSpecificValues.Tracer);
+                            SobekCM_Database.Update_SobekCM_User(user.UserID, true, true, true, true, true, true, true, "edit_internal", "editmarc_internal", true, true, true, RequestSpecificValues.Tracer);
+                            SobekCM_Database.Update_SobekCM_User_DefaultMetadata(user.UserID, new ReadOnlyCollection<string>(projects), RequestSpecificValues.Tracer);
+                            SobekCM_Database.Update_SobekCM_User_Templates(user.UserID, new ReadOnlyCollection<string>(templates), RequestSpecificValues.Tracer);
 
 							// Retrieve the user information again
-							user = SobekCM_Database.Get_User(username, password, Tracer);
+                            user = SobekCM_Database.Get_User(username, password, RequestSpecificValues.Tracer);
 						}
 
 						user.Is_Just_Registered = true;
@@ -439,39 +435,39 @@ namespace SobekCM.Library.MySobekViewer
 						// If they want to be able to contribue, send an email
 						if (desire_to_upload)
 						{
-							SobekCM_Database.Send_Database_Email(InstanceWide_Settings_Singleton.Settings.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>Name: " + user.Full_Name + "<br />Email: " + user.Email + "<br />Organization: " + user.Organization + "<br />User ID: " + user.UserID + "</blockquote>", true, false, -1, -1);
+							SobekCM_Database.Send_Database_Email(UI_ApplicationCache_Gateway.Settings.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>Name: " + user.Full_Name + "<br />Email: " + user.Email + "<br />Organization: " + user.Organization + "<br />User ID: " + user.UserID + "</blockquote>", true, false, -1, -1);
 						}
 
 						// Email the user their registation information
 						if (desire_to_upload)
 						{
-							SobekCM_Database.Send_Database_Email(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + currentMode.Base_URL + "/my\">" + currentMode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName + "<br /><br />You will receive an email when your request to submit items has been processed.", true, false, -1, -1);
+							SobekCM_Database.Send_Database_Email(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/my\">" + RequestSpecificValues.Current_Mode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName + "<br /><br />You will receive an email when your request to submit items has been processed.", true, false, -1, -1);
 						}
 						else
 						{
-							SobekCM_Database.Send_Database_Email(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + currentMode.Base_URL + "/my\">" + currentMode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName, true, false, -1, -1);
+							SobekCM_Database.Send_Database_Email(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/my\">" + RequestSpecificValues.Current_Mode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName, true, false, -1, -1);
 						}
 
 						// Now, forward back to the My Sobek home page
-						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+						RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
 
 						// If this is the first user to register (who would have been set to admin), send to the 
 						// system-wide settings screen
 						if (user.UserID == 1)
 						{
-							currentMode.Mode = Display_Mode_Enum.Administrative;
-							currentMode.Admin_Type = Admin_Type_Enum.Settings;
+							RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+							RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
 						}
-						currentMode.Redirect();
+						UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
 					}
 					else
 					{
 						HttpContext.Current.Session["user"] = user;
-						SobekCM_Database.Save_User(user, String.Empty, user.Authentication_Type,  Tracer);
+                        SobekCM_Database.Save_User(user, String.Empty, user.Authentication_Type, RequestSpecificValues.Tracer);
 
 						// Now, forward back to the My Sobek home page
-						currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-						currentMode.Redirect();
+						RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+						UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
 					}
 				}
 			}
@@ -502,7 +498,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 if (HttpContext.Current.Session["user"] == null)
                 {
-                    return "Register for My" + currentMode.SobekCM_Instance_Abbreviation;
+                    return "Register for My" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
                 }
                 return "Edit Your Account Preferences";
             }
@@ -523,16 +519,16 @@ namespace SobekCM.Library.MySobekViewer
 
 			Output.WriteLine("<h1>" + Web_Title + "</h1>");
 			Output.WriteLine();
-			Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+			Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"SobekHomeText\" >");
 			Output.WriteLine("<blockquote>");
 			if (registration)
 			{
 				Output.WriteLine("Registration for " + mySobekText + " is free and open to the public.  Enter your information below to be instantly registered.<br /><br />");
 				Output.WriteLine("Account information, name, and email are required for each new account.<br /><br />");
-				currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-				Output.WriteLine("Already registered?  <a href=\"" + currentMode.Redirect_URL() + "\">Log on</a>.<br /><br />");
-				currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+				RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+				Output.WriteLine("Already registered?  <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Log on</a>.<br /><br />");
+				RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
 			}
 			if (validationErrors.Count > 0)
 			{
@@ -573,7 +569,7 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + userNameLabel + ":</td><td>" + user.UserName + "</td></tr>");
 				if (user.ShibbID.Trim().Length > 0)
 				{
-					Output.WriteLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name + ":</td><td>" + user.ShibbID + "</td></tr>");
+					Output.WriteLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name + ":</td><td>" + user.ShibbID + "</td></tr>");
 				}
 			}
 
@@ -603,9 +599,9 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefDepartment\">" + departmentLabel + ":</label></td><td><input id=\"prefDepartment\" name=\"prefDepartment\" class=\"preferences_large_input sbk_Focusable\" value=\"" + department + "\"type=\"text\" /></td></tr>");
 			Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefUnit\">" + unitLabel + ":</label></td><td><input id=\"prefUnit\" name=\"prefUnit\" class=\"preferences_large_input sbk_Focusable\" value=\"" + unit + "\" type=\"text\" /></td></tr>");
 
-			if ((registration) && (InstanceWide_Settings_Singleton.Settings.Shibboleth_System_URL.Length > 0))
+			if ((registration) && (UI_ApplicationCache_Gateway.Settings.Shibboleth_System_URL.Length > 0))
 			{
-				Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefUfid\">" + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name + ":</label></td><td><input id=\"prefUfid\" name=\"prefUfid\" class=\"preferences_small_input sbk_Focusable\" value=\"" + ufid + "\" type=\"text\" />    &nbsp; &nbsp; (optionally provides access through Gatorlink)</td></tr>");
+				Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefUfid\">" + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name + ":</label></td><td><input id=\"prefUfid\" name=\"prefUfid\" class=\"preferences_small_input sbk_Focusable\" value=\"" + ufid + "\" type=\"text\" />    &nbsp; &nbsp; (optionally provides access through Gatorlink)</td></tr>");
 			}
 
 
@@ -657,13 +653,13 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("    <td>");
 				Output.WriteLine("      " + rightsInstructionLabel + "<br />");
 				Output.WriteLine("      <table cellpadding=\"3px\" cellspacing=\"3px\" >");
-				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc0] The author dedicated the work to the Commons by waiving all of his or her rights to the work worldwide under copyright law and all related or neighboring legal rights he or she had in the work, to the extent allowable by law.');\"><img title=\"You dedicate the work to the Commons by waiving all of your rights to the work worldwide under copyright law and all related or neighboring legal rights you had in the work, to the extent allowable by law.\" src=\"" + currentMode.Base_URL + "default/images/cc_zero.png\" /></a></td><td><b>No Copyright</b><br /><i>cc0</i></td></tr>");
-				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc by] This item is licensed with the Creative Commons Attribution License.  This license lets others distribute, remix, tweak, and build upon this work, even commercially, as long as they credit the author for the original creation.');\"><img title=\"This license lets others distribute, remix, tweak, and build upon your work, even commercially, as long as they credit you for the original creation.\" src=\"" + currentMode.Base_URL + "default/images/cc_by.png\" /></a></td><td><b>Attribution</b><br /><i>cc by</i></td></tr>");
-				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc by-sa] This item is licensed with the Creative Commons Attribution Share Alike License.  This license lets others remix, tweak, and build upon this work even for commercial reasons, as long as they credit the author and license their new creations under the identical terms.');\"><img title=\"This license lets others remix, tweak, and build upon your work even for commercial reasons, as long as they credit you and license their new creations under the identical terms.\" src=\"" + currentMode.Base_URL + "default/images/cc_by_sa.png\" /></a></td><td><b>Attribution Share Alike</b><br /><i>cc by-sa</i></td></tr>");
-				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc by-nd] This item is licensed with the Creative Commons Attribution No Derivatives License.  This license allows for redistribution, commercial and non-commercial, as long as it is passed along unchanged and in whole, with credit to the author.');\"><img title=\"This license allows for redistribution, commercial and non-commercial, as long as it is passed along unchanged and in whole, with credit to you.\" src=\"" + currentMode.Base_URL + "default/images/cc_by_nd.png\" /></a></td><td><b>Attribution No Derivatives</b><br /><i>cc by-nd</i></td></tr>");
-				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc by-nc] This item is licensed with the Creative Commons Attribution Non-Commerical License.  This license lets others remix, tweak, and build upon this work non-commercially, and although their new works must also acknowledge the author and be non-commercial, they don’t have to license their derivative works on the same terms.');\"><img title=\"This license lets others remix, tweak, and build upon your work non-commercially, and although their new works must also acknowledge you and be non-commercial, they don’t have to license their derivative works on the same terms.\" src=\"" + currentMode.Base_URL + "default/images/cc_by_nc.png\" /></a></td><td><b>Attribution Non-Commercial</b><br /><i>cc by-nc</i></td></tr>");
-				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc by-nc-sa] This item is licensed with the Creative Commons Attribution Non-Commercial Share Alike License.  This license lets others remix, tweak, and build upon this work non-commercially, as long as they credit the author and license their new creations under the identical terms.');\"><img title=\"This license lets others remix, tweak, and build upon your work non-commercially, as long as they credit you and license their new creations under the identical terms.\" src=\"" + currentMode.Base_URL + "default/images/cc_by_nc_sa.png\" /></a></td><td><b>Attribution Non-Commercial Share Alike</b><br /><i>cc by-nc-sa</i></td></tr>");
-				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc by-nc-nd] This item is licensed with the Creative Commons Attribution Non-Commercial No Derivative License.  This license allows others to download this work and share them with others as long as they mention the author and link back to the author, but they can’t change them in any way or use them commercially.');\"><img title=\"This license allows others to download your works and share them with others as long as they mention you and link back to you, but they can’t change them in any way or use them commercially.\" src=\"" + currentMode.Base_URL + "default/images/cc_by_nc_nd.png\" /></a></td><td><b>Attribution Non-Commercial No Derivatives</b><br /><i>cc by-nc-nd</i></td></tr>");
+				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc0] The author dedicated the work to the Commons by waiving all of his or her rights to the work worldwide under copyright law and all related or neighboring legal rights he or she had in the work, to the extent allowable by law.');\"><img title=\"You dedicate the work to the Commons by waiving all of your rights to the work worldwide under copyright law and all related or neighboring legal rights you had in the work, to the extent allowable by law.\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/cc_zero.png\" /></a></td><td><b>No Copyright</b><br /><i>cc0</i></td></tr>");
+				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc by] This item is licensed with the Creative Commons Attribution License.  This license lets others distribute, remix, tweak, and build upon this work, even commercially, as long as they credit the author for the original creation.');\"><img title=\"This license lets others distribute, remix, tweak, and build upon your work, even commercially, as long as they credit you for the original creation.\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/cc_by.png\" /></a></td><td><b>Attribution</b><br /><i>cc by</i></td></tr>");
+				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc by-sa] This item is licensed with the Creative Commons Attribution Share Alike License.  This license lets others remix, tweak, and build upon this work even for commercial reasons, as long as they credit the author and license their new creations under the identical terms.');\"><img title=\"This license lets others remix, tweak, and build upon your work even for commercial reasons, as long as they credit you and license their new creations under the identical terms.\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/cc_by_sa.png\" /></a></td><td><b>Attribution Share Alike</b><br /><i>cc by-sa</i></td></tr>");
+				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc by-nd] This item is licensed with the Creative Commons Attribution No Derivatives License.  This license allows for redistribution, commercial and non-commercial, as long as it is passed along unchanged and in whole, with credit to the author.');\"><img title=\"This license allows for redistribution, commercial and non-commercial, as long as it is passed along unchanged and in whole, with credit to you.\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/cc_by_nd.png\" /></a></td><td><b>Attribution No Derivatives</b><br /><i>cc by-nd</i></td></tr>");
+				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc by-nc] This item is licensed with the Creative Commons Attribution Non-Commerical License.  This license lets others remix, tweak, and build upon this work non-commercially, and although their new works must also acknowledge the author and be non-commercial, they don’t have to license their derivative works on the same terms.');\"><img title=\"This license lets others remix, tweak, and build upon your work non-commercially, and although their new works must also acknowledge you and be non-commercial, they don’t have to license their derivative works on the same terms.\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/cc_by_nc.png\" /></a></td><td><b>Attribution Non-Commercial</b><br /><i>cc by-nc</i></td></tr>");
+				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc by-nc-sa] This item is licensed with the Creative Commons Attribution Non-Commercial Share Alike License.  This license lets others remix, tweak, and build upon this work non-commercially, as long as they credit the author and license their new creations under the identical terms.');\"><img title=\"This license lets others remix, tweak, and build upon your work non-commercially, as long as they credit you and license their new creations under the identical terms.\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/cc_by_nc_sa.png\" /></a></td><td><b>Attribution Non-Commercial Share Alike</b><br /><i>cc by-nc-sa</i></td></tr>");
+				Output.WriteLine("        <tr><td> &nbsp; <a href=\"\" onclick=\"return set_cc_rights('prefRights','[cc by-nc-nd] This item is licensed with the Creative Commons Attribution Non-Commercial No Derivative License.  This license allows others to download this work and share them with others as long as they mention the author and link back to the author, but they can’t change them in any way or use them commercially.');\"><img title=\"This license allows others to download your works and share them with others as long as they mention you and link back to you, but they can’t change them in any way or use them commercially.\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/cc_by_nc_nd.png\" /></a></td><td><b>Attribution Non-Commercial No Derivatives</b><br /><i>cc by-nc-nd</i></td></tr>");
 				Output.WriteLine("      </table>");
 				Output.WriteLine("    </td>");
 				Output.WriteLine("  </tr>");
@@ -706,9 +702,9 @@ namespace SobekCM.Library.MySobekViewer
 			}
 
 			Output.WriteLine("  <tr style=\"text-align:right\"><td colspan=\"3\">");
-			currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-			Output.WriteLine("    <button onclick=\"window.location.href = '" + currentMode.Redirect_URL() + "';return false;\" class=\"sbkMySobek_BigButton\"> CANCEL </button> &nbsp; &nbsp; ");
-			currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+			RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+			Output.WriteLine("    <button onclick=\"window.location.href = '" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" class=\"sbkMySobek_BigButton\"> CANCEL </button> &nbsp; &nbsp; ");
+			RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
 
 			Output.WriteLine("    <button type=\"submit\" class=\"sbkMySobek_BigButton\"> SUBMIT </button> ");
 

@@ -5,11 +5,9 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Web;
 using SobekCM.Core.Configuration;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Navigation;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -22,10 +20,9 @@ namespace SobekCM.Library.HTML
     public class Preferences_HtmlSubwriter : abstractHtmlSubwriter
     {
         /// <summary> Constructor for a new instance of the Preferences_HtmlSubwriter class </summary>
-        public Preferences_HtmlSubwriter( SobekCM_Navigation_Object Current_Mode )
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Preferences_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
         {
-            Mode = Current_Mode;
-
             // See if there was a hidden request
             string hidden_request = HttpContext.Current.Request.Form["hidden_request"] ?? String.Empty;
 
@@ -37,15 +34,15 @@ namespace SobekCM.Library.HTML
                 switch (language_option)
                 {
                     case "en":
-                        Mode.Language = Web_Language_Enum.English;
+                        RequestSpecificValues.Current_Mode.Language = Web_Language_Enum.English;
                         break;
 
                     case "fr":
-                        Mode.Language = Web_Language_Enum.French;
+                        RequestSpecificValues.Current_Mode.Language = Web_Language_Enum.French;
                         break;
 
                     case "es":
-                        Mode.Language = Web_Language_Enum.Spanish;
+                        RequestSpecificValues.Current_Mode.Language = Web_Language_Enum.Spanish;
                         break;
 
                 }
@@ -56,9 +53,9 @@ namespace SobekCM.Library.HTML
                 int user_sort = Convert.ToInt32(form["defaultSortDropDown"]);
                 HttpContext.Current.Session["User_Default_Sort"] = user_sort;
 
-                Mode.Mode = Display_Mode_Enum.Aggregation;
-				Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                Mode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
 
             }
         }
@@ -77,14 +74,14 @@ namespace SobekCM.Library.HTML
             const string defaultView = "Default View:";
             const string defaultSort = "Default Sort:";
 
-            if (Mode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
             {
                 preferences = "Preferencias";
                 language = "Idioma:";
                 button = "Regresar";
             }
 
-            if (Mode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
             {
                 preferences = "Préférences";
                 language = "Langue:";
@@ -98,7 +95,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<br /><br />");
             Output.WriteLine("<div class=\"SobekSearchPanel\" align=\"center\">");
             Output.WriteLine("  <h1>" + preferences + "</h1>");
-            Output.WriteLine("  <form name=\"preferences_form\" id=\"addedForm\"  method=\"post\" action=\"" + Mode.Redirect_URL() + "\" >");
+            Output.WriteLine("  <form name=\"preferences_form\" id=\"addedForm\"  method=\"post\" action=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >");
 
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
             Output.WriteLine("<input type=\"hidden\" id=\"hidden_request\" name=\"hidden_request\" value=\"\" />");
@@ -109,9 +106,9 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("        <td align=\"left\" width=\"100px\">" + language + "</td>");
             Output.WriteLine("        <td align=\"left\">");
             Output.WriteLine("          <select name=\"languageDropDown\" id=\"languageDropDown\">");
-            Output.WriteLine(Mode.Language == Web_Language_Enum.English ? "            <option selected=\"selected\" value=\"en\">English</option>" : "            <option value=\"en\">English</option>");
-            Output.WriteLine(Mode.Language == Web_Language_Enum.French ? "            <option selected=\"selected\" value=\"fr\">Français</option>" : "            <option value=\"fr\">Français</option>");
-            Output.WriteLine(Mode.Language == Web_Language_Enum.Spanish ? "            <option selected=\"selected\" value=\"es\">Español</option>" : "            <option value=\"es\">Español</option>");
+            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.English ? "            <option selected=\"selected\" value=\"en\">English</option>" : "            <option value=\"en\">English</option>");
+            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French ? "            <option selected=\"selected\" value=\"fr\">Français</option>" : "            <option value=\"fr\">Français</option>");
+            Output.WriteLine(RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish ? "            <option selected=\"selected\" value=\"es\">Español</option>" : "            <option value=\"es\">Español</option>");
             Output.WriteLine("          </select>");
             Output.WriteLine("        </td>");
             Output.WriteLine("      </tr>");
@@ -150,7 +147,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine(user_sort == 0 ? "            <option selected=\"selected\" value=\"1\">Title</option>" : "            <option value=\"1\">Title</option>");
 
             // Add the bibid sorts if this is an internal user
-            if (Mode.Internal_User)
+            if (RequestSpecificValues.Current_Mode.Internal_User)
             {
                 Output.WriteLine(user_sort == 2 ? "            <option selected=\"selected\" value=\"2\">BibID Ascending</option>" : "            <option value=\"2\">BibID Ascending</option>");
                 Output.WriteLine(user_sort == 3 ? "            <option selected=\"selected\" value=\"3\">BibID Descending</option>" : "            <option value=\"3\">BibID Descending</option>");

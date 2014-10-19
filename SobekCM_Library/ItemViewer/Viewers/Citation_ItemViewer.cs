@@ -8,26 +8,24 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Database;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
-using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
 using SobekCM.Resource_Object.Metadata_Modules.VRACore;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Database;
-using SobekCM.Library.Navigation;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -286,7 +284,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 			else
 			{
-				Output.WriteLine("      <li><a href=\"" + CurrentMode.Redirect_URL("citation") + "\">" + STANDARD_VIEW + "</a></li>");
+				Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "citation") + "\">" + STANDARD_VIEW + "</a></li>");
 			}
 
 			if (citationType == Citation_Type.MARC)
@@ -296,7 +294,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			else
 			{
 				if (!isRobot)
-					Output.WriteLine("      <li><a href=\"" + CurrentMode.Redirect_URL("marc") + "\">" + MARC_VIEW + "</a></li>");
+					Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "marc") + "\">" + MARC_VIEW + "</a></li>");
 				else
 					Output.WriteLine("      <li>" + MARC_VIEW + "</li>");
 			}
@@ -312,7 +310,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 				else
 				{
-					Output.WriteLine("      <li><a href=\"" + CurrentMode.Redirect_URL("metadata") + "\">" + METADATA_VIEW + "</a></li>");
+					Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "metadata") + "\">" + METADATA_VIEW + "</a></li>");
 				}
 
 				if (citationType == Citation_Type.Statistics)
@@ -321,7 +319,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 				else
 				{
-					Output.WriteLine("      <li><a href=\"" + CurrentMode.Redirect_URL("usage") + "\">" + STATISTICS_VIEW + "</a></li>");
+					Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "usage") + "\">" + STATISTICS_VIEW + "</a></li>");
 				}
 			}
 
@@ -639,7 +637,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             builder.AppendLine("<div id=\"sbkCiv_MarcXmlDownload\" class=\"sbCiv_DownloadSection\">");
             builder.AppendLine("  <a href=\"" + marc_xml + "\" target=\"_blank\">View MARC XML File</a>");
-            builder.AppendLine("  <p>The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=\"" + InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative + CurrentMode.Redirect_URL("FC2") + "\">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=\"http://www.loc.gov/standards/marcxml/\">MarcXML Schema</a>.</p>");
+            builder.AppendLine("  <p>The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(CurrentMode, "FC2") + "\">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=\"http://www.loc.gov/standards/marcxml/\">MarcXML Schema</a>.</p>");
 		    builder.AppendLine("</div>");
 
             // Should the TEI be added here?
@@ -721,7 +719,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
 				CurrentMode.My_Sobek_SubMode = "1";
-				builder.AppendLine("<blockquote><a href=\"" + CurrentMode.Redirect_URL() + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/edit_item_button.gif\" border=\"0px\" alt=\"Edit this item\" /></a></blockquote>");
+				builder.AppendLine("<blockquote><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/edit_item_button.gif\" border=\"0px\" alt=\"Edit this item\" /></a></blockquote>");
 				CurrentMode.Mode = Display_Mode_Enum.Item_Display;
 			}
 			else
@@ -729,7 +727,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 builder.AppendLine("<br />");
 			}
 
-            builder.AppendLine(CurrentItem.Get_MARC_HTML(collections, CurrentMode.Internal_User, Width, InstanceWide_Settings_Singleton.Settings.System_Name, InstanceWide_Settings_Singleton.Settings.System_Abbreviation));
+            builder.AppendLine(CurrentItem.Get_MARC_HTML(collections, CurrentMode.Internal_User, Width, UI_ApplicationCache_Gateway.Settings.System_Name, UI_ApplicationCache_Gateway.Settings.System_Abbreviation));
 
             builder.AppendLine("<br />");
             builder.AppendLine("<br />");
@@ -767,13 +765,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			CurrentMode.Search_Type = Search_Type_Enum.Advanced;
 			CurrentMode.Search_String = "<%VALUE%>";
 			CurrentMode.Search_Fields = "<%CODE%>";
-			string search_link = "<a href=\"" + CurrentMode.Redirect_URL().Replace("&", "&amp;").Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "&quot;<%VALUE%>&quot;") + "\" target=\"_BLANK\">";
+			string search_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode).Replace("&", "&amp;").Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "&quot;<%VALUE%>&quot;") + "\" target=\"_BLANK\">";
 			string search_link_end = "</a>";
 			CurrentMode.Aggregation = String.Empty;
 			CurrentMode.Search_String = String.Empty;
 			CurrentMode.Search_Fields = String.Empty;
 			CurrentMode.Mode = lastMode;
-			string url_options = CurrentMode.URL_Options();
+			string url_options = UrlWriterHelper.URL_Options(CurrentMode);
 			if (url_options.Length > 0)
 			{
 				url_options = "?" + url_options;

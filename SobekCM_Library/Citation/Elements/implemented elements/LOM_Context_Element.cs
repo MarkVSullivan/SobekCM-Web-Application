@@ -4,16 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
-using SobekCM.Core.Users;
 
 #endregion
 

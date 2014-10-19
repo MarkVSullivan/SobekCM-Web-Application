@@ -2,11 +2,11 @@
 
 using System.Text;
 using System.Web.UI.WebControls;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -18,10 +18,10 @@ namespace SobekCM.Library.ResultsViewer
     public class Table_ResultsViewer : abstract_ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Table_ResultsViewer class </summary>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        public Table_ResultsViewer(Item_Lookup_Object All_Items_Lookup)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Table_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            base.All_Items_Lookup = All_Items_Lookup;
+            // Do nothing
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
@@ -36,14 +36,14 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // If results are null, or no results, return empty string
-            if ((Paged_Results == null) || (Results_Statistics == null) || (Results_Statistics.Total_Items <= 0))
+            if ((RequestSpecificValues.Paged_Results == null) || (RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Items <= 0))
                 return;
 
             // Get the text search redirect stem and (writer-adjusted) base url 
             string textRedirectStem = Text_Redirect_Stem;
-            string base_url = CurrentMode.Base_URL;
-            if (CurrentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-                base_url = CurrentMode.Base_URL + "l/";
+            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
             // Start the results
             StringBuilder resultsBldr = new StringBuilder(5000);
@@ -51,12 +51,12 @@ namespace SobekCM.Library.ResultsViewer
             resultsBldr.AppendLine("<table width=\"100%\">");
 
             // Start the header row and add the 'No.' part
-            short currentOrder = CurrentMode.Sort;
-            if (CurrentMode.Mode == Display_Mode_Enum.Results)
+            short currentOrder = RequestSpecificValues.Current_Mode.Sort;
+            if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results)
             {
-                CurrentMode.Sort = 0;
+                RequestSpecificValues.Current_Mode.Sort = 0;
                 resultsBldr.AppendLine("\t<tr valign=\"bottom\" align=\"left\">");
-                resultsBldr.AppendLine("\t\t<td width=\"30px\"><span class=\"SobekTableSortText\"><a href=\"" + CurrentMode.Redirect_URL().Replace("&", "&amp;") + "\"><strong>No.</strong></a></span></td>");
+                resultsBldr.AppendLine("\t\t<td width=\"30px\"><span class=\"SobekTableSortText\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\"><strong>No.</strong></a></span></td>");
             }
             else
             {
@@ -64,27 +64,25 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // Add the title column
-            CurrentMode.Sort = 1;
-            resultsBldr.AppendLine("\t\t<td><span class=\"SobekTableSortText\"><a href=\"" + CurrentMode.Redirect_URL().Replace("&", "&amp;") + "\"><strong>" + Translator.Get_Translation("Title", CurrentMode.Language) + "</strong></a></span></td>");
+            RequestSpecificValues.Current_Mode.Sort = 1;
+            resultsBldr.AppendLine("\t\t<td><span class=\"SobekTableSortText\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\"><strong>" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</strong></a></span></td>");
 
             // Add the date column
-            CurrentMode.Sort = 10;
-            resultsBldr.AppendLine("\t\t<td><span class=\"SobekTableSortText\"><a href=\"" + CurrentMode.Redirect_URL().Replace("&", "&amp;") + "\"><strong>" + Translator.Get_Translation("Date", CurrentMode.Language) + "</strong></a></span></td>");
-            CurrentMode.Sort = currentOrder;
+            RequestSpecificValues.Current_Mode.Sort = 10;
+            resultsBldr.AppendLine("\t\t<td><span class=\"SobekTableSortText\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\"><strong>" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date", RequestSpecificValues.Current_Mode.Language) + "</strong></a></span></td>");
+            RequestSpecificValues.Current_Mode.Sort = currentOrder;
             resultsBldr.AppendLine("\t</tr>");
 
             resultsBldr.AppendLine("\t<tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
 
             // Set the counter for these results from the page 
-            int result_counter = ((CurrentMode.Page - 1) * Results_Per_Page) + 1;
+            int result_counter = ((RequestSpecificValues.Current_Mode.Page - 1) * Results_Per_Page) + 1;
             int current_row = 0;
 
             // Step through all the results
-            foreach (iSearch_Title_Result titleResult in Paged_Results)
+            foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
             {
-                bool multiple_title = false;
-                if (titleResult.Item_Count > 1)
-                    multiple_title = true;
+                bool multiple_title = titleResult.Item_Count > 1;
 
                 // Always get the first item for things like the main link and thumbnail
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
@@ -104,7 +102,7 @@ namespace SobekCM.Library.ResultsViewer
                 string internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
 
                 // For browses, just point to the title
-                if (( CurrentMode.Mode == Display_Mode_Enum.Aggregation ) && ( CurrentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ))
+                if (( RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation ) && ( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ))
                     internal_link = base_url + titleResult.BibID + textRedirectStem;
 
                 // Start this row

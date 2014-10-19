@@ -5,15 +5,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using System.Web.Caching;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Database;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 namespace SobekCM.Library.AggregationViewer.Viewers
@@ -37,41 +36,40 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         private readonly string textBoxValue;
 
 		/// <summary> Constructor for a new instance of the Basic_Search_YearRange_AggregationViewer class </summary>
-        /// <param name="Current_Aggregation"> Current item aggregation object </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-		public Basic_Search_YearRange_AggregationViewer(Item_Aggregation Current_Aggregation, SobekCM_Navigation_Object Current_Mode)
-			: base(Current_Aggregation, Current_Mode)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Basic_Search_YearRange_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Save the search term
-            if (currentMode.Search_String.Length > 0)
+            if (RequestSpecificValues.Current_Mode.Search_String.Length > 0)
             {
-                textBoxValue = currentMode.Search_String;
+                textBoxValue = RequestSpecificValues.Current_Mode.Search_String;
             }
 
             // Determine the complete script action name
-            Display_Mode_Enum displayMode = currentMode.Mode;
-            Search_Type_Enum searchType = currentMode.Search_Type;
-			Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
-            currentMode.Mode = Display_Mode_Enum.Results;
-            currentMode.Search_Type = Search_Type_Enum.Basic;
-            currentMode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
-            string search_string = currentMode.Search_String;
-            currentMode.Search_String = String.Empty;
-            currentMode.Search_Fields = String.Empty;
+            Display_Mode_Enum displayMode = RequestSpecificValues.Current_Mode.Mode;
+            Search_Type_Enum searchType = RequestSpecificValues.Current_Mode.Search_Type;
+			Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
+
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+            RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Basic;
+            RequestSpecificValues.Current_Mode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
+            string search_string = RequestSpecificValues.Current_Mode.Search_String;
+            RequestSpecificValues.Current_Mode.Search_String = String.Empty;
+            RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
             arg2 = String.Empty;
-            arg1 = currentMode.Redirect_URL();
-            currentMode.Mode = Display_Mode_Enum.Aggregation;
-			currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
-            currentMode.Info_Browse_Mode = "all";
-            browse_url = currentMode.Redirect_URL();
+            arg1 = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+			RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
+            browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-            scriptActionName = "basic_search_years_sobekcm('" + arg1 + "', '" + browse_url + "');";
+            Search_Script_Action = "basic_search_years_sobekcm('" + arg1 + "', '" + browse_url + "');";
 
-            currentMode.Mode = displayMode;
-			currentMode.Aggregation_Type = aggrType;
-            currentMode.Search_Type = searchType;
-            currentMode.Search_String = search_string;
-            currentMode.Info_Browse_Mode = String.Empty;
+            RequestSpecificValues.Current_Mode.Mode = displayMode;
+			RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
+            RequestSpecificValues.Current_Mode.Search_Type = searchType;
+            RequestSpecificValues.Current_Mode.Search_String = search_string;
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
 
 			
         }
@@ -104,13 +102,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
 			// Get the list of years for this aggregation
-	        string aggrCode = currentCollection.Code.ToLower();
+	        string aggrCode = RequestSpecificValues.Hierarchy_Object.Code.ToLower();
 	        string key = aggrCode + "_YearRanges";
 	        List<int> yearRange = HttpContext.Current.Cache[key] as List<int>;
 			if (yearRange == null)
 			{
 				yearRange = new List<int>();
-				List<string> yearRangeString = SobekCM_Database.Get_Item_Aggregation_Metadata_Browse(aggrCode, "Temporal Year", Tracer);
+				List<string> yearRangeString = Engine_Database.Get_Item_Aggregation_Metadata_Browse(aggrCode, "Temporal Year", Tracer);
 				foreach (string thisYear in yearRangeString)
 				{
 					int result;
@@ -122,12 +120,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             string search_collection = "Search Collection";
 	        const string YEAR_RANGE = "Limit by Year";
-            if (currentMode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
             {
                 search_collection = "Buscar en la colección";
             }
 
-            if (currentMode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
             {
                 search_collection = "Recherche dans la collection";
             }
@@ -137,7 +135,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			Output.WriteLine("      <td style=\"text-align:right;width:27%;\" id=\"sbkBsav_SearchPrompt\"><label for=\"SobekHomeSearchBox\">" + search_collection + ":</label></td>");
 			Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
 			Output.WriteLine("      <td style=\"width:60%;\"><input name=\"u_search\" type=\"text\" class=\"sbkBsav_SearchBox sbk_Focusable\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basicyears', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
-			Output.WriteLine("      <td style=\"width:10%;\"><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + scriptActionName + ";return false;\">Go</button></td>");
+			Output.WriteLine("      <td style=\"width:10%;\"><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
 			Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
 			Output.WriteLine("    </tr>");
 
@@ -151,7 +149,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 				Output.WriteLine("        <select name=\"YearDropDown1\" id=\"YearDropDown1\" class=\"sbkBsav_YearDropDown\">");
 			//	Output.WriteLine("          <option value=\"ZZ\"> </option>");
-		        int currYear1 = currentMode.DateRange_Year1;
+		        int currYear1 = RequestSpecificValues.Current_Mode.DateRange_Year1;
 		        if (( currYear1 != -1 ) && ( !yearRange.Contains(currYear1)))
 			        Output.WriteLine("          <option selected=\"selected\" value=\"" + currYear1 + "\">" + currYear1 + "</option>");
 		        if (currYear1 == -1)
@@ -173,7 +171,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 				Output.WriteLine("        <select name=\"YearDropDown2\" id=\"YearDropDown2\" class=\"sbkBsav_YearDropDown\">");
 			//	Output.WriteLine("          <option value=\"ZZ\"> </option>");
-				int currYear2 = currentMode.DateRange_Year1;
+				int currYear2 = RequestSpecificValues.Current_Mode.DateRange_Year1;
 				if (( currYear2 != -1 ) && ( !yearRange.Contains(currYear2)))
 					Output.WriteLine("          <option selected=\"selected\" value=\"" + currYear2 + "\">" + currYear2 + "</option>");
 		        if (currYear2 == -1)

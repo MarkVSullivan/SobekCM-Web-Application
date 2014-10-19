@@ -8,9 +8,9 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using SobekCM.Core.Configuration;
+using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Settings;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Tools.Logs;
 using SobekCM.Builder_Library;
@@ -43,25 +43,25 @@ namespace SobekCM.Builder
             aborted = false;
 
             // Assign the database connection strings
-            SobekCM_Database.Connection_String = InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String;
-            Library.Database.SobekCM_Database.Connection_String = InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String;
+            SobekCM_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
+            Library.Database.SobekCM_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
 
             // Save the list of instances
             instances = new List<Database_Instance_Configuration>();
-            foreach (Database_Instance_Configuration dbInfo in InstanceWide_Settings_Singleton.Settings.Database_Connections)
+            foreach (Database_Instance_Configuration dbInfo in Engine_ApplicationCache_Gateway.Settings.Database_Connections)
             {
                 instances.Add(dbInfo);
             }
 
             // Pull the values from the database and assign other setting values
-            InstanceWide_Settings_Singleton.Settings.Local_Log_Directory = Application.StartupPath + "\\Logs\\";
-            DataSet settings = Library.Database.SobekCM_Database.Get_Settings_Complete(null);
+            Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory = Application.StartupPath + "\\Logs\\";
+            DataSet settings = Engine_Database.Get_Settings_Complete(null);
             if (settings == null)
             {
                 Console.WriteLine("FATAL ERROR pulling latest settings from the database: " + Library.Database.SobekCM_Database.Last_Exception.Message);
                 return;
             }
-            if (!InstanceWide_Settings_Singleton.Refresh())
+            if (!Engine_ApplicationCache_Gateway.RefreshSettings())
             {
                 Console.WriteLine("Error using database settings to refresh SobekCM_Library_Settings in Worker_Controller constructor");
             }
@@ -78,22 +78,22 @@ namespace SobekCM.Builder
         public void Execute_In_Background()
         {
 			// Load all the settings
-			InstanceWide_Settings_Singleton.Refresh();
+            Engine_ApplicationCache_Gateway.RefreshSettings();
 
             // Set the variable which will control background execution
-	        int time_between_polls = InstanceWide_Settings_Singleton.Settings.Builder_Override_Seconds_Between_Polls;
-			if (( time_between_polls < 0 ) || ( InstanceWide_Settings_Singleton.Settings.Database_Connections.Count == 1 ))
-				time_between_polls = Convert.ToInt32(InstanceWide_Settings_Singleton.Settings.Builder_Seconds_Between_Polls);
+	        int time_between_polls = Engine_ApplicationCache_Gateway.Settings.Builder_Override_Seconds_Between_Polls;
+			if (( time_between_polls < 0 ) || ( Engine_ApplicationCache_Gateway.Settings.Database_Connections.Count == 1 ))
+				time_between_polls = Convert.ToInt32(Engine_ApplicationCache_Gateway.Settings.Builder_Seconds_Between_Polls);
 
             // Determine the new log name
             string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
-            string local_log_name = InstanceWide_Settings_Singleton.Settings.Local_Log_Directory + "\\" + log_name;
+            string local_log_name = Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + "\\" + log_name;
 
             // Create the new log file
             LogFileXHTML preloader_logger = new LogFileXHTML(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
 
             // start with warnings on imagemagick and ghostscript not being installed
-            if ((String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.ImageMagick_Executable)) || (!File.Exists(InstanceWide_Settings_Singleton.Settings.ImageMagick_Executable)))
+            if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable)))
             {
                 string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
                 if ((!String.IsNullOrEmpty(possible_imagemagick)) && ( Directory.Exists(possible_imagemagick)) && ( File.Exists( Path.Combine(possible_imagemagick, "convert.exe"))))
@@ -110,10 +110,10 @@ namespace SobekCM.Builder
             }
             else
             {
-                imageMagickProgram = InstanceWide_Settings_Singleton.Settings.ImageMagick_Executable;
+                imageMagickProgram = Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable;
             }
 
-            if ((String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.Ghostscript_Executable)) || (!File.Exists(InstanceWide_Settings_Singleton.Settings.Ghostscript_Executable)))
+            if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable)))
             {
                 string possible_ghost = Look_For_Variable_Registry_Key("SOFTWARE\\GPL Ghostscript", "GS_DLL");
                 if (!String.IsNullOrEmpty(possible_ghost))
@@ -140,7 +140,7 @@ namespace SobekCM.Builder
             }
             else
             {
-                ghostscriptProgram = InstanceWide_Settings_Singleton.Settings.Ghostscript_Executable;
+                ghostscriptProgram = Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable;
             }
 
 			// Set the time for the next feed building event to 10 minutes from now
@@ -200,7 +200,7 @@ namespace SobekCM.Builder
 						Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", abort_message, String.Empty);
 
 						// Save information about this last run
-                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", InstanceWide_Settings_Singleton.Settings.Current_Builder_Version);
+                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Current_Builder_Version);
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", abort_message);
 
@@ -312,7 +312,7 @@ namespace SobekCM.Builder
 							{
 
 								//    // Always build an endeca feed first (so it occurs once a day)
-								//    if (InstanceWide_Settings_Singleton.Settings.Build_MARC_Feed_By_Default)
+								//    if (Engine_ApplicationCache_Gateway.Settings.Build_MARC_Feed_By_Default)
 								//    {
 								//        Create_Complete_MarcXML_Feed(false);
 								//    }
@@ -322,7 +322,7 @@ namespace SobekCM.Builder
 								Console.WriteLine(dbInstance.Name + " - Expiring old log entries");
 								preloader_logger.AddNonError(dbInstance.Name + " - Expiring old log entries");
 								Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Expiring old log entries", String.Empty);
-								Library.Database.SobekCM_Database.Builder_Expire_Log_Entries(InstanceWide_Settings_Singleton.Settings.Builder_Log_Expiration_Days);
+								Library.Database.SobekCM_Database.Builder_Expire_Log_Entries(Engine_ApplicationCache_Gateway.Settings.Builder_Log_Expiration_Days);
 
 
 
@@ -331,8 +331,8 @@ namespace SobekCM.Builder
 								preloader_logger.AddNonError(dbInstance.Name + " - Rebuilding all static pages");
 								long staticRebuildLogId = Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Rebuilding all static pages", String.Empty);
 
-								Static_Pages_Builder builder = new Static_Pages_Builder(InstanceWide_Settings_Singleton.Settings.Application_Server_URL, InstanceWide_Settings_Singleton.Settings.Static_Pages_Location, InstanceWide_Settings_Singleton.Settings.Application_Server_Network);
-								builder.Rebuild_All_Static_Pages(preloader_logger, false, InstanceWide_Settings_Singleton.Settings.Local_Log_Directory, dbInstance.Name, staticRebuildLogId);
+								Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Application_Server_Network);
+								builder.Rebuild_All_Static_Pages(preloader_logger, false, Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory, dbInstance.Name, staticRebuildLogId);
 
 							}
 
@@ -417,7 +417,7 @@ namespace SobekCM.Builder
 						Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building ABORTED per request from database key", String.Empty);
 
 						// Save information about this last run
-                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", InstanceWide_Settings_Singleton.Settings.Current_Builder_Version);
+                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Current_Builder_Version);
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", "Building ABORTED per request");
 
@@ -436,18 +436,18 @@ namespace SobekCM.Builder
 			//// Initiate a solr/lucene index optimization since we are done loading for a while
 			//if (DateTime.Now.Day % 2 == 0)
 			//{
-			//	if (InstanceWide_Settings_Singleton.Settings.Document_Solr_Index_URL.Length > 0)
+			//	if (Engine_ApplicationCache_Gateway.Settings.Document_Solr_Index_URL.Length > 0)
 			//	{
 			//		Console.WriteLine("Initiating Solr/Lucene document index optimization");
-			//		Solr_Controller.Optimize_Document_Index(InstanceWide_Settings_Singleton.Settings.Document_Solr_Index_URL);
+			//		Solr_Controller.Optimize_Document_Index(Engine_ApplicationCache_Gateway.Settings.Document_Solr_Index_URL);
 			//	}
 			//}
 			//else
 			//{
-			//	if (InstanceWide_Settings_Singleton.Settings.Page_Solr_Index_URL.Length > 0)
+			//	if (Engine_ApplicationCache_Gateway.Settings.Page_Solr_Index_URL.Length > 0)
 			//	{
 			//		Console.WriteLine("Initiating Solr/Lucene page index optimization");
-			//		Solr_Controller.Optimize_Page_Index(InstanceWide_Settings_Singleton.Settings.Page_Solr_Index_URL);
+			//		Solr_Controller.Optimize_Page_Index(Engine_ApplicationCache_Gateway.Settings.Page_Solr_Index_URL);
 			//	}
 			//}
 			//// Sleep for twenty minutes to end this (the index rebuild might take some time)
@@ -458,10 +458,10 @@ namespace SobekCM.Builder
 		{
 			try
 			{
-				if ((InstanceWide_Settings_Singleton.Settings.Builder_Logs_Publish_Directory.Length > 0) && (Directory.Exists(InstanceWide_Settings_Singleton.Settings.Builder_Logs_Publish_Directory)))
+				if ((Engine_ApplicationCache_Gateway.Settings.Builder_Logs_Publish_Directory.Length > 0) && (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Builder_Logs_Publish_Directory)))
 				{
 					if ( File.Exists(LocalLogName))
-						File.Copy(LocalLogName, InstanceWide_Settings_Singleton.Settings.Builder_Logs_Publish_Directory + "\\" + Path.GetFileName(LocalLogName), true );
+						File.Copy(LocalLogName, Engine_ApplicationCache_Gateway.Settings.Builder_Logs_Publish_Directory + "\\" + Path.GetFileName(LocalLogName), true );
 				}
 			}
 			catch
@@ -477,7 +477,7 @@ namespace SobekCM.Builder
                 Prebuilder.Perform_BulkLoader( Verbose );
 
                 // Save information about this last run
-                Library.Database.SobekCM_Database.Set_Setting("Builder Version", InstanceWide_Settings_Singleton.Settings.Current_Builder_Version);
+                Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Current_Builder_Version);
                 Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
                 Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", Prebuilder.Final_Message);
 
@@ -493,21 +493,21 @@ namespace SobekCM.Builder
         private void Run_BulkLoader( bool Verbose )
         {
             // Create the local log directories
-            if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Local_Log_Directory))
+            if (!Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory))
             {
-                Console.WriteLine("Creating local log directory: " + InstanceWide_Settings_Singleton.Settings.Local_Log_Directory);
-                Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Local_Log_Directory);
+                Console.WriteLine("Creating local log directory: " + Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory);
+                Directory.CreateDirectory(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory);
             }
 
             // Determine the new log name
             string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
-            string local_log_name = InstanceWide_Settings_Singleton.Settings.Local_Log_Directory + "\\" + log_name;
+            string local_log_name = Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + "\\" + log_name;
 
             // Create the new log file
             LogFileXHTML preloader_logger = new LogFileXHTML(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
 
 			// Step through each database instance
-	        foreach (Database_Instance_Configuration dbConfig in InstanceWide_Settings_Singleton.Settings.Database_Connections)
+	        foreach (Database_Instance_Configuration dbConfig in Engine_ApplicationCache_Gateway.Settings.Database_Connections)
 	        {
 		        try
 		        {
@@ -524,7 +524,7 @@ namespace SobekCM.Builder
 						newLoader.Perform_BulkLoader(Verbose);
 
 						// Save information about this last run
-                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", InstanceWide_Settings_Singleton.Settings.Current_Builder_Version);
+                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Current_Builder_Version);
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", newLoader.Final_Message);
 			        }
@@ -549,11 +549,11 @@ namespace SobekCM.Builder
 	    public void Execute_Immediately(bool BuildProductionMarcxmlFeed, bool BuildTestMarcxmlFeed, bool RunBulkloader, bool CompleteStaticRebuild, bool MarcRebuild )
         {
             // start with warnings on imagemagick and ghostscript not being installed
-            if (InstanceWide_Settings_Singleton.Settings.ImageMagick_Executable.Length == 0)
+            if (Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable.Length == 0)
             {
                 Console.WriteLine("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
             }
-            if (InstanceWide_Settings_Singleton.Settings.Ghostscript_Executable.Length == 0)
+            if (Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable.Length == 0)
             {
                 Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
             }
@@ -562,14 +562,14 @@ namespace SobekCM.Builder
             {
 				Console.WriteLine("Beginning static rebuild");
                 LogFileXHTML staticRebuildLog = new LogFileXHTML(Application.StartupPath + "/Logs/static_rebuild.html");
-				Static_Pages_Builder builder = new Static_Pages_Builder(InstanceWide_Settings_Singleton.Settings.Application_Server_URL, InstanceWide_Settings_Singleton.Settings.Static_Pages_Location, InstanceWide_Settings_Singleton.Settings.Application_Server_Network);
-                builder.Rebuild_All_Static_Pages(staticRebuildLog, true, InstanceWide_Settings_Singleton.Settings.Local_Log_Directory, String.Empty, -1);
+				Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Application_Server_Network);
+                builder.Rebuild_All_Static_Pages(staticRebuildLog, true, Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory, String.Empty, -1);
             }
             
             if ( MarcRebuild )
             {
-				Static_Pages_Builder builder = new Static_Pages_Builder(InstanceWide_Settings_Singleton.Settings.Application_Server_URL, InstanceWide_Settings_Singleton.Settings.Static_Pages_Location, InstanceWide_Settings_Singleton.Settings.Application_Server_Network);
-                builder.Rebuild_All_MARC_Files( InstanceWide_Settings_Singleton.Settings.Image_Server_Network );
+				Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Application_Server_Network);
+                builder.Rebuild_All_MARC_Files( Engine_ApplicationCache_Gateway.Settings.Image_Server_Network );
             }
 
             if (BuildProductionMarcxmlFeed)
@@ -583,7 +583,7 @@ namespace SobekCM.Builder
             }
 
             // Create the log
-            string directory = InstanceWide_Settings_Singleton.Settings.Local_Log_Directory;
+            string directory = Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory;
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 
@@ -638,20 +638,20 @@ namespace SobekCM.Builder
                 // Create the Mango load stuff
                 Console.WriteLine("Building " + feed_name);
                 MarcXML_Load_Creator createEndeca = new MarcXML_Load_Creator();
-                bool reportSuccess = createEndeca.Create_MarcXML_Data_File( Test_Feed_Flag, InstanceWide_Settings_Singleton.Settings.Local_Log_Directory + file_name);
+                bool reportSuccess = createEndeca.Create_MarcXML_Data_File( Test_Feed_Flag, Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + file_name);
 
                 // Publish this feed
                 if (reportSuccess)
                 {
                     Library.Database.SobekCM_Database.Builder_Clear_Item_Error_Log(feed_name.ToUpper(), "", "UFDC Builder");
-                    File.Copy(InstanceWide_Settings_Singleton.Settings.Local_Log_Directory + file_name, InstanceWide_Settings_Singleton.Settings.MarcXML_Feed_Location + file_name, true);
+                    File.Copy(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + file_name, Engine_ApplicationCache_Gateway.Settings.MarcXML_Feed_Location + file_name, true);
                 }
                 else
                 {
                     string errors = createEndeca.Errors;
                     if (errors.Length > 0)
                     {
-                        StreamWriter writer = new StreamWriter(InstanceWide_Settings_Singleton.Settings.MarcXML_Feed_Location + error_file_name, false);
+                        StreamWriter writer = new StreamWriter(Engine_ApplicationCache_Gateway.Settings.MarcXML_Feed_Location + error_file_name, false);
                         writer.WriteLine("<html><head><title>" + feed_name + " Errors</title></head><body><h1>" + feed_name + " Errors</h1>");
                         writer.Write(errors.Replace("\r\n","<br />").Replace("\n","<br />").Replace("<br />", "<br />\r\n"));
                         writer.Write("</body></html>");
@@ -660,7 +660,7 @@ namespace SobekCM.Builder
 
                         Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, feed_name.ToUpper(), "Error", "Resulting file failed validation", "");
 
-                        File.Copy(InstanceWide_Settings_Singleton.Settings.Local_Log_Directory + file_name, InstanceWide_Settings_Singleton.Settings.MarcXML_Feed_Location + file_name.Replace(".xml", "_error.xml"), true);
+                        File.Copy(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + file_name, Engine_ApplicationCache_Gateway.Settings.MarcXML_Feed_Location + file_name.Replace(".xml", "_error.xml"), true);
                     }
                 }
             }

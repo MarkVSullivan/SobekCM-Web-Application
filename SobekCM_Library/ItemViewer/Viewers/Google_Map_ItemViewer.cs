@@ -4,15 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Web.UI.WebControls;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
-using SobekCM.Library.ItemViewer.Viewers;
-using SobekCM.Library.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -223,7 +221,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Determine a base URL for pointing for any polygons that correspond to a page sequence
                     string currentViewerCode = CurrentMode.ViewerCode;
                     CurrentMode.ViewerCode = "XXXXXXXX";
-                    string redirect_url = CurrentMode.Redirect_URL();
+                    string redirect_url = UrlWriterHelper.Redirect_URL(CurrentMode);;
                     CurrentMode.ViewerCode = currentViewerCode;
 
                     // Add each polygon 
@@ -433,7 +431,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 "            There were no matches within this item for your geographic search. &nbsp; ");
                             string currentModeViewerCode = CurrentMode.ViewerCode;
                             CurrentMode.ViewerCode = "mapsearch";
-                            Output.WriteLine("            ( <a href=\"" + CurrentMode.Redirect_URL() +
+                            Output.WriteLine("            ( <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) +
                                               "\">Modify item search</a> )");
                             CurrentMode.ViewerCode = currentModeViewerCode;
 
@@ -455,7 +453,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 {
                                     CurrentMode.Search_String = providedMaxLat.ToString() + "," + providedMaxLong;
                                 }
-                                Output.WriteLine("            <a href=\"" + CurrentMode.Redirect_URL() +
+                                Output.WriteLine("            <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) +
                                                   "\">Click here to search other items in the current collection</a><br />");
                                 CurrentMode.Mode = Display_Mode_Enum.Item_Display;
                             }
@@ -480,7 +478,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                             int column = 0;
                             bool first_row = true;
-                            string url_options = CurrentMode.URL_Options();
+                            string url_options = UrlWriterHelper.URL_Options(CurrentMode);
                             string urlOptions1 = String.Empty;
                             string urlOptions2 = String.Empty;
                             if (url_options.Length > 0)
@@ -552,7 +550,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             // Add link to modify this item search
                             string currentModeViewerCode = CurrentMode.ViewerCode;
                             CurrentMode.ViewerCode = "mapsearch";
-                            Output.WriteLine("                  <a href=\"" + CurrentMode.Redirect_URL() + "\">" +
+                            Output.WriteLine("                  <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">" +
                                               modify_item_search + "</a> &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; ");
                             CurrentMode.ViewerCode = currentModeViewerCode;
 
@@ -572,9 +570,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 }
 
                                 if (CurrentMode.Aggregation == "aerials")
-                                    Output.WriteLine("                  <a href=\"" + CurrentMode.Redirect_URL() + "\">Search all flights</a><br />");
+                                    Output.WriteLine("                  <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">Search all flights</a><br />");
                                 else
-                                    Output.WriteLine("                  <a href=\"" + CurrentMode.Redirect_URL() + "\">Search entire collection</a><br />");
+                                    Output.WriteLine("                  <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">Search entire collection</a><br />");
 
                                 CurrentMode.Mode = Display_Mode_Enum.Item_Display;
                             }

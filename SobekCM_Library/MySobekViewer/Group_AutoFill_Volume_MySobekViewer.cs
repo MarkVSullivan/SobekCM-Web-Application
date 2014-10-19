@@ -3,7 +3,6 @@
 using System.IO;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
 
 #endregion
@@ -25,8 +24,8 @@ namespace SobekCM.Library.MySobekViewer
     public class Group_AutoFill_Volume_MySobekViewer : abstract_MySobekViewer
     {
         /// <summary> Constructor for a new instance of the Group_AutoFill_Volume_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        public Group_AutoFill_Volume_MySobekViewer(User_Object User) : base(User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Group_AutoFill_Volume_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // This is currently a place holder class and does nothing
         }

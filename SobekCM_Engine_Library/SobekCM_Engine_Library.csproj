@@ -7,7 +7,7 @@
     <ProjectGuid>{C5D75F1A-C5D8-428D-BBA3-EA946FD539E1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SobekCM_Engine_Library</RootNamespace>
+    <RootNamespace>SobekCM.Engine_Library</RootNamespace>
     <AssemblyName>SobekCM_Engine_Library</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -30,8 +30,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.ApplicationBlocks.Data">
+      <HintPath>..\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="SolrNet">
+      <HintPath>..\DLLs\SolrNet\SolrNet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -39,7 +49,44 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aggregations\Item_Aggregation_Utilities.cs" />
+    <Compile Include="Aggregations\Item_Aggregation_XML_Reader.cs" />
+    <Compile Include="ApplicationState\Checked_Out_Item.cs" />
+    <Compile Include="ApplicationState\Checked_Out_Items_List.cs" />
+    <Compile Include="ApplicationState\Engine_ApplicationCache_Gateway.cs" />
+    <Compile Include="ApplicationState\Item_Lookup_Object.cs" />
+    <Compile Include="Database\Database_Item_Result.cs" />
+    <Compile Include="Database\Database_Title_Result.cs" />
+    <Compile Include="Database\Engine_Database.cs" />
+    <Compile Include="Items\Authority\Map_Features_DataSet.cs" />
+    <Compile Include="Items\Authority\Map_Streets_DataSet.cs" />
+    <Compile Include="Items\SobekCM_Item_Factory.cs" />
+    <Compile Include="Items\SobekCM_METS_Based_ItemBuilder.cs" />
+    <Compile Include="Navigation\SobekCM_QueryString_Analyzer.cs" />
+    <Compile Include="Navigation\UrlWriterHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings\InstanceWide_Settings_Builder.cs" />
+    <Compile Include="SiteMap\SobekCM_SiteMap_Reader.cs" />
+    <Compile Include="Solr\Solr_Controller.cs" />
+    <Compile Include="Solr\Solr_Documents_Searcher.cs" />
+    <Compile Include="Solr\Solr_Document_Result.cs" />
+    <Compile Include="Solr\Solr_Operations_Cache.cs" />
+    <Compile Include="Solr\Solr_Page_Result.cs" />
+    <Compile Include="Solr\Solr_Page_Results.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj">
+      <Project>{849C78A5-C60B-4FAF-9EFB-943753F64E56}</Project>
+      <Name>SobekCM_Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
+      <Project>{395c2621-ce19-41e0-aa1a-abdb37f6e815}</Project>
+      <Name>SobekCM_Resource_Object</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj">
+      <Project>{a511ce4c-7bd6-4446-bca8-ab71f7aa8078}</Project>
+      <Name>SobekCM_Tools</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

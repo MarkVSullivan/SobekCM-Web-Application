@@ -1,4 +1,4 @@
-﻿#region using directives
+﻿#region Using directives
 
 using System;
 using System.Data;
@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Caching;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Tools;
 
 #endregion
@@ -174,7 +175,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					Output.WriteLine(INDENT + "    <tr>");
 					Output.WriteLine(INDENT + "      <td>&nbsp;</td>");
 					CurrentMode.SubPage = (ushort)(table_number + 1);
-					Output.WriteLine(INDENT + "      <td colspan=\"3\" class=\"sbkDcv_TableHeader\"><a href=\"" + CurrentMode.Redirect_URL() + "\" title=\"View additional details for this table\">" + thisTable.TableName.Replace("_", " ") + "</a></td>");
+					Output.WriteLine(INDENT + "      <td colspan=\"3\" class=\"sbkDcv_TableHeader\"><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" title=\"View additional details for this table\">" + thisTable.TableName.Replace("_", " ") + "</a></td>");
 					Output.WriteLine(INDENT + "    </tr>");
 
 					// Add each table's column information
@@ -232,10 +233,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					Output.WriteLine(INDENT + "      <td colspan=\"3\" class=\"sbkDcv_TableFooter\">");
 
 					CurrentMode.SubPage = (ushort) (table_number + 1);
-					Output.WriteLine(INDENT + "        <a href=\"" + CurrentMode.Redirect_URL() + "\" title=\"View additional details for this table\">view details</a> &nbsp; &nbsp; &nbsp;");
+					Output.WriteLine(INDENT + "        <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" title=\"View additional details for this table\">view details</a> &nbsp; &nbsp; &nbsp;");
 
 					CurrentMode.ViewerCode = "dsview";
-					Output.WriteLine(INDENT + "        <a href=\"" + CurrentMode.Redirect_URL() + "\" title=\"View the rows of data within this table\">view contents</a>");
+					Output.WriteLine(INDENT + "        <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" title=\"View the rows of data within this table\">view contents</a>");
 
 					CurrentMode.ViewerCode = "dscodebook";
 
@@ -259,7 +260,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				{
 					ushort subpage = CurrentMode.SubPage;
 					CurrentMode.SubPage = 1;
-					Output.WriteLine("<a href=\"" + CurrentMode.Redirect_URL() + "\" title=\"Back to full data structure\">&larr; Back</a><br /><br />");
+					Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" title=\"Back to full data structure\">&larr; Back</a><br /><br />");
 					CurrentMode.SubPage = subpage;
 				}
 				else
@@ -306,7 +307,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							{
 								column_definition = "FK";
 								CurrentMode.SubPage = (ushort) (itemDataset.Tables.IndexOf(fkConstraint.RelatedColumns[0].Table) + 2);
-								column_reference = "<a href=\"" + CurrentMode.Redirect_URL() + "\" title=\"View details of linked table\">" + fkConstraint.RelatedColumns[0].Table.TableName + "</a>." + fkConstraint.RelatedColumns[0].ColumnName + " <img src=\"" + CurrentMode.Base_URL + "default/images/leftarrow.png\" alt=\"<--\" />";
+								column_reference = "<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" title=\"View details of linked table\">" + fkConstraint.RelatedColumns[0].Table.TableName + "</a>." + fkConstraint.RelatedColumns[0].ColumnName + " <img src=\"" + CurrentMode.Base_URL + "default/images/leftarrow.png\" alt=\"<--\" />";
 							}
 						}
 					}
@@ -344,7 +345,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Output.WriteLine(INDENT + "      <td colspan=\"4\" class=\"sbkDcv_TableFooter\">");
 
 				CurrentMode.ViewerCode = "dsview";
-				Output.WriteLine(INDENT + "        <a href=\"" + CurrentMode.Redirect_URL() + "\" title=\"View the rows of data within this table\">view contents</a>");
+				Output.WriteLine(INDENT + "        <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" title=\"View the rows of data within this table\">view contents</a>");
 
 				CurrentMode.ViewerCode = "dscodebook";
 

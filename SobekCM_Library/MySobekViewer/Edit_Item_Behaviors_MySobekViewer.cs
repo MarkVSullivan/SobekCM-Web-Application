@@ -4,25 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Database;
-using SobekCM.Library.Application_State;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
-using SobekCM.Library.Navigation;
-using SobekCM.Core.Users;
+using SobekCM.Resource_Object.Database;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
 namespace SobekCM.Library.MySobekViewer
 {
-    /// <summary> Class allows an authenticated user to edit a single digital resource's behaviors within this digital library </summary>
+    /// <summary> Class allows an authenticated RequestSpecificValues.Current_User to edit a single digital resource's behaviors within this digital library </summary>
     /// <remarks> This class extends the <see cref="abstract_MySobekViewer"/> class.<br /><br />
     /// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
@@ -32,57 +28,49 @@ namespace SobekCM.Library.MySobekViewer
     /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="SobekCM_Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
-    /// <li>The mySobek subwriter creates an instance of this viewer to display the item's behaviors for editing</li>
+    /// <li>The mySobek subwriter creates an instance of this viewer to display the RequestSpecificValues.Current_Item's behaviors for editing</li>
     /// <li>This viewer uses the <see cref="SobekCM.Library.Citation.Template.Template"/> class to display the correct elements for editing </li>
     /// </ul></remarks>
     public class Edit_Item_Behaviors_MySobekViewer : abstract_MySobekViewer
     {
-        private readonly SobekCM_Item item;
         private readonly Template template;
 
         #region Constructor
 
         /// <summary> Constructor for a new instance of the Edit_Item_Behaviors_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Current_Item"> Individual digital resource to be edited by the user </param>
-        /// <param name="Code_Manager"> Code manager contains the list of all valid aggregation codes </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public Edit_Item_Behaviors_MySobekViewer(User_Object User, SobekCM_Navigation_Object Current_Mode, SobekCM_Item Current_Item, Aggregation_Code_Manager Code_Manager, Custom_Tracer Tracer) : base(User)
+        ///  <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Edit_Item_Behaviors_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", String.Empty);
+            RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", String.Empty);
 
-            currentMode = Current_Mode;
-            item = Current_Item;
-
-            // If the user cannot edit this item, go back
-            if (!user.Can_Edit_This_Item(item.BibID, item.Bib_Info.SobekCM_Type_String, item.Bib_Info.Source.Code, item.Bib_Info.HoldingCode, item.Behaviors.Aggregation_Code_List))
+            // If the RequestSpecificValues.Current_User cannot edit this RequestSpecificValues.Current_Item, go back
+            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
             {
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
             const string TEMPLATE_CODE = "itembehaviors";
-            template = Cached_Data_Manager.Retrieve_Template(TEMPLATE_CODE, Tracer);
+            template = Cached_Data_Manager.Retrieve_Template(TEMPLATE_CODE, RequestSpecificValues.Tracer);
             if (template != null)
             {
-                Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Found template in cache");
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Found template in cache");
             }
             else
             {
-                Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Reading template file");
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Reading template file");
 
                 // Read this template
                 Template_XML_Reader reader = new Template_XML_Reader();
                 template = new Template();
-                reader.Read_XML(InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "templates\\defaults\\" + TEMPLATE_CODE + ".xml", template, true);
+                reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\defaults\\" + TEMPLATE_CODE + ".xml", template, true);
 
                 // Add the current codes to this template
-                template.Add_Codes(Code_Manager);
+                template.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
                 // Save this into the cache
-                Cached_Data_Manager.Store_Template(TEMPLATE_CODE, template, Tracer);
+                Cached_Data_Manager.Store_Template(TEMPLATE_CODE, template, RequestSpecificValues.Tracer);
             }
 
             // See if there was a hidden request
@@ -91,39 +79,39 @@ namespace SobekCM.Library.MySobekViewer
             // If this was a cancel request do that
             if (hidden_request == "cancel")
             {
-                currentMode.Mode = Display_Mode_Enum.Item_Display;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
             }
             else if (hidden_request == "save")
             {
-                // Changes to the tracking box require the metadata search citation be rebuilt for this item
+                // Changes to the tracking box require the metadata search citation be rebuilt for this RequestSpecificValues.Current_Item
                 // so save the old tracking box information first
-                string oldTrackingBox = item.Tracking.Tracking_Box;
+                string oldTrackingBox = RequestSpecificValues.Current_Item.Tracking.Tracking_Box;
 
                 // Save these changes to bib
-                template.Save_To_Bib(item, user, 1);
+                template.Save_To_Bib(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_User, 1);
 
                 // Save the behaviors
-                SobekCM_Database.Save_Behaviors(item, item.Behaviors.Text_Searchable, false );
+                SobekCM_Database.Save_Behaviors(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_Item.Behaviors.Text_Searchable, false );
 
                 // Save the serial hierarchy as well (sort of a behavior)
-                SobekCM_Database.Save_Serial_Hierarchy_Information(item, item.Web.GroupID, item.Web.ItemID);
+                SobekCM_Database.Save_Serial_Hierarchy_Information(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_Item.Web.GroupID, RequestSpecificValues.Current_Item.Web.ItemID);
 
                 // Did the tracking box change?
-                if (item.Tracking.Tracking_Box != oldTrackingBox)
+                if (RequestSpecificValues.Current_Item.Tracking.Tracking_Box != oldTrackingBox)
                 {
-                    SobekCM_Database.Create_Full_Citation_Value(item.Web.ItemID);
+                    SobekCM_Database.Create_Full_Citation_Value(RequestSpecificValues.Current_Item.Web.ItemID);
                 }
 
                 // Remoe from the caches (to replace the other)
-                Cached_Data_Manager.Remove_Digital_Resource_Object(item.BibID, item.VID, Tracer);
+                Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
 
                 // Also remove the list of volumes, since this may have changed
-                Cached_Data_Manager.Remove_Items_In_Title(item.BibID, Tracer);
+                Cached_Data_Manager.Remove_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
 
                 // Forward
-                currentMode.Mode = Display_Mode_Enum.Item_Display;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
             }
         }
 
@@ -173,8 +161,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
             Output.WriteLine("<input type=\"hidden\" id=\"behaviors_request\" name=\"behaviors_request\" value=\"\" />");
 
-			// Write the top item mimic html portion
-			Write_Item_Type_Top(Output, item);
+			// Write the top RequestSpecificValues.Current_Item mimic html portion
+			Write_Item_Type_Top(Output, RequestSpecificValues.Current_Item);
 
 			Output.WriteLine("<div id=\"container-inner1000\">");
 			Output.WriteLine("<div id=\"pagecontainer\">");
@@ -182,11 +170,11 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<!-- Edit_Item_Behaviors_MySobekViewer.Write_ItemNavForm_Closing -->");
 			Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <h2>Edit this item's behaviors within this library</h2>");
+            Output.WriteLine("  <h2>Edit this RequestSpecificValues.Current_Item's behaviors within this library</h2>");
             Output.WriteLine("  <ul>");
-            Output.WriteLine("    <li>Enter the data for this item below and press the SAVE button when all your edits are complete.</li>");
-            Output.WriteLine("    <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
-            Output.WriteLine("    <li>Click <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "help/behaviors\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing behaviors online.</li>");
+            Output.WriteLine("    <li>Enter the data for this RequestSpecificValues.Current_Item below and press the SAVE button when all your edits are complete.</li>");
+            Output.WriteLine("    <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
+            Output.WriteLine("    <li>Click <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/behaviors\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing behaviors online.</li>");
             Output.WriteLine("  </ul>");
             Output.WriteLine("</div>");
             Output.WriteLine();
@@ -202,25 +190,25 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
 			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
-			Output.WriteLine("      <script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+			Output.WriteLine("      <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine();
 
 			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("      </div>");
 			Output.WriteLine("      <br /><br />");
 			Output.WriteLine();
 
-	        bool isMozilla = currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
-	        template.Render_Template_HTML(Output, item, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, 1);
+	        bool isMozilla = RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
+	        template.Render_Template_HTML(Output, RequestSpecificValues.Current_Item, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
 
 			// Add the second buttons at the bottom of the form
 			Output.WriteLine();
 			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
 			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("      </div>");
 			Output.WriteLine("      <br />");
 			Output.WriteLine("    </div>");
@@ -245,7 +233,7 @@ namespace SobekCM.Library.MySobekViewer
 
 		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
 		/// requests from the main HTML subwriter. </summary>
-		/// <value> This tells the HTML and mySobek writers to mimic the item viewer </value>
+		/// <value> This tells the HTML and mySobek writers to mimic the RequestSpecificValues.Current_Item viewer </value>
 		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
 		{
 			get

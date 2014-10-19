@@ -9,28 +9,25 @@ using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Divisions;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.EAD;
-using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
+using SobekCM.Core.Items;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.ItemViewer;
 using SobekCM.Library.ItemViewer.Fragments;
 using SobekCM.Library.ItemViewer.Viewers;
-using SobekCM.Library.Items;
 using SobekCM.Library.MemoryMgmt;
-using SobekCM.Library.Navigation;
-using SobekCM.Core.Users;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Divisions;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.EAD;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -41,19 +38,13 @@ namespace SobekCM.Library.HTML
     public class Item_HtmlSubwriter : abstractHtmlSubwriter
     {
         #region Private class members 
-
-        private readonly SobekCM_Item currentItem;
-        private Page_TreeNode currentPage;
-        private readonly User_Object currentUser;
         private readonly bool isEadTypeItem;
         private bool itemCheckedOutByOtherUser;
         private readonly bool itemRestrictedFromUserByIp;
-        private readonly SobekCM_Items_In_Title itemsInTitle;
         private readonly int searchResultsCount;
         private readonly bool showToc;
         private readonly bool showZoomable;
         private bool tocSelectedComplete;
-        private readonly Language_Support_Info translations;
         private TreeView treeView1;
         private readonly bool userCanEditItem;
         private readonly List<HtmlSubwriter_Behaviors_Enum> behaviors;
@@ -65,54 +56,34 @@ namespace SobekCM.Library.HTML
         #region Constructor(s)
 
         /// <summary> Constructor for a new instance of the Item_HtmlSubwriter class </summary>
-        /// <param name="Current_Item">Current item to display </param>
-        /// <param name="Current_Page"> Current page within the item</param>
-        /// <param name="Current_User"> Currently logged on user for determining rights over this item </param>
-        /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-        /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="ShowToc"> Flag indicates whether to show the table of contents open for this item </param>
         /// <param name="Show_Zoomable"> Flag indicates if the zoomable server is available </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Current_Collection"> Current item aggregation this item is being displayed from (if there is one) </param>
         /// <param name="Item_Restricted_Message"> Message to be shown because this item is restriced from the current user by IP address </param>
-        /// <param name="Items_In_Title"> List of items within a title (for item group display in particular) </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public Item_HtmlSubwriter(SobekCM_Item Current_Item, Page_TreeNode Current_Page, User_Object Current_User,
-                                  Aggregation_Code_Manager Code_Manager,
-                                  Language_Support_Info Translator, bool ShowToc, bool Show_Zoomable,
-                                  SobekCM_Navigation_Object Current_Mode,
-                                  Item_Aggregation Current_Collection,
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Item_HtmlSubwriter(bool ShowToc, bool Show_Zoomable,
                                   string Item_Restricted_Message,
-                                  SobekCM_Items_In_Title Items_In_Title,
-                                  Custom_Tracer Tracer )
+                                  RequestCache RequestSpecificValues) : base ( RequestSpecificValues )
         {
-            Mode = Current_Mode;
-            currentUser = Current_User;
-            currentItem = Current_Item;
-            currentPage = Current_Page;
-            itemsInTitle = Items_In_Title;
-            translations = Translator;
             showToc = ShowToc;
             showZoomable = Show_Zoomable;
-            Current_Aggregation = Current_Collection;
             itemCheckedOutByOtherUser = false;
             userCanEditItem = false;
             searchResultsCount = 0;
 
             // Determine if this item is an EAD
-            isEadTypeItem = (currentItem.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY) != null);
+            isEadTypeItem = (RequestSpecificValues.Current_Item.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY) != null);
 
             // Determine if this item is actually restricted 
             itemRestrictedFromUserByIp = Item_Restricted_Message.Length > 0;
 
 			// Determine if this user can edit this item
-			if (currentUser != null)
+			if (RequestSpecificValues.Current_User != null)
             {
-                userCanEditItem = currentUser.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List);
+                userCanEditItem = RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List);
             }
 
             // If this item is restricted by IP than alot of the upcoming code is unnecessary
-            if (( currentUser != null ) && ((!itemRestrictedFromUserByIp) || ( userCanEditItem ) || ( currentUser.Is_Internal_User )))
+            if (( RequestSpecificValues.Current_User != null ) && ((!itemRestrictedFromUserByIp) || ( userCanEditItem ) || ( RequestSpecificValues.Current_User.Is_Internal_User )))
             {
                 #region Region suppressed currently - was for adding feature to a map image?
 
@@ -121,7 +92,7 @@ namespace SobekCM.Library.HTML
                 //{
                 //    // If there is a coordinate search, and polygons, do that
                 //    // GEt the geospatial metadata module
-                //    GeoSpatial_Information geoInfo = currentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                //    GeoSpatial_Information geoInfo = RequestSpecificValues.Current_Item.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
                 //    if ((geoInfo != null) && (geoInfo.hasData))
                 //    {
                 //        if ((currentMode.Coordinates.Length > 0) && (geoInfo.Polygon_Count > 1))
@@ -177,9 +148,9 @@ namespace SobekCM.Library.HTML
                 #endregion
 
                 // Is this a postback?
-                if (Mode.isPostBack) 
+                if (RequestSpecificValues.Current_Mode.isPostBack) 
                 {
-                    // Handle any actions from standard user action (i.e., email, add to bookshelf, etc.. )
+                    // Handle any actions from standard user action (i.e., email, add to bookshelf, etc. )
                     if (HttpContext.Current.Request.Form["item_action"] != null)
                     {
                         string action = HttpContext.Current.Request.Form["item_action"].ToLower().Trim();
@@ -195,17 +166,17 @@ namespace SobekCM.Library.HTML
                                 bool is_html_format = format != "TEXT";
 
                                 // CC: the user, unless they are already on the list
-                                string cc_list = currentUser.Email;
-                                if (address.ToUpper().IndexOf(currentUser.Email.ToUpper()) >= 0)
+                                string cc_list = RequestSpecificValues.Current_User.Email;
+                                if (address.ToUpper().IndexOf(RequestSpecificValues.Current_User.Email.ToUpper()) >= 0)
                                     cc_list = String.Empty;
 
                                 // Send the email
-                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, currentUser.Full_Name,Mode.SobekCM_Instance_Abbreviation,currentItem,is_html_format,HttpContext.Current.Items["Original_URL"].ToString(), currentUser.UserID)
+                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name,RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation,RequestSpecificValues.Current_Item,is_html_format,HttpContext.Current.Items["Original_URL"].ToString(), RequestSpecificValues.Current_User.UserID)
                                     ? "Error encountered while sending email" : "Your email has been sent");
 
                                 HttpContext.Current.Response.Redirect( HttpContext.Current.Items["Original_URL"].ToString(), false);
                                 HttpContext.Current.ApplicationInstance.CompleteRequest();
-                                Current_Mode.Request_Completed = true;
+                                RequestSpecificValues.Current_Mode.Request_Completed = true;
                                 return;
                             }
                         }
@@ -216,12 +187,12 @@ namespace SobekCM.Library.HTML
                             string foldername = HttpContext.Current.Request.Form["add_bookshelf"].Trim();
                             bool open_bookshelf = HttpContext.Current.Request.Form["open_bookshelf"] != null;
 
-                            if (SobekCM_Database.Add_Item_To_User_Folder(currentUser.UserID, foldername, currentItem.BibID, currentItem.VID, 0, usernotes, Tracer))
+                            if (SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, foldername, RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, 0, usernotes, RequestSpecificValues.Tracer))
                             {
-                                currentUser.Add_Bookshelf_Item(currentItem.BibID, currentItem.VID);
+                                RequestSpecificValues.Current_User.Add_Bookshelf_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID);
 
                                 // Ensure this user folder is not sitting in the cache
-                                Cached_Data_Manager.Remove_User_Folder_Browse(currentUser.UserID, foldername, Tracer);
+                                Cached_Data_Manager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, foldername, RequestSpecificValues.Tracer);
 
                                 HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Item was saved to your bookshelf.");
 
@@ -237,16 +208,16 @@ namespace SobekCM.Library.HTML
 
                             HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
                             HttpContext.Current.ApplicationInstance.CompleteRequest();
-                            Current_Mode.Request_Completed = true;
+                            RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
 
                         if (action == "remove")
                         {
-                            if (SobekCM_Database.Delete_Item_From_User_Folders(currentUser.UserID, currentItem.BibID, currentItem.VID, Tracer))
+                            if (SobekCM_Database.Delete_Item_From_User_Folders(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer))
                             {
-                                currentUser.Remove_From_Bookshelves(currentItem.BibID, currentItem.VID);
-                                Cached_Data_Manager.Remove_All_User_Folder_Browses(currentUser.UserID, Tracer);
+                                RequestSpecificValues.Current_User.Remove_From_Bookshelves(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID);
+                                Cached_Data_Manager.Remove_All_User_Folder_Browses(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
                                 HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Item was removed from your bookshelves.");
                             }
                             else
@@ -256,7 +227,7 @@ namespace SobekCM.Library.HTML
 
                             HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
                             HttpContext.Current.ApplicationInstance.CompleteRequest();
-                            Current_Mode.Request_Completed = true;
+                            RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
 
@@ -268,16 +239,16 @@ namespace SobekCM.Library.HTML
                                 tagid = Convert.ToInt32(action.Replace("add_tag_", ""));
                             }
                             string description = HttpContext.Current.Request.Form["add_tag"].Trim();
-                            int new_tagid = SobekCM_Database.Add_Description_Tag(currentUser.UserID, tagid, currentItem.Web.ItemID, description, Tracer);
+                            int new_tagid = SobekCM_Database.Add_Description_Tag(RequestSpecificValues.Current_User.UserID, tagid, RequestSpecificValues.Current_Item.Web.ItemID, description, RequestSpecificValues.Tracer);
                             if (new_tagid > 0)
                             {
-                                currentItem.Behaviors.Add_User_Tag(currentUser.UserID, currentUser.Full_Name, description, DateTime.Now, new_tagid);
-                                currentUser.Has_Descriptive_Tags = true;
+                                RequestSpecificValues.Current_Item.Behaviors.Add_User_Tag(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Current_User.Full_Name, description, DateTime.Now, new_tagid);
+                                RequestSpecificValues.Current_User.Has_Descriptive_Tags = true;
                             }
 
                             HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
                             HttpContext.Current.ApplicationInstance.CompleteRequest();
-                            Current_Mode.Request_Completed = true;
+                            RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
 
@@ -286,21 +257,21 @@ namespace SobekCM.Library.HTML
                             if (action.Replace("delete_tag", "").Length > 0)
                             {
                                 int tagid = Convert.ToInt32(action.Replace("delete_tag_", ""));
-                                if (currentItem.Behaviors.Delete_User_Tag(tagid, currentUser.UserID))
+                                if (RequestSpecificValues.Current_Item.Behaviors.Delete_User_Tag(tagid, RequestSpecificValues.Current_User.UserID))
                                 {
-                                    SobekCM_Database.Delete_Description_Tag(tagid, Tracer);
+                                    SobekCM_Database.Delete_Description_Tag(tagid, RequestSpecificValues.Tracer);
                                 }
                             }
                             HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
                             HttpContext.Current.ApplicationInstance.CompleteRequest();
-                            Current_Mode.Request_Completed = true;
+                            RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
                     }
                 }
 
                 // Handle any request from the internal header for the item
-                if ((HttpContext.Current != null) && (HttpContext.Current.Request.Form["internal_header_action"] != null) && ( currentUser != null ))
+                if ((HttpContext.Current != null) && (HttpContext.Current.Request.Form["internal_header_action"] != null) && ( RequestSpecificValues.Current_User != null ))
                 {
                     // Pull the action value
                     string internalHeaderAction = HttpContext.Current.Request.Form["internal_header_action"].Trim();
@@ -309,41 +280,41 @@ namespace SobekCM.Library.HTML
                     if (internalHeaderAction == "save_comments")
                     {
                         string new_comments = HttpContext.Current.Request.Form["intheader_internal_notes"].Trim();
-                        if ( Resource_Object.Database.SobekCM_Database.Save_Item_Internal_Comments( currentItem.Web.ItemID, new_comments)) 
-                            currentItem.Tracking.Internal_Comments = new_comments;
+                        if ( Resource_Object.Database.SobekCM_Database.Save_Item_Internal_Comments( RequestSpecificValues.Current_Item.Web.ItemID, new_comments)) 
+                            RequestSpecificValues.Current_Item.Tracking.Internal_Comments = new_comments;
                     }
 
                     // Is this to change accessibility?
                     if ((internalHeaderAction == "public") || (internalHeaderAction == "private") || (internalHeaderAction == "restricted"))
                     {
-                        int current_mask = currentItem.Behaviors.IP_Restriction_Membership;
+                        int current_mask = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
                         switch (internalHeaderAction)
                         {
                             case "public":
-                                currentItem.Behaviors.IP_Restriction_Membership = 0;
+                                RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership = 0;
                                 break;
 
                             case "private":
-                                currentItem.Behaviors.IP_Restriction_Membership = -1;
+                                RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership = -1;
                                 break;
 
                             case "restricted":
-                                currentItem.Behaviors.IP_Restriction_Membership = 1;
+                                RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership = 1;
                                 break;
                         }
 
                         // Is this new visibility different than the old one?
-                        if (currentItem.Behaviors.IP_Restriction_Membership != current_mask)
+                        if (RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership != current_mask)
                         {
 							// Save this to the database
-                            if (Resource_Object.Database.SobekCM_Database.Set_IP_Restriction_Mask(currentItem.Web.ItemID, currentItem.Behaviors.IP_Restriction_Membership, currentUser.UserName, String.Empty))
+                            if (Resource_Object.Database.SobekCM_Database.Set_IP_Restriction_Mask(RequestSpecificValues.Current_Item.Web.ItemID, RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership, RequestSpecificValues.Current_User.UserName, String.Empty))
                             {
 								// Update the cached item
-                                Cached_Data_Manager.Remove_Digital_Resource_Object(currentItem.BibID, currentItem.VID, Tracer);
-                                Cached_Data_Manager.Store_Digital_Resource_Object(currentItem.BibID, currentItem.VID, currentItem, Tracer);
+                                Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
+                                Cached_Data_Manager.Store_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Current_Item, RequestSpecificValues.Tracer);
 
 								// Update the web.config
-	                            Resource_Web_Config_Writer.Update_Web_Config(currentItem.Source_Directory, currentItem.Behaviors.Dark_Flag, (short) current_mask, currentItem.Behaviors.Main_Thumbnail);
+	                            Resource_Web_Config_Writer.Update_Web_Config(RequestSpecificValues.Current_Item.Source_Directory, RequestSpecificValues.Current_Item.Behaviors.Dark_Flag, (short) current_mask, RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail);
                             }
                         }
                     }
@@ -351,32 +322,32 @@ namespace SobekCM.Library.HTML
             }
 
             // Set the code for bib level mets to show the volume tree by default
-            if ((currentItem.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL) && (Mode.ViewerCode.Length == 0))
+            if ((RequestSpecificValues.Current_Item.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL) && (RequestSpecificValues.Current_Mode.ViewerCode.Length == 0))
             {
-                Mode.ViewerCode = "allvolumes1";
+                RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes1";
             }
 
             // If there is a file name included, look for the sequence of that file
-            if (Mode.Page_By_FileName.Length > 0)
+            if (RequestSpecificValues.Current_Mode.Page_By_FileName.Length > 0)
             {
-                int page_sequence = currentItem.Divisions.Physical_Tree.Page_Sequence_By_FileName(Mode.Page_By_FileName);
+                int page_sequence = RequestSpecificValues.Current_Item.Divisions.Physical_Tree.Page_Sequence_By_FileName(RequestSpecificValues.Current_Mode.Page_By_FileName);
                 if (page_sequence > 0)
                 {
-                    Mode.ViewerCode = page_sequence.ToString();
-                    Mode.Page = (ushort) page_sequence;
+                    RequestSpecificValues.Current_Mode.ViewerCode = page_sequence.ToString();
+                    RequestSpecificValues.Current_Mode.Page = (ushort) page_sequence;
                 }
             }
 
             // Get the valid viewer code
-            Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Getting the appropriate item viewer");
+            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Getting the appropriate item viewer");
 
-            if ((Mode.ViewerCode.Length == 0) && (Mode.Coordinates.Length > 0))
+            if ((RequestSpecificValues.Current_Mode.ViewerCode.Length == 0) && (RequestSpecificValues.Current_Mode.Coordinates.Length > 0))
             {
-                Mode.ViewerCode = "map";
+                RequestSpecificValues.Current_Mode.ViewerCode = "map";
             }
-            Mode.ViewerCode = currentItem.Web.Get_Valid_Viewer_Code(Mode.ViewerCode, Mode.Page);
-            View_Object viewObject = currentItem.Web.Get_Viewer(Mode.ViewerCode);
-            PageViewer = ItemViewer_Factory.Get_Viewer(viewObject, currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), currentItem, currentUser, Mode);
+            RequestSpecificValues.Current_Mode.ViewerCode = RequestSpecificValues.Current_Item.Web.Get_Valid_Viewer_Code(RequestSpecificValues.Current_Mode.ViewerCode, RequestSpecificValues.Current_Mode.Page);
+            View_Object viewObject = RequestSpecificValues.Current_Item.Web.Get_Viewer(RequestSpecificValues.Current_Mode.ViewerCode);
+            PageViewer = ItemViewer_Factory.Get_Viewer(viewObject, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String.ToUpper(), RequestSpecificValues.Current_Item, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode);
 
             // If this was in fact restricted by IP address, restrict now
             if (itemRestrictedFromUserByIp)
@@ -386,29 +357,29 @@ namespace SobekCM.Library.HTML
                     (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Related_Images))
                 {
                     PageViewer = new Restricted_ItemViewer(Item_Restricted_Message);
-                    Mode.ViewerCode = "res";
+                    RequestSpecificValues.Current_Mode.ViewerCode = "res";
                 }
             }
 
             // If execution should end, do it now
-            if (Mode.Request_Completed)
+            if (RequestSpecificValues.Current_Mode.Request_Completed)
                 return;
 
-            Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Created " + PageViewer.GetType().ToString().Replace("SobekCM.Library.ItemViewer.Viewers.", ""));
+            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Created " + PageViewer.GetType().ToString().Replace("SobekCM.Library.ItemViewer.Viewers.", ""));
 
             // Assign the rest of the information, if a page viewer was created
             if (PageViewer != null)
             {
-                PageViewer.CurrentItem = currentItem;
-                PageViewer.CurrentMode = Mode; 
-                PageViewer.Translator = Translator;
-                PageViewer.CurrentUser = currentUser;
+                PageViewer.CurrentItem = RequestSpecificValues.Current_Item;
+                PageViewer.CurrentMode = RequestSpecificValues.Current_Mode; 
+                PageViewer.Translator = UI_ApplicationCache_Gateway.Translation;
+                PageViewer.CurrentUser = RequestSpecificValues.Current_User;
 
                 // Special code if this is the citation viewer
                 Citation_ItemViewer viewer = PageViewer as Citation_ItemViewer;
                 if (viewer != null)
                 {
-                    viewer.Code_Manager = Code_Manager;
+                    viewer.Code_Manager = UI_ApplicationCache_Gateway.Aggregations;
                     viewer.Item_Restricted = itemRestrictedFromUserByIp;
                 }
 
@@ -416,17 +387,17 @@ namespace SobekCM.Library.HTML
                 var itemViewer = PageViewer as MultiVolumes_ItemViewer;
                 if (itemViewer != null)
                 {
-                    if (itemsInTitle == null)
+                    if (RequestSpecificValues.Items_In_Title == null)
                     {
                         // Look in the cache first
-                        itemsInTitle = Cached_Data_Manager.Retrieve_Items_In_Title(currentItem.BibID, Tracer);
+                        RequestSpecificValues.Items_In_Title = Cached_Data_Manager.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
 
                         // If still null, try to pull from the database
-                        if (itemsInTitle == null)
+                        if (RequestSpecificValues.Items_In_Title == null)
                         {
                             // Get list of information about this item group and save the item list
-                            DataSet itemDetails = SobekCM_Database.Get_Item_Group_Details(currentItem.BibID, Tracer);
-                            itemsInTitle = new SobekCM_Items_In_Title(itemDetails.Tables[1]);
+                            DataSet itemDetails = Engine_Database.Get_Item_Group_Details(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+                            RequestSpecificValues.Items_In_Title = new SobekCM_Items_In_Title(itemDetails.Tables[1]);
 
                             //// Add the related titles, if there are some
                             //if ((currentGroup.Tables.Count > 3) && (currentGroup.Tables[3].Rows.Count > 0))
@@ -437,23 +408,23 @@ namespace SobekCM.Library.HTML
                             //        string title = thisRow["GroupTitle"].ToString();
                             //        string bibid = thisRow["BibID"].ToString();
                             //        string link_and_title = "<a href=\"" + currentMode.Base_URL + bibid + "<%URL_OPTS%>\">" + title + "</a>";
-                            //        currentItem.Behaviors.All_Related_Titles.Add(new SobekCM.Resource_Object.Behaviors.Related_Titles(relationship, link_and_title));
+                            //        RequestSpecificValues.Current_Item.Behaviors.All_Related_Titles.Add(new SobekCM.Resource_Object.Behaviors.Related_Titles(relationship, link_and_title));
                             //    }
                             //}
 
                             // Store in cache if retrieved
-                            if (itemsInTitle != null)
+                            if (RequestSpecificValues.Items_In_Title != null)
                             {
-                                Cached_Data_Manager.Store_Items_In_Title(currentItem.BibID, itemsInTitle, Tracer);
+                                Cached_Data_Manager.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Items_In_Title, RequestSpecificValues.Tracer);
                             }
                         }
                     }
 
-                    itemViewer.Item_List = itemsInTitle;
+                    itemViewer.Item_List = RequestSpecificValues.Items_In_Title;
                 }
 
                 // Finally, perform any necessary work before display
-                PageViewer.Perform_PreDisplay_Work(Tracer);
+                PageViewer.Perform_PreDisplay_Work(RequestSpecificValues.Tracer);
 
                 // Get the list of any special behaviors
                 behaviors = PageViewer.ItemViewer_Behaviors;
@@ -484,7 +455,7 @@ namespace SobekCM.Library.HTML
             get
             {
                 // If this is for a fragment, do nothing
-                if (!String.IsNullOrEmpty(Mode.Fragment))
+                if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Fragment))
                     return false;
 
                 if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Left_Navigation_Bar))
@@ -494,15 +465,15 @@ namespace SobekCM.Library.HTML
                     return true;
 
                 // If there are any icons, need to show the bar
-                if (currentItem.Behaviors.Wordmark_Count > 0)
+                if (RequestSpecificValues.Current_Item.Behaviors.Wordmark_Count > 0)
                     return true;
                 
                 // If the item can be described, include the quick links still
-                if (currentItem.Behaviors.Can_Be_Described)
+                if (RequestSpecificValues.Current_Item.Behaviors.Can_Be_Described)
                     return true;
                 
                 // If a TOC could be shown for this item, need a navigation bar
-                if (currentItem.Web.Static_Division_Count > 1)
+                if (RequestSpecificValues.Current_Item.Web.Static_Division_Count > 1)
                     return true;
                 
                 // Search results are also included in the left navigation bar
@@ -552,20 +523,20 @@ namespace SobekCM.Library.HTML
             if (!ShouldLeftNavigationBarBeShown)
                 return;
 
-            if ((showToc) && (currentItem.Web.Static_PageCount > 1) && (currentItem.Web.Static_Division_Count > 1))
+            if ((showToc) && (RequestSpecificValues.Current_Item.Web.Static_PageCount > 1) && (RequestSpecificValues.Current_Item.Web.Static_Division_Count > 1))
             {
                 Tracer.Add_Trace("Item_HtmlSubwriter.Add_Standard_TOC", "Adding Table of Contents control to <i>TOC_PlaceHolder</i>");
 
                 string table_of_contents = "TABLE OF CONTENTS";
                 string hide_toc = "HIDE TABLE OF CONTENTS";
 
-                if (Mode.Language == Web_Language_Enum.French)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                 {
                     table_of_contents = "TABLE DES MATIERES";
                     hide_toc = "MASQUER L'INDEX";
                 }
 
-                if (Mode.Language == Web_Language_Enum.Spanish)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                 {
                     table_of_contents = "INDICE";
                     hide_toc = "ESCONDA INDICE";
@@ -573,7 +544,7 @@ namespace SobekCM.Library.HTML
 
                 // Add the HTML to start this menu section
                 Literal menuStartLiteral = new Literal();
-                string redirect_url = Mode.Redirect_URL().Replace("&","&amp;");
+                string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&","&amp;");
                 if (redirect_url.IndexOf("?") < 0)
                     redirect_url = redirect_url + "?toc=n";
                 else
@@ -581,8 +552,8 @@ namespace SobekCM.Library.HTML
 
                 
                 menuStartLiteral.Text = string.Format("        <div class=\"sbkIsw_ShowTocRow\">" + Environment.NewLine +
-                    "          <a href=\"{1}\"><div class=\"sbkIsw_UpToc\">{4}<img src=\"" + Mode.Base_URL + "default/images/button_up_arrow.png\" alt=\"\" /></div></a>" + Environment.NewLine + 
-                    "        </div>", table_of_contents, redirect_url, Mode.Base_URL, Skin.Base_Skin_Code, hide_toc);
+                    "          <a href=\"{1}\"><div class=\"sbkIsw_UpToc\">{4}<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_up_arrow.png\" alt=\"\" /></div></a>" + Environment.NewLine + 
+                    "        </div>", table_of_contents, redirect_url, RequestSpecificValues.Current_Mode.Base_URL, RequestSpecificValues.HTML_Skin.Base_Skin_Code, hide_toc);
                 TocPlaceHolder.Controls.Add(menuStartLiteral);
 
                 // Create the treeview
@@ -611,18 +582,18 @@ namespace SobekCM.Library.HTML
                 string currentNodeID = treeView1.SelectedNode.Value;
                 if ((currentNodeID.Length > 0) && (Convert.ToInt32(currentNodeID) > 0))
                 {
-                    Mode.Page = Convert.ToUInt16(currentNodeID);
-                    Mode.ViewerCode = currentNodeID;
+                    RequestSpecificValues.Current_Mode.Page = Convert.ToUInt16(currentNodeID);
+                    RequestSpecificValues.Current_Mode.ViewerCode = currentNodeID;
                 }
                 else
                 {
-                    Mode.Page = 0;
-                    Mode.ViewerCode = "1";
+                    RequestSpecificValues.Current_Mode.Page = 0;
+                    RequestSpecificValues.Current_Mode.ViewerCode = "1";
                 }
 
                 // Redirect
                 if (HttpContext.Current != null)
-                    Mode.Redirect();
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
             }
         }
 
@@ -634,146 +605,144 @@ namespace SobekCM.Library.HTML
         public override void Write_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
         {
             // If this is for a fragment, do nothing
-            if (!String.IsNullOrEmpty(Mode.Fragment))
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Fragment))
                 return;
 
-            string currentViewerCode = Mode.ViewerCode;
+            string currentViewerCode = RequestSpecificValues.Current_Mode.ViewerCode;
 
             Output.WriteLine("  <table id=\"sbk_InternalHeader\">");
             Output.WriteLine("    <tr style=\"height:30px;\">");
             Output.WriteLine("      <td style=\"text-align:left\">");
             Output.WriteLine("          <button title=\"Hide Internal Header\" class=\"sbkIsw_intheader_button hide_intheader_button2\" onclick=\"return hide_internal_header();\"></button>");
             Output.WriteLine("      </td>");
-            if (currentItem.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL)
+            if (RequestSpecificValues.Current_Item.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL)
             {
-                Output.WriteLine("      <td style=\"text-align:center;\"><h2>" + currentItem.BibID + "</h2></td>");
+                Output.WriteLine("      <td style=\"text-align:center;\"><h2>" + RequestSpecificValues.Current_Item.BibID + "</h2></td>");
             }
             else
             {
-                Output.WriteLine("      <td style=\"text-align:center;\"><h2><a href=\"" + Mode.Base_URL + currentItem.BibID + "/00000\">" + currentItem.BibID + "</a> : " + currentItem.VID + "</h2></td>");
+                Output.WriteLine("      <td style=\"text-align:center;\"><h2><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Item.BibID + "/00000\">" + RequestSpecificValues.Current_Item.BibID + "</a> : " + RequestSpecificValues.Current_Item.VID + "</h2></td>");
             }
 
             Write_Internal_Header_Search_Box(Output);
             Output.WriteLine("    </tr>");
 
-            if (currentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
+            if (RequestSpecificValues.Current_Item.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
             {
                 Output.WriteLine("    <tr style=\"height:40px;\">");
                 Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;vertical-align:middle;\">");
 
                 // Should we add ability to edit this item to the quick links?
-                bool allow_access_change = false;
                 if (userCanEditItem)
                 {
                     // Add ability to edit metadata for this item
-                    Mode.Mode = Display_Mode_Enum.My_Sobek;
-                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
-                    Mode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("          <button title=\"Edit Metadata\" class=\"sbkIsw_intheader_button edit_metadata_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                    Output.WriteLine("          <button title=\"Edit Metadata\" class=\"sbkIsw_intheader_button edit_metadata_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
 
                     // Add ability to edit behaviors for this item
-                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
-                    Mode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
-                    Mode.Mode = Display_Mode_Enum.Item_Display;
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
 
 
                     // Add ability to edit behaviors for this item
-                    if (currentItem.Web.Static_PageCount == 0)
+                    if (RequestSpecificValues.Current_Item.Web.Static_PageCount == 0)
                     {
-                        Mode.Mode = Display_Mode_Enum.My_Sobek;
-                        Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
-                        Mode.Mode = Display_Mode_Enum.Item_Display;
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                     }
                     else
                     {
-                        Mode.ViewerCode = "qc";
-                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                        RequestSpecificValues.Current_Mode.ViewerCode = "qc";
+                        Output.WriteLine("          <button title=\"Perform Quality Control\" class=\"sbkIsw_intheader_button qualitycontrol_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
 					}
 
                     // Get ready to send to item permissions
-                    Mode.Mode = Display_Mode_Enum.My_Sobek;
-                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
-                    Mode.My_Sobek_SubMode = "1";
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
 
                     // Check if this item is DARK first
-                    if (currentItem.Behaviors.Dark_Flag)
+                    if (RequestSpecificValues.Current_Item.Behaviors.Dark_Flag)
                     {
-                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
                     }
                     else
                     {
                         // If the item is currently PUBLIC, only internal or system admins can reset back to PRIVATE
-                        if (currentItem.Behaviors.IP_Restriction_Membership >= 0)
+                        if (RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership >= 0)
                         {
-                            if ((currentUser.Is_Internal_User) || (currentUser.Is_System_Admin))
+                            if ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_System_Admin))
                             {
-                                allow_access_change = true;
-                                Output.WriteLine(currentItem.Behaviors.IP_Restriction_Membership == 0
-                                                     ? "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button public_resource_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>"
-                                                     : "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button restricted_resource_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                                Output.WriteLine(RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership == 0
+                                                     ? "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button public_resource_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>"
+                                                     : "          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button restricted_resource_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
                             }
                             else
                             {
-                                Output.WriteLine(currentItem.Behaviors.IP_Restriction_Membership == 0
-                                                     ? "          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>"
-                                                     : "          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                                Output.WriteLine(RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership == 0
+                                                     ? "          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>"
+                                                     : "          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
                             }
                         }
                         else
                         {
-                            Output.WriteLine("          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button private_resource_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                            Output.WriteLine("          <button title=\"Change Access Restriction\" class=\"sbkIsw_intheader_button private_resource_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
                         }
                     }
                 }
                 else
                 {
                     // Check if this item is DARK first
-                    if (currentItem.Behaviors.Dark_Flag)
+                    if (RequestSpecificValues.Current_Item.Behaviors.Dark_Flag)
                     {
-                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                        Output.WriteLine("          <button title=\"Dark Resource\" class=\"sbkIsw_intheader_button dark_resource_button_fixed\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
                     }
                     else
                     {
                         // Still show that the item is public, private, restricted
-                        if (currentItem.Behaviors.IP_Restriction_Membership > 0)
+                        if (RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership > 0)
                         {
                             Output.WriteLine("          <button title=\"IP Restriced Resource\" class=\"sbkIsw_intheader_button restricted_resource_button_fixed\" onclick=\"return false;\"></button>");
                         }
-                        if (currentItem.Behaviors.IP_Restriction_Membership == 0)
+                        if (RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership == 0)
                         {
                             Output.WriteLine("          <button title=\"Public Resource\" class=\"sbkIsw_intheader_button public_resource_button_fixed\" onclick=\"return false;\"></button>");
                         }
-                        if (currentItem.Behaviors.IP_Restriction_Membership < 0)
+                        if (RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership < 0)
                         {
                             Output.WriteLine("          <button title=\"Private Resource\" class=\"sbkIsw_intheader_button private_resource_button_fixed\" onclick=\"return false;\"></button>");
                         }
                     }
                 }
 
-                Mode.Mode = Display_Mode_Enum.Item_Display;
-                Mode.ViewerCode = "tracking";
-                Output.WriteLine("          <button title=\"View Work Log\" class=\"sbkIsw_intheader_button view_worklog_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
-                Mode.ViewerCode = currentViewerCode;
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                RequestSpecificValues.Current_Mode.ViewerCode = "tracking";
+                Output.WriteLine("          <button title=\"View Work Log\" class=\"sbkIsw_intheader_button view_worklog_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                RequestSpecificValues.Current_Mode.ViewerCode = currentViewerCode;
 
                 // Add ability to edit behaviors for this item
                 if (userCanEditItem)
                 {
-                    Mode.Mode = Display_Mode_Enum.My_Sobek;
-                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
-                    Output.WriteLine("          <button title=\"Manage Files\" class=\"sbkIsw_intheader_button manage_files_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
-                    Mode.Mode = Display_Mode_Enum.Item_Display;
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+                    Output.WriteLine("          <button title=\"Manage Files\" class=\"sbkIsw_intheader_button manage_files_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                 }
 
                 // Add the HELP icon next
-				Output.WriteLine("<span id=\"sbk_InternalHeader_Help\"><a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(Mode.Base_URL) + "help/itemheader\" title=\"Help regarding this header\"><img src=\"" + Mode.Base_URL + "default/images/help_button_darkgray.jpg\" alt=\"?\" title=\"Help regarding this header\" /></a></span>");
+				Output.WriteLine("<span id=\"sbk_InternalHeader_Help\"><a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/itemheader\" title=\"Help regarding this header\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button_darkgray.jpg\" alt=\"?\" title=\"Help regarding this header\" /></a></span>");
 
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
 
                 // Display the comments and allow change?
-                if ((userCanEditItem) || (currentUser.Is_Internal_User) || (currentUser.Is_System_Admin))
+                if ((userCanEditItem) || (RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_System_Admin))
                 {
                     const int ROWS = 1;
                     const int ACTUAL_COLS = 70;
@@ -785,7 +754,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
                     Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
                     Output.WriteLine("            <td>");
-					Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input sbkIsw_Focusable\">" + HttpUtility.HtmlEncode(currentItem.Tracking.Internal_Comments) + "</textarea>");
+					Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input sbkIsw_Focusable\">" + HttpUtility.HtmlEncode(RequestSpecificValues.Current_Item.Tracking.Internal_Comments) + "</textarea>");
                     Output.WriteLine("            </td>");
                     Output.WriteLine("            <td>");
                     Output.WriteLine("              <button title=\"Save new internal comments\" class=\"internalheader_button\" onclick=\"save_internal_notes(); return false;\">SAVE</button>");
@@ -807,7 +776,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
                     Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
                     Output.WriteLine("            <td>");
-                    Output.WriteLine("              <textarea readonly=\"readonly\" rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + HttpUtility.HtmlEncode(currentItem.Tracking.Internal_Comments) + "</textarea>");
+                    Output.WriteLine("              <textarea readonly=\"readonly\" rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + HttpUtility.HtmlEncode(RequestSpecificValues.Current_Item.Tracking.Internal_Comments) + "</textarea>");
                     Output.WriteLine("            </td>");
                     Output.WriteLine("          </tr>");
                     Output.WriteLine("        </table>");
@@ -824,26 +793,26 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;vertical-align:middle;\">");
 
                     // Add ability to edit behaviors for this item group
-                    Mode.Mode = Display_Mode_Enum.My_Sobek;
-                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
-                    Mode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                    Output.WriteLine("          <button title=\"Edit Behaviors\" class=\"sbkIsw_intheader_button edit_behaviors_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
 
                     // Add ability to add a new item/volume to this title
-                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
-                    Output.WriteLine("          <button title=\"Add Volume\" class=\"sbkIsw_intheader_button add_volume_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
+                    Output.WriteLine("          <button title=\"Add Volume\" class=\"sbkIsw_intheader_button add_volume_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
 
                     // Add ability to auto-fill a number of new items/volumes to this title
-                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_AutoFill_Volumes;
-                    Output.WriteLine("          <button title=\"Auto-Fill Volumes\" class=\"sbkIsw_intheader_button autofill_volumes_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_AutoFill_Volumes;
+                    Output.WriteLine("          <button title=\"Auto-Fill Volumes\" class=\"sbkIsw_intheader_button autofill_volumes_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
 
                     // Add ability to edit the serial hierarchy online
-                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy;
-                    Output.WriteLine("          <button title=\"Edit Serial Hierarchy\" class=\"sbkIsw_intheader_button serial_hierarchy_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy;
+                    Output.WriteLine("          <button title=\"Edit Serial Hierarchy\" class=\"sbkIsw_intheader_button serial_hierarchy_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
 
                     // Add ability to mass update the items behaviors under this title
-                    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
-                    Output.WriteLine("          <button title=\"Mass Update Volumes\" class=\"sbkIsw_intheader_button mass_update_button\" onclick=\"window.location.href='" + Mode.Redirect_URL() + "';return false;\"></button>");
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
+                    Output.WriteLine("          <button title=\"Mass Update Volumes\" class=\"sbkIsw_intheader_button mass_update_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
 
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
@@ -853,8 +822,8 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("  </table>");
 
-            Mode.Mode = Display_Mode_Enum.Item_Display;
-            Mode.ViewerCode = currentViewerCode;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+            RequestSpecificValues.Current_Mode.ViewerCode = currentViewerCode;
         }
 
         //public void Set_Text_Language(Application_State.Language_Enum Language)
@@ -915,7 +884,7 @@ namespace SobekCM.Library.HTML
 
 
 		    // If this is for a fragment, do nothing
-		    if (!String.IsNullOrEmpty(Mode.Fragment))
+		    if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Fragment))
 			    return false;
 
 
@@ -937,12 +906,12 @@ namespace SobekCM.Library.HTML
 	        {
 	            Output.WriteLine("<!-- Show the title and any other important item information -->");
 	            Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
-	            if (currentItem.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL)
+	            if (RequestSpecificValues.Current_Item.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL)
 	            {
-	                string grouptitle = currentItem.Behaviors.GroupTitle;
+	                string grouptitle = RequestSpecificValues.Current_Item.Behaviors.GroupTitle;
 	                if (grouptitle.Length > 125)
 	                {
-	                    Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "...</abbr></h1>");
+	                    Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "..</abbr></h1>");
 	                }
 	                else
 	                {
@@ -951,20 +920,20 @@ namespace SobekCM.Library.HTML
 	            }
 	            else
 	            {
-	                string final_title = currentItem.Bib_Info.Main_Title.Title;
-	                if (currentItem.Bib_Info.Main_Title.NonSort.Length > 0)
+	                string final_title = RequestSpecificValues.Current_Item.Bib_Info.Main_Title.Title;
+	                if (RequestSpecificValues.Current_Item.Bib_Info.Main_Title.NonSort.Length > 0)
 	                {
-	                    if (currentItem.Bib_Info.Main_Title.NonSort[currentItem.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
-	                        final_title = currentItem.Bib_Info.Main_Title.NonSort + currentItem.Bib_Info.Main_Title.Title;
+	                    if (RequestSpecificValues.Current_Item.Bib_Info.Main_Title.NonSort[RequestSpecificValues.Current_Item.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
+	                        final_title = RequestSpecificValues.Current_Item.Bib_Info.Main_Title.NonSort + RequestSpecificValues.Current_Item.Bib_Info.Main_Title.Title;
 	                    else
 	                    {
-	                        if (currentItem.Bib_Info.Main_Title.NonSort[currentItem.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
+	                        if (RequestSpecificValues.Current_Item.Bib_Info.Main_Title.NonSort[RequestSpecificValues.Current_Item.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
 	                        {
-	                            final_title = currentItem.Bib_Info.Main_Title.NonSort + currentItem.Bib_Info.Main_Title.Title;
+	                            final_title = RequestSpecificValues.Current_Item.Bib_Info.Main_Title.NonSort + RequestSpecificValues.Current_Item.Bib_Info.Main_Title.Title;
 	                        }
 	                        else
 	                        {
-	                            final_title = currentItem.Bib_Info.Main_Title.NonSort + " " + currentItem.Bib_Info.Main_Title.Title;
+	                            final_title = RequestSpecificValues.Current_Item.Bib_Info.Main_Title.NonSort + " " + RequestSpecificValues.Current_Item.Bib_Info.Main_Title.Title;
 	                        }
 	                    }
 	                }
@@ -974,23 +943,23 @@ namespace SobekCM.Library.HTML
 	                if (final_title.Length > 0)
 	                {
 	                    // Is this a newspaper?
-	                    bool newspaper = currentItem.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
+	                    bool newspaper = RequestSpecificValues.Current_Item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
 
 						// Does a custom setting override the default behavior to add a date?
-						if ((newspaper) && (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (InstanceWide_Settings_Singleton.Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
+						if ((newspaper) && (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (UI_ApplicationCache_Gateway.Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
 			                newspaper = false;
 
 						// Add the date if it should be added
-	                    if ((newspaper) && ((currentItem.Bib_Info.Origin_Info.Date_Created.Length > 0) || (currentItem.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
+	                    if ((newspaper) && ((RequestSpecificValues.Current_Item.Bib_Info.Origin_Info.Date_Created.Length > 0) || (RequestSpecificValues.Current_Item.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
 	                    {
-	                        string date = currentItem.Bib_Info.Origin_Info.Date_Created;
-	                        if (currentItem.Bib_Info.Origin_Info.Date_Created.Length == 0)
-	                            date = currentItem.Bib_Info.Origin_Info.Date_Issued;
+	                        string date = RequestSpecificValues.Current_Item.Bib_Info.Origin_Info.Date_Created;
+	                        if (RequestSpecificValues.Current_Item.Bib_Info.Origin_Info.Date_Created.Length == 0)
+	                            date = RequestSpecificValues.Current_Item.Bib_Info.Origin_Info.Date_Issued;
 
 
 	                        if (final_title.Length > 125)
 	                        {
-	                            Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
+	                            Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "..</abbr> ( " + date + " )</h1>");
 	                        }
 	                        else
 	                        {
@@ -1001,7 +970,7 @@ namespace SobekCM.Library.HTML
 	                    {
 	                        if (final_title.Length > 125)
 	                        {
-	                            Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
+	                            Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "..</abbr></h1>");
 	                        }
 	                        else
 	                        {
@@ -1012,44 +981,44 @@ namespace SobekCM.Library.HTML
 
 
 	                // Add the link if there is one
-	                if ((currentItem.Bib_Info.hasLocationInformation) && (currentItem.Bib_Info.Location.Other_URL.Length > 0))
+	                if ((RequestSpecificValues.Current_Item.Bib_Info.hasLocationInformation) && (RequestSpecificValues.Current_Item.Bib_Info.Location.Other_URL.Length > 0))
 	                {
-	                    if (currentItem.Bib_Info.Location.Other_URL.ToLower().IndexOf("www.youtube.com") < 0)
+	                    if (RequestSpecificValues.Current_Item.Bib_Info.Location.Other_URL.ToLower().IndexOf("www.youtube.com") < 0)
 	                    {
 
 
 	                        // Determine the type of link
-	                        string type = translations.Get_Translation("Related Link", Mode.Language);
-	                        if (currentItem.Bib_Info.Location.Other_URL_Display_Label.Length > 0)
+	                        string type = UI_ApplicationCache_Gateway.Translation.Get_Translation("Related Link", RequestSpecificValues.Current_Mode.Language);
+	                        if (RequestSpecificValues.Current_Item.Bib_Info.Location.Other_URL_Display_Label.Length > 0)
 	                        {
-	                            type = translations.Get_Translation(currentItem.Bib_Info.Location.Other_URL_Display_Label, Mode.Language);
+	                            type = UI_ApplicationCache_Gateway.Translation.Get_Translation(RequestSpecificValues.Current_Item.Bib_Info.Location.Other_URL_Display_Label, RequestSpecificValues.Current_Mode.Language);
 	                        }
 
 
 	                        // Determine the display value
-	                        string note = currentItem.Bib_Info.Location.Other_URL;
-	                        if (currentItem.Bib_Info.Location.Other_URL_Note.Length > 0)
+	                        string note = RequestSpecificValues.Current_Item.Bib_Info.Location.Other_URL;
+	                        if (RequestSpecificValues.Current_Item.Bib_Info.Location.Other_URL_Note.Length > 0)
 	                        {
-	                            note = currentItem.Bib_Info.Location.Other_URL_Note;
+	                            note = RequestSpecificValues.Current_Item.Bib_Info.Location.Other_URL_Note;
 	                        }
 
 
 	                        // Add the link
-	                        Output.WriteLine("\t<a href=\"" + currentItem.Bib_Info.Location.Other_URL + "\">" + note + " ( " + type + " )</a><br />");
+	                        Output.WriteLine("\t<a href=\"" + RequestSpecificValues.Current_Item.Bib_Info.Location.Other_URL + "\">" + note + " ( " + type + " )</a><br />");
 	                    }
 	                }
 
 
 	                // If there is an ACCESSION number and this is an ARTIFACT, include that at the top
                     //EDIT: Removing the condition for checking if this is an ARTIFACT. Always display the ACCESSION number if available (6/18/2014 - SY)
-	          //      if ((currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Artifact) && (currentItem.Bib_Info.Identifiers_Count > 0))
-                    if (currentItem.Bib_Info.Identifiers_Count > 0)
+	          //      if ((RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Artifact) && (RequestSpecificValues.Current_Item.Bib_Info.Identifiers_Count > 0))
+                    if (RequestSpecificValues.Current_Item.Bib_Info.Identifiers_Count > 0)
 	                {
-	                    foreach (Identifier_Info thisIdentifier in currentItem.Bib_Info.Identifiers)
+	                    foreach (Identifier_Info thisIdentifier in RequestSpecificValues.Current_Item.Bib_Info.Identifiers)
 	                    {
 	                        if (thisIdentifier.Type.ToUpper().IndexOf("ACCESSION") >= 0)
 	                        {
-	                            Output.WriteLine("\t" + translations.Get_Translation("Accession number", Mode.Language) + " " + thisIdentifier.Identifier + "<br />");
+	                            Output.WriteLine("\t" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Accession number", RequestSpecificValues.Current_Mode.Language) + " " + thisIdentifier.Identifier + "<br />");
 	                            break;
 	                        }
 	                    }
@@ -1065,7 +1034,7 @@ namespace SobekCM.Library.HTML
 		    if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu))
 		    {
 			    // Can this user (if there is one) edit this item?
-                bool canManage = (currentUser != null) && (currentUser.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List));
+                bool canManage = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List));
 
 
 			    // Add the item views
@@ -1074,7 +1043,7 @@ namespace SobekCM.Library.HTML
 
 
 			    // Add the sharing buttons if this is not restricted by IP address or checked out
-			    if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!Mode.Is_Robot))
+			    if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!RequestSpecificValues.Current_Mode.Is_Robot))
 			    {
 					string add_text = "Add";
 					string remove_text = "Remove";
@@ -1091,19 +1060,19 @@ namespace SobekCM.Library.HTML
 
 				    Output.WriteLine("\t<div id=\"menu-right-actions\">");
 
-					if (currentItem.Web.ItemID > 0)
+					if (RequestSpecificValues.Current_Item.Web.ItemID > 0)
 					{
-						Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open();\"><img src=\"" + Mode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
+						Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
 					}
 					else
 					{
-						Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.print();return false;\"><img src=\"" + Mode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
+						Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.print();return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/printer.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
 					}
 
 
-				    //if (currentItem.Behaviors.Can_Be_Described)
+				    //if (RequestSpecificValues.Current_Item.Behaviors.Can_Be_Described)
 				    //{
-				    //    if (currentUser != null)
+				    //    if (RequestSpecificValues.Current_User != null)
 				    //    {
 				    //        Output.Write("<a href=\"?m=hmh\" onmouseover=\"document.getElementById('describe_button').src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button_h.gif'\" onmouseout=\"document.getElementById('describe_button').src='" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button.gif'\"  onclick=\"return describe_item_form_open( 'describe_button' );\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"describe_button\" id=\"describe_button\" src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/describe_rect_button.gif\" title=\"Add a description to this item\" alt=\"DESCRIBE\" /></a>");
 				    //    }
@@ -1115,31 +1084,31 @@ namespace SobekCM.Library.HTML
 
 
 
-				    if ((currentUser != null))
+				    if ((RequestSpecificValues.Current_User != null))
 				    {
-						Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + Mode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
+						Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
 
 
-					    if (currentItem.Web.ItemID > 0)
+					    if (RequestSpecificValues.Current_Item.Web.ItemID > 0)
 					    {
-						    if (currentUser.Is_In_Bookshelf(currentItem.BibID, currentItem.VID))
+						    if (RequestSpecificValues.Current_User.Is_In_Bookshelf(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID))
 						    {
-							    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"return remove_item_itemviewer();\"><img src=\"" + Mode.Base_URL + "default/images/minussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + remove_text + "</span></span>");
+							    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"return remove_item_itemviewer();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/minussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + remove_text + "</span></span>");
 						    }
 						    else
 						    {
-							    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();\"><img src=\"" + Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
+							    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
 						    }
 					    }
 				    }
 				    else
 				    {
 
-						Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + Mode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
+						Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
 
 
-					    if (currentItem.Web.ItemID > 0)
-						    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
+					    if (RequestSpecificValues.Current_Item.Web.ItemID > 0)
+						    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
 
 				    }
 
@@ -1155,21 +1124,21 @@ namespace SobekCM.Library.HTML
 
 
 			    // Save the current view type
-			    ushort page = Mode.Page;
-			    ushort subpage = Mode.SubPage;
-			    string viewerCode = Mode.ViewerCode;
-			    Mode.SubPage = 0;
+			    ushort page = RequestSpecificValues.Current_Mode.Page;
+			    ushort subpage = RequestSpecificValues.Current_Mode.SubPage;
+			    string viewerCode = RequestSpecificValues.Current_Mode.ViewerCode;
+			    RequestSpecificValues.Current_Mode.SubPage = 0;
 
 				// Add any PRE-MENU instance options
 				string first_pre_menu_option = String.Empty;
 				string second_pre_menu_option = String.Empty;
 				string third_pre_menu_option = String.Empty;
-				if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Item Viewer.Static First Menu Item"))
-					first_pre_menu_option = InstanceWide_Settings_Singleton.Settings.Additional_Settings["Item Viewer.Static First Menu Item"];
-				if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Item Viewer.Static Second Menu Item"))
-					second_pre_menu_option = InstanceWide_Settings_Singleton.Settings.Additional_Settings["Item Viewer.Static Second Menu Item"];
-				if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Item Viewer.Static Third Menu Item"))
-					third_pre_menu_option = InstanceWide_Settings_Singleton.Settings.Additional_Settings["Item Viewer.Static Third Menu Item"];
+				if (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Item Viewer.Static First Menu Item"))
+					first_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Additional_Settings["Item Viewer.Static First Menu Item"];
+				if (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Item Viewer.Static Second Menu Item"))
+					second_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Additional_Settings["Item Viewer.Static Second Menu Item"];
+				if (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Item Viewer.Static Third Menu Item"))
+					third_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Additional_Settings["Item Viewer.Static Third Menu Item"];
 				if ((first_pre_menu_option.Length > 0) || (second_pre_menu_option.Length > 0) || ( third_pre_menu_option.Length > 0 ))
 				{
 					if (first_pre_menu_option.Length > 0)
@@ -1199,62 +1168,62 @@ namespace SobekCM.Library.HTML
 				}
 
 			    // Add the item level views
-			    foreach (View_Object thisView in currentItem.Behaviors.Views)
+			    foreach (View_Object thisView in RequestSpecificValues.Current_Item.Behaviors.Views)
 			    {
-				    if (((!itemRestrictedFromUserByIp) && (!currentItem.Behaviors.Dark_Flag)) || (thisView.View_Type == View_Enum.CITATION) ||
+				    if (((!itemRestrictedFromUserByIp) && (!RequestSpecificValues.Current_Item.Behaviors.Dark_Flag)) || (thisView.View_Type == View_Enum.CITATION) ||
 				        (thisView.View_Type == View_Enum.ALL_VOLUMES) ||
 				        (thisView.View_Type == View_Enum.RELATED_IMAGES))
 				    {
 					    // Special code for the CITATION view (TEMPORARY - v.3.2)
 					    if (thisView.View_Type == View_Enum.CITATION)
 					    {
-						    if (Mode.Is_Robot)
+						    if (RequestSpecificValues.Current_Mode.Is_Robot)
 						    {
 								Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"\">Description</a></li>");
 						    }
 						    else
 						    {
-							    Mode.ViewerCode = "citation";
-							    if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
-								    Mode.ViewerCode = "description";
+							    RequestSpecificValues.Current_Mode.ViewerCode = "citation";
+							    if (RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
+								    RequestSpecificValues.Current_Mode.ViewerCode = "description";
 							    if ((viewerCode == "citation") || (viewerCode == "marc") || (viewerCode == "metadata") ||
 							        (viewerCode == "usage") || (viewerCode == "description"))
 							    {
-								    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + Mode.Redirect_URL() + "\">Description</a>");
+								    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Description</a>");
 							    }
 							    else
 							    {
-								    Output.Write("\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Description</a>");
+								    Output.Write("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Description</a>");
 							    }
 							    Output.WriteLine("<ul>");
 
 
-							    if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
-								    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Archival Description</a></li>");
+							    if (RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
+								    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Archival Description</a></li>");
 							    else
-								    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Standard View</a></li>");
+								    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Standard View</a></li>");
 
 
 
-							    Mode.ViewerCode = "marc";
-							    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">MARC View</a></li>");
+							    RequestSpecificValues.Current_Mode.ViewerCode = "marc";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">MARC View</a></li>");
 
 
-							    Mode.ViewerCode = "metadata";
-							    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Metadata</a></li>");
+							    RequestSpecificValues.Current_Mode.ViewerCode = "metadata";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Metadata</a></li>");
 
 
-							    Mode.ViewerCode = "usage";
-							    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Usage Statistics</a></li>");
+							    RequestSpecificValues.Current_Mode.ViewerCode = "usage";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Usage Statistics</a></li>");
 
 
 							    Output.WriteLine("\t\t</ul></li>");
-							    Mode.ViewerCode = viewerCode;
+							    RequestSpecificValues.Current_Mode.ViewerCode = viewerCode;
 						    }
 					    }
 					    else if (thisView.View_Type == View_Enum.ALL_VOLUMES)
 					    {
-							string resource_type_upper = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
+							string resource_type_upper = RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String.ToUpper();
 							string all_volumes = "All Volumes";
 							if (resource_type_upper.IndexOf("NEWSPAPER") >= 0)
 							{
@@ -1269,48 +1238,48 @@ namespace SobekCM.Library.HTML
 								all_volumes = "Related Flights";
 							}
 
-						    if (Mode.Is_Robot)
+						    if (RequestSpecificValues.Current_Mode.Is_Robot)
 						    {
-								Output.Write("\t\t<li><a href=\"" + InstanceWide_Settings_Singleton.Settings.Base_URL + "\\" + currentItem.BibID + "\">" + all_volumes + "</a></li>");
+								Output.Write("\t\t<li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_URL + "\\" + RequestSpecificValues.Current_Item.BibID + "\">" + all_volumes + "</a></li>");
 						    }
 						    else
 						    {
 
-							    Mode.ViewerCode = "allvolumes";
+							    RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes";
 							    if ((viewerCode == "allvolumes") || (viewerCode == "allvolumes2") ||
 							        (viewerCode == "allvolumes3"))
 							    {
-								    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + Mode.Redirect_URL() + "\">" + all_volumes + "</a>");
+								    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + all_volumes + "</a>");
 							    }
 							    else
 							    {
-								    Output.Write("\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">" + all_volumes + "</a>");
+								    Output.Write("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + all_volumes + "</a>");
 							    }
 							    Output.WriteLine("<ul>");
 
 
-							    Mode.ViewerCode = "allvolumes";
-							    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Tree View</a></li>");
+							    RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Tree View</a></li>");
 
 
-							    Mode.ViewerCode = "allvolumes2";
-							    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Thumbnails</a></li>");
+							    RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes2";
+							    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Thumbnails</a></li>");
 
 
-							    if (Mode.Internal_User)
+							    if (RequestSpecificValues.Current_Mode.Internal_User)
 							    {
-								    Mode.ViewerCode = "allvolumes3";
-								    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">List View</a></li>");
+								    RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes3";
+								    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">List View</a></li>");
 							    }
 
 
 							    Output.WriteLine("\t\t</ul></li>");
-							    Mode.ViewerCode = viewerCode;
+							    RequestSpecificValues.Current_Mode.ViewerCode = viewerCode;
 						    }
 					    }
 					    else
 					    {
-						    List<string> item_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisView, currentItem.Bib_Info.SobekCM_Type_String, Skin.Base_Skin_Code, Mode, -1, translations, showZoomable, currentItem);
+                            List<string> item_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisView, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode, -1, UI_ApplicationCache_Gateway.Translation, showZoomable, RequestSpecificValues.Current_Item);
 
 
 						    // Add each nav bar link
@@ -1325,46 +1294,46 @@ namespace SobekCM.Library.HTML
 
 			    // If this is citation or index mode, the number may be an invalid page sequence
 			    if ((page <= 0) ||
-			        (Mode.ViewerCode == View_Object.Viewer_Code_By_Type(View_Enum.RELATED_IMAGES)[0]))
+			        (RequestSpecificValues.Current_Mode.ViewerCode == View_Object.Viewer_Code_By_Type(View_Enum.RELATED_IMAGES)[0]))
 			    {
-				    Mode.Page = 1;
+				    RequestSpecificValues.Current_Mode.Page = 1;
 			    }
 
 
-			    if ((currentItem.Web.Static_PageCount > 0) && (currentPage == null))
+			    if ((RequestSpecificValues.Current_Item.Web.Static_PageCount > 0) && (RequestSpecificValues.Current_Page == null))
 			    {
-				    currentPage = currentItem.Web.Pages_By_Sequence[0];
+				    RequestSpecificValues.Current_Page = RequestSpecificValues.Current_Item.Web.Pages_By_Sequence[0];
 			    }
 
 
 			    // Add each page display type
-			    if ((currentPage != null) && (!itemRestrictedFromUserByIp))
+			    if ((RequestSpecificValues.Current_Page != null) && (!itemRestrictedFromUserByIp))
 			    {
-				    int page_seq = Mode.Page;
-				    string resourceType = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
-				    if (currentItem.Behaviors.Item_Level_Page_Views_Count > 0)
+				    int page_seq = RequestSpecificValues.Current_Mode.Page;
+				    string resourceType = RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String.ToUpper();
+				    if (RequestSpecificValues.Current_Item.Behaviors.Item_Level_Page_Views_Count > 0)
 				    {
 					    List<string> pageViewLinks = new List<string>();
 
-					    foreach (View_Object thisPageView in currentItem.Behaviors.Item_Level_Page_Views)
+					    foreach (View_Object thisPageView in RequestSpecificValues.Current_Item.Behaviors.Item_Level_Page_Views)
 					    {
 						    View_Enum thisViewType = thisPageView.View_Type;
-						    foreach (SobekCM_File_Info thisFile in currentPage.Files)
+						    foreach (SobekCM_File_Info thisFile in RequestSpecificValues.Current_Page.Files)
 						    {
 							    View_Object fileObject = thisFile.Get_Viewer();
 							    if ((fileObject != null) && (fileObject.View_Type == thisViewType))
 							    {
-								    pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisFile.Get_Viewer(), resourceType, Skin.Base_Skin_Code, Mode, page_seq, translations, showZoomable, currentItem));
+                                    pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisFile.Get_Viewer(), resourceType, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode, page_seq, UI_ApplicationCache_Gateway.Translation, showZoomable, RequestSpecificValues.Current_Item));
 							    }
 						    }
 					    }
 
 
-					    if (currentItem.BibID == "UF00001672")
+					    if (RequestSpecificValues.Current_Item.BibID == "UF00001672")
 					    {
-						    string filename = currentPage.Files[0].File_Name_Sans_Extension + ".txt";
+						    string filename = RequestSpecificValues.Current_Page.Files[0].File_Name_Sans_Extension + ".txt";
 						    SobekCM_File_Info newFile = new SobekCM_File_Info(filename);
-						    pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(newFile.Get_Viewer(), resourceType, Skin.Base_Skin_Code, Mode, page_seq, translations, showZoomable, currentItem));
+                            pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(newFile.Get_Viewer(), resourceType, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode, page_seq, UI_ApplicationCache_Gateway.Translation, showZoomable, RequestSpecificValues.Current_Item));
 					    }
 
 					    // Only continue if there were views
@@ -1380,7 +1349,7 @@ namespace SobekCM.Library.HTML
 						    {
 							    menu_title = "Image";
 						    }
-						    if (currentItem.Web.Static_PageCount > 1)
+						    if (RequestSpecificValues.Current_Item.Web.Static_PageCount > 1)
 							    menu_title = menu_title + "s";
 
 
@@ -1390,7 +1359,7 @@ namespace SobekCM.Library.HTML
 
 
 						    // Was this a match?
-						    if ((Mode.ViewerCode == page_seq + "t") || (Mode.ViewerCode == page_seq + "x") || (Mode.ViewerCode == page_seq + "j"))
+						    if ((RequestSpecificValues.Current_Mode.ViewerCode == page_seq + "t") || (RequestSpecificValues.Current_Mode.ViewerCode == page_seq + "x") || (RequestSpecificValues.Current_Mode.ViewerCode == page_seq + "j"))
 						    {
 							    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + link + "\">" + menu_title + "</a>");
 						    }
@@ -1415,7 +1384,7 @@ namespace SobekCM.Library.HTML
 
 			    if (itemRestrictedFromUserByIp)
 			    {
-				    List<string> restricted_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(new View_Object(View_Enum.RESTRICTED), currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), Skin.Base_Skin_Code, Mode, 0, translations, showZoomable, currentItem);
+                    List<string> restricted_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(new View_Object(View_Enum.RESTRICTED), RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String.ToUpper(), RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode, 0, UI_ApplicationCache_Gateway.Translation, showZoomable, RequestSpecificValues.Current_Item);
 				    Output.WriteLine("\t\t" + restricted_nav_bar_link[0] + "");
 			    }
 
@@ -1424,24 +1393,24 @@ namespace SobekCM.Library.HTML
 			    if (userCanEditItem)
 			    {
 					// Get the MANAGE URL (which is actually an item view)
-				    Mode.ViewerCode = "manage";
-				    string manage_menu_url = Mode.Redirect_URL();
+				    RequestSpecificValues.Current_Mode.ViewerCode = "manage";
+				    string manage_menu_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-				    if (currentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
+				    if (RequestSpecificValues.Current_Item.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
 				    {
 
 					    // Get all the mySObek URLs
-					    Mode.Mode = Display_Mode_Enum.My_Sobek;
-					    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
-					    string edit_metadata_url = Mode.Redirect_URL();
-					    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
-					    string edit_behaviors_url = Mode.Redirect_URL();
-					    Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-					    string page_images_url = Mode.Redirect_URL();
-					    Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
-					    string manage_downloads = Mode.Redirect_URL();
+					    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+					    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+					    string edit_metadata_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+					    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
+					    string edit_behaviors_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+					    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+					    string page_images_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+					    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+					    string manage_downloads = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-					    Mode.Mode = Display_Mode_Enum.Item_Display;
+					    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
 
 
 					    Output.WriteLine("\t\t<li><a href=\"" + manage_menu_url + "\">Manage</a><ul>");
@@ -1450,34 +1419,34 @@ namespace SobekCM.Library.HTML
 					    Output.WriteLine("\t\t\t<li><a href=\"" + edit_behaviors_url + "\">Edit Item Behaviors</a></li>");
 					    Output.WriteLine("\t\t\t<li><a href=\"" + manage_downloads + "\">Manage Download Files</a></li>");
 
-					    if (currentItem.Web.Static_PageCount == 0)
+					    if (RequestSpecificValues.Current_Item.Web.Static_PageCount == 0)
 						    Output.WriteLine("\t\t\t<li><a href=\"" + page_images_url + "\">Manage Pages and Divisions</a></li>");
 					    else
 					    {
-						    Mode.ViewerCode = "qc";
-						    Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Manage Pages and Divisions</a></li>");
+						    RequestSpecificValues.Current_Mode.ViewerCode = "qc";
+						    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Manage Pages and Divisions</a></li>");
 					    }
 
-					    Mode.ViewerCode = "mapedit";
-						Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">Manage Geo-Spatial Data (beta)</a></li>");
+					    RequestSpecificValues.Current_Mode.ViewerCode = "mapedit";
+						Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Manage Geo-Spatial Data (beta)</a></li>");
 
-						Mode.ViewerCode = "ts";
-						Output.WriteLine("\t\t\t<li><a href=\"" + Mode.Redirect_URL() + "\">View Tracking Sheet</a></li>");
+						RequestSpecificValues.Current_Mode.ViewerCode = "ts";
+						Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">View Tracking Sheet</a></li>");
 
 					    Output.WriteLine("\t\t</ul></li>");
 				    }
 				    else
 				    {
 						// Get all the mySObek URLs
-						Mode.Mode = Display_Mode_Enum.My_Sobek;
-						Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
-						string edit_behaviors_url = Mode.Redirect_URL();
-						Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
-						string add_volume_url = Mode.Redirect_URL();
-						Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
-						string mass_update_url = Mode.Redirect_URL();
+						RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+						RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
+						string edit_behaviors_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+						RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
+						string add_volume_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+						RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
+						string mass_update_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-						Mode.Mode = Display_Mode_Enum.Item_Display;
+						RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
 
 
 						Output.WriteLine("\t\t<li><a href=\"" + manage_menu_url + "\">Manage</a><ul>");
@@ -1492,9 +1461,9 @@ namespace SobekCM.Library.HTML
 
 
 			    // Set current submode back
-			    Mode.Page = page;
-			    Mode.ViewerCode = viewerCode;
-			    Mode.SubPage = subpage;
+			    RequestSpecificValues.Current_Mode.Page = page;
+			    RequestSpecificValues.Current_Mode.ViewerCode = viewerCode;
+			    RequestSpecificValues.Current_Mode.SubPage = subpage;
 
 
 
@@ -1563,26 +1532,26 @@ namespace SobekCM.Library.HTML
                 //}
 
                 // Provide way to expand TOC
-                if ((!showToc) && (currentItem.Web.Static_PageCount > 1) && (currentItem.Web.Static_Division_Count > 1))
+                if ((!showToc) && (RequestSpecificValues.Current_Item.Web.Static_PageCount > 1) && (RequestSpecificValues.Current_Item.Web.Static_Division_Count > 1))
                 {
                     string show_toc_text = "SHOW TABLE OF CONTENTS";
 
-                    if (Mode.Language == Web_Language_Enum.French)
+                    if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                     {
                         show_toc_text = "VOIR L'INDEX";
                     }
-                    if (Mode.Language == Web_Language_Enum.Spanish)
+                    if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                     {
                         show_toc_text = "MOSTRAR INDICE";
                     }
 
                     Output.WriteLine("\t<div class=\"sbkIsw_ShowTocRow\">");
-                    string redirect_url = Mode.Redirect_URL().Replace("&", "&amp;");
+                    string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;");
                     if (redirect_url.IndexOf("?") < 0)
                         redirect_url = redirect_url + "?toc=y";
                     else
                         redirect_url = redirect_url + "&toc=y";
-                    Output.WriteLine("\t\t<div class=\"sbkIsw_DownTOC\"><a href=\"" + redirect_url + "\">" + show_toc_text + "<img src=\"" + Mode.Base_URL + "default/images/button_down_arrow.png\" alt=\"\" /></a></div>");
+                    Output.WriteLine("\t\t<div class=\"sbkIsw_DownTOC\"><a href=\"" + redirect_url + "\">" + show_toc_text + "<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_down_arrow.png\" alt=\"\" /></a></div>");
                     // Output.WriteLine("\t\t<a href=\"" + redirect_url + "\">" + show_toc_text + "<div class=\"downarrow\"></div></a>");
                     Output.WriteLine("\t</div>");
                 }
@@ -1601,7 +1570,7 @@ namespace SobekCM.Library.HTML
         public override void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             // If this is for a fragment, do nothing
-            if (!String.IsNullOrEmpty(Mode.Fragment))
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Fragment))
                 return;
 
             Tracer.Add_Trace("Item_HtmlSubwriter.Write_Additional_HTML", "Rendering HTML ( finish left navigation bar, begin main viewer section )");
@@ -1626,18 +1595,18 @@ namespace SobekCM.Library.HTML
                 
                 if (isEadTypeItem) 
                 {
-                    EAD_Info eadInfo = (EAD_Info)currentItem.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY);
+                    EAD_Info eadInfo = (EAD_Info)RequestSpecificValues.Current_Item.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY);
                     if ((eadInfo != null) && (eadInfo.TOC_Included_Sections.Count > 0))
                     {
                         // Determine the URL to use for most of these
                         string description_link = String.Empty;
-                        if (Mode.ViewerCode != "description")
-                            description_link = Mode.Redirect_URL("description");
+                        if (RequestSpecificValues.Current_Mode.ViewerCode != "description")
+                            description_link = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode, "description");
 
                         // Add the TOC as a floating DIV
                         Output.WriteLine("      <div id=\"sbkEad_FloatingTOC\">");
                         Output.WriteLine("      <ul class=\"sbkEad_TocMenu\">");
-                        Output.WriteLine("        <li class=\"sbkEad_TocHeader\">TABLE OF CONTENTS &nbsp; <span style=\"color:#eeeeee\"><a href=\"#\" title=\"Return to the top of this document\"><img src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/buttons/up_arrow.gif\" /></a></span></li>");
+                        Output.WriteLine("        <li class=\"sbkEad_TocHeader\">TABLE OF CONTENTS &nbsp; <span style=\"color:#eeeeee\"><a href=\"#\" title=\"Return to the top of this document\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/up_arrow.gif\" /></a></span></li>");
 
                         foreach (EAD_TOC_Included_Section thisMatch in eadInfo.TOC_Included_Sections)
                         {
@@ -1647,7 +1616,7 @@ namespace SobekCM.Library.HTML
                         // Add the container list if there is one
                         if (eadInfo.Container_Hierarchy.Containers.Count > 0)
                         {
-                            Output.WriteLine("        <li><a href=\"" + Mode.Redirect_URL("container") + "\">Container List</a></li>");
+                            Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode, "container") + "\">Container List</a></li>");
                         }
 
                         Output.WriteLine("      </ul>");
@@ -1655,12 +1624,12 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                if (currentItem.Behaviors.Wordmark_Count > 0)
+                if (RequestSpecificValues.Current_Item.Behaviors.Wordmark_Count > 0)
                 {
                     Output.WriteLine("\t<div id=\"sbkIsw_Wordmarks\">");
 
                     // Compute the URL options which may be needed
-                    string url_options = Mode.URL_Options();
+                    string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
                     string urlOptions1 = String.Empty;
                     string urlOptions2 = String.Empty;
                     if (url_options.Length > 0)
@@ -1669,11 +1638,11 @@ namespace SobekCM.Library.HTML
                         urlOptions2 = "&" + url_options;
                     }
 
-                    if (currentItem.Behaviors.Wordmark_Count > 0)
+                    if (RequestSpecificValues.Current_Item.Behaviors.Wordmark_Count > 0)
                     {
-                        foreach (Wordmark_Info thisIcon in currentItem.Behaviors.Wordmarks)
+                        foreach (Wordmark_Info thisIcon in RequestSpecificValues.Current_Item.Behaviors.Wordmarks)
                         {
-                            Output.WriteLine("\t\t" + thisIcon.HTML.Replace("<%BASEURL%>", Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
+                            Output.WriteLine("\t\t" + thisIcon.HTML.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
                         }
                     }
 
@@ -1711,7 +1680,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // In this format, add the DARK and RESTRICTED information
-                if (currentItem.Behaviors.Dark_Flag)
+                if (RequestSpecificValues.Current_Item.Behaviors.Dark_Flag)
                 {
                     Output.WriteLine("\t<tr id=\"sbkIsw_RestrictedRow\">");
                     Output.WriteLine("\t\t<td>");
@@ -1719,7 +1688,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("\t\t</td>");
                     Output.WriteLine("\t</tr>");
                 }
-                else if (currentItem.Behaviors.IP_Restriction_Membership < 0)
+                else if (RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership < 0)
                 {
                     Output.WriteLine("\t<tr id=\"sbkIsw_RestrictedRow\">");
                     Output.WriteLine("\t\t<td>");
@@ -1730,7 +1699,7 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-            #region Add navigation rows here (buttons for first, previous, next, last, etc..)
+            #region Add navigation rows here (buttons for first, previous, next, last, etc.)
 
             // Add navigation row here (buttons and viewer specific)
             if (PageViewer != null)
@@ -1758,7 +1727,7 @@ namespace SobekCM.Library.HTML
                         string next_page_text = "Next";
                         string last_page_text = "Last";
 
-                        if (Mode.Language == Web_Language_Enum.Spanish)
+                        if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                         {
                             go_to = "Ir a:";
                             first_page = "Primera Página";
@@ -1771,7 +1740,7 @@ namespace SobekCM.Library.HTML
                             last_page_text = "Último";
                         }
 
-                        if (Mode.Language == Web_Language_Enum.French) 
+                        if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French) 
                         {
                             go_to = "Aller à:";
                             first_page = "Première Page";
@@ -1795,8 +1764,8 @@ namespace SobekCM.Library.HTML
                         if ((PageViewer.Current_Page > 1) && ((firstButtonURL.Length > 0) || (prevButtonURL.Length > 0)))
                         {
                             buttonsHtmlBuilder.AppendLine("\t\t\t\t<span class=\"sbkIsw_LeftPaginationButtons\">");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + Mode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + previous_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
                             buttonsHtmlBuilder.AppendLine("\t\t\t\t</span>");
                         }
                          
@@ -1808,8 +1777,8 @@ namespace SobekCM.Library.HTML
                         if ((PageViewer.Current_Page < PageViewer.PageCount) && ((lastButtonURL.Length > 0) || (nextButtonURL.Length > 0)))
                         {
                             buttonsHtmlBuilder.AppendLine("\t\t\t\t<span class=\"sbkIsw_RightPaginationButtons\">");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + Mode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                            buttonsHtmlBuilder.AppendLine("\t\t\t\t\t<button title=\"" + last_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                             buttonsHtmlBuilder.AppendLine("\t\t\t\t</span>");
                         }
 
@@ -1833,11 +1802,11 @@ namespace SobekCM.Library.HTML
                                     }
 
                                     Output.WriteLine("\t\t\t\t<span id=\"sbkIsw_GoToSpan\">" + go_to + "</span>");
-                                    string orig_viewercode = Mode.ViewerCode;
-                                    string viewercode_only = Mode.ViewerCode.Replace(Mode.Page.ToString(), "");
-                                    Mode.ViewerCode = "XX1234567890XX";
-                                    string url = Mode.Redirect_URL();
-                                    Mode.ViewerCode = orig_viewercode;
+                                    string orig_viewercode = RequestSpecificValues.Current_Mode.ViewerCode;
+                                    string viewercode_only = RequestSpecificValues.Current_Mode.ViewerCode.Replace(RequestSpecificValues.Current_Mode.Page.ToString(), "");
+                                    RequestSpecificValues.Current_Mode.ViewerCode = "XX1234567890XX";
+                                    string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                                    RequestSpecificValues.Current_Mode.ViewerCode = orig_viewercode;
 
                                     Output.WriteLine("\t\t\t\t<select id=\"page_select\" name=\"page_select\" onchange=\"javascript:item_jump_sobekcm('" + url + "')\">");
 
@@ -1847,18 +1816,18 @@ namespace SobekCM.Library.HTML
                                     {
 	                                    if (thisName.Length > 75)
 	                                    {
-		                                    if (Mode.Page == page_index)
+		                                    if (RequestSpecificValues.Current_Mode.Page == page_index)
 		                                    {
-			                                    Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\" selected=\"selected\" >" + thisName.Substring(0,75) + "...</option>");
+			                                    Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\" selected=\"selected\" >" + thisName.Substring(0,75) + "..</option>");
 		                                    }
 		                                    else
 		                                    {
-												Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\">" + thisName.Substring(0, 75) + "...</option>");
+												Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\">" + thisName.Substring(0, 75) + "..</option>");
 		                                    }
 	                                    }
 	                                    else
 	                                    {
-											if (Mode.Page == page_index)
+											if (RequestSpecificValues.Current_Mode.Page == page_index)
 											{
 												Output.WriteLine("\t\t\t\t\t<option value=\"" + page_index + viewercode_only + "\" selected=\"selected\" >" + thisName + "</option>");
 											}
@@ -1902,7 +1871,7 @@ namespace SobekCM.Library.HTML
                                     {
                                         if (PageViewer.Current_Page > 4 && PageViewer.Current_Page < num_of_pages - 3)
                                         {
-                                            pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[0] + "\">" + 1 + "</a>" + "...");
+                                            pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[0] + "\">" + 1 + "</a>" + "..");
                                             for (int i = PageViewer.Current_Page - 2; i <= PageViewer.Current_Page + 2; i++)
                                             {
                                                 if (i == PageViewer.Current_Page)
@@ -1910,7 +1879,7 @@ namespace SobekCM.Library.HTML
                                                 else
                                                     pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
                                             }
-                                            pageLinkBuilder.AppendLine("\t\t\t\t\t..." + "<a href=\"" + page_urls[page_urls.Length - 1] + "\">" + num_of_pages + "</a>");
+                                            pageLinkBuilder.AppendLine("\t\t\t\t\t.." + "<a href=\"" + page_urls[page_urls.Length - 1] + "\">" + num_of_pages + "</a>");
                                         }
 
                                         else if (PageViewer.Current_Page <= 4 && PageViewer.Current_Page < num_of_pages - 3)
@@ -1922,12 +1891,12 @@ namespace SobekCM.Library.HTML
                                                 else
                                                     pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[i - 1] + "\">" + i + "</a>&nbsp;");
                                             }
-                                            pageLinkBuilder.AppendLine("\t\t\t\t\t..." + "<a href=\"" + page_urls[page_urls.Length - 1] + "\">" + num_of_pages + "</a>");
+                                            pageLinkBuilder.AppendLine("\t\t\t\t\t.." + "<a href=\"" + page_urls[page_urls.Length - 1] + "\">" + num_of_pages + "</a>");
                                         }
 
                                         else if (PageViewer.Current_Page > 4 && PageViewer.Current_Page >= num_of_pages - 3)
                                         {
-                                            pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[0] + "\">" + 1 + "</a>" + "...");
+                                            pageLinkBuilder.AppendLine("\t\t\t\t\t<a href=\"" + page_urls[0] + "\">" + 1 + "</a>" + "..");
                                             for (int i = PageViewer.Current_Page - 2; i <= num_of_pages; i++)
                                             {
                                                 if (i == PageViewer.Current_Page)
@@ -1962,7 +1931,7 @@ namespace SobekCM.Library.HTML
 
             // Add the HTML from the pageviewer
             // Add the main viewer section
-            if ((PageViewer != null) && (String.IsNullOrEmpty(Mode.Fragment)))
+            if ((PageViewer != null) && (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Fragment)))
             {
                 Tracer.Add_Trace("Item_MainWriter.Write_Additional_HTML", "Allowing page viewer to write directly to the output to add main viewer section");
                 PageViewer.Write_Main_Viewer_Section(Output, Tracer);
@@ -1980,27 +1949,27 @@ namespace SobekCM.Library.HTML
             if ( PageViewer != null)
             {
                 // Was this to draw a fragment?
-                if ( !String.IsNullOrEmpty(Mode.Fragment))
+                if ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Fragment))
                 {
-                    switch( Mode.Fragment )
+                    switch( RequestSpecificValues.Current_Mode.Fragment )
                     {
                         case "printform":
-                            PrintForm_Fragment_ItemViewer printform_viewer = new PrintForm_Fragment_ItemViewer(currentPage, PageViewer) {CurrentItem = currentItem, CurrentMode = Mode, Translator = PageViewer.Translator, CurrentUser = currentUser};
+                            PrintForm_Fragment_ItemViewer printform_viewer = new PrintForm_Fragment_ItemViewer(RequestSpecificValues.Current_Page, PageViewer) {CurrentItem = RequestSpecificValues.Current_Item, CurrentMode = RequestSpecificValues.Current_Mode, Translator = PageViewer.Translator, CurrentUser = RequestSpecificValues.Current_User};
                             printform_viewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                             break;
 
                         case "shareform":
-                            Share_Fragment_ItemViewer share_viewer = new Share_Fragment_ItemViewer {CurrentItem = currentItem, CurrentMode = Mode, Translator = PageViewer.Translator, CurrentUser = currentUser};
+                            Share_Fragment_ItemViewer share_viewer = new Share_Fragment_ItemViewer {CurrentItem = RequestSpecificValues.Current_Item, CurrentMode = RequestSpecificValues.Current_Mode, Translator = PageViewer.Translator, CurrentUser = RequestSpecificValues.Current_User};
                             share_viewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                             break;
 
                         case "addform":
-                            AddRemove_Fragment_ItemViewer add_viewer = new AddRemove_Fragment_ItemViewer {CurrentItem = currentItem, CurrentMode = Mode, Translator = PageViewer.Translator, CurrentUser = currentUser};
+                            AddRemove_Fragment_ItemViewer add_viewer = new AddRemove_Fragment_ItemViewer {CurrentItem = RequestSpecificValues.Current_Item, CurrentMode = RequestSpecificValues.Current_Mode, Translator = PageViewer.Translator, CurrentUser = RequestSpecificValues.Current_User};
                             add_viewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                             break;
 
                         case "sendform":
-                            Send_Fragment_ItemViewer send_viewer = new Send_Fragment_ItemViewer {CurrentItem = currentItem, CurrentMode = Mode, Translator = PageViewer.Translator, CurrentUser = currentUser};
+                            Send_Fragment_ItemViewer send_viewer = new Send_Fragment_ItemViewer {CurrentItem = RequestSpecificValues.Current_Item, CurrentMode = RequestSpecificValues.Current_Mode, Translator = PageViewer.Translator, CurrentUser = RequestSpecificValues.Current_User};
                             send_viewer.Add_Main_Viewer_Section(Main_PlaceHolder, Tracer);
                             break;
                     }
@@ -2054,7 +2023,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("\t</tr>");
             }
 
-            if (PageViewer != null && ((currentItem.Behaviors.CheckOut_Required) && (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Checked_Out)))
+            if (PageViewer != null && ((RequestSpecificValues.Current_Item.Behaviors.CheckOut_Required) && (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Checked_Out)))
             {
                 Output.WriteLine("<tr><td><span id=\"sbkIsw_CheckOutRequired\">This item contains copyrighted material and is reserved for single (fair) use.  Once you finish working with this item,<br />it will return to the digital stacks in fifteen minutes for another patron to use.<br /><br /></span></td></tr>");
             }
@@ -2074,7 +2043,7 @@ namespace SobekCM.Library.HTML
 
             // None of the sharing options are available if the user is restricted from this item
             // or if we are generating this as a static page source for robots
-	        if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!Mode.Is_Robot))
+	        if ((!itemRestrictedFromUserByIp) && (!itemCheckedOutByOtherUser) && (!RequestSpecificValues.Current_Mode.Is_Robot))
 	        {
 		        // Add the hidden field
 		        Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -2092,9 +2061,9 @@ namespace SobekCM.Library.HTML
 	        if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Full_JQuery_UI))
 	        {
 #if DEBUG
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.js\"></script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.js\"></script>");
 #else
-		        Output.WriteLine("<script type=\"text/javascript\" src=\"" + Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.min.js\"></script>");
+		        Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.min.js\"></script>");
 #endif
 	        }
         }
@@ -2112,7 +2081,7 @@ namespace SobekCM.Library.HTML
             List<TreeNode> selectedNodes = new List<TreeNode>();
 
             int sequence = 0;
-            foreach (abstract_TreeNode absNode in currentItem.Divisions.Physical_Tree.Roots)
+            foreach (abstract_TreeNode absNode in RequestSpecificValues.Current_Item.Divisions.Physical_Tree.Roots)
             {
                 Division_TreeNode divNode = (Division_TreeNode) absNode;
                 TreeNode treeViewNode = new TreeNode { Text = string.Format("<span class=\"sbkIsw_TocTreeViewItem\" Title=\"{0}\">{1}</span>", divNode.Display_Label, divNode.Display_Short_Label) };
@@ -2146,7 +2115,7 @@ namespace SobekCM.Library.HTML
                     {
                         thisNode.Value = Sequence.ToString();
                     }
-                    if (Sequence >= Mode.Page)
+                    if (Sequence >= RequestSpecificValues.Current_Mode.Page)
                     {
                         if (!tocSelectedComplete)
                         {
@@ -2155,7 +2124,7 @@ namespace SobekCM.Library.HTML
                         }
                         else
                         {
-                            if (Sequence == Mode.Page)
+                            if (Sequence == RequestSpecificValues.Current_Mode.Page)
                             {
                                 SelectedNodes.AddRange(PathNodes);
                             }
@@ -2204,7 +2173,7 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                return currentItem != null ? currentItem.Bib_Info.Main_Title.Title : "{0} Item";
+                return RequestSpecificValues.Current_Item != null ? RequestSpecificValues.Current_Item.Bib_Info.Main_Title.Title : "{0} Item";
             }
         }
 
@@ -2219,9 +2188,9 @@ namespace SobekCM.Library.HTML
 
             // Write the main SobekCM item style sheet to use 
 #if DEBUG
-            Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 #endif
 
             // Add any viewer specific tags that need to reside within the HTML head
@@ -2229,9 +2198,9 @@ namespace SobekCM.Library.HTML
                 PageViewer.Write_Within_HTML_Head(Output, Tracer);
 
             // Add a thumbnail to this item
-            if (currentItem != null)
+            if (RequestSpecificValues.Current_Item != null)
             {
-                string image_src = Mode.Base_URL + "/" + currentItem.Web.AssocFilePath + "/" + currentItem.Behaviors.Main_Thumbnail;
+                string image_src = RequestSpecificValues.Current_Mode.Base_URL + "/" + RequestSpecificValues.Current_Item.Web.AssocFilePath + "/" + RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail;
 
                 Output.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\" />");
             }

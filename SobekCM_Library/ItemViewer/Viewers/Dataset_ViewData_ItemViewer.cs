@@ -1,4 +1,4 @@
-﻿#region using directives
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -7,10 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Caching;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -266,7 +266,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					}
 
 					Output.WriteLine("              </select> &nbsp; ");
-					Output.WriteLine("              <button title=\"Filter results\" id=\"sbkDvd_FilterButton\" class=\"sbkIsw_RoundButton\" onclick=\"data_search('" + CurrentMode.Redirect_URL() + "'); return false;\">GO<img src=\"http://ufdc.ufl.edu/default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+					Output.WriteLine("              <button title=\"Filter results\" id=\"sbkDvd_FilterButton\" class=\"sbkIsw_RoundButton\" onclick=\"data_search('" + UrlWriterHelper.Redirect_URL(CurrentMode) + "'); return false;\">GO<img src=\"http://ufdc.ufl.edu/default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
 
 					Output.WriteLine("            </div");
 				}
@@ -310,13 +310,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					{
 						CurrentMode.SubPage = (ushort) table_number;
 						table_number++;
-						Output.WriteLine("              <li><a href=\"" + CurrentMode.Redirect_URL() + "\" title=\"View all rows from this table\">" + thisTableList.TableName.Replace("_", " ") + "</a> ( " + thisTableList.Rows.Count + " rows )</li>");
+						Output.WriteLine("              <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" title=\"View all rows from this table\">" + thisTableList.TableName.Replace("_", " ") + "</a> ( " + thisTableList.Rows.Count + " rows )</li>");
 					}
 					Output.WriteLine("            </ul>");
 
 					CurrentMode.ViewerCode = "dscodebook";
 					CurrentMode.SubPage = 0;
-					Output.WriteLine("            <p>For more information about the structure of this dataset <a href=\"" + CurrentMode.Redirect_URL() + "\" title=\"Vist the codebook\">view the data structure/codebook</a> for this dataset.</p>");
+					Output.WriteLine("            <p>For more information about the structure of this dataset <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" title=\"Vist the codebook\">view the data structure/codebook</a> for this dataset.</p>");
 					CurrentMode.SubPage = subpage;
 					CurrentMode.ViewerCode = "dsview";
 
@@ -381,7 +381,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Output.WriteLine("           \"bProcessing\": true,");
 
 				Output.WriteLine("           \"bServerSide\": true,");
-				string redirect_url = CurrentMode.Redirect_URL();
+				string redirect_url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				if ((field.Length > 0) && (term.Length > 0))
 				{
 					if (redirect_url.IndexOf("?") > 0)

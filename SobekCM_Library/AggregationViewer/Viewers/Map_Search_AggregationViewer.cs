@@ -3,16 +3,14 @@
 using System;
 using System.IO;
 using System.Text;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Configuration;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -38,30 +36,29 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         private readonly string text4 = String.Empty;
 
         /// <summary> Constructor for a new instance of the Map_Search_AggregationViewer class </summary>
-        /// <param name="Current_Aggregation"> Current item aggregation object </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        public Map_Search_AggregationViewer(Item_Aggregation Current_Aggregation, SobekCM_Navigation_Object Current_Mode): base(Current_Aggregation, Current_Mode)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Map_Search_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Compute the redirect stem to use
-            string fields = currentMode.Search_Fields;
-            string search_string = currentMode.Search_String;
-            currentMode.Search_String = String.Empty;
-            currentMode.Search_Fields = String.Empty;
-            currentMode.Mode = Display_Mode_Enum.Results;
-            currentMode.Search_Type = Search_Type_Enum.Map;
-            currentMode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
-            string redirect_stem = currentMode.Redirect_URL();
-            currentMode.Mode = Display_Mode_Enum.Search;
-            currentMode.Search_String = search_string;
-            currentMode.Search_Fields = fields;
+            string fields = RequestSpecificValues.Current_Mode.Search_Fields;
+            string search_string = RequestSpecificValues.Current_Mode.Search_String;
+            RequestSpecificValues.Current_Mode.Search_String = String.Empty;
+            RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+            RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Map;
+            RequestSpecificValues.Current_Mode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
+            string redirect_stem = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
+            RequestSpecificValues.Current_Mode.Search_String = search_string;
+            RequestSpecificValues.Current_Mode.Search_Fields = fields;
             // Now, populate the search terms, if there was one or some
             text1 = String.Empty;
             text2 = String.Empty;
             text3 = String.Empty;
             text4 = String.Empty;
-            if (currentMode.Search_String.Length > 0)
+            if (RequestSpecificValues.Current_Mode.Search_String.Length > 0)
             {
-                string[] splitter = currentMode.Search_String.Split(",".ToCharArray());
+                string[] splitter = RequestSpecificValues.Current_Mode.Search_String.Split(",".ToCharArray());
                 bool isNumber = true;
                 foreach (char thisChar in splitter[0])
                 {
@@ -119,14 +116,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             StringBuilder scriptBuilder = new StringBuilder();
             
             scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?v=3.2&sensor=false\"></script>");
-            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_map_search.js\"></script>");
-            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_map_tool.js\"></script>");
+            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_map_search.js\"></script>");
+            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_map_tool.js\"></script>");
             
             scriptBuilder.AppendLine("<script type=\"text/javascript\">");
             scriptBuilder.AppendLine("  //<![CDATA[");
             scriptBuilder.AppendLine("  function load() { ");
 
-            switch (Current_Aggregation.Map_Search % 100)
+            switch (RequestSpecificValues.Hierarchy_Object.Map_Search % 100)
             {
                 case 0:  // WORLD
                     scriptBuilder.AppendLine("    load_search_map(0, 0, 1, \"map1\");");
@@ -173,7 +170,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             // If no point searching is allowed, disable it
-            if (currentCollection.Map_Search >= 100)
+            if (RequestSpecificValues.Hierarchy_Object.Map_Search >= 100)
             {
                 scriptBuilder.AppendLine("    disable_point_searching();");
             }
@@ -191,10 +188,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             scriptBuilder.AppendLine("  }");
             scriptBuilder.AppendLine("  //]]>");
             scriptBuilder.AppendLine("</script>");
-            scriptIncludeName = scriptBuilder.ToString();
+            Search_Script_Reference = scriptBuilder.ToString();
 
             // Get the action name for the button
-            scriptActionName = "map_search_sobekcm('" + redirect_stem + "');";
+            Search_Script_Action = "map_search_sobekcm('" + redirect_stem + "');";
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
@@ -240,7 +237,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string address_text = "Address";
             const string LOCATE_TEXT = "Locate";
 
-            if (currentMode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
             {
                 search_button_text = "Buscar";
                 find_button_text = "Localizar";
@@ -250,7 +247,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             bool show_coordinates = false;
             int width = 740;
-            if (currentMode.Info_Browse_Mode == "1")
+            if (RequestSpecificValues.Current_Mode.Info_Browse_Mode == "1")
             {
                 show_coordinates = true;
                 width = 550;
@@ -259,15 +256,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("  <table id=\"sbkMsav_SearchPanel\" >");
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td colspan=\"2\">");
-            switch( currentMode.Language )
+            switch( RequestSpecificValues.Current_Mode.Language )
             {
 
                 case Web_Language_Enum.Spanish:
-                    if (currentCollection.Map_Search >= 100)
+                    if (RequestSpecificValues.Hierarchy_Object.Map_Search >= 100)
                     {
                         Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td><span style=\"line-height:160%\"> &nbsp; &nbsp; 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map &nbsp; &nbsp; <br /> &nbsp; &nbsp; 2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</span> </td>");
-						Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + scriptActionName + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + currentMode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button></td></tr>");
+						Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button></td></tr>");
                         Output.WriteLine("          </table>");
                     }
                     else
@@ -288,11 +285,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     break;
 
                 default:
-                    if (currentCollection.Map_Search >= 100)
+                    if (RequestSpecificValues.Hierarchy_Object.Map_Search >= 100)
                     {
                         Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td><span style=\"line-height:160%\"> &nbsp; &nbsp; 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map &nbsp; &nbsp; <br /> &nbsp; &nbsp; 2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</span> </td>");
-						Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + scriptActionName + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + currentMode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button></td></tr>");
+						Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button></td></tr>");
                         Output.WriteLine("          </table>");
                     }
                     else
@@ -313,13 +310,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     break;
             }
 
-            if (currentCollection.Map_Search < 100)
+            if (RequestSpecificValues.Hierarchy_Object.Map_Search < 100)
             {
                 Output.WriteLine("        <div id=\"sbkMsav_AddressDiv\">");
                 Output.WriteLine("          <label for=\"AddressTextBox\">" + address_text + ":</label> &nbsp; ");
 				Output.WriteLine("          <input name=\"AddressTextBox\" type=\"text\" id=\"AddressTextBox\" class=\"sbkMsav_AddressBox sbk_Focusable\" value=\"\" placeholder=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" data-placeholder-text=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" onleave=\"address_box_changed(this);\" onchange=\"address_box_changed(this);\" onkeydown=\"address_keydown(event, this);\" /> &nbsp; ");
 				Output.WriteLine("          <button name=\"findButton\" id=\"findButton\" class=\"sbk_SearchButton\" onclick=\"map_address_geocode();return false;\" >" + find_button_text + "</button> &nbsp; ");
-				Output.WriteLine("          <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + scriptActionName + ";return false;\" >" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + currentMode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
+				Output.WriteLine("          <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\" >" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
                 Output.WriteLine("        </div>");
             }
             Output.WriteLine("    </td>");
@@ -330,17 +327,17 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (!show_coordinates)
             {
 	            Output.WriteLine("      <div id=\"sbkMsav_ShowCoordinateTab\">");
-                currentMode.Info_Browse_Mode = "1";
-                Output.WriteLine("        <span class=\"sbk_FauxUpwardTab\"><a href=\"" + currentMode.Redirect_URL() + "\">SHOW COORDINATES</a></span>");
-                currentMode.Info_Browse_Mode = "0";
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "1";
+                Output.WriteLine("        <span class=\"sbk_FauxUpwardTab\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">SHOW COORDINATES</a></span>");
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "0";
                 Output.WriteLine("      </div>");
             }
             else
             {
 				Output.WriteLine("      <div id=\"sbkMsav_HideCoordinateTab\">");
-                currentMode.Info_Browse_Mode = "0";
-				Output.WriteLine("        <span class=\"sbk_FauxUpwardTab\"><a href=\"" + currentMode.Redirect_URL() + "\">HIDE COORDINATES</a></span>");
-                currentMode.Info_Browse_Mode = "1";
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "0";
+				Output.WriteLine("        <span class=\"sbk_FauxUpwardTab\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">HIDE COORDINATES</a></span>");
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "1";
                 Output.WriteLine("      </div>");
             }
             Output.WriteLine("      <div id=\"map1\" style=\"width: " + width + "px; height: " + mapHeight + "px\"></div>");
@@ -382,10 +379,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			Output.WriteLine("<div id=\"sbk_QuickTips\">");
 
             // See if the FAQ is present for this collection
-            string language_code = currentMode.Language_Code;
+            string language_code = RequestSpecificValues.Current_Mode.Language_Code;
             if (language_code.Length > 0)
                 language_code = "_" + language_code;
-            string directory = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "\\aggregations\\" + currentMode.Aggregation + "\\extra";
+            string directory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "\\aggregations\\" + RequestSpecificValues.Current_Mode.Aggregation + "\\extra";
             string aggregation_specific_faq = String.Empty;
             if ( Directory.Exists( directory ))
             {
@@ -412,7 +409,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // If no aggregation level FAQ was found, look for a collection wide
             if (aggregation_specific_faq.Length == 0)
             {
-                directory = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "\\extra\\searchtips";
+                directory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "\\extra\\searchtips";
                 if (Directory.Exists(directory))
                 {
                     if (File.Exists(directory + "\\map_faq" + language_code + ".txt"))
@@ -446,7 +443,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("  <h1>Map Search FAQ</h1>");
                 Output.WriteLine("  <ul>");
                 Output.WriteLine("    <li>How do I search?");
-                if (currentCollection.Map_Search < 100)
+                if (RequestSpecificValues.Hierarchy_Object.Map_Search < 100)
                 {
                     Output.WriteLine("      <p class=\"tagline\">To perform a search, you first need to define your area or point of interest and then perform the search.  There are several ways to define your area of interest.  You can either enter an address to search or you can draw either a region or point on the map.  Once you have defined your search, click the <i>Search</i> button to discover any matches to that location.</p>");
                     Output.WriteLine("      <p class=\"tagline\">To search for addresses, type in an address and click on the <i>Find Address</i> button.   You may also use major landmark names, although addresses may work better.  Be sure to include the city and state in your search as well.   Once the address is located on the map, click <i>Search</i> to discover aerials which include that location. </p>");
@@ -463,7 +460,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("      <p class=\"tagline\">Selecting a rectangular area to search is simple once you understand the technique.  First, select the <i>Press to Select Area</i> button on the map.  Then, move to the top left corner of the region you wish to search and click and release the left mouse button.  As you move the mouse now you will notice a rectangle is being drawn which represents your region.  When you click and release the mouse again, you define the lower right corner of the region to search.  Do not press the mouse button and drag the mouse, as this will drag the map around, and will not define a region to select.  Once your region is correctly identified, press the <i>Search</i> button to view matching results.</p>");
                 Output.WriteLine("    </li>");
 
-                if (currentCollection.Map_Search < 100)
+                if (RequestSpecificValues.Hierarchy_Object.Map_Search < 100)
                 {
                     Output.WriteLine("    <li>I am having difficulty searching by address");
                     Output.WriteLine("      <p class=\"tagline\">Be sure to enter the complete address, including state and country.  You can also try to use the name of a major landmark, but using an address often works better.  Once you enter the address or major landmark name, press the <i>Find Address</i> button.  Look at the map and verify that the location found on the map matches your desired search.  Then, press the <i>Search</i> button to view matching results.</p>");

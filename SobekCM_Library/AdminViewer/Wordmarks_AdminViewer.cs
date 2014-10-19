@@ -11,17 +11,15 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Application_State;
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UploadiFive;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -44,31 +42,26 @@ namespace SobekCM.Library.AdminViewer
         private readonly string actionMessage;
 	    private readonly string wordmarkDirectory;
 	    private readonly List<string> loweredFiles;
-	    private readonly Dictionary<string, Wordmark_Icon> wordmarks;
+        private readonly Dictionary<string, Wordmark_Icon> wordmarks;
 
         #region Constructor
 
         /// <summary> Constructor for a new instance of the Wordmarks_AdminViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from editing an existing wordmark, deleting a wordmark, or creating a new wordmark is handled here in the constructor </remarks>
-        public Wordmarks_AdminViewer(User_Object User, SobekCM_Navigation_Object Current_Mode, Custom_Tracer Tracer) : base(User)
+        public Wordmarks_AdminViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Wordmarks_AdminViewer.Constructor", String.Empty);
-
-			// Save the mode and settings  here
-            currentMode = Current_Mode;
+            RequestSpecificValues.Tracer.Add_Trace("Wordmarks_AdminViewer.Constructor", String.Empty);
 
             // Set action message to nothing to start
             actionMessage = String.Empty;
 
-            // If the user cannot edit this, go back
-            if ((user == null ) || ((!user.Is_System_Admin) && ( !user.Is_Portal_Admin )))
+            // If the RequestSpecificValues.Current_User cannot edit this, go back
+            if ((RequestSpecificValues.Current_User == null ) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && ( !RequestSpecificValues.Current_User.Is_Portal_Admin )))
             {
-                currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
@@ -79,10 +72,10 @@ namespace SobekCM.Library.AdminViewer
 
 			// Get the list of all wordmarks
 			wordmarks = new Dictionary<string, Wordmark_Icon>();
-			SobekCM_Database.Populate_Icon_List(wordmarks, Tracer);
+            SobekCM_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
 
             // If this is a postback, handle any events first
-           // if (currentMode.isPostBack)
+           // if (RequestSpecificValues.Current_Mode.isPostBack)
            // {
                 try
                 {
@@ -101,13 +94,13 @@ namespace SobekCM.Library.AdminViewer
 							// so this is to delete a USED wordmark which is both a file AND in the database
 			                if (delete_value.IndexOf(".") < 0)
 			                {
-				                Tracer.Add_Trace("Wordmarks_AdminViewer.Constructor", "Delete wordmark '" + delete_value + "' from the database");
+                                RequestSpecificValues.Tracer.Add_Trace("Wordmarks_AdminViewer.Constructor", "Delete wordmark '" + delete_value + "' from the database");
 
 								// Get the wordmark, so we can also delete the file
 				                Wordmark_Icon deleteIcon = wordmarks[delete_value];
 
 								// Delete from the database
-				                if (SobekCM_Database.Delete_Icon(delete_value, Tracer))
+                                if (SobekCM_Database.Delete_Icon(delete_value, RequestSpecificValues.Tracer))
 				                {
 									// Set the deleted wordmark message
 					                actionMessage = "Deleted wordmark <i>" + delete_value + "</i>";
@@ -127,7 +120,7 @@ namespace SobekCM.Library.AdminViewer
 
 									// Repull the wordmark list now
 									wordmarks = new Dictionary<string, Wordmark_Icon>();
-									SobekCM_Database.Populate_Icon_List(wordmarks, Tracer);
+                                    SobekCM_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
 				                }
 				                else
 				                {
@@ -166,7 +159,7 @@ namespace SobekCM.Library.AdminViewer
 			                // Or.. was this a save request
 			                if (save_value.Length > 0)
 			                {
-				                Tracer.Add_Trace("Wordmarks_AdminViewer.Constructor", "Save wordmark '" + save_value + "'");
+				                RequestSpecificValues.Tracer.Add_Trace("Wordmarks_AdminViewer.Constructor", "Save wordmark '" + save_value + "'");
 
 				                // Was this to save a new interface (from the main page) or edit an existing (from the popup form)?
 				                if (save_value == new_wordmark_code)
@@ -176,7 +169,7 @@ namespace SobekCM.Library.AdminViewer
 					                string new_title = form["admin_wordmark_title"].Trim();
 
 					                // Save this new wordmark
-					                if (SobekCM_Database.Save_Icon(new_wordmark_code, new_file, new_link, new_title, Tracer) > 0)
+                                    if (SobekCM_Database.Save_Icon(new_wordmark_code, new_file, new_link, new_title, RequestSpecificValues.Tracer) > 0)
 					                {
 						                actionMessage = "Saved new wordmark <i>" + save_value + "</i>";
 					                }
@@ -192,7 +185,7 @@ namespace SobekCM.Library.AdminViewer
 					                string edit_title = form["form_wordmark_title"].Trim();
 
 					                // Save this existing wordmark
-					                if (SobekCM_Database.Save_Icon(save_value, edit_file, edit_link, edit_title, Tracer) > 0)
+                                    if (SobekCM_Database.Save_Icon(save_value, edit_file, edit_link, edit_title, RequestSpecificValues.Tracer) > 0)
 					                {
 						                actionMessage = "Edited existing wordmark <i>" + save_value + "</i>";
 					                }
@@ -204,7 +197,7 @@ namespace SobekCM.Library.AdminViewer
 
 								// Repull the wordmark list now
 								wordmarks = new Dictionary<string, Wordmark_Icon>();
-								SobekCM_Database.Populate_Icon_List(wordmarks, Tracer);
+                                SobekCM_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
 			                }
 		                }
 	                }
@@ -250,7 +243,7 @@ namespace SobekCM.Library.AdminViewer
 
 			Tracer.Add_Trace("Wordmarks_AdminViewer.Write_ItemNavForm_Closing", "Add any popup divisions for form elements");
 
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 
 			// Start this added form
 			string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
@@ -286,8 +279,8 @@ namespace SobekCM.Library.AdminViewer
 			// Add the buttons
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
 			Output.WriteLine("      <td colspan=\"2\">");
-			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return wordmark_form_close();\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Save changes to this existing wordmark\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return wordmark_form_close();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this existing wordmark\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("  </table>");
@@ -296,7 +289,7 @@ namespace SobekCM.Library.AdminViewer
 			Tracer.Add_Trace("Wordmarks_AdminViewer.Write_HTML", "Write the HTML for the rest of the form");
 
 			Output.WriteLine();
-			Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+			Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
 			if (actionMessage.Length > 0)
@@ -305,7 +298,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
 			}
 
-			Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/wordmarks\" target=\"ADMIN_WORDMARK_HELP\" >click here to view the help page</a>.</p>");
+			Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/wordmarks\" target=\"ADMIN_WORDMARK_HELP\" >click here to view the help page</a>.</p>");
 
 
 
@@ -315,7 +308,7 @@ namespace SobekCM.Library.AdminViewer
 	        if (loweredFiles.Count > 0)
 	        {
 
-		        Output.WriteLine("  <div style=\"width:210px; float:right;\"><img id=\"sbkWav_SelectedImage\" name=\"sbkWav_SelectedImage\" src=\"" + currentMode.Base_URL + "design/wordmarks/" + loweredFiles[0] + "\" alt=\"Missing\" Title=\"Selected image file\" /></div>");
+		        Output.WriteLine("  <div style=\"width:210px; float:right;\"><img id=\"sbkWav_SelectedImage\" name=\"sbkWav_SelectedImage\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/wordmarks/" + loweredFiles[0] + "\" alt=\"Missing\" Title=\"Selected image file\" /></div>");
 
 		        Output.WriteLine("    <div class=\"sbkWav_NewDiv\">");
 				Output.WriteLine("      <table class=\"sbkAdm_PopupTable\">");
@@ -330,7 +323,7 @@ namespace SobekCM.Library.AdminViewer
 		        Output.WriteLine("        <tr>");
 		        Output.WriteLine("          <td><label for=\"admin_wordmark_file\">Image File:</label></td>");
 		        Output.WriteLine("          <td>");
-		        Output.WriteLine("            <select class=\"sbkWav_medium_input\" name=\"admin_wordmark_file\" id=\"admin_wordmark_file\" onchange=\"wordmark_select_changed('" + currentMode.Base_URL + "design/wordmarks/');\">");
+		        Output.WriteLine("            <select class=\"sbkWav_medium_input\" name=\"admin_wordmark_file\" id=\"admin_wordmark_file\" onchange=\"wordmark_select_changed('" + RequestSpecificValues.Current_Mode.Base_URL + "design/wordmarks/');\">");
 
 		        foreach (string thisFile in loweredFiles)
 		        {
@@ -349,7 +342,7 @@ namespace SobekCM.Library.AdminViewer
 		        Output.WriteLine("        <tr><td><label for=\"admin_wordmark_link\">Link:</label></td><td><input class=\"sbkWav_large_input sbkAdmin_Focusable\" name=\"admin_wordmark_link\" id=\"admin_wordmark_link\" type=\"text\" value=\"\" /></td></tr>");
 
 				// Add the SAVE button
-				Output.WriteLine("        <tr style=\"height:30px; text-align: center;\"><td colspan=\"2\"><button title=\"Save new wordmark\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_wordmark();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+				Output.WriteLine("        <tr style=\"height:30px; text-align: center;\"><td colspan=\"2\"><button title=\"Save new wordmark\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_wordmark();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
 		        Output.WriteLine("      </table>");
 		        Output.WriteLine("    </div>");
 	        }
@@ -396,7 +389,7 @@ namespace SobekCM.Library.AdminViewer
 		        foreach (string thisIcon in loweredFiles)
 		        {
 			        Output.Write("      <td style=\"width:210px;\">");
-			        Output.Write("<img style=\"border: 0;\" class=\"sbkWav_ItemWordmark\" src=\"" + currentMode.Base_URL + "design/wordmarks/" + thisIcon + "\" alt=\"Missing Thumbnail\" title=\"" + thisIcon + "\" />");
+			        Output.Write("<img style=\"border: 0;\" class=\"sbkWav_ItemWordmark\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/wordmarks/" + thisIcon + "\" alt=\"Missing Thumbnail\" title=\"" + thisIcon + "\" />");
 			        Output.Write("<br /><span class=\"sbkWav_ItemWordmarkTitle\">" + thisIcon + "</span>");
 
 			        // Build the action links
@@ -445,8 +438,8 @@ namespace SobekCM.Library.AdminViewer
 		        {
 			        Output.Write("      <td style=\"width:210px;\">");
 			        if (thisIcon.Link.Length > 0)
-				        Output.Write("<a href=\"" + thisIcon.Link.Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%?URLOPTS%>", "") + "\" target=\"_blank\">");
-			        Output.Write("<img style=\"border: 0;\" class=\"sbkWav_ItemWordmarkTitle\" src=\"" + currentMode.Base_URL + "design/wordmarks/" + thisIcon.Image_FileName + "\"");
+				        Output.Write("<a href=\"" + thisIcon.Link.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%?URLOPTS%>", "") + "\" target=\"_blank\">");
+			        Output.Write("<img style=\"border: 0;\" class=\"sbkWav_ItemWordmarkTitle\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/wordmarks/" + thisIcon.Image_FileName + "\"");
 			        if (thisIcon.Title.Length > 0)
 				        Output.Write(" title=\"" + thisIcon.Title + "\"");
 			        Output.Write(" />");
@@ -456,7 +449,7 @@ namespace SobekCM.Library.AdminViewer
 
 			        // Build the action links
 			        Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
-			        Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return wordmark_form_popup( '" + thisIcon.Code + "', '" + thisIcon.Title.Replace("'", "") + "','" + thisIcon.Image_FileName + "','" + thisIcon.Link + "');\">edit</a> | ");
+			        Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return wordmark_form_popup( '" + thisIcon.Code + "', '" + thisIcon.Title.Replace("'", "") + "','" + thisIcon.Image_FileName + "','" + thisIcon.Link + "');\">edit</a> | ");
 			        Output.Write("<a title=\"Click to delete\" href=\"javascript:delete_wordmark('" + thisIcon.Code + "');\">delete</a> )</span>");
 			        Output.WriteLine("</td>");
 
@@ -509,7 +502,7 @@ namespace SobekCM.Library.AdminViewer
 
 			UploadiFiveControl uploadControl = new UploadiFiveControl();
 			uploadControl.UploadPath = wordmarkDirectory;
-			uploadControl.UploadScript = currentMode.Base_URL + "UploadiFiveFileHandler.ashx";
+			uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
 			uploadControl.AllowedFileExtensions = ".jpg,.png,.gif,.bmp,.jpeg";
 			uploadControl.RemoveCompleted = true;
 			uploadControl.SubmitWhenQueueCompletes = true;

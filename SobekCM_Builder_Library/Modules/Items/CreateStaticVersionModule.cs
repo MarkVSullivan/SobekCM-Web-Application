@@ -2,7 +2,6 @@
 
 using System.IO;
 using SobekCM.Library;
-using SobekCM.Library.Settings;
 
 #endregion
 

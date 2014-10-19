@@ -7,26 +7,17 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Divisions;
-using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Items;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.SiteMap;
-using SobekCM.Library.Skins;
-using SobekCM.Core.Users;
-using SobekCM.Library.WebContent;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -36,110 +27,13 @@ namespace SobekCM.Library.MainWriters
     /// <remarks> This class extends the abstract class <see cref="abstractMainWriter"/>. </remarks>
     public class Html_MainWriter : abstractMainWriter
     {
-        // HTML specific objects
-        private readonly Dictionary<string, string> aggregationAliases;
-        private readonly Checked_Out_Items_List checkedItems;
-        private readonly Aggregation_Code_Manager codeManager;
-        private readonly User_Object currentUser;
-	    private readonly SobekCM_Skin_Object htmlSkin;
-        private readonly Dictionary<string, Wordmark_Icon> iconList;
-        private readonly IP_Restriction_Ranges ipRestrictionInfo;
-        private readonly Item_Lookup_Object itemList;
-        private readonly SobekCM_Items_In_Title itemsInTitle;
-        private readonly Public_User_Folder publicFolder;
-        private readonly Recent_Searches searchHistory;
-        private readonly SobekCM_SiteMap siteMap;
-        private readonly Statistics_Dates statsDateRange;
-        private readonly List<Thematic_Heading> thematicHeadings;
-        private readonly Language_Support_Info translator;
-        private readonly Portal_List urlPortals;
-        private readonly SobekCM_Skin_Collection webSkins;
-        private readonly List<User_Group> userGroups;
-        private readonly List<string> searchStopWords;
-
         // Special HTML sub-writers that need to have some persistance between methods
         private readonly abstractHtmlSubwriter subwriter;
 
-	    /// <summary> Constructor for a new instance of the Text_MainWriter class </summary>
-	    /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-	    /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
-	    /// <param name="Results_Statistics"> Information about the entire set of results for a search or browse </param>
-	    /// <param name="Paged_Results"> Single page of results for a search or browse, within the entire set </param>
-	    /// <param name="Browse_Object"> Object contains all the basic information about any browse or info display </param>
-	    /// <param name="Current_Item"> Current item to display </param>
-	    /// <param name="Current_Page"> Current page within the item</param>
-	    /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
-	    /// <param name="Current_User"> Currently logged on user </param>
-	    /// <param name="Translator"> Language support object which handles simple translational duties </param>
-	    /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-	    /// <param name="Item_List"> Lookup object used to pull basic information about any item loaded into this library </param>
-	    /// <param name="Stats_Date_Range"> Object contains the start and end dates for the statistical data in the database </param>
-	    /// <param name="Search_History"> List of recent searches performed against this digital library </param>
-	    /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the wordmarks subpage </param>
-	    /// <param name="Thematic_Headings"> Headings under which all the highlighted collections on the main home page are organized </param>
-	    /// <param name="Public_Folder"> Object contains the information about the public folder to display </param>
-	    /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions </param>
-	    /// <param name="Web_Skin_Collection"> Collection of all the web skins </param>
-	    /// <param name="Checked_Items"> List of all items which are currently checked out for single fair use and the IP address currently viewing the item</param>
-	    /// <param name="IP_Restrictions"> Any possible restriction on item access by IP ranges </param>
-	    /// <param name="URL_Portals"> List of all web portals into this system </param>
-	    /// <param name="Site_Map"> Optional site map object used to render a navigational tree-view on left side of static web content pages </param>
-	    /// <param name="Items_In_Title"> List of items within the current title ( used for the Item Group display )</param>
-	    /// <param name="Static_Web_Content"> HTML content-based browse, info, or imple CMS-style web content objects.  These are objects which are read from a static HTML file and much of the head information must be maintained </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-	    public Html_MainWriter(SobekCM_Navigation_Object Current_Mode,
-            Item_Aggregation Hierarchy_Object,
-            Search_Results_Statistics Results_Statistics,
-            List<iSearch_Title_Result> Paged_Results,
-            Item_Aggregation_Child_Page Browse_Object,
-            SobekCM_Item Current_Item,
-            Page_TreeNode Current_Page,
-            SobekCM_Skin_Object HTML_Skin,
-            User_Object Current_User,
-            Language_Support_Info Translator,
-            Aggregation_Code_Manager Code_Manager,
-            Item_Lookup_Object Item_List,
-            Statistics_Dates Stats_Date_Range,
-            Recent_Searches Search_History,
-            Dictionary<string, Wordmark_Icon> Icon_Dictionary,
-            List<Thematic_Heading> Thematic_Headings,
-            Public_User_Folder Public_Folder,
-            Dictionary<string, string> Aggregation_Aliases,
-            SobekCM_Skin_Collection Web_Skin_Collection,
-            Checked_Out_Items_List Checked_Items,
-            IP_Restriction_Ranges IP_Restrictions,
-            Portal_List URL_Portals,
-            SobekCM_SiteMap Site_Map,
-            SobekCM_Items_In_Title Items_In_Title,
-            HTML_Based_Content Static_Web_Content,
-            List<User_Group> UserGroups,
-            List<string> Search_Stop_Words,
-            Custom_Tracer Tracer )
-            : base(Current_Mode, Hierarchy_Object, Results_Statistics, Paged_Results, Browse_Object,  Current_Item, Current_Page, Static_Web_Content)
+	    /// <summary> Constructor for a new instance of the Html_MainWriter class </summary>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+	    public Html_MainWriter( RequestCache RequestSpecificValues ) : base( RequestSpecificValues )
 	    {
-            // Save parameters
-            htmlSkin = HTML_Skin;
-            translator = Translator;
-            codeManager = Code_Manager;
-            itemList = Item_List;
-            statsDateRange = Stats_Date_Range;
-            searchHistory = Search_History;
-            currentUser = Current_User;
-            iconList = Icon_Dictionary;
-            thematicHeadings = Thematic_Headings;
-            publicFolder = Public_Folder;
-            aggregationAliases = Aggregation_Aliases;
-            webSkins = Web_Skin_Collection;
-            checkedItems = Checked_Items;
-            ipRestrictionInfo = IP_Restrictions;
-            urlPortals = URL_Portals;
-            siteMap = Site_Map;
-            itemsInTitle = Items_In_Title;
-	        userGroups = UserGroups;
-            searchStopWords = Search_Stop_Words;
-
-            // Set some defaults
-
 		    // Handle basic events which may be fired by the internal header
             if (HttpContext.Current.Request.Form["internal_header_action"] != null)
             {
@@ -154,13 +48,13 @@ namespace SobekCM.Library.MainWriters
                     if ((internalHeaderAction == "hide") && (shown))
                     {
                         HttpContext.Current.Session["internal_header"] = "hidden";
-                        currentMode.Redirect();
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
                     }
                     if ((internalHeaderAction == "show") && (!shown))
                     {
                         HttpContext.Current.Session["internal_header"] = "shown";
-                        currentMode.Redirect();
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
                     }
                 }
@@ -170,37 +64,37 @@ namespace SobekCM.Library.MainWriters
             {
 
                 // Create the html sub writer now
-                switch (Current_Mode.Mode)
+                switch (RequestSpecificValues.Current_Mode.Mode)
                 {
                     case Display_Mode_Enum.Internal:
-                        subwriter = new Internal_HtmlSubwriter(iconList, currentUser, codeManager);
+                        subwriter = new Internal_HtmlSubwriter(RequestSpecificValues);
                         break;
 
                     case Display_Mode_Enum.Statistics:
-                        subwriter = new Statistics_HtmlSubwriter(searchHistory, codeManager, statsDateRange);
+                        subwriter = new Statistics_HtmlSubwriter(RequestSpecificValues);
                         break;
 
                     case Display_Mode_Enum.Preferences:
-                        subwriter = new Preferences_HtmlSubwriter(currentMode);
+                        subwriter = new Preferences_HtmlSubwriter(RequestSpecificValues);
                         break;
 
                     case Display_Mode_Enum.Error:
-                        subwriter = new Error_HtmlSubwriter(false);
+                        subwriter = new Error_HtmlSubwriter(false, RequestSpecificValues);
                         // Send the email now
-                        if (currentMode.Caught_Exception != null)
+                        if (RequestSpecificValues.Current_Mode.Caught_Exception != null)
                         {
-                            if (currentMode.Error_Message.Length == 0)
-                                currentMode.Error_Message = "Unknown exception caught";
-                            Email_Information(currentMode.Error_Message, currentMode.Caught_Exception, Tracer, false);
+                            if (RequestSpecificValues.Current_Mode.Error_Message.Length == 0)
+                                RequestSpecificValues.Current_Mode.Error_Message = "Unknown exception caught";
+                            Email_Information(RequestSpecificValues.Current_Mode.Error_Message, RequestSpecificValues.Current_Mode.Caught_Exception, RequestSpecificValues.Tracer, false);
                         }
                         break;
 
                     case Display_Mode_Enum.Legacy_URL:
-                        subwriter = new LegacyUrl_HtmlSubwriter();
+                        subwriter = new LegacyUrl_HtmlSubwriter(RequestSpecificValues);
                         break;
 
                     case Display_Mode_Enum.Item_Print:
-                        subwriter = new Print_Item_HtmlSubwriter(currentItem, codeManager, translator, currentMode);
+                        subwriter = new Print_Item_HtmlSubwriter( RequestSpecificValues );
                         break;
 
                     case Display_Mode_Enum.Contact:
@@ -249,41 +143,41 @@ namespace SobekCM.Library.MainWriters
                         {
 
                         }
-                        subwriter = new Contact_HtmlSubwriter(lastMode, builder.ToString(), currentMode, hierarchyObject);
+                        subwriter = new Contact_HtmlSubwriter(lastMode, builder.ToString(), RequestSpecificValues);
                         break;
 
 
                     case Display_Mode_Enum.Contact_Sent:
-                        subwriter = new Contact_HtmlSubwriter(String.Empty, String.Empty, currentMode, hierarchyObject);
+                        subwriter = new Contact_HtmlSubwriter(String.Empty, String.Empty, RequestSpecificValues);
                         break;
 
                     case Display_Mode_Enum.Simple_HTML_CMS:
-                        subwriter = new Web_Content_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, htmlBasedContent, siteMap);
+                        subwriter = new Web_Content_HtmlSubwriter(RequestSpecificValues);
                         break;
 
                     case Display_Mode_Enum.My_Sobek:
-                        subwriter = new MySobek_HtmlSubwriter(results_statistics, paged_results, codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, currentItem, currentUser, iconList, statsDateRange, webSkins, userGroups, ipRestrictionInfo, Tracer);
+                        subwriter = new MySobek_HtmlSubwriter(RequestSpecificValues);
                         break;
 
                     case Display_Mode_Enum.Administrative:
-                        subwriter = new Admin_HtmlSubwriter(codeManager, itemList, hierarchyObject, htmlSkin, translator, currentMode, aggregationAliases, webSkins, currentUser, ipRestrictionInfo, iconList, urlPortals, thematicHeadings, Tracer);
+                        subwriter = new Admin_HtmlSubwriter(RequestSpecificValues);
                         break;
 
                     case Display_Mode_Enum.Results:
-                        subwriter = new Search_Results_HtmlSubwriter(results_statistics, paged_results, codeManager, translator, itemList, currentUser);
+                        subwriter = new Search_Results_HtmlSubwriter(RequestSpecificValues);
                         break;
 
                     case Display_Mode_Enum.Public_Folder:
-                        subwriter = new Public_Folder_HtmlSubwriter(results_statistics, paged_results, codeManager, translator, itemList, currentUser, publicFolder);
+                        subwriter = new Public_Folder_HtmlSubwriter(RequestSpecificValues);
                         break;
 
                     case Display_Mode_Enum.Search:
                     case Display_Mode_Enum.Aggregation:
-                        subwriter = new Aggregation_HtmlSubwriter(hierarchyObject, currentMode, htmlSkin, translator, thisBrowseObject, results_statistics, paged_results, codeManager, itemList, thematicHeadings, currentUser, htmlBasedContent, Tracer);
+                        subwriter = new Aggregation_HtmlSubwriter(RequestSpecificValues);
                         break;
 
                     case Display_Mode_Enum.Item_Display:
-                        if ((!currentMode.Invalid_Item) && (currentItem != null))
+                        if ((!RequestSpecificValues.Current_Mode.Invalid_Item) && (RequestSpecificValues.Current_Item != null))
                         {
                             bool show_toc = false;
                             if (HttpContext.Current.Session["Show TOC"] != null)
@@ -293,9 +187,9 @@ namespace SobekCM.Library.MainWriters
 
                             // Check that this item is not checked out by another user
                             bool itemCheckedOutByOtherUser = false;
-                            if (currentItem.Behaviors.CheckOut_Required)
+                            if (RequestSpecificValues.Current_Item.Behaviors.CheckOut_Required)
                             {
-                                if (!checkedItems.Check_Out(currentItem.Web.ItemID, HttpContext.Current.Request.UserHostAddress))
+                                if (!Engine_ApplicationCache_Gateway.Checked_List.Check_Out(RequestSpecificValues.Current_Item.Web.ItemID, HttpContext.Current.Request.UserHostAddress))
                                 {
                                     itemCheckedOutByOtherUser = true;
                                 }
@@ -303,23 +197,23 @@ namespace SobekCM.Library.MainWriters
 
                             // Check to see if this is IP restricted
                             string restriction_message = String.Empty;
-                            if (currentItem.Behaviors.IP_Restriction_Membership > 0)
+                            if (RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership > 0)
                             {
                                 if (HttpContext.Current != null)
                                 {
                                     int user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
-                                    int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
+                                    int comparison = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership & user_mask;
                                     if (comparison == 0)
                                     {
-                                        int restriction = currentItem.Behaviors.IP_Restriction_Membership;
+                                        int restriction = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
                                         int restriction_counter = 0;
                                         while (restriction % 2 != 1)
                                         {
                                             restriction = restriction >> 1;
                                             restriction_counter++;
                                         }
-                                        if (ipRestrictionInfo.Count > 0)
-                                            restriction_message = ipRestrictionInfo[restriction_counter].Item_Restricted_Statement;
+                                        if (Engine_ApplicationCache_Gateway.IP_Restrictions.Count > restriction_counter)
+                                            restriction_message = Engine_ApplicationCache_Gateway.IP_Restrictions[restriction_counter].Item_Restricted_Statement;
                                         else
                                             restriction_message = "Restricted Item";
                                     }
@@ -327,13 +221,13 @@ namespace SobekCM.Library.MainWriters
                             }
 
                             // Create the item viewer writer
-                            subwriter = new Item_HtmlSubwriter(currentItem, currentPage, currentUser, codeManager, translator, show_toc, (InstanceWide_Settings_Singleton.Settings.JP2ServerUrl.Length > 0), currentMode, hierarchyObject, restriction_message, itemsInTitle, Tracer);
+                            subwriter = new Item_HtmlSubwriter( show_toc, (UI_ApplicationCache_Gateway.Settings.JP2ServerUrl.Length > 0), restriction_message, RequestSpecificValues );
                             ((Item_HtmlSubwriter)subwriter).Item_Checked_Out_By_Other_User = itemCheckedOutByOtherUser;
                         }
                         else
                         {
                             // Create the invalid item html subwrite and write the HTML
-                            subwriter = new Error_HtmlSubwriter(true);
+                            subwriter = new Error_HtmlSubwriter(true, RequestSpecificValues);
                         }
                         break;
 
@@ -344,33 +238,22 @@ namespace SobekCM.Library.MainWriters
                 // Send to the dashboard
                 if ((HttpContext.Current.Request.UserHostAddress == "127.0.0.1") || (HttpContext.Current.Request.UserHostAddress == HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"]) || (HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0))
                 {
-                    Tracer.Add_Trace("Html_MainWriter.Constructor", "Exception caught!", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("Html_MainWriter.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("Html_MainWriter.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", "Exception caught!", Custom_Trace_Type_Enum.Error);
+                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.Message, Custom_Trace_Type_Enum.Error);
+                    RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Constructor", ee.StackTrace, Custom_Trace_Type_Enum.Error);
 
                     // Wrap this into the SobekCM Exception
-                    SobekCM_Traced_Exception newException = new SobekCM_Traced_Exception("Exception caught while building the mode-specific HTML Subwriter", ee, Tracer);
+                    SobekCM_Traced_Exception newException = new SobekCM_Traced_Exception("Exception caught while building the mode-specific HTML Subwriter", ee, RequestSpecificValues.Tracer);
 
                     // Save this to the session state, and then forward to the dashboard
                     HttpContext.Current.Session["Last_Exception"] = newException;
                     HttpContext.Current.Response.Redirect("dashboard.aspx", false);
-                    Current_Mode.Request_Completed = true;
-
-                    return;
+                    RequestSpecificValues.Current_Mode.Request_Completed = true;
                 }
                 else
                 {
-                    subwriter = new Error_HtmlSubwriter(false);
+                    subwriter = new Error_HtmlSubwriter(false, RequestSpecificValues);
                 }
-            }
-
-
-            if (subwriter != null)
-            {
-                subwriter.Mode = currentMode;
-                subwriter.Skin = htmlSkin;
-                subwriter.Current_Aggregation = hierarchyObject;
-                subwriter.Search_Stop_Words = searchStopWords;
             }
         }
 
@@ -383,7 +266,7 @@ namespace SobekCM.Library.MainWriters
         {
             get
             {
-                switch (currentMode.Mode)
+                switch (RequestSpecificValues.Current_Mode.Mode)
                 {
                     case Display_Mode_Enum.Item_Print:
                     case Display_Mode_Enum.Internal:
@@ -396,16 +279,16 @@ namespace SobekCM.Library.MainWriters
                         return false;
 
                     case Display_Mode_Enum.Simple_HTML_CMS:
-                        return siteMap != null;
+                        return RequestSpecificValues.Site_Map != null;
 
                     case Display_Mode_Enum.Aggregation:
-		                if ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
+		                if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home) || (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 		                {
-			                if ((currentMode.Aggregation.Length != 0) && (currentMode.Aggregation.ToUpper() != "ALL"))
+			                if ((RequestSpecificValues.Current_Mode.Aggregation.Length != 0) && (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() != "ALL"))
 			                {
 				                return false;
 			                }
-			                return (currentMode.Home_Type == Home_Type_Enum.Tree_Collapsed) || (currentMode.Home_Type == Home_Type_Enum.Tree_Expanded);
+			                return (RequestSpecificValues.Current_Mode.Home_Type == Home_Type_Enum.Tree_Collapsed) || (RequestSpecificValues.Current_Mode.Home_Type == Home_Type_Enum.Tree_Expanded);
 		                }
 		                return true;
 
@@ -450,7 +333,7 @@ namespace SobekCM.Library.MainWriters
 		}
 
         /// <summary> Gets the enumeration of the type of main writer </summary>
-        /// <value> This property always returns the enumerational value <see cref="SobekCM.Library.Navigation.Writer_Type_Enum.HTML"/>. </value>
+        /// <value> This property always returns the enumerational value <see cref="SobekCM.UI_Library.Navigation.Writer_Type_Enum.HTML"/>. </value>
         public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.HTML; } }
 
         /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
@@ -461,19 +344,19 @@ namespace SobekCM.Library.MainWriters
         public override void Add_Controls( PlaceHolder TOC_Place_Holder, PlaceHolder Main_Place_Holder, Custom_Tracer Tracer)
         {
             // If execution should end, do it now
-            if (currentMode.Request_Completed)
+            if (RequestSpecificValues.Current_Mode.Request_Completed)
                 return;
 
             Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Adding any necessary controls to the placeholders on the page");
 
             // Render HTML and add controls depending on the current mode
-            switch (currentMode.Mode)
+            switch (RequestSpecificValues.Current_Mode.Mode)
             {
                 #region Start adding HTML and controls for SIMPLE WEB CONTENT TEXT mode
 
                 case Display_Mode_Enum.Simple_HTML_CMS:
                     // Add any necessary controls
-                    if (siteMap != null)
+                    if (RequestSpecificValues.Site_Map != null)
                     {
                         ((Web_Content_HtmlSubwriter)subwriter).Add_Controls(Main_Place_Holder, Tracer);
                     }
@@ -537,9 +420,9 @@ namespace SobekCM.Library.MainWriters
 					if (searchResultsSub != null )
                     {
                         // Make sure the corresponding 'search' is the latest
-                        currentMode.Mode = Display_Mode_Enum.Search;
-                        HttpContext.Current.Session["LastSearch"] = currentMode.Redirect_URL();
-                        currentMode.Mode = Display_Mode_Enum.Results;
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Search;
+                        HttpContext.Current.Session["LastSearch"] = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
 
                         // Add the controls 
 						searchResultsSub.Add_Controls(Main_Place_Holder, Tracer, null);
@@ -613,7 +496,7 @@ namespace SobekCM.Library.MainWriters
             if ( String.IsNullOrEmpty(thisTitle))
                 thisTitle = "{0}";
 
-            return String.Format(thisTitle, currentMode.SobekCM_Instance_Abbreviation);
+            return String.Format(thisTitle, RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation);
         }
 
         /// <summary> Writes the style references and other data to the HEAD portion of the web page </summary>
@@ -624,7 +507,7 @@ namespace SobekCM.Library.MainWriters
             Tracer.Add_Trace("Html_MainWriter.Add_Style_References", "Adding style references and apple touch icon to HTML");
 
             // A couple extraordinary cases
-            switch (currentMode.Mode)
+            switch (RequestSpecificValues.Current_Mode.Mode)
             {
                 case Display_Mode_Enum.Reset:
                 case Display_Mode_Enum.Item_Cache_Reload:
@@ -635,27 +518,27 @@ namespace SobekCM.Library.MainWriters
 
             // Write the style sheet to use 
 #if DEBUG
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 
 #endif
 
 			// Always add jQuery library (changed as of 7/8/2013)
-            if ((currentMode.Mode != Display_Mode_Enum.Item_Display) || (currentMode.ViewerCode != "pageturner"))
+            if ((RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.ViewerCode != "pageturner"))
             {
 #if DEBUG
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_full.js\"></script>");
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.js\"></script>");
-                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_full.js\"></script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.qtip.min.js\"></script>");
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
 #else
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
 
-     //           Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.js\"></script>");
-                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
+     //           Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.qtip.min.js\"></script>");
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
 
 #endif
 			}
@@ -674,31 +557,31 @@ namespace SobekCM.Library.MainWriters
 			else
 			{
 				Output.WriteLine("  <!--[if lt IE 9]>");
-				Output.WriteLine("    <script src=\"" + currentMode.Base_URL + "default/scripts/html5shiv/html5shiv.js\"></script>");
+				Output.WriteLine("    <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/html5shiv/html5shiv.js\"></script>");
 				Output.WriteLine("  <![endif]-->");
 			}
 
             // Add the special code for the html subwriter
             if (subwriter != null)
-                subwriter.Write_Within_HTML_Head(Output, Tracer);
+                subwriter.Write_Within_HTML_Head(Output, RequestSpecificValues.Tracer);
 
             // Include the interface's style sheet if it has one
-            if ((htmlSkin != null) && (htmlSkin.CSS_Style.Length > 0))
+            if ((RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.CSS_Style.Length > 0))
             {
-				Output.WriteLine("  <link href=\"" + currentMode.Base_URL + htmlSkin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
             }
 
 			// Finally add the aggregation-level CSS if it exists
-			if (((currentMode.Mode == Display_Mode_Enum.Aggregation) || (currentMode.Mode == Display_Mode_Enum.Search) || (currentMode.Mode == Display_Mode_Enum.Results)) && (hierarchyObject != null) && (hierarchyObject.CSS_File.Length > 0))
+            if (((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Search) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results)) && (RequestSpecificValues.Hierarchy_Object != null) && (RequestSpecificValues.Hierarchy_Object.CSS_File.Length > 0))
 			{
-				Output.WriteLine("  <link href=\"" + currentMode.Base_Design_URL + "aggregations/" + hierarchyObject.Code + "/" + hierarchyObject.CSS_File + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/" + RequestSpecificValues.Hierarchy_Object.CSS_File + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}
 
             // Add a printer friendly CSS
-            Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + currentMode.Base_URL + "default/print.css\" type=\"text/css\" media=\"print\" /> ");
+            Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/print.css\" type=\"text/css\" media=\"print\" /> ");
 
             // Add the apple touch icon
-            Output.WriteLine("  <link rel=\"apple-touch-icon\" href=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Skin + "/iphone-icon.png\" />");
+            Output.WriteLine("  <link rel=\"apple-touch-icon\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Skin + "/iphone-icon.png\" />");
         }
 
 
@@ -714,7 +597,7 @@ namespace SobekCM.Library.MainWriters
 
             // Handles special case where a message should be displayed to the user
             // from a previous action
-            if (!currentMode.isPostBack)
+            if (!RequestSpecificValues.Current_Mode.isPostBack)
             {
                 if ((HttpContext.Current.Session["ON_LOAD_MESSAGE"] != null) || (HttpContext.Current.Session["ON_LOAD_WINDOW"] != null))
                 {
@@ -829,7 +712,7 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-			if ((currentMode.isPostBack) && (currentMode.Mode != Display_Mode_Enum.My_Sobek) && (currentMode.Mode != Display_Mode_Enum.Administrative)) return;
+			if ((RequestSpecificValues.Current_Mode.isPostBack) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative)) return;
             if (subwriter == null) return;
 
             Tracer.Add_Trace("Html_MainWriter.Write_Final_HTML", String.Empty);
@@ -865,27 +748,27 @@ namespace SobekCM.Library.MainWriters
 		        return;
 
             // Should the internal header be added?
-            if ((subwriter != null) && (currentMode.Mode != Display_Mode_Enum.My_Sobek) && (currentMode.Mode != Display_Mode_Enum.Administrative) && (currentUser != null))
+            if ((subwriter != null) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative) && (RequestSpecificValues.Current_User != null))
             {
 
                 bool displayHeader = false;
-                if (( currentUser.Is_Internal_User ) || ( currentUser.Is_System_Admin ))
+                if (( RequestSpecificValues.Current_User.Is_Internal_User ) || ( RequestSpecificValues.Current_User.Is_System_Admin ))
                 {
                     displayHeader = true;
                 }
                 else
                 {
-                    switch ( currentMode.Mode )
+                    switch ( RequestSpecificValues.Current_Mode.Mode )
                     {
                         case Display_Mode_Enum.Item_Display:
-                            if (currentUser.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
+                            if (RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
                                 displayHeader = true;
                             break;
 
                         case Display_Mode_Enum.Aggregation:
                         case Display_Mode_Enum.Results:
                         case Display_Mode_Enum.Search:
-                            if (( currentUser.Is_Aggregation_Curator( currentMode.Aggregation )) || ( currentUser.Can_Edit_All_Items( currentMode.Aggregation )))
+                            if (( RequestSpecificValues.Current_User.Is_Aggregation_Curator( RequestSpecificValues.Current_Mode.Aggregation )) || ( RequestSpecificValues.Current_User.Can_Edit_All_Items( RequestSpecificValues.Current_Mode.Aggregation )))
                             {
                                 displayHeader = true;
                             }
@@ -895,7 +778,7 @@ namespace SobekCM.Library.MainWriters
                 
                 if (( displayHeader ) && ( !behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
                 {
-                    string return_url = currentMode.Redirect_URL();
+                    string return_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                     if ((HttpContext.Current != null) && (HttpContext.Current.Session["Original_URL"] != null))
                         return_url = HttpContext.Current.Session["Original_URL"].ToString();
 
@@ -919,7 +802,7 @@ namespace SobekCM.Library.MainWriters
                     }
                     else
                     {
-                        subwriter.Write_Internal_Header_HTML(Output, currentUser);
+                        subwriter.Write_Internal_Header_HTML(Output, RequestSpecificValues.Current_User);
                     }
 
                     Output.WriteLine("</form>");
@@ -929,43 +812,43 @@ namespace SobekCM.Library.MainWriters
             }
 
             // Get the url options
-            string url_options = currentMode.URL_Options();
+            string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
             string modified_url_options = String.Empty;
             if (url_options.Length > 0)
                 modified_url_options = "?" + url_options;
 
 			// Determine which header and footer to display
-			bool useItemHeader = (currentMode.Mode == Display_Mode_Enum.Item_Display) || (currentMode.Mode == Display_Mode_Enum.Item_Print) || (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter));
+			bool useItemHeader = (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Print) || (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter));
 			
             // Create the breadcrumbs text
             string breadcrumbs = "&nbsp; &nbsp; ";
 			if (useItemHeader)
 			{
-				StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>");
+				StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home</a>");
 
 				int codes_added = 0;
-				if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
+				if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
 				{
-					breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL + currentMode.Aggregation + modified_url_options + "\">" + codeManager.Get_Collection_Short_Name(currentMode.Aggregation) + "</a>");
+					breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation) + "</a>");
 					codes_added++;
 				}
 
-				if (currentItem != null)
+				if (RequestSpecificValues.Current_Item != null)
 				{
-					if (currentItem.Behaviors.Aggregation_Count > 0)
+					if (RequestSpecificValues.Current_Item.Behaviors.Aggregation_Count > 0)
 					{
-						foreach (Aggregation_Info aggregation in currentItem.Behaviors.Aggregations)
+						foreach (Aggregation_Info aggregation in RequestSpecificValues.Current_Item.Behaviors.Aggregations)
 						{
 							string aggrCode = aggregation.Code;
-							if (aggrCode.ToLower() != currentMode.Aggregation)
+							if (aggrCode.ToLower() != RequestSpecificValues.Current_Mode.Aggregation)
 							{
-								if ((aggrCode.ToUpper() != "I" + currentItem.Bib_Info.Source.Code.ToUpper()) &&
-									(aggrCode.ToUpper() != "I" + currentItem.Bib_Info.Location.Holding_Code.ToUpper()))
+								if ((aggrCode.ToUpper() != "I" + RequestSpecificValues.Current_Item.Bib_Info.Source.Code.ToUpper()) &&
+									(aggrCode.ToUpper() != "I" + RequestSpecificValues.Current_Item.Bib_Info.Location.Holding_Code.ToUpper()))
 								{
-									Item_Aggregation_Related_Aggregations thisAggr = codeManager[aggrCode];
+									Item_Aggregation_Related_Aggregations thisAggr = UI_ApplicationCache_Gateway.Aggregations[aggrCode];
 									if ((thisAggr != null) && (thisAggr.Active))
 									{
-										breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+										breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL +
 																  aggrCode.ToLower() + modified_url_options + "\">" +
 																  thisAggr.ShortName +
 																  "</a>");
@@ -980,41 +863,41 @@ namespace SobekCM.Library.MainWriters
 
 					if (codes_added < 5)
 					{
-						if (currentItem.Bib_Info.Source.Code.Length > 0) 
+						if (RequestSpecificValues.Current_Item.Bib_Info.Source.Code.Length > 0) 
 						{
 							// Add source code
-							string source_code = currentItem.Bib_Info.Source.Code;
+							string source_code = RequestSpecificValues.Current_Item.Bib_Info.Source.Code;
 							if ((source_code[0] != 'i') && (source_code[0] != 'I'))
 								source_code = "I" + source_code;
-							Item_Aggregation_Related_Aggregations thisSourceAggr = codeManager[source_code];
+							Item_Aggregation_Related_Aggregations thisSourceAggr = UI_ApplicationCache_Gateway.Aggregations[source_code];
 							if ((thisSourceAggr != null) && (!thisSourceAggr.Hidden) && (thisSourceAggr.Active))
 							{
 								string source_name = thisSourceAggr.ShortName;
 								if (source_name.ToUpper() != "ADDED AUTOMATICALLY")
 								{
-									breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+									breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL +
 															  source_code.ToLower() + modified_url_options + "\">" +
 															  source_name + "</a>");
 								}
 							}
 
 							// Add the holding code
-							if ((currentItem.Bib_Info.Location.Holding_Code.Length > 0) &&
-								(currentItem.Bib_Info.Location.Holding_Code != currentItem.Bib_Info.Source.Code))
+							if ((RequestSpecificValues.Current_Item.Bib_Info.Location.Holding_Code.Length > 0) &&
+								(RequestSpecificValues.Current_Item.Bib_Info.Location.Holding_Code != RequestSpecificValues.Current_Item.Bib_Info.Source.Code))
 							{
 								// Add holding code
-								string holding_code = currentItem.Bib_Info.Location.Holding_Code;
+								string holding_code = RequestSpecificValues.Current_Item.Bib_Info.Location.Holding_Code;
 								if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
 									holding_code = "I" + holding_code;
 
-								Item_Aggregation_Related_Aggregations thisAggr = codeManager[holding_code];
+								Item_Aggregation_Related_Aggregations thisAggr = UI_ApplicationCache_Gateway.Aggregations[holding_code];
 								if ((thisAggr != null) && (!thisAggr.Hidden) && (thisAggr.Active))
 								{
 									string holding_name = thisAggr.ShortName;
 
 									if (holding_name.ToUpper() != "ADDED AUTOMATICALLY")
 									{
-										breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+										breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL +
 																  holding_code.ToLower() + modified_url_options + "\">" +
 																  holding_name + "</a>");
 									}
@@ -1023,16 +906,16 @@ namespace SobekCM.Library.MainWriters
 						}
 						else
 						{
-							if (currentItem.Bib_Info.Location.Holding_Code.Length > 0)
+							if (RequestSpecificValues.Current_Item.Bib_Info.Location.Holding_Code.Length > 0)
 							{
 								// Add holding code
-								string holding_code = currentItem.Bib_Info.Location.Holding_Code;
+								string holding_code = RequestSpecificValues.Current_Item.Bib_Info.Location.Holding_Code;
 								if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
 									holding_code = "I" + holding_code;
-								string holding_name = codeManager.Get_Collection_Short_Name(holding_code);
+								string holding_name = UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(holding_code);
 								if (holding_name.ToUpper() != "ADDED AUTOMATICALLY")
 								{
-									breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
+									breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL +
 															  holding_code.ToLower() + modified_url_options + "\">" +
 															  holding_name + "</a>");
 								}
@@ -1044,35 +927,35 @@ namespace SobekCM.Library.MainWriters
 			}
 			else
 			{
-				switch (currentMode.Mode)
+				switch (RequestSpecificValues.Current_Mode.Mode)
 				{
 					case Display_Mode_Enum.Error:
-						breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
+						breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home</a>";
 						break;
 
 					case Display_Mode_Enum.Aggregation:
-						if ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
+						if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home) || (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 						{
-							if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
+							if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
 							{
-								breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
+								breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home</a>";
 							}
 						}
 						else
 						{
-							breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
-							if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
+							breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home</a>";
+							if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
 							{
-								breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL + currentMode.Aggregation + modified_url_options + "\">" + codeManager.Get_Collection_Short_Name(currentMode.Aggregation) + "</a>";
+								breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation) + "</a>";
 							}
 						}
 						break;
 
 					default:
-						breadcrumbs = "<a href=\"" + currentMode.Base_URL + modified_url_options + "\">" + currentMode.SobekCM_Instance_Abbreviation + " Home</a>";
-						if ((currentMode.Aggregation.Length > 0) && (currentMode.Aggregation != "all"))
+						breadcrumbs = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + modified_url_options + "\">" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home</a>";
+						if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation != "all"))
 						{
-							breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL + currentMode.Aggregation + modified_url_options + "\">" + codeManager.Get_Collection_Short_Name(currentMode.Aggregation) + "</a>";
+							breadcrumbs = breadcrumbs + " &nbsp;|&nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Aggregation + modified_url_options + "\">" + UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(RequestSpecificValues.Current_Mode.Aggregation) + "</a>";
 						}
 						break;
 				}
@@ -1081,14 +964,14 @@ namespace SobekCM.Library.MainWriters
             
             // Create the mySobek text
             string mySobekLinks = String.Empty;
-            if (!currentMode.Is_Robot)
+            if (!RequestSpecificValues.Current_Mode.Is_Robot)
             {
-                string mySobekText = "my" + currentMode.SobekCM_Instance_Abbreviation;
+                string mySobekText = "my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
                 string mySobekOptions = url_options;
                 string mySobekLogoutOptions = url_options;
                 string return_url = String.Empty;
                 if (( HttpContext.Current != null ) && ( HttpContext.Current.Items["Original_URL"] != null ))
-                    return_url = HttpContext.Current.Items["Original_URL"].ToString().ToLower().Replace(currentMode.Base_URL.ToLower(), "");
+                    return_url = HttpContext.Current.Items["Original_URL"].ToString().ToLower().Replace(RequestSpecificValues.Current_Mode.Base_URL.ToLower(), "");
                 if (return_url.IndexOf("?") > 0)
                     return_url = return_url.Substring(0, return_url.IndexOf("?"));
                 if (return_url.IndexOf("my/") == 0)
@@ -1132,33 +1015,33 @@ namespace SobekCM.Library.MainWriters
 
                 if (( HttpContext.Current != null ) && (HttpContext.Current.Session["user"] == null))
                 {
-                    mySobekLinks = "<a href=\"" + currentMode.Base_URL + "my/logon" + mySobekOptions + "\">" + mySobekText + " Home</a>";
+                    mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logon" + mySobekOptions + "\">" + mySobekText + " Home</a>";
                 }
                 else
                 {
                     User_Object tempObject = ((User_Object)HttpContext.Current.Session["user"]);
                     if (tempObject.Nickname.Length > 0)
                     {
-                        mySobekLinks = "<a href=\"" + currentMode.Base_URL + "my" + mySobekOptions + "\">" + tempObject.Nickname + "'s " + mySobekText + "</a>&nbsp; | &nbsp; <a href=\"" + currentMode.Base_URL + "my/logout" + mySobekLogoutOptions + "\">Log Out</a>";
+                        mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my" + mySobekOptions + "\">" + tempObject.Nickname + "'s " + mySobekText + "</a>&nbsp; | &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logout" + mySobekLogoutOptions + "\">Log Out</a>";
                     }
                     else
                     {
-                        mySobekLinks = "<a href=\"" + currentMode.Base_URL + "my" + mySobekOptions + "\">" + tempObject.Given_Name + "'s " + mySobekText + "</a>&nbsp; | &nbsp; <a href=\"" + currentMode.Base_URL + "my/logout" + mySobekLogoutOptions + "\">Log Out</a>";
+                        mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my" + mySobekOptions + "\">" + tempObject.Given_Name + "'s " + mySobekText + "</a>&nbsp; | &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logout" + mySobekLogoutOptions + "\">Log Out</a>";
                     }
                 }
             }
 
 
             // Get the language selections
-            Web_Language_Enum language = currentMode.Language;
-            currentMode.Language = Web_Language_Enum.TEMPLATE;
-            string template_language = currentMode.Redirect_URL();
+            Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
+            RequestSpecificValues.Current_Mode.Language = Web_Language_Enum.TEMPLATE;
+            string template_language = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             string english = template_language.Replace("l=XXXXX", "l=en");
             string french = template_language.Replace("l=XXXXX", "l=fr");
             string spanish = template_language.Replace("l=XXXXX", "l=es");
-            currentMode.Language = language;
+            RequestSpecificValues.Current_Mode.Language = language;
 
-            if (currentMode.Is_Robot)
+            if (RequestSpecificValues.Current_Mode.Is_Robot)
             {
                 english = String.Empty;
                 french = String.Empty;
@@ -1169,7 +1052,7 @@ namespace SobekCM.Library.MainWriters
 			string container_inner = subwriter.Container_CssClass;
 
             // Get the skin url
-            string skin_url = currentMode.Base_Design_URL + "skins/" + currentMode.Skin + "/";
+            string skin_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "skins/" + RequestSpecificValues.Current_Mode.Skin + "/";
 
             // Determine the URL options for replacement
             string urlOptions1 = String.Empty;
@@ -1184,29 +1067,29 @@ namespace SobekCM.Library.MainWriters
             string banner = String.Empty;
             if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
             {
-                if ((htmlSkin != null) && (htmlSkin.Override_Banner))
+                if ((RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.Override_Banner))
                 {
-                    banner = htmlSkin.Banner_HTML;
+                    banner = RequestSpecificValues.HTML_Skin.Banner_HTML;
                 }
                 else
                 {
-                    if (hierarchyObject != null)
+                    if (RequestSpecificValues.Hierarchy_Object != null)
                     {
-                        string banner_image = hierarchyObject.Banner_Image(currentMode.Language, htmlSkin);
-                        if  (hierarchyObject.Code != "all")
+                        string banner_image = RequestSpecificValues.Hierarchy_Object.Banner_Image(RequestSpecificValues.Current_Mode.Language, RequestSpecificValues.HTML_Skin);
+                        if  (RequestSpecificValues.Hierarchy_Object.Code != "all")
                         {                            
                             if (banner_image.Length > 0)
-                                banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"" + hierarchyObject.ShortName + "\" href=\"" + currentMode.Base_URL + hierarchyObject.Code + urlOptions1 + "\" style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
+                                banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Hierarchy_Object.Code + urlOptions1 + "\" style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
                         }
                         else
                         {
                             if (banner_image.Length > 0)
                             {
-								banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"  style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + currentMode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
+								banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"  style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
                             }
                             else
                             {
-								banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + currentMode.Base_URL + urlOptions1 + "\"  style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"\" /></a></div>";
+								banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"  style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"\" /></a></div>";
                             }
                         }
                     }
@@ -1216,23 +1099,23 @@ namespace SobekCM.Library.MainWriters
 			// Add the appropriate header
 			if (useItemHeader)
 			{
-				Output.WriteLine(htmlSkin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+				Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_Item_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
 			}
 			else
 			{
 				if (container_inner.Length == 0)
 				{
-					if (htmlSkin.Header_Has_Container_Directive)
-						Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", String.Empty));
+					if (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive)
+						Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", String.Empty));
 					else
-						Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+						Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
 				}
 				else
 				{
-					if (htmlSkin.Header_Has_Container_Directive)
-						Output.WriteLine(htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">"));
+					if (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive)
+						Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">"));
 					else
-						Output.WriteLine("<div id=\"" + container_inner + "\">" + Environment.NewLine + htmlSkin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", currentMode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
+						Output.WriteLine("<div id=\"" + container_inner + "\">" + Environment.NewLine + RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url));
 
 				}
 			}
@@ -1259,18 +1142,18 @@ namespace SobekCM.Library.MainWriters
 				return;
 
 			// Determine which header and footer to display
-			bool useItemFooter = (currentMode.Mode == Display_Mode_Enum.Item_Display) || (currentMode.Mode == Display_Mode_Enum.Item_Print) || (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter));
+			bool useItemFooter = (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Print) || (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter));
 	
             // Get the current contact URL
-            Display_Mode_Enum thisMode = currentMode.Mode;
-            currentMode.Mode = Display_Mode_Enum.Contact;
-            string contact = currentMode.Redirect_URL();
+            Display_Mode_Enum thisMode = RequestSpecificValues.Current_Mode.Mode;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
+            string contact = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
             // Restore the old mode
-            currentMode.Mode = thisMode;
+            RequestSpecificValues.Current_Mode.Mode = thisMode;
 
             // Get the URL options
-            string url_options = currentMode.URL_Options();
+            string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
             string urlOptions1 = String.Empty;
             string urlOptions2 = String.Empty;
             if (url_options.Length > 0)
@@ -1280,51 +1163,51 @@ namespace SobekCM.Library.MainWriters
             }
 
             // Get the base url
-            string base_url = currentMode.Base_URL;
-            if (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
                 base_url = base_url + "l/";
 
             // Get the skin url
-            string skin_url = currentMode.Base_Design_URL + "skins/" + htmlSkin.Skin_Code + "/";
+            string skin_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "skins/" + RequestSpecificValues.HTML_Skin.Skin_Code + "/";
 
-	        bool end_div = !(( currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS ) && ( siteMap != null ));
+	        bool end_div = !(( RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Simple_HTML_CMS ) && ( RequestSpecificValues.Site_Map != null ));
 
-	        string VERSION = InstanceWide_Settings_Singleton.Settings.Current_Web_Version;
+	        string VERSION = UI_ApplicationCache_Gateway.Settings.Current_Web_Version;
 	        if (VERSION.IndexOf(" ") > 0)
 		        VERSION = VERSION.Split(" ".ToCharArray())[0];
 
 			if (useItemFooter)
 			{
-				Output.WriteLine(htmlSkin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
+				Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
 			}
 			else
 			{
-				if (htmlSkin.Footer_Has_Container_Directive)
+				if (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive)
 				{
 					if (!end_div)
-						Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "").Trim());
+						Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "").Trim());
 					else
-						Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "</div>").Trim());
+						Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "</div>").Trim());
 				}
 				else
 				{
 					if (!end_div)
-						Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
+						Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
 					else
-						Output.WriteLine(htmlSkin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim() + Environment.NewLine + "</div>");
+						Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim() + Environment.NewLine + "</div>");
 				}
 			}
 
             // Add the time and trace at the end
-			if ((HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth")) || (currentMode.Trace_Flag_Simple) || ((currentUser != null) && (currentUser.Is_System_Admin)))
+			if ((HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth")) || (RequestSpecificValues.Current_Mode.Trace_Flag_Simple) || ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin)))
             {
                 Output.WriteLine("<style type=\"text/css\">");
-                Output.WriteLine("table.Traceroute { border-width: 2px; border-style: solid; border-color: gray; border-collapse: collapse; background-color: white; font-size: small; }");
-                Output.WriteLine("table.Traceroute th { border-width: 2px; padding: 3px; border-style: solid; border-color: gray; background-color: gray; color: white; }");
-                Output.WriteLine("table.Traceroute td { border-width: 2px; padding: 3px; border-style: solid; border-color: gray;	background-color: white; }");
+                Output.WriteLine("table.RequestSpecificValues.Traceroute { border-width: 2px; border-style: solid; border-color: gray; border-collapse: collapse; background-color: white; font-size: small; }");
+                Output.WriteLine("table.RequestSpecificValues.Traceroute th { border-width: 2px; padding: 3px; border-style: solid; border-color: gray; background-color: gray; color: white; }");
+                Output.WriteLine("table.RequestSpecificValues.Traceroute td { border-width: 2px; padding: 3px; border-style: solid; border-color: gray;	background-color: white; }");
                 Output.WriteLine("</style>");
-				Output.WriteLine("<a href=\"\" onclick=\"return show_trace_route()\" id=\"sbkHmw_TraceRouterShowLink\">show trace route (sys admin)</a>");
-				Output.WriteLine("<div id=\"sbkHmw_TraceRouter\" style=\"display:none;\">");
+				Output.WriteLine("<a href=\"\" onclick=\"return show_trace_route()\" id=\"sbkHmw_RequestSpecificValues.TracerouterShowLink\">show trace route (sys admin)</a>");
+				Output.WriteLine("<div id=\"sbkHmw_RequestSpecificValues.Tracerouter\" style=\"display:none;\">");
 
                 Output.WriteLine("<br /><br /><b>URL REWRITE</b>");
                 if (HttpContext.Current.Items["Original_URL"] == null)
@@ -1349,7 +1232,7 @@ namespace SobekCM.Library.MainWriters
         private static void Email_Information(string EmailTitle, Exception ObjErr, Custom_Tracer Tracer, bool Redirect )
         {
             // Is ther an error email address in the configuration?
-            if (InstanceWide_Settings_Singleton.Settings.System_Error_Email.Length > 0)
+            if (UI_ApplicationCache_Gateway.Settings.System_Error_Email.Length > 0)
             {
                 try
                 {
@@ -1385,11 +1268,11 @@ namespace SobekCM.Library.MainWriters
                     // Email the error message
                     if (Tracer != null)
                     {
-                        SobekCM_Database.Send_Database_Email(InstanceWide_Settings_Singleton.Settings.System_Error_Email, EmailTitle, err + "<br /><br />" + Tracer.Text_Trace, true, false, -1, -1);
+                        SobekCM_Database.Send_Database_Email(UI_ApplicationCache_Gateway.Settings.System_Error_Email, EmailTitle, err + "<br /><br />" + Tracer.Text_Trace, true, false, -1, -1);
                     }
                     else
                     {
-                        SobekCM_Database.Send_Database_Email(InstanceWide_Settings_Singleton.Settings.System_Error_Email, EmailTitle, err, true, false, -1, -1);
+                        SobekCM_Database.Send_Database_Email(UI_ApplicationCache_Gateway.Settings.System_Error_Email, EmailTitle, err, true, false, -1, -1);
                     }
                 }
                 catch (Exception)
@@ -1401,7 +1284,7 @@ namespace SobekCM.Library.MainWriters
             // Forward to our error message
             if (Redirect)
             {
-                HttpContext.Current.Response.Redirect(InstanceWide_Settings_Singleton.Settings.System_Error_URL, false);
+                HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.System_Error_URL, false);
                 HttpContext.Current.ApplicationInstance.CompleteRequest();
             }
         }

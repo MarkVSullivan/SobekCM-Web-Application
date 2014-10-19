@@ -7,13 +7,13 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -39,12 +39,10 @@ namespace SobekCM.Library.MySobekViewer
         private readonly List<string> validationErrors;
 
         /// <summary> Constructor for a new instance of the NewPassword_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public NewPassword_MySobekViewer(User_Object User, Custom_Tracer Tracer)
-            : base(User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public NewPassword_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("NewPassword_MySobekViewer.Constructor", String.Empty);
+            RequestSpecificValues.Tracer.Add_Trace("NewPassword_MySobekViewer.Constructor", String.Empty);
 
             // Do nothing
             validationErrors = new List<string>();
@@ -77,6 +75,8 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("NewPassword_MySobekViewer.Add_Controls", "");
 
+		    User_Object user = RequestSpecificValues.Current_User;
+
             // Is this for registration?       
             bool registration = (HttpContext.Current.Session["user"] == null);
             if (registration)
@@ -88,7 +88,7 @@ namespace SobekCM.Library.MySobekViewer
             string new_password = String.Empty;
             string new_password2 = String.Empty;
 
-            if (currentMode.isPostBack)
+            if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 // Loop through and get the dataa
                 string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
@@ -134,15 +134,15 @@ namespace SobekCM.Library.MySobekViewer
                         string raw_url = (HttpContext.Current.Request.RawUrl);
                         if (raw_url.ToUpper().IndexOf("M=HML") > 0)
                         {
-                            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                            currentMode.Redirect();
+                            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                             return;
                         }
                         else
                         {
                             HttpContext.Current.Response.Redirect(HttpContext.Current.Request.RawUrl, false);
                             HttpContext.Current.ApplicationInstance.CompleteRequest();
-                            currentMode.Request_Completed = true;
+                            RequestSpecificValues.Current_Mode.Request_Completed = true;
                             return;
                         }
                     }
@@ -154,7 +154,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             StringBuilder literalBuilder = new StringBuilder(1000);
-            literalBuilder.AppendLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+            literalBuilder.AppendLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
             literalBuilder.AppendLine("<div class=\"SobekHomeText\" >");
             literalBuilder.AppendLine("<br />");
             literalBuilder.AppendLine("<blockquote>");
@@ -218,9 +218,9 @@ namespace SobekCM.Library.MySobekViewer
 
             literalBuilder.AppendLine("   </td><td>&nbsp;</td></tr>");
             literalBuilder.AppendLine("  <tr align=\"right\" valign=\"bottom\" height=\"50px\" ><td colspan=\"3\">");
-            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Log_Out;
-            literalBuilder.AppendLine("    <a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button.gif\" border=\"0\" alt=\"CANCEL\" /></a> &nbsp; ");
-            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.New_Password;
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Log_Out;
+            literalBuilder.AppendLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/cancel_button.gif\" border=\"0\" alt=\"CANCEL\" /></a> &nbsp; ");
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Password;
 
             LiteralControl literal4 = new LiteralControl(literalBuilder.ToString());
             MainPlaceHolder.Controls.Add(literal4);
@@ -228,7 +228,7 @@ namespace SobekCM.Library.MySobekViewer
             // Add the submit button
             ImageButton submitButton = new ImageButton
                                            {
-                                               ImageUrl = currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button.gif",
+                                               ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/save_button.gif",
                                                AlternateText = "SAVE"
                                            };
             submitButton.Click += submitButton_Click;

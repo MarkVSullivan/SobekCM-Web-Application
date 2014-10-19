@@ -4,29 +4,28 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Web.UI.WebControls;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
+using SobekCM.Core.Items;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Skins;
+using SobekCM.EngineLibrary.ApplicationState;
+using SobekCM.Engine_Library.Aggregations;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Items;
+using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Database;
+using SobekCM.Library.MemoryMgmt;
+using SobekCM.Library.Skins;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Database;
-using SobekCM.Library.HTML;
-using SobekCM.Library.ItemViewer.Viewers;
-using SobekCM.Library.Items;
-using SobekCM.Library.MemoryMgmt;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Skins;
 using SobekCM.Tools;
 using SobekCM.Tools.Logs;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -125,8 +124,8 @@ namespace SobekCM.Library
 			SobekCM_Skin_Collection_Builder.Populate_Default_Skins(skinsCollection, null);
 
             // Set some constant settings
-            // SobekCM.Library.InstanceWide_Settings_Singleton.Settings.Watermarks_URL = primary_web_server_url + "/design/wordmarks/";
-            InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative = primaryWebServerUrl;
+            // SobekCM.Library.UI_ApplicationCache_Gateway.Settings.Watermarks_URL = primary_web_server_url + "/design/wordmarks/";
+            UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative = primaryWebServerUrl;
 
             // Create the mode object
             currentMode = new SobekCM_Navigation_Object
@@ -236,7 +235,7 @@ namespace SobekCM.Library
 
 			// Get the item list and build the hashtable 
 			Item_Lookup_Object itemList = new Item_Lookup_Object();
-			SobekCM_Database.Populate_Item_Lookup_Object(false, itemList, tracer);
+			Engine_Database.Populate_Item_Lookup_Object(false, itemList, tracer);
 
 
             foreach (DataRow thisRow in item_list_table.Tables[0].Rows)
@@ -280,7 +279,7 @@ namespace SobekCM.Library
 
 	        // Set the correct base directory
 			if (staticSobekcmLocation.Length > 0)
-				InstanceWide_Settings_Singleton.Settings.Base_Directory = staticSobekcmLocation;
+				UI_ApplicationCache_Gateway.Settings.Base_Directory = staticSobekcmLocation;
 
             // Set the item for the current mode
 	        errors = 0;
@@ -293,7 +292,7 @@ namespace SobekCM.Library
 
 				// Get the item list and build the hashtable 
 				Item_Lookup_Object itemList = new Item_Lookup_Object();
-				SobekCM_Database.Populate_Item_Lookup_Object(false, itemList, tracer);
+				Engine_Database.Populate_Item_Lookup_Object(false, itemList, tracer);
 
                 foreach (DataRow thisRow in item_list_table.Tables[0].Rows)
                 {
@@ -306,8 +305,8 @@ namespace SobekCM.Library
                     //}
                     string bibid = thisRow["BibID"].ToString();
                     string vid = thisRow["VID"].ToString();
-	                string itemDirectory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
-	                string staticDirectory = itemDirectory + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name;
+	                string itemDirectory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
+	                string staticDirectory = itemDirectory + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name;
 
 
 					// ********** TEMPORARY CLEAN UP ***********************//
@@ -407,7 +406,7 @@ namespace SobekCM.Library
 						if (Create_Item_Citation_HTML(bibid, vid, static_file, itemDirectory, itemList))
 						{
 							// Also copy to the static page location server
-							string web_server_directory = InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
+							string web_server_directory = UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
 							if (!Directory.Exists(web_server_directory))
 								Directory.CreateDirectory(web_server_directory);
 
@@ -490,10 +489,10 @@ namespace SobekCM.Library
 						SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building static links page for " + code, String.Empty);
 
 		                //Get the list of items for this collection
-		                items = SobekCM_Database.Simple_Item_List(code, tracer);
+		                items = Engine_Database.Simple_Item_List(code, tracer);
 
 		                // Get the item aggregation object
-		                Item_Aggregation aggregation = Item_Aggregation_Builder.Get_Item_Aggregation(code.ToLower(), "en", null, true, false, null);
+		                Item_Aggregation aggregation = Item_Aggregation_Utilities.Get_Item_Aggregation(code.ToLower(), "en", null, true, false, null);
 
 		                // Build the static browse pages
 		                if (Build_All_Browse(aggregation, items))
@@ -527,12 +526,12 @@ namespace SobekCM.Library
             sitemap_writer.Flush();
             sitemap_writer.Close();
 
-            items = SobekCM_Database.Simple_Item_List(String.Empty, tracer);
+            items = Engine_Database.Simple_Item_List(String.Empty, tracer);
             Logger.AddNonError(InstanceName + ".....Building static links page for ALL ITEMS");
             Console.WriteLine(InstanceName + @"Building static links page for ALL ITEMS");
 			SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building static links page for ALL ITEMS", String.Empty);
 
-			Item_Aggregation allAggregation = Item_Aggregation_Builder.Get_Item_Aggregation("all", "en", null, true, false, null);
+			Item_Aggregation allAggregation = Item_Aggregation_Utilities.Get_Item_Aggregation("all", "en", null, true, false, null);
 
             Build_All_Browse(allAggregation, items);
 
@@ -540,7 +539,7 @@ namespace SobekCM.Library
             Logger.AddNonError(InstanceName + ".....Building RSS feeds for ALL ITEMS");
 			SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building RSS feeds for ALL ITEMS", String.Empty);
 
-            Create_RSS_Feed("all", staticSobekcmDataLocation + "rss\\", "All " + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + " Items", items);
+            Create_RSS_Feed("all", staticSobekcmDataLocation + "rss\\", "All " + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + " Items", items);
 
             // Build the site maps
             Logger.AddNonError(InstanceName + ".....Building site maps");
@@ -558,13 +557,13 @@ namespace SobekCM.Library
             allListWriter.WriteLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
             allListWriter.WriteLine("<html xmlns=\"http://www.w3.org/1999/xhtml\" >");
             allListWriter.WriteLine("<head>");
-            allListWriter.WriteLine("  <title>" + InstanceWide_Settings_Singleton.Settings.System_Name + " Site Map Links</title>");
+            allListWriter.WriteLine("  <title>" + UI_ApplicationCache_Gateway.Settings.System_Name + " Site Map Links</title>");
             allListWriter.WriteLine();
             allListWriter.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
             allListWriter.WriteLine("  <link href=\"" + primaryWebServerUrl + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 			if (defaultSkinObject.CSS_Style.Length > 0)
 			{
-				allListWriter.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+				allListWriter.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}
 
             allListWriter.WriteLine("</head>");
@@ -575,7 +574,7 @@ namespace SobekCM.Library
 			string banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"All Collections\" href=\"" + primaryWebServerUrl + "\" style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + primaryWebServerUrl + "design/aggregations/all/images/banners/coll.jpg\" alt=\"\" /></a></div>";
 			Display_Header(allListWriter, defaultSkinObject, banner);
 
-            allListWriter.WriteLine("<br /><br />This page is to provide static links to all resources in " + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + ". <br />");
+            allListWriter.WriteLine("<br /><br />This page is to provide static links to all resources in " + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + ". <br />");
             allListWriter.WriteLine("Click <a href=\"" + primaryWebServerUrl + "\">HERE</a> to return to main library. <br />");
             allListWriter.WriteLine("<br />");
             allListWriter.WriteLine("<br />");
@@ -614,13 +613,13 @@ namespace SobekCM.Library
                 writer.WriteLine("<!DOCTYPE html>");
                 writer.WriteLine("<html>");
                 writer.WriteLine("<head>");
-				writer.WriteLine("  <title>RSS Feeds for " + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + "</title>");
+				writer.WriteLine("  <title>RSS Feeds for " + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + "</title>");
                 writer.WriteLine();
                 writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
                 writer.WriteLine("  <link href=\"" + primaryWebServerUrl + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 				if (defaultSkinObject.CSS_Style.Length > 0)
 				{
-					writer.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+					writer.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 				}
                 writer.WriteLine("</head>");
                 writer.WriteLine("<body>");
@@ -635,13 +634,13 @@ namespace SobekCM.Library
 
                 writer.WriteLine("<div class=\"ViewsBrowsesRow\">");
 				writer.WriteLine("  <ul class=\"sbk_FauxUpwardTabsList\">");
-				writer.WriteLine("    <li><a href=\"" + primaryWebServerUrl + "\">" + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + " HOME</a></li>");
+				writer.WriteLine("    <li><a href=\"" + primaryWebServerUrl + "\">" + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + " HOME</a></li>");
 				writer.WriteLine("    <li class=\"current\">RSS FEEDS</li>");
 				writer.WriteLine("  </ul>");
                 writer.WriteLine("</div>");
                 writer.WriteLine();
                 writer.WriteLine("<div class=\"SobekSearchPanel\">");
-                writer.WriteLine("  <h1>RSS Feeds for the " + InstanceWide_Settings_Singleton.Settings.System_Name + "</h1>");
+                writer.WriteLine("  <h1>RSS Feeds for the " + UI_ApplicationCache_Gateway.Settings.System_Name + "</h1>");
                 writer.WriteLine("</div>");
                 writer.WriteLine();
 
@@ -650,12 +649,12 @@ namespace SobekCM.Library
                 writer.WriteLine("  <tr>");
                 writer.WriteLine("    <td>");
                 writer.WriteLine("      <br />");
-				writer.WriteLine("      This page provides links to RSS feeds for items within " + InstanceWide_Settings_Singleton.Settings.System_Name + ".  The first group of RSS feeds below contains the last 20 items added to the collection.  The second group of items contains links to every item in a collection.  These rss feeds can grow quite lengthy and the load time is often non-trivial.<br />");
+				writer.WriteLine("      This page provides links to RSS feeds for items within " + UI_ApplicationCache_Gateway.Settings.System_Name + ".  The first group of RSS feeds below contains the last 20 items added to the collection.  The second group of items contains links to every item in a collection.  These rss feeds can grow quite lengthy and the load time is often non-trivial.<br />");
                 writer.WriteLine("      <br />");
                 writer.WriteLine("      In addition, the following three RSS feeds are provided:");
                 writer.WriteLine("      <blockquote>");
-                writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_rss.xml\">All items in " + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + "</a><br />");
-				writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_short_rss.xml\">Most recently added items in " + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + " (last 100)</a><br />");
+                writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_rss.xml\">All items in " + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + "</a><br />");
+				writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_short_rss.xml\">Most recently added items in " + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + " (last 100)</a><br />");
                 writer.WriteLine("      </blockquote>");
                 writer.WriteLine("      RSS feeds	are a way to keep up-to-date on new materials that are added to the Digital Collections. RSS feeds are written in XML    and require a news reader to access.<br />");
                 writer.WriteLine("      <br />");
@@ -752,7 +751,7 @@ namespace SobekCM.Library
 	        currentMode.Is_Robot = true;
 
 			if (staticSobekcmLocation.Length > 0)
-				InstanceWide_Settings_Singleton.Settings.Base_Directory = staticSobekcmLocation;
+				UI_ApplicationCache_Gateway.Settings.Base_Directory = staticSobekcmLocation;
 
             // Pull the item aggregation object
 	        if (Aggregation.Web_Skins.Count > 0)
@@ -770,17 +769,17 @@ namespace SobekCM.Library
 			writer.WriteLine("<!DOCTYPE html>");
 			writer.WriteLine("<html>");
 			writer.WriteLine("<head>");
-	        writer.WriteLine("  <title>" + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + " - " + Aggregation.Name + "</title>");
+	        writer.WriteLine("  <title>" + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + " - " + Aggregation.Name + "</title>");
 			writer.WriteLine();
-			writer.WriteLine("  <!-- " + InstanceWide_Settings_Singleton.Settings.System_Name + " : SobekCM Digital Repository -->");
+			writer.WriteLine("  <!-- " + UI_ApplicationCache_Gateway.Settings.System_Name + " : SobekCM Digital Repository -->");
 			writer.WriteLine();
-			writer.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
-			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
-			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
+			writer.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
 	        writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
 			if (skinObject.CSS_Style.Length > 0)
 			{
-				writer.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+				writer.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}
 			if (Aggregation.CSS_File.Length > 0)
 			{
@@ -795,7 +794,7 @@ namespace SobekCM.Library
 			Display_Header(writer, skinObject, banner);
 
 
-			MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(writer, currentMode, null, Aggregation, translations, codeManager );
+	//		MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(writer, currentMode, null, Aggregation, translations, codeManager );
 
 
 			writer.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_BrowseDescPanel\">");
@@ -899,7 +898,7 @@ namespace SobekCM.Library
             // Finish writing this
             Finish_writing_html(Current_Item, currentPage, Static_FileName, Text_File_Directory);
 
-            InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative = String.Empty;
+            UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative = String.Empty;
             return true;
 
         }
@@ -933,7 +932,7 @@ namespace SobekCM.Library
                 SobekCM_Item currentItem;
                 Page_TreeNode currentPage;
                 SobekCM_Items_In_Title itemsInTitle;
-				assistant.Get_Item(String.Empty, currentMode, Item_List, InstanceWide_Settings_Singleton.Settings.Image_URL, iconList, null, tracer, null, out currentItem, out currentPage, out itemsInTitle);
+				assistant.Get_Item(String.Empty, currentMode, Item_List, UI_ApplicationCache_Gateway.Settings.Image_URL, iconList, null, tracer, null, out currentItem, out currentPage, out itemsInTitle);
                 currentMode.Aggregation = String.Empty;
                 if (currentItem == null)
                     return false;
@@ -947,7 +946,7 @@ namespace SobekCM.Library
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
                 Dictionary<string, object> options = new Dictionary<string, object>();
-                options["MarcXML_File_ReaderWriter:Additional_Tags"] = currentItem.MARC_Sobek_Standard_Tags(codeManager.Get_Collection_Short_Name(currentMode.Aggregation), true, InstanceWide_Settings_Singleton.Settings.System_Name, InstanceWide_Settings_Singleton.Settings.System_Abbreviation);
+                options["MarcXML_File_ReaderWriter:Additional_Tags"] = currentItem.MARC_Sobek_Standard_Tags(codeManager.Get_Collection_Short_Name(currentMode.Aggregation), true, UI_ApplicationCache_Gateway.Settings.System_Name, UI_ApplicationCache_Gateway.Settings.System_Abbreviation);
                 return marcWriter.Write_Metadata(marcFile, currentItem, options, out errorMessage);
             }
             catch
@@ -983,7 +982,7 @@ namespace SobekCM.Library
             SobekCM_Item currentItem;
             Page_TreeNode currentPage;
             SobekCM_Items_In_Title itemsInTitle;
-			assistant.Get_Item(String.Empty, currentMode, Item_List, InstanceWide_Settings_Singleton.Settings.Image_URL, iconList, null,  tracer, null, out currentItem, out currentPage, out itemsInTitle);
+			assistant.Get_Item(String.Empty, currentMode, Item_List, UI_ApplicationCache_Gateway.Settings.Image_URL, iconList, null,  tracer, null, out currentItem, out currentPage, out itemsInTitle);
 		    if (currentItem == null)
 			    return false;
 
@@ -1001,329 +1000,329 @@ namespace SobekCM.Library
 
         private void Finish_writing_html(SobekCM_Item CurrentItem, Page_TreeNode CurrentPage, string Filename, string TextFileLocation )
         {
-	        bool textSearchable = CurrentItem.Behaviors.Text_Searchable;
-	        CurrentItem.Behaviors.Text_Searchable = false;
-			if (staticSobekcmLocation.Length > 0)
-		        InstanceWide_Settings_Singleton.Settings.Base_Directory = staticSobekcmLocation;
+            //bool textSearchable = CurrentItem.Behaviors.Text_Searchable;
+            //CurrentItem.Behaviors.Text_Searchable = false;
+            //if (staticSobekcmLocation.Length > 0)
+            //    UI_ApplicationCache_Gateway.Settings.Base_Directory = staticSobekcmLocation;
 
-			// Get the skin
-	        if ((CurrentItem.Behaviors.Web_Skin_Count > 0) && ( !CurrentItem.Behaviors.Web_Skins.Contains( defaultSkin.ToUpper())))
-		        currentMode.Skin = CurrentItem.Behaviors.Web_Skins[0];
+            //// Get the skin
+            //if ((CurrentItem.Behaviors.Web_Skin_Count > 0) && ( !CurrentItem.Behaviors.Web_Skins.Contains( defaultSkin.ToUpper())))
+            //    currentMode.Skin = CurrentItem.Behaviors.Web_Skins[0];
 
-			// Get the skin object
-			SobekCM_Skin_Object skinObject = skinsCollection[currentMode.Skin];
-			if (skinObject == null)
-			{
-				skinObject = assistant.Get_HTML_Skin(currentMode, skinsCollection, false, null);
-				skinsCollection.Add(skinObject);
-			}
+            //// Get the skin object
+            //SobekCM_Skin_Object skinObject = skinsCollection[currentMode.Skin];
+            //if (skinObject == null)
+            //{
+            //    skinObject = assistant.Get_HTML_Skin(currentMode, skinsCollection, false, null);
+            //    skinsCollection.Add(skinObject);
+            //}
 
-            // Create the HTML writer
-            Item_HtmlSubwriter itemWriter = new Item_HtmlSubwriter(CurrentItem, CurrentPage, null, codeManager, translations, true, true, currentMode, null, String.Empty, null, tracer) { Mode = currentMode, Skin = skinObject };
-            InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative = currentMode.Base_URL;
-            if ((InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative.Length == 0) || (InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative.Contains("localhost")))
-            {
-                InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative = primaryWebServerUrl;
-                currentMode.Base_URL = InstanceWide_Settings_Singleton.Settings.Base_SobekCM_Location_Relative;
-            }
+            //// Create the HTML writer
+            //Item_HtmlSubwriter itemWriter = new Item_HtmlSubwriter(CurrentItem, CurrentPage, null, codeManager, translations, true, true, currentMode, null, String.Empty, null, tracer) { Mode = currentMode, Skin = skinObject };
+            //UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative = currentMode.Base_URL;
+            //if ((UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative.Length == 0) || (UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative.Contains("localhost")))
+            //{
+            //    UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative = primaryWebServerUrl;
+            //    currentMode.Base_URL = UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative;
+            //}
 
-            // Now that the item viewer is built, set the robot flag to suppress some checks
-            currentMode.Is_Robot = true;
+            //// Now that the item viewer is built, set the robot flag to suppress some checks
+            //currentMode.Is_Robot = true;
 
-            // Create the TextWriter
-            StreamWriter writer = new StreamWriter(Filename, false, Encoding.UTF8);
+            //// Create the TextWriter
+            //StreamWriter writer = new StreamWriter(Filename, false, Encoding.UTF8);
 
-			writer.WriteLine("<!DOCTYPE html>");
-			writer.WriteLine("<html>");
-			writer.WriteLine("<head>");
-			writer.WriteLine("  <title>" + CurrentItem.Bib_Info.Main_Title + "</title>");
-			writer.WriteLine();
-			writer.WriteLine("  <!-- " + InstanceWide_Settings_Singleton.Settings.System_Name + " : SobekCM Digital Repository -->");
-			writer.WriteLine();
-			writer.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
-			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
-			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
-			writer.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            //writer.WriteLine("<!DOCTYPE html>");
+            //writer.WriteLine("<html>");
+            //writer.WriteLine("<head>");
+            //writer.WriteLine("  <title>" + CurrentItem.Bib_Info.Main_Title + "</title>");
+            //writer.WriteLine();
+            //writer.WriteLine("  <!-- " + UI_ApplicationCache_Gateway.Settings.System_Name + " : SobekCM Digital Repository -->");
+            //writer.WriteLine();
+            //writer.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            //writer.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+            //writer.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
+            //writer.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 
-			writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
-			if (skinObject.CSS_Style.Length > 0)
-			{
-				writer.WriteLine("  <link href=\"" + InstanceWide_Settings_Singleton.Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
-			}
+            //writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
+            //if (skinObject.CSS_Style.Length > 0)
+            //{
+            //    writer.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            //}
 
-			string image_src = currentMode.Base_URL + "/" + CurrentItem.Web.AssocFilePath + "/" + CurrentItem.Behaviors.Main_Thumbnail;
-			writer.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\" />");
-
-
+            //string image_src = currentMode.Base_URL + "/" + CurrentItem.Web.AssocFilePath + "/" + CurrentItem.Behaviors.Main_Thumbnail;
+            //writer.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\" />");
 
 
-			writer.WriteLine("</head>");
-			writer.WriteLine("<body>");
-
-			// Is this item DARK or PRIVATE
-			if ((CurrentItem.Behaviors.Dark_Flag) || ( CurrentItem.Behaviors.IP_Restriction_Membership < 0 ))
-			{
-				writer.WriteLine("THIS ITEM IS CURRENTLY DARK OR PRIVATE");
-				writer.WriteLine("</body>");
-				writer.WriteLine("</html>");
-				writer.Flush();
-				writer.Close();
-				return;
-			}
 
 
-            // Add the header
-            Display_Header(writer, itemWriter.Skin, CurrentItem);
+            //writer.WriteLine("</head>");
+            //writer.WriteLine("<body>");
 
-            // Begin to write the item view
-            itemWriter.Write_HTML(writer, tracer);
-
-	        if ((CurrentItem.Behaviors.Wordmark_Count > 0) || ((CurrentItem.Web.Static_PageCount > 1) && (CurrentItem.Web.Static_Division_Count > 1)))
-	        {
-				writer.WriteLine("<nav id=\"sbkIsw_Leftnavbar\" style=\"padding-top:3px\">");
-
-		        // Write the table of contents as static HTML, rather than the TreeView web control
-		        if ((CurrentItem.Web.Static_PageCount > 1) && (CurrentItem.Web.Static_Division_Count > 1))
-		        {
-					writer.WriteLine("  <div class=\"sbkIsw_ShowTocRow\">");
-					writer.WriteLine("    <div class=\"sbkIsw_UpToc\">HIDE TABLE OF CONTENTS</div>");
-					writer.WriteLine("  </div>");
-
-					writer.WriteLine("<div class=\"sbkIsw_TocTreeView\">");
-
-			        // load the table of contents in the tree
-			        TreeView treeView1 = new TreeView();
-			        itemWriter.Create_TreeView_From_Divisions(treeView1);
-
-			        // Step through all the parent nodes
-			        writer.WriteLine("  <table cellspacing=\"4px\">");
-			        foreach (TreeNode thisNode in treeView1.Nodes)
-			        {
-						writer.WriteLine("    <tr><td width=\"9px\">&nbsp;</td><td>" + thisNode.Text.Replace("sbkIsw_SelectedTocTreeViewItem", "sbkIsw_TocTreeViewItem") + "</td></tr>");
-			        }
-			        writer.WriteLine("  </table>");
-			        writer.WriteLine("</div>");
-		        }
-
-	        }
+            //// Is this item DARK or PRIVATE
+            //if ((CurrentItem.Behaviors.Dark_Flag) || ( CurrentItem.Behaviors.IP_Restriction_Membership < 0 ))
+            //{
+            //    writer.WriteLine("THIS ITEM IS CURRENTLY DARK OR PRIVATE");
+            //    writer.WriteLine("</body>");
+            //    writer.WriteLine("</html>");
+            //    writer.Flush();
+            //    writer.Close();
+            //    return;
+            //}
 
 
-	        itemWriter.Write_Additional_HTML(writer, tracer);
+            //// Add the header
+            //Display_Header(writer, itemWriter.Skin, CurrentItem);
 
-            //Literal citationLiteral = (Literal)placeHolder.Controls[0];
-            //writer.WriteLine(citationLiteral.Text);
-            //placeHolder.Controls.Clear();
+            //// Begin to write the item view
+            //itemWriter.Write_HTML(writer, tracer);
 
-            writer.WriteLine("<!-- COMMENT HERE -->");
+            //if ((CurrentItem.Behaviors.Wordmark_Count > 0) || ((CurrentItem.Web.Static_PageCount > 1) && (CurrentItem.Web.Static_Division_Count > 1)))
+            //{
+            //    writer.WriteLine("<nav id=\"sbkIsw_Leftnavbar\" style=\"padding-top:3px\">");
 
-            // Close out this tables and form
-            writer.WriteLine("       </tr>");
+            //    // Write the table of contents as static HTML, rather than the TreeView web control
+            //    if ((CurrentItem.Web.Static_PageCount > 1) && (CurrentItem.Web.Static_Division_Count > 1))
+            //    {
+            //        writer.WriteLine("  <div class=\"sbkIsw_ShowTocRow\">");
+            //        writer.WriteLine("    <div class=\"sbkIsw_UpToc\">HIDE TABLE OF CONTENTS</div>");
+            //        writer.WriteLine("  </div>");
 
-			// If this is IP restricted, show nothing else
-	        if (CurrentItem.Behaviors.IP_Restriction_Membership == 0)
-	        {
-		        // Add the download list if there are some
-		        if (CurrentItem.Divisions.Download_Tree.Has_Files)
-		        {
-			        writer.WriteLine("       <tr>");
-			        // Create the downloads viewer to ouput the html
-			        Download_ItemViewer downloadViewer = new Download_ItemViewer {CurrentItem = CurrentItem, CurrentMode = currentMode};
+            //        writer.WriteLine("<div class=\"sbkIsw_TocTreeView\">");
 
-			        // Add the HTML for this now
-			        downloadViewer.Write_Main_Viewer_Section(writer, tracer);
-			        writer.WriteLine("       </tr>");
-		        }
+            //        // load the table of contents in the tree
+            //        TreeView treeView1 = new TreeView();
+            //        itemWriter.Create_TreeView_From_Divisions(treeView1);
 
-		        // If there is a table of contents write it again, this time it will be complete
-		        // and also show a hierarchy if there is one
-		        if ((CurrentItem.Web.Static_PageCount > 1) && (CurrentItem.Web.Static_Division_Count > 1))
-		        {
-			        writer.WriteLine("       <tr>");
-			        writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Table of Contents</span></td>");
-			        writer.WriteLine("       </tr>");
+            //        // Step through all the parent nodes
+            //        writer.WriteLine("  <table cellspacing=\"4px\">");
+            //        foreach (TreeNode thisNode in treeView1.Nodes)
+            //        {
+            //            writer.WriteLine("    <tr><td width=\"9px\">&nbsp;</td><td>" + thisNode.Text.Replace("sbkIsw_SelectedTocTreeViewItem", "sbkIsw_TocTreeViewItem") + "</td></tr>");
+            //        }
+            //        writer.WriteLine("  </table>");
+            //        writer.WriteLine("</div>");
+            //    }
 
-			        writer.WriteLine("       <tr>");
-			        writer.WriteLine("          <td>");
-			        writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
-
-			        foreach (abstract_TreeNode treeNode in CurrentItem.Divisions.Physical_Tree.Roots)
-			        {
-				        recursively_write_toc(writer, treeNode, "&nbsp; &nbsp; ");
-			        }
-
-			        writer.WriteLine("            </div>");
-			        writer.WriteLine("          </td>");
-			        writer.WriteLine("       </tr>");
-		        }
-
-		        // Is the text file location included, in which case any full text should be appended to the end?
-		        if ((TextFileLocation.Length > 0) && (Directory.Exists(TextFileLocation)))
-		        {
-			        // Get the list of all TXT files in this division
-			        string[] text_files = Directory.GetFiles(TextFileLocation, "*.txt");
-			        Dictionary<string, string> text_files_existing = new Dictionary<string, string>();
-			        foreach (string thisTextFile in text_files)
-			        {
-				        string text_filename = (new FileInfo(thisTextFile)).Name.ToUpper();
-				        text_files_existing[text_filename] = text_filename;
-			        }
-
-			        // Are there ANY text files?
-			        if (text_files.Length > 0)
-			        {
-				        // If this has page images, check for related text files 
-				        List<string> text_files_included = new List<string>();
-				        bool started = false;
-				        if (CurrentItem.Divisions.Physical_Tree.Has_Files)
-				        {
-					        // Go through the first 100 text pages
-					        List<abstract_TreeNode> pages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
-					        int page_count = 0;
-					        foreach (Page_TreeNode thisPage in pages)
-					        {
-						        // Keep track of the page count
-						        page_count++;
-
-						        // Look for files in this page
-						        if (thisPage.Files.Count > 0)
-						        {
-							        bool found_non_thumb_file = false;
-							        foreach (SobekCM_File_Info thisFile in thisPage.Files)
-							        {
-								        // Make sure this is not a thumb
-								        if (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0)
-								        {
-									        found_non_thumb_file = true;
-									        string root = thisFile.File_Name_Sans_Extension;
-									        if (text_files_existing.ContainsKey(root.ToUpper() + ".TXT"))
-									        {
-										        string text_file = TextFileLocation + "\\" + thisFile.File_Name_Sans_Extension + ".txt";
-
-										        // SInce this is marked to be included, save this name
-										        text_files_included.Add(root.ToUpper() + ".TXT");
-
-										        // For size reasons, we only include the text from the first 100 pages
-										        if (page_count <= 100)
-										        {
-											        if (!started)
-											        {
-												        writer.WriteLine("       <tr>");
-												        writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Full Text</span></td>");
-												        writer.WriteLine("       </tr>");
-												        writer.WriteLine("       <tr>");
-												        writer.WriteLine("          <td>");
-												        writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
-
-												        started = true;
-											        }
-
-											        try
-											        {
-												        StreamReader reader = new StreamReader(text_file);
-												        string text_line = reader.ReadLine();
-												        while (text_line != null)
-												        {
-													        writer.WriteLine(text_line + "<br />");
-													        text_line = reader.ReadLine();
-												        }
-												        reader.Close();
-											        }
-											        catch
-											        {
-												        writer.WriteLine("Unable to read file: " + text_file);
-											        }
-
-											        writer.WriteLine("<br /><br />");
-										        }
-									        }
-
-								        }
-
-								        // If a suitable file was found, break here
-								        if (found_non_thumb_file)
-									        break;
-							        }
-						        }
-					        }
-
-					        // End this if it was ever started
-					        if (started)
-					        {
-						        writer.WriteLine("            </div>");
-						        writer.WriteLine("          </td>");
-						        writer.WriteLine("       </tr>");
-					        }
-				        }
-
-				        // Now, check for any other valid text files 
-				        List<string> additional_text_files = text_files_existing.Keys.Where(ThisTextFile => (!text_files_included.Contains(ThisTextFile.ToUpper())) && (ThisTextFile.ToUpper() != "AGREEMENT.TXT") && (ThisTextFile.ToUpper().IndexOf("REQUEST") != 0)).ToList();
-
-				        // Now, include any additional text files, which would not be page text files, possiblye 
-				        // full text for included PDFs, Powerpoint, Word Doc, etc..
-				        started = false;
-				        foreach (string thisTextFile in additional_text_files)
-				        {
-					        if (!started)
-					        {
-						        writer.WriteLine("       <tr>");
-						        writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Full Text</span></td>");
-						        writer.WriteLine("       </tr>");
-						        writer.WriteLine("       <tr>");
-						        writer.WriteLine("          <td>");
-						        writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
-
-						        started = true;
-					        }
-
-					        string text_file = TextFileLocation + "\\" + thisTextFile;
-
-					        try
-					        {
+            //}
 
 
-						        StreamReader reader = new StreamReader(text_file);
-						        string text_line = reader.ReadLine();
-						        while (text_line != null)
-						        {
-							        writer.WriteLine(text_line + "<br />");
-							        text_line = reader.ReadLine();
-						        }
-						        reader.Close();
-					        }
-					        catch
-					        {
-						        writer.WriteLine("Unable to read file: " + text_file);
-					        }
+            //itemWriter.Write_Additional_HTML(writer, tracer);
 
-					        writer.WriteLine("<br /><br />");
-				        }
+            ////Literal citationLiteral = (Literal)placeHolder.Controls[0];
+            ////writer.WriteLine(citationLiteral.Text);
+            ////placeHolder.Controls.Clear();
 
-				        // End this if it was ever started
-				        if (started)
-				        {
-					        writer.WriteLine("            </div>");
-					        writer.WriteLine("          </td>");
-					        writer.WriteLine("       </tr>");
-				        }
-			        }
-		        }
-	        }
+            //writer.WriteLine("<!-- COMMENT HERE -->");
 
-	        writer.WriteLine("      </table>");
-			writer.WriteLine("      </div>");
+            //// Close out this tables and form
+            //writer.WriteLine("       </tr>");
 
-            // Write the footer
-            Display_Footer(writer, itemWriter.Skin);
+            //// If this is IP restricted, show nothing else
+            //if (CurrentItem.Behaviors.IP_Restriction_Membership == 0)
+            //{
+            //    // Add the download list if there are some
+            //    if (CurrentItem.Divisions.Download_Tree.Has_Files)
+            //    {
+            //        writer.WriteLine("       <tr>");
+            //        // Create the downloads viewer to ouput the html
+            //        Download_ItemViewer downloadViewer = new Download_ItemViewer {CurrentItem = CurrentItem, CurrentMode = currentMode};
 
-			writer.WriteLine("</body>");
-			writer.WriteLine("</html>");
+            //        // Add the HTML for this now
+            //        downloadViewer.Write_Main_Viewer_Section(writer, tracer);
+            //        writer.WriteLine("       </tr>");
+            //    }
 
-            writer.Flush();
-            writer.Close();
+            //    // If there is a table of contents write it again, this time it will be complete
+            //    // and also show a hierarchy if there is one
+            //    if ((CurrentItem.Web.Static_PageCount > 1) && (CurrentItem.Web.Static_Division_Count > 1))
+            //    {
+            //        writer.WriteLine("       <tr>");
+            //        writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Table of Contents</span></td>");
+            //        writer.WriteLine("       </tr>");
 
-            // Restore the text searchable flag and robot flag
-            currentMode.Is_Robot = false;
-			CurrentItem.Behaviors.Text_Searchable = textSearchable;
+            //        writer.WriteLine("       <tr>");
+            //        writer.WriteLine("          <td>");
+            //        writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
+
+            //        foreach (abstract_TreeNode treeNode in CurrentItem.Divisions.Physical_Tree.Roots)
+            //        {
+            //            recursively_write_toc(writer, treeNode, "&nbsp; &nbsp; ");
+            //        }
+
+            //        writer.WriteLine("            </div>");
+            //        writer.WriteLine("          </td>");
+            //        writer.WriteLine("       </tr>");
+            //    }
+
+            //    // Is the text file location included, in which case any full text should be appended to the end?
+            //    if ((TextFileLocation.Length > 0) && (Directory.Exists(TextFileLocation)))
+            //    {
+            //        // Get the list of all TXT files in this division
+            //        string[] text_files = Directory.GetFiles(TextFileLocation, "*.txt");
+            //        Dictionary<string, string> text_files_existing = new Dictionary<string, string>();
+            //        foreach (string thisTextFile in text_files)
+            //        {
+            //            string text_filename = (new FileInfo(thisTextFile)).Name.ToUpper();
+            //            text_files_existing[text_filename] = text_filename;
+            //        }
+
+            //        // Are there ANY text files?
+            //        if (text_files.Length > 0)
+            //        {
+            //            // If this has page images, check for related text files 
+            //            List<string> text_files_included = new List<string>();
+            //            bool started = false;
+            //            if (CurrentItem.Divisions.Physical_Tree.Has_Files)
+            //            {
+            //                // Go through the first 100 text pages
+            //                List<abstract_TreeNode> pages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
+            //                int page_count = 0;
+            //                foreach (Page_TreeNode thisPage in pages)
+            //                {
+            //                    // Keep track of the page count
+            //                    page_count++;
+
+            //                    // Look for files in this page
+            //                    if (thisPage.Files.Count > 0)
+            //                    {
+            //                        bool found_non_thumb_file = false;
+            //                        foreach (SobekCM_File_Info thisFile in thisPage.Files)
+            //                        {
+            //                            // Make sure this is not a thumb
+            //                            if (thisFile.System_Name.ToLower().IndexOf("thm.jpg") < 0)
+            //                            {
+            //                                found_non_thumb_file = true;
+            //                                string root = thisFile.File_Name_Sans_Extension;
+            //                                if (text_files_existing.ContainsKey(root.ToUpper() + ".TXT"))
+            //                                {
+            //                                    string text_file = TextFileLocation + "\\" + thisFile.File_Name_Sans_Extension + ".txt";
+
+            //                                    // SInce this is marked to be included, save this name
+            //                                    text_files_included.Add(root.ToUpper() + ".TXT");
+
+            //                                    // For size reasons, we only include the text from the first 100 pages
+            //                                    if (page_count <= 100)
+            //                                    {
+            //                                        if (!started)
+            //                                        {
+            //                                            writer.WriteLine("       <tr>");
+            //                                            writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Full Text</span></td>");
+            //                                            writer.WriteLine("       </tr>");
+            //                                            writer.WriteLine("       <tr>");
+            //                                            writer.WriteLine("          <td>");
+            //                                            writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
+
+            //                                            started = true;
+            //                                        }
+
+            //                                        try
+            //                                        {
+            //                                            StreamReader reader = new StreamReader(text_file);
+            //                                            string text_line = reader.ReadLine();
+            //                                            while (text_line != null)
+            //                                            {
+            //                                                writer.WriteLine(text_line + "<br />");
+            //                                                text_line = reader.ReadLine();
+            //                                            }
+            //                                            reader.Close();
+            //                                        }
+            //                                        catch
+            //                                        {
+            //                                            writer.WriteLine("Unable to read file: " + text_file);
+            //                                        }
+
+            //                                        writer.WriteLine("<br /><br />");
+            //                                    }
+            //                                }
+
+            //                            }
+
+            //                            // If a suitable file was found, break here
+            //                            if (found_non_thumb_file)
+            //                                break;
+            //                        }
+            //                    }
+            //                }
+
+            //                // End this if it was ever started
+            //                if (started)
+            //                {
+            //                    writer.WriteLine("            </div>");
+            //                    writer.WriteLine("          </td>");
+            //                    writer.WriteLine("       </tr>");
+            //                }
+            //            }
+
+            //            // Now, check for any other valid text files 
+            //            List<string> additional_text_files = text_files_existing.Keys.Where(ThisTextFile => (!text_files_included.Contains(ThisTextFile.ToUpper())) && (ThisTextFile.ToUpper() != "AGREEMENT.TXT") && (ThisTextFile.ToUpper().IndexOf("REQUEST") != 0)).ToList();
+
+            //            // Now, include any additional text files, which would not be page text files, possiblye 
+            //            // full text for included PDFs, Powerpoint, Word Doc, etc..
+            //            started = false;
+            //            foreach (string thisTextFile in additional_text_files)
+            //            {
+            //                if (!started)
+            //                {
+            //                    writer.WriteLine("       <tr>");
+            //                    writer.WriteLine("         <td align=\"left\"><span class=\"SobekViewerTitle\">Full Text</span></td>");
+            //                    writer.WriteLine("       </tr>");
+            //                    writer.WriteLine("       <tr>");
+            //                    writer.WriteLine("          <td>");
+            //                    writer.WriteLine("            <div class=\"sbkCiv_Citation\">");
+
+            //                    started = true;
+            //                }
+
+            //                string text_file = TextFileLocation + "\\" + thisTextFile;
+
+            //                try
+            //                {
+
+
+            //                    StreamReader reader = new StreamReader(text_file);
+            //                    string text_line = reader.ReadLine();
+            //                    while (text_line != null)
+            //                    {
+            //                        writer.WriteLine(text_line + "<br />");
+            //                        text_line = reader.ReadLine();
+            //                    }
+            //                    reader.Close();
+            //                }
+            //                catch
+            //                {
+            //                    writer.WriteLine("Unable to read file: " + text_file);
+            //                }
+
+            //                writer.WriteLine("<br /><br />");
+            //            }
+
+            //            // End this if it was ever started
+            //            if (started)
+            //            {
+            //                writer.WriteLine("            </div>");
+            //                writer.WriteLine("          </td>");
+            //                writer.WriteLine("       </tr>");
+            //            }
+            //        }
+            //    }
+            //}
+
+            //writer.WriteLine("      </table>");
+            //writer.WriteLine("      </div>");
+
+            //// Write the footer
+            //Display_Footer(writer, itemWriter.Skin);
+
+            //writer.WriteLine("</body>");
+            //writer.WriteLine("</html>");
+
+            //writer.Flush();
+            //writer.Close();
+
+            //// Restore the text searchable flag and robot flag
+            //currentMode.Is_Robot = false;
+            //CurrentItem.Behaviors.Text_Searchable = textSearchable;
         }
 
         private void recursively_write_toc(StreamWriter Writer, abstract_TreeNode TreeNode, string Indent)
@@ -1352,7 +1351,7 @@ namespace SobekCM.Library
 	    /// <param name="CurrentItem"> Current item, to include the aggregationPermissions in the breadcrumbs </param>
 	    public void Display_Header(TextWriter Writer, SobekCM_Skin_Object HTMLSkin, SobekCM_Item CurrentItem )
         {
-			StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + currentMode.Base_URL + "\">" + InstanceWide_Settings_Singleton.Settings.System_Abbreviation + " Home</a>");
+			StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + currentMode.Base_URL + "\">" + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + " Home</a>");
 
 			int codes_added = 0;
 				if (CurrentItem.Behaviors.Aggregation_Count > 0)
@@ -1454,7 +1453,7 @@ namespace SobekCM.Library
 		/// <param name="Banner"> Banner HTML</param>
 		public void Display_Header(TextWriter Writer, SobekCM_Skin_Object HTMLSkin, string Banner)
 		{
-			string breadcrumbs = "<a href=\"" + currentMode.Base_URL + "\">" + InstanceWide_Settings_Singleton.Settings.System_Name + " Home</a>";
+			string breadcrumbs = "<a href=\"" + currentMode.Base_URL + "\">" + UI_ApplicationCache_Gateway.Settings.System_Name + " Home</a>";
 			Writer.WriteLine(HTMLSkin.Header_Item_HTML.Replace("<%URLOPTS%>", "").Replace("<%?URLOPTS%>", "").Replace("<%&URLOPTS%>", "").Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", "").Replace("<%ENGLISH%>", "").Replace("<%FRENCH%>", "").Replace("<%SPANISH%>", "").Replace("<%LOWGRAPHICS%>", "").Replace("<%HIGHGRAPHICS%>", "").Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%BANNER%>", Banner));
 			Writer.WriteLine(String.Empty);
 		}
@@ -1467,7 +1466,7 @@ namespace SobekCM.Library
             // Get the current contact URL
             Display_Mode_Enum thisMode = currentMode.Mode;
             currentMode.Mode = Display_Mode_Enum.Contact;
-            string contact = currentMode.Redirect_URL();
+            string contact = UrlWriterHelper.Redirect_URL(currentMode);
 
             // Restore the old mode
             currentMode.Mode = thisMode;

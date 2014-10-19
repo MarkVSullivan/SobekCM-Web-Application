@@ -5,14 +5,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Database;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -32,19 +31,17 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     public class Map_Browse_AggregationViewer : abstractAggregationViewer
     {
         /// <summary> Constructor for a new instance of the Metadata_Browse_AggregationViewer class </summary>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Current_Aggregation"> Current item aggregation object to display </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public Map_Browse_AggregationViewer(SobekCM_Navigation_Object Current_Mode, Item_Aggregation Current_Aggregation, Custom_Tracer Tracer): base(Current_Aggregation, Current_Mode)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Map_Browse_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Get the coordinate information
-            DataTable coordinates = SobekCM_Database.Get_All_Coordinate_Points_By_Aggregation(Current_Aggregation.Code, Tracer);
+            DataTable coordinates = Engine_Database.Get_All_Coordinate_Points_By_Aggregation(RequestSpecificValues.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
 
             // Add the google script information
             StringBuilder scriptBuilder = new StringBuilder(10000);
 
             scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?sensor=false\"></script>");
-            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Current_Mode.Base_URL + "default/scripts/keydragzoom_packed.js\"></script>");
+            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/keydragzoom_packed.js\"></script>");
             scriptBuilder.AppendLine("<script type=\"text/javascript\">");
             scriptBuilder.AppendLine("  //<![CDATA[");
             scriptBuilder.AppendLine("  // Global values");
@@ -72,7 +69,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 scriptBuilder.AppendLine("    // Create the custom icon / marker image");
                 scriptBuilder.AppendLine("    var iconSize = new google.maps.Size(11, 11);");
                 scriptBuilder.AppendLine("    var iconAnchor = new google.maps.Point(5, 5);");
-                scriptBuilder.AppendLine("    var pointer_image = '" + currentMode.Base_URL + "/default/images/map_point.png';");
+                scriptBuilder.AppendLine("    var pointer_image = '" + RequestSpecificValues.Current_Mode.Base_URL + "/default/images/map_point.png';");
                 scriptBuilder.AppendLine("    custom_icon = new google.maps.MarkerImage(pointer_image, iconSize, null, iconAnchor);");
 
                 scriptBuilder.AppendLine();
@@ -101,7 +98,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         if (bibids_in_this_point.Count > 0)
                         {
                             // Add the point
-                            add_single_point(last_latitude, last_longitude, Current_Mode,  bibids_in_this_point, scriptBuilder);
+                            add_single_point(last_latitude, last_longitude, RequestSpecificValues.Current_Mode, bibids_in_this_point, scriptBuilder);
 
                             // Assign this as the last value
                             last_latitude = latitude;
@@ -125,7 +122,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (bibids_in_this_point.Count > 0)
                 {
                     // Add the point
-                    add_single_point(last_latitude, last_longitude, Current_Mode, bibids_in_this_point, scriptBuilder);
+                    add_single_point(last_latitude, last_longitude, RequestSpecificValues.Current_Mode, bibids_in_this_point, scriptBuilder);
 
                     // Clear the list of newspapers linked to this point
                     bibids_in_this_point.Clear();
@@ -144,7 +141,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             scriptBuilder.AppendLine("  }");
             scriptBuilder.AppendLine("  //]]>");
             scriptBuilder.AppendLine("</script>");
-            scriptIncludeName = scriptBuilder.ToString();
+            Search_Script_Reference = scriptBuilder.ToString();
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
@@ -191,10 +188,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 string link = Current_Mode.Base_URL + thisBibId;
 
                 // Calculate the thumbnail
-                string thumb = InstanceWide_Settings_Singleton.Settings.Image_URL + groupThumbnail.Replace("\\", "/").Replace("//", "/");
+                string thumb = UI_ApplicationCache_Gateway.Settings.Image_URL + groupThumbnail.Replace("\\", "/").Replace("//", "/");
                 if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
-                    thumb = currentMode.Default_Images_URL + "NoThumb.jpg";
+                    thumb = RequestSpecificValues.Current_Mode.Default_Images_URL + "NoThumb.jpg";
                 }
 
 				contentBuilder.Append("<td><table class=\"sbkMbav_Thumb\" >");

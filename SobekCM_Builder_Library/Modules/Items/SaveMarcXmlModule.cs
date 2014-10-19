@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using SobekCM.Library.Settings;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 
 #endregion

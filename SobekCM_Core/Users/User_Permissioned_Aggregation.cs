@@ -1,4 +1,8 @@
-﻿using System.Runtime.Serialization;
+﻿#region Using directives
+
+using System.Runtime.Serialization;
+
+#endregion
 
 namespace SobekCM.Core.Users
 {

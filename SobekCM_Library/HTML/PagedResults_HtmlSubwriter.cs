@@ -8,22 +8,17 @@ using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
 using SobekCM.Core.Search;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
 using SobekCM.Library.ResultsViewer;
-using SobekCM.Library.Search;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -37,53 +32,25 @@ namespace SobekCM.Library.HTML
 		private const int MAXIMIZED_FACET_COUNT = 100;
 		private const int RESULTS_PER_PAGE = 20;
 
-		private readonly Item_Lookup_Object allItems;
 		private string leftButtons;
 		private string rightButtons;
-		private readonly Aggregation_Code_Manager codeManager;
-		private readonly User_Object currentUser;
 		private readonly string facetInformation;
-		private readonly List<iSearch_Title_Result> pagedResults;
 		private iResultsViewer resultWriter;
-		private readonly Search_Results_Statistics resultsStatistics;
 		private string sortOptions;
-		private readonly Language_Support_Info translations;
 		private int term_counter;
-        private List<string> searchStopWords;
 
 		/// <summary> Constructor for a new instance of the paged_result_html_subwriter class </summary>
-		/// <param name="Results_Statistics"> Information about the entire set of results for a search or browse </param>
-		/// <param name="Paged_Results"> Single page of results for a search or browse, within the entire set </param>
-		/// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-		/// <param name="Translator"> Language support object which handles simple translational duties </param>
-		/// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-		/// <param name="Current_User"> Currently logged on user </param>
-		/// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-		public PagedResults_HtmlSubwriter(Search_Results_Statistics Results_Statistics,
-			List<iSearch_Title_Result> Paged_Results,
-			Aggregation_Code_Manager Code_Manager,
-			Language_Support_Info Translator, Item_Lookup_Object All_Items_Lookup, 
-			User_Object Current_User,
-			SobekCM_Navigation_Object Current_Mode, List<string> Search_Stop_Words,
-			Custom_Tracer Tracer )
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public PagedResults_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
 		{
-			currentUser = Current_User;
-			pagedResults = Paged_Results;
-			resultsStatistics = Results_Statistics;
-			codeManager = Code_Manager;
-			translations = Translator;
-		    searchStopWords = Search_Stop_Words;
 
 			Browse_Title = String.Empty;
-			allItems = All_Items_Lookup;
 			sortOptions = String.Empty;
 			leftButtons = String.Empty;
 			rightButtons = String.Empty;
 			Showing_Text = String.Empty;
 			Include_Bookshelf_View = false;
 			Outer_Form_Name = String.Empty;
-			Mode= Current_Mode;
 			Folder_Owner_Name = String.Empty;
 			Folder_Owner_Email = String.Empty;
 			term_counter = 0;
@@ -117,15 +84,15 @@ namespace SobekCM.Library.HTML
 							bool is_html_format = format != "TEXT";
 
 							// CC: the user, unless they are already on the list
-							string cc_list = currentUser.Email;
-							if (address.ToUpper().IndexOf(currentUser.Email.ToUpper()) >= 0)
+							string cc_list = RequestSpecificValues.Current_User.Email;
+							if (address.ToUpper().IndexOf(RequestSpecificValues.Current_User.Email.ToUpper()) >= 0)
 								cc_list = String.Empty;
 
 							// Send the email
-							string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, currentUser.Full_Name, Mode.SobekCM_Instance_Abbreviation, is_html_format, HttpContext.Current.Items["Original_URL"].ToString(), url_description, list_type, currentUser.UserID);
+							string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation, is_html_format, HttpContext.Current.Items["Original_URL"].ToString(), url_description, list_type, RequestSpecificValues.Current_User.UserID);
 							HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", any_error.Length > 0 ? any_error : "Your email has been sent");
 
-							Mode.isPostBack = true;
+							RequestSpecificValues.Current_Mode.isPostBack = true;
 
 							// Do this to force a return trip (cirumnavigate cacheing)
 							string original_url = HttpContext.Current.Items["Original_URL"].ToString();
@@ -135,7 +102,7 @@ namespace SobekCM.Library.HTML
 								HttpContext.Current.Response.Redirect(original_url + "&p=" + DateTime.Now.Millisecond, false);
 
 							HttpContext.Current.ApplicationInstance.CompleteRequest();
-							Current_Mode.Request_Completed = true;
+                            RequestSpecificValues.Current_Mode.Request_Completed = true;
 							return;
 						}
 					}
@@ -146,7 +113,7 @@ namespace SobekCM.Library.HTML
 						bool open_searches = HttpContext.Current.Request.Form["open_searches"] != null;
 
 						string original_url = HttpContext.Current.Items["Original_URL"].ToString();
-						if (SobekCM_Database.Save_User_Search(currentUser.UserID, original_url , url_description, 0, usernotes, Tracer) != -1000)
+                        if (SobekCM_Database.Save_User_Search(RequestSpecificValues.Current_User.UserID, original_url, url_description, 0, usernotes, RequestSpecificValues.Tracer) != -1000)
 						{
 							if (open_searches)
 							{
@@ -161,7 +128,7 @@ namespace SobekCM.Library.HTML
 						}
 
 						// Do this to force a return trip (cirumnavigate cacheing)
-						Mode.isPostBack = true;
+						RequestSpecificValues.Current_Mode.isPostBack = true;
 						if (original_url.IndexOf("?") > 0)
 						{
 							HttpContext.Current.Response.Redirect(original_url + "&p=" + DateTime.Now.Millisecond, false);
@@ -171,7 +138,7 @@ namespace SobekCM.Library.HTML
 							HttpContext.Current.Response.Redirect(original_url + "?p=" + DateTime.Now.Millisecond, false);
 						}
 						HttpContext.Current.ApplicationInstance.CompleteRequest();
-						Current_Mode.Request_Completed = true;
+                        RequestSpecificValues.Current_Mode.Request_Completed = true;
 					}
 				}
 			}
@@ -204,39 +171,38 @@ namespace SobekCM.Library.HTML
         /// <summary> Creates the specific results viewer according the user's preferences in the current request mode </summary>
 		private void create_resultwriter()
 		{
-			if ( resultsStatistics.Total_Items == 0)
+			if ( RequestSpecificValues.Results_Statistics.Total_Items == 0)
 			{
-				resultWriter = new No_Results_ResultsViewer
-								   {CurrentMode = Mode, Results_Statistics = resultsStatistics};
+			    resultWriter = new No_Results_ResultsViewer(RequestSpecificValues);
 				return;
 			}
 
 			// If this is default, determine the type from the aggregation (currently) or user
-			if (Mode.Result_Display_Type == Result_Display_Type_Enum.Default)
+			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Default)
 			{
-				if (Mode.Coordinates.Length > 0)
-					Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
+				if (RequestSpecificValues.Current_Mode.Coordinates.Length > 0)
+					RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
 				else
 				{
 					string user_view = "default";
 					if (HttpContext.Current.Session["User_Default_View"] != null)
 						user_view = HttpContext.Current.Session["User_Default_View"].ToString();
-					Mode.Result_Display_Type = Current_Aggregation.Default_Result_View;
+					RequestSpecificValues.Current_Mode.Result_Display_Type = RequestSpecificValues.Hierarchy_Object.Default_Result_View;
 					switch (user_view)
 					{
 						case "brief":
-							if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
-								Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
+							if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+								RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
 							break;
 
 						case "thumb":
-							if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
-								Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
+							if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
+								RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
 							break;
 
 						case "table":
-							if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Table))
-								Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
+							if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Table))
+								RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
 							break;
 
 					}
@@ -245,169 +211,162 @@ namespace SobekCM.Library.HTML
 			}
 
 			// Create the bookshelf view
-			if (Mode.Result_Display_Type == Result_Display_Type_Enum.Bookshelf)
+			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Bookshelf)
 			{
-				if (Mode.Mode == Display_Mode_Enum.My_Sobek)
+				if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.My_Sobek)
 				{
-					resultWriter = new Bookshelf_View_ResultsViewer(allItems, currentUser);
+                    resultWriter = new Bookshelf_View_ResultsViewer(RequestSpecificValues);
 				}
 				else
 				{
-					resultWriter = new Brief_ResultsViewer(allItems);
+                    resultWriter = new Brief_ResultsViewer(RequestSpecificValues);
 				}
 			}
 
 			// Create the result writer and populate the sort list for BRIEF view
-			if (Mode.Result_Display_Type == Result_Display_Type_Enum.Brief)
+			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Brief)
 			{
-				resultWriter = new Brief_ResultsViewer(allItems);
+                resultWriter = new Brief_ResultsViewer(RequestSpecificValues);
 			}
 
 			// Create the result writer and populate the sort list for THUMBNAIL view
-			if (Mode.Result_Display_Type == Result_Display_Type_Enum.Thumbnails)
+			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Thumbnails)
 			{
-				resultWriter = new Thumbnail_ResultsViewer(allItems);
-				((Thumbnail_ResultsViewer)resultWriter).Code_Manager = codeManager;
+                resultWriter = new Thumbnail_ResultsViewer(RequestSpecificValues);
 			}
 
 			// Create the result writer and populate the sort list for TABLE view
-			if (Mode.Result_Display_Type == Result_Display_Type_Enum.Table)
+			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Table)
 			{
-				resultWriter = new Table_ResultsViewer(allItems);
+                resultWriter = new Table_ResultsViewer(RequestSpecificValues);
 			}
 
 			// Create the result writer and populate the sort list for FULL view
-			if ((Mode.Result_Display_Type == Result_Display_Type_Enum.Full_Citation) || (Mode.Result_Display_Type == Result_Display_Type_Enum.Full_Image))
+			if ((RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Full_Citation) || (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Full_Image))
 			{
-				resultWriter = new Full_ResultsViewer(allItems);
+                resultWriter = new Full_ResultsViewer(RequestSpecificValues);
 			}
 
 			// Create the result writer and populate the sort list for MAP view
-			if (Mode.Result_Display_Type == Result_Display_Type_Enum.Map)
+			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map)
 			{
-				resultWriter = new Google_Map_ResultsViewer(allItems);
+                resultWriter = new Google_Map_ResultsViewer(RequestSpecificValues);
 			}
 
             // Create the result writer and populate the sort list for MAP view
-            if (Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
+            if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
             {
-                resultWriter = new Google_Map_ResultsViewer_Beta(Mode, allItems);
+                resultWriter = new Google_Map_ResultsViewer_Beta(RequestSpecificValues);
             }
 
 			// Create the result writer and populate the sort list for TEXT view
-			if (Mode.Result_Display_Type == Result_Display_Type_Enum.Export)
+			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Export)
 			{
-				resultWriter = new Export_File_ResultsViewer(allItems, currentUser);
+				resultWriter = new Export_File_ResultsViewer(RequestSpecificValues);
 			}
-
-			resultWriter.CurrentMode = Mode;
-			resultWriter.Results_Statistics = resultsStatistics;
-			resultWriter.Paged_Results = pagedResults;
-			resultWriter.HierarchyObject = Current_Aggregation;
-			resultWriter.Translator = translations;
 			
 			// Populate the sort list and sort the result set
 			sortOptions = String.Empty;
 			StringBuilder sort_options_builder = new StringBuilder(1000);
-			if ((resultWriter.Sortable) && (!Mode.Is_Robot))
+			if ((resultWriter.Sortable) && (!RequestSpecificValues.Current_Mode.Is_Robot))
 			{
 				// Add the special sorts for browses
-				if (Mode.Mode == Display_Mode_Enum.Aggregation) // browse info only
+				if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) // browse info only
 				{
-					if (Mode.Info_Browse_Mode.ToUpper().IndexOf("NEW") >= 0)
+					if (RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper().IndexOf("NEW") >= 0)
 					{
-						if (Mode.Sort == 0)
+						if (RequestSpecificValues.Current_Mode.Sort == 0)
 						{
-							sort_options_builder.Append("      <option value=\"" + 0 + "\" selected=\"selected\">" + translations.Get_Translation("Date Added", Mode.Language) + "</option>" + Environment.NewLine );
+							sort_options_builder.Append("      <option value=\"" + 0 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date Added", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 						}
 						else
 						{
-							sort_options_builder.Append("      <option value=\"" + 0 + "\">" + translations.Get_Translation("Date Added", Mode.Language) + "</option>" + Environment.NewLine );
+							sort_options_builder.Append("      <option value=\"" + 0 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date Added", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 						}
 
-						if (Mode.Sort == 1)
+						if (RequestSpecificValues.Current_Mode.Sort == 1)
 						{
-							sort_options_builder.Append("      <option value=\"" + 1 + "\" selected=\"selected\">" + translations.Get_Translation("Title", Mode.Language) + "</option>" + Environment.NewLine );
+							sort_options_builder.Append("      <option value=\"" + 1 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 						}
 						else
 						{
-							sort_options_builder.Append("      <option value=\"" + 1 + "\">" + translations.Get_Translation("Title", Mode.Language) + "</option>" + Environment.NewLine );
+							sort_options_builder.Append("      <option value=\"" + 1 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 						}
 					}
 					else
 					{
-						if ((Mode.Sort == 0) || (Mode.Sort == 1))
+						if ((RequestSpecificValues.Current_Mode.Sort == 0) || (RequestSpecificValues.Current_Mode.Sort == 1))
 						{
-							sort_options_builder.Append("      <option value=\"" + 0 + "\" selected=\"selected\">" + translations.Get_Translation("Title", Mode.Language) + "</option>" + Environment.NewLine );
+							sort_options_builder.Append("      <option value=\"" + 0 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 						}
 						else
 						{
-							sort_options_builder.Append("      <option value=\"" + 0 + "\">" + translations.Get_Translation("Title", Mode.Language) + "</option>" + Environment.NewLine );
+							sort_options_builder.Append("      <option value=\"" + 0 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 						}
 					}
 				}
 
 				// Add the special sorts for searches
-				if (Mode.Mode == Display_Mode_Enum.Results)
+				if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results)
 				{
-					if (Mode.Sort == 0)
+					if (RequestSpecificValues.Current_Mode.Sort == 0)
 					{
-						sort_options_builder.Append("      <option value=\"" + 0 + "\" selected=\"selected\">" + translations.Get_Translation("Rank", Mode.Language) + "</option>" + Environment.NewLine );
+						sort_options_builder.Append("      <option value=\"" + 0 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Rank", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 					}
 					else
 					{
-						sort_options_builder.Append("      <option value=\"" + 0 + "\">" + translations.Get_Translation("Rank", Mode.Language) + "</option>" + Environment.NewLine );
+						sort_options_builder.Append("      <option value=\"" + 0 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Rank", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 					}
 
-					if (Mode.Sort == 1)
+					if (RequestSpecificValues.Current_Mode.Sort == 1)
 					{
-						sort_options_builder.Append("      <option value=\"" + 1 + "\" selected=\"selected\">" + translations.Get_Translation("Title", Mode.Language) + "</option>" + Environment.NewLine );
+						sort_options_builder.Append("      <option value=\"" + 1 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 					}
 					else
 					{
-						sort_options_builder.Append("      <option value=\"" + 1 + "\">" + translations.Get_Translation("Title", Mode.Language) + "</option>" + Environment.NewLine );
+						sort_options_builder.Append("      <option value=\"" + 1 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 					}
 				}
 
 				// Add the bibid sorts if this is an internal user
-				if (Mode.Internal_User)
+				if (RequestSpecificValues.Current_Mode.Internal_User)
 				{
-					if (Mode.Sort == 2)
+					if (RequestSpecificValues.Current_Mode.Sort == 2)
 					{
-						sort_options_builder.Append("      <option value=\"" + 2 + "\" selected=\"selected\">" + translations.Get_Translation("BibID Ascending", Mode.Language) + "</option>" + Environment.NewLine );
+						sort_options_builder.Append("      <option value=\"" + 2 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID Ascending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 					}
 					else
 					{
-						sort_options_builder.Append("      <option value=\"" + 2 + "\">" + translations.Get_Translation("BibID Ascending", Mode.Language) + "</option>" + Environment.NewLine );
+						sort_options_builder.Append("      <option value=\"" + 2 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID Ascending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 					}
 
-					if (Mode.Sort == 3)
+					if (RequestSpecificValues.Current_Mode.Sort == 3)
 					{
-						sort_options_builder.Append("      <option value=\"" + 3 + "\" selected=\"selected\">" + translations.Get_Translation("BibID Descending", Mode.Language) + "</option>" + Environment.NewLine );
+						sort_options_builder.Append("      <option value=\"" + 3 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID Descending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 					}
 					else
 					{
-						sort_options_builder.Append("      <option value=\"" + 3 + "\">" + translations.Get_Translation("BibID Descending", Mode.Language) + "</option>" + Environment.NewLine );
+						sort_options_builder.Append("      <option value=\"" + 3 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID Descending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 					}
 				}
 
 				// Add the publication date sorts
-				if (Mode.Sort == 10)
+				if (RequestSpecificValues.Current_Mode.Sort == 10)
 				{
-					sort_options_builder.Append("      <option value=\"" + 10 + "\" selected=\"selected\">" + translations.Get_Translation("Date Ascending", Mode.Language) + "</option>" + Environment.NewLine );
+					sort_options_builder.Append("      <option value=\"" + 10 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date Ascending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 				}
 				else
 				{
-					sort_options_builder.Append("      <option value=\"" + 10 + "\">" + translations.Get_Translation("Date Ascending", Mode.Language) + "</option>" + Environment.NewLine );
+					sort_options_builder.Append("      <option value=\"" + 10 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date Ascending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 				}
 
-				if (Mode.Sort == 11)
+				if (RequestSpecificValues.Current_Mode.Sort == 11)
 				{
-					sort_options_builder.Append("      <option value=\"" + 11 + "\" selected=\"selected\">" + translations.Get_Translation("Date Descending", Mode.Language) + "</option>" + Environment.NewLine );
+					sort_options_builder.Append("      <option value=\"" + 11 + "\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date Descending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 				}
 				else
 				{
-					sort_options_builder.Append("      <option value=\"" + 11 + "\">" + translations.Get_Translation("Date Descending", Mode.Language) + "</option>" + Environment.NewLine );
+					sort_options_builder.Append("      <option value=\"" + 11 + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Date Descending", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
 				}
 
 				sortOptions = sort_options_builder.ToString();
@@ -423,7 +382,7 @@ namespace SobekCM.Library.HTML
 			Tracer.Add_Trace("paged_result_html_subwriter.Add_Controls", "Adding controls for the result set");
 
 			// If the results have facets, this should be rendered in a table with the facets to the left
-			if ((resultsStatistics.Has_Facet_Info) && (resultsStatistics.Total_Items > 1) && (Mode.Result_Display_Type != Result_Display_Type_Enum.Export) && (Mode.Result_Display_Type != Result_Display_Type_Enum.Map))
+			if ((RequestSpecificValues.Results_Statistics.Has_Facet_Info) && (RequestSpecificValues.Results_Statistics.Total_Items > 1) && (RequestSpecificValues.Current_Mode.Result_Display_Type != Result_Display_Type_Enum.Export) && (RequestSpecificValues.Current_Mode.Result_Display_Type != Result_Display_Type_Enum.Map))
 			{
 				// Start this table, write the facets, and start the next TD section for the results
 				Literal startFacetTable = new Literal { Text = string.Format("<table id=\"sbkPrsw_ResultsOuterTable\">" + Environment.NewLine + "<tr style=\"vertical-align:top;\">" + Environment.NewLine + "<td id=\"sbkPrsw_FacetOuterColumn\">" + Environment.NewLine + "{0}" + Environment.NewLine + "</td>" + Environment.NewLine + "<td>" + Environment.NewLine, Add_Facet_Information(Tracer)) };
@@ -443,18 +402,18 @@ namespace SobekCM.Library.HTML
 				return;
 
 
-			if (resultsStatistics.Total_Items == 0)
+			if (RequestSpecificValues.Results_Statistics.Total_Items == 0)
 			{
 				resultWriter.Add_HTML(MainPlaceHolder, Tracer);
 				return;
 			}
 
-			Literal startingLiteral = new Literal{ Text = (Mode.Result_Display_Type == Result_Display_Type_Enum.Map) ? "</div>" + Environment.NewLine + "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine : (Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta) ? "</div>" + Environment.NewLine + "<div>" + Environment.NewLine : "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine};
+			Literal startingLiteral = new Literal{ Text = (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map) ? "</div>" + Environment.NewLine + "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine : (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta) ? "</div>" + Environment.NewLine + "<div>" + Environment.NewLine : "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine};
 			MainPlaceHolder.Controls.Add(startingLiteral);
 
 			resultWriter.Add_HTML(MainPlaceHolder, Tracer );
 
-            Literal endingLiteral = new Literal { Text = (Mode.Result_Display_Type == Result_Display_Type_Enum.Map || Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta) ? "</div>" + Environment.NewLine + "<div id=\"pagecontainer_resumed\">" + Environment.NewLine : "</div>" + Environment.NewLine };
+            Literal endingLiteral = new Literal { Text = (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map || RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta) ? "</div>" + Environment.NewLine + "<div id=\"pagecontainer_resumed\">" + Environment.NewLine : "</div>" + Environment.NewLine };
 			MainPlaceHolder.Controls.Add(endingLiteral);
 
 			// If the results have facets, end the result table
@@ -469,7 +428,7 @@ namespace SobekCM.Library.HTML
 		{
 			Tracer.Add_Trace("paged_result_html_subwriter.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
 
-			if ( resultsStatistics.Total_Items > 0 )
+			if ( RequestSpecificValues.Results_Statistics.Total_Items > 0 )
 			{
 				Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">");
 				Output.Write(leftButtons);
@@ -489,7 +448,7 @@ namespace SobekCM.Library.HTML
 		{
 			Tracer.Add_Trace("paged_result_html_subwriter.Write_HTML", "Rendering HTML");
 
-            if (Mode.Result_Display_Type != Result_Display_Type_Enum.Map_Beta)
+            if (RequestSpecificValues.Current_Mode.Result_Display_Type != Result_Display_Type_Enum.Map_Beta)
             {
                 #region all but map beta
 
@@ -497,39 +456,39 @@ namespace SobekCM.Library.HTML
                 string showing_range_text = "{0} - {1} of {2} matching titles";
                 string showing_coord_range_text = "{0} - {1} of {2} matching coordinates";
 
-                if (Mode.Aggregation == "aerials")
+                if (RequestSpecificValues.Current_Mode.Aggregation == "aerials")
                 {
                     showing_coord_range_text = "{0} - {1} of {2} matching flights";
                 }
 
-                if (Mode.Language == Web_Language_Enum.Spanish)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                 {
                     sort_by = "Organizar";
                     showing_range_text = "{0} - {1} de {2} títulos correspondientes";
                 }
 
-                if (Mode.Language == Web_Language_Enum.French)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                 {
                     sort_by = "Limiter";
                     showing_range_text = "{0} - {1} de {2} titres correspondants";
                 }
 
-                if (Mode.Result_Display_Type == Result_Display_Type_Enum.Map)
+                if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map)
                     showing_range_text = showing_coord_range_text;
 
-                if (Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
+                if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
                     showing_range_text = showing_coord_range_text;
 
-                Display_Mode_Enum initialMode = Mode.Mode;
+                Display_Mode_Enum initialMode = RequestSpecificValues.Current_Mode.Mode;
 
                 Tracer.Add_Trace("paged_result_html_subwriter.Write_HTML", "Building appropriate ResultsWriter");
 
-                Mode.Mode = initialMode;
-                if (Mode.Mode == Display_Mode_Enum.Search)
-                    Mode.Mode = Display_Mode_Enum.Results;
+                RequestSpecificValues.Current_Mode.Mode = initialMode;
+                if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Search)
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
 
                 // If no results, display different information here
-                if ((Mode.Mode == Display_Mode_Enum.Results) && (resultsStatistics.Total_Items == 0))
+                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results) && (RequestSpecificValues.Results_Statistics.Total_Items == 0))
                 {
                     Output.WriteLine("<div class=\"sbkPrsw_DescPanel\" style=\"margin-top:10px\">");
                     Show_Search_Info(Output);
@@ -546,7 +505,7 @@ namespace SobekCM.Library.HTML
                     return false;
 
                 // Determine which rows are being displayed
-                int lastRow = Mode.Page * RESULTS_PER_PAGE;
+                int lastRow = RequestSpecificValues.Current_Mode.Page * RESULTS_PER_PAGE;
                 int startRow = lastRow - 19;
 
                 // Start the form for this, unless we are already in an appropriate form
@@ -562,12 +521,12 @@ namespace SobekCM.Library.HTML
                 // Get the name of this
                 string currentName = "browse";
                 string currentTitle = "Browse";
-                if (Mode.Mode == Display_Mode_Enum.Results)
+                if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results)
                 {
                     currentName = "search";
                     currentTitle = "Search";
                 }
-                if (Mode.Mode == Display_Mode_Enum.Public_Folder)
+                if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Public_Folder)
                 {
                     currentName = "public bookshelf";
                     currentTitle = "Public Bookshelf";
@@ -583,13 +542,13 @@ namespace SobekCM.Library.HTML
 
                 // Get the value for the <%SORTER%> directive (to sort the results)
                 string SORTER = String.Empty;
-                if ((resultWriter.Sortable) && (!Mode.Is_Robot) && (Mode.Mode != Display_Mode_Enum.My_Sobek) && (Mode.Mode != Display_Mode_Enum.Public_Folder))
+                if ((resultWriter.Sortable) && (!RequestSpecificValues.Current_Mode.Is_Robot) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Public_Folder))
                 {
                     StringBuilder sorterBuilder = new StringBuilder("  <div class=\"sbkPrsw_ResultsSort\">");
-                    short current_order = Mode.Sort;
-                    Mode.Sort = 0;
-                    string url = Mode.Redirect_URL();
-                    Mode.Sort = current_order;
+                    short current_order = RequestSpecificValues.Current_Mode.Sort;
+                    RequestSpecificValues.Current_Mode.Sort = 0;
+                    string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                    RequestSpecificValues.Current_Mode.Sort = current_order;
                     sorterBuilder.AppendLine("    " + sort_by + ": &nbsp;");
                     sorterBuilder.AppendLine("    <select name=\"sorter_input\" onchange=\"sort_results('" + url.Replace("&", "&amp;") + "')\" id=\"sorter_input\" class=\"sbkPrsw_SorterDropDown\">");
                     sorterBuilder.AppendLine(sortOptions);
@@ -601,18 +560,18 @@ namespace SobekCM.Library.HTML
                 // Get the value for the <%DESCRIPTION%> directive (to explain current display)
                 string DESCRIPTION = String.Empty;
                 string summation;
-                if ((Mode.Mode == Display_Mode_Enum.Aggregation) || (Mode.Mode == Display_Mode_Enum.Public_Folder) || ((Mode.Mode == Display_Mode_Enum.My_Sobek) && (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management))) // browse info only for aggregation
+                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Public_Folder) || ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management))) // browse info only for aggregation
                 {
-                    if (Mode.Mode == Display_Mode_Enum.Public_Folder)
+                    if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Public_Folder)
                     {
-                        DESCRIPTION = "<h1>&quot;" + translations.Get_Translation(Browse_Title, Mode.Language) + "&quot;</h1>" + Environment.NewLine + "  <span class=\"sbkPrsw_PublicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>";
+                        DESCRIPTION = "<h1>&quot;" + UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + "&quot;</h1>" + Environment.NewLine + "  <span class=\"sbkPrsw_PublicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>";
 
-                        summation = translations.Get_Translation(Browse_Title, Mode.Language) + " (publicly shared folder)";
+                        summation = UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + " (publicly shared folder)";
                     }
                     else
                     {
-                        DESCRIPTION = "<h1>" + translations.Get_Translation(Browse_Title, Mode.Language) + "</h1>";
-                        summation = translations.Get_Translation(Browse_Title, Mode.Language) + " browse in " + Current_Aggregation.Name;
+                        DESCRIPTION = "<h1>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + "</h1>";
+                        summation = UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + " browse in " + RequestSpecificValues.Hierarchy_Object.Name;
                     }
                 }
                 else
@@ -632,13 +591,13 @@ namespace SobekCM.Library.HTML
                 // Get the value for the <%DESCRIPTION%> directive (to explain current display)
                 //ushort current_page = currentMode.Page;
                 string SHOWING = String.Empty;
-                if (Mode.Result_Display_Type == Result_Display_Type_Enum.Export)
+                if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Export)
                 {
-                    SHOWING = resultsStatistics.Total_Items.ToString();
+                    SHOWING = RequestSpecificValues.Results_Statistics.Total_Items.ToString();
                 }
                 else
                 {
-                    SHOWING = String.Format(showing_range_text, startRow, Math.Min(lastRow, resultsStatistics.Total_Titles), resultWriter.Total_Results);
+                    SHOWING = String.Format(showing_range_text, startRow, Math.Min(lastRow, RequestSpecificValues.Results_Statistics.Total_Titles), resultWriter.Total_Results);
                     if (startRow == lastRow)
                     {
                         SHOWING = Showing_Text.Replace(startRow + " - " + startRow, startRow + " ");
@@ -657,7 +616,7 @@ namespace SobekCM.Library.HTML
                 string next_page_text = "Next";
                 string last_page_text = "Last";
 
-                if (Mode.Language == Web_Language_Enum.Spanish)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                 {
                     first_page = "Primera Página";
                     previous_page = "Página Anterior";
@@ -669,7 +628,7 @@ namespace SobekCM.Library.HTML
                     last_page_text = "Último";
                 }
 
-                if (Mode.Language == Web_Language_Enum.French)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                 {
                     first_page = "Première Page";
                     previous_page = "Page Précédente";
@@ -690,17 +649,17 @@ namespace SobekCM.Library.HTML
 
                     if (RESULTS_PER_PAGE < resultWriter.Total_Results)
                     {
-                        ushort current_page = Mode.Page;
+                        ushort current_page = RequestSpecificValues.Current_Mode.Page;
                         StringBuilder buttons_builder = new StringBuilder(1000);
 
                         // Should the previous and first buttons be enabled?
                         if (current_page > 1)
                         {
                             buttons_builder.Append("<div class=\"sbkPrsw_LeftButtons\">");
-                            Mode.Page = 1;
-                            buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + Mode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + Mode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-                            Mode.Page = (ushort)(current_page - 1);
-                            buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + Mode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                            RequestSpecificValues.Current_Mode.Page = 1;
+                            buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                            RequestSpecificValues.Current_Mode.Page = (ushort)(current_page - 1);
+                            buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
                             buttons_builder.Append("</div>");
                             LEFT_BUTTONS = buttons_builder.ToString();
                             buttons_builder.Clear();
@@ -715,12 +674,12 @@ namespace SobekCM.Library.HTML
                         if ((current_page * RESULTS_PER_PAGE) < resultWriter.Total_Results)
                         {
                             buttons_builder.Append("<div class=\"sbkPrsw_RightButtons\">");
-                            Mode.Page = (ushort)(current_page + 1);
-                            buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + Mode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-                            Mode.Page = (ushort)(resultWriter.Total_Results / RESULTS_PER_PAGE);
+                            RequestSpecificValues.Current_Mode.Page = (ushort)(current_page + 1);
+                            buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                            RequestSpecificValues.Current_Mode.Page = (ushort)(resultWriter.Total_Results / RESULTS_PER_PAGE);
                             if (resultWriter.Total_Results % RESULTS_PER_PAGE > 0)
-                                Mode.Page = (ushort)(Mode.Page + 1);
-                            buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + Mode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + Mode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                                RequestSpecificValues.Current_Mode.Page = (ushort)(RequestSpecificValues.Current_Mode.Page + 1);
+                            buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                             buttons_builder.Append("</div>");
                             RIGHT_BUTTONS = buttons_builder.ToString();
                         }
@@ -729,7 +688,7 @@ namespace SobekCM.Library.HTML
                             RIGHT_BUTTONS = "<div class=\"sbkPrsw_NoRightButtons\">&nbsp;</div>";
                         }
 
-                        Mode.Page = current_page;
+                        RequestSpecificValues.Current_Mode.Page = current_page;
                     }
                 }
 
@@ -738,96 +697,96 @@ namespace SobekCM.Library.HTML
                 string map_view = "MAP VIEW";
                 string table_view = "TABLE VIEW";
                 string thumbnail_view = "THUMBNAIL VIEW";
-                if (Mode.Language == Web_Language_Enum.Spanish)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                 {
                     map_view = "VISTA MAPA";
                     brief_view = "VISTA BREVE";
                     table_view = "VISTA TABLERA";
                     thumbnail_view = "VISTA MINIATURA";
                 }
-                if (Mode.Language == Web_Language_Enum.French)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                 {
                     map_view = "MODE CARTE";
                     brief_view = "MODE SIMPLE";
                     table_view = "MODE DE TABLE";
                     thumbnail_view = "MODE IMAGETTE";
                 }
-                Result_Display_Type_Enum resultView = Mode.Result_Display_Type;
+                Result_Display_Type_Enum resultView = RequestSpecificValues.Current_Mode.Result_Display_Type;
                 StringBuilder iconBuilder = new StringBuilder(1000);
                 iconBuilder.AppendLine();
                 iconBuilder.AppendLine("    <div class=\"sbkPrsw_ViewIconButtons\">");
-                if ((Mode.Coordinates.Length > 0) || (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map)))
+                if ((RequestSpecificValues.Current_Mode.Coordinates.Length > 0) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map)))
                 {
                     if (resultView == Result_Display_Type_Enum.Map)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
-                        Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
-                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
-                if ((Mode.Coordinates.Length > 0) || (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)))
+                if ((RequestSpecificValues.Current_Mode.Coordinates.Length > 0) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)))
                 {
                     if (resultView == Result_Display_Type_Enum.Map_Beta)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
-                        Mode.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
-                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
-                if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+                if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Brief))
                 {
                     if (resultView == Result_Display_Type_Enum.Brief)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Mode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
-                        Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
-                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + Mode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
-                if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Table))
+                if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Table))
                 {
                     if (resultView == Result_Display_Type_Enum.Table)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Mode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
-                        Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
-                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + table_view + "\"><img src=\"" + Mode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + table_view + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
-                if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
+                if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
                 {
                     if (resultView == Result_Display_Type_Enum.Thumbnails)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Mode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
-                        Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
-                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + thumbnail_view + "\"><img src=\"" + Mode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + thumbnail_view + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
-                Mode.Result_Display_Type = resultView;
+                RequestSpecificValues.Current_Mode.Result_Display_Type = resultView;
                 iconBuilder.AppendLine("    </div>");
                 string VIEWICONS = iconBuilder.ToString();
                 string NEWSEARCH = String.Empty;
                 string ADDFILTER = String.Empty;
 
                 // Start the division for the sort and then description and buttons, etc..
-                switch (Mode.Mode)
+                switch (RequestSpecificValues.Current_Mode.Mode)
                 {
                     case Display_Mode_Enum.Public_Folder:
                         Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_FolderDescPanel\">");
@@ -850,7 +809,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine();
 
                 // Configure the way to remove search terms
-                if ((InstanceWide_Settings_Singleton.Settings.Can_Remove_Single_Term) && (term_counter > 0))
+                if ((UI_ApplicationCache_Gateway.Settings.Can_Remove_Single_Term) && (term_counter > 0))
                 {
                     Output.WriteLine("<script>");
                     for (int i = 1; i <= term_counter; i++)
@@ -867,12 +826,12 @@ namespace SobekCM.Library.HTML
 
                 // Determine the number of columns for text areas, depending on browser
                 int actual_cols = 50;
-                if (Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0)
+                if (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0)
                     actual_cols = 45;
 
                 // Add the hidden field
                 Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
-                if (Mode.Mode != Display_Mode_Enum.My_Sobek)
+                if (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek)
                 {
                     Output.WriteLine("<input type=\"hidden\" id=\"item_action\" name=\"item_action\" value=\"\" />");
                 }
@@ -881,15 +840,15 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine();
 
                 // Add the scripts needed
-                if (Mode.Mode != Display_Mode_Enum.My_Sobek)
+                if (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek)
                 {
-                    Output.WriteLine("<script type=\"text/javascript\" src=\"" + Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+                    Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
                     Output.WriteLine();
                 }
 
                 #region Email form
 
-                if (currentUser != null)
+                if (RequestSpecificValues.Current_User != null)
                 {
                     Output.WriteLine("<!-- Email form -->");
                     Output.WriteLine("<div class=\"email_popup_div\" id=\"form_email\" style=\"display:none;\">");
@@ -902,7 +861,7 @@ namespace SobekCM.Library.HTML
 
                     // Add email address line
                     Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"email_address\">To:</label></td>");
-                    Output.WriteLine("<td><input class=\"email_input\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + currentUser.Email + "\" onfocus=\"javascript:textbox_enter('email_address', 'email_input_focused')\" onblur=\"javascript:textbox_leave('email_address', 'email_input')\" /></td></tr>");
+                    Output.WriteLine("<td><input class=\"email_input\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + RequestSpecificValues.Current_User.Email + "\" onfocus=\"javascript:textbox_enter('email_address', 'email_input_focused')\" onblur=\"javascript:textbox_leave('email_address', 'email_input')\" /></td></tr>");
 
                     // Add comments area
                     Output.Write("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"email_comments\">Comments:</label></td>");
@@ -917,19 +876,19 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("    </table>");
                     Output.WriteLine("    <br />");
                     Output.WriteLine("  </fieldset><br />");
-                    Output.WriteLine("  <center><a href=\"\" onclick=\"return email_form_close();\"><img border=\"0\" src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/buttons/send_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
+                    Output.WriteLine("  <center><a href=\"\" onclick=\"return email_form_close();\"><img border=\"0\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/send_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
                     Output.WriteLine("</div>");
                     Output.WriteLine();
                 }
 
                 #endregion
 
-                if (Mode.Mode != Display_Mode_Enum.My_Sobek)
+                if (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek)
                 {
 
                     #region Save search/browse form
 
-                    if (currentUser != null)
+                    if (RequestSpecificValues.Current_User != null)
                     {
                         Output.WriteLine("<!-- Save search/browse -->");
                         Output.WriteLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\">");
@@ -946,7 +905,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("    </table>");
                         Output.WriteLine("    <br />");
                         Output.WriteLine("  </fieldset><br />");
-                        Output.WriteLine("  <center><a href=\"\" onclick=\"return add_item_form_close();\"><img border=\"0\" src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
+                        Output.WriteLine("  <center><a href=\"\" onclick=\"return add_item_form_close();\"><img border=\"0\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
                         Output.WriteLine("</div>");
                         Output.WriteLine();
                     }
@@ -962,20 +921,20 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("<!-- Share form -->");
                     Output.WriteLine("<div class=\"share_popup_div\" id=\"share_form\" style=\"display:none;\">");
 
-                    Output.WriteLine("<a href=\"http://www.facebook.com/share.php?u=" + share_url + "&amp;t=" + title + "\" target=\"FACEBOOK_WINDOW\" onmouseover=\"facebook_share.src='" + Mode.Base_URL + "default/images/facebook_share_h.gif'\" onmouseout=\"facebook_share.src='" + Mode.Base_URL + "default/images/facebook_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"facebook_share\" name=\"facebook_share\" src=\"" + Mode.Base_URL + "default/images/facebook_share.gif\" alt=\"FACEBOOK\" /></a>");
-                    Output.WriteLine("<a href=\"http://buzz.yahoo.com/buzz?targetUrl=" + share_url + "&amp;headline=" + title + "\" target=\"YAHOOBUZZ_WINDOW\" onmouseover=\"yahoobuzz_share.src='" + Mode.Base_URL + "default/images/yahoobuzz_share_h.gif'\" onmouseout=\"yahoobuzz_share.src='" + Mode.Base_URL + "default/images/yahoobuzz_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoobuzz_share\" name=\"yahoobuzz_share\" src=\"" + Mode.Base_URL + "default/images/yahoobuzz_share.gif\" alt=\"YAHOO BUZZ\" /></a>");
+                    Output.WriteLine("<a href=\"http://www.facebook.com/share.php?u=" + share_url + "&amp;t=" + title + "\" target=\"FACEBOOK_WINDOW\" onmouseover=\"facebook_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/facebook_share_h.gif'\" onmouseout=\"facebook_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/facebook_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"facebook_share\" name=\"facebook_share\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/facebook_share.gif\" alt=\"FACEBOOK\" /></a>");
+                    Output.WriteLine("<a href=\"http://buzz.yahoo.com/buzz?targetUrl=" + share_url + "&amp;headline=" + title + "\" target=\"YAHOOBUZZ_WINDOW\" onmouseover=\"yahoobuzz_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/yahoobuzz_share_h.gif'\" onmouseout=\"yahoobuzz_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/yahoobuzz_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoobuzz_share\" name=\"yahoobuzz_share\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/yahoobuzz_share.gif\" alt=\"YAHOO BUZZ\" /></a>");
                     Output.WriteLine("<br />");
 
-                    Output.WriteLine("<a href=\"http://twitter.com/home?status=Currently reading " + share_url + "\" target=\"TWITTER_WINDOW\" onmouseover=\"twitter_share.src='" + Mode.Base_URL + "default/images/twitter_share_h.gif'\" onmouseout=\"twitter_share.src='" + Mode.Base_URL + "default/images/twitter_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"twitter_share\" name=\"twitter_share\" src=\"" + Mode.Base_URL + "default/images/twitter_share.gif\" alt=\"TWITTER\" /></a>");
-                    Output.WriteLine("<a href=\"http://www.google.com/bookmarks/mark?op=add&amp;bkmk=" + share_url + "&amp;title=" + title + "\" target=\"GOOGLE_WINDOW\" onmouseover=\"google_share.src='" + Mode.Base_URL + "default/images/google_share_h.gif'\" onmouseout=\"google_share.src='" + Mode.Base_URL + "default/images/google_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"google_share\" name=\"google_share\" src=\"" + Mode.Base_URL + "default/images/google_share.gif\" alt=\"GOOGLE SHARE\" /></a>");
+                    Output.WriteLine("<a href=\"http://twitter.com/home?status=Currently reading " + share_url + "\" target=\"TWITTER_WINDOW\" onmouseover=\"twitter_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/twitter_share_h.gif'\" onmouseout=\"twitter_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/twitter_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"twitter_share\" name=\"twitter_share\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/twitter_share.gif\" alt=\"TWITTER\" /></a>");
+                    Output.WriteLine("<a href=\"http://www.google.com/bookmarks/mark?op=add&amp;bkmk=" + share_url + "&amp;title=" + title + "\" target=\"GOOGLE_WINDOW\" onmouseover=\"google_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/google_share_h.gif'\" onmouseout=\"google_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/google_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"google_share\" name=\"google_share\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/google_share.gif\" alt=\"GOOGLE SHARE\" /></a>");
                     Output.WriteLine("<br />");
 
-                    Output.WriteLine("<a href=\"http://www.stumbleupon.com/submit?url=" + share_url + "&amp;title=" + title + "\" target=\"STUMBLEUPON_WINDOW\" onmouseover=\"stumbleupon_share.src='" + Mode.Base_URL + "default/images/stumbleupon_share_h.gif'\" onmouseout=\"stumbleupon_share.src='" + Mode.Base_URL + "default/images/stumbleupon_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"stumbleupon_share\" name=\"stumbleupon_share\" src=\"" + Mode.Base_URL + "default/images/stumbleupon_share.gif\" alt=\"STUMBLEUPON\" /></a>");
-                    Output.WriteLine("<a href=\"http://myweb.yahoo.com/myresults/bookmarklet?t=" + title + "&amp;u=" + share_url + "\" target=\"YAHOO_WINDOW\" onmouseover=\"yahoo_share.src='" + Mode.Base_URL + "default/images/yahoo_share_h.gif'\" onmouseout=\"yahoo_share.src='" + Mode.Base_URL + "default/images/yahoo_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoo_share\" name=\"yahoo_share\" src=\"" + Mode.Base_URL + "default/images/yahoo_share.gif\" alt=\"YAHOO SHARE\" /></a>");
+                    Output.WriteLine("<a href=\"http://www.stumbleupon.com/submit?url=" + share_url + "&amp;title=" + title + "\" target=\"STUMBLEUPON_WINDOW\" onmouseover=\"stumbleupon_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/stumbleupon_share_h.gif'\" onmouseout=\"stumbleupon_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/stumbleupon_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"stumbleupon_share\" name=\"stumbleupon_share\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/stumbleupon_share.gif\" alt=\"STUMBLEUPON\" /></a>");
+                    Output.WriteLine("<a href=\"http://myweb.yahoo.com/myresults/bookmarklet?t=" + title + "&amp;u=" + share_url + "\" target=\"YAHOO_WINDOW\" onmouseover=\"yahoo_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/yahoo_share_h.gif'\" onmouseout=\"yahoo_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/yahoo_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoo_share\" name=\"yahoo_share\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/yahoo_share.gif\" alt=\"YAHOO SHARE\" /></a>");
                     Output.WriteLine("<br />");
 
-                    Output.WriteLine("<a href=\"http://digg.com/submit?phase=2&amp;url=" + share_url + "&amp;title=" + title + "\" target=\"DIGG_WINDOW\" onmouseover=\"digg_share.src='" + Mode.Base_URL + "default/images/digg_share_h.gif'\" onmouseout=\"digg_share.src='" + Mode.Base_URL + "default/images/digg_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"digg_share\" name=\"digg_share\" src=\"" + Mode.Base_URL + "default/images/digg_share.gif\" alt=\"DIGG\" /></a>");
-                    Output.WriteLine("<a onmouseover=\"favorites_share.src='" + Mode.Base_URL + "default/images/favorites_share_h.gif'\" onmouseout=\"favorites_share.src='" + Mode.Base_URL + "default/images/favorites_share.gif'\" onclick=\"javascript:add_to_favorites();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"favorites_share\" name=\"favorites_share\" src=\"" + Mode.Base_URL + "default/images/favorites_share.gif\" alt=\"MY FAVORITES\" /></a>");
+                    Output.WriteLine("<a href=\"http://digg.com/submit?phase=2&amp;url=" + share_url + "&amp;title=" + title + "\" target=\"DIGG_WINDOW\" onmouseover=\"digg_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/digg_share_h.gif'\" onmouseout=\"digg_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/digg_share.gif'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"digg_share\" name=\"digg_share\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/digg_share.gif\" alt=\"DIGG\" /></a>");
+                    Output.WriteLine("<a onmouseover=\"favorites_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/favorites_share_h.gif'\" onmouseout=\"favorites_share.src='" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/favorites_share.gif'\" onclick=\"javascript:add_to_favorites();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"favorites_share\" name=\"favorites_share\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/favorites_share.gif\" alt=\"MY FAVORITES\" /></a>");
                     Output.WriteLine("<br />");
 
                     Output.WriteLine("</div>");
@@ -994,14 +953,14 @@ namespace SobekCM.Library.HTML
 		    {
                 #region map beta
 
-                Display_Mode_Enum initialMode = Mode.Mode;
+                Display_Mode_Enum initialMode = RequestSpecificValues.Current_Mode.Mode;
 
-                Mode.Mode = initialMode;
-                if (Mode.Mode == Display_Mode_Enum.Search)
-                    Mode.Mode = Display_Mode_Enum.Results;
+                RequestSpecificValues.Current_Mode.Mode = initialMode;
+                if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Search)
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
 
                 // If no results, display different information here
-                if ((Mode.Mode == Display_Mode_Enum.Results) && (resultsStatistics.Total_Items == 0))
+                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results) && (RequestSpecificValues.Results_Statistics.Total_Items == 0))
                 {
                     Output.WriteLine("<div class=\"sbkPrsw_DescPanel\" style=\"margin-top:10px\">");
                     Show_Search_Info(Output);
@@ -1024,18 +983,18 @@ namespace SobekCM.Library.HTML
                 // Get the value for the <%DESCRIPTION%> directive (to explain current display)
                 string DESCRIPTION = String.Empty;
                 string summation;
-                if ((Mode.Mode == Display_Mode_Enum.Aggregation) || (Mode.Mode == Display_Mode_Enum.Public_Folder) || ((Mode.Mode == Display_Mode_Enum.My_Sobek) && (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management))) // browse info only for aggregation
+                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Public_Folder) || ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management))) // browse info only for aggregation
                 {
-                    if (Mode.Mode == Display_Mode_Enum.Public_Folder)
+                    if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Public_Folder)
                     {
-                        DESCRIPTION = "<h1>&quot;" + translations.Get_Translation(Browse_Title, Mode.Language) + "&quot;</h1>" + Environment.NewLine + "  <span class=\"sbkPrsw_PublicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>";
+                        DESCRIPTION = "<h1>&quot;" + UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + "&quot;</h1>" + Environment.NewLine + "  <span class=\"sbkPrsw_PublicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>";
 
-                        summation = translations.Get_Translation(Browse_Title, Mode.Language) + " (publicly shared folder)";
+                        summation = UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + " (publicly shared folder)";
                     }
                     else
                     {
-                        DESCRIPTION = "<h1>" + translations.Get_Translation(Browse_Title, Mode.Language) + "</h1>";
-                        summation = translations.Get_Translation(Browse_Title, Mode.Language) + " browse in " + Current_Aggregation.Name;
+                        DESCRIPTION = "<h1>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + "</h1>";
+                        summation = UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + " browse in " + RequestSpecificValues.Hierarchy_Object.Name;
                     }
                 }
                 else
@@ -1069,89 +1028,89 @@ namespace SobekCM.Library.HTML
                 string map_view = "MAP VIEW";
                 string table_view = "TABLE VIEW";
                 string thumbnail_view = "THUMBNAIL VIEW";
-                if (Mode.Language == Web_Language_Enum.Spanish)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                 {
                     map_view = "VISTA MAPA";
                     brief_view = "VISTA BREVE";
                     table_view = "VISTA TABLERA";
                     thumbnail_view = "VISTA MINIATURA";
                 }
-                if (Mode.Language == Web_Language_Enum.French)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                 {
                     map_view = "MODE CARTE";
                     brief_view = "MODE SIMPLE";
                     table_view = "MODE DE TABLE";
                     thumbnail_view = "MODE IMAGETTE";
                 }
-                Result_Display_Type_Enum resultView = Mode.Result_Display_Type;
+                Result_Display_Type_Enum resultView = RequestSpecificValues.Current_Mode.Result_Display_Type;
                 StringBuilder iconBuilder = new StringBuilder(1000);
                 iconBuilder.AppendLine();
                 iconBuilder.AppendLine("    <div class=\"sbkPrsw_ViewIconButtons\">");
-                if ((Mode.Coordinates.Length > 0) || (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map)))
+                if ((RequestSpecificValues.Current_Mode.Coordinates.Length > 0) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map)))
                 {
                     if (resultView == Result_Display_Type_Enum.Map)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
-                        Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
-                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
-		        if ((Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)) & (Mode.Use_Beta))
+		        if ((RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)) & (RequestSpecificValues.Current_Mode.Use_Beta))
 		        {
 		            if (resultView == Result_Display_Type_Enum.Map_Beta)
 		            {
-		                iconBuilder.AppendLine("      <img src=\"" + Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAPBETA\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+		                iconBuilder.AppendLine("      <img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAPBETA\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
 		            }
 		            else
 		            {
-		                Mode.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
-		                iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAPBETA\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+		                RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
+		                iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "geo_blue.png\" alt=\"MAPBETA\" class=\"sbkPrsw_ViewIconButton\"/></a>");
 		            }
 		        }
 
-		        if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+		        if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Brief))
                 {
                     if (resultView == Result_Display_Type_Enum.Brief)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Mode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
-                        Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
-                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + Mode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "brief_blue.png\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
-                if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Table))
+                if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Table))
                 {
                     if (resultView == Result_Display_Type_Enum.Table)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Mode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
-                        Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
-                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + table_view + "\"><img src=\"" + Mode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + table_view + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "table_blue.png\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
-                if (Current_Aggregation.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
+                if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
                 {
                     if (resultView == Result_Display_Type_Enum.Thumbnails)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Mode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
-                        Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
-                        iconBuilder.AppendLine("      <a href=\"" + Mode.Redirect_URL().Replace("&", "&amp;") + "\" title=\"" + thumbnail_view + "\"><img src=\"" + Mode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + thumbnail_view + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "thumb_blue.png\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
-                Mode.Result_Display_Type = resultView;
+                RequestSpecificValues.Current_Mode.Result_Display_Type = resultView;
                 iconBuilder.AppendLine("    </div>");
                 string VIEWICONS = iconBuilder.ToString();
 
@@ -1162,7 +1121,7 @@ namespace SobekCM.Library.HTML
                 string ADDFILTER = String.Empty;
 
                 // Start the division for the sort and then description and buttons, etc..
-                switch (Mode.Mode)
+                switch (RequestSpecificValues.Current_Mode.Mode)
                 {
                     case Display_Mode_Enum.Public_Folder:
                         Output.WriteLine("<div class=\"sbkPrsw_DescPanel sbkPrsw_FolderDescPanel\">");
@@ -1185,7 +1144,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine();
 
                 // Configure the way to remove search terms
-                if ((InstanceWide_Settings_Singleton.Settings.Can_Remove_Single_Term) && (term_counter > 0))
+                if ((UI_ApplicationCache_Gateway.Settings.Can_Remove_Single_Term) && (term_counter > 0))
                 {
                     Output.WriteLine("<script>");
                     for (int i = 1; i <= term_counter; i++)
@@ -1222,7 +1181,7 @@ namespace SobekCM.Library.HTML
 			string on_one_date = "in {0} ";
 
 			// Set special language for aerials
-			if (Mode.Aggregation == "aerials")
+			if (RequestSpecificValues.Current_Mode.Aggregation == "aerials")
 			{
 				no_matches_language = "resulted in no matching flights.";
 				one_match_language = "resulted in one matching flight.";
@@ -1233,10 +1192,10 @@ namespace SobekCM.Library.HTML
 				multiple_titles_language = " counties.";
 			}
 			
-			switch (Mode.Language)
+			switch (RequestSpecificValues.Current_Mode.Language)
 			{
 				case Web_Language_Enum.French:
-					Output.Write("Votre recherche de <i>" + Current_Aggregation.Name + "</i> en ");
+					Output.Write("Votre recherche de <i>" + RequestSpecificValues.Hierarchy_Object.Name + "</i> en ");
 					and_language = "et ";
 					or_language = "ou ";
 					and_not_language = "non ";
@@ -1251,7 +1210,7 @@ namespace SobekCM.Library.HTML
 					break;
 
 				case Web_Language_Enum.Spanish:
-					Output.Write("Su búsqueda de <i>" + Current_Aggregation.Name + "</i> en ");
+					Output.Write("Su búsqueda de <i>" + RequestSpecificValues.Hierarchy_Object.Name + "</i> en ");
 					and_language = "y ";
 					or_language = "o ";
 					and_not_language = "no ";
@@ -1266,33 +1225,33 @@ namespace SobekCM.Library.HTML
 					break;
 
 				default:
-					if ((Mode.Search_Type == Search_Type_Enum.Map)||(Mode.Search_Type == Search_Type_Enum.Map_Beta))
-						Output.Write("Your geographic search of <i>" + Current_Aggregation.Name + "</i> ");
+					if ((RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Map)||(RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Map_Beta))
+						Output.Write("Your geographic search of <i>" + RequestSpecificValues.Hierarchy_Object.Name + "</i> ");
 					else
-						Output.Write("Your search of <i>" + Current_Aggregation.Name + "</i> for ");
+						Output.Write("Your search of <i>" + RequestSpecificValues.Hierarchy_Object.Name + "</i> for ");
 					break;
 			}
 
 			// Split the parts
-			if ((Mode.Search_Type != Search_Type_Enum.Map)||(Mode.Search_Type != Search_Type_Enum.Map_Beta))
+			if ((RequestSpecificValues.Current_Mode.Search_Type != Search_Type_Enum.Map)||(RequestSpecificValues.Current_Mode.Search_Type != Search_Type_Enum.Map_Beta))
 			{
 				int length_of_explanation = 0;
 				List<string> terms = new List<string>();
 				List<string> fields = new List<string>();
 
 				// Split the terms correctly
-				SobekCM_Assistant.Split_Clean_Search_Terms_Fields(Mode.Search_String, Mode.Search_Fields, Mode.Search_Type, terms, fields, searchStopWords, Mode.Search_Precision, ',');
+				SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, terms, fields, UI_ApplicationCache_Gateway.Search_Stop_Words, RequestSpecificValues.Current_Mode.Search_Precision, ',');
 
 				try
 				{
 					// Create this differently depending on whether users can remove a search term from their current search
-					if (InstanceWide_Settings_Singleton.Settings.Can_Remove_Single_Term)
+					if (UI_ApplicationCache_Gateway.Settings.Can_Remove_Single_Term)
 					{
-						string current_search_string = Mode.Search_String;
-						string current_search_field = Mode.Search_Fields;
-						Display_Mode_Enum current_display_mode = Mode.Mode;
-						Aggregation_Type_Enum current_aggr_mode = Mode.Aggregation_Type;
-						string current_info_browse_mode = Mode.Info_Browse_Mode;
+						string current_search_string = RequestSpecificValues.Current_Mode.Search_String;
+						string current_search_field = RequestSpecificValues.Current_Mode.Search_Fields;
+						Display_Mode_Enum current_display_mode = RequestSpecificValues.Current_Mode.Mode;
+						Aggregation_Type_Enum current_aggr_mode = RequestSpecificValues.Current_Mode.Aggregation_Type;
+						string current_info_browse_mode = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
 
 						StringBuilder fieldsBuilder = new StringBuilder();
 						StringBuilder termsBuilder = new StringBuilder();
@@ -1380,35 +1339,35 @@ namespace SobekCM.Library.HTML
 											fieldsBuilder.Append(fields[j]);
 										}
 									}
-									Mode.Search_String = termsBuilder.ToString();
-									Mode.Search_Fields = fieldsBuilder.ToString();
+									RequestSpecificValues.Current_Mode.Search_String = termsBuilder.ToString();
+									RequestSpecificValues.Current_Mode.Search_Fields = fieldsBuilder.ToString();
 								}
 								else
 								{
-									if (Current_Aggregation.Views_And_Searches.Contains(Item_Aggregation.CollectionViewsAndSearchesEnum.All_New_Items))
+									if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation.CollectionViewsAndSearchesEnum.All_New_Items))
 									{
-										Mode.Mode = Display_Mode_Enum.Aggregation;
-										Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
-										Mode.Info_Browse_Mode = "all";
+										RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+										RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+										RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
 									}
 									else
 									{
-										Mode.Mode = Display_Mode_Enum.Aggregation;
-										Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+										RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+										RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
 									}
 								}
 
 
-								Output.WriteLine("<a href=\"" + Mode.Redirect_URL() + "\" title=\"Click to remove this search term\"><img src=\"" + Mode.Default_Images_URL + "removeIcon.gif\" id=\"removesearchterm" + term_counter + "\" class=\"sbkPrsw_RemoveSearchTerm\" /></a></div>");
+								Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Click to remove this search term\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "removeIcon.gif\" id=\"removesearchterm" + term_counter + "\" class=\"sbkPrsw_RemoveSearchTerm\" /></a></div>");
 								length_of_explanation += write_value.Length;
 							}
 						}
 
-						Mode.Search_String = current_search_string;
-						Mode.Search_Fields = current_search_field;
-						Mode.Mode = current_display_mode;
-						Mode.Aggregation_Type = current_aggr_mode;
-						Mode.Info_Browse_Mode = current_info_browse_mode;
+						RequestSpecificValues.Current_Mode.Search_String = current_search_string;
+						RequestSpecificValues.Current_Mode.Search_Fields = current_search_field;
+						RequestSpecificValues.Current_Mode.Mode = current_display_mode;
+						RequestSpecificValues.Current_Mode.Aggregation_Type = current_aggr_mode;
+						RequestSpecificValues.Current_Mode.Info_Browse_Mode = current_info_browse_mode;
 					}
 					else
 					{
@@ -1484,39 +1443,39 @@ namespace SobekCM.Library.HTML
 			}
 
 			// Add the year date range text here as well
-			if (Mode.DateRange_Year1 >= 0)
+			if (RequestSpecificValues.Current_Mode.DateRange_Year1 >= 0)
 			{
-				if (Mode.DateRange_Year2 >= 0)
+				if (RequestSpecificValues.Current_Mode.DateRange_Year2 >= 0)
 				{
-					Output.Write(between_two_dates, Mode.DateRange_Year1, Mode.DateRange_Year2 );
+					Output.Write(between_two_dates, RequestSpecificValues.Current_Mode.DateRange_Year1, RequestSpecificValues.Current_Mode.DateRange_Year2 );
 				}
 				else
 				{
-					Output.Write(on_one_date, Mode.DateRange_Year1);
+					Output.Write(on_one_date, RequestSpecificValues.Current_Mode.DateRange_Year1);
 				}
 			}
 
-			if ((resultsStatistics == null) || (resultsStatistics.Total_Titles == 0))
+            if ((RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Titles == 0))
 			{
 				Output.WriteLine(no_matches_language );
 			}
 			else
 			{
-				if (resultsStatistics.Total_Titles == resultsStatistics.Total_Items)
+				if (RequestSpecificValues.Results_Statistics.Total_Titles == RequestSpecificValues.Results_Statistics.Total_Items)
 				{
-					Output.WriteLine(resultsStatistics.Total_Titles == 1 ? one_match_language : String.Format(multiple_records_language, resultsStatistics.Total_Titles));
+					Output.WriteLine(RequestSpecificValues.Results_Statistics.Total_Titles == 1 ? one_match_language : String.Format(multiple_records_language, RequestSpecificValues.Results_Statistics.Total_Titles));
 				}
 				else
 				{
-					Output.Write(resultsStatistics.Total_Items == 1 ? one_item_language : String.Format(multiple_items_language, resultsStatistics.Total_Items.ToString()));
+					Output.Write(RequestSpecificValues.Results_Statistics.Total_Items == 1 ? one_item_language : String.Format(multiple_items_language, RequestSpecificValues.Results_Statistics.Total_Items.ToString()));
 
-					if (resultsStatistics.Total_Titles == 1)
+					if (RequestSpecificValues.Results_Statistics.Total_Titles == 1)
 					{
 						Output.WriteLine(one_title_language);
 					}
 					else
 					{
-						Output.WriteLine(resultsStatistics.Total_Titles + multiple_titles_language);
+						Output.WriteLine(RequestSpecificValues.Results_Statistics.Total_Titles + multiple_titles_language);
 					}
 				}
 			}
@@ -1525,20 +1484,20 @@ namespace SobekCM.Library.HTML
 		private string Search_Label_from_Sobek_Code(string Code)
 		{
 			string in_language = "in ";
-			if (Mode.Language == Web_Language_Enum.French)
+			if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
 			{
 				in_language = "en ";
 			}
-			if (Mode.Language == Web_Language_Enum.Spanish)
+			if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
 			{
 				in_language = "en ";
 			}
 
 			if (Code == "ZZ")
-				return translations.Get_Translation("anywhere", Mode.Language);
+				return UI_ApplicationCache_Gateway.Translation.Get_Translation("anywhere", RequestSpecificValues.Current_Mode.Language);
 
-			Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Code(Code);
-			return (field != null) ? in_language + translations.Get_Translation(field.Display_Term, Mode.Language) : in_language + Code;
+			Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(Code);
+			return (field != null) ? in_language + UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Display_Term, RequestSpecificValues.Current_Mode.Language) : in_language + Code;
 		}
 
 		#region Methods to create the facets on the left side of the results
@@ -1551,15 +1510,15 @@ namespace SobekCM.Library.HTML
 
             StringBuilder builder = new StringBuilder();
 
-            if (Mode.Result_Display_Type != Result_Display_Type_Enum.Map_Beta)
+            if (RequestSpecificValues.Current_Mode.Result_Display_Type != Result_Display_Type_Enum.Map_Beta)
             {
                 #region all but mapbeta
 
-                string collection = translations.Get_Translation("Collection", Mode.Language);
-                string show_more = translations.Get_Translation("Show More", Mode.Language);
-                string show_less = translations.Get_Translation("Show Less", Mode.Language);
-                string sort_by_frequency = translations.Get_Translation("Sort these facets by frequency", Mode.Language);
-                string sort_alphabetically = translations.Get_Translation("Sort these facets alphabetically", Mode.Language);
+                string collection = UI_ApplicationCache_Gateway.Translation.Get_Translation("Collection", RequestSpecificValues.Current_Mode.Language);
+                string show_more = UI_ApplicationCache_Gateway.Translation.Get_Translation("Show More", RequestSpecificValues.Current_Mode.Language);
+                string show_less = UI_ApplicationCache_Gateway.Translation.Get_Translation("Show Less", RequestSpecificValues.Current_Mode.Language);
+                string sort_by_frequency = UI_ApplicationCache_Gateway.Translation.Get_Translation("Sort these facets by frequency", RequestSpecificValues.Current_Mode.Language);
+                string sort_alphabetically = UI_ApplicationCache_Gateway.Translation.Get_Translation("Sort these facets alphabetically", RequestSpecificValues.Current_Mode.Language);
                 
                 builder.AppendLine("<input type=\"hidden\" id=\"facet\" name=\"facet\" value=\"" + HttpUtility.HtmlEncode(facetInformation) + "\" />");
 
@@ -1570,58 +1529,58 @@ namespace SobekCM.Library.HTML
                 string url = String.Empty;
                 string aggregation_url = String.Empty;
 
-                if (Mode.Mode == Display_Mode_Enum.Aggregation)  // browse info only
+                if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation)  // browse info only
                 {
-                    Display_Mode_Enum displayMode = Mode.Mode;
-                    Mode.Mode = Display_Mode_Enum.Results;
-                    Mode.Search_Type = Search_Type_Enum.Advanced;
-                    Mode.Search_Fields = "<%CODE%>";
-                    Mode.Search_String = "<%VALUE%>";
-                    ushort page = Mode.Page;
-                    Mode.Page = 1;
-                    url = Mode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
-                    Mode.Mode = displayMode;
-                    Mode.Page = page;
-                    Mode.Search_Fields = String.Empty;
-                    Mode.Search_String = String.Empty;
+                    Display_Mode_Enum displayMode = RequestSpecificValues.Current_Mode.Mode;
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+                    RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Advanced;
+                    RequestSpecificValues.Current_Mode.Search_Fields = "<%CODE%>";
+                    RequestSpecificValues.Current_Mode.Search_String = "<%VALUE%>";
+                    ushort page = RequestSpecificValues.Current_Mode.Page;
+                    RequestSpecificValues.Current_Mode.Page = 1;
+                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                    RequestSpecificValues.Current_Mode.Mode = displayMode;
+                    RequestSpecificValues.Current_Mode.Page = page;
+                    RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
+                    RequestSpecificValues.Current_Mode.Search_String = String.Empty;
 
-                    if ((Mode.Aggregation.Length == 0) || (Mode.Aggregation == "all"))
+                    if ((RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation == "all"))
                     {
-                        Mode.Aggregation = "<%AGGREGATION%>";
-                        aggregation_url = Mode.Redirect_URL();
-                        Mode.Aggregation = String.Empty;
+                        RequestSpecificValues.Current_Mode.Aggregation = "<%AGGREGATION%>";
+                        aggregation_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
                     }
                 }
                 else
                 {
-                    if ((Mode.Aggregation.Length == 0) || (Mode.Aggregation == "all"))
+                    if ((RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation == "all"))
                     {
-                        Mode.Aggregation = "<%AGGREGATION%>";
-                        aggregation_url = Mode.Redirect_URL();
-                        Mode.Aggregation = String.Empty;
+                        RequestSpecificValues.Current_Mode.Aggregation = "<%AGGREGATION%>";
+                        aggregation_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
                     }
 
-                    if (Mode.Search_Type == Search_Type_Enum.Advanced)
+                    if (RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Advanced)
                     {
-                        string orig_field = Mode.Search_Fields;
-                        string orig_terms = Mode.Search_String;
-                        Mode.Search_Fields = Mode.Search_Fields + ",<%CODE%>";
-                        Mode.Search_String = Mode.Search_String + ",<%VALUE%>";
-                        ushort page = Mode.Page;
-                        Mode.Page = 1;
-                        url = Mode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
-                        Mode.Page = page;
-                        Mode.Search_Fields = orig_field;
-                        Mode.Search_String = orig_terms;
+                        string orig_field = RequestSpecificValues.Current_Mode.Search_Fields;
+                        string orig_terms = RequestSpecificValues.Current_Mode.Search_String;
+                        RequestSpecificValues.Current_Mode.Search_Fields = RequestSpecificValues.Current_Mode.Search_Fields + ",<%CODE%>";
+                        RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
+                        ushort page = RequestSpecificValues.Current_Mode.Page;
+                        RequestSpecificValues.Current_Mode.Page = 1;
+                        url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                        RequestSpecificValues.Current_Mode.Page = page;
+                        RequestSpecificValues.Current_Mode.Search_Fields = orig_field;
+                        RequestSpecificValues.Current_Mode.Search_String = orig_terms;
                     }
-                    if (Mode.Search_Type == Search_Type_Enum.Basic)
+                    if (RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Basic)
                     {
                         List<string> output_terms = new List<string>();
                         List<string> output_fields = new List<string>();
-                        SobekCM_Assistant.Split_Clean_Search_Terms_Fields(Mode.Search_String, Mode.Search_Fields, Mode.Search_Type, output_terms, output_fields, searchStopWords, Mode.Search_Precision, ',');
+                        SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, output_terms, output_fields, UI_ApplicationCache_Gateway.Search_Stop_Words, RequestSpecificValues.Current_Mode.Search_Precision, ',');
 
-                        string original_search = Mode.Search_String;
-                        Mode.Search_Type = Search_Type_Enum.Advanced;
+                        string original_search = RequestSpecificValues.Current_Mode.Search_String;
+                        RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Advanced;
                         StringBuilder term_builder = new StringBuilder();
                         foreach (string thisTerm in output_terms)
                         {
@@ -1636,16 +1595,16 @@ namespace SobekCM.Library.HTML
                                 field_builder.Append(",");
                             field_builder.Append(thisField);
                         }
-                        Mode.Search_Fields = field_builder.ToString();
-                        Mode.Search_String = term_builder.ToString();
+                        RequestSpecificValues.Current_Mode.Search_Fields = field_builder.ToString();
+                        RequestSpecificValues.Current_Mode.Search_String = term_builder.ToString();
 
-                        Mode.Search_Fields = Mode.Search_Fields + ",<%CODE%>";
-                        Mode.Search_String = Mode.Search_String + ",<%VALUE%>";
-                        url = Mode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                        RequestSpecificValues.Current_Mode.Search_Fields = RequestSpecificValues.Current_Mode.Search_Fields + ",<%CODE%>";
+                        RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
+                        url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
 
-                        Mode.Search_Type = Search_Type_Enum.Basic;
-                        Mode.Search_Fields = String.Empty;
-                        Mode.Search_String = original_search;
+                        RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Basic;
+                        RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
+                        RequestSpecificValues.Current_Mode.Search_String = original_search;
 
                     }
                 }
@@ -1659,11 +1618,11 @@ namespace SobekCM.Library.HTML
                 builder.AppendLine();
 
                 builder.AppendLine("<div class=\"sbkPrsw_FacetColumn\">");
-                builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + translations.Get_Translation("NARROW RESULTS BY", Mode.Language) + ":</div>");
+                builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("NARROW RESULTS BY", RequestSpecificValues.Current_Mode.Language) + ":</div>");
 
 
                 // Add the aggregation information first
-                if (((Mode.Aggregation.Length == 0) || (Mode.Aggregation == "all")) && (resultsStatistics.Aggregation_Facets_Count > 0))
+                if (((RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation == "all")) && (RequestSpecificValues.Results_Statistics.Aggregation_Facets_Count > 0))
                 {
                     string title = collection;
                     const int FACET_INDEX = 0;
@@ -1707,16 +1666,16 @@ namespace SobekCM.Library.HTML
 
                     builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + title + "</div>");
                     builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
-                    if (resultsStatistics.Aggregation_Facets.Count > 1)
-                        builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
+                    if (RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count > 1)
+                        builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
                     if ((facetInformation[FACET_INDEX] == '2') || (facetInformation[FACET_INDEX] == '3'))
                     {
                         SortedList<string, string> order_facets = new SortedList<string, string>();
-                        while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
+                        while ((facet_count < total_facets_to_show) && (facet_count < RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count))
                         {
-                            if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
+                            if (RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
                             {
-                                order_facets[resultsStatistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
+                                order_facets[RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
                             }
                             facet_count++;
                         }
@@ -1727,11 +1686,11 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
+                        while ((facet_count < total_facets_to_show) && (facet_count < RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count))
                         {
-                            if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
+                            if (RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
                             {
-                                builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
+                                builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
                             }
                             facet_count++;
                         }
@@ -1742,7 +1701,7 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        if (facet_count < resultsStatistics.Aggregation_Facets.Count)
+                        if (facet_count < RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count)
                         {
                             builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
                         }
@@ -1751,82 +1710,82 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Add the first facet information 
-                if (resultsStatistics.First_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.First_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.First_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.First_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 1, sort_by_frequency, sort_alphabetically, resultsStatistics.First_Facets);
+                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 1, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.First_Facets);
                     }
                 }
 
                 // Add the second facet information 
-                if (resultsStatistics.Second_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Second_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Second_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Second_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 2, sort_by_frequency, sort_alphabetically, resultsStatistics.Second_Facets);
+                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 2, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Second_Facets);
                     }
                 }
 
                 // Add the third facet information 
-                if (resultsStatistics.Third_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Third_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Third_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Third_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 3, sort_by_frequency, sort_alphabetically, resultsStatistics.Third_Facets);
+                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 3, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Third_Facets);
                     }
                 }
 
                 // Add the fourth facet information 
-                if (resultsStatistics.Fourth_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Fourth_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Fourth_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Fourth_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 4, sort_by_frequency, sort_alphabetically, resultsStatistics.Fourth_Facets);
+                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 4, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Fourth_Facets);
                     }
                 }
 
                 // Add the fifth facet information 
-                if (resultsStatistics.Fifth_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Fifth_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Fifth_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Fifth_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 5, sort_by_frequency, sort_alphabetically, resultsStatistics.Fifth_Facets);
+                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 5, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Fifth_Facets);
                     }
                 }
 
                 // Add the sixth facet information 
-                if (resultsStatistics.Sixth_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Sixth_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Sixth_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Sixth_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 6, sort_by_frequency, sort_alphabetically, resultsStatistics.Sixth_Facets);
+                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 6, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Sixth_Facets);
                     }
                 }
 
                 // Add the seventh facet information 
-                if (resultsStatistics.Seventh_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Seventh_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Seventh_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Seventh_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 7, sort_by_frequency, sort_alphabetically, resultsStatistics.Seventh_Facets);
+                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 7, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Seventh_Facets);
                     }
                 }
 
                 // Add the eighth facet information 
-                if (resultsStatistics.Eighth_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Eighth_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Eighth_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Eighth_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 8, sort_by_frequency, sort_alphabetically, resultsStatistics.Eighth_Facets);
+                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 8, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Eighth_Facets);
                     }
                 }
 
@@ -1838,11 +1797,11 @@ namespace SobekCM.Library.HTML
             {
                 #region mapbeta
 
-                string collection = translations.Get_Translation("Collection", Mode.Language);
-                string show_more = translations.Get_Translation("Show More", Mode.Language);
-                string show_less = translations.Get_Translation("Show Less", Mode.Language);
-                string sort_by_frequency = translations.Get_Translation("Sort these facets by frequency", Mode.Language);
-                string sort_alphabetically = translations.Get_Translation("Sort these facets alphabetically", Mode.Language);
+                string collection = UI_ApplicationCache_Gateway.Translation.Get_Translation("Collection", RequestSpecificValues.Current_Mode.Language);
+                string show_more = UI_ApplicationCache_Gateway.Translation.Get_Translation("Show More", RequestSpecificValues.Current_Mode.Language);
+                string show_less = UI_ApplicationCache_Gateway.Translation.Get_Translation("Show Less", RequestSpecificValues.Current_Mode.Language);
+                string sort_by_frequency = UI_ApplicationCache_Gateway.Translation.Get_Translation("Sort these facets by frequency", RequestSpecificValues.Current_Mode.Language);
+                string sort_alphabetically = UI_ApplicationCache_Gateway.Translation.Get_Translation("Sort these facets alphabetically", RequestSpecificValues.Current_Mode.Language);
 
                 #region js
 
@@ -1855,58 +1814,58 @@ namespace SobekCM.Library.HTML
                 string url = String.Empty;
                 string aggregation_url = String.Empty;
 
-                if (Mode.Mode == Display_Mode_Enum.Aggregation)  // browse info only
+                if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation)  // browse info only
                 {
-                    Display_Mode_Enum displayMode = Mode.Mode;
-                    Mode.Mode = Display_Mode_Enum.Results;
-                    Mode.Search_Type = Search_Type_Enum.Advanced;
-                    Mode.Search_Fields = "<%CODE%>";
-                    Mode.Search_String = "<%VALUE%>";
-                    ushort page = Mode.Page;
-                    Mode.Page = 1;
-                    url = Mode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
-                    Mode.Mode = displayMode;
-                    Mode.Page = page;
-                    Mode.Search_Fields = String.Empty;
-                    Mode.Search_String = String.Empty;
+                    Display_Mode_Enum displayMode = RequestSpecificValues.Current_Mode.Mode;
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+                    RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Advanced;
+                    RequestSpecificValues.Current_Mode.Search_Fields = "<%CODE%>";
+                    RequestSpecificValues.Current_Mode.Search_String = "<%VALUE%>";
+                    ushort page = RequestSpecificValues.Current_Mode.Page;
+                    RequestSpecificValues.Current_Mode.Page = 1;
+                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                    RequestSpecificValues.Current_Mode.Mode = displayMode;
+                    RequestSpecificValues.Current_Mode.Page = page;
+                    RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
+                    RequestSpecificValues.Current_Mode.Search_String = String.Empty;
 
-                    if ((Mode.Aggregation.Length == 0) || (Mode.Aggregation == "all"))
+                    if ((RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation == "all"))
                     {
-                        Mode.Aggregation = "<%AGGREGATION%>";
-                        aggregation_url = Mode.Redirect_URL();
-                        Mode.Aggregation = String.Empty;
+                        RequestSpecificValues.Current_Mode.Aggregation = "<%AGGREGATION%>";
+                        aggregation_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
                     }
                 }
                 else
                 {
-                    if ((Mode.Aggregation.Length == 0) || (Mode.Aggregation == "all"))
+                    if ((RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation == "all"))
                     {
-                        Mode.Aggregation = "<%AGGREGATION%>";
-                        aggregation_url = Mode.Redirect_URL();
-                        Mode.Aggregation = String.Empty;
+                        RequestSpecificValues.Current_Mode.Aggregation = "<%AGGREGATION%>";
+                        aggregation_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
                     }
 
-                    if (Mode.Search_Type == Search_Type_Enum.Advanced)
+                    if (RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Advanced)
                     {
-                        string orig_field = Mode.Search_Fields;
-                        string orig_terms = Mode.Search_String;
-                        Mode.Search_Fields = Mode.Search_Fields + ",<%CODE%>";
-                        Mode.Search_String = Mode.Search_String + ",<%VALUE%>";
-                        ushort page = Mode.Page;
-                        Mode.Page = 1;
-                        url = Mode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
-                        Mode.Page = page;
-                        Mode.Search_Fields = orig_field;
-                        Mode.Search_String = orig_terms;
+                        string orig_field = RequestSpecificValues.Current_Mode.Search_Fields;
+                        string orig_terms = RequestSpecificValues.Current_Mode.Search_String;
+                        RequestSpecificValues.Current_Mode.Search_Fields = RequestSpecificValues.Current_Mode.Search_Fields + ",<%CODE%>";
+                        RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
+                        ushort page = RequestSpecificValues.Current_Mode.Page;
+                        RequestSpecificValues.Current_Mode.Page = 1;
+                        url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                        RequestSpecificValues.Current_Mode.Page = page;
+                        RequestSpecificValues.Current_Mode.Search_Fields = orig_field;
+                        RequestSpecificValues.Current_Mode.Search_String = orig_terms;
                     }
-                    if (Mode.Search_Type == Search_Type_Enum.Basic)
+                    if (RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Basic)
                     {
                         List<string> output_terms = new List<string>();
                         List<string> output_fields = new List<string>();
-                        SobekCM_Assistant.Split_Clean_Search_Terms_Fields(Mode.Search_String, Mode.Search_Fields, Mode.Search_Type, output_terms, output_fields, searchStopWords, Mode.Search_Precision, ',');
+                        SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, output_terms, output_fields, UI_ApplicationCache_Gateway.Search_Stop_Words, RequestSpecificValues.Current_Mode.Search_Precision, ',');
 
-                        string original_search = Mode.Search_String;
-                        Mode.Search_Type = Search_Type_Enum.Advanced;
+                        string original_search = RequestSpecificValues.Current_Mode.Search_String;
+                        RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Advanced;
                         StringBuilder term_builder = new StringBuilder();
                         foreach (string thisTerm in output_terms)
                         {
@@ -1921,16 +1880,16 @@ namespace SobekCM.Library.HTML
                                 field_builder.Append(",");
                             field_builder.Append(thisField);
                         }
-                        Mode.Search_Fields = field_builder.ToString();
-                        Mode.Search_String = term_builder.ToString();
+                        RequestSpecificValues.Current_Mode.Search_Fields = field_builder.ToString();
+                        RequestSpecificValues.Current_Mode.Search_String = term_builder.ToString();
 
-                        Mode.Search_Fields = Mode.Search_Fields + ",<%CODE%>";
-                        Mode.Search_String = Mode.Search_String + ",<%VALUE%>";
-                        url = Mode.Redirect_URL().Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                        RequestSpecificValues.Current_Mode.Search_Fields = RequestSpecificValues.Current_Mode.Search_Fields + ",<%CODE%>";
+                        RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
+                        url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
 
-                        Mode.Search_Type = Search_Type_Enum.Basic;
-                        Mode.Search_Fields = String.Empty;
-                        Mode.Search_String = original_search;
+                        RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Basic;
+                        RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
+                        RequestSpecificValues.Current_Mode.Search_String = original_search;
 
                     }
                 }
@@ -1951,10 +1910,10 @@ namespace SobekCM.Library.HTML
 
                 #region filterbox
 
-                builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + translations.Get_Translation("NARROW RESULTS BY", Mode.Language) + ":</div>");
+                builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("NARROW RESULTS BY", RequestSpecificValues.Current_Mode.Language) + ":</div>");
                 
                 // Add the aggregation information first
-                if (((Mode.Aggregation.Length == 0) || (Mode.Aggregation == "all")) && (resultsStatistics.Aggregation_Facets_Count > 0))
+                if (((RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation == "all")) && (RequestSpecificValues.Results_Statistics.Aggregation_Facets_Count > 0))
                 {
                     string title = collection;
                     const int FACET_INDEX = 0;
@@ -1998,16 +1957,16 @@ namespace SobekCM.Library.HTML
 
                     builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + title + "</div>");
                     builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
-                    if (resultsStatistics.Aggregation_Facets.Count > 1)
-                        builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a onclick=\"set_facet_callback(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
+                    if (RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count > 1)
+                        builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a onclick=\"set_facet_callback(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
                     if ((facetInformation[FACET_INDEX] == '2') || (facetInformation[FACET_INDEX] == '3'))
                     {
                         SortedList<string, string> order_facets = new SortedList<string, string>();
-                        while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
+                        while ((facet_count < total_facets_to_show) && (facet_count < RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count))
                         {
-                            if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
+                            if (RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
                             {
-                                order_facets[resultsStatistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
+                                order_facets[RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
                             }
                             facet_count++;
                         }
@@ -2018,11 +1977,11 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
+                        while ((facet_count < total_facets_to_show) && (facet_count < RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count))
                         {
-                            if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
+                            if (RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
                             {
-                                builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
+                                builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
                             }
                             facet_count++;
                         }
@@ -2033,7 +1992,7 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        if (facet_count < resultsStatistics.Aggregation_Facets.Count)
+                        if (facet_count < RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count)
                         {
                             builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a onclick=\"set_facet_callback(" + FACET_INDEX + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
                         }
@@ -2048,89 +2007,89 @@ namespace SobekCM.Library.HTML
                 List<string> FIDS = new List<string>();
 
                 // Add the first facet information 
-                if (resultsStatistics.First_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.First_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.First_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.First_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 1, sort_by_frequency, sort_alphabetically, resultsStatistics.First_Facets);
+                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 1, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.First_Facets);
                         FIDS.Add(field.Display_Term);
                     }
                 }
 
                 // Add the second facet information 
-                if (resultsStatistics.Second_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Second_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Second_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Second_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 2, sort_by_frequency, sort_alphabetically, resultsStatistics.Second_Facets);
+                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 2, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Second_Facets);
                         FIDS.Add(field.Display_Term);
                     }
                 }
 
                 // Add the third facet information 
-                if (resultsStatistics.Third_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Third_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Third_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Third_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 3, sort_by_frequency, sort_alphabetically, resultsStatistics.Third_Facets);
+                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 3, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Third_Facets);
                         FIDS.Add(field.Display_Term);
                     }
                 }
 
                 // Add the fourth facet information 
-                if (resultsStatistics.Fourth_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Fourth_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Fourth_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Fourth_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 4, sort_by_frequency, sort_alphabetically, resultsStatistics.Fourth_Facets);
+                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 4, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Fourth_Facets);
                         FIDS.Add(field.Display_Term);
                     }
                 }
 
                 // Add the fifth facet information 
-                if (resultsStatistics.Fifth_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Fifth_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Fifth_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Fifth_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 5, sort_by_frequency, sort_alphabetically, resultsStatistics.Fifth_Facets);
+                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 5, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Fifth_Facets);
                         FIDS.Add(field.Display_Term);
                     }
                 }
 
                 // Add the sixth facet information 
-                if (resultsStatistics.Sixth_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Sixth_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Sixth_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Sixth_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 6, sort_by_frequency, sort_alphabetically, resultsStatistics.Sixth_Facets);
+                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 6, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Sixth_Facets);
                         FIDS.Add(field.Display_Term);
                     }
                 }
 
                 // Add the seventh facet information 
-                if (resultsStatistics.Seventh_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Seventh_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Seventh_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Seventh_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 7, sort_by_frequency, sort_alphabetically, resultsStatistics.Seventh_Facets);
+                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 7, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Seventh_Facets);
                         FIDS.Add(field.Display_Term);
                     }
                 }
 
                 // Add the eighth facet information 
-                if (resultsStatistics.Eighth_Facets_Count > 0)
+                if (RequestSpecificValues.Results_Statistics.Eighth_Facets_Count > 0)
                 {
-                    Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID(resultsStatistics.Eighth_Facets_MetadataTypeID);
+                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Eighth_Facets_MetadataTypeID);
                     if (field != null)
                     {
-                        Add_Single_Facet_Callback(builder, translations.Get_Translation(field.Facet_Term, Mode.Language), field.Web_Code, show_less, show_more, 8, sort_by_frequency, sort_alphabetically, resultsStatistics.Eighth_Facets);
+                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 8, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Eighth_Facets);
                         FIDS.Add(field.Display_Term);
                     }
                 }
@@ -2210,7 +2169,7 @@ namespace SobekCM.Library.HTML
 			Builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
 			if (Collection.Count > 1)
 			{
-				Builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + (FacetIndex - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
+				Builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + (FacetIndex - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
 			}
 			if ((facetInformation[FacetIndex - 1] == '2') || (facetInformation[FacetIndex - 1] == '3'))
 			{
@@ -2291,7 +2250,7 @@ namespace SobekCM.Library.HTML
             Builder.AppendLine("<div class=\"sbkPrsw_FacetBox\"><ul>");
             if (Collection.Count > 1)
             {
-                Builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a onclick=\"set_facet_callback(" + (FacetIndex - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
+                Builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a onclick=\"set_facet_callback(" + (FacetIndex - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
             }
             if ((facetInformation[FacetIndex - 1] == '2') || (facetInformation[FacetIndex - 1] == '3'))
             {

@@ -1,17 +1,18 @@
 ﻿#region Using directives
+
 using System;
-using System.Security.Cryptography;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
-using SobekCM.Tools;
-using Zen.Barcode;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
-using System.Data;
-using SobekCM.Library.HTML;
-using SobekCM.Library.Navigation;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Library.HTML;
 using SobekCM.Resource_Object;
+using SobekCM.Tools;
+using SobekCM.UI_Library;
+using Zen.Barcode;
+
 #endregion
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -88,7 +89,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 
 
             //Create the temporary location for saving the barcode images
-           image_location = InstanceWide_Settings_Singleton.Settings.Base_Temporary_Directory + "tsBarcodes\\" + itemID.ToString();
+           image_location = UI_ApplicationCache_Gateway.Settings.Base_Temporary_Directory + "tsBarcodes\\" + itemID.ToString();
 
 
             // Create the folder for the user in the temp directory
@@ -402,10 +403,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //Generate the image
            Code39BarcodeDraw barcode39 = BarcodeDrawFactory.Code39WithoutChecksum;
-            System.Drawing.Image barcode_image = barcode39.Draw(barcodeString, 60);
+            Image barcode_image = barcode39.Draw(barcodeString, 60);
             
             //Save the image
-            barcode_image.Save(@image_save_location, System.Drawing.Imaging.ImageFormat.Gif);
+            barcode_image.Save(@image_save_location, ImageFormat.Gif);
 	       // string url = CurrentMode.Base_URL + "temp/" + CurrentUser.UserName.Replace(".", "").Replace("@", "") + "/tsBarcodes/" + itemID.ToString();
             string url = CurrentMode.Base_URL + "temp/" + "tsBarcodes/" + itemID.ToString();
 

@@ -6,16 +6,15 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web.UI.WebControls;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Database;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Tracking;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Database;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -178,7 +177,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                     else
                     {
-						Output.WriteLine("        <li><a href=\"" + CurrentMode.Redirect_URL("milestones") + "\">" + MILESTONES_VIEW + "</a></li>");
+						Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "milestones") + "\">" + MILESTONES_VIEW + "</a></li>");
                     }
 
                 if ((citationType == Tracking_Type.History) || ((CurrentItem.Tracking.hasHistoryInformation)))
@@ -189,7 +188,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                     else
                     {
-						Output.WriteLine("        <li><a href=\"" + CurrentMode.Redirect_URL("tracking") + "\">" + TRACKING_VIEW + "</a></li>");
+						Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "tracking") + "\">" + TRACKING_VIEW + "</a></li>");
                     }
                 }
 
@@ -201,7 +200,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                     else
                     {
-						Output.WriteLine("        <li><a href=\"" + CurrentMode.Redirect_URL("media") + "\">" + MEDIA_VIEW + "</a></li>");
+						Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "media") + "\">" + MEDIA_VIEW + "</a></li>");
                     }
                 }
 
@@ -213,7 +212,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                     else
                     {
-						Output.WriteLine("        <li><a href=\"" + CurrentMode.Redirect_URL("archive") + "\">" + ARCHIVE_VIEW + "</a></li>");
+						Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "archive") + "\">" + ARCHIVE_VIEW + "</a></li>");
                     }
                 }
 
@@ -225,7 +224,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                     else
                     {
-						Output.WriteLine("        <li><a href=\"" + CurrentMode.Redirect_URL("directory") + "\">" + DIRECTORY_VIEW + "</a></li>");
+						Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "directory") + "\">" + DIRECTORY_VIEW + "</a></li>");
                     }
                 }
             }
@@ -462,8 +461,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             try
             {
-                string directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
-                string url = InstanceWide_Settings_Singleton.Settings.Image_URL + CurrentItem.Web.AssocFilePath;
+                string directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+                string url = UI_ApplicationCache_Gateway.Settings.Image_URL + CurrentItem.Web.AssocFilePath;
 
                 FileInfo[] files = (new DirectoryInfo(directory)).GetFiles();
 
@@ -535,7 +534,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     string thisFileUpper = thisFile.System_Name.ToUpper();
                                     if (sortedFiles.ContainsKey(thisFileUpper))
                                     {
-                                       // string file = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + thisFile.System_Name;
+                                       // string file = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + thisFile.System_Name;
                                         Add_File_HTML(sortedFiles[thisFileUpper], builder, url, true);
                                         sortedFiles.Remove(thisFileUpper);
                                     }
@@ -547,7 +546,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 {
                                     if (sortedFiles.ContainsKey(fileName.ToUpper() + thisFileEnder))
                                     {
-                                        //string file = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + fileName + thisFileEnder.ToLower();
+                                        //string file = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + fileName + thisFileEnder.ToLower();
                                         Add_File_HTML(sortedFiles[fileName.ToUpper() + thisFileEnder], builder, url, true);
                                         sortedFiles.Remove(fileName.ToUpper() + thisFileEnder);
                                     }

@@ -3,13 +3,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
 using SobekCM.Tools;
 
 #endregion

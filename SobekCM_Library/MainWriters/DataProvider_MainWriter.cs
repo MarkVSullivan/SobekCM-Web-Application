@@ -7,13 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Caching;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Divisions;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
+using SobekCM.Core.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -25,27 +20,14 @@ namespace SobekCM.Library.MainWriters
 	public class DataProvider_MainWriter : abstractMainWriter 
 	{
 		/// <summary> Constructor for a new instance of the DataProvider_MainWriter class </summary>
-		/// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-		/// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
-		/// <param name="Results_Statistics"> Information about the entire set of results for a search or browse </param>
-		/// <param name="Paged_Results"> Single page of results for a search or browse, within the entire set </param>
-		/// <param name="Browse_Object"> Object contains all the basic information about any browse or info display </param>
-		/// <param name="Current_Item"> Current item to display </param>
-		/// <param name="Current_Page"> Current page within the item</param>
-		public DataProvider_MainWriter(SobekCM_Navigation_Object Current_Mode,
-			Item_Aggregation Hierarchy_Object,
-			Search_Results_Statistics Results_Statistics,
-			List<iSearch_Title_Result> Paged_Results,
-			Item_Aggregation_Child_Page Browse_Object,
-			SobekCM_Item Current_Item,
-			Page_TreeNode Current_Page)
-			: base(Current_Mode, Hierarchy_Object, Results_Statistics, Paged_Results, Browse_Object, Current_Item, Current_Page, null)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public DataProvider_MainWriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
 		{
 			// All work done in base class
 		}
 
 		/// <summary> Gets the enumeration of the type of main writer </summary>
-		/// <value> This property always returns the enumerational value <see cref="SobekCM.Library.Navigation.Writer_Type_Enum.DataSet"/>. </value>
+		/// <value> This property always returns the enumerational value <see cref="SobekCM.UI_Library.Navigation.Writer_Type_Enum.DataSet"/>. </value>
 		public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.DataSet; } }
 
 		/// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
@@ -53,10 +35,10 @@ namespace SobekCM.Library.MainWriters
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
 		public override void Write_Html(TextWriter Output, Custom_Tracer Tracer)
 		{
-			switch (currentMode.Mode)
+			switch (RequestSpecificValues.Current_Mode.Mode)
 			{
 				case Display_Mode_Enum.Item_Display:
-					if (currentMode.ViewerCode.IndexOf("dsview", StringComparison.OrdinalIgnoreCase) == 0)
+					if (RequestSpecificValues.Current_Mode.ViewerCode.IndexOf("dsview", StringComparison.OrdinalIgnoreCase) == 0)
 					{
 						provide_dataset_items_view_data(Output);
 					}
@@ -71,13 +53,13 @@ namespace SobekCM.Library.MainWriters
 		private void provide_dataset_items_view_data(TextWriter Output)
 		{
 			string error_message = String.Empty;
-			string key = currentItem.BibID + "_" + currentItem.VID + "_Dataset";
+			string key = RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + "_Dataset";
 			DataSet itemDataset = HttpContext.Current.Cache[key] as DataSet;
 			if (itemDataset == null)
 			{
 				// Find the dataset from the METS strucutre map.  Currently this looks
 				// only for XML with attached XSD
-				string xml_file = (from thisFile in currentItem.Divisions.Download_Other_Files where thisFile.System_Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0 select thisFile.System_Name).FirstOrDefault();
+				string xml_file = (from thisFile in RequestSpecificValues.Current_Item.Divisions.Download_Other_Files where thisFile.System_Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0 select thisFile.System_Name).FirstOrDefault();
 
 				// If one was found, read it in!
 				if (!String.IsNullOrEmpty(xml_file))
@@ -86,7 +68,7 @@ namespace SobekCM.Library.MainWriters
 					try
 					{
 						// Read the XML file
-						itemDataset.ReadXml(currentItem.Source_Directory + "\\" + xml_file);
+						itemDataset.ReadXml(RequestSpecificValues.Current_Item.Source_Directory + "\\" + xml_file);
 
 						// Add this to the cache
 						HttpContext.Current.Cache.Insert(key, itemDataset, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
@@ -133,7 +115,7 @@ namespace SobekCM.Library.MainWriters
 			// Look for the search term and such from the current query string
 			string term = String.Empty;
 			string field = String.Empty;
-			string[] possibles = new string[] { "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12", "col13", "col14", "col15", "col16", "col17", "col18", "col19", "col20" };
+			string[] possibles = { "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12", "col13", "col14", "col15", "col16", "col17", "col18", "col19", "col20" };
 			foreach (string possibility in possibles)
 			{
 				if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString[possibility]))
@@ -145,7 +127,7 @@ namespace SobekCM.Library.MainWriters
 			}
 
 			// Create the results view
-			DataTable results = itemDataset.Tables[currentMode.SubPage - 2];
+			DataTable results = itemDataset.Tables[RequestSpecificValues.Current_Mode.SubPage - 2];
 			DataView resultsView = new DataView(results);
 
 			// Should a filter be applied?
@@ -218,9 +200,9 @@ namespace SobekCM.Library.MainWriters
 						adjust_for_filter = resultsView.Count;
 						filter_modified = true;
 
-						if (sortColumn.DataType == System.Type.GetType("System.Int32"))
+						if (sortColumn.DataType == Type.GetType("System.Int32"))
 							resultsView.RowFilter = sortColumn.ColumnName + " < 0 or " + sortColumn.ColumnName + " is null";
-						if (sortColumn.DataType == System.Type.GetType("System.String"))
+						if (sortColumn.DataType == Type.GetType("System.String"))
 							resultsView.RowFilter = sortColumn.ColumnName + " = '' or " + sortColumn.ColumnName + " is null";
 					}
 					else

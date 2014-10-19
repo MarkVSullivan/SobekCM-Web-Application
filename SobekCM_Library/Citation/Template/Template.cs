@@ -6,13 +6,12 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
-using SobekCM.Resource_Object;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Citation.Elements;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Navigation;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Library.Citation.Elements;
+using SobekCM.Resource_Object;
 
 #endregion
 

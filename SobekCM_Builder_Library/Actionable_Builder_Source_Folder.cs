@@ -2,11 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
+using SobekCM.Engine_Library.ApplicationState;
 
 #endregion
 
@@ -210,7 +209,7 @@ namespace SobekCM.Builder_Library
             {
                 // Is this resource a candidate to move for continued processing?
                 long resource_age = resource.AgeInTicks;
-                if ((resource_age > InstanceWide_Settings_Singleton.Settings.Complete_Package_Required_Aging) || ((resource_age > InstanceWide_Settings_Singleton.Settings.METS_Only_Package_Required_Aging) && (resource.METS_Only_Package)))
+                if ((resource_age > Engine_ApplicationCache_Gateway.Settings.Complete_Package_Required_Aging) || ((resource_age > Engine_ApplicationCache_Gateway.Settings.METS_Only_Package_Required_Aging) && (resource.METS_Only_Package)))
                 {
                     if (!resource.Move(Processing_Folder))
                     {

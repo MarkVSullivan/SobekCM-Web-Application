@@ -1,16 +1,13 @@
 #region Using directives
 
 using System.Text;
+using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
 using SobekCM.Core.Search;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.Search;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -22,10 +19,10 @@ namespace SobekCM.Library.ResultsViewer
     public class Brief_ResultsViewer : abstract_ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Brief_ResultsViewer class </summary>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        public Brief_ResultsViewer(Item_Lookup_Object All_Items_Lookup)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Brief_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            base.All_Items_Lookup = All_Items_Lookup;
+            // Do nothing
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
@@ -40,16 +37,16 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // If results are null, or no results, return empty string
-            if ((Paged_Results == null) || (Results_Statistics == null) || (Results_Statistics.Total_Items <= 0))
+            if ((RequestSpecificValues.Paged_Results == null) || (RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Items <= 0))
                 return;
 
             const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
 
             // Get the text search redirect stem and (writer-adjusted) base url 
             string textRedirectStem = Text_Redirect_Stem;
-            string base_url = CurrentMode.Base_URL;
-            if (CurrentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-                base_url = CurrentMode.Base_URL + "l/";
+            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
             // Start the results
             StringBuilder resultsBldr = new StringBuilder(2000);
@@ -57,11 +54,11 @@ namespace SobekCM.Library.ResultsViewer
             resultsBldr.AppendLine("<table>");
 
             // Set the counter for these results from the page 
-            int result_counter = ((CurrentMode.Page - 1)*Results_Per_Page) + 1;
+            int result_counter = ((RequestSpecificValues.Current_Mode.Page - 1)*Results_Per_Page) + 1;
 
             // Step through all the results
             int current_row = 0;
-            foreach (iSearch_Title_Result titleResult in Paged_Results)
+            foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
             {
 	            bool multiple_title = titleResult.Item_Count > 1;
 
@@ -72,7 +69,7 @@ namespace SobekCM.Library.ResultsViewer
                 string internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
 
                 // For browses, just point to the title
-				if (CurrentMode.Mode == Display_Mode_Enum.Aggregation) // browse info only
+				if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) // browse info only
                     internal_link = base_url + titleResult.BibID + textRedirectStem;
 
                 // Start this row
@@ -101,18 +98,18 @@ namespace SobekCM.Library.ResultsViewer
                 // Draw the thumbnail 
                 if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
-                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" + CurrentMode.Default_Images_URL + "NoThumb.jpg\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></td>");
+                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "NoThumb.jpg\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></td>");
                 }
                 else
                 {
-                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" +InstanceWide_Settings_Singleton.Settings.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></td>");
+                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" +UI_ApplicationCache_Gateway.Settings.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></td>");
                 }
                 resultsBldr.AppendLine("\t\t<td>");
 
                 // If this was access restricted, add that
                 if (restricted_by_ip)
                 {
-                    resultsBldr.AppendLine("<span class=\"RestrictedItemText\">" + Translator.Get_Translation("Access Restricted", CurrentMode.Language) + "</span>");
+                    resultsBldr.AppendLine("<span class=\"RestrictedItemText\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Access Restricted", RequestSpecificValues.Current_Mode.Language) + "</span>");
                 }
 
                 // Add each element to this table
@@ -132,10 +129,10 @@ namespace SobekCM.Library.ResultsViewer
 
                 if ((titleResult.Primary_Identifier_Type.Length > 0) && (titleResult.Primary_Identifier.Length > 0))
                 {
-                    resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(titleResult.Primary_Identifier_Type, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + titleResult.Primary_Identifier + "</td></tr>");
+                    resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + titleResult.Primary_Identifier + "</td></tr>");
                 }
 
-                if (CurrentMode.Internal_User)
+                if (RequestSpecificValues.Current_Mode.Internal_User)
                 {
                     resultsBldr.AppendLine("\t\t\t\t<tr><td>BibID:</td><td>&nbsp;</td><td>" + titleResult.BibID + "</td></tr>");
 
@@ -150,11 +147,11 @@ namespace SobekCM.Library.ResultsViewer
                     }
                 }
 
-				for (int i = 0 ; i < Results_Statistics.Metadata_Labels.Count ; i++ )
+                for (int i = 0; i < RequestSpecificValues.Results_Statistics.Metadata_Labels.Count; i++)
 				{
-					string field = Results_Statistics.Metadata_Labels[i];
+                    string field = RequestSpecificValues.Results_Statistics.Metadata_Labels[i];
 					string value = titleResult.Metadata_Display_Values[i];
-					Metadata_Search_Field thisField = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Name(field);
+					Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
 					string display_field = string.Empty;
 					if ( thisField != null )
 						display_field = thisField.Display_Term;
@@ -163,7 +160,7 @@ namespace SobekCM.Library.ResultsViewer
 
 					if (value == "*")
 					{
-						resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlDecode(VARIES_STRING) + "</td></tr>");
+						resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(VARIES_STRING) + "</td></tr>");
 					}
 					else if ( value.Trim().Length > 0 )
 					{
@@ -178,10 +175,10 @@ namespace SobekCM.Library.ResultsViewer
 								{
 									if (!value_found)
 									{
-										resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>");
+										resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>");
 										value_found = true;
 									}
-									resultsBldr.Append(System.Web.HttpUtility.HtmlDecode(thisValue) + "<br />");
+									resultsBldr.Append(HttpUtility.HtmlDecode(thisValue) + "<br />");
 								}
 							}
 
@@ -192,7 +189,7 @@ namespace SobekCM.Library.ResultsViewer
 						}
 						else
 						{
-							resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlDecode(value) + "</td></tr>");
+							resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(value) + "</td></tr>");
 						}
 					}
 				}
@@ -207,7 +204,7 @@ namespace SobekCM.Library.ResultsViewer
 
 				//	if (titleResult.Author == "*")
 				//	{
-				//		resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(creatorString, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
+				//		resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(creatorString, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
 				//	}
 				//	else
 				//	{
@@ -220,7 +217,7 @@ namespace SobekCM.Library.ResultsViewer
 				//			{
 				//				if (!author_found)
 				//				{
-				//					resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" +Translator.Get_Translation(creatorString, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>");
+				//					resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" +UI_ApplicationCache_Gateway.Translation.Get_Translation(creatorString, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>");
 				//					author_found = true;
 				//				}
 				//				resultsBldr.Append(thisAuthor + "<br />");

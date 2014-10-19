@@ -1,11 +1,8 @@
 ﻿#region Using directives
 
 using System.IO;
-using System.Web;
-using System.Web.UI.WebControls;
-using SobekCM.Library.Navigation;
+using SobekCM.Core.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -19,16 +16,15 @@ namespace SobekCM.Library.MainWriters
         private readonly string fileToEcho;
 
         /// <summary> Constructor for a new instance of the Text_MainWriter class </summary>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="HTML_File_To_Echo"> The HTML file to echo </param>
-        public Html_Echo_MainWriter(SobekCM_Navigation_Object Current_Mode, string HTML_File_To_Echo)
-            : base(Current_Mode, null, null, null, null,  null, null, null)
+        public Html_Echo_MainWriter(RequestCache RequestSpecificValues, string HTML_File_To_Echo) : base(RequestSpecificValues)
         {
             fileToEcho = HTML_File_To_Echo;
         }
 
         /// <summary> Gets the enumeration of the type of main writer </summary>
-        /// <value> This property always returns the enumerational value <see cref="SobekCM.Library.Navigation.Writer_Type_Enum.HTML"/>. </value>
+        /// <value> This property always returns the enumerational value <see cref="SobekCM.UI_Library.Navigation.Writer_Type_Enum.HTML"/>. </value>
         public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.HTML_Echo; } }
 
 
@@ -43,32 +39,32 @@ namespace SobekCM.Library.MainWriters
 
 			// Write the style sheet to use 
 #if DEBUG
-            Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 
 #endif
 			// Write the main SobekCM item style sheet to use 
 #if DEBUG
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 #endif
 
 			// Always add jQuery library (changed as of 7/8/2013)
-			if ((currentMode.Mode != Display_Mode_Enum.Item_Display) || (currentMode.ViewerCode != "pageturner"))
+			if ((RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.ViewerCode != "pageturner"))
 			{
 #if DEBUG
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_full.js\"></script>");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_full.js\"></script>");
 #else
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
 #endif
 			}
 
 			// Include the interface's style sheet if it has one
-			Output.WriteLine("  <link href=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/" + currentMode.Base_Skin + ".css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/" + RequestSpecificValues.Current_Mode.Base_Skin + ".css\" rel=\"stylesheet\" type=\"text/css\" />");
         }
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>

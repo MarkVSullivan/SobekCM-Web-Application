@@ -3,11 +3,9 @@
 using System;
 using System.Data;
 using System.IO;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
-using SobekCM.Library.Navigation;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -15,20 +13,11 @@ namespace SobekCM.Library.MySobekViewer
 {
     class User_Usage_Stats_MySobekViewer : abstract_MySobekViewer
     {
-        private readonly Statistics_Dates statsDates;
-
         /// <summary> Constructor for a new instance of the User_Tags_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Stats_Date_Range"> Object contains the start and end dates for the statistical data in the database </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public User_Usage_Stats_MySobekViewer(User_Object User, SobekCM_Navigation_Object Current_Mode, Statistics_Dates Stats_Date_Range, Custom_Tracer Tracer)
-            : base(User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public User_Usage_Stats_MySobekViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("User_Usage_Stats_MySobekViewer.Constructor", String.Empty);
-
-            currentMode = Current_Mode;
-            statsDates = Stats_Date_Range;
+            RequestSpecificValues.Tracer.Add_Trace("User_Usage_Stats_MySobekViewer.Constructor", String.Empty);
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
@@ -45,11 +34,11 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("User_Usage_Stats_MySobekViewer.Write_HTML", String.Empty);
 
-            string submode = currentMode.My_Sobek_SubMode;
+            string submode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 
             // Determine the date (month,year) for the usage stats to display
-            int month = statsDates.Latest_Month;
-            int year = statsDates.Latest_Year;
+            int month = UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Month;
+            int year = UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Year;
             if (submode.Length >= 6)
             {
                 Int32.TryParse(submode.Substring(0, 4), out year);
@@ -89,14 +78,14 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<br />");
-            Output.WriteLine("<p>Below is a list of items associated with your account including usage statistics.  Total views and visits represents the total amount of usage since the item was added to the library and the monthly views and visits is the usage in the selected month.  For more information about these terms, see the <a href=\"" + currentMode.Base_URL + "stats/usage/definitions\" target=\"_BLANK\">definitions on the main statistics page</a>.</p>");
+            Output.WriteLine("<p>Below is a list of items associated with your account including usage statistics.  Total views and visits represents the total amount of usage since the item was added to the library and the monthly views and visits is the usage in the selected month.  For more information about these terms, see the <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "stats/usage/definitions\" target=\"_BLANK\">definitions on the main statistics page</a>.</p>");
             Output.WriteLine("<p>You may be the author, contributor, or associated with these items in some other way.</p>");
             Output.WriteLine("<p>To see statistics for a different month, change the selected month/year:");
-            Output.WriteLine("<select name=\"date1_selector\" class=\"SobekStatsDateSelector\" onChange=\"window.location.href='" + currentMode.Base_URL + "my/stats/' + this.options[selectedIndex].value + '" + sort_value + "';\">");
+            Output.WriteLine("<select name=\"date1_selector\" class=\"SobekStatsDateSelector\" onChange=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/stats/' + this.options[selectedIndex].value + '" + sort_value + "';\">");
 
-            int select_month = statsDates.Earliest_Month;
-            int select_year = statsDates.Earliest_Year;
-            while ((select_month != statsDates.Latest_Month) || (select_year != statsDates.Latest_Year))
+            int select_month = UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Month;
+            int select_year = UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Year;
+            while ((select_month != UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Month) || (select_year != UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Year))
             {
                 if ((month == select_month) && (year == select_year))
                 {
@@ -128,7 +117,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<br />");
 
             // Get the item usage stats for this user on this month
-            DataTable usageStats = SobekCM_Database.Get_User_Linked_Items_Stats(user.UserID, month, year, Tracer);
+            DataTable usageStats = SobekCM_Database.Get_User_Linked_Items_Stats(RequestSpecificValues.Current_User.UserID, month, year, Tracer);
 
             // Only continue if stats were returned
             if (usageStats != null)
@@ -141,7 +130,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
                 Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\" >");
 
-                string redirect_value = currentMode.Base_URL + "my/stats/" + year + month.ToString().PadLeft(2,'0');
+                string redirect_value = RequestSpecificValues.Current_Mode.Base_URL + "my/stats/" + year + month.ToString().PadLeft(2,'0');
 
                 if (sort_value != 'a')
                 {
@@ -204,7 +193,7 @@ namespace SobekCM.Library.MySobekViewer
                     string vid = thisRow["VID"].ToString();
 
                     Output.WriteLine("  <tr align=\"left\" >");
-                    Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + bibid + "/" + vid + "/usage\" target=\"" + bibid+"_"+vid + "\">" + thisRow["Title"] + "</a></td>");
+                    Output.WriteLine("    <td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + bibid + "/" + vid + "/usage\" target=\"" + bibid+"_"+vid + "\">" + thisRow["Title"] + "</a></td>");
                     Output.WriteLine("    <td align=\"center\">" + thisRow["Total_Hits"] + "</td>");
                     Output.WriteLine("    <td align=\"center\">" + thisRow["Total_Sessions"] + "</td>");
                     Output.WriteLine("    <td align=\"center\">" + thisRow["Month_Hits"] + "</td>");

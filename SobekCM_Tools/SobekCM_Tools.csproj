@@ -156,6 +156,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SobekCM_File_Utilities.cs" />
+    <Compile Include="SobekCM_Traced_Exception.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>

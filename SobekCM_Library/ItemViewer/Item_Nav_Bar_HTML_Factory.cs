@@ -1,11 +1,12 @@
 ﻿#region Using directives
 
 using System.Collections.Generic;
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Navigation;
+using SobekCM.Resource_Object.Bib_Info;
 
 #endregion
 
@@ -241,7 +242,7 @@ namespace SobekCM.Library.ItemViewer
         {
             string previousViewerCode = Current_Mode.ViewerCode;
             Current_Mode.ViewerCode = Viewer_Code;
-            string returnValue = "<a href=\"" + Current_Mode.Redirect_URL() + "\">" + Display_Text + "</a>";
+            string returnValue = "<a href=\"" + UrlWriterHelper.Redirect_URL(Current_Mode) + "\">" + Display_Text + "</a>";
             Current_Mode.ViewerCode = previousViewerCode;
             return returnValue;
         }
@@ -261,7 +262,7 @@ namespace SobekCM.Library.ItemViewer
 
             string previousViewerCode = Current_Mode.ViewerCode;
             Current_Mode.ViewerCode = Viewer_Code;
-            string returnValue = "<li><a href=\"" + Current_Mode.Redirect_URL() + "\">" + Display_Text + "</a></li>";
+            string returnValue = "<li><a href=\"" + UrlWriterHelper.Redirect_URL(Current_Mode) + "\">" + Display_Text + "</a></li>";
             Current_Mode.ViewerCode = previousViewerCode;
             return returnValue;
         }

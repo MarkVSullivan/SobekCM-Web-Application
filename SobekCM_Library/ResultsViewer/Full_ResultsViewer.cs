@@ -1,7 +1,6 @@
 ﻿#region Using directives
 
 using System.Web.UI.WebControls;
-using SobekCM.Library.Application_State;
 using SobekCM.Tools;
 
 #endregion
@@ -14,10 +13,10 @@ namespace SobekCM.Library.ResultsViewer
     public class Full_ResultsViewer :  abstract_ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Full_ResultsViewer class </summary>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        public Full_ResultsViewer(Item_Lookup_Object All_Items_Lookup)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Full_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            base.All_Items_Lookup = All_Items_Lookup;
+            // Do nothing
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
@@ -86,7 +85,7 @@ namespace SobekCM.Library.ResultsViewer
 
             //// Read this item information
             //Item.SobekCM_METS_Based_ItemBuilder builder = new SobekCM.Library.Items.SobekCM_METS_Based_ItemBuilder();
-            //string mets_location = InstanceWide_Settings_Singleton.Settings.Image_URL + dbTitle.File_Root + "/" + dbItem.VID_String;
+            //string mets_location = UI_ApplicationCache_Gateway.Settings.Image_URL + dbTitle.File_Root + "/" + dbItem.VID_String;
             //SobekCM.Resource_Object.SobekCM_Item thisItem = builder.Build_Brief_Item(mets_location, Tracer);
 
             //if (thisItem != null)
@@ -95,7 +94,7 @@ namespace SobekCM.Library.ResultsViewer
             //    thisItem.Behaviors.GroupTitle = dbTitle.GroupTitle;
             //    thisItem.Web.AssocFilePath = dbTitle.File_Root + "/" + dbItem.VID_String;
             //    thisItem.Web.File_Root = String.Empty;
-            //    thisItem.Behaviors.Image_Root = InstanceWide_Settings_Singleton.Settings.Image_URL;
+            //    thisItem.Behaviors.Image_Root = UI_ApplicationCache_Gateway.Settings.Image_URL;
             //    thisItem.Behaviors.IP_Restriction_Membership = dbItem.IP_Range_Membership;
 
             //    string preview_citation = "PREVIEW CITATION";
@@ -210,7 +209,7 @@ namespace SobekCM.Library.ResultsViewer
             //        else
             //        {
             //            resultsBldr.AppendLine("    <td align=\"center\" colspan=\"3\">");
-            //            string image_link = InstanceWide_Settings_Singleton.Settings.Image_URL + thisItem.Web.AssocFilePath + "/" + thisItem.Behaviors.Main_Page.FileName;
+            //            string image_link = UI_ApplicationCache_Gateway.Settings.Image_URL + thisItem.Web.AssocFilePath + "/" + thisItem.Behaviors.Main_Page.FileName;
             //            resultsBldr.AppendLine("      <a href=\"" + full_item_link + "\"><img border=\"0\" src=\"" + image_link + "\" /></a>");
             //            resultsBldr.AppendLine("    </td>");
             //        }

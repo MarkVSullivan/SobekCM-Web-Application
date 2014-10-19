@@ -1,16 +1,13 @@
 #region Using directives
 
 using System.Text;
+using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
 using SobekCM.Core.Search;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.Search;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -22,10 +19,10 @@ namespace SobekCM.Library.ResultsViewer
     public class Thumbnail_ResultsViewer : abstract_ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Thumbnail_ResultsViewer class </summary>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        public Thumbnail_ResultsViewer(Item_Lookup_Object All_Items_Lookup)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Thumbnail_ResultsViewer(RequestCache RequestSpecificValues ) : base(RequestSpecificValues)
         {
-            base.All_Items_Lookup = All_Items_Lookup;
+            // Do nothing
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
@@ -40,18 +37,18 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // If results are null, or no results, return empty string
-            if ((Paged_Results == null) || (Results_Statistics == null) || (Results_Statistics.Total_Items <= 0))
+            if ((RequestSpecificValues.Paged_Results == null) || (RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Items <= 0))
                 return;
 
             // Get the text search redirect stem and (writer-adjusted) base url 
             string textRedirectStem = Text_Redirect_Stem;
-            string base_url = CurrentMode.Base_URL;
-            if (CurrentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-                base_url = CurrentMode.Base_URL + "l/";
+            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
             // Should the publication date be shown?
             bool showDate = false;
-            if (CurrentMode.Sort >= 10)
+            if (RequestSpecificValues.Current_Mode.Sort >= 10)
             {
                 showDate = true;
             }
@@ -60,13 +57,13 @@ namespace SobekCM.Library.ResultsViewer
             StringBuilder resultsBldr = new StringBuilder(5000);
 
             //Add the necessary JavaScript, CSS files
-            //resultsBldr.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
-            //resultsBldr.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.js\"></script>");
-            //resultsBldr.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
+            //resultsBldr.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
+            //resultsBldr.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.qtip.min.js\"></script>");
+            //resultsBldr.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
 
 
-    //        resultsBldr.AppendLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
-            resultsBldr.AppendLine("  <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/sobekcm_thumb_results.js\"></script>");
+    //        resultsBldr.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.1.js\"></script>");
+            resultsBldr.AppendLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_thumb_results.js\"></script>");
 
 
             // Start this table
@@ -83,7 +80,7 @@ namespace SobekCM.Library.ResultsViewer
             int col = 0;
             int title_count = 0;
 
-            foreach (iSearch_Title_Result titleResult in Paged_Results)
+            foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
             {
                 title_count++;
                 // Should a new row be started
@@ -105,7 +102,7 @@ namespace SobekCM.Library.ResultsViewer
                 string internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
 
                 // For browses, just point to the title
-                if ((CurrentMode.Mode == Display_Mode_Enum.Aggregation) && ( CurrentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ))
+                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && ( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ))
                     internal_link = base_url + titleResult.BibID + textRedirectStem;
 
                 resultsBldr.AppendLine("\t\t<td align=\"center\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onclick=\"window.location.href='" + internal_link + "';\" >");
@@ -179,11 +176,11 @@ namespace SobekCM.Library.ResultsViewer
                 // Add the thumbnail
                 if ((firstItemResult.MainThumbnail.ToUpper().IndexOf(".JPG") < 0) && (firstItemResult.MainThumbnail.ToUpper().IndexOf(".GIF") < 0))
                 {
-                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan"+title_count+"\"><a href=\"" + internal_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\" src=\"" + CurrentMode.Default_Images_URL + "NoThumb.jpg\" /></a></span></td></tr>");
+                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan"+title_count+"\"><a href=\"" + internal_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\" src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "NoThumb.jpg\" /></a></span></td></tr>");
                 }
                 else
                 {
-                    string thumb = InstanceWide_Settings_Singleton.Settings.Image_URL + titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" + titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
+                    string thumb = UI_ApplicationCache_Gateway.Settings.Image_URL + titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" + titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
                     resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan" + title_count + "\"><a href=\"" + internal_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\"src=\"" + thumb + "\" alt=\"MISSING THUMBNAIL\" /></a></span></td></tr>");
                 }
 
@@ -211,10 +208,10 @@ namespace SobekCM.Library.ResultsViewer
 
                 if ((titleResult.Primary_Identifier_Type.Length > 0) && (titleResult.Primary_Identifier.Length > 0))
                 {
-                    resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(titleResult.Primary_Identifier_Type, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlDecode(titleResult.Primary_Identifier) + "</td></tr>");
+                    resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(titleResult.Primary_Identifier) + "</td></tr>");
                 }
 
-                if (CurrentMode.Internal_User)
+                if (RequestSpecificValues.Current_Mode.Internal_User)
                 {
                     resultsBldr.AppendLine("\t\t\t\t<tr><td>BibID:</td><td>&nbsp;</td><td>" + titleResult.BibID + "</td></tr>");
 
@@ -229,11 +226,11 @@ namespace SobekCM.Library.ResultsViewer
                     }
                 }
 
-				for (int i = 0 ; i < Results_Statistics.Metadata_Labels.Count ; i++ )
+                for (int i = 0; i < RequestSpecificValues.Results_Statistics.Metadata_Labels.Count; i++)
 				{
-					string field = Results_Statistics.Metadata_Labels[i];
+                    string field = RequestSpecificValues.Results_Statistics.Metadata_Labels[i];
 					string value = titleResult.Metadata_Display_Values[i];
-					Metadata_Search_Field thisField = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Name(field);
+					Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
 					string display_field = string.Empty;
 					if ( thisField != null )
 						display_field = thisField.Display_Term;
@@ -242,7 +239,7 @@ namespace SobekCM.Library.ResultsViewer
 
 					if (value == "*")
 					{
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlDecode(VARIES_STRING) + "</td></tr>");
+                        resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(VARIES_STRING) + "</td></tr>");
 					}
 					else if ( value.Trim().Length > 0 )
 					{
@@ -257,10 +254,10 @@ namespace SobekCM.Library.ResultsViewer
 								{
 									if (!value_found)
 									{
-										resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>");
+										resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>");
 										value_found = true;
 									}
-									resultsBldr.Append(System.Web.HttpUtility.HtmlDecode(thisValue) + "<br />");
+									resultsBldr.Append(HttpUtility.HtmlDecode(thisValue) + "<br />");
 								}
 							}
 
@@ -271,7 +268,7 @@ namespace SobekCM.Library.ResultsViewer
 						}
 						else
 						{
-							resultsBldr.AppendLine("\t\t\t\t<tr><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>&nbsp;</td><td>" + System.Web.HttpUtility.HtmlDecode(value) + "</td></tr>");
+							resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(value) + "</td></tr>");
 						}
 					}
 				}

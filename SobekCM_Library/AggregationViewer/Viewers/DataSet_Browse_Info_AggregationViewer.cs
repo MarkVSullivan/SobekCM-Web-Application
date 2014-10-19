@@ -1,15 +1,10 @@
 ﻿#region Using directives
 
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
+using SobekCM.Core.Aggregations;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Results;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
 
 #endregion
@@ -31,35 +26,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     /// </ul></remarks>
     public class DataSet_Browse_Info_AggregationViewer : abstractAggregationViewer
     {
-        private readonly Item_Aggregation_Child_Page browseObject;
-        private readonly Aggregation_Code_Manager codeManager;
-        private readonly Item_Lookup_Object itemList;
-        private readonly List<iSearch_Title_Result> pagedResults;
-        private readonly Search_Results_Statistics resultsStatistics;
-
         private PagedResults_HtmlSubwriter writeResult;
 
 
         /// <summary> Constructor for a new instance of the DataSet_Browse_Info_AggregationViewer class </summary>
-        /// <param name="Browse_Object"> Browse or information object to be displayed </param>
-        /// <param name="Results_Statistics"> Information about the entire set of results for a search or browse </param>
-        /// <param name="Paged_Results"> Single page of results for a search or browse, within the entire set </param>
-        /// <param name="Code_Manager"> Code manager object maintains mapping between SobekCM codes and greenstone codes (used by result_dataset_html_subwriter)</param>
-        /// <param name="Item_List"> Object for pulling additional information about each item during display </param>
-        /// <param name="Current_User"> Currently logged on user, or NULL </param>
-        public DataSet_Browse_Info_AggregationViewer(Item_Aggregation_Child_Page Browse_Object,
-            Search_Results_Statistics Results_Statistics,
-            List<iSearch_Title_Result> Paged_Results,
-            Aggregation_Code_Manager Code_Manager,
-            Item_Lookup_Object Item_List,
-            User_Object Current_User):base(null, null )
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public DataSet_Browse_Info_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            browseObject = Browse_Object;
-            codeManager = Code_Manager;
-            itemList = Item_List;
-            currentUser = Current_User;
-            resultsStatistics = Results_Statistics;
-            pagedResults = Paged_Results;
+            // Do nothing
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
@@ -124,13 +98,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("DataSet_Browse_Info_AggregationViewer.Add_Secondary_Controls", "Adding HTML");
             }
 
-            writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translator, itemList, currentUser, currentMode, null, Tracer)
-                              {
-                                  Skin = htmlSkin,
-                                  Mode = currentMode,
-                                  Current_Aggregation = currentCollection,
-                                  Browse_Title = browseObject.Get_Label(currentMode.Language)
-                              };
+            writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues) { Browse_Title = RequestSpecificValues.Browse_Object.Get_Label(RequestSpecificValues.Current_Mode.Language) };
             writeResult.Add_Controls(MainPlaceHolder, Tracer);
 
 

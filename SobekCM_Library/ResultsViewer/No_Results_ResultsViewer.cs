@@ -7,9 +7,9 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -20,6 +20,13 @@ namespace SobekCM.Library.ResultsViewer
     /// <see cref="iResultsViewer" /> interface. </remarks>
     public class No_Results_ResultsViewer : abstract_ResultsViewer
     {
+        /// <summary> Constructor for a new instance of the No_Results_ResultsViewer class </summary>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public No_Results_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        {
+            // Do nothing
+        }
+
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -39,7 +46,7 @@ namespace SobekCM.Library.ResultsViewer
             noResultsTextBuilder.AppendLine("<span class=\"SobekNoResultsText\"><br />Your search returned no results.<br /><br /></span>");
 
             // Get the list of search terms
-            string terms = CurrentMode.Search_String.Replace(",", " ").Trim();
+            string terms = RequestSpecificValues.Current_Mode.Search_String.Replace(",", " ").Trim();
 
             // Try to search out into the Union catalog
             int union_catalog_matches = 0;
@@ -47,7 +54,7 @@ namespace SobekCM.Library.ResultsViewer
             {
                 // the html retrieved from the page
                 String strResult;
-                WebRequest objRequest = WebRequest.Create( InstanceWide_Settings_Singleton.Settings.Mango_Union_Search_Base_URL + "&term=" + terms );
+                WebRequest objRequest = WebRequest.Create( UI_ApplicationCache_Gateway.Settings.Mango_Union_Search_Base_URL + "&term=" + terms );
                 objRequest.Timeout = 2000;
                 WebResponse objResponse = objRequest.GetResponse();
 
@@ -74,20 +81,20 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             string union_library_link = "http://uf.catalog.fcla.edu/uf.jsp";
-            if ((union_catalog_matches > 0) || ((CurrentMode.Aggregation.Length > 0) && (CurrentMode.Aggregation.ToUpper() != "ALL") && (Results_Statistics.All_Collections_Items > 0) && (CurrentMode.Default_Aggregation == "all" )))
+            if ((union_catalog_matches > 0) || ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() != "ALL") && (RequestSpecificValues.Results_Statistics.All_Collections_Items > 0) && (RequestSpecificValues.Current_Mode.Default_Aggregation == "all")))
             {
                 noResultsTextBuilder.AppendLine("The following matches were found:<br /><br />");
 
-                if ((CurrentMode.Aggregation.Length > 0) && (CurrentMode.Aggregation.ToUpper() != "ALL") && (Results_Statistics.All_Collections_Items > 0) && ( CurrentMode.Default_Aggregation == "all" ))
+                if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() != "ALL") && (RequestSpecificValues.Results_Statistics.All_Collections_Items > 0) && (RequestSpecificValues.Current_Mode.Default_Aggregation == "all"))
                 {
-                    string aggregation = CurrentMode.Aggregation;
-                    CurrentMode.Aggregation = String.Empty;
-                    if ( Results_Statistics.All_Collections_Items > 1 )
-                        noResultsTextBuilder.AppendLine("<a href=\"" + CurrentMode.Redirect_URL() + "\">" + number_to_string(Results_Statistics.All_Collections_Items) + " found in the " + CurrentMode.SobekCM_Instance_Name + "</a><br /><br />");
+                    string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
+                    RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
+                    if (RequestSpecificValues.Results_Statistics.All_Collections_Items > 1)
+                        noResultsTextBuilder.AppendLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + number_to_string(RequestSpecificValues.Results_Statistics.All_Collections_Items) + " found in the " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Name + "</a><br /><br />");
                     else
-                        noResultsTextBuilder.AppendLine("<a href=\"" + CurrentMode.Redirect_URL() + "\">" + Results_Statistics.All_Collections_Items + " found in the " + CurrentMode.SobekCM_Instance_Name + "</a><br /><br />");
+                        noResultsTextBuilder.AppendLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + RequestSpecificValues.Results_Statistics.All_Collections_Items + " found in the " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Name + "</a><br /><br />");
 
-                    CurrentMode.Aggregation = aggregation;
+                    RequestSpecificValues.Current_Mode.Aggregation = aggregation;
                 }
 
                 if (union_catalog_matches > 0)

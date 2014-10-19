@@ -1,29 +1,23 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Web.UI.WebControls;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.ResultsViewer;
-using SobekCM.Library.Search;
-using SobekCM.Library.Settings;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Database;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Navigation;
 using SobekCM.Tools;
+
+#endregion
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
     public class Map_Browse_AggregationViewer_Beta : abstractAggregationViewer
     {
         /// <summary> Constructor for a new instance of the Metadata_Browse_AggregationViewer class </summary>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Current_Aggregation"> Current item aggregation object to display </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public Map_Browse_AggregationViewer_Beta(SobekCM_Navigation_Object Current_Mode, Item_Aggregation Current_Aggregation, Custom_Tracer Tracer): base(Current_Aggregation, Current_Mode)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Map_Browse_AggregationViewer_Beta(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
 
             // Start to build the response
@@ -63,7 +57,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             mapSearchBuilder.AppendLine("     <script src=\"http://hlmatt.com/uf/part2/bin/js/custom_geoObjects.js\"></script>  ");
 
             //mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + Current_Mode.Base_URL + "default/SobekCM_MapSearch.css\"> ");
-            mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + Current_Mode.Base_URL + "default/scripts/mapsearch/sobekcm_mapsearch.js\"></script> ");
+            mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/sobekcm_mapsearch.js\"></script> ");
 
             #endregion
 
@@ -333,7 +327,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             //end of custom content
             mapSearchBuilder.AppendLine("</td>");
 
-            scriptIncludeName = (mapSearchBuilder.ToString());
+            Search_Script_Reference = (mapSearchBuilder.ToString());
 
         }
 

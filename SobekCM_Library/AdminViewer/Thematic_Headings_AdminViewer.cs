@@ -3,22 +3,19 @@
 #region Using directives
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Web;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -39,44 +36,28 @@ namespace SobekCM.Library.AdminViewer
     public class Thematic_Headings_AdminViewer : abstract_AdminViewer
     {
         private readonly string actionMessage;
-        private readonly List<Thematic_Heading> thematicHeadings;
 
         /// <summary> Constructor for a new instance of the Thematic_Headings_AdminViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request </param>
-        /// <param name="Thematic_Headings"> Headings under which all the highlighted collections on the home page are organized </param>
-		/// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new thematic heading is handled here in the constructor </remarks>
-        public Thematic_Headings_AdminViewer(User_Object User,
-            SobekCM_Navigation_Object Current_Mode,
-            List<Thematic_Heading> Thematic_Headings,
-			Aggregation_Code_Manager Code_Manager,
-            Custom_Tracer Tracer)
-            : base(User)
+        public Thematic_Headings_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Thematic_Headings_AdminViewer.Constructor", String.Empty);
-
-            // Get the current list of thematic headings
-            thematicHeadings = Thematic_Headings;
-
-            // Save the mode 
-            currentMode = Current_Mode;
+            RequestSpecificValues.Tracer.Add_Trace("Thematic_Headings_AdminViewer.Constructor", String.Empty);
 
             // Set action message to nothing to start
             actionMessage = String.Empty;
 
-            // If the user cannot edit this, go back
-            if ((!user.Is_System_Admin) && ( !user.Is_Portal_Admin ))
+            // If the RequestSpecificValues.Current_User cannot edit this, go back
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && ( !RequestSpecificValues.Current_User.Is_Portal_Admin ))
             {
-                currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
             // Handle any post backs
-            if (currentMode.isPostBack)
+            if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 try
                 {
@@ -95,18 +76,18 @@ namespace SobekCM.Library.AdminViewer
                                 if (new_name != null)
                                 {
                                     int id = Convert.ToInt32(save_value);
-                                    int order = 1 + Thematic_Headings.TakeWhile(ThisHeading => ThisHeading.ThematicHeadingID != id).Count();
-                                    if (SobekCM_Database.Edit_Thematic_Heading(id, order, new_name, Tracer) < 1)
+                                    int order = 1 + UI_ApplicationCache_Gateway.Thematic_Headings.TakeWhile(ThisHeading => ThisHeading.ThematicHeadingID != id).Count();
+                                    if (SobekCM_Database.Edit_Thematic_Heading(id, order, new_name, RequestSpecificValues.Tracer) < 1)
                                     {
                                         actionMessage = "Unable to edit existing thematic heading";
                                     }
                                     else
                                     {
                                         // For thread safety, lock the thematic headings list
-                                        lock (Thematic_Headings)
+                                        lock (UI_ApplicationCache_Gateway.Thematic_Headings)
                                         {
                                             // Repopulate the thematic headings list
-                                            SobekCM_Database.Populate_Thematic_Headings(Thematic_Headings, Tracer);
+                                            Engine_Database.Populate_Thematic_Headings(UI_ApplicationCache_Gateway.Thematic_Headings, RequestSpecificValues.Tracer);
                                         }
 
                                         actionMessage = "Thematic heading edits saved";
@@ -116,7 +97,7 @@ namespace SobekCM.Library.AdminViewer
 
                             case "delete":
                                 int thematicDeleteId = Convert.ToInt32(save_value);
-                                if (!SobekCM_Database.Delete_Thematic_Heading(thematicDeleteId, Tracer))
+                                if (!SobekCM_Database.Delete_Thematic_Heading(thematicDeleteId, RequestSpecificValues.Tracer))
                                 {
                                     // Set action message
                                     actionMessage = "Unable to delete existing thematic heading";
@@ -124,14 +105,14 @@ namespace SobekCM.Library.AdminViewer
                                 else
                                 {
                                     // For thread safety, lock the thematic headings list
-                                    lock (Thematic_Headings)
+                                    lock (UI_ApplicationCache_Gateway.Thematic_Headings)
                                     {
                                         // Remove this thematic heading from the list
                                         int i = 0;
-                                        while (i < Thematic_Headings.Count)
+                                        while (i < UI_ApplicationCache_Gateway.Thematic_Headings.Count)
                                         {
-                                            if (Thematic_Headings[i].ThematicHeadingID == thematicDeleteId)
-                                                Thematic_Headings.RemoveAt(i);
+                                            if (UI_ApplicationCache_Gateway.Thematic_Headings[i].ThematicHeadingID == thematicDeleteId)
+                                                UI_ApplicationCache_Gateway.Thematic_Headings.RemoveAt(i);
                                             else
                                                 i++;
                                         }
@@ -144,21 +125,21 @@ namespace SobekCM.Library.AdminViewer
 
 
                             case "new":
-                                int new_order = Thematic_Headings.Count + 1;
-		                        int newid = SobekCM_Database.Edit_Thematic_Heading(-1, new_order, save_value, Tracer);
+                                int new_order = UI_ApplicationCache_Gateway.Thematic_Headings.Count + 1;
+                                int newid = SobekCM_Database.Edit_Thematic_Heading(-1, new_order, save_value, RequestSpecificValues.Tracer);
 								if ( newid  < 1)
                                     actionMessage = "Unable to save new thematic heading";
                                 else
                                 {
                                     // For thread safety, lock the thematic headings list
-                                    lock (Thematic_Headings)
+                                    lock (UI_ApplicationCache_Gateway.Thematic_Headings)
                                     {
                                         // Repopulate the thematic headings list
-                                        SobekCM_Database.Populate_Thematic_Headings(Thematic_Headings, Tracer);
+                                        Engine_Database.Populate_Thematic_Headings(UI_ApplicationCache_Gateway.Thematic_Headings, RequestSpecificValues.Tracer);
                                     }
 
 									// Add this blank thematic heading to the code manager
-	                                Code_Manager.Add_Blank_Thematic_Heading(newid);
+	                                UI_ApplicationCache_Gateway.Aggregations.Add_Blank_Thematic_Heading(newid);
 
                                     actionMessage = "New thematic heading saved";
                                 }
@@ -170,24 +151,24 @@ namespace SobekCM.Library.AdminViewer
                                 int moveup_order = Convert.ToInt32(moveup_split[1]);
                                 if (moveup_order > 1)
                                 {
-                                    Thematic_Heading themeHeading = Thematic_Headings[moveup_order - 1];
+                                    Thematic_Heading themeHeading = UI_ApplicationCache_Gateway.Thematic_Headings[moveup_order - 1];
                                     if (themeHeading.ThematicHeadingID == moveup_id)
                                     {
                                         // For thread safety, lock the thematic headings list
-                                        lock (Thematic_Headings)
+                                        lock (UI_ApplicationCache_Gateway.Thematic_Headings)
                                         {
                                             // Move this thematic heading up
-                                            Thematic_Headings.Remove(themeHeading);
-                                            Thematic_Headings.Insert(moveup_order - 2, themeHeading);
+                                            UI_ApplicationCache_Gateway.Thematic_Headings.Remove(themeHeading);
+                                            UI_ApplicationCache_Gateway.Thematic_Headings.Insert(moveup_order - 2, themeHeading);
                                             int current_order = 1;
-                                            foreach (Thematic_Heading thisTheme in Thematic_Headings)
+                                            foreach (Thematic_Heading thisTheme in UI_ApplicationCache_Gateway.Thematic_Headings)
                                             {
-                                                SobekCM_Database.Edit_Thematic_Heading(thisTheme.ThematicHeadingID, current_order, thisTheme.ThemeName, Tracer);
+                                                SobekCM_Database.Edit_Thematic_Heading(thisTheme.ThematicHeadingID, current_order, thisTheme.ThemeName, RequestSpecificValues.Tracer);
                                                 current_order++;
                                             }
 
                                             // Repopulate the thematic headings list
-                                            SobekCM_Database.Populate_Thematic_Headings(Thematic_Headings, Tracer);
+                                            Engine_Database.Populate_Thematic_Headings(UI_ApplicationCache_Gateway.Thematic_Headings, RequestSpecificValues.Tracer);
                                         }
                                     }
                                 }
@@ -197,26 +178,26 @@ namespace SobekCM.Library.AdminViewer
                                 string[] movedown_split = save_value.Split(",".ToCharArray());
                                 int movedown_id = Convert.ToInt32(movedown_split[0]);
                                 int movedown_order = Convert.ToInt32(movedown_split[1]);
-                                if (movedown_order < Thematic_Headings.Count)
+                                if (movedown_order < UI_ApplicationCache_Gateway.Thematic_Headings.Count)
                                 {
-                                    Thematic_Heading themeHeading = Thematic_Headings[movedown_order - 1];
+                                    Thematic_Heading themeHeading = UI_ApplicationCache_Gateway.Thematic_Headings[movedown_order - 1];
                                     if (themeHeading.ThematicHeadingID == movedown_id)
                                     {
                                         // For thread safety, lock the thematic headings list
-                                        lock (Thematic_Headings)
+                                        lock (UI_ApplicationCache_Gateway.Thematic_Headings)
                                         {
                                             // Move this thematic heading down
-                                            Thematic_Headings.Remove(themeHeading);
-                                            Thematic_Headings.Insert(movedown_order, themeHeading);
+                                            UI_ApplicationCache_Gateway.Thematic_Headings.Remove(themeHeading);
+                                            UI_ApplicationCache_Gateway.Thematic_Headings.Insert(movedown_order, themeHeading);
                                             int current_order = 1;
-                                            foreach (Thematic_Heading thisTheme in Thematic_Headings)
+                                            foreach (Thematic_Heading thisTheme in UI_ApplicationCache_Gateway.Thematic_Headings)
                                             {
-                                                SobekCM_Database.Edit_Thematic_Heading(thisTheme.ThematicHeadingID, current_order, thisTheme.ThemeName, Tracer);
+                                                SobekCM_Database.Edit_Thematic_Heading(thisTheme.ThematicHeadingID, current_order, thisTheme.ThemeName, RequestSpecificValues.Tracer);
                                                 current_order++;
                                             }
 
                                             // Repopulate the thematic headings list
-                                            SobekCM_Database.Populate_Thematic_Headings(Thematic_Headings, Tracer);
+                                            Engine_Database.Populate_Thematic_Headings(UI_ApplicationCache_Gateway.Thematic_Headings, RequestSpecificValues.Tracer);
                                         }
                                     }
                                 }
@@ -258,7 +239,7 @@ namespace SobekCM.Library.AdminViewer
             Tracer.Add_Trace("Thematic_Headings_AdminViewer.Write_ItemNavForm_Closing", "Add any popup divisions for form elements");
 
 			Output.WriteLine("<!-- Thematic_Headings_AdminViewer.Write_ItemNavForm_Closing -->");
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -278,8 +259,8 @@ namespace SobekCM.Library.AdminViewer
 			// Add the buttons
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
 			Output.WriteLine("      <td colspan=\"2\">");
-			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return heading_form_close();\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Save changes to this existing thematic heading\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return heading_form_close();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this existing thematic heading\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("  </table>");
@@ -289,7 +270,7 @@ namespace SobekCM.Library.AdminViewer
 
             Tracer.Add_Trace("Thematic_Headings_AdminViewer.Write_ItemNavForm_Closing", "Write the rest of the form ");
 
-            Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
 			if (actionMessage.Length > 0)
@@ -299,7 +280,7 @@ namespace SobekCM.Library.AdminViewer
 			}
 
             Output.WriteLine("  <p>Thematic headings are the headings on the main library home page, under which all the item aggregation icons appear.</p>");
-            Output.WriteLine("  <p>For more information about thematic headings, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/headings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>For more information about thematic headings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/headings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
             Output.WriteLine();
 
             Output.WriteLine("  <h2>New Thematic Heading</h2>");
@@ -308,7 +289,7 @@ namespace SobekCM.Library.AdminViewer
 	        Output.WriteLine("      <tr>");
 	        Output.WriteLine("        <td><label for=\"admin_heading_name\">Heading:</label></td>");
 			Output.WriteLine("        <td><input class=\"sbkThav_input sbkAdmin_Focusable\" name=\"admin_heading_name\" id=\"admin_heading_name\" type=\"text\" value=\"\" /></td>");
-			Output.WriteLine("        <td><button title=\"Save new thematic heading\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_heading();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
+			Output.WriteLine("        <td><button title=\"Save new thematic heading\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_heading();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
 			Output.WriteLine("      </tr>");
             Output.WriteLine("    </table>");
             Output.WriteLine("  </div>");
@@ -325,17 +306,17 @@ namespace SobekCM.Library.AdminViewer
 
             // Write the data for each interface
             int current_order = 1;
-            foreach (Thematic_Heading thisTheme in thematicHeadings)
+            foreach (Thematic_Heading thisTheme in UI_ApplicationCache_Gateway.Thematic_Headings)
             {
                 // Build the action links
                 Output.WriteLine("    <tr style=\"text-align:left;\" >");
 				Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
-                Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return heading_form_popup('" + thisTheme.ThemeName + "','" + thisTheme.ThematicHeadingID + "');\">edit</a> | ");
-                Output.WriteLine("<a title=\"Delete this thematic heading\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_heading('" + thisTheme.ThematicHeadingID + "', '" + thisTheme.ThemeName.Replace("\'", "") + "');\">delete</a> )</td>");
+                Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return heading_form_popup('" + thisTheme.ThemeName + "','" + thisTheme.ThematicHeadingID + "');\">edit</a> | ");
+                Output.WriteLine("<a title=\"Delete this thematic heading\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_heading('" + thisTheme.ThematicHeadingID + "', '" + thisTheme.ThemeName.Replace("\'", "") + "');\">delete</a> )</td>");
 
 				Output.Write("      <td class=\"sbkAdm_ActionLink\">( ");
-                Output.Write("<a title=\"Move this heading up in the order\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return move_heading_up('" + thisTheme.ThematicHeadingID + "', '" + current_order + "');\">up</a> | ");
-                Output.WriteLine("<a title=\"Move this heading down in the order\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return move_heading_down('" + thisTheme.ThematicHeadingID + "', '" + current_order + "');\">down</a> )</td>");
+                Output.Write("<a title=\"Move this heading up in the order\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return move_heading_up('" + thisTheme.ThematicHeadingID + "', '" + current_order + "');\">up</a> | ");
+                Output.WriteLine("<a title=\"Move this heading down in the order\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return move_heading_down('" + thisTheme.ThematicHeadingID + "', '" + current_order + "');\">down</a> )</td>");
 
                 // Add the rest of the row with data
                 Output.WriteLine("      <td>" + thisTheme.ThemeName + "</td>");

@@ -2,14 +2,13 @@
 
 using System;
 using System.IO;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Configuration;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -34,50 +33,49 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         private readonly string textBoxValue;
 
         /// <summary> Constructor for a new instance of the Newspaper_Search_AggregationViewer class </summary>
-        /// <param name="Current_Aggregation"> Current item aggregation object </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        public Newspaper_Search_AggregationViewer(Item_Aggregation Current_Aggregation, SobekCM_Navigation_Object Current_Mode): base(Current_Aggregation, Current_Mode)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Newspaper_Search_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Determine the sub text to use
             const string SUB_CODE = "s=";
 
             // Save the search term
-            if (currentMode.Search_String.Length > 0)
+            if (RequestSpecificValues.Current_Mode.Search_String.Length > 0)
             {
-                textBoxValue = currentMode.Search_String;
+                textBoxValue = RequestSpecificValues.Current_Mode.Search_String;
             }
 
             // Compute the redirect stem to use
-            string fields = currentMode.Search_Fields;
-            string search_string = currentMode.Search_String;
-			Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
-            currentMode.Search_String = String.Empty;
-            currentMode.Search_Fields = String.Empty;
-            currentMode.Home_Type = Home_Type_Enum.List;
-            currentMode.Mode = Display_Mode_Enum.Results;
-            currentMode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
-            string redirect_stem = currentMode.Redirect_URL().Replace("&m=hhh", "").Replace("m=hht", "").Replace("&m=lhh", "").Replace("m=lht", "");
-			currentMode.Mode = Display_Mode_Enum.Aggregation;
-            currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
-            currentMode.Info_Browse_Mode = "all";
-            browse_url = currentMode.Redirect_URL();
-            currentMode.Search_String = search_string;
-            currentMode.Search_Fields = fields;
-	        currentMode.Aggregation_Type = aggrType;
-            currentMode.Info_Browse_Mode = String.Empty;
+            string fields = RequestSpecificValues.Current_Mode.Search_Fields;
+            string search_string = RequestSpecificValues.Current_Mode.Search_String;
+			Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
+            RequestSpecificValues.Current_Mode.Search_String = String.Empty;
+            RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
+            RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+            RequestSpecificValues.Current_Mode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
+            string redirect_stem = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&m=hhh", "").Replace("m=hht", "").Replace("&m=lhh", "").Replace("m=lht", "");
+			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
+            browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Search_String = search_string;
+            RequestSpecificValues.Current_Mode.Search_Fields = fields;
+	        RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
 
             // Write the advanced search box
             arg2 = String.Empty;
             arg1 = redirect_stem;
 
-            if ((Current_Aggregation.Children_Count > 0) && (currentMode.Show_Selection_Panel))
+            if ((RequestSpecificValues.Hierarchy_Object.Children_Count > 0) && (RequestSpecificValues.Current_Mode.Show_Selection_Panel))
             {
-                scriptActionName = "newspaper_select_search_sobekcm('" + arg1 + "', '" + SUB_CODE + "', '" + browse_url + "');";
+                Search_Script_Action = "newspaper_select_search_sobekcm('" + arg1 + "', '" + SUB_CODE + "', '" + browse_url + "');";
                 arg2 = SUB_CODE;
             }
             else
             {
-                scriptActionName = "newspaper_search_sobekcm('" + arg1 + "');";
+                Search_Script_Action = "newspaper_search_sobekcm('" + arg1 + "');";
             }
         }
 
@@ -110,13 +108,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             string search_language = "Search for:";
             string in_language = "in";
-            if (currentMode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
             {
                 search_language = "Búsqueda de la:";
                 in_language = "en";
             }
 
-            if (currentMode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
             {
                 search_language = "Recherche de:";
                 in_language = "en";
@@ -136,7 +134,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("          <option value=\"PP\">Location</option>");
             Output.WriteLine("        </select>");
             Output.WriteLine("      </td>");
-			Output.WriteLine("      <td> &nbsp; <button class=\"sbk_GoButton\" onclick=\"" + scriptActionName + ";return false;\">Go</button></td>");
+			Output.WriteLine("      <td> &nbsp; <button class=\"sbk_GoButton\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
             Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");     
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");

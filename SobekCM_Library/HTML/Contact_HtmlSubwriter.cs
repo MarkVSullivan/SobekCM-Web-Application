@@ -7,16 +7,12 @@ using System.Net.Mail;
 using System.Text;
 using System.Web;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Database;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Database;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -27,20 +23,15 @@ namespace SobekCM.Library.HTML
     public class Contact_HtmlSubwriter : abstractHtmlSubwriter
     {
         private readonly string lastMode;
-        private readonly string userHistoryRequestInfo;
 
         /// <summary> Constructor for a new instance of the Contact_HtmlSubwriter class </summary>
         /// <param name="Last_Mode"> URL for the last mode this user was in before selecting contact us</param>
         /// <param name="UserHistoryRequestInfo"> Some history and user information to include in the final email </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
-        public Contact_HtmlSubwriter(string Last_Mode, string UserHistoryRequestInfo, SobekCM_Navigation_Object Current_Mode, Item_Aggregation Hierarchy_Object)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Contact_HtmlSubwriter(string Last_Mode, string UserHistoryRequestInfo, RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Save the parameters
             lastMode = Last_Mode;
-            userHistoryRequestInfo = UserHistoryRequestInfo;
-            Mode = Current_Mode;
-            this.Current_Aggregation = Hierarchy_Object;
 
             // If this is a post back, send email
             if (HttpContext.Current.Request.Form["item_action"] == null) return;
@@ -50,7 +41,7 @@ namespace SobekCM.Library.HTML
             {
                 string notes = HttpContext.Current.Request.Form["notesTextBox"].Trim();
                 string subject = HttpContext.Current.Request.Form["subjectTextBox"].Trim();
-                string message_from = InstanceWide_Settings_Singleton.Settings.System_Email;
+                string message_from = UI_ApplicationCache_Gateway.Settings.System_Email;
                 string email = HttpContext.Current.Request.Form["emailTextBox"].Trim();
                 string name = HttpContext.Current.Request.Form["nameTextBox"].Trim();
 
@@ -69,14 +60,14 @@ namespace SobekCM.Library.HTML
                     builder.Append("PERSONAL INFORMATION\n");
                     builder.Append("\tName:\t\t\t\t" + name + "\n");
                     builder.Append("\tEmail:\t\t\t" + email + "\n");
-                    builder.Append(userHistoryRequestInfo);
+                    builder.Append(UserHistoryRequestInfo);
                     string email_body = builder.ToString();
 
                     try
                     {
-                        MailMessage myMail = new MailMessage(message_from, base.Current_Aggregation.Contact_Email.Replace(";", ","))
+                        MailMessage myMail = new MailMessage(message_from, RequestSpecificValues.Hierarchy_Object.Contact_Email.Replace(";", ","))
                                                  {
-                                                     Subject =subject + "  [" + Mode.SobekCM_Instance_Abbreviation +" Submission]",
+                                                     Subject = subject + "  [" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Submission]",
                                                      Body = email_body
                                                  };
                         // Mail this
@@ -87,30 +78,27 @@ namespace SobekCM.Library.HTML
                         string sender = message_from;
                         if (name.Length > 0)
                             sender = name + " ( " + message_from + " )";
-                        SobekCM_Database.Log_Sent_Email(sender, base.Current_Aggregation.Contact_Email.Replace(";", ","), subject + "  [" + Mode.SobekCM_Instance_Abbreviation + " Submission]", email_body, false, true, -1);
+                        SobekCM_Database.Log_Sent_Email(sender, RequestSpecificValues.Hierarchy_Object.Contact_Email.Replace(";", ","), subject + "  [" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Submission]", email_body, false, true, -1);
 
                         // Send back to the home for this collection, sub, or group
-                        Current_Mode.Mode = Display_Mode_Enum.Contact_Sent;
-                        Current_Mode.Redirect();
-                        return;
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact_Sent;
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     }
                     catch
                     {
-                        bool email_error = SobekCM_Database.Send_Database_Email(base.Current_Aggregation.Contact_Email.Replace(";", ","), subject + "  [" + Mode.SobekCM_Instance_Abbreviation + " Submission]", email_body, false, true, -1, -1 );
+                        bool email_error = SobekCM_Database.Send_Database_Email(RequestSpecificValues.Hierarchy_Object.Contact_Email.Replace(";", ","), subject + "  [" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Submission]", email_body, false, true, -1, -1);
 
                         // Send back to the home for this collection, sub, or group
                         if (email_error)
                         {
-                            HttpContext.Current.Response.Redirect(InstanceWide_Settings_Singleton.Settings.System_Error_URL, false);
+                            HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.System_Error_URL, false);
                             HttpContext.Current.ApplicationInstance.CompleteRequest();
-                            return;
                         }
                         else
                         {
                             // Send back to the home for this collection, sub, or group
-                            Current_Mode.Mode = Display_Mode_Enum.Contact_Sent;
-                            Current_Mode.Redirect();
-                            return;
+                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact_Sent;
+                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         }
                     }
                 }
@@ -123,10 +111,10 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
-        public virtual void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             // Based on display mode, add ROBOT instructions
-            switch (Mode.Mode)
+            switch (RequestSpecificValues.Current_Mode.Mode)
             {
                 case Display_Mode_Enum.Contact:
                     Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
@@ -143,7 +131,7 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                return Mode.Mode == Display_Mode_Enum.Contact_Sent ? "{0} Contact Sent" : "{0} Contact Us";
+                return RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Contact_Sent ? "{0} Contact Sent" : "{0} Contact Us";
             }
         }
 
@@ -162,7 +150,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<br /><br />");
             Output.WriteLine();
 
-            if (Mode.Mode == Display_Mode_Enum.Contact_Sent)
+            if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Contact_Sent)
             {
                 Output.WriteLine("<div class=\"SobekHomeText\">");
                 Output.WriteLine("<table width=\"700\" border=\"0\" align=\"center\">");
@@ -170,9 +158,9 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("    <td align=\"center\" >");
                 Output.WriteLine("      <b>Your email has been sent.</b>");
                 Output.WriteLine("      <br /><br />");
-                Output.WriteLine("      <a href=\"" + Mode.Base_URL + "\">Click here to return to the digital collection home</a>");
+                Output.WriteLine("      <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "\">Click here to return to the digital collection home</a>");
                 Output.WriteLine("      <br /><br />");
-                if (Mode.Browser_Type.IndexOf("IE") >= 0)
+                if (RequestSpecificValues.Current_Mode.Browser_Type.IndexOf("IE") >= 0)
                 {
                     Output.WriteLine("      <a href=\"javascript:window.close();\">Click here to close this tab in your browser</a>");
                 }
@@ -194,7 +182,7 @@ namespace SobekCM.Library.HTML
                 string submit = "Submit";
                 string cancel = "Cancel";
 
-                if (Mode.Language == Web_Language_Enum.French)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                 {
                     contact_us_title = "Contactez Nous";
                     please_complete = "Veuillez remplir les champs obligatoires indiqués:";
@@ -207,7 +195,7 @@ namespace SobekCM.Library.HTML
                     cancel = "Annuler";
                 }
 
-                if (Mode.Language == Web_Language_Enum.Spanish)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                 {
                     contact_us_title = "Contáctenos";
                     please_complete = "Por Favor llene la información Requerida:";
@@ -225,16 +213,16 @@ namespace SobekCM.Library.HTML
                 string email_value = string.Empty;
                 string notes_value = String.Empty;
                 string subject_value = String.Empty;
-                if ((!Mode.isPostBack) && ( HttpContext.Current.Session["user"] != null ))
+                if ((!RequestSpecificValues.Current_Mode.isPostBack) && (HttpContext.Current.Session["user"] != null))
                 {
                     User_Object user = (User_Object) HttpContext.Current.Session["user"];
                     name_value = user.Full_Name;
                     email_value = user.Email;
                 }
-                if (Mode.Error_Message.Length > 0)
+                if (RequestSpecificValues.Current_Mode.Error_Message.Length > 0)
                 {
-                    subject_value = Mode.SobekCM_Instance_Abbreviation + " Error";
-                    notes_value = Mode.Error_Message;
+                    subject_value = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Error";
+                    notes_value = RequestSpecificValues.Current_Mode.Error_Message;
                 }
 
                 // Start this form
@@ -251,9 +239,9 @@ namespace SobekCM.Library.HTML
 
                 Output.WriteLine("<blockquote>");
 
-                if ((Mode.Aggregation == "juv") || (Mode.Aggregation == "alice"))
+                if ((RequestSpecificValues.Current_Mode.Aggregation == "juv") || (RequestSpecificValues.Current_Mode.Aggregation == "alice"))
                 {
-                    Output.WriteLine("<a href=\"" + Mode.Base_URL + "bookvalue\" target=\"_bookvalue\">Click here if you are asking about your own copy of a book.</a><br /><br />");
+                    Output.WriteLine("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "bookvalue\" target=\"_bookvalue\">Click here if you are asking about your own copy of a book.</a><br /><br />");
                 }
 
                 Output.WriteLine("<strong>" + please_complete + "</strong>");
@@ -279,14 +267,14 @@ namespace SobekCM.Library.HTML
                     Output.Write("<a href=\"?" + lastMode + "\">");
                 else
                 {
-                    Mode.Mode = Display_Mode_Enum.Aggregation;
-					Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                    Output.Write("<a href=\"" + Mode.Redirect_URL() + "\">");
-                    Mode.Mode = Display_Mode_Enum.Contact;
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">");
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
                 }
 
-                Output.WriteLine("<img src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"" + cancel + "\" /></a> &nbsp; &nbsp; ");
-                Output.WriteLine("<a href=\"?\" onclick=\"return send_contact_email();\" ><img src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/buttons/send_button_g.gif\" alt=\"" + submit + "\" /></a>");
+                Output.WriteLine("<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"" + cancel + "\" /></a> &nbsp; &nbsp; ");
+                Output.WriteLine("<a href=\"?\" onclick=\"return send_contact_email();\" ><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/send_button_g.gif\" alt=\"" + submit + "\" /></a>");
                 Output.WriteLine("</center>");
                 Output.WriteLine("</blockquote>");
                 Output.WriteLine("</blockquote>");
@@ -307,13 +295,9 @@ namespace SobekCM.Library.HTML
             return true;
         }
 
-
-
-
-
         public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
-            get { return new List<HtmlSubwriter_Behaviors_Enum>() { HtmlSubwriter_Behaviors_Enum.Suppress_Banner }; }
+            get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner }; }
         }
     }
 }

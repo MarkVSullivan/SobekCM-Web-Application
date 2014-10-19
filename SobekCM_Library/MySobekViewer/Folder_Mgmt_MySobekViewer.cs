@@ -10,31 +10,26 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Divisions;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
+using SobekCM.Core.Items;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Items;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.Skins;
-using SobekCM.Core.Users;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
 namespace SobekCM.Library.MySobekViewer
 {
 
-    /// <summary> Class allows an authenticated user to view the items and searches in their bookshelves (or folders) online </summary>
+    /// <summary> Class allows an authenticated RequestSpecificValues.Current_User to view the items and searches in their bookshelves (or folders) online </summary>
     /// <remarks> This class extends the <see cref="abstract_MySobekViewer"/> class.<br /><br />
     /// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
@@ -49,79 +44,44 @@ namespace SobekCM.Library.MySobekViewer
     /// </ul></remarks>
     public class Folder_Mgmt_MySobekViewer : abstract_MySobekViewer
     {
-        private readonly Aggregation_Code_Manager codeManager;
-        private readonly Item_Aggregation currentCollection;
-        private readonly SobekCM_Skin_Object htmlSkin;
-        private readonly Item_Lookup_Object itemList;
-        private readonly List<iSearch_Title_Result> pagedResults;
         private readonly string properFolderName;
-        private readonly Search_Results_Statistics resultsStatistics;
         private PagedResults_HtmlSubwriter writeResult;
 
         /// <summary> Constructor for a new instance of the Folder_Mgmt_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Results_Statistics"> Information about the entire set of results for the current folder </param>
-        /// <param name="Paged_Results"> Single page of results for the current folder, within the entire set </param>
-        /// <param name="Code_Manager"> Code manager object maintains mapping between SobekCM codes and greenstone codes (used by result_dataset_html_subwriter)</param>
-        /// <param name="Item_List"> Object for pulling additional information about each item during display </param>
-        /// <param name="CurrentCollection"> Current item aggregation [UNUSED?] </param>
-        /// <param name="HTMLSkin"> HTML interface, which determines the header, footer, stylesheet, and other design elements for the rendered HTML</param>
-        /// <param name="Translator"> Translation / language support object for writing the user interface is multiple languages</param>
-		/// <param name="CurrentMode"> Mode / navigation information for the current request</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public Folder_Mgmt_MySobekViewer(User_Object User,
-            Search_Results_Statistics Results_Statistics,
-            List<iSearch_Title_Result> Paged_Results,
-            Aggregation_Code_Manager Code_Manager,
-            Item_Lookup_Object Item_List,
-            Item_Aggregation CurrentCollection, 
-            SobekCM_Skin_Object HTMLSkin,
-            Language_Support_Info Translator, 
-            SobekCM_Navigation_Object CurrentMode,
-            Custom_Tracer Tracer)
-            : base(User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Folder_Mgmt_MySobekViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Constructor", String.Empty);
-
-	        currentMode = CurrentMode;
-            user = User;
-            pagedResults = Paged_Results;
-            resultsStatistics = Results_Statistics;
-            codeManager = Code_Manager;
-            itemList = Item_List;
-            htmlSkin = HTMLSkin;
-            base.Translator = Translator;
-            currentCollection = CurrentCollection;
+            RequestSpecificValues.Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Constructor", String.Empty);
 
             properFolderName = String.Empty;
             int current_folder_id = -1;
-            if (currentMode.My_Sobek_SubMode.Length > 0)
+            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
             {
-                // Try to get this user folder from the user object
-                User_Folder userFolder = user.Get_Folder( currentMode.My_Sobek_SubMode );
+                // Try to get this RequestSpecificValues.Current_User folder from the RequestSpecificValues.Current_User object
+                User_Folder userFolder = RequestSpecificValues.Current_User.Get_Folder( RequestSpecificValues.Current_Mode.My_Sobek_SubMode );
 
-                // If the user folder is null, then this folder is not in the current user object
+                // If the RequestSpecificValues.Current_User folder is null, then this folder is not in the current RequestSpecificValues.Current_User object
                 // This may still be a valid folder though.  Check this by pulling folder list for this 
-                // user again
+                // RequestSpecificValues.Current_User again
                 if (userFolder == null)
                 {
-                    // Get the user from the database again
-                    User_Object checkFolderUser = SobekCM_Database.Get_User(user.UserID, Tracer);
+                    // Get the RequestSpecificValues.Current_User from the database again
+                    User_Object checkFolderUser = SobekCM_Database.Get_User(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
 
-                    // Look for this folder in the new user object
-                    userFolder = checkFolderUser.Get_Folder(currentMode.My_Sobek_SubMode);
+                    // Look for this folder in the new RequestSpecificValues.Current_User object
+                    userFolder = checkFolderUser.Get_Folder(RequestSpecificValues.Current_Mode.My_Sobek_SubMode);
                     if (userFolder == null)
                     {
                         // Invalid folder.. should not have gotten this far though
-                        HttpContext.Current.Response.Redirect(currentMode.Base_URL, false);
+                        HttpContext.Current.Response.Redirect(RequestSpecificValues.Current_Mode.Base_URL, false);
                         HttpContext.Current.ApplicationInstance.CompleteRequest();
-                        currentMode.Request_Completed = true;
+                        RequestSpecificValues.Current_Mode.Request_Completed = true;
                         return;
                     }
 
 
-                    // Save this to the user so this does not have to happen again
-                    user.Add_Folder(userFolder);
+                    // Save this to the RequestSpecificValues.Current_User so this does not have to happen again
+                    RequestSpecificValues.Current_User.Add_Folder(userFolder);
                 }
 
                 // Get the proper name and folder id
@@ -130,7 +90,7 @@ namespace SobekCM.Library.MySobekViewer
                 current_folder_id = userFolder.Folder_ID;
             }
 
-            if ((currentMode.isPostBack) || ((HttpContext.Current.Request.Form["item_action"] != null) && (HttpContext.Current.Request.Form["item_action"].Length > 0 )))
+            if ((RequestSpecificValues.Current_Mode.isPostBack) || ((HttpContext.Current.Request.Form["item_action"] != null) && (HttpContext.Current.Request.Form["item_action"].Length > 0 )))
             {
                 try
                 {
@@ -146,17 +106,17 @@ namespace SobekCM.Library.MySobekViewer
 
                     if (item_action == "REFRESH_FOLDER")
                     {
-                         refresh_user_folders(user, Tracer);
-                         Cached_Data_Manager.Remove_All_User_Folder_Browses(user.UserID, Tracer);
+                         refresh_user_folders(RequestSpecificValues.Current_User, RequestSpecificValues.Tracer);
+                         Cached_Data_Manager.Remove_All_User_Folder_Browses(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
                     }
 
                     if (item_action == "DELETE_FOLDER")
                     {
                         int folder_id = Convert.ToInt32(bookshelf_items);
 
-                        SobekCM_Database.Delete_User_Folder(user.UserID, folder_id, Tracer);
-                        Cached_Data_Manager.Clear_Public_Folder_Info(folder_id, Tracer);
-                        refresh_user_folders(user, Tracer);
+                        SobekCM_Database.Delete_User_Folder(RequestSpecificValues.Current_User.UserID, folder_id, RequestSpecificValues.Tracer);
+                        Cached_Data_Manager.Clear_Public_Folder_Info(folder_id, RequestSpecificValues.Tracer);
+                        refresh_user_folders(RequestSpecificValues.Current_User, RequestSpecificValues.Tracer);
                     }
 
                     if (item_action == "NEW_BOOKSHELF")
@@ -164,27 +124,27 @@ namespace SobekCM.Library.MySobekViewer
                         string folder_name = form["new_bookshelf_name"].Trim().Replace("<", "(").Replace(">", ")");
                         int parent_id = Convert.ToInt32(form["new_bookshelf_parent"]);
 
-                        if (SobekCM_Database.Edit_User_Folder(-1, user.UserID, parent_id, folder_name, false, String.Empty, Tracer) > 0)
+                        if (SobekCM_Database.Edit_User_Folder(-1, RequestSpecificValues.Current_User.UserID, parent_id, folder_name, false, String.Empty, RequestSpecificValues.Tracer) > 0)
                         {
-                            refresh_user_folders(user, Tracer);
+                            refresh_user_folders(RequestSpecificValues.Current_User, RequestSpecificValues.Tracer);
                         }
                     }
 
 
                     if ( item_action == "FOLDER_VISIBILITY" )
                     {
-                        User_Folder thisFolder = user.Get_Folder(bookshelf_items);
+                        User_Folder thisFolder = RequestSpecificValues.Current_User.Get_Folder(bookshelf_items);
                         if (bookshelf_params.ToUpper() == "PRIVATE")
                         {
-                            if (SobekCM_Database.Edit_User_Folder(thisFolder.Folder_ID, user.UserID, -1, thisFolder.Folder_Name, false, String.Empty, Tracer) >= 0)
+                            if (SobekCM_Database.Edit_User_Folder(thisFolder.Folder_ID, RequestSpecificValues.Current_User.UserID, -1, thisFolder.Folder_Name, false, String.Empty, RequestSpecificValues.Tracer) >= 0)
                                 thisFolder.IsPublic = false;
 
-                            Cached_Data_Manager.Clear_Public_Folder_Info(thisFolder.Folder_ID, Tracer);
+                            Cached_Data_Manager.Clear_Public_Folder_Info(thisFolder.Folder_ID, RequestSpecificValues.Tracer);
                         }
 
                         if (bookshelf_params.ToUpper() == "PUBLIC")
                         {
-                            if (SobekCM_Database.Edit_User_Folder(thisFolder.Folder_ID, user.UserID, -1, thisFolder.Folder_Name, true, String.Empty, Tracer) >= 0 )
+                            if (SobekCM_Database.Edit_User_Folder(thisFolder.Folder_ID, RequestSpecificValues.Current_User.UserID, -1, thisFolder.Folder_Name, true, String.Empty, RequestSpecificValues.Tracer) >= 0 )
                                 thisFolder.IsPublic = true;
                         }                        
                     }
@@ -196,23 +156,23 @@ namespace SobekCM.Library.MySobekViewer
                             string[] split_multi_items = bookshelf_items.Split("|".ToCharArray());
                             foreach (string[] split in split_multi_items.Select(ThisItem => ThisItem.Split("_".ToCharArray())).Where(Split => Split.Length == 2))
                             {
-                                SobekCM_Database.Delete_Item_From_User_Folder(user.UserID, properFolderName, split[0], split[1], Tracer);
+                                SobekCM_Database.Delete_Item_From_User_Folder(RequestSpecificValues.Current_User.UserID, properFolderName, split[0], split[1], RequestSpecificValues.Tracer);
                                 if (item_action == "MOVE")
                                 {
-                                    SobekCM_Database.Add_Item_To_User_Folder(user.UserID, add_bookshelf, split[0], split[1], 0, String.Empty, Tracer);
+                                    SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, add_bookshelf, split[0], split[1], 0, String.Empty, RequestSpecificValues.Tracer);
                                 }
                             }
 
-                            // Ensure this user folder is not sitting in the cache
-                            Cached_Data_Manager.Remove_User_Folder_Browse(user.UserID, properFolderName, Tracer);
-                            Cached_Data_Manager.Clear_Public_Folder_Info(current_folder_id, Tracer);
+                            // Ensure this RequestSpecificValues.Current_User folder is not sitting in the cache
+                            Cached_Data_Manager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, properFolderName, RequestSpecificValues.Tracer);
+                            Cached_Data_Manager.Clear_Public_Folder_Info(current_folder_id, RequestSpecificValues.Tracer);
                             if (item_action == "MOVE")
                             {
-                                Cached_Data_Manager.Remove_User_Folder_Browse(user.UserID, add_bookshelf, Tracer);
-                                User_Folder moved_to_folder = user.Get_Folder(add_bookshelf);
+                                Cached_Data_Manager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, add_bookshelf, RequestSpecificValues.Tracer);
+                                User_Folder moved_to_folder = RequestSpecificValues.Current_User.Get_Folder(add_bookshelf);
                                 if (moved_to_folder != null)
                                 {
-                                    Cached_Data_Manager.Clear_Public_Folder_Info(moved_to_folder.Folder_ID, Tracer);
+                                    Cached_Data_Manager.Clear_Public_Folder_Info(moved_to_folder.Folder_ID, RequestSpecificValues.Tracer);
                                 }
                             }
                         }
@@ -221,23 +181,23 @@ namespace SobekCM.Library.MySobekViewer
                                 string[] split = bookshelf_items.Split("_".ToCharArray());
                                 if (split.Length == 2)
                                 {
-                                    SobekCM_Database.Delete_Item_From_User_Folder(user.UserID, properFolderName, split[0], split[1], Tracer);
+                                    SobekCM_Database.Delete_Item_From_User_Folder(RequestSpecificValues.Current_User.UserID, properFolderName, split[0], split[1], RequestSpecificValues.Tracer);
                                     if (item_action == "MOVE")
                                     {
-                                        SobekCM_Database.Add_Item_To_User_Folder(user.UserID, add_bookshelf, split[0], split[1], 1, String.Empty, Tracer);
+                                        SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, add_bookshelf, split[0], split[1], 1, String.Empty, RequestSpecificValues.Tracer);
                                     }
                                 }
 
-                            // Ensure this user folder is not sitting in the cache
-                            Cached_Data_Manager.Remove_User_Folder_Browse(user.UserID, properFolderName, Tracer);
-                            Cached_Data_Manager.Clear_Public_Folder_Info(current_folder_id, Tracer);
+                            // Ensure this RequestSpecificValues.Current_User folder is not sitting in the cache
+                            Cached_Data_Manager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, properFolderName, RequestSpecificValues.Tracer);
+                            Cached_Data_Manager.Clear_Public_Folder_Info(current_folder_id, RequestSpecificValues.Tracer);
                             if (item_action == "MOVE")
                             {
-                                Cached_Data_Manager.Remove_User_Folder_Browse(user.UserID, add_bookshelf, Tracer);
-                                User_Folder moved_to_folder = user.Get_Folder(add_bookshelf);
+                                Cached_Data_Manager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, add_bookshelf, RequestSpecificValues.Tracer);
+                                User_Folder moved_to_folder = RequestSpecificValues.Current_User.Get_Folder(add_bookshelf);
                                 if (moved_to_folder != null)
                                 {
-                                    Cached_Data_Manager.Clear_Public_Folder_Info(moved_to_folder.Folder_ID, Tracer);
+                                    Cached_Data_Manager.Clear_Public_Folder_Info(moved_to_folder.Folder_ID, RequestSpecificValues.Tracer);
                                 }
                             }
                         }
@@ -256,14 +216,14 @@ namespace SobekCM.Library.MySobekViewer
                                 SobekCM_Item newItem;
                                 Page_TreeNode newPage;
                                 SobekCM_Items_In_Title itemsInTitle;
-	                            newAssistant.Get_Item(currentMode, Item_List, InstanceWide_Settings_Singleton.Settings.Image_URL, null, null, user, Tracer, out newItem, out newPage, out itemsInTitle );
-                                SobekCM_Database.Add_Item_To_User_Folder(user.UserID, add_bookshelf, split[0], split[1], 1, comments, Tracer);
+	                            newAssistant.Get_Item(RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.Settings.Image_URL, null, null, RequestSpecificValues.Current_User, RequestSpecificValues.Tracer, out newItem, out newPage, out itemsInTitle );
+                                SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, add_bookshelf, split[0], split[1], 1, comments, RequestSpecificValues.Tracer);
 
                                 // Determine the email format
                                 bool is_html_format = (format != "TEXT");
 
                                 // Send this email
-                                Item_Email_Helper.Send_Email(email, String.Empty, comments, user.Full_Name, currentMode.SobekCM_Instance_Abbreviation, newItem, is_html_format, currentMode.Base_URL + newItem.BibID + "/" + newItem.VID, user.UserID);
+                                Item_Email_Helper.Send_Email(email, String.Empty, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation, newItem, is_html_format, RequestSpecificValues.Current_Mode.Base_URL + newItem.BibID + "/" + newItem.VID, RequestSpecificValues.Current_User.UserID);
                             }
                     }
 
@@ -274,8 +234,8 @@ namespace SobekCM.Library.MySobekViewer
                             string[] split = bookshelf_items.Split("_".ToCharArray());
                             if (split.Length == 2)
                             {
-                                SobekCM_Database.Add_Item_To_User_Folder(user.UserID, add_bookshelf, split[0], split[1], 1, notes, Tracer);
-                                Cached_Data_Manager.Remove_User_Folder_Browse(user.UserID, add_bookshelf, Tracer);
+                                SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, add_bookshelf, split[0], split[1], 1, notes, RequestSpecificValues.Tracer);
+                                Cached_Data_Manager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, add_bookshelf, RequestSpecificValues.Tracer);
                             }
 
                     }
@@ -283,13 +243,13 @@ namespace SobekCM.Library.MySobekViewer
                 catch(Exception)
                 {
                     // Catches any errors which may occur.  User will be sent back to the same URL,
-                    // so any error that occurs should be obvious to the user
+                    // so any error that occurs should be obvious to the RequestSpecificValues.Current_User
                 }
 
                 string return_url = HttpContext.Current.Items["Original_URL"].ToString();
                 HttpContext.Current.Response.Redirect(return_url, false);
                 HttpContext.Current.ApplicationInstance.CompleteRequest();
-                currentMode.Request_Completed = true;
+                RequestSpecificValues.Current_Mode.Request_Completed = true;
             }
         }
 
@@ -340,9 +300,9 @@ namespace SobekCM.Library.MySobekViewer
                     folderNodes[parentid].Add_Child_Folder(folderNodes[folderid]);
                 }
             }
-            user.Clear_Folders();
+            RequestSpecificValues.Current_User.Clear_Folders();
             foreach (User_Folder root_folder in parentNodes)
-                user.Add_Folder(root_folder);
+                RequestSpecificValues.Current_User.Add_Folder(root_folder);
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
@@ -352,7 +312,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Write_HTML", String.Empty);
 
-			if (currentMode.My_Sobek_SubMode != "submitted items")
+			if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode != "submitted items")
 			{
 				Output.WriteLine("  <h1>" + Web_Title + "</h1>");
 				Output.WriteLine();
@@ -367,7 +327,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Folder_Mgmt_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
 
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 			Output.WriteLine();
 
             // Add the hidden fields
@@ -377,11 +337,11 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<input type=\"hidden\" id=\"bookshelf_params\" name=\"bookshelf_params\" value=\"\" />");
 			Output.WriteLine();
 
-            if (currentMode.My_Sobek_SubMode.Length > 0)
+            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
             {
                 #region Email form
 
-                if (user != null)
+                if (RequestSpecificValues.Current_User != null)
                 {
                     Output.WriteLine("<!-- Email form -->");
 					Output.WriteLine("<div class=\"sbkFmsv_EmailPopup sbkMySobek_PopupForm\" id=\"form_email\" style=\"display:none;\">");
@@ -395,7 +355,7 @@ namespace SobekCM.Library.MySobekViewer
                     // Add email address line
 	                Output.WriteLine("      <tr>");
 					Output.WriteLine("        <td style=\"width:80px\"><label for=\"email_address\">To:</label></td>");
-					Output.WriteLine("        <td><input class=\"sbkFmsv_EmailInput sbkMySobek_Focusable\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + user.Email + "\" /></td>");
+					Output.WriteLine("        <td><input class=\"sbkFmsv_EmailInput sbkMySobek_Focusable\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + RequestSpecificValues.Current_User.Email + "\" /></td>");
 					Output.WriteLine("      </tr>");
 
                     // Add comments area
@@ -415,7 +375,7 @@ namespace SobekCM.Library.MySobekViewer
 
                     Output.WriteLine("    </table>");
                     Output.WriteLine("  </fieldset>");
-                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\"><a href=\"\" onclick=\"return email_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/send_button_g.gif\" value=\"Submit\" alt=\"Submit\"></div><br />");
+                    Output.WriteLine("  <div class=\"sbk_PopupButtonsDiv\"><a href=\"\" onclick=\"return email_form_close();\"><img border=\"0\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/send_button_g.gif\" value=\"Submit\" alt=\"Submit\"></div><br />");
                     Output.WriteLine("</div>");
                     Output.WriteLine();
                 }
@@ -424,7 +384,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 #region Move item
 
-                if (user != null)
+                if (RequestSpecificValues.Current_User != null)
                 {
                     Output.WriteLine("<!-- Move between bookshelves form -->");
                     Output.WriteLine("<div class=\"add_popup_div\" id=\"move_item_form\" style=\"display:none;\">");
@@ -439,7 +399,7 @@ namespace SobekCM.Library.MySobekViewer
                     Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"add_bookshelf\">Bookshelf:</label></td>");
                     Output.Write("<td><select class=\"email_bookshelf_input\" name=\"add_bookshelf\" id=\"add_bookshelf\">");
 
-                    foreach (User_Folder folder in user.All_Folders)
+                    foreach (User_Folder folder in RequestSpecificValues.Current_User.All_Folders)
                     {
                         if (folder.Folder_Name.Length > 80)
                         {
@@ -461,16 +421,16 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("    </table>");
                     Output.WriteLine("    <br />");
                     Output.WriteLine("  </fieldset><br />");
-                    Output.WriteLine("  <center><a href=\"\" onclick=\"return move_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
+                    Output.WriteLine("  <center><a href=\"\" onclick=\"return move_form_close();\"><img border=\"0\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
                     Output.WriteLine("</div>");
                     Output.WriteLine();
                 }
 
                 #endregion
 
-                #region Edit user notes
+                #region Edit RequestSpecificValues.Current_User notes
 
-                if (user != null)
+                if (RequestSpecificValues.Current_User != null)
                 {
                     Output.WriteLine("<!-- Add/Edit Bookshelf Item Notes -->");
                     Output.WriteLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\">");
@@ -487,7 +447,7 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("    </table>");
                     Output.WriteLine("    <br />");
                     Output.WriteLine("  </fieldset><br />");
-                    Output.WriteLine("  <center><a href=\"\" onclick=\"return add_item_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
+                    Output.WriteLine("  <center><a href=\"\" onclick=\"return add_item_form_close();\"><img border=\"0\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
                     Output.WriteLine("</div>");
                     Output.WriteLine();
                 }
@@ -498,7 +458,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 #region New bookshelf form
 
-                if (user != null)
+                if (RequestSpecificValues.Current_User != null)
                 {
                     Output.WriteLine("<!-- New bookshelf form -->");
                     Output.WriteLine("<div class=\"add_popup_div\" id=\"new_bookshelf_form\" style=\"display:none;\">");
@@ -518,7 +478,7 @@ namespace SobekCM.Library.MySobekViewer
                     Output.Write("<td><select class=\"email_bookshelf_input\" name=\"new_bookshelf_parent\" id=\"new_bookshelf_parent\">");
                     Output.Write("<option value=\"-1\" selected=\"selected\" >(none)</option>");
 
-                    foreach (User_Folder folder in user.All_Folders)
+                    foreach (User_Folder folder in RequestSpecificValues.Current_User.All_Folders)
                     {
 
                         if (folder.Folder_Name.Length > 80)
@@ -538,7 +498,7 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("    </table>");
                     Output.WriteLine("    <br />");
                     Output.WriteLine("  </fieldset><br />");
-                    Output.WriteLine("  <center><a href=\"\" onclick=\"return new_bookshelf_form_close();\"><img border=\"0\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
+                    Output.WriteLine("  <center><a href=\"\" onclick=\"return new_bookshelf_form_close();\"><img border=\"0\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
                     Output.WriteLine("</div>");
                     Output.WriteLine();
                 }
@@ -561,22 +521,22 @@ namespace SobekCM.Library.MySobekViewer
             if (properFolderName != "Submitted Items")
             {
                 // Determine the redirect
-                currentMode.My_Sobek_SubMode = "XXXXXXXXXXXXXXXXXX";
-                Result_Display_Type_Enum currentDisplayType = currentMode.Result_Display_Type;
-                currentMode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
-                redirect_url = currentMode.Redirect_URL();
-                currentMode.My_Sobek_SubMode = String.Empty;
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;
-                string saved_search_url = currentMode.Redirect_URL();
-                currentMode.Mode = Display_Mode_Enum.Aggregation;
-				currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                currentMode.Home_Type = Home_Type_Enum.Personalized;
-                currentMode.Aggregation = String.Empty;
-                string personalized_home = currentMode.Redirect_URL();
-                currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
-                currentMode.My_Sobek_SubMode = properFolderName;
-                currentMode.Result_Display_Type = currentDisplayType;
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "XXXXXXXXXXXXXXXXXX";
+                Result_Display_Type_Enum currentDisplayType = RequestSpecificValues.Current_Mode.Result_Display_Type;
+                RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
+                redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;
+                string saved_search_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Personalized;
+                RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
+                string personalized_home = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = properFolderName;
+                RequestSpecificValues.Current_Mode.Result_Display_Type = currentDisplayType;
 
                 // Build the tree view object and tree view nodes now
                 TreeView treeView1 = new TreeView
@@ -594,7 +554,7 @@ namespace SobekCM.Library.MySobekViewer
                 TreeNode rootNode = new TreeNode
                                         {
                                             Text = "&nbsp; <a title=\"Manage my library\" href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", String.Empty) + "\">My Library  (Manage my bookshelves)</a>",
-                                            ImageUrl = currentMode.Base_URL + "default/images/bookshelf.jpg",
+                                            ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/bookshelf.jpg",
                                             SelectAction = TreeNodeSelectAction.None
                                         };
                 treeView1.Nodes.Add(rootNode);
@@ -604,7 +564,7 @@ namespace SobekCM.Library.MySobekViewer
                                         {
                                             Text = "&nbsp; <a title=\"View my collections home page\" href=\"" + personalized_home + "\">My Collections Home</a>", 
                                             SelectAction = TreeNodeSelectAction.None,
-                                            ImageUrl = currentMode.Base_URL + "default/images/home_folder.gif"
+                                            ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/home_folder.gif"
                                         };
                 rootNode.ChildNodes.Add(homeNode);
 
@@ -613,14 +573,14 @@ namespace SobekCM.Library.MySobekViewer
                                                  {
                                                      Text ="&nbsp; <a title=\"View my saved searches\" href=\"" + saved_search_url + "\">My Saved Searches</a>",
                                                      SelectAction = TreeNodeSelectAction.None,
-                                                     ImageUrl = currentMode.Base_URL + "default/images/saved_searches.gif"
+                                                     ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/saved_searches.gif"
                                                  };
                 rootNode.ChildNodes.Add(savedSearchesNode);
 
 
                // StringBuilder literalBuilder = new StringBuilder();
                 List<TreeNode> selectedNodes = new List<TreeNode>();
-                foreach (User_Folder thisFolder in user.Folders)
+                foreach (User_Folder thisFolder in RequestSpecificValues.Current_User.Folders)
                 {
                     if (thisFolder.Folder_Name != "Submitted Items")
                     {
@@ -631,12 +591,12 @@ namespace SobekCM.Library.MySobekViewer
                             selectedNodes.Add(folderNode);
                             if (thisFolder.IsPublic)
                             {
-                                folderNode.ImageUrl = currentMode.Base_URL + "default/images/open_folder_public.jpg";
+                                folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/open_folder_public.jpg";
                                 folderNode.ImageToolTip = "Public folder";
                             }
                             else
                             {
-                                folderNode.ImageUrl = currentMode.Base_URL + "default/images/open_folder.jpg";
+                                folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/open_folder.jpg";
                             }
                             folderNode.Text = "&nbsp; <span class=\"Selected_TreeNode_Text\">" + thisFolder.Folder_Name + "</span>";
                             folderNode.SelectAction = TreeNodeSelectAction.None;
@@ -645,12 +605,12 @@ namespace SobekCM.Library.MySobekViewer
                         {
                             if (thisFolder.IsPublic)
                             {
-                                folderNode.ImageUrl = currentMode.Base_URL + "default/images/closed_folder_public.jpg";
+                                folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/closed_folder_public.jpg";
                                 folderNode.ImageToolTip = "Public folder";
                             }
                             else
                             {
-                                folderNode.ImageUrl = currentMode.Base_URL + "default/images/closed_folder.jpg";
+                                folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/closed_folder.jpg";
                             }
                             folderNode.Text = "&nbsp; <a href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", thisFolder.Folder_Name_Encoded) + "\">" + thisFolder.Folder_Name + "</a>";
                         }
@@ -681,17 +641,17 @@ namespace SobekCM.Library.MySobekViewer
                 MainPlaceHolder.Controls.Add(treeView1);
             }
 
-            if (currentMode.My_Sobek_SubMode.Length > 0)
+            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
             {
-                if ( resultsStatistics.Total_Titles == 0)
+                if ( RequestSpecificValues.Results_Statistics.Total_Titles == 0)
                 {
                     Literal literal = new Literal();
 
-                    string folder_name = user.Folder_Name(currentMode.My_Sobek_SubMode);
-                    currentMode.My_Sobek_SubMode = String.Empty;
+                    string folder_name = RequestSpecificValues.Current_User.Folder_Name(RequestSpecificValues.Current_Mode.My_Sobek_SubMode);
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                     if (folder_name.Length == 0)
                     {
-                        currentMode.Redirect();
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
                     }
                     
@@ -705,11 +665,8 @@ namespace SobekCM.Library.MySobekViewer
                 else
                 {
 
-                    writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, Translator, itemList, user, currentMode, null, Tracer)
+                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues)
                                       {
-                                          Current_Aggregation = currentCollection,
-                                          Skin = htmlSkin,
-                                          Mode = currentMode,
                                           Browse_Title = properFolderName,
                                           Outer_Form_Name = "itemNavForm"
                                       };
@@ -750,9 +707,9 @@ namespace SobekCM.Library.MySobekViewer
                 bookshelfManageBuilder.AppendLine("  <blockquote>");
                 bookshelfManageBuilder.AppendLine("  <table width=\"630px\">");
                 bookshelfManageBuilder.AppendLine("    <tr valign=\"middle\">");
-                bookshelfManageBuilder.AppendLine("      <td align=\"left\" width=\"30px\"><a href=\"?\" id=\"new_bookshelf_link\" name=\"new_bookshelf_link\" onclick=\"return open_new_bookshelf_folder();\" title=\"Click to add a new bookshelf\" ><img title=\"Click to add a new bookshelf\" src=\"" + currentMode.Base_URL + "default/images/new_folder.jpg\" /></a><td>");
+                bookshelfManageBuilder.AppendLine("      <td align=\"left\" width=\"30px\"><a href=\"?\" id=\"new_bookshelf_link\" name=\"new_bookshelf_link\" onclick=\"return open_new_bookshelf_folder();\" title=\"Click to add a new bookshelf\" ><img title=\"Click to add a new bookshelf\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/new_folder.jpg\" /></a><td>");
                 bookshelfManageBuilder.AppendLine("      <td align=\"left\"><a href=\"?\" id=\"new_bookshelf_link\" name=\"new_bookshelf_link\" onclick=\"return open_new_bookshelf_folder();\" title=\"Click to add a new bookshelf\" >Add New Bookshelf</a><td>");
-                bookshelfManageBuilder.AppendLine("      <td align=\"right\" width=\"40px\"><a href=\"?\" id=\"refresh_bookshelf_link\" name=\"refresh_bookshelf_link\" onclick=\"return refresh_bookshelves();\" title=\"Refresh bookshelf list\" ><img title=\"Refresh bookshelf list\" src=\"" + currentMode.Base_URL + "default/images/refresh_folder.jpg\" /></a><td>");
+                bookshelfManageBuilder.AppendLine("      <td align=\"right\" width=\"40px\"><a href=\"?\" id=\"refresh_bookshelf_link\" name=\"refresh_bookshelf_link\" onclick=\"return refresh_bookshelves();\" title=\"Refresh bookshelf list\" ><img title=\"Refresh bookshelf list\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/refresh_folder.jpg\" /></a><td>");
                 bookshelfManageBuilder.AppendLine("      <td align=\"left\" width=\"150px\"><a href=\"?\" id=\"refresh_bookshelf_link\" name=\"refresh_bookshelf_link\" onclick=\"return refresh_bookshelves();\" title=\"Refresh bookshelf list\" >Refresh Bookshelves</a><td>");
                 bookshelfManageBuilder.AppendLine("    </tr>");
                 bookshelfManageBuilder.AppendLine("  </table>");
@@ -767,7 +724,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Write the data for each interface
                 int folder_number = 1;
-                foreach ( User_Folder thisFolder in user.All_Folders )
+                foreach ( User_Folder thisFolder in RequestSpecificValues.Current_User.All_Folders )
                 {
                     if (thisFolder.Folder_Name != "Submitted Items")
                     {
@@ -776,39 +733,39 @@ namespace SobekCM.Library.MySobekViewer
                         bookshelfManageBuilder.Append("      <td class=\"SobekFolderActionLink\" >( ");
                         if (thisFolder.Child_Count == 0)
                         {
-                            if (user.All_Folders.Count == 1)
+                            if (RequestSpecificValues.Current_User.All_Folders.Count == 1)
                             {
-                                bookshelfManageBuilder.Append("<a title=\"Click to delete this bookshelf\" id=\"DELETE_" + folder_number + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You cannot delete your last bookshelf');return false;\">delete</a> | ");
+                                bookshelfManageBuilder.Append("<a title=\"Click to delete this bookshelf\" id=\"DELETE_" + folder_number + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You cannot delete your last bookshelf');return false;\">delete</a> | ");
                             }
                             else
                             {
-                                bookshelfManageBuilder.Append("<a title=\"Click to delete this bookshelf\" id=\"DELETE_" + folder_number + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_folder('" + thisFolder.Folder_ID + "');\">delete</a> | ");
+                                bookshelfManageBuilder.Append("<a title=\"Click to delete this bookshelf\" id=\"DELETE_" + folder_number + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_folder('" + thisFolder.Folder_ID + "');\">delete</a> | ");
                             }
                         }
                         else
                         {
-                            bookshelfManageBuilder.Append("<a title=\"Click to delete this bookshelf\" id=\"DELETE_" + folder_number + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You cannot delete bookshelves which contain other bookshelves');return false;\">delete</a> | ");
+                            bookshelfManageBuilder.Append("<a title=\"Click to delete this bookshelf\" id=\"DELETE_" + folder_number + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You cannot delete bookshelves which contain other bookshelves');return false;\">delete</a> | ");
                         }
                         if (thisFolder.IsPublic)
                         {
-                            bookshelfManageBuilder.Append("<a title=\"Make this bookshelf private\" id=\"PUBLIC_" + folder_number + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return change_folder_visibility('" + thisFolder.Folder_Name_Encoded + "', 'private');\">make private</a> | ");
+                            bookshelfManageBuilder.Append("<a title=\"Make this bookshelf private\" id=\"PUBLIC_" + folder_number + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return change_folder_visibility('" + thisFolder.Folder_Name_Encoded + "', 'private');\">make private</a> | ");
                         }
                         else
                         {
-                            bookshelfManageBuilder.Append("<a title=\"Make this bookshelf public\" id=\"PUBLIC_" + folder_number + "\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return change_folder_visibility('" + thisFolder.Folder_Name_Encoded + "', 'public');\">make public</a> | ");
+                            bookshelfManageBuilder.Append("<a title=\"Make this bookshelf public\" id=\"PUBLIC_" + folder_number + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return change_folder_visibility('" + thisFolder.Folder_Name_Encoded + "', 'public');\">make public</a> | ");
                         }
                         bookshelfManageBuilder.AppendLine("<a title=\"Click to manage this bookshelf\" href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", thisFolder.Folder_Name_Encoded) + "\">manage</a> )</td>");
                         if (thisFolder.IsPublic)
                         {
-                            currentMode.Mode = Display_Mode_Enum.Public_Folder;
-                            currentMode.FolderID = thisFolder.Folder_ID;
-                            bookshelfManageBuilder.AppendLine("      <td><a href=\"" + currentMode.Redirect_URL() + "\"><img title=\"Public folder\" src=\"" + currentMode.Base_URL + "default/images/closed_folder_public.jpg\" /><a/></td>");
-                            bookshelfManageBuilder.AppendLine("      <td><a href=\"" + currentMode.Redirect_URL() + "\">" + thisFolder.Folder_Name + "</a></td>");
-                            currentMode.Mode = Display_Mode_Enum.My_Sobek;
+                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Public_Folder;
+                            RequestSpecificValues.Current_Mode.FolderID = thisFolder.Folder_ID;
+                            bookshelfManageBuilder.AppendLine("      <td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img title=\"Public folder\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/closed_folder_public.jpg\" /><a/></td>");
+                            bookshelfManageBuilder.AppendLine("      <td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + thisFolder.Folder_Name + "</a></td>");
+                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                         }
                         else
                         {
-                            bookshelfManageBuilder.AppendLine("      <td><img title=\"Private folder\" src=\"" + currentMode.Base_URL + "default/images/closed_folder.jpg\" /></td>");
+                            bookshelfManageBuilder.AppendLine("      <td><img title=\"Private folder\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/closed_folder.jpg\" /></td>");
                             bookshelfManageBuilder.AppendLine("      <td>" + thisFolder.Folder_Name + "</td>");
                         }
                         bookshelfManageBuilder.AppendLine("     </tr>");
@@ -840,12 +797,12 @@ namespace SobekCM.Library.MySobekViewer
                     SelectedNodes.Add(folderNode);
                     if (childFolders.IsPublic)
                     {
-                        folderNode.ImageUrl = currentMode.Base_URL + "default/images/open_folder_public.jpg";
+                        folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/open_folder_public.jpg";
                         folderNode.ImageToolTip = "Public folder";
                     }
                     else
                     {
-                        folderNode.ImageUrl = currentMode.Base_URL + "default/images/open_folder.jpg";
+                        folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/open_folder.jpg";
                     }
 
                     folderNode.Text = "&nbsp; <span class=\"Selected_TreeNode_Text\">" + childFolders.Folder_Name + "</span>";
@@ -855,12 +812,12 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     if (childFolders.IsPublic)
                     {
-                        folderNode.ImageUrl = currentMode.Base_URL + "default/images/closed_folder_public.jpg";
+                        folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/closed_folder_public.jpg";
                         folderNode.ImageToolTip = "Public folder";
                     }
                     else
                     {
-                        folderNode.ImageUrl = currentMode.Base_URL + "default/images/closed_folder.jpg";
+                        folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/closed_folder.jpg";
                     }
                     folderNode.Text = "&nbsp; <a href=\"" + RedirectURL.Replace("XXXXXXXXXXXXXXXXXX", childFolders.Folder_Name_Encoded) + "\">" + childFolders.Folder_Name + "</a>";
                 }

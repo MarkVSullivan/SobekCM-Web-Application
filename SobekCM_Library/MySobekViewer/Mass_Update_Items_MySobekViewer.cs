@@ -4,20 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
-using System.Web.UI.WebControls;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Database;
-using SobekCM.Library.Application_State;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
-using SobekCM.Library.Navigation;
-using SobekCM.Core.Users;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Database;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -44,20 +40,16 @@ namespace SobekCM.Library.MySobekViewer
         #region Constructor
 
         /// <summary> Constructor for a new instance of the Mass_Update_Items_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Current_Item"> Individual digital resource to be edited by the user </param>
-        /// <param name="Code_Manager"> Code manager contains the list of all valid aggregation codes </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public Mass_Update_Items_MySobekViewer(User_Object User, SobekCM_Navigation_Object Current_Mode, SobekCM_Item Current_Item,  Aggregation_Code_Manager Code_Manager, Custom_Tracer Tracer) : base(User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Mass_Update_Items_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", String.Empty);
-            currentMode = Current_Mode;
+            RequestSpecificValues.Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", String.Empty);
+
 
             // Since this is a mass update, just create a new empty item with the GroupID included
             // from the provided item
-            SobekCM_Item emptyItem = new SobekCM_Item {BibID = Current_Item.BibID};
-            emptyItem.Web.GroupID = Current_Item.Web.GroupID;
+            SobekCM_Item emptyItem = new SobekCM_Item {BibID = RequestSpecificValues.Current_Item.BibID};
+            emptyItem.Web.GroupID = RequestSpecificValues.Current_Item.Web.GroupID;
             emptyItem.Bib_Info.Source.Code = String.Empty;
             emptyItem.Behaviors.CheckOut_Required_Is_Null = true;
             emptyItem.Behaviors.IP_Restriction_Membership_Is_Null = true;
@@ -65,33 +57,33 @@ namespace SobekCM.Library.MySobekViewer
             item = emptyItem;           
 
             // If the user cannot edit this item, go back
-            if (!User.Can_Edit_This_Item( Current_Item.BibID, Current_Item.Bib_Info.SobekCM_Type_String, Current_Item.Bib_Info.Source.Code, Current_Item.Bib_Info.HoldingCode, Current_Item.Behaviors.Aggregation_Code_List ))
+            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
             {
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
             const string TEMPLATE_CODE = "massupdate";
-            template = Cached_Data_Manager.Retrieve_Template(TEMPLATE_CODE, Tracer);
+            template = Cached_Data_Manager.Retrieve_Template(TEMPLATE_CODE, RequestSpecificValues.Tracer);
             if (template != null)
             {
-                Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", "Found template in cache");
+                RequestSpecificValues.Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", "Found template in cache");
             }
             else
             {
-                Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", "Reading template file");
+                RequestSpecificValues.Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", "Reading template file");
 
                 // Read this template
                 Template_XML_Reader reader = new Template_XML_Reader();
                 template = new Template();
-                reader.Read_XML(InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "templates\\defaults\\" + TEMPLATE_CODE + ".xml", template, true);
+                reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\defaults\\" + TEMPLATE_CODE + ".xml", template, true);
 
                 // Add the current codes to this template
-                template.Add_Codes(Code_Manager);
+                template.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
                 // Save this into the cache
-                Cached_Data_Manager.Store_Template(TEMPLATE_CODE, template, Tracer);
+                Cached_Data_Manager.Store_Template(TEMPLATE_CODE, template, RequestSpecificValues.Tracer);
             }
 
             // See if there was a hidden request
@@ -100,23 +92,23 @@ namespace SobekCM.Library.MySobekViewer
             // If this was a cancel request do that
             if (hidden_request == "cancel")
             {
-                currentMode.Mode = Display_Mode_Enum.Item_Display;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
             }
             else if (hidden_request == "save")
             {
                 // Save these changes to bib
-                template.Save_To_Bib(item, user, 1);
+                template.Save_To_Bib(item, RequestSpecificValues.Current_User, 1);
 
                 // Save the behaviors
                 SobekCM_Database.Save_Behaviors(item, false, true );
 
                 // Store on the caches (to replace the other)
-                Cached_Data_Manager.Remove_Digital_Resource_Objects(item.BibID, Tracer);
+                Cached_Data_Manager.Remove_Digital_Resource_Objects(item.BibID, RequestSpecificValues.Tracer);
 
                 // Forward
-                currentMode.Mode = Display_Mode_Enum.Item_Display;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
             }
         }
 
@@ -192,8 +184,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <h2>Change the behavior of all items belonging to this group</h2>");
             Output.WriteLine("    <ul>");
             Output.WriteLine("      <li>Enter any behaviors you would like to have propogate through all the items within this item group.and press the SAVE button when complete.</li>");
-            Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
-            Output.WriteLine("      <li>Click <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "help/behaviors\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on mass updating behaviors online.</li>");
+            Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
+            Output.WriteLine("      <li>Click <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/behaviors\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on mass updating behaviors online.</li>");
 
             Output.WriteLine("     </ul>");
             Output.WriteLine("</div>");
@@ -210,25 +202,25 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
 			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
-			Output.WriteLine("      <script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+			Output.WriteLine("      <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine();
 
 			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("      </div>");
 			Output.WriteLine();
 
-	        bool isMozilla = currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
+	        bool isMozilla = RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
 
-	        template.Render_Template_HTML(Output, item, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, 1);
+	        template.Render_Template_HTML(Output, item, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
 
 			// Add the second buttons at the bottom of the form
 			Output.WriteLine();
 			Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
 			Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("        <button onclick=\"behaviors_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("      </div>");
 			Output.WriteLine("      <br />");
 			Output.WriteLine("    </div>");

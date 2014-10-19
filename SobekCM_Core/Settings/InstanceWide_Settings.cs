@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Search;
-using SobekCM.Core.Users;
 using SobekCM.Core.Serialization;
+using SobekCM.Core.Users;
 
 #endregion
 

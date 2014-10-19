@@ -4,14 +4,12 @@
 
 using System;
 using System.IO;
-using SobekCM.Core.Settings;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -32,24 +30,21 @@ namespace SobekCM.Library.AdminViewer
 	public class Home_AdminViewer : abstract_AdminViewer
 	{
 		/// <summary> Constructor for a new instance of the Home_AdminViewer class </summary>
-		/// <param name="User"> Authenticated user information </param>
-		/// <param name="Current_Mode">Mode / navigation information for the current request</param>
-		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public Home_AdminViewer(User_Object User, SobekCM_Navigation_Object Current_Mode, Custom_Tracer Tracer)
-			: base(User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Home_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
 		{
-			Tracer.Add_Trace("Home_AdminViewer.Constructor", String.Empty);
+            RequestSpecificValues.Tracer.Add_Trace("Home_AdminViewer.Constructor", String.Empty);
 
-			if ((User == null) || ((!User.Is_Portal_Admin) && (!User.Is_System_Admin)))
+            if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin)))
 			{
-				Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-				Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-				currentMode.Redirect();                 
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);                 
 			}
 		}
 
 		/// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
-		/// <value> The value of this message changes, depending on if this is the user's first time here.  It is always a welcoming message though </value>
+		/// <value> The value of this message changes, depending on if this is the RequestSpecificValues.Current_User's first time here.  It is always a welcoming message though </value>
 		public override string Web_Title
 		{
 			get
@@ -70,65 +65,65 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <table id=\"sbkHav_OptionsTable\">");
 
 			// Edit aggregation aliases
-			currentMode.Admin_Type = Admin_Type_Enum.Aliases;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "forwarding.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Aggregation Aliases</a></td></tr>");
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "forwarding.gif\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Aggregation Aliases</a></td></tr>");
 
 			// Edit item aggregationPermissions
-			currentMode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "building.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Aggregation Management</a></td></tr>");
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "building.gif\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Aggregation Management</a></td></tr>");
 			
 
 			// View and set SobekCM Builder Status
-			currentMode.Admin_Type = Admin_Type_Enum.Builder_Status;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "gears.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Builder Status</a></td></tr>");
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "gears.png\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Builder Status</a></td></tr>");
 			
 
 			// Edit Default_Metadata
-			currentMode.Admin_Type = Admin_Type_Enum.Default_Metadata;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "pmets.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Default Metadata</a></td></tr>");
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "pmets.gif\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Default Metadata</a></td></tr>");
 
 			// Edit IP Restrictions
-			currentMode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "firewall.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">IP Restriction Ranges</a></td></tr>");
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "firewall.gif\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">IP Restriction Ranges</a></td></tr>");
 
 			// Edit Settings
-			currentMode.Admin_Type = Admin_Type_Enum.Settings;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "wrench.png\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">System-Wide Settings</a></td></tr>");
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "wrench.png\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">System-Wide Settings</a></td></tr>");
 
 			// Edit Thematic Headings
-			currentMode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Thematic Headings</a></td></tr>");
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Thematic Headings</a></td></tr>");
 
 
 			// Edit URL Portals
-			currentMode.Admin_Type = Admin_Type_Enum.URL_Portals;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "portals.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">URL Portals</a></td></tr>");
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "portals.gif\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">URL Portals</a></td></tr>");
 
-			if (user.Is_System_Admin)
+			if (RequestSpecificValues.Current_User.Is_System_Admin)
 			{
 				// Edit users
-				currentMode.Admin_Type = Admin_Type_Enum.Users;
-				Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "users.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Users and Groups</a></td></tr>");
+				RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+				Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "users.gif\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Users and Groups</a></td></tr>");
 			}
 
 			// Edit web skins
-			currentMode.Admin_Type = Admin_Type_Enum.Skins;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "skins.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Web Skins</a></td></tr>");
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "skins.gif\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Web Skins</a></td></tr>");
 
 			// Edit wordmarks
-			currentMode.Admin_Type = Admin_Type_Enum.Wordmarks;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "wordmarks.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Wordmarks / Icons</a></td></tr>");
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "wordmarks.gif\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Wordmarks / Icons</a></td></tr>");
 
 			// Reset cache
-			currentMode.Admin_Type = Admin_Type_Enum.Reset;
-			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Default_Images_URL + "refresh.gif\" /></a></td><td><a href=\"" + currentMode.Redirect_URL() + "\">Reset Cache</a></td></tr>");
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
+			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "refresh.gif\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Reset Cache</a></td></tr>");
 
-			currentMode.Admin_Type = Admin_Type_Enum.Home;
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
 
 			Output.WriteLine("  </table>");
 
-			Output.WriteLine("  <p>For clarification on any of these options, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/tasks\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
-			Output.WriteLine("  <p>You are currently running version " + InstanceWide_Settings_Singleton.Settings.Current_Web_Version + ". ( <a href=\"http://ufdc.ufl.edu/sobekcm/development/history\">see release notes</a> )</p>");
+			Output.WriteLine("  <p>For clarification on any of these options, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/tasks\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+			Output.WriteLine("  <p>You are currently running version " + UI_ApplicationCache_Gateway.Settings.Current_Web_Version + ". ( <a href=\"http://ufdc.ufl.edu/sobekcm/development/history\">see release notes</a> )</p>");
 			Output.WriteLine("</div>");
 		}
 	}

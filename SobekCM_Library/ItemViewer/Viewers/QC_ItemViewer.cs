@@ -2,29 +2,25 @@
 
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Database;
-using SobekCM.Library.HTML;
-using SobekCM.Library.Items;
-using SobekCM.Library.MemoryMgmt;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Items;
+using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.HTML;
+using SobekCM.Library.MemoryMgmt;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Divisions;
-using System.Xml;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -92,7 +88,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-				CurrentMode.Redirect();
+				UrlWriterHelper.Redirect(CurrentMode);
 				return;
 			}
 
@@ -100,7 +96,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (!CurrentUser.Can_Edit_This_Item(Current_Object.BibID, Current_Object.Bib_Info.SobekCM_Type_String, Current_Object.Bib_Info.Source.Code, Current_Object.Bib_Info.HoldingCode, Current_Object.Behaviors.Aggregation_Code_List))
 			{
 				CurrentMode.ViewerCode = String.Empty;
-				CurrentMode.Redirect();
+				UrlWriterHelper.Redirect(CurrentMode);
 				return;
 			}
 
@@ -109,7 +105,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-                CurrentMode.Redirect();
+                UrlWriterHelper.Redirect(CurrentMode);
                 return;
             }
 
@@ -128,9 +124,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// If the QC work is already in process, we may find a temporary METS file to read.
 
 			// Determine the in process directory for this
-            userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
+            userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
 			if (Current_User.ShibbID.Trim().Length > 0)
-                userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + Current_User.ShibbID + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
+                userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + Current_User.ShibbID + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
 
 			// Make the folder for the user in process directory
 			if (!Directory.Exists(userInProcessDirectory))
@@ -174,7 +170,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-                CurrentMode.Redirect();
+                UrlWriterHelper.Redirect(CurrentMode);
                 return;
             }
 
@@ -288,7 +284,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             //Get the list of associated errors for this item from the database
-		    int itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(Current_Object.BibID, Current_Object.VID);
+		    int itemID = SobekCM_Database.Get_ItemID(Current_Object.BibID, Current_Object.VID);
             Get_QC_Errors(itemID);
 
 
@@ -322,7 +318,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					    {
 						    // Forward to the item
 						    CurrentMode.ViewerCode = String.Empty;
-						    CurrentMode.Redirect();
+						    UrlWriterHelper.Redirect(CurrentMode);
 					    }
 				    }
                     break;
@@ -332,7 +328,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 				    // Forward back to the default item view
 				    CurrentMode.ViewerCode = String.Empty;
-				    CurrentMode.Redirect();
+				    UrlWriterHelper.Redirect(CurrentMode);
                     break;
 
                 case "clear_pagination":
@@ -420,7 +416,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     if (qc_errors_dictionary.ContainsKey(itemID+affected_page_filename))
                     {
                         //Delete the previous error for this file from the database
-                        Resource_Object.Database.SobekCM_Database.Delete_QC_Error(itemID, affected_page_filename);
+                        SobekCM_Database.Delete_QC_Error(itemID, affected_page_filename);
 
                         //Also remove any previous entry from the session dictionary
                         qc_errors_dictionary.Remove(itemID+affected_page_filename);
@@ -499,7 +495,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (qc_errors_dictionary.ContainsKey(itemID + affected_page_filename))
             {
                 //Delete the previous error for this file from the database
-                Resource_Object.Database.SobekCM_Database.Delete_QC_Error(itemID, affected_page_filename);
+                SobekCM_Database.Delete_QC_Error(itemID, affected_page_filename);
 
                 //Also remove any previous entry from the session dictionary
                 qc_errors_dictionary.Remove(itemID+affected_page_filename);
@@ -508,7 +504,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Now save this error to the DB, and update the dictionary
             if (error_code != "11" && error_code!="0")
             {
-                thisError.Error_ID = Resource_Object.Database.SobekCM_Database.Save_QC_Error(itemID, affected_page_filename, thisError.ErrorCode, thisError.Description, thisError.isVolumeError);
+                thisError.Error_ID = SobekCM_Database.Save_QC_Error(itemID, affected_page_filename, thisError.ErrorCode, thisError.Description, thisError.isVolumeError);
                 if (qc_errors_dictionary == null)
                     qc_errors_dictionary = new Dictionary<string, QC_Error>();
 
@@ -525,7 +521,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public void Get_QC_Errors(int thisItemID)
         {
             //Get the DataTable of all page errors for this item from the database
-            qc_errors_table = Resource_Object.Database.SobekCM_Database.Get_QC_Errors_For_Item(thisItemID);
+            qc_errors_table = SobekCM_Database.Get_QC_Errors_For_Item(thisItemID);
             QC_Error thisError = new QC_Error();
 
             if (HttpContext.Current.Session["QC_Errors"] == null)
@@ -616,7 +612,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Perform_PreDisplay_Work(Custom_Tracer Tracer)
         {
             //Get the item details from the DB
-            Item_Detail = SobekCM_Database.Get_Item_Information(CurrentItem.BibID, CurrentItem.VID, Tracer);
+            Item_Detail = Engine_Database.Get_Item_Information(CurrentItem.BibID, CurrentItem.VID, Tracer);
 
             if (Item_Detail != null)
             {
@@ -1265,8 +1261,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    {
 	        if (File.Exists(metsInProcessFile))
 	        {
-	            string resource_directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
-                string backup_directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + qc_item.Web.AssocFilePath + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name;
+	            string resource_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
+                string backup_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name;
 
 	            // Ensure the backup directory exists
 	            if (!Directory.Exists(backup_directory))
@@ -1327,7 +1323,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        }
 
             //Save changes to the DB
-            Resource_Object.Database.SobekCM_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, hidden_main_thumbnail + "thm.jpg", hidden_main_thumbnail + ".jpg", 1, 1, 1, notes);
+            SobekCM_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, hidden_main_thumbnail + "thm.jpg", hidden_main_thumbnail + ".jpg", 1, 1, 1, notes);
 
 	        // Clear the updated item from the session
 	        HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = null;
@@ -1343,9 +1339,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	    private void Delete_Resource_File(string FilenameToDelete)
 	    {
-	        string resource_directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
+	        string resource_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
             string[] files = Directory.GetFiles(resource_directory, FilenameToDelete + ".*");
-	        string recycle_bin = InstanceWide_Settings_Singleton.Settings.Recycle_Bin + "\\" + qc_item.METS_Header.ObjectID;
+	        string recycle_bin = UI_ApplicationCache_Gateway.Settings.Recycle_Bin + "\\" + qc_item.METS_Header.ObjectID;
 	        if (!Directory.Exists(recycle_bin))
 	            Directory.CreateDirectory(recycle_bin);
 
@@ -1471,7 +1467,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					queryString = (index_queryString < curr_url.Length - 1) ? curr_url.Substring(index_queryString) : String.Empty;
 				}
 					  
-				return ((PageCount > 1) && (CurrentMode.Page > 1)) ? CurrentMode.Redirect_URL("1qc")+queryString : String.Empty;
+				return ((PageCount > 1) && (CurrentMode.Page > 1)) ? UrlWriterHelper.Redirect_URL(CurrentMode, "1qc")+queryString : String.Empty;
 			}
 		}
 
@@ -1480,7 +1476,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-				return ((PageCount > 1) && ( CurrentMode.Page > 1 )) ? CurrentMode.Redirect_URL( (CurrentMode.Page - 1).ToString() + "qc" ) : String.Empty;
+                return ((PageCount > 1) && (CurrentMode.Page > 1)) ? UrlWriterHelper.Redirect_URL(CurrentMode, (CurrentMode.Page - 1).ToString() + "qc") : String.Empty;
 			}
 		}
 
@@ -1490,7 +1486,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			get
 			{
 				int temp_page_count = PageCount;
-				return  ( temp_page_count > 1 ) && (CurrentMode.Page < temp_page_count) ? CurrentMode.Redirect_URL( (CurrentMode.Page + 1).ToString() + "qc" ) :  String.Empty;
+                return (temp_page_count > 1) && (CurrentMode.Page < temp_page_count) ? UrlWriterHelper.Redirect_URL(CurrentMode, (CurrentMode.Page + 1).ToString() + "qc") : String.Empty;
 			}
 		}
 
@@ -1500,7 +1496,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			get
 			{
 				int temp_page_count = PageCount;
-				return (temp_page_count > 1) && (CurrentMode.Page < temp_page_count) ? CurrentMode.Redirect_URL(temp_page_count.ToString() + "qc") : String.Empty;
+                return (temp_page_count > 1) && (CurrentMode.Page < temp_page_count) ? UrlWriterHelper.Redirect_URL(CurrentMode, temp_page_count.ToString() + "qc") : String.Empty;
 			}
 		}
 
@@ -1516,7 +1512,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				    int numThumbnailstemp = CurrentMode.Thumbnails_Per_Page;
 				    CurrentMode.Thumbnails_Per_Page =  (short)thumbnailsPerPage;
 				    CurrentMode.Size_Of_Thumbnails = (short)thumbnailSize;
-					goToUrls.Add(CurrentMode.Redirect_URL(i + "qc"));
+                    goToUrls.Add(UrlWriterHelper.Redirect_URL(CurrentMode, i + "qc"));
 				}
 				return goToUrls.ToArray();
 			}
@@ -1623,7 +1619,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string viewerCode = CurrentMode.ViewerCode;
             CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
             CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
-            string url = CurrentMode.Redirect_URL();
+            string url = UrlWriterHelper.Redirect_URL(CurrentMode);
             CurrentMode.Mode = Display_Mode_Enum.Item_Display;
             CurrentMode.ViewerCode = viewerCode;
 
@@ -1633,27 +1629,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<span class=\"sbkQc_MainMenuSeperator\"></span>");
 
             if (thumbnailSize == 1)
-                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_small.ico\" title=\"Small thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_small.ico\" title=\"Small thumbnails\"/></a></span>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 1;
-                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_small.ico\" title=\"Small thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_small.ico\" title=\"Small thumbnails\"/></a></span>");
             }
 
             if (thumbnailSize == 2)
-                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_medium.ico\" title=\"Medium thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_medium.ico\" title=\"Medium thumbnails\"/></a></span>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 2;
-                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_medium.ico\" title=\"Medium thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_medium.ico\" title=\"Medium thumbnails\"/></a></span>");
             }
 
             if (thumbnailSize == 3)
-                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_large.ico\" title=\"Large thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_large.ico\" title=\"Large thumbnails\"/></a></span>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 3;
-                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_large.ico\" title=\"Large thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_large.ico\" title=\"Large thumbnails\"/></a></span>");
             }
 
             //Reset the current mode
@@ -1677,7 +1673,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
                 {
                     thumbnail_count++;
-                    string currentPageURL1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
+                    string currentPageURL1 = UrlWriterHelper.Redirect_URL(CurrentMode, (thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
                     string filename = thisFile.Files[0].File_Name_Sans_Extension;
                     string tooltipText = String.Empty;
 
@@ -1741,27 +1737,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t<li><a onclick=\"return false;\">Thumbnail Size</a><ul>");
             //Add the thumbnail size options
             if (thumbnailSize == 1)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "Small</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "Small</a></li>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 1;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "Small</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "Small</a></li>");
             }
 
             if (thumbnailSize == 2)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "Medium</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "Medium</a></li>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 2;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "Medium</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "Medium</a></li>");
             }
 
             if (thumbnailSize == 3)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "Large</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "Large</a></li>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 3;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "Large</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "Large</a></li>");
             }
 
             //Reset the current mode
@@ -1772,39 +1768,39 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //Add the thumbnails per page options
             if (thumbnailsPerPage == 25)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "25</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "25</a></li>");
             else
             {
                 CurrentMode.Thumbnails_Per_Page = 25;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\">" + noCheckmark + "25</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\">" + noCheckmark + "25</a></li>");
             }
             if (thumbnailsPerPage == 50)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "50</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "50</a></li>");
             else
             {
                 CurrentMode.Thumbnails_Per_Page = 50;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "50</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "50</a></li>");
             }
             if (thumbnailsPerPage == 100)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "100</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "100</a></li>");
             else
             {
                 CurrentMode.Thumbnails_Per_Page = 100;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "100</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "100</a></li>");
             }
             if (thumbnailsPerPage == 500)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "500</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "500</a></li>");
             else
             {
                 CurrentMode.Thumbnails_Per_Page = 500;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "500</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "500</a></li>");
             }
             if (thumbnailsPerPage == 1000)
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "1000</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + checkmark + "1000</a></li>");
             else
             {
                 CurrentMode.Thumbnails_Per_Page = 1000;
-                Output.WriteLine("\t\t<li><a href=\"" + CurrentMode.Redirect_URL("1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "1000</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\">" + noCheckmark + "1000</a></li>");
             }
 
             //Reset the current mode
@@ -1863,8 +1859,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("</ul></li>");
             Output.WriteLine("<li><a onclick=\"return false;\">View</a><ul>");
             Output.WriteLine("\t<li><a href=\"" + complete_mets + "\" target=\"_blank\">View METS</a></li>");
-            Output.WriteLine("\t<li><a href=\"" + CurrentMode.Redirect_URL("directory") + "\" target=\"_blank\">View Directory</a></li>");
-            Output.WriteLine("\t<li><a href=\"" + CurrentMode.Redirect_URL("tracking") + "\" target=\"_blank\">View QC History</a></li>");
+            Output.WriteLine("\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "directory") + "\" target=\"_blank\">View Directory</a></li>");
+            Output.WriteLine("\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "tracking") + "\" target=\"_blank\">View QC History</a></li>");
             Output.WriteLine("</ul></li>");
             Output.WriteLine("<li><a onclick=\"return false;\">Help</a></li>");
             Output.WriteLine("</ul>");
@@ -2164,8 +2160,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			        string image_url = image_by_pageindex[page_index];
                     string filename_sans_extension = file_sans_by_pageindex[page_index];
                     string filenameToDisplay = filename_sans_extension;
-                    int itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(CurrentItem.BibID, CurrentItem.VID);
-					string url = CurrentMode.Redirect_URL().Replace("&", "&amp;").Replace("\"", "&quot;");
+                    int itemID = SobekCM_Database.Get_ItemID(CurrentItem.BibID, CurrentItem.VID);
+					string url = UrlWriterHelper.Redirect_URL(CurrentMode).Replace("&", "&amp;").Replace("\"", "&quot;");
 
                     QC_Error thisError = new QC_Error();
 			        bool errorPresentThisPage = false;

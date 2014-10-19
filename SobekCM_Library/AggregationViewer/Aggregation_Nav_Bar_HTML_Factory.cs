@@ -1,11 +1,11 @@
 ﻿#region Using directives
 
 using System;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Navigation;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -115,7 +115,7 @@ namespace SobekCM.Library.AggregationViewer
 
 			if ((Current_Mode.Mode == Display_Mode_Enum.Search) && (Current_Mode.Search_Type == Search_Type))
 			{
-				return "<li class=\"selected-sf-menu-item-link\"><a href=\"" + Current_Mode.Redirect_URL() + "\">" + Display_Text + "</a></li>" + Environment.NewLine;
+                return "<li class=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(Current_Mode) + "\">" + Display_Text + "</a></li>" + Environment.NewLine;
 			}
 
 			// else...
@@ -123,7 +123,7 @@ namespace SobekCM.Library.AggregationViewer
 			Display_Mode_Enum currentMode2 = Current_Mode.Mode;
 			Current_Mode.Search_Type = Search_Type;
 			Current_Mode.Mode = Display_Mode_Enum.Search;
-			string toReturn2 = "<li><a href=\"" + Current_Mode.Redirect_URL() + "\">" + Display_Text + "</a></li>" + Environment.NewLine;
+			string toReturn2 = "<li><a href=\"" + UrlWriterHelper.Redirect_URL(Current_Mode) + "\">" + Display_Text + "</a></li>" + Environment.NewLine;
 			Current_Mode.Search_Type = currentSearchType2;
 			Current_Mode.Mode = currentMode2;
 			return toReturn2;
@@ -191,7 +191,7 @@ namespace SobekCM.Library.AggregationViewer
                 Display_Mode_Enum currentMode = Current_Mode.Mode;
                 Current_Mode.Search_Type = Search_Type;
                 Current_Mode.Mode = Display_Mode_Enum.Search;
-                string toReturn = "<a href=\"" + Current_Mode.Redirect_URL() + "\"> " + "<img src=\"" + Current_Mode.Base_URL + "design/skins/" + SkinCode + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\"> "+ Display_Text + " </span><img src=\"" + Current_Mode.Base_URL + "design/skins/" + SkinCode + "/tabs/cRD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /></a>" + Environment.NewLine ;
+                string toReturn = "<a href=\"" + UrlWriterHelper.Redirect_URL(Current_Mode)  + "\"> " + "<img src=\"" + Current_Mode.Base_URL + "design/skins/" + SkinCode + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\"> " + Display_Text + " </span><img src=\"" + Current_Mode.Base_URL + "design/skins/" + SkinCode + "/tabs/cRD.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /></a>" + Environment.NewLine;
                 Current_Mode.Search_Type = currentSearchType;
                 Current_Mode.Mode = currentMode;
                 return toReturn;
@@ -207,7 +207,7 @@ namespace SobekCM.Library.AggregationViewer
 	        Display_Mode_Enum currentMode2 = Current_Mode.Mode;
 	        Current_Mode.Search_Type = Search_Type;
 	        Current_Mode.Mode = Display_Mode_Enum.Search;
-	        string toReturn2 = "<a href=\"" + Current_Mode.Redirect_URL() + "\"> <img src=\"" + Current_Mode.Base_URL + "design/skins/" + SkinCode + "/tabs/cL.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\"> " + Display_Text + " </span><img src=\"" + Current_Mode.Base_URL + "design/skins/" + SkinCode + "/tabs/cR.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /> </a>" + Environment.NewLine ;
+            string toReturn2 = "<a href=\"" + UrlWriterHelper.Redirect_URL(Current_Mode) + "\"> <img src=\"" + Current_Mode.Base_URL + "design/skins/" + SkinCode + "/tabs/cL.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\"> " + Display_Text + " </span><img src=\"" + Current_Mode.Base_URL + "design/skins/" + SkinCode + "/tabs/cR.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /> </a>" + Environment.NewLine;
 	        Current_Mode.Search_Type = currentSearchType2;
 	        Current_Mode.Mode = currentMode2;
 	        return toReturn2;

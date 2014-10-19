@@ -7,16 +7,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Web;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Application_State;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -37,40 +34,30 @@ namespace SobekCM.Library.AdminViewer
     public class Aliases_AdminViewer : abstract_AdminViewer
     {
         private readonly string actionMessage;
-        private readonly Dictionary<string, string> aggregationAliases;
 
         #region Constructor
 
         /// <summary> Constructor for a new instance of the Aliases_AdminViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="CurrentMode"> Mode / navigation information for the current request</param>
-        /// <param name="Aggregation_Aliases"> Dictionary of all current item aggregation aliases </param>
-		/// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new item aggregation alias is handled here in the constructor </remarks>
-        public Aliases_AdminViewer(User_Object User, SobekCM_Navigation_Object CurrentMode, Dictionary<string,string> Aggregation_Aliases, Aggregation_Code_Manager Code_Manager, Custom_Tracer Tracer)
-            : base(User)
+        public Aliases_AdminViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Aliases_AdminViewer.Constructor", String.Empty);
-
-            // Save the mode and settings  here
-            currentMode = CurrentMode;
-            aggregationAliases = Aggregation_Aliases;
+            RequestSpecificValues.Tracer.Add_Trace("Aliases_AdminViewer.Constructor", String.Empty);
 
             // Set action message to nothing to start
             actionMessage = String.Empty;
 
-            // If the user cannot edit this, go back
-            if (( user == null ) || ((!user.Is_System_Admin) && ( !user.Is_Portal_Admin )))
+            // If the RequestSpecificValues.Current_User cannot edit this, go back
+            if (( RequestSpecificValues.Current_User == null ) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && ( !RequestSpecificValues.Current_User.Is_Portal_Admin )))
             {
-                CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
-                CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                CurrentMode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
             // If this is a postback, handle any events first
-            if (CurrentMode.isPostBack)
+            if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 try
                 {
@@ -86,14 +73,14 @@ namespace SobekCM.Library.AdminViewer
                         // If this starts with a '-' this is a delete
                         if (save_value[0] == '-')
                         {
-                            if (( user.Is_System_Admin ) && ( save_value.Length > 1 ))
+                            if (( RequestSpecificValues.Current_User.Is_System_Admin ) && ( save_value.Length > 1 ))
                             {
                                 save_value = save_value.Substring(1);
-                                Tracer.Add_Trace("Aliases_AdminViewer.Constructor", "Delete alias '" + save_value + "'");
-                                if (SobekCM_Database.Delete_Aggregation_Alias(save_value, Tracer))
+                                RequestSpecificValues.Tracer.Add_Trace("Aliases_AdminViewer.Constructor", "Delete alias '" + save_value + "'");
+                                if (SobekCM_Database.Delete_Aggregation_Alias(save_value, RequestSpecificValues.Tracer))
                                 {
-                                    if (aggregationAliases.ContainsKey(save_value))
-                                        aggregationAliases.Remove( save_value );
+                                    if (UI_ApplicationCache_Gateway.Collection_Aliases.ContainsKey(save_value))
+                                        UI_ApplicationCache_Gateway.Collection_Aliases.Remove( save_value );
 
                                     actionMessage = "Deleted existing aggregation alias <i>" + save_value + "</i>";
                                 }
@@ -101,7 +88,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            Tracer.Add_Trace("Aliases_AdminViewer.Constructor", "Save alias '" + save_value + "'");
+                            RequestSpecificValues.Tracer.Add_Trace("Aliases_AdminViewer.Constructor", "Save alias '" + save_value + "'");
 
                             // Was this to save a new alias (from the main page) or edit an existing (from the popup form)?
                             if (save_value == new_alias)
@@ -118,22 +105,22 @@ namespace SobekCM.Library.AdminViewer
 									actionMessage = "You must enter a CODE for this aggregation alias";
 
 								}
-								else if (Code_Manager[new_code.ToUpper()] != null)
+								else if (UI_ApplicationCache_Gateway.Aggregations[new_code.ToUpper()] != null)
 								{
 									actionMessage = "Aggregation with this code already exists";
 								}
-								else if (InstanceWide_Settings_Singleton.Settings.Reserved_Keywords.Contains(new_code.ToLower()))
+								else if (UI_ApplicationCache_Gateway.Settings.Reserved_Keywords.Contains(new_code.ToLower()))
 								{
 									actionMessage = "That code is a system-reserved keyword.  Try a different code.";
 								}
 
                                 // Save this new forwarding
-                                if (SobekCM_Database.Save_Aggregation_Alias(save_value, new_code, Tracer))
+                                if (SobekCM_Database.Save_Aggregation_Alias(save_value, new_code, RequestSpecificValues.Tracer))
                                 {
-                                    if (aggregationAliases.ContainsKey(save_value))
-                                        aggregationAliases[save_value] = new_code;
+                                    if (UI_ApplicationCache_Gateway.Collection_Aliases.ContainsKey(save_value))
+                                        UI_ApplicationCache_Gateway.Collection_Aliases[save_value] = new_code;
                                     else
-                                        aggregationAliases.Add(save_value, new_code);
+                                        UI_ApplicationCache_Gateway.Collection_Aliases.Add(save_value, new_code);
 
                                     actionMessage = "Saved new aggregation alias <i>" + save_value + "</i>";
                                 }
@@ -147,12 +134,12 @@ namespace SobekCM.Library.AdminViewer
                                 string edit_code = form["form_forwarding_code"].ToLower().Trim();
 
                                 // Save this existing forwarding
-                                if (SobekCM_Database.Save_Aggregation_Alias(save_value, edit_code, Tracer))
+                                if (SobekCM_Database.Save_Aggregation_Alias(save_value, edit_code, RequestSpecificValues.Tracer))
                                 {
-                                    if (aggregationAliases.ContainsKey(save_value))
-                                        aggregationAliases[save_value] = edit_code;
+                                    if (UI_ApplicationCache_Gateway.Collection_Aliases.ContainsKey(save_value))
+                                        UI_ApplicationCache_Gateway.Collection_Aliases[save_value] = edit_code;
                                     else
-                                        aggregationAliases.Add(save_value, edit_code);
+                                        UI_ApplicationCache_Gateway.Collection_Aliases.Add(save_value, edit_code);
 
                                     actionMessage = "Edited existing aggregation alias <i>" + save_value + "</i>";
                                 }
@@ -199,7 +186,7 @@ namespace SobekCM.Library.AdminViewer
             Tracer.Add_Trace("Aliases_AdminViewer.Write_ItemNavForm_Closing", "Add any popup divisions for form elements");
 
 			Output.WriteLine("<!-- Aliases_AdminViewer.Write_ItemNavForm_Closing -->");
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -221,8 +208,8 @@ namespace SobekCM.Library.AdminViewer
 			// Add the buttons and close the table
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
 			Output.WriteLine("      <td colspan=\"2\"> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return alias_form_close();\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Save changes to this existing aggregation alias\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return alias_form_close();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this existing aggregation alias\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("  </table>");
@@ -231,7 +218,7 @@ namespace SobekCM.Library.AdminViewer
 
             Tracer.Add_Trace("Aliases_AdminViewer.Write_ItemNavForm_Closing", "Write the rest of the form ");
 
-            Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
 			if (actionMessage.Length > 0)
@@ -242,7 +229,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <p>Use item aggregation aliases to allow a term to forward to an existing item aggregation. ");
             Output.WriteLine("  This creates a simpler URL and can forward from a discontinued item aggregation.</p>");
-	        Output.WriteLine("  <p>For more information about aggregation aliases and forwarding, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/aggraliases\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+	        Output.WriteLine("  <p>For more information about aggregation aliases and forwarding, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/aggraliases\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 
             Output.WriteLine("  <h2>New Item Aggregation Alias</h2>");
 			Output.WriteLine("    <div class=\"sbkAav_NewDiv\">");
@@ -252,7 +239,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        <tr><td style=\"width:120px;\"><label for=\"admin_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_alias\" id=\"admin_forwarding_alias\" type=\"text\" value=\"\" /></td></tr>");
 
             // Add line for aggregation
-			Output.WriteLine("        <tr><td><label for=\"admin_forwarding_code\">Item Aggregation:</label></td><td><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_code\" id=\"admin_forwarding_code\" type=\"text\" value=\"\" /></td><td><button title=\"Save new aggregation alias\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_alias();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+			Output.WriteLine("        <tr><td><label for=\"admin_forwarding_code\">Item Aggregation:</label></td><td><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_code\" id=\"admin_forwarding_code\" type=\"text\" value=\"\" /></td><td><button title=\"Save new aggregation alias\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_alias();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
 			Output.WriteLine("      </table>");
 			Output.WriteLine("    </div>");
             Output.WriteLine("  <br />");
@@ -261,7 +248,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <h2>Existing Item Aggregation Aliases</h2>");
 
-	        if (aggregationAliases.Count > 0)
+	        if (UI_ApplicationCache_Gateway.Collection_Aliases.Count > 0)
 	        {
 		        Output.WriteLine("  <table class=\"sbkAav_Table sbkAdm_Table\">");
 		        Output.WriteLine("    <tr>");
@@ -272,7 +259,7 @@ namespace SobekCM.Library.AdminViewer
 		        Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
 		        SortedList<string, string> sorter = new SortedList<string, string>();
-		        foreach (KeyValuePair<string, string> thisForward in aggregationAliases)
+		        foreach (KeyValuePair<string, string> thisForward in UI_ApplicationCache_Gateway.Collection_Aliases)
 		        {
 			        sorter.Add(thisForward.Key, thisForward.Value);
 		        }
@@ -283,12 +270,12 @@ namespace SobekCM.Library.AdminViewer
 			        // Build the action links
 			        Output.WriteLine("    <tr>");
 			        Output.Write("    <td class=\"sbkAdm_ActionLink\" >( ");
-			        Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return alias_form_popup('" + thisForward.Key + "','" + thisForward.Value + "');\">edit</a> | ");
-			        Output.Write("<a title=\"Click to view\" href=\"" + currentMode.Base_URL + thisForward.Key + "\" target=\"_PREVIEW\">view</a> | ");
-					if ( user.Is_System_Admin )
-				        Output.Write("<a title=\"Delete this alias\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_alias('" + thisForward.Key + "');\">delete</a> )</td>");
+			        Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return alias_form_popup('" + thisForward.Key + "','" + thisForward.Value + "');\">edit</a> | ");
+			        Output.Write("<a title=\"Click to view\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisForward.Key + "\" target=\"_PREVIEW\">view</a> | ");
+					if ( RequestSpecificValues.Current_User.Is_System_Admin )
+				        Output.Write("<a title=\"Delete this alias\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_alias('" + thisForward.Key + "');\">delete</a> )</td>");
 					else
-						Output.Write("<a title=\"Only SYSTEM administrators can delete aliases\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('Only SYSTEM administrators can delete aliases');return false;\">delete</a> )</td>");
+						Output.Write("<a title=\"Only SYSTEM administrators can delete aliases\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('Only SYSTEM administrators can delete aliases');return false;\">delete</a> )</td>");
 
 			        // Add the rest of the row with data
 			        Output.WriteLine("      <td>" + thisForward.Key + "</span></td>");

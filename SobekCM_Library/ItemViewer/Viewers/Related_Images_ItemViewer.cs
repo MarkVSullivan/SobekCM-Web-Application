@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using SobekCM.Core.Configuration;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Resource_Object.Divisions;
-using SobekCM.Library.Configuration;
 using SobekCM.Tools;
 
 #endregion
@@ -82,7 +82,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					queryString = (index_queryString < curr_url.Length - 1) ? curr_url.Substring(index_queryString) : String.Empty;
 				}
 					  
-				return ((PageCount > 1) && (CurrentMode.Page > 1)) ? CurrentMode.Redirect_URL("1thumbs")+queryString : String.Empty;
+				return ((PageCount > 1) && (CurrentMode.Page > 1)) ? UrlWriterHelper.Redirect_URL(CurrentMode, "1thumbs")+queryString : String.Empty;
 			}
 		}
 
@@ -91,7 +91,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{                
-				return ((PageCount > 1) && ( CurrentMode.Page > 1 )) ? CurrentMode.Redirect_URL( (CurrentMode.Page - 1).ToString() + "thumbs" ) : String.Empty;
+				return ((PageCount > 1) && ( CurrentMode.Page > 1 )) ? UrlWriterHelper.Redirect_URL( CurrentMode, (CurrentMode.Page - 1).ToString() + "thumbs" ) : String.Empty;
 			}
 		}
 
@@ -101,7 +101,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			get
 			{
 				int temp_page_count = PageCount;
-				return  ( temp_page_count > 1 ) && (CurrentMode.Page < temp_page_count) ? CurrentMode.Redirect_URL( (CurrentMode.Page + 1).ToString() + "thumbs" ) :  String.Empty;
+                return (temp_page_count > 1) && (CurrentMode.Page < temp_page_count) ? UrlWriterHelper.Redirect_URL(CurrentMode, (CurrentMode.Page + 1).ToString() + "thumbs") : String.Empty;
 			}
 		}
 
@@ -111,7 +111,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			get
 			{
 				int temp_page_count = PageCount;
-				return (temp_page_count > 1) && (CurrentMode.Page < temp_page_count) ? CurrentMode.Redirect_URL(temp_page_count.ToString() + "thumbs") : String.Empty;
+                return (temp_page_count > 1) && (CurrentMode.Page < temp_page_count) ? UrlWriterHelper.Redirect_URL(CurrentMode, temp_page_count.ToString() + "thumbs") : String.Empty;
 			}
 		}
 
@@ -124,7 +124,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				List<string> goToUrls = new List<string>();
 				for (int i = 1; i <= PageCount; i++)
 				{
-					goToUrls.Add(CurrentMode.Redirect_URL(i + "thumbs"));
+                    goToUrls.Add(UrlWriterHelper.Redirect_URL(CurrentMode, i + "thumbs"));
 				}
 				return goToUrls.ToArray();
 			}
@@ -176,10 +176,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				//Redirect to the first page of results when the number of thumbnails option is changed by the user
 				string current_viewercode = CurrentMode.ViewerCode;
-				CurrentMode.Redirect_URL("1thumbs");
+				UrlWriterHelper.Redirect_URL(CurrentMode, "1thumbs");
 
 				//   CurrentMode.Thumbnails_Per_Page = -1;
-				//  string current_Page_url = CurrentMode.Redirect_URL("1thumbs");
+				//  string current_Page_url = UrlWriterHelper.Redirect_URL(CurrentMode, "1thumbs");
 
 				// Collect the list of options to display
 				List<int> thumbsOptions = new List<int> {25};
@@ -198,23 +198,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					CurrentMode.Thumbnails_Per_Page = (short)thumbOption;
 					if (thumbnailsPerPage == thumbOption)
 					{
-						Output.WriteLine("\t\t\t\t<option value=\"" + CurrentMode.Redirect_URL() + "\" selected=\"selected\">" + thumbOption + " " + numOfThumbnails + "</option>");
+						Output.WriteLine("\t\t\t\t<option value=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" selected=\"selected\">" + thumbOption + " " + numOfThumbnails + "</option>");
 					}
 					else
 					{
 
-                        Output.WriteLine("\t\t\t\t<option value=\"" + CurrentMode.Redirect_URL() + "\">" + thumbOption + " " + numOfThumbnails + "</option>");
+                        Output.WriteLine("\t\t\t\t<option value=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">" + thumbOption + " " + numOfThumbnails + "</option>");
 					}
 				}
 
 				CurrentMode.Thumbnails_Per_Page = -1;
 				if (thumbnailsPerPage == int.MaxValue)
 				{
-                    Output.WriteLine("\t\t\t\t<option value=\"" + CurrentMode.Redirect_URL() + "\" selected=\"selected\">All thumbnails</option>");
+                    Output.WriteLine("\t\t\t\t<option value=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" selected=\"selected\">All thumbnails</option>");
 				}
 				else
 				{
-                    Output.WriteLine("\t\t\t\t<option value=\"" + CurrentMode.Redirect_URL() + "\">All thumbnails</option>");
+                    Output.WriteLine("\t\t\t\t<option value=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">All thumbnails</option>");
 				}
 
 				//Reset the Current Mode Thumbnails_Per_Page
@@ -238,7 +238,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = 1;
-                Output.Write("\t\t\t<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + SMALL_THUMBNAILS + "\"><img src=\"" + image_location + "thumbs3.gif\" alt=\"Small\" /></a>");
+                Output.Write("\t\t\t<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1thumbs") + "\" title=\"" + SMALL_THUMBNAILS + "\"><img src=\"" + image_location + "thumbs3.gif\" alt=\"Small\" /></a>");
 			}
 
 			if (thumbnailSize == 2)
@@ -246,14 +246,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = 2;
-                Output.Write("<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + MEDIUM_THUMBNAILS + "\"><img src=\"" + image_location + "thumbs2.gif\" alt=\"Medium\" /></a>");
+                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1thumbs") + "\" title=\"" + MEDIUM_THUMBNAILS + "\"><img src=\"" + image_location + "thumbs2.gif\" alt=\"Medium\" /></a>");
 			}
 			if (thumbnailSize == 3)
                 Output.Write("<img src=\"" + image_location + "thumbs1_selected.gif\" alt=\"Large\" />");
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = 3;
-                Output.Write("<a href=\"" + CurrentMode.Redirect_URL("1thumbs") + "\" title=\"" + LARGE_THUMBNAILS + "\"><img src=\"" + image_location + "thumbs1.gif\" alt=\"Large\" /></a>");
+                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1thumbs") + "\" title=\"" + LARGE_THUMBNAILS + "\"><img src=\"" + image_location + "thumbs1.gif\" alt=\"Large\" /></a>");
 			}
 			//Reset the current mode
 			CurrentMode.Size_Of_Thumbnails = -1;
@@ -271,7 +271,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				int thumbnail_count = 0;
 				foreach (Page_TreeNode thisFile in CurrentItem.Web.Pages_By_Sequence)
 				{
-					string currentPageURL1 = CurrentMode.Redirect_URL((thumbnail_count / thumbnailsPerPage + (thumbnail_count % thumbnailsPerPage == 0 ? 0 : 1)).ToString() + "thumbs");
+                    string currentPageURL1 = UrlWriterHelper.Redirect_URL(CurrentMode, (thumbnail_count / thumbnailsPerPage + (thumbnail_count % thumbnailsPerPage == 0 ? 0 : 1)).ToString() + "thumbs");
 
 					//  Output.WriteLine("<option value=\"" + current_Page_url1 + "#" + thisFile.Label + "\">" + thisFile.Label + "</option>");
 					if (String.IsNullOrEmpty(thisFile.Label))
@@ -360,7 +360,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Get the image URL
 				CurrentMode.Page = (ushort) (page_index + 1);
 				CurrentMode.ViewerCode = (page_index + 1).ToString();
-				string url = CurrentMode.Redirect_URL();
+				string url = UrlWriterHelper.Redirect_URL(CurrentMode);
 
                 // Determine the width information and the URL for the image
                 string image_url; // = (CurrentItem.Web.Source_URL + "/" + thumbnail).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");

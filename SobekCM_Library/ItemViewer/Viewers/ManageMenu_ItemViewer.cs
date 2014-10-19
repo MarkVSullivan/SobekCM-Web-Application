@@ -2,15 +2,11 @@
 
 using System;
 using System.IO;
-using System.Linq;
-using System.Web;
-using SobekCM.Library.Navigation;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -37,7 +33,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (CurrentUser == null)
 			{
 				Current_Mode.ViewerCode = String.Empty;
-				Current_Mode.Redirect();
+				UrlWriterHelper.Redirect(Current_Mode);
 				return;
 			}
 			else
@@ -46,7 +42,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				if (!userCanEditItem)
 				{
 					Current_Mode.ViewerCode = String.Empty;
-					Current_Mode.Redirect();
+					UrlWriterHelper.Redirect(Current_Mode);
 					return;
 				}
 			}
@@ -133,7 +129,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
 				CurrentMode.My_Sobek_SubMode = "1";
-				string url = CurrentMode.Redirect_URL();
+				string url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "edit_metadata_icon.png\" /></a></td>");
@@ -148,7 +144,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
 				CurrentMode.My_Sobek_SubMode = "1";
-				url = CurrentMode.Redirect_URL();
+				url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "edit_behaviors_icon.png\" /></a></td>");
@@ -162,7 +158,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Add ability to perform QC ( manage pages and divisions) for this item
 				CurrentMode.Mode = Display_Mode_Enum.Item_Display;
 				CurrentMode.ViewerCode = "qc";
-				url = CurrentMode.Redirect_URL();
+				url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "qc_button_icon.png\" /></a></td>");
@@ -177,7 +173,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Add ability to view work history for this item
 				CurrentMode.Mode = Display_Mode_Enum.Item_Display;
 				CurrentMode.ViewerCode = "tracking";
-				url = CurrentMode.Redirect_URL();
+				url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "view_work_log_icon.png\" /></a></td>");
@@ -192,7 +188,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Add ability to upload new download files for this item
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
-				url = CurrentMode.Redirect_URL();
+				url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "file_management_icon.png\" /></a></td>");
@@ -206,7 +202,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Add ability to edit geo-spatial information for this item
 				CurrentMode.Mode = Display_Mode_Enum.Item_Display;
 				CurrentMode.ViewerCode = "mapedit";
-				url = CurrentMode.Redirect_URL();
+				url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "add_geospatial_icon.png\" /></a></td>");
@@ -221,7 +217,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Add ability to edit geo-spatial information for this item
 				CurrentMode.Mode = Display_Mode_Enum.Item_Display;
 				CurrentMode.ViewerCode = "ts";
-				url = CurrentMode.Redirect_URL();
+				url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "tracking_sheet_icon.png\" /></a></td>");
@@ -239,7 +235,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
 				CurrentMode.My_Sobek_SubMode = "1";
-				url = CurrentMode.Redirect_URL();
+				url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "edit_behaviors_icon.png\" /></a></td>");
@@ -254,7 +250,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
 				CurrentMode.My_Sobek_SubMode = "1";
-				url = CurrentMode.Redirect_URL();
+				url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "add_volume_icon.png\" /></a></td>");
@@ -271,7 +267,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 					CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
 					CurrentMode.My_Sobek_SubMode = "1";
-					url = CurrentMode.Redirect_URL();
+					url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 					Output.WriteLine("\t\t\t\t<tr>");
 					Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 					Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "mass_update_icon.png\" /></a></td>");
@@ -304,7 +300,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
 				CurrentMode.My_Sobek_SubMode = "1";
-				string url = CurrentMode.Redirect_URL();
+				string url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "edit_behaviors_icon.png\" /></a></td>");
@@ -319,7 +315,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
 				CurrentMode.My_Sobek_SubMode = "1";
-				url = CurrentMode.Redirect_URL();
+				url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "add_volume_icon.png\" /></a></td>");
@@ -334,7 +330,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
 				CurrentMode.My_Sobek_SubMode = "1";
-				url = CurrentMode.Redirect_URL();
+				url = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + CurrentMode.Default_Images_URL + "mass_update_icon.png\" /></a></td>");

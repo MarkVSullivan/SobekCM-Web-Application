@@ -1,16 +1,9 @@
 #region Using directives
 
-using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Divisions;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.WebContent;
+using SobekCM.Core.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -19,56 +12,14 @@ namespace SobekCM.Library.MainWriters
     /// <summary> Abstract class which all main writer classes must extend </summary>
     public abstract class abstractMainWriter
     {
-        /// <summary> Protected field contains the current item to display </summary>
-        protected SobekCM_Item currentItem;
-
-        /// <summary> Protected field contains the mode / navigation information for the current request </summary>
-        protected SobekCM_Navigation_Object currentMode;
-
-        /// <summary> Protected field contains the current page within the item </summary>
-        protected Page_TreeNode currentPage;
-
-        /// <summary> Protected field contains the current item aggregation object to display </summary>
-        protected Item_Aggregation hierarchyObject;
-
-        /// <summary> Content derived from static HTML pages, such as static info/browse pages or general web content </summary>
-        protected HTML_Based_Content htmlBasedContent;
-
-        /// <summary> Protected field contains the single page of results for a search or browse, within the entire set </summary>
-        protected List<iSearch_Title_Result> paged_results;
-
-        /// <summary> Protected field contains the information about the entire set of results for a search or browse</summary>
-        protected Search_Results_Statistics results_statistics;
-
-        /// <summary> Protected field contains the basic information about any browse or info display</summary>
-        protected Item_Aggregation_Child_Page thisBrowseObject;
+        /// <summary> Protected field contains the information specific to the current request </summary>
+        protected RequestCache RequestSpecificValues;
 
         /// <summary> Constructor for a new instance of the abstractMainWriter abstract class </summary>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
-        /// <param name="Results_Statistics"> Information about the entire set of results for a search or browse </param>
-        /// <param name="Paged_Results"> Single page of results for a search or browse, within the entire set </param>
-        /// <param name="Browse_Object"> Object contains all the basic information about any browse or info display </param>
-        /// <param name="Current_Item"> Current item to display </param>
-        /// <param name="Current_Page"> Current page within the item</param>
-        /// <param name="Static_Web_Content"> HTML content-based browse, info, or imple CMS-style web content objects.  These are objects which are read from a static HTML file and much of the head information must be maintained </param>
-        protected abstractMainWriter(SobekCM_Navigation_Object Current_Mode,
-            Item_Aggregation Hierarchy_Object,
-            Search_Results_Statistics Results_Statistics,
-            List<iSearch_Title_Result> Paged_Results,
-            Item_Aggregation_Child_Page Browse_Object,
-            SobekCM_Item Current_Item,
-            Page_TreeNode Current_Page,
-            HTML_Based_Content Static_Web_Content )
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        protected abstractMainWriter( RequestCache RequestSpecificValues )
         {
-            currentMode = Current_Mode;
-            hierarchyObject = Hierarchy_Object;
-            results_statistics = Results_Statistics;
-            paged_results = Paged_Results;
-            thisBrowseObject = Browse_Object;
-            currentItem = Current_Item;
-            currentPage = Current_Page;
-            htmlBasedContent = Static_Web_Content;
+            this.RequestSpecificValues = RequestSpecificValues;
         }
 
         /// <summary> Gets the enumeration of the type of main writer </summary>

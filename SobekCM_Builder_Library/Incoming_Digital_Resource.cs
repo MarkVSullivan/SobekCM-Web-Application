@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Library;
-using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database;
@@ -258,10 +258,10 @@ namespace SobekCM.Builder_Library
         {
             try
             {
-                if (!Directory.Exists(Resource_Folder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name))
-                    Directory.CreateDirectory(Resource_Folder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name);
+                if (!Directory.Exists(Resource_Folder + "\\" + Engine_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name))
+                    Directory.CreateDirectory(Resource_Folder + "\\" + Engine_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name);
 
-                string filename = Resource_Folder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name + "\\" + Metadata.BibID + "_" + Metadata.VID + ".html";
+                string filename = Resource_Folder + "\\" + Engine_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name + "\\" + Metadata.BibID + "_" + Metadata.VID + ".html";
                 StaticBuilder.Create_Item_Citation_HTML(Metadata, filename, resourceFolder);
 
                 return filename;
@@ -280,7 +280,7 @@ namespace SobekCM.Builder_Library
             try
             {
                 // Set the image location
-				Metadata.Web.Image_Root = InstanceWide_Settings_Singleton.Settings.Image_URL + Metadata.Web.File_Root.Replace("\\", "/");
+                Metadata.Web.Image_Root = Engine_ApplicationCache_Gateway.Settings.Image_URL + Metadata.Web.File_Root.Replace("\\", "/");
                 Metadata.Web.Set_BibID_VID(Metadata.BibID, Metadata.VID);
 
 
@@ -295,7 +295,7 @@ namespace SobekCM.Builder_Library
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
                 Dictionary<string, object> options = new Dictionary<string, object>();
-                options["MarcXML_File_ReaderWriter:Additional_Tags"] = Metadata.MARC_Sobek_Standard_Tags(collectionnames, true, InstanceWide_Settings_Singleton.Settings.System_Name, InstanceWide_Settings_Singleton.Settings.System_Abbreviation);
+                options["MarcXML_File_ReaderWriter:Additional_Tags"] = Metadata.MARC_Sobek_Standard_Tags(collectionnames, true, Engine_ApplicationCache_Gateway.Settings.System_Name, Engine_ApplicationCache_Gateway.Settings.System_Abbreviation);
                 return marcWriter.Write_Metadata(Metadata.Source_Directory + "\\marc.xml", Metadata, options, out errorMessage);
 
             }
@@ -441,7 +441,7 @@ namespace SobekCM.Builder_Library
         {
             get
             {
-                return InstanceWide_Settings_Singleton.Settings.System_Base_URL + "/" + Metadata.BibID + "/" + Metadata.VID;
+                return Engine_ApplicationCache_Gateway.Settings.System_Base_URL + "/" + Metadata.BibID + "/" + Metadata.VID;
             }
         }
 

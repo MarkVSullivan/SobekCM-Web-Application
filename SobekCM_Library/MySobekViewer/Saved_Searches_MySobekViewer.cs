@@ -5,12 +5,10 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Web;
-using SobekCM.Library.Application_State;
+using SobekCM.Core.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
 
 #endregion
@@ -33,22 +31,12 @@ namespace SobekCM.Library.MySobekViewer
     public class Saved_Searches_MySobekViewer : abstract_MySobekViewer
     {
         /// <summary> Constructor for a new instance of the Saved_Searches_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Translator"> Translation / language support object for writing the user interface is multiple languages</param>
-        /// <param name="currentMode"> Mode / navigation information for the current request</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public Saved_Searches_MySobekViewer(User_Object User, 
-            Language_Support_Info Translator, 
-            SobekCM_Navigation_Object currentMode,
-            Custom_Tracer Tracer)
-            : base(User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Saved_Searches_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Saved_Searches_MySobekViewer.Constructor", String.Empty);
+            RequestSpecificValues.Tracer.Add_Trace("Saved_Searches_MySobekViewer.Constructor", String.Empty);
 
-            user = User;
-            base.Translator = Translator;
-
-            if (currentMode.isPostBack)
+            if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 // Pull the standard values
                 NameValueCollection form = HttpContext.Current.Request.Form;
@@ -60,12 +48,12 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     int folder_id_int;
                     if (Int32.TryParse(folder_id, out folder_id_int))
-                        SobekCM_Database.Delete_User_Search(folder_id_int, Tracer);
+                        SobekCM_Database.Delete_User_Search(folder_id_int, RequestSpecificValues.Tracer);
                 }
 
                 HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
                 HttpContext.Current.ApplicationInstance.CompleteRequest();
-                currentMode.Request_Completed = true;
+                RequestSpecificValues.Current_Mode.Request_Completed = true;
             }
         }
 
@@ -82,7 +70,7 @@ namespace SobekCM.Library.MySobekViewer
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Saved_Searches_MySobekViewer.Write_HTML", String.Empty);
-			DataTable searchesTable = SobekCM_Database.Get_User_Searches(user.UserID, Tracer);
+            DataTable searchesTable = SobekCM_Database.Get_User_Searches(RequestSpecificValues.Current_User.UserID, Tracer);
 
 
 			Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -116,7 +104,7 @@ namespace SobekCM.Library.MySobekViewer
 					// Build the action links
 					Output.WriteLine("    <tr align=\"left\" valign=\"center\" >");
 					Output.Write("      <td class=\"SobekFolderActionLink\" >( ");
-					Output.Write("<a title=\"Click to delete this saved search\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_search('" + usersearchid + "');\">delete</a> | ");
+					Output.Write("<a title=\"Click to delete this saved search\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_search('" + usersearchid + "');\">delete</a> | ");
 					Output.WriteLine("<a title=\"Click to view this search\" href=\"" + search_url + "\">view</a> )</td>");
 					Output.WriteLine("      <td><a href=\"" + search_url + "\">" + search_desc + "</a></td>");
 					Output.WriteLine("     </tr>");

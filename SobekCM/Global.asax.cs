@@ -1,42 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Using directives
+
+using System;
 using System.IO;
-using System.Linq;
 using System.Web;
-using System.Web.Security;
-using System.Web.SessionState;
-using SobekCM.Core.Settings;
-using SobekCM.Library;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Settings;
-using SobekCM.Library.Skins;
-using SobekCM.Core.Users;
+using SobekCM.Tools;
+using SobekCM.UI_Library;
+
+#endregion
 
 namespace SobekCM
 {
-	public class Global : System.Web.HttpApplication
+	public class Global : HttpApplication
 	{
-		// Values used by the SobekCM Library, as well as the SobekCM Web Application
-		public static Checked_Out_Items_List Checked_List;
-		public static Aggregation_Code_Manager Codes;
-		public static Dictionary<string, string> Collection_Aliases;
-		public static Dictionary<string, Wordmark_Icon> Icon_List;
-		public static IP_Restriction_Ranges IP_Restrictions;
-		public static Item_Lookup_Object Item_List;
-		public static DateTime? Last_Refresh;
-		public static Recent_Searches Search_History;
-		public static SobekCM_Skin_Collection Skins;
-		public static Statistics_Dates Stats_Date_Range;
-		public static List<Thematic_Heading> Thematic_Headings;
-		public static Language_Support_Info Translation;
-		public static Portal_List URL_Portals;
-		public static Dictionary<string, Mime_Type_Info> Mime_Types;
-		public static List<string> Item_Viewer_Priority;
-        public static List<User_Group> User_Groups;
-
-        // the list of all stop words ignored during metadata searching (such as 'The', 'A', etc..) 
-	    public static List<string> Search_Stop_Words;
+   
 
 		protected void Application_Start(object sender, EventArgs e)
 		{
@@ -139,9 +115,9 @@ namespace SobekCM
 					else
 					{
 						// Forward if there is a place to forward to.
-						if (!String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.System_Error_URL))
+						if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System_Error_URL))
 						{
-							Response.Redirect(InstanceWide_Settings_Singleton.Settings.System_Error_URL, false);
+							Response.Redirect(UI_ApplicationCache_Gateway.Settings.System_Error_URL, false);
 						}
 						else
 						{

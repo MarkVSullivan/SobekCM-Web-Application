@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿#region Using directives
+
+using System;
+using System.Web.Services;
 using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Data.SqlClient;
-using System.Configuration;
-using System.Data;
-using SobekCM.Core.Settings;
 using SobekCM.Library.Database;
 using SobekCM.Library.ResultsViewer;
-using SobekCM.Library.Settings;
+using SobekCM.UI_Library;
 
-public partial class CallBacks : System.Web.UI.Page
+#endregion
+
+public partial class CallBacks : Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
 
     }
 
-    [System.Web.Services.WebMethod]
+    [WebMethod]
     public static object MapSearch(string sendData)
     {
-        SobekCM_Database.Connection_String = InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String;
+        SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
         return Google_Map_ResultsViewer.Process_MapSearch_Callback(sendData);
     }
 }

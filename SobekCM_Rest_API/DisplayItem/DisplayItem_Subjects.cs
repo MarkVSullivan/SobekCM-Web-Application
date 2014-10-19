@@ -1,9 +1,9 @@
-﻿using System;
+﻿#region Using directives
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.Serialization;
+
+#endregion
 
 namespace SobekCM_Rest_API.DisplayItem
 {

@@ -3,12 +3,9 @@
 using System;
 using System.Text;
 using System.Web.UI.WebControls;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Core.Users;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -20,12 +17,10 @@ namespace SobekCM.Library.ResultsViewer
     public class Bookshelf_View_ResultsViewer : abstract_ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Bookshelf_View_ResultsViewer class </summary>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        /// <param name="Current_User"> Current user object </param>
-        public Bookshelf_View_ResultsViewer(Item_Lookup_Object All_Items_Lookup, User_Object Current_User )
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Bookshelf_View_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            base.All_Items_Lookup = All_Items_Lookup;
-            currentUser = Current_User;
+            // do nothing
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
@@ -40,14 +35,14 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // If results are null, or no results, return empty string
-            if ((Paged_Results == null) || (Results_Statistics == null) || (Results_Statistics.Total_Items <= 0))
+            if ((RequestSpecificValues.Paged_Results == null) || (RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Items <= 0))
                 return;
 
             // Get the text search redirect stem and (writer-adjusted) base url 
             string textRedirectStem = Text_Redirect_Stem;
-            string base_url = CurrentMode.Base_URL;
-            if (CurrentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-                base_url = CurrentMode.Base_URL + "l/";
+            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
             // Start this table
             StringBuilder resultsBldr = new StringBuilder(5000);
@@ -65,11 +60,11 @@ namespace SobekCM.Library.ResultsViewer
 
             // Add the next row for manipulating checked items
             resultsBldr.AppendLine("\t<tr align=\"left\" bgcolor=\"#7d90d5\" >");
-            resultsBldr.Append("\t\t<td class=\"SobekFolderActionLink\" ><span style=\"color: White\"> ( <a href=\"\" id=\"bookshelf_all_remove\" name=\"bookshelf_all_remove\" onclick=\"return remove_all('" + Paged_Results.Count + "' );\"><span style=\"color: White\" title=\"Remove all checked items from your bookshelf\" >remove<span style=\"color: White\"></a> | ");
-            resultsBldr.AppendLine("<a href=\"\" id=\"bookshelf_all_move\" id=\"bookshelf_all_move\" onclick=\"return move_all('" + Paged_Results.Count + "' );\"><span style=\"color: White\" title=\"Move all checked items to a new bookshelf\" >move<span style=\"color: White\"></a> )</span></td>");
+            resultsBldr.Append("\t\t<td class=\"SobekFolderActionLink\" ><span style=\"color: White\"> ( <a href=\"\" id=\"bookshelf_all_remove\" name=\"bookshelf_all_remove\" onclick=\"return remove_all('" + RequestSpecificValues.Paged_Results.Count + "' );\"><span style=\"color: White\" title=\"Remove all checked items from your bookshelf\" >remove<span style=\"color: White\"></a> | ");
+            resultsBldr.AppendLine("<a href=\"\" id=\"bookshelf_all_move\" id=\"bookshelf_all_move\" onclick=\"return move_all('" + RequestSpecificValues.Paged_Results.Count + "' );\"><span style=\"color: White\" title=\"Move all checked items to a new bookshelf\" >move<span style=\"color: White\"></a> )</span></td>");
 
             // Add the check box (checks all or removes all checks)
-            resultsBldr.AppendLine("\t\t<td><span style=\"color: White\"><input title=\"Select or unselect all items in this bookshelf\" type=\"checkbox\" id=\"bookshelf_all_check\" name=\"bookshelf_all_check\" onclick=\"bookshelf_all_check_clicked('" + Paged_Results.Count + "');\" /></span></td>");
+            resultsBldr.AppendLine("\t\t<td><span style=\"color: White\"><input title=\"Select or unselect all items in this bookshelf\" type=\"checkbox\" id=\"bookshelf_all_check\" name=\"bookshelf_all_check\" onclick=\"bookshelf_all_check_clicked('" + RequestSpecificValues.Paged_Results.Count + "');\" /></span></td>");
 
             // Add the title
             resultsBldr.AppendLine("\t\t<td><span style=\"color: White\">&nbsp;</span></td>\n\t</tr>");
@@ -80,15 +75,13 @@ namespace SobekCM.Library.ResultsViewer
             resultsBldr.Remove(0, resultsBldr.Length);
 
             // Determine if this is an internal user
-            bool internal_user = false;
-            if ((currentUser != null) && ((currentUser.Is_Internal_User) || (currentUser.Is_System_Admin)))
-                internal_user = true;
+            bool internal_user = (RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_System_Admin));
 
             // Set the counter for these results from the page 
             int current_row = 0;
 
             // Step through all the results
-            foreach (iSearch_Title_Result titleResult in Paged_Results)
+            foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
             {
                 // Write a single row
                 Write_Single_Row(resultsBldr, titleResult, current_row + 1, textRedirectStem, base_url, internal_user);
@@ -122,7 +115,7 @@ namespace SobekCM.Library.ResultsViewer
 
             if (internal_user)
             {
-                resultsBldr.Append(" | <a title=\"Edit this item\" href=\"" + CurrentMode.Base_URL + "my/edit/" + titleRow.BibID + "/" + itemRow.VID + "\" name=\"item_edit_" + index_in_page + "\" id=\"item_edit_" + index_in_page + "\" >edit</a> )</td>\n");
+                resultsBldr.Append(" | <a title=\"Edit this item\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/edit/" + titleRow.BibID + "/" + itemRow.VID + "\" name=\"item_edit_" + index_in_page + "\" id=\"item_edit_" + index_in_page + "\" >edit</a> )</td>\n");
             }
             else
             {

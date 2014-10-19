@@ -2,15 +2,15 @@
 
 using System;
 using System.Data;
+using System.IO;
 using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
+using SobekCM.Core.Items;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Items;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -165,7 +165,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 ushort subpage = CurrentMode.SubPage;
                 CurrentMode.SubPage = 1;
-                string returnVal = CurrentMode.Redirect_URL();
+                string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);;
                 CurrentMode.SubPage = subpage;
                 return returnVal;
             }
@@ -182,7 +182,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 ushort subpage = CurrentMode.SubPage;
                 CurrentMode.SubPage = (ushort)(CurrentMode.SubPage - 1);
-                string returnVal = CurrentMode.Redirect_URL();
+                string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);;
                 CurrentMode.SubPage = subpage;
                 return returnVal;
             }
@@ -199,7 +199,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 
                 ushort subpage = CurrentMode.SubPage;
                 CurrentMode.SubPage = (ushort)(CurrentMode.SubPage + 1);
-                string returnVal = CurrentMode.Redirect_URL();
+                string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);;
                 CurrentMode.SubPage = subpage;
                 return returnVal;
             }
@@ -218,7 +218,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentMode.SubPage = (ushort)((thumbnail_count / 60));
                 if ((thumbnail_count % 60) != 0)
                     CurrentMode.SubPage = (ushort)(CurrentMode.SubPage + 1);
-                string returnVal = CurrentMode.Redirect_URL();
+                string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);;
                 CurrentMode.SubPage = subpage;
                 return returnVal;
             }
@@ -227,7 +227,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Stream to which to write the HTML for this subwriter  </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Main_Viewer_Section(System.IO.TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (viewType != View_Type.Tree)
             {
@@ -300,7 +300,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 relatedBuilder.AppendLine("  <tr>");
                 relatedBuilder.AppendLine("    <td colspan=\"2\"><h2>Related Titles</h2></td>");
                 relatedBuilder.AppendLine("  </tr>");
-                string url_opts = CurrentMode.URL_Options();
+                string url_opts = UrlWriterHelper.URL_Options(CurrentMode);
                 foreach (Related_Titles thisTitle in CurrentItem.Web.All_Related_Titles)
                 {
                     relatedBuilder.AppendLine("  <tr>");
@@ -326,7 +326,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Writes the list of volumes associated with the same title as a digital resource to the output stream </summary>
         /// <param name="Output"> HTML output response stream </param>
         /// <param name="Volumes"> Source datatable with all affiliated volumes </param>
-        protected internal void Write_List(System.IO.TextWriter Output, DataTable Volumes)
+        protected internal void Write_List(TextWriter Output, DataTable Volumes)
         {
             // Save the current viewer code
             string current_view_code = CurrentMode.ViewerCode;
@@ -335,7 +335,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Compute the base redirect URL
             string current_vid = CurrentMode.VID;
             CurrentMode.VID = "<%VID%>";
-            string redirect_url = CurrentMode.Redirect_URL(String.Empty);
+            string redirect_url = UrlWriterHelper.Redirect_URL(CurrentMode, String.Empty);
             CurrentMode.VID = current_vid;
 
             // Get the column references for speed
@@ -439,7 +439,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Writes the collection of thumbnails for volumes associated with the same title as a digital resource to the output stream </summary>
         /// <param name="Volumes"> Source datatable with all affiliated volumes </param>
         /// <param name="Output"> HTML output response stream </param>
-        protected internal void Write_Thumbnails(System.IO.TextWriter Output, DataTable Volumes)
+        protected internal void Write_Thumbnails(TextWriter Output, DataTable Volumes)
         {
             if (CurrentMode.SubPage <= 0)
                 CurrentMode.SubPage = 1;
@@ -455,7 +455,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<div style=\"margin:5px;text-align:center;\">");
 
             // Find the base address for this thumbnail
-            string jpeg_base = (InstanceWide_Settings_Singleton.Settings.Image_URL + CurrentItem.Web.File_Root + "/").Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+            string jpeg_base = (UI_ApplicationCache_Gateway.Settings.Image_URL + CurrentItem.Web.File_Root + "/").Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
 
             // Compute the base redirect URL
             string current_vid = CurrentMode.VID;
@@ -464,7 +464,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentMode.ViewerCode = String.Empty;
             CurrentMode.SubPage = 0;
             CurrentMode.VID = "<%VID%>";
-            string redirect_url = CurrentMode.Redirect_URL(String.Empty);
+            string redirect_url = UrlWriterHelper.Redirect_URL(CurrentMode, String.Empty);
             CurrentMode.ViewerCode = viewercode;
             CurrentMode.SubPage = subpage;
             CurrentMode.VID = current_vid;
@@ -579,7 +579,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Compute the base redirect URL
             string current_vid = CurrentMode.VID;
             CurrentMode.VID = "<%VID%>";
-            string redirect_url = CurrentMode.Redirect_URL(String.Empty);
+            string redirect_url = UrlWriterHelper.Redirect_URL(CurrentMode, String.Empty);
             CurrentMode.VID = current_vid;
 
             // Get the data columns for quick access

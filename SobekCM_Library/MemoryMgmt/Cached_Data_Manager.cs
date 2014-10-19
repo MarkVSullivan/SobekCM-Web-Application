@@ -8,20 +8,18 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
-using SobekCM.Resource_Object;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Citation.Template;
-using SobekCM.Library.Items;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.SiteMap;
-using SobekCM.Library.Skins;
-using SobekCM.Library.Solr;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Items;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
+using SobekCM.Core.SiteMap;
+using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Solr;
+using SobekCM.Library.Citation.Template;
+using SobekCM.Resource_Object;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -38,7 +36,7 @@ namespace SobekCM.Library.MemoryMgmt
 		/// <summary> Static constructor initializes several variables </summary>
 		static Cached_Data_Manager()
 		{
-			caching_serving_enabled = InstanceWide_Settings_Singleton.Settings.Caching_Server.Length > 0;
+			caching_serving_enabled = UI_ApplicationCache_Gateway.Settings.Caching_Server.Length > 0;
 			Disabled = false;
 		}
 

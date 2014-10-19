@@ -1,14 +1,14 @@
-﻿#region Includes
+﻿#region Using directives
 
 using System;
-using SobekCM.Library.Navigation;
-using SobekCM_UI_Library.Navigation;
+using System.Web.UI;
+using SobekCM.Core.Navigation;
 
 #endregion
 
 namespace SobekCM
 {
-	public partial class SobekCM_OAI : System.Web.UI.Page
+	public partial class SobekCM_OAI : Page
 	{
 		private SobekCM_Page_Globals pageGlobals;
 

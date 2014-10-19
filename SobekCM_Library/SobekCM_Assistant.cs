@@ -8,29 +8,31 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Items;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
 using SobekCM.Core.Search;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
+using SobekCM.Core.SiteMap;
+using SobekCM.Core.Skins;
+using SobekCM.Core.Users;
+using SobekCM.Core.WebContent;
+using SobekCM.EngineLibrary.ApplicationState;
+using SobekCM.Engine_Library.Aggregations;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Items;
+using SobekCM.Engine_Library.Navigation;
+using SobekCM.Engine_Library.SiteMap;
+using SobekCM.Engine_Library.Solr;
+using SobekCM.Library.Database;
+using SobekCM.Library.MemoryMgmt;
+using SobekCM.Library.Skins;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
-using SobekCM.Library.ResultsViewer;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Database;
-using SobekCM.Library.Items;
-using SobekCM.Library.MemoryMgmt;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.Search;
-using SobekCM.Library.SiteMap;
-using SobekCM.Library.Skins;
-using SobekCM.Library.Solr;
-using SobekCM.Core.Users;
-using SobekCM.Library.WebContent;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -130,7 +132,7 @@ namespace SobekCM.Library
 
                 // Remove the include and either place in the text from the indicated file, 
                 // or just remove
-                if ((filename_to_include.Length > 0 ) && (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "design\\webcontent\\" + filename_to_include)))
+                if ((filename_to_include.Length > 0 ) && (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + filename_to_include)))
                 {
                     // Define the value for the include text
                     string include_text;
@@ -146,7 +148,7 @@ namespace SobekCM.Library
                         try
                         {
                             // Pull from the file
-                            StreamReader reader = new StreamReader(InstanceWide_Settings_Singleton.Settings.Base_Directory + "design\\webcontent\\" + filename_to_include);
+                            StreamReader reader = new StreamReader(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + filename_to_include);
                             include_text = reader.ReadToEnd();
                             reader.Close();
 
@@ -182,7 +184,7 @@ namespace SobekCM.Library
                 if (Site_Map == null)
                 {
                     // Only continue if the file exists
-                    if (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap))
+                    if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap))
                     {
                         if (Tracer != null)
                         {
@@ -190,7 +192,7 @@ namespace SobekCM.Library
                         }
 
                         // Try to read this sitemap file
-                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(InstanceWide_Settings_Singleton.Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap);
+                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap);
 
                         // If the sitemap file was succesfully read, cache it
                         if (Site_Map != null)
@@ -202,7 +204,7 @@ namespace SobekCM.Library
             }
 
             // Since this is not cached, we can apply the individual user settings to the static text which was read right here
-            Simple_Web_Content.Static_Text = Simple_Web_Content.Apply_Settings_To_Static_Text(Simple_Web_Content.Static_Text, null, Current_Mode.Skin, Current_Mode.Base_Skin, Current_Mode.Base_URL, Current_Mode.URL_Options(), Tracer);
+            Simple_Web_Content.Static_Text = Simple_Web_Content.Apply_Settings_To_Static_Text(Simple_Web_Content.Static_Text, null, Current_Mode.Skin, Current_Mode.Base_Skin, Current_Mode.Base_URL, UrlWriterHelper.URL_Options(Current_Mode), Tracer);
 
 
             return true;
@@ -258,7 +260,7 @@ namespace SobekCM.Library
                 }
 
 
-                Single_Paged_Results_Args returnArgs = SobekCM_Database.Get_User_Folder_Browse(User_ID, Folder_Name, Results_Per_Page, ResultsPage, false, new List<short>(), need_browse_statistics, Tracer);
+                Single_Paged_Results_Args returnArgs = Engine_Database.Get_User_Folder_Browse(User_ID, Folder_Name, Results_Per_Page, ResultsPage, false, new List<short>(), need_browse_statistics, Tracer);
                 if (need_browse_statistics)
                 {
                     Complete_Result_Set_Info = returnArgs.Statistics;
@@ -350,7 +352,7 @@ namespace SobekCM.Library
                     Tracer.Add_Trace("SobekCM_Assistant.Get_User_Folder", "Building results information");
                 }
 
-                Single_Paged_Results_Args returnArgs = SobekCM_Database.Get_Public_Folder_Browse(UserFolderID, 20, ResultsPage, false, new List<short>(), need_browse_statistics, Tracer);
+                Single_Paged_Results_Args returnArgs = Engine_Database.Get_Public_Folder_Browse(UserFolderID, 20, ResultsPage, false, new List<short>(), need_browse_statistics, Tracer);
                 if (need_browse_statistics)
                 {
                     Complete_Result_Set_Info = returnArgs.Statistics;
@@ -383,7 +385,7 @@ namespace SobekCM.Library
         /// <returns> File name to read for the static browse HTML to display </returns>
         public string Get_All_Browse_Static_HTML(SobekCM_Navigation_Object Current_Mode, Custom_Tracer Tracer)
         {
-            string base_image_url = InstanceWide_Settings_Singleton.Settings.Base_Data_Directory + Current_Mode.Aggregation + "_all.html";
+            string base_image_url = UI_ApplicationCache_Gateway.Settings.Base_Data_Directory + Current_Mode.Aggregation + "_all.html";
             return base_image_url;
         }
 
@@ -512,7 +514,7 @@ namespace SobekCM.Library
                         // Get from the hierarchy object
                         if (Current_Mode.Writer_Type == Writer_Type_Enum.JSON)
                         {
-                            Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Get_Item_Aggregation_Browse_Paged(Current_Mode.Aggregation, "1900-01-01", false, 20, Current_Mode.Page, 0, need_browse_statistics, Aggregation_Object.Facets, need_browse_statistics, Tracer);
+                            Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Item_Aggregation_Browse_Paged(Current_Mode.Aggregation, "1900-01-01", false, 20, Current_Mode.Page, 0, need_browse_statistics, Aggregation_Object.Facets, need_browse_statistics, Tracer);
                             if (need_browse_statistics)
                             {
                                 Complete_Result_Set_Info = returnArgs.Statistics;
@@ -523,7 +525,7 @@ namespace SobekCM.Library
                         }
                         else
                         {
-                            Multiple_Paged_Results_Args returnArgs = Aggregation_Object.Get_Browse_Results(Browse_Object, Current_Mode.Page, sort, results_per_page, !special_search_type, need_browse_statistics, Tracer);
+                            Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Get_Browse_Results(Aggregation_Object, Browse_Object, Current_Mode.Page, sort, results_per_page, !special_search_type, need_browse_statistics, Tracer);
                             if (need_browse_statistics)
                             {
                                 Complete_Result_Set_Info = returnArgs.Statistics;
@@ -551,7 +553,7 @@ namespace SobekCM.Library
                     break;
 
                 case Item_Aggregation_Child_Page.Result_Data_Type.Text:
-                    Browse_Info_Display_Text = Browse_Object.Get_Static_Content(Current_Mode.Language, Current_Mode.Base_URL, InstanceWide_Settings_Singleton.Settings.Base_Design_Location + Aggregation_Object.ObjDirectory, Tracer);
+                    Browse_Info_Display_Text = Browse_Object.Get_Static_Content(Current_Mode.Language, Current_Mode.Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Design_Location + Aggregation_Object.ObjDirectory, Tracer);
                     break;
             }
             return true;
@@ -612,7 +614,7 @@ namespace SobekCM.Library
             string bibid = Current_Mode.BibID;
             string vid = selected_item.VID.PadLeft(5, '0');
             Current_Mode.VID = vid;
-            string base_image_url = InstanceWide_Settings_Singleton.Settings.Base_Data_Directory + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + bibid + "_" + vid + ".html";
+            string base_image_url = UI_ApplicationCache_Gateway.Settings.Base_Data_Directory + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + bibid + "_" + vid + ".html";
             return base_image_url;
         }
 
@@ -900,7 +902,7 @@ namespace SobekCM.Library
 			        if (terms.Length < 2)
 			        {
 				        Current_Mode.Mode = Display_Mode_Enum.Search;
-				        Current_Mode.Redirect();
+				        UrlWriterHelper.Redirect(Current_Mode);
 				        return;
 			        }
 			        if (terms.Length < 4)
@@ -926,7 +928,7 @@ namespace SobekCM.Library
 			        if (((lat1 == 1000) || (long1 == 1000)) && ((lat2 == 1000) || (long2 == 1000)))
 			        {
 				        Current_Mode.Mode = Display_Mode_Enum.Search;
-				        Current_Mode.Redirect();
+				        UrlWriterHelper.Redirect(Current_Mode);
 				        return;
 			        }
 
@@ -949,7 +951,7 @@ namespace SobekCM.Library
 			        {
 				        // Try to pull more than one page, so we can cache the next page or so
 
-				        Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Get_Items_By_Coordinates(Current_Mode.Aggregation, lat1, long1, lat2, long2, false, 20, Current_Mode.Page, sort, false, new List<short>(), true, Tracer);
+				        Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Items_By_Coordinates(Current_Mode.Aggregation, lat1, long1, lat2, long2, false, 20, Current_Mode.Page, sort, false, new List<short>(), true, Tracer);
 				        List<List<iSearch_Title_Result>> pagesOfResults = returnArgs.Paged_Results;
 				        Complete_Result_Set_Info = returnArgs.Statistics;
 
@@ -972,7 +974,7 @@ namespace SobekCM.Library
 		        catch
 		        {
 			        Current_Mode.Mode = Display_Mode_Enum.Search;
-			        Current_Mode.Redirect();
+			        UrlWriterHelper.Redirect(Current_Mode);
 		        }
 	        }
 	        else
@@ -1371,7 +1373,7 @@ namespace SobekCM.Library
                     if (is_number)
                     {
                         long oclc = Convert.ToInt64(Terms[0]);
-                        Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Items_By_OCLC_Number(oclc, false, Results_Per_Page, Current_Sort, Need_Search_Statistics, Tracer);
+                        Multiple_Paged_Results_Args returnArgs = Engine_Database.Items_By_OCLC_Number(oclc, false, Results_Per_Page, Current_Sort, Need_Search_Statistics, Tracer);
                         if (Need_Search_Statistics)
                             Complete_Result_Set_Info = returnArgs.Statistics;
                         Paged_Results = returnArgs.Paged_Results;
@@ -1387,7 +1389,7 @@ namespace SobekCM.Library
                     if (is_number)
                     {
                         int aleph = Convert.ToInt32(Terms[0]);
-                        Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Items_By_ALEPH_Number(aleph, false, Results_Per_Page, Current_Sort, Need_Search_Statistics, Tracer);
+                        Multiple_Paged_Results_Args returnArgs = Engine_Database.Items_By_ALEPH_Number(aleph, false, Results_Per_Page, Current_Sort, Need_Search_Statistics, Tracer);
                         if (Need_Search_Statistics)
                             Complete_Result_Set_Info = returnArgs.Statistics;
                         Paged_Results = returnArgs.Paged_Results;
@@ -1483,7 +1485,7 @@ namespace SobekCM.Library
             // If this is an exact match, just do the search
             if (Current_Mode.Search_Precision == Search_Precision_Type_Enum.Exact_Match)
             {
-                Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Exact_Search_Paged(db_terms[0], db_fields[0], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Exact_Search_Paged(db_terms[0], db_fields[0], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
                 if (Need_Search_Statistics)
                     Complete_Result_Set_Info = returnArgs.Statistics;
                 Paged_Results = returnArgs.Paged_Results;
@@ -1540,7 +1542,7 @@ namespace SobekCM.Library
 
 
 
-                    Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Search_Paged(searchBuilder.ToString(), INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                    Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(searchBuilder.ToString(), INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
                     if (Need_Search_Statistics)
                         Complete_Result_Set_Info = returnArgs.Statistics;
                     Paged_Results = returnArgs.Paged_Results;
@@ -1548,7 +1550,7 @@ namespace SobekCM.Library
                 else
                 {
                     // Perform search in the database
-                    Multiple_Paged_Results_Args returnArgs = SobekCM_Database.Perform_Metadata_Search_Paged(db_terms[0], db_fields[0], links[0], db_terms[1], db_fields[1], links[1], db_terms[2], db_fields[2], links[2], db_terms[3],
+                    Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(db_terms[0], db_fields[0], links[0], db_terms[1], db_fields[1], links[1], db_terms[2], db_fields[2], links[2], db_terms[3],
                                                                                                             db_fields[3], links[3], db_terms[4], db_fields[4], links[4], db_terms[5], db_fields[5], links[5], db_terms[6], db_fields[6], links[6], db_terms[7], db_fields[7], links[7], db_terms[8], db_fields[8],                                                                                        links[8], db_terms[9], db_fields[9], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
 					if (Need_Search_Statistics)
                         Complete_Result_Set_Info = returnArgs.Statistics;
@@ -1559,7 +1561,7 @@ namespace SobekCM.Library
 
         private static short Metadata_Field_Number( string FieldCode )
         {
-            Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Code(FieldCode);
+            Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(FieldCode);
             return (field == null) ? (short) -1 : field.ID;
         }
 
@@ -1593,7 +1595,7 @@ namespace SobekCM.Library
                     }
                     else
                     {
-                        Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
+                        Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
                         if (field != null)
                         {
                             solr_field = field.Solr_Field + ":";
@@ -1651,7 +1653,7 @@ namespace SobekCM.Library
                     }
                     else
                     {
-                        Metadata_Search_Field field = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
+                        Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(web_field.ToUpper());
                         if (field != null)
                         {
                             solr_field = field.Solr_Field + ":";
@@ -1750,7 +1752,7 @@ namespace SobekCM.Library
             Item_Aggregation cacheInstance = Cached_Data_Manager.Retrieve_Item_Aggregation(Aggregation_Code, Language_Code, !IsRobot, Tracer);
 
             // Put into the builder regardless of whether his came from the cache.. need to confirm search fields as well
-            Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation(Aggregation_Code, Language_Code, cacheInstance, IsRobot, true, Tracer);
+            Item_Aggregation returned = Item_Aggregation_Utilities.Get_Item_Aggregation(Aggregation_Code, Language_Code, cacheInstance, IsRobot, true, Tracer);
 
             // If the collection is null, then this subcollection code was invalid.
             if (returned == null) 
@@ -1777,7 +1779,7 @@ namespace SobekCM.Library
                 Item_Aggregation cacheInstance = Cached_Data_Manager.Retrieve_Item_Aggregation("all", Language_Code, !IsRobot, Tracer);
 
                 // Put into the builder regardless of whether his came from the cache.. need to confirm search fields as well
-                Item_Aggregation returned = Item_Aggregation_Builder.Get_Item_Aggregation("all", Language_Code, cacheInstance, IsRobot, true, Tracer);
+                Item_Aggregation returned = Item_Aggregation_Utilities.Get_Item_Aggregation("all", Language_Code, cacheInstance, IsRobot, true, Tracer);
 
                 // If the object is null, then this group code was invalid.
                 if (returned == null) 

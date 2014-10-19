@@ -1,7 +1,6 @@
 #region Using directives
 
 using System;
-using System.Data;
 using System.Runtime.Serialization;
 
 #endregion

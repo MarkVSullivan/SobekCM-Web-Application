@@ -1,8 +1,7 @@
 ﻿#region Using directives
 
 using System;
-using SobekCM.Library.Settings;
-using SobekCM.Library.Solr;
+using SobekCM.Engine_Library.Solr;
 
 #endregion
 

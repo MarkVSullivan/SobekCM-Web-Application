@@ -99,9 +99,14 @@
     <Compile Include="Modules\Schedulable\RebuildAllAggregationBrowsesModule.cs" />
     <Compile Include="Modules\Schedulable\SendNewItemEmailsModule.cs" />
     <Compile Include="Modules\Schedulable\SolrLuceneIndexOptimizationModule.cs" />
-    <Compile Include="Modules\Schedulable\UpdatedCachedAggreagtionMetadataModule.cs" />
+    <Compile Include="Modules\Schedulable\UpdatedCachedAggregationMetadataModule.cs" />
     <Compile Include="PDF_Tools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Statistics\SobekCM_Hit.cs" />
+    <Compile Include="Statistics\SobekCM_Log_Reader.cs" />
+    <Compile Include="Statistics\SobekCM_Session.cs" />
+    <Compile Include="Statistics\SobekCM_Stats_DataSet.cs" />
+    <Compile Include="Statistics\SobekCM_Stats_Reader_Processor.cs" />
     <Compile Include="Text_Cleaner.cs" />
     <Compile Include="Word_Powerpoint_to_PDF_Converter.cs" />
   </ItemGroup>
@@ -109,6 +114,10 @@
     <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj">
       <Project>{849c78a5-c60b-4faf-9efb-943753f64e56}</Project>
       <Name>SobekCM_Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj">
+      <Project>{c5d75f1a-c5d8-428d-bba3-ea946fd539e1}</Project>
+      <Name>SobekCM_Engine_Library</Name>
     </ProjectReference>
     <ProjectReference Include="..\SobekCM_Library\SobekCM_Library.csproj">
       <Project>{4426ff50-74c7-4b88-878b-efb9bc2317bd}</Project>

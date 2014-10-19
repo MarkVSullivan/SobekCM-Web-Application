@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿#region Using directives
+
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+
+#endregion
 
 namespace SobekCM.Core.Users
 {

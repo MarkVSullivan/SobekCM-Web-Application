@@ -1,22 +1,25 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
+using System.IO;
+using System.Reflection;
 using System.Web;
 using System.Web.UI.WebControls;
-using System.IO;
-using System.Xml;
-using SobekCM.Core.Settings;
-using SobekCM.Library.HTML;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.HTML;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
-using SobekCM.Library.Navigation;
-using SobekCM.Resource_Object;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
+
+#endregion
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -45,7 +48,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			CurrentItem = Current_Item;
 			CurrentMode = Current_Mode;
 
-			//string resource_directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+			//string resource_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
 			//string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
 
 			// If there is no user, send to the login
@@ -54,7 +57,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
                 CurrentMode.Return_URL = Current_Item.BibID + "/" + Current_Item.VID + "/mapedit";
-                CurrentMode.Redirect();
+                UrlWriterHelper.Redirect(CurrentMode);
                 return;
 			}
 
@@ -70,7 +73,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 			////create a backup of the mets
-			//string backup_directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + Current_Item.Web.AssocFilePath + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name;
+			//string backup_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + Current_Item.Web.AssocFilePath + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name;
 			//string backup_mets_name = backup_directory + "\\" + CurrentItem.METS_Header.ObjectID + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + ".mets.bak";
 			//File.Copy(current_mets, backup_mets_name);
 
@@ -161,7 +164,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							//add the new point 
 							resourceGeoInfo.Add_Point(newPoint);
 							//save to db
-							Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
+							SobekCM_Database.Save_Digital_Resource(CurrentItem);
 							break;
 						#endregion
 						#region overlay
@@ -259,7 +262,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							//add the pagegeo obj
 							pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
 							//save to db
-							Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
+							SobekCM_Database.Save_Digital_Resource(CurrentItem);
 							break;
 						#endregion
 					}
@@ -275,7 +278,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 								//clear nonpoipoints
 								resourceGeoInfo.Clear_NonPOIPoints();
 								//save to db
-								Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
+								SobekCM_Database.Save_Digital_Resource(CurrentItem);
 								break;
 							#endregion
 							#region overlay
@@ -309,7 +312,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 									pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
 
 									//save to db
-									Resource_Object.Database.SobekCM_Database.Save_Digital_Resource(CurrentItem);
+									SobekCM_Database.Save_Digital_Resource(CurrentItem);
 								}
 								catch (Exception)
 								{
@@ -440,8 +443,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			#region prep saving dir
 			//create inprocessing directory
-			string userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.User_InProcess_Directory( CurrentUser, "mapwork");
-            string backupDirectory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name;
+			string userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.User_InProcess_Directory( CurrentUser, "mapwork");
+            string backupDirectory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name;
 
 			//ensure the user's process directory exists
 			if (!Directory.Exists(userInProcessDirectory))
@@ -450,7 +453,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (!Directory.Exists(backupDirectory))
 				Directory.CreateDirectory(backupDirectory);
 
-			string resource_directory = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+			string resource_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
 			string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
 			string backup_mets = backupDirectory + "\\" + CurrentItem.METS_Header.ObjectID + "_" + DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + "_" + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + ".mets.xml.BAK";
 			string metsInProcessFile = userInProcessDirectory + "\\" + CurrentItem.BibID + "_" + CurrentItem.VID + ".mets.xml";
@@ -593,14 +596,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				#region Get debug time (only while debugging)
 
 #if DEBUG
-            string filePath = System.Reflection.Assembly.GetCallingAssembly().Location;
+            string filePath = Assembly.GetCallingAssembly().Location;
             const int c_PeHeaderOffset = 60;
             const int c_LinkerTimestampOffset = 8;
             byte[] b = new byte[2048];
-            System.IO.Stream s = null;
+            Stream s = null;
             try
             {
-                s = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                s = new FileStream(filePath, FileMode.Open, FileAccess.Read);
                 s.Read(b, 0, 2048);
             }
             catch (Exception)
@@ -615,8 +618,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     s.Close();
                 }
             }
-            int i2 = System.BitConverter.ToInt32(b, c_PeHeaderOffset);
-            int secondsSince1970 = System.BitConverter.ToInt32(b, i2 + c_LinkerTimestampOffset);
+            int i2 = BitConverter.ToInt32(b, c_PeHeaderOffset);
+            int secondsSince1970 = BitConverter.ToInt32(b, i2 + c_LinkerTimestampOffset);
             DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
             dt = dt.AddSeconds(secondsSince1970);
             dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
@@ -662,7 +665,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					collectionIdsFromPage.Add(CurrentItem.BibID);
 
 					//get settings
-					List<string>[] settings = Configuration.MapEditor_Configuration.getSettings(collectionIdsFromPage);
+					List<string>[] settings = MapEditor_Configuration.getSettings(collectionIdsFromPage);
 
 					//loop through settings
 					for (int i = 0; i < settings[0].Count; i++)

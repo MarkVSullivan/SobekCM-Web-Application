@@ -1,8 +1,8 @@
 ﻿#region Using directives
 
 using System;
-using SobekCM.Core.Database;
 using System.Runtime.Serialization;
+using SobekCM.Core.Database;
 
 #endregion
 

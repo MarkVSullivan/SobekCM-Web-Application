@@ -2,12 +2,11 @@
 
 using System.IO;
 using System.Text;
-using System.Web.UI.WebControls;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Items.Authority;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
-using SobekCM.Library.Items.Authority;
-using SobekCM.Library.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -74,7 +73,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("<center><b>UNABLE TO LOAD STREETS FROM DATABASE</b></center>");
                 Output.WriteLine("<br />");
                 CurrentMode.Mode = Display_Mode_Enum.Contact;
-                Output.WriteLine("<center>Click <a href=\"" + CurrentMode.Redirect_URL() + "\">here</a> to report this issue.</center>");
+                Output.WriteLine("<center>Click <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">here</a> to report this issue.</center>");
                 Output.WriteLine("<br />");
                 CurrentMode.Mode = Display_Mode_Enum.Item_Display;
             }
@@ -193,7 +192,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Add the link to the sheet
                 CurrentMode.ViewerCode = thisStreet.PageSequence.ToString();
-                Output.WriteLine("\t\t\t\t\t<td><a href=\"" + CurrentMode.Redirect_URL() + "\">" + thisStreet.PageName.Replace("Sheet", "").Trim() + "</a></td>");				
+                Output.WriteLine("\t\t\t\t\t<td><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">" + thisStreet.PageName.Replace("Sheet", "").Trim() + "</a></td>");				
 
                 // End this row
                 Output.WriteLine("\t\t\t\t</tr>");

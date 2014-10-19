@@ -3,11 +3,10 @@
 using System;
 using System.Data;
 using System.IO;
-using SobekCM.Library.Aggregations;
+using SobekCM.Core.Aggregations;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
 using SobekCM.Tools;
 
 #endregion
@@ -29,9 +28,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     {
 
         /// <summary> Constructor for a new instance of the Item_Count_AggregationViewer class </summary>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Current_Aggregation"> Current item aggregation object to display </param>
-        public Item_Count_AggregationViewer(SobekCM_Navigation_Object Current_Mode, Item_Aggregation Current_Aggregation ): base(Current_Aggregation, Current_Mode)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Item_Count_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // All work done in the base constructor
         }
@@ -82,7 +80,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Item_Count_AggregationViewer.Add_Secondary_HTML", "Adding HTML");
             }
 
-            DataTable value = SobekCM_Database.Tracking_Get_Milestone_Report(currentCollection.Code, Tracer);
+            DataTable value = SobekCM_Database.Tracking_Get_Milestone_Report(RequestSpecificValues.Hierarchy_Object.Code, Tracer);
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<br />");
@@ -121,13 +119,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("<br />");
         }
 
-        private static string Int_To_Comma_String(int value)
+        private static string Int_To_Comma_String(int Value)
         {
-            if (value < 1000)
-                return value.ToString();
+            if (Value < 1000)
+                return Value.ToString();
 
-            string valueString = value.ToString();
-            if ((value >= 1000) && (value < 1000000))
+            string valueString = Value.ToString();
+            if ((Value >= 1000) && (Value < 1000000))
             {
                 return valueString.Substring(0, valueString.Length - 3) + "," + valueString.Substring(valueString.Length - 3);
             }
