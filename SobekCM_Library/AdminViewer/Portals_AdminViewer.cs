@@ -8,6 +8,7 @@ using System.IO;
 using System.Web;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -127,7 +128,7 @@ namespace SobekCM.Library.AdminViewer
                 }
 
                 // Reload all the URL UI_ApplicationCache_Gateway.URL_Portals
-                SobekCM_Database.Populate_URL_Portals(UI_ApplicationCache_Gateway.URL_Portals, RequestSpecificValues.Tracer);
+                Engine_Database.Populate_URL_Portals(UI_ApplicationCache_Gateway.URL_Portals, RequestSpecificValues.Tracer);
             }
         }
 

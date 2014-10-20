@@ -13,6 +13,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -72,7 +73,7 @@ namespace SobekCM.Library.AdminViewer
 
 			// Get the list of all wordmarks
 			wordmarks = new Dictionary<string, Wordmark_Icon>();
-            SobekCM_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
+            Engine_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
 
             // If this is a postback, handle any events first
            // if (RequestSpecificValues.Current_Mode.isPostBack)
@@ -120,7 +121,7 @@ namespace SobekCM.Library.AdminViewer
 
 									// Repull the wordmark list now
 									wordmarks = new Dictionary<string, Wordmark_Icon>();
-                                    SobekCM_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
+                                    Engine_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
 				                }
 				                else
 				                {
@@ -197,7 +198,7 @@ namespace SobekCM.Library.AdminViewer
 
 								// Repull the wordmark list now
 								wordmarks = new Dictionary<string, Wordmark_Icon>();
-                                SobekCM_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
+                                Engine_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
 			                }
 		                }
 	                }

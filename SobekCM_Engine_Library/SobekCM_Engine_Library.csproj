@@ -58,8 +58,12 @@
     <Compile Include="Database\Database_Item_Result.cs" />
     <Compile Include="Database\Database_Title_Result.cs" />
     <Compile Include="Database\Engine_Database.cs" />
-    <Compile Include="Items\Authority\Map_Features_DataSet.cs" />
-    <Compile Include="Items\Authority\Map_Streets_DataSet.cs" />
+    <Compile Include="Items\Authority\Map_Features_DataSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Items\Authority\Map_Streets_DataSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Items\SobekCM_Item_Factory.cs" />
     <Compile Include="Items\SobekCM_METS_Based_ItemBuilder.cs" />
     <Compile Include="Navigation\SobekCM_QueryString_Analyzer.cs" />

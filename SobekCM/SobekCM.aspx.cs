@@ -264,13 +264,6 @@ namespace SobekCM
 		}
 
 
-		protected override void OnUnload(EventArgs E)
-		{
-			if (HttpContext.Current.Session["Last_Exception"] == null)
-                Engine_Database.Verify_Item_Lookup_Object(true, UI_ApplicationCache_Gateway.Items, null);
-
-			base.OnUnload(E);
-		}
 
 		#endregion
 

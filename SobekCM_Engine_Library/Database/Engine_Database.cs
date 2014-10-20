@@ -9,6 +9,8 @@ using Microsoft.ApplicationBlocks.Data;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Results;
+using SobekCM.Core.Settings;
+using SobekCM.Core.Users;
 using SobekCM.EngineLibrary.ApplicationState;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Tools;
@@ -153,7 +155,6 @@ namespace SobekCM.Engine_Library.Database
 
         #endregion
 
-
         #region Methods to support the restriction by IP addresses
 
         /// <summary> Gets the list of all the IP ranges for restriction, including each single IP information in those ranges </summary>
@@ -237,6 +238,8 @@ namespace SobekCM.Engine_Library.Database
 
         #endregion
 
+        #region Methods to support pulling data needed for the application cache
+
         /// <summary> Gets the list of all search stop words which are ignored during searching ( such as 'The', 'A', etc.. ) </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> List of all the search stop words from the database </returns>
@@ -245,7 +248,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Search_Stop_Words", "Pull search stop words from the database");
+                Tracer.Add_Trace("SobekCM_Database.StopWords", "Pull search stop words from the database");
             }
 
             // Build return list
@@ -280,9 +283,9 @@ namespace SobekCM.Engine_Library.Database
                 Last_Exception = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Search_Stop_Words", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Search_Stop_Words", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Search_Stop_Words", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.StopWords", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.StopWords", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.StopWords", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return null;
             }
@@ -375,6 +378,460 @@ namespace SobekCM.Engine_Library.Database
                 return false;
             }
         }
+
+        /// <summary> Gets the list of all user groups </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> List of partly built <see cref="Users.User_Group"/> object </returns>
+        /// <remarks> This calls the 'mySobek_Get_All_User_Groups' stored procedure </remarks> 
+        public static List<User_Group> Get_All_User_Groups(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", String.Empty);
+            }
+
+            try
+            {
+                // Execute this non-query stored procedure
+                SqlParameter[] paramList = new SqlParameter[1];
+
+                DataSet resultSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Get_All_User_Groups", paramList);
+
+                List<User_Group> returnValue = new List<User_Group>();
+
+                foreach (DataRow thisRow in resultSet.Tables[0].Rows)
+                {
+                    string name = thisRow["GroupName"].ToString();
+                    string description = thisRow["GroupDescription"].ToString();
+                    int usergroupid = Convert.ToInt32(thisRow["UserGroupID"]);
+                    bool specialGroup = Convert.ToBoolean(thisRow["IsSpecialGroup"]);
+
+                    User_Group userGroup = new User_Group(name, description, usergroupid);
+                    userGroup.IsSpecialGroup = specialGroup;
+
+                    returnValue.Add(userGroup);
+
+                }
+
+
+                return returnValue;
+
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+
+        /// <summary> Datatable with the information for every html skin from the database </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Datatable with all the html skin information to be loaded into the <see cref="Skins.SobekCM_Skin_Collection"/> object. </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Web_Skins' stored procedure </remarks> 
+        public static DataTable Get_All_Web_Skins(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_All_Skins", "Pull display skin information from the database");
+            }
+
+            // Define a temporary dataset
+            DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Web_Skins");
+
+            // If there was no data for this collection and entry point, return null (an ERROR occurred)
+            if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+            {
+                return null;
+            }
+
+            // Return the built search fields object
+            return tempSet.Tables[0];
+        }
+
+
+        public static List<string> Get_Viewer_Priority(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_Viewer_Priority", "Pulling from database");
+            }
+
+            try
+            {
+                List<string> returnValue = new List<string>();
+
+                // Define a temporary dataset
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Viewer_Priority");
+
+                // If there was no data for this collection and entry point, return null (an ERROR occurred)
+                if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+                {
+                    return returnValue;
+                }
+
+                // Return the first table from the returned dataset
+                foreach (DataRow thisRow in tempSet.Tables[0].Rows)
+                {
+                    returnValue.Add(thisRow["ViewType"].ToString());
+                }
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Get_Viewer_Priority", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Viewer_Priority", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Viewer_Priority", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Populates the code manager object for translating SobekCM codes to greenstone collection codes </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="Codes"> Code object to populate with the all the code and aggregation information</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Codes' stored procedure </remarks> 
+        public static bool Populate_Code_Manager(Aggregation_Code_Manager Codes, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Populate_Code_Manager", String.Empty);
+            }
+
+            // Create the connection
+            using (SqlConnection connect = new SqlConnection(Connection_String))
+            {
+                SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Codes", connect);
+
+                // Create the data reader
+                connect.Open();
+                using (SqlDataReader reader = executeCommand.ExecuteReader())
+                {
+                    // Clear the codes list and then move in the new data
+                    Codes.Clear();
+
+                    // get the column indexes out
+                    const int CODE_COL = 0;
+                    const int TYPE_COL = 1;
+                    const int NAME_COL = 2;
+                    const int SHORT_NAME_COL = 3;
+                    const int IS_ACTIVE_COL = 4;
+                    const int HIDDEN_COL = 5;
+                    const int ID_COL = 6;
+                    const int DESC_COL = 7;
+                    const int THEME_COL = 8;
+                    const int LINK_COL = 9;
+
+                    while (reader.Read())
+                    {
+                        // Get the list key values out 
+                        string code = reader.GetString(CODE_COL).ToUpper();
+                        string type = reader.GetString(TYPE_COL);
+                        int theme = reader.GetInt32(THEME_COL);
+
+                        // Only do anything else if this is not somehow a repeat
+                        if (!Codes.isValidCode(code))
+                        {
+                            // Create the object
+                            Item_Aggregation_Related_Aggregations thisAggr =
+                                new Item_Aggregation_Related_Aggregations(code, reader.GetString(NAME_COL),
+                                                                          reader.GetString(SHORT_NAME_COL), type,
+                                                                          reader.GetBoolean(IS_ACTIVE_COL),
+                                                                          reader.GetBoolean(HIDDEN_COL),
+                                                                          reader.GetString(DESC_COL),
+                                                                          (ushort)reader.GetInt32(ID_COL)) { External_Link = reader.GetString(LINK_COL) };
+
+                            // Add this to the codes manager
+                            Codes.Add_Collection(thisAggr, theme);
+                        }
+                    }
+                    reader.Close();
+                }
+                connect.Close();
+            }
+
+            // Succesful
+            return true;
+        }
+
+        /// <summary> Populates the dictionary of all icons from the database </summary>
+        /// <param name="Icon_List"> List of icons to be populated with a successful database pulll </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Icon_List' stored procedure <br /><br />
+        /// The lookup values in this dictionary are the icon code uppercased.</remarks> 
+        public static bool Populate_Icon_List(Dictionary<string, Wordmark_Icon> Icon_List, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Populate_Icon_List", String.Empty);
+            }
+
+            // Create the connection
+            using (SqlConnection connect = new SqlConnection(Connection_String))
+            {
+                SqlCommand executeCommand = new SqlCommand("SobekCM_Icon_List", connect) { CommandType = CommandType.StoredProcedure };
+
+
+                // Create the data reader
+                connect.Open();
+                using (SqlDataReader reader = executeCommand.ExecuteReader())
+                {
+                    // Clear existing icons
+                    Icon_List.Clear();
+
+                    while (reader.Read())
+                    {
+                        string code = reader.GetString(0).ToUpper();
+                        Icon_List[code] = new Wordmark_Icon(code, reader.GetString(1), reader.GetString(2), reader.GetString(3));
+                    }
+                    reader.Close();
+                }
+                connect.Close();
+            }
+
+            // Succesful
+            return true;
+        }
+
+        /// <summary> Populates the dictionary of all files and MIME types from the database </summary>
+        /// <param name="MIME_List"> List of files and MIME types to be populated with a successful database pulll </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Mime_Types' stored procedure <br /><br />
+        /// The lookup values in this dictionary are the file extensions in lower case.</remarks> 
+        public static bool Populate_MIME_List(Dictionary<string, Mime_Type_Info> MIME_List, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Populate_MIME_List", String.Empty);
+            }
+
+            // Create the connection
+            using (SqlConnection connect = new SqlConnection(Connection_String))
+            {
+                SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Mime_Types", connect) { CommandType = CommandType.StoredProcedure };
+
+
+                // Create the data reader
+                connect.Open();
+                using (SqlDataReader reader = executeCommand.ExecuteReader())
+                {
+                    // Clear existing icons
+                    MIME_List.Clear();
+
+                    while (reader.Read())
+                    {
+                        string extension = reader.GetString(0).ToLower();
+                        MIME_List[extension] = new Mime_Type_Info(extension, reader.GetString(1), reader.GetBoolean(2), reader.GetBoolean(3));
+                    }
+                    reader.Close();
+                }
+                connect.Close();
+            }
+
+            // Succesful
+            return true;
+        }
+
+        /// <summary> Populates the date range from the database for which statistical information exists </summary>
+        /// <param name="Stats_Date_Object"> Statistical range object to hold the beginning and ending of the statistical information </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Statistics_By_Date_Range' stored procedure <br /><br />
+        /// This is used by the <see cref="Statistics_HtmlSubwriter"/> class</remarks>
+        public static bool Populate_Statistics_Dates(Statistics_Dates Stats_Date_Object, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", "Pulling statistics date information from database");
+            }
+
+            try
+            {
+                // Execute this query stored procedure
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Statistics_Dates");
+
+                // Reset the values in the object and then set from the database result
+                Stats_Date_Object.Clear();
+                Stats_Date_Object.Set_Statistics_Dates(tempSet.Tables[0]);
+
+                // No error encountered
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+
+        /// <summary> Populates the translation / language support object for translating common UI terms </summary>
+        /// <param name="Translations"> Translations object to populate from the database </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Translation' stored procedure </remarks> 
+        public static bool Populate_Translations(Language_Support_Info Translations, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Populate_Translations", String.Empty);
+            }
+
+            try
+            {
+                // Create the connection
+                using (SqlConnection connect = new SqlConnection(Connection_String))
+                {
+                    SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Translation", connect) { CommandType = CommandType.StoredProcedure };
+
+                    // Clear the translation information
+                    Translations.Clear();
+
+                    // Create the data reader
+                    connect.Open();
+                    using (SqlDataReader reader = executeCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Translations.Add_French(reader.GetString(1), reader.GetString(2));
+                            Translations.Add_Spanish(reader.GetString(1), reader.GetString(3));
+                        }
+                        reader.Close();
+                    }
+                    connect.Close();
+                }
+
+                // Return the first table from the returned dataset
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Populate_Translations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Populate_Translations", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Populate_Translations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+
+        /// <summary> Populates the collection of possible portals from the database </summary>
+        /// <param name="Portals"> List of possible URL portals into this library/cms </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successul, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Get_All_Portals' stored procedure </remarks>
+        public static bool Populate_URL_Portals(Portal_List Portals, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", "Pull URL portal information from the database");
+            }
+
+            try
+            {
+                // Build the parameter list
+                SqlParameter[] paramList = new SqlParameter[1];
+                paramList[0] = new SqlParameter("@activeonly", true);
+
+                // Define a temporary dataset
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_All_Portals", paramList);
+
+                lock (Portals)
+                {
+                    // Clear the current list
+                    Portals.Clear();
+
+                    // If there was no data for this collection and entry point, return null (an ERROR occurred)
+                    if (tempSet.Tables.Count > 0)
+                    {
+                        // Add each provided portal
+                        foreach (DataRow thisRow in tempSet.Tables[0].Rows)
+                        {
+                            // Pull the basic data for this portal
+                            int portalId = Convert.ToInt16(thisRow[0]);
+                            string baseUrl = thisRow[1].ToString().Trim();
+                            bool isDefault = Convert.ToBoolean(thisRow[3]);
+                            string abbreviation = thisRow[4].ToString().Trim();
+                            string name = thisRow[5].ToString().Trim();
+                            string basePurl = thisRow[6].ToString().Trim();
+
+                            if (isDefault)
+                            {
+                                if ((baseUrl == "*") || (baseUrl == "default"))
+                                    baseUrl = String.Empty;
+                            }
+
+                            // Get matching skins and aggregationPermissions
+                            DataRow[] aggrs = tempSet.Tables[1].Select("PortalID=" + portalId);
+                            DataRow[] skins = tempSet.Tables[2].Select("PortalID=" + portalId);
+
+                            // Find the default aggregation
+                            string defaultAggr = String.Empty;
+                            if (aggrs.Length > 0)
+                                defaultAggr = aggrs[0][1].ToString().ToLower();
+
+                            // Find the default skin
+                            string defaultSkin = String.Empty;
+                            if (skins.Length > 0)
+                                defaultSkin = skins[0][1].ToString().ToLower();
+
+                            // Add this portal
+                            Portal newPortal = Portals.Add_Portal(portalId, name, abbreviation, defaultAggr, defaultSkin, baseUrl, basePurl);
+
+                            // If this is default, set it
+                            if (isDefault)
+                                Portals.Default_Portal = newPortal;
+                        }
+                    }
+                }
+
+                if (Portals.Count == 0)
+                {
+                    // Add the default url portal then
+                    Portals.Default_Portal = Portals.Add_Portal(-1, "Default SobekCM Library", "Sobek", "all", "sobek", "", "");
+                }
+
+                // Return the built collection as readonly
+                return true;
+            }
+            catch (Exception ee)
+            {
+                // Add the default url portal then
+                Portals.Default_Portal = Portals.Add_Portal(-1, "Default SobekCM Library", "Sobek", "all", "sobek", "", "");
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        #endregion
+
+  
 
 
         /// <summary> Gets complete information for an item which may be missing from the complete list of items </summary>
@@ -474,7 +931,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful or if the object is already filled, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Item_List_Web' stored procedure </remarks> 
-        public static bool Verify_Item_Lookup_Object(bool Include_Private, Item_Lookup_Object ItemLookupObject, Custom_Tracer Tracer)
+        internal static bool Verify_Item_Lookup_Object(bool Include_Private, Item_Lookup_Object ItemLookupObject, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {

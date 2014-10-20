@@ -152,20 +152,6 @@ namespace SobekCM
 
 			tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Navigation Object created from URI query string");
 
-
-			// Need to ensure the list of items was pulled for several modes
-			if (((currentMode.Writer_Type != Writer_Type_Enum.HTML) && (currentMode.Writer_Type != Writer_Type_Enum.HTML_Echo) && (currentMode.Writer_Type != Writer_Type_Enum.HTML_LoggedIn)) ||
-			    (currentMode.Mode == Display_Mode_Enum.Item_Display) ||
-			    (currentMode.Mode == Display_Mode_Enum.Item_Print) ||
-			    (currentMode.Mode == Display_Mode_Enum.Results) ||
-			    ((currentMode.Mode == Display_Mode_Enum.Aggregation) && ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Map))) ||
-			    (currentMode.Mode == Display_Mode_Enum.Public_Folder) ||
-			    ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Delete_Item) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_AutoFill_Volumes) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))))
-			{
-                Engine_Database.Verify_Item_Lookup_Object(true, UI_ApplicationCache_Gateway.Items, tracer);
-			}
-
-
 			try
 			{
 				if (currentMode.Aggregation.ToUpper() == "EPCSANB")

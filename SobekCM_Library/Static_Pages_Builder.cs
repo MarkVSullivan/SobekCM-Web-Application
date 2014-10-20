@@ -108,20 +108,20 @@ namespace SobekCM.Library
 
             // Build all the objects needed by the SobekCM Library
             iconList = new Dictionary<string, Wordmark_Icon>();
-            SobekCM_Database.Populate_Icon_List(iconList, tracer);
+            Engine_Database.Populate_Icon_List(iconList, tracer);
 
             translations = new Language_Support_Info();
-            SobekCM_Database.Populate_Translations(translations, tracer);
+            Engine_Database.Populate_Translations(translations, tracer);
 
             codeManager = new Aggregation_Code_Manager();
-            SobekCM_Database.Populate_Code_Manager(codeManager, tracer);
+            Engine_Database.Populate_Code_Manager(codeManager, tracer);
 
 			Portal_List urlPortals = new Portal_List();
-			SobekCM_Database.Populate_URL_Portals(urlPortals, tracer);
+            Engine_Database.Populate_URL_Portals(urlPortals, tracer);
 	        defaultSkin = urlPortals.Default_Portal.Default_Web_Skin;
 
 			skinsCollection = new SobekCM_Skin_Collection();
-			SobekCM_Skin_Collection_Builder.Populate_Default_Skins(skinsCollection, null);
+			
 
             // Set some constant settings
             // SobekCM.Library.UI_ApplicationCache_Gateway.Settings.Watermarks_URL = primary_web_server_url + "/design/wordmarks/";
@@ -864,7 +864,7 @@ namespace SobekCM.Library
             {
                 // Build the code manager
                 codeManager = new Aggregation_Code_Manager();
-                SobekCM_Database.Populate_Code_Manager(codeManager, tracer);
+                Engine_Database.Populate_Code_Manager(codeManager, tracer);
             }
             catch(Exception)
             {

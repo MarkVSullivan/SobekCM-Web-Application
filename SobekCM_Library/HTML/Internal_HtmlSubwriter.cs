@@ -563,7 +563,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Search_History</td>" + Environment.NewLine + "    <td>SobekCM.Library.Application_State.Recent_Searches</td>" + Environment.NewLine + "  </tr>");
 
                 Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Search_Stop_Words</td>" + Environment.NewLine + "    <td>List&lt;string&gt;</td>" + Environment.NewLine + "  </tr>");               
+                Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>StopWords</td>" + Environment.NewLine + "    <td>List&lt;string&gt;</td>" + Environment.NewLine + "  </tr>");               
 
                 Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                 Output.WriteLine("  <tr align=\"left\">" + Environment.NewLine + "    <td>Skins</td>" + Environment.NewLine + "    <td>SobekCM.Library.Skins.SobekCM_Skin_Collection</td>" + Environment.NewLine + "  </tr>");

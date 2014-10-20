@@ -12,6 +12,7 @@ using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -342,7 +343,7 @@ namespace SobekCM.Library.AdminViewer
 						case 2:
 							// Check the RequestSpecificValues.Current_User groups for update
 							bool update_user_groups = false;
-                            List<User_Group> userGroup = SobekCM_Database.Get_All_User_Groups(RequestSpecificValues.Tracer);
+                            List<User_Group> userGroup = Engine_Database.Get_All_User_Groups(RequestSpecificValues.Tracer);
 							List<string> newGroups = new List<string>();
                             foreach (User_Group thisRow in userGroup)
 							{
@@ -604,7 +605,7 @@ namespace SobekCM.Library.AdminViewer
 						}
 
 						// Save the RequestSpecificValues.Current_User group links
-						List<User_Group> userGroup = SobekCM_Database.Get_All_User_Groups(RequestSpecificValues.Tracer);
+						List<User_Group> userGroup = Engine_Database.Get_All_User_Groups(RequestSpecificValues.Tracer);
 						Dictionary<string, int> groupnames_to_id = new Dictionary<string, int>();
 						foreach (User_Group thisRow in userGroup)
 						{
@@ -1165,7 +1166,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("  <span class=\"SobekEditItemSectionTitle_first\"> &nbsp; RequestSpecificValues.Current_User Group Membership</span>");
                     Output.WriteLine("  <blockquote>");
 
-                    List<User_Group> userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
+                    List<User_Group> userGroup = Engine_Database.Get_All_User_Groups(Tracer);
                     if ((userGroup == null) || (userGroup.Count == 0))
                     {
                         Output.WriteLine("<br />");
@@ -1589,7 +1590,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <br /><br />");
 
             // get the list of all RequestSpecificValues.Current_User groups
-            List<User_Group> userGroup = SobekCM_Database.Get_All_User_Groups(Tracer);
+            List<User_Group> userGroup = Engine_Database.Get_All_User_Groups(Tracer);
 
             // Get the redirect
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "XXXXXXX";

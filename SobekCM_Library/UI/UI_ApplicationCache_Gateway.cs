@@ -88,7 +88,7 @@ namespace SobekCM.UI_Library
 
         public static List<string> Search_Stop_Words
         {
-            get { return Engine_ApplicationCache_Gateway.Search_Stop_Words; }
+            get { return Engine_ApplicationCache_Gateway.StopWords; }
         }
 
         public static IP_Restriction_Ranges IP_Restrictions

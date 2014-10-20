@@ -122,7 +122,7 @@ namespace SobekCM.Library.AdminViewer
 						// Reload the list of all codes, to include this new one and the new hierarchy
 						lock (UI_ApplicationCache_Gateway.Aggregations)
 						{
-                            SobekCM_Database.Populate_Code_Manager(UI_ApplicationCache_Gateway.Aggregations, RequestSpecificValues.Tracer);
+                            Engine_Database.Populate_Code_Manager(UI_ApplicationCache_Gateway.Aggregations, RequestSpecificValues.Tracer);
 						}
 					}
 
@@ -368,7 +368,7 @@ namespace SobekCM.Library.AdminViewer
                                     // Reload the list of all codes, to include this new one and the new hierarchy
                                     lock (UI_ApplicationCache_Gateway.Aggregations)
                                     {
-                                        SobekCM_Database.Populate_Code_Manager(UI_ApplicationCache_Gateway.Aggregations, RequestSpecificValues.Tracer);
+                                        Engine_Database.Populate_Code_Manager(UI_ApplicationCache_Gateway.Aggregations, RequestSpecificValues.Tracer);
                                     }
 									if ( !String.IsNullOrEmpty(actionMessage))
 	                                    actionMessage = "New item aggregation <i>" + new_aggregation_code + "</i> saved successfully";

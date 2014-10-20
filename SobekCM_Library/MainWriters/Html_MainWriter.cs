@@ -34,6 +34,30 @@ namespace SobekCM.Library.MainWriters
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
 	    public Html_MainWriter( RequestCache RequestSpecificValues ) : base( RequestSpecificValues )
 	    {
+            // Check the IE hack CSS is loaded
+            if (HttpContext.Current.Application["NonIE_Hack_CSS"] == null) 
+            {
+                string css_file = HttpContext.Current.Server.MapPath("default/SobekCM_NonIE.css");
+                if (File.Exists(css_file))
+                {
+                    try
+                    {
+                        StreamReader reader = new StreamReader(css_file);
+                        HttpContext.Current.Application["NonIE_Hack_CSS"] = reader.ReadToEnd().Trim();
+                        reader.Close();
+                    }
+                    catch (Exception)
+                    {
+                        HttpContext.Current.Application["NonIE_Hack_CSS"] = "/* ERROR READING FILE: default/SobekCM_NonIE.css */";
+                        throw;
+                    }
+                }
+                else
+                {
+                    HttpContext.Current.Application["NonIE_Hack_CSS"] = String.Empty;
+                }
+            }
+
 		    // Handle basic events which may be fired by the internal header
             if (HttpContext.Current.Request.Form["internal_header_action"] != null)
             {
