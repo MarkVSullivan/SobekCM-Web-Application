@@ -621,7 +621,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("</div>");
 
             // Is there a script to be included?
-            if (collectionViewer.Search_Script_Reference.Length > 0)
+            if ( !String.IsNullOrEmpty(collectionViewer.Search_Script_Reference))
                 Output.WriteLine(collectionViewer.Search_Script_Reference);
 
             // Write the search box

@@ -491,7 +491,7 @@ namespace SobekCM.Engine_Library.ApplicationState
                 // This just ensures another thread doesn't pull a half built list
                 lock (ipRestrictionsLock)
                 {
-                    if (ipRestrictionsLock == null)
+                    if (ipRestrictions == null)
                     {
                         DataTable ipRestrictionTbl = Engine_Database.Get_IP_Restriction_Ranges(null);
                         if (ipRestrictionTbl != null)

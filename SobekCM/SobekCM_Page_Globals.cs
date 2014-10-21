@@ -70,6 +70,8 @@ namespace SobekCM
 			{
 				tracer = new Custom_Tracer();
 				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", String.Empty);
+			    SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
+
 
 				// Check that something is saved for the original requested URL (may not exist if not forwarded)
 				if (!HttpContext.Current.Items.Contains("Original_URL"))

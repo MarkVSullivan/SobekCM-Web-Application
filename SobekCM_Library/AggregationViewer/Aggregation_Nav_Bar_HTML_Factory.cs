@@ -70,29 +70,29 @@ namespace SobekCM.Library.AggregationViewer
 			{
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search:
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange:
-					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Advanced, Translations.Get_Translation("ADVANCED SEARCH", Current_Mode.Language), Current_Mode);
+					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Advanced, Translations.Get_Translation("Advanced Search", Current_Mode.Language), Current_Mode);
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search:
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_YearRange:
-					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Basic, Translations.Get_Translation("BASIC SEARCH", Current_Mode.Language), Current_Mode);
+					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Basic, Translations.Get_Translation("Basic Search", Current_Mode.Language), Current_Mode);
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search:
-					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Map, Translations.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode);
+					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Map, Translations.Get_Translation("Map Search", Current_Mode.Language), Current_Mode);
 
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search_Beta:
-                    return Menu_HTML_Helper(skinCode, Search_Type_Enum.Map_Beta, Translations.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode);
+                    return Menu_HTML_Helper(skinCode, Search_Type_Enum.Map_Beta, Translations.Get_Translation("Map Search", Current_Mode.Language), Current_Mode);
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Newspaper_Search:
-					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Newspaper, Translations.Get_Translation("NEWSPAPER SEARCH", Current_Mode.Language), Current_Mode);
+					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Newspaper, Translations.Get_Translation("Newspaper Search", Current_Mode.Language), Current_Mode);
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Admin_View:
 					return String.Empty; // HTML_Helper(Skin_Code, SobekCM.Library.Navigation.Search_Type_Enum.Admin_View, Translations.Get_Translation("ADMIN", Current_Mode.Language), Current_Mode, Downward_Tabs);
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.DLOC_FullText_Search:
-					return Menu_HTML_Helper(skinCode, Search_Type_Enum.dLOC_Full_Text, Translations.Get_Translation("TEXT SEARCH", Current_Mode.Language), Current_Mode);
+					return Menu_HTML_Helper(skinCode, Search_Type_Enum.dLOC_Full_Text, Translations.Get_Translation("Text Search", Current_Mode.Language), Current_Mode);
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.FullText_Search:
-					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Full_Text, Translations.Get_Translation("TEXT SEARCH", Current_Mode.Language), Current_Mode);
+                    return Menu_HTML_Helper(skinCode, Search_Type_Enum.Full_Text, Translations.Get_Translation("Text Search", Current_Mode.Language), Current_Mode);
 			}
 
 			return String.Empty;

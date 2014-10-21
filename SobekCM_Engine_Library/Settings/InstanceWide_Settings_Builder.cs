@@ -54,6 +54,7 @@ namespace SobekCM.Core.Settings
             Read_Configuration_File(returnValue, returnValue.Base_Directory + "\\config\\sobekcm.config");
 
             Engine_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
+            Resource_Object.Database.SobekCM_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
 
             DataSet sobekCMSettings = Engine_Database.Get_Settings_Complete(null);
             Refresh(returnValue, sobekCMSettings);

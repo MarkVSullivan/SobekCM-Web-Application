@@ -217,7 +217,7 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Was there a match?
-                if ((fillSet.Tables.Count == 0) || (fillSet.Tables[0].Rows.Count == 0))
+                if (fillSet.Tables.Count == 0)
                     return null;
 
                 // Return the fill set
