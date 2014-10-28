@@ -1,8 +1,10 @@
-﻿namespace SobekCM.Builder_Library.Modules.Schedulable
+﻿using SobekCM.Core.Settings;
+
+namespace SobekCM.Builder_Library.Modules.Schedulable
 {
     public class RebuildAllAggregationBrowsesModule : abstractSchedulableModule
     {
-        public override void DoWork()
+        public override void DoWork(InstanceWide_Settings Settings)
         {
             //// Rebuild all the static pages
             //Console.WriteLine(dbInstance.Name + " - Rebuilding all static pages");

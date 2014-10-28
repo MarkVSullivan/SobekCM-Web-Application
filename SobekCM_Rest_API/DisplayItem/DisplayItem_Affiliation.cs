@@ -1,8 +1,5 @@
 #region Using directives
 
-using System;
-using System.IO;
-using System.Text;
 using System.Runtime.Serialization;
 
 #endregion

@@ -3,14 +3,13 @@
 using System;
 using System.Data;
 using System.IO;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Aggregations;
+using SobekCM.Core.Aggregations;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -30,9 +29,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     public class Usage_Statistics_AggregationViewer : abstractAggregationViewer
     {
         /// <summary> Constructor for a new instance of the Usage_Statistics_AggregationViewer class </summary>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Current_Aggregation"> Current item aggregation object to display </param>
-        public Usage_Statistics_AggregationViewer(SobekCM_Navigation_Object Current_Mode, Item_Aggregation Current_Aggregation): base(Current_Aggregation, Current_Mode)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Usage_Statistics_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Everything done in base class constructor
         }
@@ -70,7 +68,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         public override void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             // Normalize the submode
-            string submode = currentMode.Info_Browse_Mode.ToLower();
+            string submode = RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToLower();
             if ((submode != "views") && (submode != "itemviews") && (submode != "titles") && (submode != "items") && (submode != "definitions"))
             {
                 submode = "views";
@@ -122,7 +120,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			Output.WriteLine("  <ul class=\"sbk_FauxUpwardTabsList\">");
 
             // Save and normalize the submode
-            string submode = currentMode.Info_Browse_Mode.ToLower();
+            string submode = RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToLower();
             if ((submode != "views") && (submode != "itemviews") && (submode != "titles") && (submode != "items") && (submode != "definitions"))
             {
                 submode = "views";
@@ -135,8 +133,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
             else
             {
-                currentMode.Info_Browse_Mode = "views";
-                Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "\">" + COLLECTION_VIEWS + "</a></li>");
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "views";
+                Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + COLLECTION_VIEWS + "</a></li>");
             }
 
             if (submode == "itemviews")
@@ -145,8 +143,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
             else
             {
-                currentMode.Info_Browse_Mode = "itemviews";
-                Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "\">" + ITEM_VIEWS + "</a></li>");
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "itemviews";
+                Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + ITEM_VIEWS + "</a></li>");
             }
 
             if (submode == "titles")
@@ -155,8 +153,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
             else
             {
-                currentMode.Info_Browse_Mode = "titles";
-                Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "\">" + TOP_TITLES + "</a></li>");
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "titles";
+                Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + TOP_TITLES + "</a></li>");
             }
 
             if (submode == "items")
@@ -165,8 +163,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
             else
             {
-                currentMode.Info_Browse_Mode = "items";
-                Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "\">" + TOP_ITEMS + "</a></li>");
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "items";
+                Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + TOP_ITEMS + "</a></li>");
             }
 
             if (submode == "definitions")
@@ -175,10 +173,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
             else
             {
-                currentMode.Info_Browse_Mode = "definitions";
-                Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "\">" + DEFINITIONS + "</a></li>");
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "definitions";
+                Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + DEFINITIONS + "</a></li>");
             }
-            currentMode.Info_Browse_Mode = submode;
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = submode;
 			Output.WriteLine("  </ul>");
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
@@ -187,19 +185,19 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             switch (submode)
             {
                 case "views":
-                    add_collection_usage_history(Output, SobekCM_Database.Get_Aggregation_Statistics_History(currentCollection.Code, Tracer), Tracer);
+                    add_collection_usage_history(Output, SobekCM_Database.Get_Aggregation_Statistics_History(RequestSpecificValues.Hierarchy_Object.Code, Tracer), Tracer);
                     break;
 
                 case "itemviews":
-                    add_item_usage_history(Output, SobekCM_Database.Get_Aggregation_Statistics_History(currentCollection.Code, Tracer), Tracer);
+                    add_item_usage_history(Output, SobekCM_Database.Get_Aggregation_Statistics_History(RequestSpecificValues.Hierarchy_Object.Code, Tracer), Tracer);
                     break;
 
                 case "titles":
-                    add_titles_by_collection(Output, currentCollection.Code, Tracer);
+                    add_titles_by_collection(Output, RequestSpecificValues.Hierarchy_Object.Code, Tracer);
                     break;
 
                 case "items":
-                    add_items_by_collection(Output, currentCollection.Code, Tracer);
+                    add_items_by_collection(Output, RequestSpecificValues.Hierarchy_Object.Code, Tracer);
                     break;
 
                 case "definitions":
@@ -273,8 +271,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<p>Usage history for this collection is displayed below. This history includes just the top-level views of the collection.</p>");
 
-            currentMode.Info_Browse_Mode = "definitions";
-            Output.WriteLine("<p>The <a href=\"" + currentMode.Redirect_URL() + "\">Definitions page</a> provides more details about the statistics and words used below.</p>");
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = "definitions";
+            Output.WriteLine("<p>The <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Definitions page</a> provides more details about the statistics and words used below.</p>");
             Output.WriteLine("</div>");
             Output.WriteLine("<center>");
 
@@ -383,8 +381,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<p>Usage history for the items within this collection are displayed below.</p>");
 
-            currentMode.Info_Browse_Mode = "definitions";
-            Output.WriteLine("<p>The <a href=\"" + currentMode.Redirect_URL() + "\">Definitions page</a> provides more details about the statistics and words used below.</p>");
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = "definitions";
+            Output.WriteLine("<p>The <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Definitions page</a> provides more details about the statistics and words used below.</p>");
             Output.WriteLine("</div>");
             Output.WriteLine("<center>");
 
@@ -541,7 +539,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         private void add_usage_definitions(TextWriter Output, Custom_Tracer Tracer)
         {
             // See if the FAQ is present for this collection
-            string directory = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "\\extra\\stats";
+            string directory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "\\extra\\stats";
             string usageDefinitions = String.Empty;
             if (Directory.Exists(directory))
             {
@@ -567,14 +565,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if (usageDefinitions.Length > 0)
             {
-                string urloptions = currentMode.URL_Options();
+                string urloptions = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
                 if (urloptions.Length > 0)
                     urloptions = "?" + urloptions;
 
                 if ( Tracer != null )
                     Tracer.Add_Trace("Usage_Statistics_AggregationViewer.add_usage_definitions", "Rendering HTML read from source file");
                 Output.WriteLine("<div class=\"SobekText\">");
-                Output.WriteLine(usageDefinitions.Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%?URLOPTS%>", urloptions));
+                Output.WriteLine(usageDefinitions.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%?URLOPTS%>", urloptions));
                 Output.WriteLine("</div>");
 
             }
@@ -638,8 +636,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                 Output.WriteLine("<a name=\"Views\" ></a>");
                 Output.WriteLine("<h3>VIEWS</h3>");
-                Output.WriteLine("<p>Views are the actual page hits. Each time a person goes to " + currentMode.SobekCM_Instance_Abbreviation + " it counts as a view. The " + currentMode.SobekCM_Instance_Abbreviation + " statistics are cleaned so that views from robots, which search engines use to index websites, are removed. If they were not removed, the views on all collections and items would be much higher. Web usage statistics are always somewhat fallible, and this is one of the means for ensuring better quality usage statistics. <br /><br />");
-                Output.WriteLine("Some web statistics count &quot;page item downloads&quot; as views, which is highly inaccurate because each page has multiple items on it. For instance, the digital library main page, " + currentMode.SobekCM_Instance_Abbreviation + ", includes the page HTML and all of the images. If the statistics counted each “page item download” as a hit, each single view to the main page would be counted as over 30 “page item downloads.” To make matters more confusing, some digital repositories only offer PDF downloads for users to view items. Those digital repositories track &quot;item downloads&quot; and those are most equivalent to our statistics for usage by &quot;item.&quot; </p>");
+                Output.WriteLine("<p>Views are the actual page hits. Each time a person goes to " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " it counts as a view. The " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " statistics are cleaned so that views from robots, which search engines use to index websites, are removed. If they were not removed, the views on all collections and items would be much higher. Web usage statistics are always somewhat fallible, and this is one of the means for ensuring better quality usage statistics. <br /><br />");
+                Output.WriteLine("Some web statistics count &quot;page item downloads&quot; as views, which is highly inaccurate because each page has multiple items on it. For instance, the digital library main page, " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ", includes the page HTML and all of the images. If the statistics counted each “page item download” as a hit, each single view to the main page would be counted as over 30 “page item downloads.” To make matters more confusing, some digital repositories only offer PDF downloads for users to view items. Those digital repositories track &quot;item downloads&quot; and those are most equivalent to our statistics for usage by &quot;item.&quot; </p>");
 
                 Output.WriteLine("<a name=\"Visits\" ></a>");
                 Output.WriteLine("<h3>VISITS</h3>");
@@ -702,8 +700,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<p>The most commonly utilized items for this collection appear below.</p>");
 
-            currentMode.Info_Browse_Mode = "definitions";
-            Output.WriteLine("<p>The <a href=\"" + currentMode.Redirect_URL() + "\">Definitions page</a> provides more details about the statistics and words used below.</p>");
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = "definitions";
+            Output.WriteLine("<p>The <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Definitions page</a> provides more details about the statistics and words used below.</p>");
 
             Output.WriteLine();
 
@@ -727,7 +725,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("  <tr align=\"left\" >");
                     Output.WriteLine("    <td>" + thisRow[0] + "</td>");
                     Output.WriteLine("    <td>" + thisRow[1] + "</td>");
-                    Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[0] + "/" + thisRow[1] + "\">" + thisRow[2] + "</a></td>");
+                    Output.WriteLine("    <td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisRow[0] + "/" + thisRow[1] + "\">" + thisRow[2] + "</a></td>");
                     Output.WriteLine("    <td align=\"right\">" + thisRow[3] + "</td>");
                     Output.WriteLine("  </tr>");
                     Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
@@ -754,8 +752,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<p>The most commonly utilized titles by collection appear below.</p>");
 
-            currentMode.Info_Browse_Mode = "definitions";
-            Output.WriteLine("<p>The <a href=\"" + currentMode.Redirect_URL() + "\">Definitions page</a> provides more details about the statistics and words used below.</p>");
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = "definitions";
+            Output.WriteLine("<p>The <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Definitions page</a> provides more details about the statistics and words used below.</p>");
             Output.WriteLine();
 
             Output.WriteLine("<center>");
@@ -776,7 +774,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                     Output.WriteLine("  <tr align=\"left\" >");
                     Output.WriteLine("    <td>" + thisRow[0] + "</td>");
-                    Output.WriteLine("    <td><a href=\"" + currentMode.Base_URL + thisRow[0] + "\">" + thisRow[1] + "</a></td>");
+                    Output.WriteLine("    <td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisRow[0] + "\">" + thisRow[1] + "</a></td>");
                     Output.WriteLine("    <td align=\"right\">" + thisRow[2] + "</td>");
                     Output.WriteLine("  </tr>");
                     Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");

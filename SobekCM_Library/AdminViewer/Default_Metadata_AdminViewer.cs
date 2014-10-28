@@ -7,15 +7,13 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Web;
-using SobekCM.Core.Settings;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -40,32 +38,26 @@ namespace SobekCM.Library.AdminViewer
 		#region Constructor
 
 		/// <summary> Constructor for a new instance of the Default_Metadata_AdminViewer class </summary>
-		/// <param name="User"> Authenticated user information </param>
-		/// <param name="CurrentMode"> Mode / navigation information for the current request</param>
-		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
 		/// <remarks> Postback from handling a new project is handled here in the constructor </remarks>
-		public Default_Metadata_AdminViewer(User_Object User, SobekCM_Navigation_Object CurrentMode, Custom_Tracer Tracer)
-			: base(User)
+        public Default_Metadata_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
 		{
-			Tracer.Add_Trace("Default_Metadata_AdminViewer.Constructor", String.Empty);
-
-			// Save the mode and settings  here
-			currentMode = CurrentMode;
+            RequestSpecificValues.Tracer.Add_Trace("Default_Metadata_AdminViewer.Constructor", String.Empty);
 
 			// Set action message to nothing to start
 			actionMessage = String.Empty;
 
-			// If the user cannot edit this, go back
-			if ((!user.Is_System_Admin ) && ( !user.Is_Portal_Admin ))
+			// If the RequestSpecificValues.Current_User cannot edit this, go back
+			if ((!RequestSpecificValues.Current_User.Is_System_Admin ) && ( !RequestSpecificValues.Current_User.Is_Portal_Admin ))
 			{
-				currentMode.Mode = Display_Mode_Enum.My_Sobek;
-				currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-				currentMode.Redirect();
+				RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+				RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+				UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
 				return;
 			}
 
 			// If this is a postback, handle any events first
-			if (currentMode.isPostBack)
+			if (RequestSpecificValues.Current_Mode.isPostBack)
 			{
 				try
 				{
@@ -77,18 +69,18 @@ namespace SobekCM.Library.AdminViewer
 					string code_value = form["admin_project_code"].ToUpper().Trim();
 
 					// Was this a delete request?
-					if (( user.Is_System_Admin ) && ( delete_value.Length > 0))
+					if (( RequestSpecificValues.Current_User.Is_System_Admin ) && ( delete_value.Length > 0))
 					{
-						Tracer.Add_Trace("Default_Metadata_AdminViewer.Constructor", "Delete default metadata '" + delete_value + "'");
+                        RequestSpecificValues.Tracer.Add_Trace("Default_Metadata_AdminViewer.Constructor", "Delete default metadata '" + delete_value + "'");
 					
 						// Try to delete in the database
-						if (SobekCM_Database.Delete_Project(delete_value, Tracer))
+                        if (SobekCM_Database.Delete_Default_Metadata(delete_value, RequestSpecificValues.Tracer))
 						{
 							// Set the message
 							actionMessage = "Deletes default metadata '" + delete_value + "'";
 
 							// Look for the file to delete as well
-							string pmets_file = InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "projects\\" + delete_value + ".pmets";
+							string pmets_file = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "projects\\" + delete_value + ".pmets";
 							if (File.Exists(pmets_file))
 							{
 								try
@@ -108,7 +100,7 @@ namespace SobekCM.Library.AdminViewer
 					}
 					else if (save_value.Length > 0) // Or.. was this a save request
 					{
-						Tracer.Add_Trace("Default_Metadata_AdminViewer.Constructor", "Save default metadata '" + save_value + "'");
+						RequestSpecificValues.Tracer.Add_Trace("Default_Metadata_AdminViewer.Constructor", "Save default metadata '" + save_value + "'");
 
 						// Was this to save a new project (from the main page) or rename an existing (from the popup form)?
 						if (save_value == code_value)
@@ -117,7 +109,7 @@ namespace SobekCM.Library.AdminViewer
 							string new_name = form["admin_project_name"].Trim();
 
 							// Save this new interface
-							if (SobekCM_Database.Save_Default_Metadata(save_value.ToUpper(), new_name, Tracer))
+                            if (SobekCM_Database.Save_Default_Metadata(save_value.ToUpper(), new_name, RequestSpecificValues.Tracer))
 							{
 								actionMessage = "Saved new default metadata <i>" + save_value + "</i>";
 							}
@@ -131,8 +123,8 @@ namespace SobekCM.Library.AdminViewer
 							{
 								if (new_base_code.Length > 0)
 								{
-									string pmets_file = InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "projects\\" + code_value + ".pmets";
-									string base_pmets_file = InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "projects\\" + new_base_code + ".pmets";
+									string pmets_file = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "projects\\" + code_value + ".pmets";
+									string base_pmets_file = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "projects\\" + new_base_code + ".pmets";
 
 									if (File.Exists(base_pmets_file))
 										File.Copy(base_pmets_file, pmets_file, true);
@@ -148,7 +140,7 @@ namespace SobekCM.Library.AdminViewer
 							string edit_name = form["form_project_name"].Trim();
 
 							// Save this existing interface
-							if (SobekCM_Database.Save_Default_Metadata(save_value.ToUpper(), edit_name, Tracer))
+                            if (SobekCM_Database.Save_Default_Metadata(save_value.ToUpper(), edit_name, RequestSpecificValues.Tracer))
 							{
 								actionMessage = "Renamed existing default metadata <i>" + save_value + "</i>";
 							}
@@ -196,7 +188,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<!-- Default_Metadata_AdminViewer.Write_ItemNavForm_Closing -->");
 
 			// Add the scripts needed
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 
 			// Add the hidden field
 			Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save -->");
@@ -225,8 +217,8 @@ namespace SobekCM.Library.AdminViewer
 			// Add the buttons and close the table
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
 			Output.WriteLine("      <td colspan=\"2\"> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return project_form_close();\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Save changes to this default metadata\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return project_form_close();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this default metadata\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("  </table>");
@@ -238,7 +230,7 @@ namespace SobekCM.Library.AdminViewer
 			// Get the list of all projects
             DataSet projectsSet = SobekCM_Database.Get_All_Template_DefaultMetadatas(Tracer);
 
-			Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+			Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
 			if (actionMessage.Length > 0)
@@ -247,7 +239,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
 			}
 
-			Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/projects\" target=\"PROJECTS_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
+			Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/projects\" target=\"PROJECTS_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
 
 			Output.WriteLine("  <h2>New Default Metadata</h2>");
 			Output.WriteLine("  <div class=\"sbkPav_NewDiv\">");
@@ -276,7 +268,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <tr>");
 
 			// Add the SAVE button
-			Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new default metadata\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_project();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+			Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new default metadata\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_project();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
 			Output.WriteLine("    </table>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine("  <br />");
@@ -292,8 +284,8 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
-			currentMode.My_Sobek_SubMode = "XXXXXXX";
-			string redirect = currentMode.Redirect_URL();
+			RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "XXXXXXX";
+			string redirect = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
 			// Write the data for each interface
 			foreach (DataRow thisRow in projectsSet.Tables[0].Rows)
@@ -306,13 +298,13 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("    <tr>");
 				Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
 				Output.Write("<a title=\"Click to edit this default metadata\" href=\"" + redirect.Replace("XXXXXXX", "1" + code) + "\" >edit</a> | ");
-				Output.Write("<a title=\"Click to change the name of this default metadata\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return project_form_popup('" + code + "','" + name + "');\">rename</a> ");
+				Output.Write("<a title=\"Click to change the name of this default metadata\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return project_form_popup('" + code + "','" + name + "');\">rename</a> ");
 				if (String.Compare(code, "none", StringComparison.OrdinalIgnoreCase) != 0)
 				{
-					if ( user.Is_System_Admin )
-						Output.WriteLine("| <a title=\"Click to delete this default metadata\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_project('" + code + "');\">delete</a> )</td>");
+					if ( RequestSpecificValues.Current_User.Is_System_Admin )
+						Output.WriteLine("| <a title=\"Click to delete this default metadata\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_project('" + code + "');\">delete</a> )</td>");
 					else
-						Output.WriteLine("| <a title=\"Only SYSTEM administrators can delete default metadata\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"alert('Only SYSTEM administrators can delete default metadata'); return false;\">delete</a> )</td>");
+						Output.WriteLine("| <a title=\"Only SYSTEM administrators can delete default metadata\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"alert('Only SYSTEM administrators can delete default metadata'); return false;\">delete</a> )</td>");
 				}
 				else
 					Output.WriteLine(")</td>");

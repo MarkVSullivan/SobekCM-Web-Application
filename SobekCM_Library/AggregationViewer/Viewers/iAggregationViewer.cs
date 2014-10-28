@@ -2,10 +2,10 @@
 
 using System.IO;
 using System.Web.UI.WebControls;
-using SobekCM.Library.Aggregations;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
 using SobekCM.Tools;
 
 #endregion

@@ -4,14 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
+using SobekCM.Core.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -21,55 +15,34 @@ namespace SobekCM.Library.HTML
     /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. </remarks>
     public class Search_Results_HtmlSubwriter : abstractHtmlSubwriter
     {
-        private readonly Item_Lookup_Object allItemsTable;
-        private readonly Aggregation_Code_Manager codeManager;
-        private readonly User_Object currentUser;
-        private readonly List<iSearch_Title_Result> pagedResults;
-        private readonly Search_Results_Statistics resultsStatistics;
-        private readonly Language_Support_Info translations;
         private PagedResults_HtmlSubwriter writeResult;
 
         /// <summary> Constructor for a new instance of the Search_Results_HtmlSubwriter class </summary>
-        /// <param name="Results_Statistics"> Information about the entire set of results for a search or browse </param>
-        /// <param name="Paged_Results"> Single page of results for a search or browse, within the entire set </param>
-        /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-        /// <param name="Translator"> Language support object which handles simple translational duties </param>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        /// <param name="Current_User"> Currently logged on user </param>
-        public Search_Results_HtmlSubwriter(Search_Results_Statistics Results_Statistics,
-            List<iSearch_Title_Result> Paged_Results,
-            Aggregation_Code_Manager Code_Manager, Language_Support_Info Translator,
-            Item_Lookup_Object All_Items_Lookup, 
-            User_Object Current_User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Search_Results_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
         {
-            currentUser = Current_User;
-            pagedResults = Paged_Results;
-            resultsStatistics = Results_Statistics;
-            translations = Translator;
-            codeManager = Code_Manager;
-            allItemsTable = All_Items_Lookup;
+            // Do nothing
          }
 
         /// <summary> Adds controls to the main navigational page </summary>
-        /// <param name="placeHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <param name="populate_node_event"> Event is used to populate the a tree node without doing a full refresh of the page </param>
+        /// <param name="PopulateNodeEvent"> Event is used to populate the a tree node without doing a full refresh of the page </param>
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles </returns>
         /// <remarks> This uses a <see cref="PagedResults_HtmlSubwriter"/> instance to render the items  </remarks>
-        public void Add_Controls(PlaceHolder placeHolder, Custom_Tracer Tracer, TreeNodeEventHandler populate_node_event )
+        public void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer, TreeNodeEventHandler PopulateNodeEvent )
         {
-            if (resultsStatistics == null) return;
+            if (RequestSpecificValues.Results_Statistics == null) return;
 
             if (writeResult == null)
             {
                 Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Controls", "Building Result DataSet Writer");
 
-                writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translations, allItemsTable, currentUser, Mode, Search_Stop_Words, Tracer)
-                                  {Current_Aggregation = Current_Aggregation, Skin = Skin, Mode = Mode};
+                writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues);
             }
 
             Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Controls", "Add controls");
-            writeResult.Add_Controls(placeHolder, Tracer);
+            writeResult.Add_Controls(MainPlaceHolder, Tracer);
         }
 
         /// <summary> Writes the final output to close this search page results, including the results page navigation buttons </summary>
@@ -96,24 +69,23 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Search_Results_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
             // If this skin has top-level navigation suppressed, skip the top tabs
-            if (Skin.Suppress_Top_Navigation)
+            if (RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation)
             {
                 Output.WriteLine("<br />");
             }
             else
             {
 				// Add the main aggrgeation menu here
-				MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, Mode, currentUser, Current_Aggregation, translations, codeManager, false);
+				MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, false);
 
             }
            
-            if ( resultsStatistics != null )
+            if ( RequestSpecificValues.Results_Statistics != null )
             {
                 if (writeResult == null)
                 {
                     Tracer.Add_Trace("Search_Results_HtmlSubwriter.Write_HTML", "Building Result DataSet Writer");
-                    writeResult = new PagedResults_HtmlSubwriter(resultsStatistics, pagedResults, codeManager, translations, allItemsTable, currentUser, Mode, Search_Stop_Words, Tracer)
-                                      {Current_Aggregation = Current_Aggregation, Skin = Skin, Mode = Mode};
+                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues);
                 }
                 writeResult.Write_HTML(Output, Tracer);
             }
@@ -127,19 +99,15 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                if (Mode.Result_Display_Type == Result_Display_Type_Enum.Map)
+                if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map)
                 {
-                    List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
-
-                    returnValue.Add(new Tuple<string, string>("onload", "load();"));
+                    List<Tuple<string, string>> returnValue = new List<Tuple<string, string>> {new Tuple<string, string>("onload", "load();")};
 
                     return returnValue;
                 }
-                if (Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
+                if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
                 {
-                    List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
-
-                    returnValue.Add(new Tuple<string, string>("onload", "load();"));
+                    List<Tuple<string, string>> returnValue = new List<Tuple<string, string>> {new Tuple<string, string>("onload", "load();")};
 
                     return returnValue;
                 }
@@ -152,14 +120,11 @@ namespace SobekCM.Library.HTML
         {
             get
             {
-                if (Current_Aggregation != null)
+                if (RequestSpecificValues.Hierarchy_Object != null)
                 {
-                    return "{0} Search Results - " + Current_Aggregation.Name;
+                    return "{0} Search Results - " + RequestSpecificValues.Hierarchy_Object.Name;
                 }
-                else
-                {
-                    return "{0} Search Results";
-                }
+                return "{0} Search Results";
             }
         }
 
@@ -177,7 +142,7 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
-				return pagedResults != null ? "container-facets" : base.Container_CssClass;
+                return RequestSpecificValues.Paged_Results != null ? "container-facets" : base.Container_CssClass;
 			}
 		}
     }

@@ -1,7 +1,7 @@
 ﻿#region Using directives
 
 using System.IO;
-using SobekCM.Library.Settings;
+
 
 #endregion
 
@@ -14,8 +14,8 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
 
             // Get the executable path/file for ghostscript and imagemagick
-            string ghostscript_executable = InstanceWide_Settings_Singleton.Settings.Ghostscript_Executable;
-            string imagemagick_executable = InstanceWide_Settings_Singleton.Settings.ImageMagick_Executable;
+            string ghostscript_executable = Settings.Ghostscript_Executable;
+            string imagemagick_executable = Settings.ImageMagick_Executable;
 
             // Preprocess each PDF
             string[] pdfs = Directory.GetFiles(resourceFolder, "*.pdf");

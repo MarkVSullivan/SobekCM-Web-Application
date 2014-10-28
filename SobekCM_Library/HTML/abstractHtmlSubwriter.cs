@@ -3,11 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Skins;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 
 #endregion
@@ -19,6 +20,16 @@ namespace SobekCM.Library.HTML
 	/// HTML subwriters are the top level writing classes employed by the <see cref="Html_MainWriter"/>. </summary>
 	public abstract class abstractHtmlSubwriter
 	{
+        /// <summary> Protected field contains the information specific to the current request </summary>
+        protected RequestCache RequestSpecificValues;
+
+        /// <summary> Base constructor </summary>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+	    protected abstractHtmlSubwriter(RequestCache RequestSpecificValues)
+	    {
+	        this.RequestSpecificValues = RequestSpecificValues;
+	    }
+
 		/// <summary> Adds the banner to the response stream from either the html web skin
 		/// or from the current item aggreagtion object, depending on flags in the web skin object </summary>
 		/// <param name="Output"> Stream to which to write the HTML for the banner </param>
@@ -36,7 +47,7 @@ namespace SobekCM.Library.HTML
 			}
 			else
 			{
-				string url_options = CurrentMode.URL_Options();
+				string url_options = UrlWriterHelper.URL_Options(CurrentMode);
 				if (url_options.Length > 0)
 					url_options = "?" + url_options;
 
@@ -64,20 +75,6 @@ namespace SobekCM.Library.HTML
 		/// <summary> Empty list of behaviors, returned by default </summary>
 		/// <remarks> This just prevents an empty set from having to be created over and over </remarks>
 		protected List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
-
-	    /// <summary> Current item aggregation object  </summary>
-		public Item_Aggregation Current_Aggregation { get; set; }
-
-	    /// <summary> HTML Web skin which controls the overall appearance of this digital library </summary>
-	    /// <remarks> This also sets all of the protected tab html strings </remarks>
-	    public SobekCM_Skin_Object Skin { get; set; }
-
-	    /// <summary>  Mode / navigation information for the current request </summary>
-	    /// <remarks> This also sets all of the protected tab html strings </remarks>
-	    public SobekCM_Navigation_Object Mode { get; set; }
-
-        /// <summary> Complete list of search stop words, from the database </summary>
-        public List<string> Search_Stop_Words { get; set; }
 
 	    /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
 		/// for the current request, or if it can be hidden. </summary>
@@ -121,10 +118,10 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("          <tr style=\"vertical-align:top; height: 16px;\">");
 			Output.WriteLine("            <td valign=\"top\">");
 			Output.Write("              <input name=\"internalSearchTextBox\" type=\"text\" id=\"internalSearchTextBox\" class=\"SobekInternalSearchBox\" value=\"\" onfocus=\"javascript:textbox_enter('internalSearchTextBox', 'SobekInternalSearchBox_focused')\" onblur=\"javascript:textbox_leave('internalSearchTextBox', 'SobekInternalSearchBox')\"");
-			if (Mode.Browser_Type.IndexOf("IE") >= 0)
-				Output.WriteLine(" onkeydown=\"internalTrapKD(event, '" + Mode.Base_URL + "contains');\" />");
+            if (RequestSpecificValues.Current_Mode.Browser_Type.IndexOf("IE") >= 0)
+                Output.WriteLine(" onkeydown=\"internalTrapKD(event, '" + RequestSpecificValues.Current_Mode.Base_URL + "contains');\" />");
 			else
-				Output.WriteLine(" onkeydown=\"return internalTrapKD(event, '" + Mode.Base_URL + "contains');\" />");
+                Output.WriteLine(" onkeydown=\"return internalTrapKD(event, '" + RequestSpecificValues.Current_Mode.Base_URL + "contains');\" />");
 			Output.WriteLine("              <select name=\"internalDropDownList\" id=\"internalDropDownList\" class=\"SobekInternalSelectBox\" >");
 			Output.WriteLine("                <option value=\"BI\" selected=\"selected\">BibID</option>");
 			Output.WriteLine("                <option value=\"OC\">OCLC Number</option>");
@@ -154,7 +151,7 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("              </select>");
 			Output.WriteLine("            </td>");
 			Output.WriteLine("            <td>");
-			Output.WriteLine("              <a onclick=\"internal_search('" + Mode.Base_URL + "contains')\"><img src=\"" + Mode.Base_URL + "default/images/go_gray.gif\" title=\"Perform search\" alt=\"Perform search\" style=\"margin-top: 1px\" /></a>");
+            Output.WriteLine("              <a onclick=\"internal_search('" + RequestSpecificValues.Current_Mode.Base_URL + "contains')\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/go_gray.gif\" title=\"Perform search\" alt=\"Perform search\" style=\"margin-top: 1px\" /></a>");
 			Output.WriteLine("              &nbsp;");
 			Output.WriteLine("            </td>");
 			Output.WriteLine("          </tr>");

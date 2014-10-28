@@ -1,10 +1,14 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.SessionState;
 using SobekCM.Library.UploadiFive;
+
+#endregion
 
 namespace SobekCM
 {

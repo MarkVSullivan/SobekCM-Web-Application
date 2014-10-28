@@ -5,14 +5,14 @@
 using System;
 using System.IO;
 using System.Web;
-using SobekCM.Core.Settings;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -35,19 +35,15 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string errorMessage;
 
         /// <summary> Constructor for a new instance of the Home_MySobekViewer class </summary>
-		/// <param name="CurrentMode"> Mode / navigation information for the current request (including interface code) </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public Logon_MySobekViewer(SobekCM_Navigation_Object CurrentMode, Custom_Tracer Tracer)
-            : base(null)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Logon_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-	        Tracer.Add_Trace("Logon_MySobekViewer.Constructor", String.Empty);
-
-			this.CurrentMode = CurrentMode;
+            RequestSpecificValues.Tracer.Add_Trace("Logon_MySobekViewer.Constructor", String.Empty);
 
             errorMessage = String.Empty;
 
             // If this is a postback, check to see if the user is valid
-            if (currentMode.isPostBack)
+            if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 string possible_username = String.Empty;
                 string possible_password = String.Empty;
@@ -75,7 +71,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 if ((!String.IsNullOrEmpty(possible_password)) && (!String.IsNullOrEmpty(possible_username)))
                 {
-                    user = SobekCM_Database.Get_User(possible_username, possible_password, Tracer);
+                    User_Object user = SobekCM_Database.Get_User(possible_username, possible_password, RequestSpecificValues.Tracer);
                     if (user != null)
                     {
                         // The user was valid here, so save this user information
@@ -95,14 +91,14 @@ namespace SobekCM.Library.MySobekViewer
                         string raw_url = HttpContext.Current.Items["Original_URL"].ToString();
                         if (raw_url.ToLower().IndexOf("my/logon") > 0)
                         {
-                            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                            currentMode.Redirect();
+                            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         }
                         else
                         {
                             HttpContext.Current.Response.Redirect(raw_url, false);
                             HttpContext.Current.ApplicationInstance.CompleteRequest();
-                            currentMode.Request_Completed = true;
+                            RequestSpecificValues.Current_Mode.Request_Completed = true;
                         }
                     }
                     else
@@ -131,7 +127,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             get 
             {
-                return "Logon to My" + currentMode.SobekCM_Instance_Abbreviation;
+                return "Logon to My" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
             }
         }
 
@@ -141,7 +137,7 @@ namespace SobekCM.Library.MySobekViewer
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
 	    {
 			// Get ready to draw the tabs
-			string my_sobek = "my" + currentMode.SobekCM_Instance_Abbreviation;
+			string my_sobek = "my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
 
 			Output.WriteLine("<br />");
 			Output.WriteLine("<h1>Logon to " + my_sobek + "</h1>");
@@ -153,39 +149,39 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("<div class=\"sbkLomv_ErrorMsg\">" + errorMessage + "</div>");
 			}
 
-			Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+			Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
 			Output.WriteLine("  <br />");
 			Output.WriteLine("  <p>The feature you are trying to access requires a valid logon.<p>");
 			Output.WriteLine("  <p>Please choose the appropriate logon directly below.</p>");
 			Output.WriteLine("  <ul id=\"sbkLomv_OptionsList\">");
 
-			if (currentMode.SobekCM_Instance_Abbreviation == "dLOC")
+			if (RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation == "dLOC")
 			{
-				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid myDLOC logon</span>, <a id=\"form_logon_term\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with myDLOC authentication</a>.</li>");
+				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid myDLOC logon</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with myDLOC authentication</a>.</li>");
 
-				if ((InstanceWide_Settings_Singleton.Settings.Shibboleth_System_URL.Length > 0) && (InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name.Length > 0))
+				if ((UI_ApplicationCache_Gateway.Settings.Shibboleth_System_URL.Length > 0) && (UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name.Length > 0))
 				{
-					Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_URL + "\">Sign on with your " + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name + " here</a>.</li>");
+					Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_URL + "\">Sign on with your " + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name + " here</a>.</li>");
 				}
 			}
 			else
 			{
-				if ((InstanceWide_Settings_Singleton.Settings.Shibboleth_System_URL.Length > 0) && (InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name.Length > 0))
+				if ((UI_ApplicationCache_Gateway.Settings.Shibboleth_System_URL.Length > 0) && (UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name.Length > 0))
 				{
-					Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_URL + "\">Sign on with your " + InstanceWide_Settings_Singleton.Settings.Shibboleth_System_Name + " here</a>.</li>");
+					Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_URL + "\">Sign on with your " + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name + " here</a>.</li>");
 				}
 
-				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid my" + currentMode.SobekCM_Instance_Abbreviation + " logon</span>, <a id=\"form_logon_term\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with my" + currentMode.SobekCM_Instance_Abbreviation + " authentication here</a>.</li>");
+				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " logon</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " authentication here</a>.</li>");
 			}
 
-			currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
-			Output.Write("    <li><span style=\"font-weight:bold\">Not registered yet?</span> <a href=\"" + currentMode.Redirect_URL() + "\">Register now</a> or ");
+			RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+			Output.Write("    <li><span style=\"font-weight:bold\">Not registered yet?</span> <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Register now</a> or ");
 
-			currentMode.Mode = Display_Mode_Enum.Contact;
-			Output.WriteLine(" <a href=\"" + currentMode.Redirect_URL() + "\">Contact Us</a></li>");
-			currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-			currentMode.Mode = Display_Mode_Enum.My_Sobek;
+			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
+			Output.WriteLine(" <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Contact Us</a></li>");
+			RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
 
 			Output.WriteLine("  </ul>");
 
@@ -203,12 +199,12 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Logon_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
 
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 
             // Add the popup form
             Output.WriteLine("<!-- mySobek Log On Form -->");
 			Output.WriteLine("<div class=\"sbkLomv_PopupDiv\" id=\"form_logon\" style=\"display:none;\">");
-			Output.WriteLine("  <div class=\"sbkMySobek_PopupTitle\"><table style=\"width:100%;\"><tr><td style=\"text-align:left;\">LOG IN</td><td style=\"text-align:right;\"><a href=\"" + currentMode.Base_URL + "logon/help\" target=\"_FORM_SIGNON_HELP\" >?</a> &nbsp; <a href=\"#template\" onclick=\"return close_mysobek_form('form_logon');\">X</a> &nbsp; </td></tr></table></div>");
+			Output.WriteLine("  <div class=\"sbkMySobek_PopupTitle\"><table style=\"width:100%;\"><tr><td style=\"text-align:left;\">LOG IN</td><td style=\"text-align:right;\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "logon/help\" target=\"_FORM_SIGNON_HELP\" >?</a> &nbsp; <a href=\"#template\" onclick=\"return close_mysobek_form('form_logon');\">X</a> &nbsp; </td></tr></table></div>");
             Output.WriteLine("  <br />");
 			Output.WriteLine("  <table class=\"sbkMySobek_PopupTable\">");
 
@@ -220,17 +216,17 @@ namespace SobekCM.Library.MySobekViewer
 			// Add the buttons 
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
 			Output.WriteLine("      <td colspan=\"2\">");
-			Output.WriteLine("        <button title=\"Close\" class=\"sbkMySobek_BigButton\" onclick=\"return close_mysobek_form('form_logon');\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL &nbsp; </button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Login\" class=\"sbkMySobek_BigButton\" type=\"submit\"> &nbsp; LOGIN <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("        <button title=\"Close\" class=\"sbkMySobek_BigButton\" onclick=\"return close_mysobek_form('form_logon');\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL &nbsp; </button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Login\" class=\"sbkMySobek_BigButton\" type=\"submit\"> &nbsp; LOGIN <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 
-            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
-            Output.WriteLine("    <tr><td colspan=\"2\"><br />Not registered yet?  <a href=\"" + currentMode.Redirect_URL() + "\">Register now</a>.");
-            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-            currentMode.Mode = Display_Mode_Enum.Contact;
-            Output.WriteLine("    <br /><br />Forgot your username or password?  Please <a href=\"" + currentMode.Redirect_URL() + "\">contact us</a>.</td></tr>");
-            currentMode.Mode = Display_Mode_Enum.My_Sobek;
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+            Output.WriteLine("    <tr><td colspan=\"2\"><br />Not registered yet?  <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Register now</a>.");
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
+            Output.WriteLine("    <br /><br />Forgot your username or password?  Please <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">contact us</a>.</td></tr>");
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
 
             // Finish the popup form
             Output.WriteLine("  </table>");

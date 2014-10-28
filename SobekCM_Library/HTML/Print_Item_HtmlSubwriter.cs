@@ -4,14 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
-using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.ItemViewer.Viewers;
-using SobekCM.Library.Navigation;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -21,24 +16,11 @@ namespace SobekCM.Library.HTML
     /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. </remarks>
     public class Print_Item_HtmlSubwriter : abstractHtmlSubwriter
     {
-        private readonly Aggregation_Code_Manager codeManager;
-        private readonly SobekCM_Item currentItem;
-        private readonly Language_Support_Info translations;
-
         /// <summary> Constructor for a new instancee of the Print_Item_HtmlSubwriter class </summary>
-        /// <param name="Current_Item">Current item to display </param>
-        /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-        /// <param name="Translator"> Language support object which handles simple translational duties </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        public Print_Item_HtmlSubwriter(SobekCM_Item Current_Item,
-            Aggregation_Code_Manager Code_Manager,
-            Language_Support_Info Translator,
-            SobekCM_Navigation_Object Current_Mode )
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Print_Item_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
         {
-            Mode = Current_Mode;
-            currentItem = Current_Item;
-            codeManager = Code_Manager;
-            translations = Translator;
+            // Do nothing
         }
 
         /// <summary> Writes the HTML generated to print this item directly to the response stream </summary>
@@ -51,7 +33,7 @@ namespace SobekCM.Library.HTML
 
             // Determine some variables
             bool include_brief_citation = false;
-            string mode = Mode.ViewerCode.ToLower();
+            string mode = RequestSpecificValues.Current_Mode.ViewerCode.ToLower();
             if (mode.Length < 2 )
                 mode = "jj1";
             if (mode[0] == '1')
@@ -94,7 +76,7 @@ namespace SobekCM.Library.HTML
                     {
                         if (mode[2] == '*')
                         {
-                            print_pages(include_brief_citation, 1, currentItem.Web.Static_PageCount, Output);
+                            print_pages(include_brief_citation, 1, RequestSpecificValues.Current_Item.Web.Static_PageCount, Output);
                         }
                         else
                         {
@@ -131,22 +113,22 @@ namespace SobekCM.Library.HTML
 
         private void print_brief_citation( string image_width, TextWriter Output)
         {
-            if (Mode.Base_Skin == "ufdc")
+            if (RequestSpecificValues.Current_Mode.Base_Skin == "ufdc")
             {
-                Output.WriteLine("<img src=\"" + Mode.Default_Images_URL + "ufdc_banner_" + image_width + ".jpg\" />");
+                Output.WriteLine("<img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "ufdc_banner_" + image_width + ".jpg\" />");
                 Output.WriteLine("<br />");
             }
 
-            if (Mode.Base_Skin == "dloc")
+            if (RequestSpecificValues.Current_Mode.Base_Skin == "dloc")
             {
-                Output.WriteLine("<img src=\"" + Mode.Default_Images_URL + "dloc_banner_" + image_width + ".jpg\" />");
+                Output.WriteLine("<img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "dloc_banner_" + image_width + ".jpg\" />");
                 Output.WriteLine("<br />");
             }
 
             Output.WriteLine("<table cellspacing=\"5px\" class=\"citation\" width=\"550px\" >");
-            Output.WriteLine("  <tr align=\"left\"><td><b>Title:</b> &nbsp; </td><td>" + currentItem.Bib_Info.Main_Title + "</td></tr>");
-            Output.WriteLine("  <tr align=\"left\"><td><b>URL:</b> &nbsp; </td><td>" + Mode.Base_URL + "/" + currentItem.BibID + "/" + currentItem.VID + "</td></tr>");
-            Output.WriteLine("  <tr align=\"left\"><td><b>Site:</b> &nbsp; </td><td>" + Mode.SobekCM_Instance_Name + "</td></tr>");
+            Output.WriteLine("  <tr align=\"left\"><td><b>Title:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Item.Bib_Info.Main_Title + "</td></tr>");
+            Output.WriteLine("  <tr align=\"left\"><td><b>URL:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Mode.Base_URL + "/" + RequestSpecificValues.Current_Item.BibID + "/" + RequestSpecificValues.Current_Item.VID + "</td></tr>");
+            Output.WriteLine("  <tr align=\"left\"><td><b>Site:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Name + "</td></tr>");
             Output.WriteLine("</table>");
         }
 
@@ -156,7 +138,7 @@ namespace SobekCM.Library.HTML
                 print_brief_citation("700", Output);
 
             // Get this page
-            Page_TreeNode thisPage = currentItem.Web.Pages_By_Sequence[page-1];
+            Page_TreeNode thisPage = RequestSpecificValues.Current_Item.Web.Pages_By_Sequence[page-1];
 
             // Find the jpeg2000 image and show the image
             foreach (SobekCM_File_Info thisFile in thisPage.Files)
@@ -164,21 +146,21 @@ namespace SobekCM.Library.HTML
                 if (thisFile.System_Name.ToUpper().IndexOf(".JP2") > 0)
                 {
                     int zoomlevels = zoom_levels( thisFile.Width, thisFile.Height );
-                    int size_pixels = 512 + (Mode.Viewport_Size * 256);
-                    if (Mode.Viewport_Size == 3)
+                    int size_pixels = 512 + (RequestSpecificValues.Current_Mode.Viewport_Size * 256);
+                    if (RequestSpecificValues.Current_Mode.Viewport_Size == 3)
                         size_pixels = 1536;
-                    int rotation = (Mode.Viewport_Rotation % 4) * 90;
+                    int rotation = (RequestSpecificValues.Current_Mode.Viewport_Rotation % 4) * 90;
 
                     string jpeg2000_filename = thisFile.System_Name;
                     if ((jpeg2000_filename.Length > 0) && (jpeg2000_filename[0] != '/'))
                     {
-                        jpeg2000_filename = "/UFDC/" + currentItem.Web.AssocFilePath + "/" + jpeg2000_filename;
+                        jpeg2000_filename = "/UFDC/" + RequestSpecificValues.Current_Item.Web.AssocFilePath + "/" + jpeg2000_filename;
                     }
 
                     // Build the source URL
-                    Output.Write("<img src=\"" + InstanceWide_Settings_Singleton.Settings.JP2ServerUrl + "imageserver?res=" + (zoomlevels - Mode.Viewport_Zoom + 1) + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
-                    if (Mode.Viewport_Zoom != 1)
-                        Output.Write("&x=" + Mode.Viewport_Point_X + "&y=" + Mode.Viewport_Point_Y);
+                    Output.Write("<img src=\"" + UI_ApplicationCache_Gateway.Settings.JP2ServerUrl + "imageserver?res=" + (zoomlevels - RequestSpecificValues.Current_Mode.Viewport_Zoom + 1) + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
+                    if (RequestSpecificValues.Current_Mode.Viewport_Zoom != 1)
+                        Output.Write("&x=" + RequestSpecificValues.Current_Mode.Viewport_Point_X + "&y=" + RequestSpecificValues.Current_Mode.Viewport_Point_Y);
                     Output.WriteLine("&rotation=" + rotation + "&filename=" + jpeg2000_filename + "\" />");
                     break;
                 }
@@ -188,8 +170,8 @@ namespace SobekCM.Library.HTML
         private int zoom_levels( int width, int height )
         {
             // Get the current portal size in pixels
-            float size_pixels = 512 + (Mode.Viewport_Size * 256);
-            if (Mode.Viewport_Size == 3)
+            float size_pixels = 512 + (RequestSpecificValues.Current_Mode.Viewport_Size * 256);
+            if (RequestSpecificValues.Current_Mode.Viewport_Size == 3)
                 size_pixels = 1536;
 
             // Get the factor 
@@ -220,7 +202,7 @@ namespace SobekCM.Library.HTML
             while (page_index < to_page)
             {
                 // Get this page
-                Page_TreeNode thisPage = currentItem.Web.Pages_By_Sequence[page_index];
+                Page_TreeNode thisPage = RequestSpecificValues.Current_Item.Web.Pages_By_Sequence[page_index];
 
                 // Find the jpeg image and show the image
                 foreach (SobekCM_File_Info thisFile in thisPage.Files)
@@ -230,7 +212,7 @@ namespace SobekCM.Library.HTML
                         if (page_index > from_page - 1)
                             Output.WriteLine("<br />");
 
-                        Output.WriteLine("<img src=\"" + currentItem.Web.Source_URL + "/" + thisFile.System_Name + "\" />");
+                        Output.WriteLine("<img src=\"" + RequestSpecificValues.Current_Item.Web.Source_URL + "/" + thisFile.System_Name + "\" />");
                         break;
                     }
                 }
@@ -250,9 +232,9 @@ namespace SobekCM.Library.HTML
 
             int page_index = 0;
             int col = 0;
-            while (page_index < currentItem.Web.Static_PageCount)
+            while (page_index < RequestSpecificValues.Current_Item.Web.Static_PageCount)
             {
-                Page_TreeNode thisPage = currentItem.Web.Pages_By_Sequence[page_index];
+                Page_TreeNode thisPage = RequestSpecificValues.Current_Item.Web.Pages_By_Sequence[page_index];
 
                 // Find the jpeg image
                 foreach (SobekCM_File_Info thisFile in thisPage.Files.Where(thisFile => thisFile.System_Name.IndexOf(".jpg") > 0))
@@ -265,7 +247,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("  <tr align=\"center\" valign=\"top\">");
                     }
 
-                    Output.WriteLine("    <td><img src=\"" + currentItem.Web.Source_URL + "/" + thisFile.System_Name.Replace(".jpg", "thm.jpg") + "\" border=\"1\" /><br />" + thisPage.Label + "</td>");
+                    Output.WriteLine("    <td><img src=\"" + RequestSpecificValues.Current_Item.Web.Source_URL + "/" + thisFile.System_Name.Replace(".jpg", "thm.jpg") + "\" border=\"1\" /><br />" + thisPage.Label + "</td>");
                     col++;
                     break;
                 }
@@ -286,22 +268,21 @@ namespace SobekCM.Library.HTML
         private void print_full_citation(TextWriter Output)
         {
             Output.WriteLine("</center>");
-            if (Mode.Base_Skin == "ufdc")
+            if (RequestSpecificValues.Current_Mode.Base_Skin == "ufdc")
             {
-                Output.WriteLine("<img src=\"" + Mode.Default_Images_URL + "ufdc_banner_700.jpg\" />");
+                Output.WriteLine("<img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "ufdc_banner_700.jpg\" />");
                 Output.WriteLine("<br />");
             }
 
-            if (Mode.Base_Skin == "dloc")
+            if (RequestSpecificValues.Current_Mode.Base_Skin == "dloc")
             {
-                Output.WriteLine("<img src=\"" + Mode.Default_Images_URL + "dloc_banner_700.jpg\" />");
+                Output.WriteLine("<img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "dloc_banner_700.jpg\" />");
                 Output.WriteLine("<br />");
             }
 
             Output.WriteLine("<div class=\"SobekCitation\">");
-            Citation_ItemViewer citationViewer = new Citation_ItemViewer(translations, codeManager, false)
-                                                     {CurrentItem = currentItem, CurrentMode = Mode};
-            Output.WriteLine(citationViewer.Standard_Citation_String(false,null));
+       //     Citation_ItemViewer citationViewer = new Citation_ItemViewer(RequestSpecificValues, false);
+       //     Output.WriteLine(citationViewer.Standard_Citation_String(false,null));
             Output.WriteLine("</div>");
         }
 
@@ -328,7 +309,7 @@ namespace SobekCM.Library.HTML
         public override string WebPage_Title
         {
             get {
-                return currentItem != null ? currentItem.Bib_Info.Main_Title.Title : "{0} Item";
+                return RequestSpecificValues.Current_Item != null ? RequestSpecificValues.Current_Item.Bib_Info.Main_Title.Title : "{0} Item";
             }
         }
 
@@ -342,13 +323,13 @@ namespace SobekCM.Library.HTML
 
             // Write the style sheet to use 
 #if DEBUG
-            Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 #endif
  
             // Write the style sheet to use 
-            Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Print.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+            Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Print.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
         }
 
         /// <summary> Gets the collection of special behaviors which this subwriter

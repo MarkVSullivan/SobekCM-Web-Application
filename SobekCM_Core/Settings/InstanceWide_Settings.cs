@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Search;
-using SobekCM.Core.Users;
 using SobekCM.Core.Serialization;
+using SobekCM.Core.Users;
 
 #endregion
 
@@ -26,7 +26,7 @@ namespace SobekCM.Core.Settings
         private readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByDisplayName;
         private readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByName;
 
-        
+        private string inProcessLocationOverride;
 
         /// <summary> constructor sets all the values to default empty strings </summary>
         public InstanceWide_Settings()
@@ -73,6 +73,8 @@ namespace SobekCM.Core.Settings
                 metadataFieldsByName = new Dictionary<string, Metadata_Search_Field>();
                 Incoming_Folders = new List<Builder_Source_Folder>();
                 Additional_Settings = new Dictionary<string, string>();
+                Workflow_Types = new List<Workflow_Type>();
+                Disposition_Options = new List<Disposition_Option>();
             }
             catch (Exception ee)
             {
@@ -198,6 +200,16 @@ namespace SobekCM.Core.Settings
         /// <summary> Returns the default user interface language </summary>
         [DataMember]
         public Web_Language_Enum Default_UI_Language { get; set; }
+
+        /// <summary> Set the default UI language, by passing in a string </summary>
+        public string Default_UI_Language_String
+        {
+            set
+            {
+                Default_UI_Language = Web_Language_Enum_Converter.Code_To_Enum(Web_Language_Enum_Converter.Name_To_Code(value));
+            }
+            get { return Web_Language_Enum_Converter.Enum_To_Name(Default_UI_Language); }
+        }
 
         /// <summary> Gets the base name for this system </summary>
         [DataMember]
@@ -580,7 +592,13 @@ namespace SobekCM.Core.Settings
         /// digital resource location </summary>
         public string In_Process_Submission_Location
         {
-            get { return Base_Directory + "\\mySobek\\InProcess"; }
+            get
+            {
+                if (String.IsNullOrEmpty(inProcessLocationOverride))
+                    return Base_Directory + "\\mySobek\\InProcess";
+                return inProcessLocationOverride;
+            }
+            set { inProcessLocationOverride = value; }
         }
 
         /// <summary> Network location of the recycle bin, where deleted items and

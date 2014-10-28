@@ -9,13 +9,11 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 using Image = System.Web.UI.WebControls.Image;
 
 #endregion
@@ -52,7 +50,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			zoomlevels = 0;
 			resourceType = String.Empty;
 
-		    this.CurrentMode = Current_Mode;
+		    CurrentMode = Current_Mode;
 
             handle_postback();
 		}
@@ -84,7 +82,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		        }
 		    }
 
-            this.CurrentMode = Current_Mode;
+            CurrentMode = Current_Mode;
             handle_postback();
 		}
 
@@ -231,7 +229,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				int zoomed_pixel_size = get_jp2_viewport_size(CurrentMode.Viewport_Size, CurrentMode.Viewport_Zoom);
 				CurrentMode.Viewport_Point_X = adjust_x(x, y, size_pixels, zoomed_pixel_size);
 				CurrentMode.Viewport_Point_Y = adjust_y(x, y, size_pixels, zoomed_pixel_size);
-				navRow.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\"><img alt=\"" + zoom_out_text + "\" src=\"" + image_location + "zoom_out.gif\" /></a>" + Environment.NewLine );
+				navRow.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img alt=\"" + zoom_out_text + "\" src=\"" + image_location + "zoom_out.gif\" /></a>" + Environment.NewLine );
 
 				// Add the buttons for each zoom level in this image
 				for (ushort i = 1; i <= zoomlevels; i++)
@@ -243,7 +241,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					{
 						CurrentMode.Viewport_Point_X = adjust_x(x, y, size_pixels, zoomed_pixel_size);
 						CurrentMode.Viewport_Point_Y = adjust_y(x, y, size_pixels, zoomed_pixel_size);
-						navRow.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\"><img alt=\"" + zoom_to_level_text + "&ldquo;" + (zoomlevels - i + 1) + "&rdquo;\" src=\"" + image_location + "znotselected.gif\" /></a>" + Environment.NewLine );
+						navRow.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img alt=\"" + zoom_to_level_text + "&ldquo;" + (zoomlevels - i + 1) + "&rdquo;\" src=\"" + image_location + "znotselected.gif\" /></a>" + Environment.NewLine );
 					}
 					else
 					{
@@ -258,7 +256,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				zoomed_pixel_size = get_jp2_viewport_size(CurrentMode.Viewport_Size, CurrentMode.Viewport_Zoom);
 				CurrentMode.Viewport_Point_X = adjust_x(x, y, size_pixels, zoomed_pixel_size);
 				CurrentMode.Viewport_Point_Y = adjust_y(x, y, size_pixels, zoomed_pixel_size);
-				navRow.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\"><img alt=\"" + zoom_in_text + "\" src=\"" + image_location + "zoom_in.gif\" /></a>" + Environment.NewLine );
+				navRow.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img alt=\"" + zoom_in_text + "\" src=\"" + image_location + "zoom_in.gif\" /></a>" + Environment.NewLine );
 
 				// Restore the x and y
 				CurrentMode.Viewport_Point_X = x;
@@ -295,7 +293,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Viewport_Rotation = (ushort)(rotate + 1);
 				if (CurrentMode.Viewport_Rotation > 3)
 					CurrentMode.Viewport_Rotation = 0;
-				navRow.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\"><img alt=\"" + rotate_clockwise_text + "\" src=\"" + image_location + "cw.gif\" /></a>" + Environment.NewLine );
+				navRow.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img alt=\"" + rotate_clockwise_text + "\" src=\"" + image_location + "cw.gif\" /></a>" + Environment.NewLine );
 				CurrentMode.Viewport_Point_X = x;
 				CurrentMode.Viewport_Point_Y = y;
 
@@ -310,7 +308,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Viewport_Rotation = (ushort)(rotate - 1);
 				if (CurrentMode.Viewport_Rotation < 0)
 					CurrentMode.Viewport_Rotation = 3;
-				navRow.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\"><img alt=\"" + rotate_counter_text + "\" src=\"" + image_location + "ccw.gif\" /></a>" + Environment.NewLine );
+				navRow.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img alt=\"" + rotate_counter_text + "\" src=\"" + image_location + "ccw.gif\" /></a>" + Environment.NewLine );
 				CurrentMode.Viewport_Rotation = rotate;
 				CurrentMode.Viewport_Point_X = x;
 				CurrentMode.Viewport_Point_Y = y;
@@ -326,7 +324,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				else
 				{
 					CurrentMode.Viewport_Size = 0;
-					navRow.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\"><img src=\"" + image_location + "sizetools1_not.gif\" alt=\"Small size view\" /></a>" + Environment.NewLine );
+					navRow.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img src=\"" + image_location + "sizetools1_not.gif\" alt=\"Small size view\" /></a>" + Environment.NewLine );
 				}
 
 
@@ -340,7 +338,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					temp_zoom_levels = zoom_levels();
 					if (zoom > temp_zoom_levels)
 						CurrentMode.Viewport_Zoom = temp_zoom_levels;
-					navRow.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\"><img src=\"" + image_location + "sizetools2_not.gif\" alt=\"Medium size view\" /></a>" + Environment.NewLine );
+					navRow.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img src=\"" + image_location + "sizetools2_not.gif\" alt=\"Medium size view\" /></a>" + Environment.NewLine );
 				}
 
 				// Medium large screen button (1024 x 1024)
@@ -352,7 +350,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					temp_zoom_levels = zoom_levels();
 					if (zoom > temp_zoom_levels)
 						CurrentMode.Viewport_Zoom = temp_zoom_levels;
-					navRow.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\"><img src=\"" + image_location + "sizetools3_not.gif\" alt=\"Medium-large size view\"/></a>" + Environment.NewLine );
+					navRow.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img src=\"" + image_location + "sizetools3_not.gif\" alt=\"Medium-large size view\"/></a>" + Environment.NewLine );
 				}
 
 				// Large screen button (1536x1536)
@@ -364,7 +362,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					temp_zoom_levels = zoom_levels();
 					if (zoom > temp_zoom_levels)
 						CurrentMode.Viewport_Zoom = temp_zoom_levels;
-					navRow.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\"><img src=\"" + image_location + "sizetools4_not.gif\" alt=\"Large size view\" /></a>" + Environment.NewLine );
+					navRow.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img src=\"" + image_location + "sizetools4_not.gif\" alt=\"Large size view\" /></a>" + Environment.NewLine );
 				}
 				CurrentMode.Viewport_Size = size;
 				CurrentMode.Viewport_Zoom = zoom;
@@ -397,25 +395,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					CurrentMode.Viewport_Point_X = x - size_pixels;
 					if (CurrentMode.Viewport_Point_X < 0)
 						CurrentMode.Viewport_Point_X = 0;
-					navRow.Append("\t<area shape=\"RECT\" coords=\"0,12,12,24\" href=\"" + CurrentMode.Redirect_URL() + "\" alt=\"" + pan_left_text +"\" >" + Environment.NewLine );
+					navRow.Append("\t<area shape=\"RECT\" coords=\"0,12,12,24\" href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" alt=\"" + pan_left_text +"\" >" + Environment.NewLine );
 
 					CurrentMode.Viewport_Point_X = x;
 					CurrentMode.Viewport_Point_Y = y - size_pixels;
 					if (CurrentMode.Viewport_Point_Y < 0)
 						CurrentMode.Viewport_Point_Y = 0;
-					navRow.Append("\t<area shape=\"RECT\" coords=\"12,0,24,12\" href=\"" + CurrentMode.Redirect_URL() + "\" alt=\"" + pan_up_text + "\" >" + Environment.NewLine );
+					navRow.Append("\t<area shape=\"RECT\" coords=\"12,0,24,12\" href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" alt=\"" + pan_up_text + "\" >" + Environment.NewLine );
 
 					CurrentMode.Viewport_Point_Y = y;
 					CurrentMode.Viewport_Point_X = x + size_pixels;
 					if ((CurrentMode.Viewport_Point_X + size_pixels) > width)
 						CurrentMode.Viewport_Point_X = width - size_pixels;
-					navRow.Append("\t<area shape=\"RECT\" coords=\"24,12,36,24\" href=\"" + CurrentMode.Redirect_URL() + "\" alt=\"" + pan_right_text + "\" >" + Environment.NewLine );
+					navRow.Append("\t<area shape=\"RECT\" coords=\"24,12,36,24\" href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" alt=\"" + pan_right_text + "\" >" + Environment.NewLine );
 
 					CurrentMode.Viewport_Point_X = x;
 					CurrentMode.Viewport_Point_Y = y + size_pixels;
 					if ((CurrentMode.Viewport_Point_Y + size_pixels) > height)
 						CurrentMode.Viewport_Point_Y = height - size_pixels;
-					navRow.Append("\t<area shape=\"RECT\" coords=\"12,24,24,36\" href=\"" + CurrentMode.Redirect_URL() + "\" alt=\"" + pan_down_text + "\" >" + Environment.NewLine );
+					navRow.Append("\t<area shape=\"RECT\" coords=\"12,24,24,36\" href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" alt=\"" + pan_down_text + "\" >" + Environment.NewLine );
 
 					CurrentMode.Viewport_Point_Y = y;
 					CurrentMode.Viewport_Point_X = x;
@@ -555,7 +553,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        // If no attributes exist, read it from the JPEG2000 file
 	        if ((width <= 0) || (height <= 0))
 	        {
-	            string network_jpeg2000 = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath.Replace("/", "\\") + FileName;
+	            string network_jpeg2000 = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath.Replace("/", "\\") + FileName;
 	            if (File.Exists(network_jpeg2000))
 	            {
 	                Tracer.Add_Trace("Aware_JP2_ItemViewer.Add_Nav_Bar_Menu_Section", "Parsing JPEG2000 file for image attributes");
@@ -615,7 +613,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 CurrentMode.Viewport_Point_Y = (int)y_value;
 
                 // Call the base method
-                CurrentMode.Redirect();
+                UrlWriterHelper.Redirect(CurrentMode);
             }
 	    }
 
@@ -681,7 +679,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        StringBuilder url_builder = new StringBuilder(500);
 	        if (string.IsNullOrEmpty(featureType))
 	        {
-	            url_builder.Append(InstanceWide_Settings_Singleton.Settings.JP2ServerUrl + "thumbnailserver?res=" + (zoom_levels() - CurrentMode.Viewport_Zoom + 1));
+	            url_builder.Append(UI_ApplicationCache_Gateway.Settings.JP2ServerUrl + "thumbnailserver?res=" + (zoom_levels() - CurrentMode.Viewport_Zoom + 1));
 	            if (CurrentMode.Viewport_Zoom != 1)
 	                url_builder.Append("&viewwidth=" + size_pixels + "&viewheight=" + size_pixels + "&x=" + CurrentMode.Viewport_Point_X + "&y=" + CurrentMode.Viewport_Point_Y);
 	            url_builder.Append("&rotation=" + rotation + "&filename=" + jpeg2000_filename + "&maxthumbnailwidth=200&maxthumbnailheight=300");
@@ -690,7 +688,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        else
 	        {
 	            // Determine the actual location on the viewport for the feature
-	            url_builder.Append( InstanceWide_Settings_Singleton.Settings.SobekCM_ImageServer + "?z=" + actualZoomLevel + "&w=" + size_pixels + "&h=" + size_pixels);
+	            url_builder.Append( UI_ApplicationCache_Gateway.Settings.SobekCM_ImageServer + "?z=" + actualZoomLevel + "&w=" + size_pixels + "&h=" + size_pixels);
 	            url_builder.Append("&r=" + rotation + "&file=" + jpeg2000_filename);
 	            if (CurrentMode.Viewport_Zoom != 1)
 	                url_builder.Append("&x=" + CurrentMode.Viewport_Point_X + "&y=" + CurrentMode.Viewport_Point_Y);
@@ -854,7 +852,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            int actual_zoom_level = (zoomlevels - CurrentMode.Viewport_Zoom + 1);
 	            if ((string.IsNullOrEmpty(featureType) || ( actual_zoom_level == 1 )))
 	            {
-	                url_builder.Append(InstanceWide_Settings_Singleton.Settings.JP2ServerUrl + "imageserver?res=" + actual_zoom_level + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
+	                url_builder.Append(UI_ApplicationCache_Gateway.Settings.JP2ServerUrl + "imageserver?res=" + actual_zoom_level + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
 	                if (CurrentMode.Viewport_Zoom != 1)
 	                    url_builder.Append("&x=" + CurrentMode.Viewport_Point_X + "&y=" + CurrentMode.Viewport_Point_Y);
 	                url_builder.Append("&rotation=" + rotation + "&filename=" + jpeg2000_filename);
@@ -862,7 +860,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            else
 	            {
 	                // Determine the actual location on the viewport for the feature
-	                url_builder.Append(InstanceWide_Settings_Singleton.Settings.SobekCM_ImageServer + "?z=" + actual_zoom_level + "&w=" + size_pixels + "&h=" + size_pixels);
+	                url_builder.Append(UI_ApplicationCache_Gateway.Settings.SobekCM_ImageServer + "?z=" + actual_zoom_level + "&w=" + size_pixels + "&h=" + size_pixels);
 	                url_builder.Append("&r=" + rotation + "&file=" + jpeg2000_filename);
 	                if (CurrentMode.Viewport_Zoom != 1)
 	                    url_builder.Append("&x=" + CurrentMode.Viewport_Point_X + "&y=" + CurrentMode.Viewport_Point_Y);
@@ -969,7 +967,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			CurrentMode.Viewport_Point_Y = y_value;
 
 			// Call the base method
-            CurrentMode.Redirect();
+            UrlWriterHelper.Redirect(CurrentMode);
 		}
 
 	    #region Method to actually compute the JPEG2000 attributes by reading the file 

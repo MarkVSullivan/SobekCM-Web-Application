@@ -5,23 +5,20 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Web;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
+using SobekCM.Core.Items;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Items;
+using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Citation.Template;
+using SobekCM.Library.HTML;
+using SobekCM.Library.MainWriters;
+using SobekCM.Library.MemoryMgmt;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Citation.Template;
-using SobekCM.Library.HTML;
-using SobekCM.Library.Items;
-using SobekCM.Library.MainWriters;
-using SobekCM.Library.MemoryMgmt;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Skins;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -42,15 +39,11 @@ namespace SobekCM.Library.MySobekViewer
     public class Group_Add_Volume_MySobekViewer : abstract_MySobekViewer
     {
         private readonly bool bornDigital;
-        private readonly Aggregation_Code_Manager codeManager;
         private readonly string date;
         private readonly short dispositionAdvice;
         private readonly string dispositionAdviceNotes;
         private bool hierarchyCopiedFromDate;
-        private readonly Dictionary<string, Wordmark_Icon> iconList;
         private readonly short ipRestrict;
-        private readonly SobekCM_Item item;
-        private readonly Item_Lookup_Object itemList;
         private readonly SobekCM_Items_In_Title itemsInTitle;
         private readonly string level1;
         private readonly int level1Order;
@@ -64,45 +57,16 @@ namespace SobekCM.Library.MySobekViewer
         private readonly Template template;
         private readonly string title;
         private readonly string trackingBox;
-        private readonly SobekCM_Skin_Object webSkin;
-		private readonly SobekCM_Skin_Collection skins;
 
 
         /// <summary> Constructor for a new instance of the Group_Add_Volume_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="All_Items_Lookup"> Allows individual items to be retrieved by various methods as <see cref="Single_Item"/> objects.</param>
-        /// <param name="Current_Item"> Individual digital resource to be edited by the user </param>
-        /// <param name="Code_Manager"> Code manager contains the list of all valid aggregation codes </param>
-        /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
-        /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Items_In_Title"> List of items within this title </param>
-        /// <param name="Translator"> Language support object which handles simple translational duties </param>
-		/// <param name="HTML_Skin_Collection"> HTML Web skin collection which controls the overall appearance of this digital library </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public Group_Add_Volume_MySobekViewer(User_Object User,
-            SobekCM_Navigation_Object Current_Mode,
-            Item_Lookup_Object All_Items_Lookup,
-            SobekCM_Item Current_Item, Aggregation_Code_Manager Code_Manager,
-            Dictionary<string, Wordmark_Icon> Icon_Table,
-            SobekCM_Skin_Object HTML_Skin,
-            SobekCM_Items_In_Title Items_In_Title,
-            Language_Support_Info Translator,
-			SobekCM_Skin_Collection HTML_Skin_Collection,
-            Custom_Tracer Tracer)
-            : base(User)
+        public Group_Add_Volume_MySobekViewer(RequestCache RequestSpecificValues, SobekCM_Items_In_Title Items_In_Title)  : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", String.Empty);
+            RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", String.Empty);
 
-            currentMode = Current_Mode;
-            item = Current_Item;
-            itemList = All_Items_Lookup;
-            codeManager = Code_Manager;
-            iconList = Icon_Table;
-            webSkin = HTML_Skin;
             itemsInTitle = Items_In_Title;
-            base.Translator = Translator;
-	        skins = HTML_Skin_Collection;
 
             // Set some defaults
             ipRestrict = -1;
@@ -125,38 +89,38 @@ namespace SobekCM.Library.MySobekViewer
 
 
             // If the user cannot edit this item, go back
-            if (!user.Can_Edit_This_Item(item.BibID, item.Bib_Info.SobekCM_Type_String, item.Bib_Info.Source.Code, item.Bib_Info.HoldingCode, item.Behaviors.Aggregation_Code_List))
+            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
             {
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
             // Determine the default template code 
             string template_code = "addvolume";
-            if (!user.Include_Tracking_In_Standard_Forms)
+            if (!RequestSpecificValues.Current_User.Include_Tracking_In_Standard_Forms)
                 template_code = "addvolume_notracking";
 
             // Load this template
-            template = Cached_Data_Manager.Retrieve_Template(template_code, Tracer);
+            template = Cached_Data_Manager.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
             if (template != null)
             {
-                Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Found template in cache");
+                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Found template in cache");
             }
             else
             {
-                Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Reading template file");
+                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Reading template file");
 
                 // Read this template
                 Template_XML_Reader reader = new Template_XML_Reader();
                 template = new Template();
-                reader.Read_XML(InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "templates\\defaults\\" + template_code + ".xml", template, true);
+                reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\defaults\\" + template_code + ".xml", template, true);
 
                 // Add the current codes to this template
-                template.Add_Codes(Code_Manager);
+                template.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
                 // Save this into the cache
-                Cached_Data_Manager.Store_Template(template_code, template, Tracer);
+                Cached_Data_Manager.Store_Template(template_code, template, RequestSpecificValues.Tracer);
             }
 
             // See if there was a hidden request
@@ -165,8 +129,8 @@ namespace SobekCM.Library.MySobekViewer
             // If this was a cancel request do that
             if (hidden_request == "cancel")
             {
-                currentMode.Mode = Display_Mode_Enum.Item_Display;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
             }
             else if (hidden_request.IndexOf("save") == 0 )
             {
@@ -182,7 +146,7 @@ namespace SobekCM.Library.MySobekViewer
                     try
                     {
                         // Get a new instance of this item
-                        SobekCM_Item saveItem = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, vid, Icon_Table, null, Tracer);
+                        SobekCM_Item saveItem = SobekCM_Item_Factory.Get_Item(RequestSpecificValues.Current_Mode.BibID, vid, UI_ApplicationCache_Gateway.Icon_List, null, RequestSpecificValues.Tracer);
                         
                         // Clear some values for this item
                         saveItem.VID = String.Empty;
@@ -197,28 +161,28 @@ namespace SobekCM.Library.MySobekViewer
 						saveItem.METS_Header.Modify_Date = saveItem.METS_Header.Create_Date;
 	                    saveItem.METS_Header.Creator_Software = "SobekCM Web - Online add a volume (derived from VID " + vid + ")";
 						saveItem.METS_Header.Clear_Creator_Individual_Notes();
-	                    saveItem.METS_Header.Creator_Individual = user.Full_Name;
+	                    saveItem.METS_Header.Creator_Individual = RequestSpecificValues.Current_User.Full_Name;
 	                    saveItem.Bib_Info.Location.Other_URL = String.Empty;
 						saveItem.Bib_Info.Location.Other_URL_Display_Label = String.Empty;
 						saveItem.Bib_Info.Location.Other_URL_Note = String.Empty;
 
                         // Save the template changes to this item
-                        template.Save_To_Bib(saveItem, user, 1);
+                        template.Save_To_Bib(saveItem, RequestSpecificValues.Current_User, 1);
 
                         // Save this item and copy over
-                        complete_item_submission(saveItem, Tracer);
+                        complete_item_submission(saveItem, RequestSpecificValues.Tracer);
 
                         // Clear the volume list
-                        Cached_Data_Manager.Remove_Items_In_Title(saveItem.BibID, Tracer);
+                        Cached_Data_Manager.Remove_Items_In_Title(saveItem.BibID, RequestSpecificValues.Tracer);
 
                         // Forward differently depending on request
                         switch (hidden_request)
                         {
                             case "save_edit":
-                                currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
-                                currentMode.VID = saveItem.VID;
-                                currentMode.Redirect();
+                                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+                                RequestSpecificValues.Current_Mode.VID = saveItem.VID;
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                                 break;
 
                             case "save_again":
@@ -253,16 +217,16 @@ namespace SobekCM.Library.MySobekViewer
                                 break;
 
                             case "save_addfiles":
-								currentMode.Mode = Display_Mode_Enum.My_Sobek;
-								currentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
-                                currentMode.VID = saveItem.VID;
-                                currentMode.Redirect();
+								RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+								RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+                                RequestSpecificValues.Current_Mode.VID = saveItem.VID;
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                                 break;
 
                             default:
-                                currentMode.Mode = Display_Mode_Enum.Item_Display;
-                                currentMode.VID = saveItem.VID;
-                                currentMode.Redirect();
+                                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                                RequestSpecificValues.Current_Mode.VID = saveItem.VID;
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                                 break;
                         }
 
@@ -344,9 +308,9 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Determine the in process directory for this
-            string user_in_process_directory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".", "").Replace("@", "") + "\\newitem";
-            if (user.ShibbID.Trim().Length > 0)
-                user_in_process_directory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\newitem";
+            string user_in_process_directory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\newitem";
+            if (RequestSpecificValues.Current_User.ShibbID.Trim().Length > 0)
+                user_in_process_directory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.ShibbID + "\\newitem";
 
             // Ensure this directory exists
             if (!Directory.Exists(user_in_process_directory))
@@ -361,26 +325,26 @@ namespace SobekCM.Library.MySobekViewer
 
             // Save to the database
             Item_To_Complete.Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
-            SobekCM_Database.Save_New_Digital_Resource(Item_To_Complete, false, false, user.UserName, String.Empty, -1);
+            SobekCM_Database.Save_New_Digital_Resource(Item_To_Complete, false, false, RequestSpecificValues.Current_User.UserName, String.Empty, -1);
 
             // Assign the file root and assoc file path
             Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
 
             // Create the static html pages
-            string base_url = currentMode.Base_URL;
+            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
             try
             {
-                Static_Pages_Builder staticBuilder = new Static_Pages_Builder(InstanceWide_Settings_Singleton.Settings.System_Base_URL, InstanceWide_Settings_Singleton.Settings.Base_Data_Directory, Translator, codeManager, iconList, skins, webSkin.Skin_Code);
+                Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Data_Directory, UI_ApplicationCache_Gateway.Translation, UI_ApplicationCache_Gateway.Aggregations, UI_ApplicationCache_Gateway.Icon_List, UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.HTML_Skin.Skin_Code);
                 string filename = user_in_process_directory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
                 staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
 
 				// Copy the static HTML file to the web server
 				try
 				{
-					if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
-						Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
-					if (File.Exists(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
-						File.Copy(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", InstanceWide_Settings_Singleton.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
+					if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8)))
+						Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8));
+					if (File.Exists(user_in_process_directory + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html"))
+						File.Copy(user_in_process_directory + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html", UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8) + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html", true);
 				}
 				catch (Exception)
 				{
@@ -393,23 +357,23 @@ namespace SobekCM.Library.MySobekViewer
                 message = message + "<br /><span style=\"color: red\"><strong>" + ee.Message + "<br />" + ee.StackTrace.Replace("\n", "<br />") + "</strong></span>";
             }
 
-            currentMode.Base_URL = base_url;
+            RequestSpecificValues.Current_Mode.Base_URL = base_url;
 
             // Save the rest of the metadata
             Item_To_Complete.Source_Directory = user_in_process_directory;
             Item_To_Complete.Save_SobekCM_METS();
 
             // Add this to the cache
-            itemList.Add_SobekCM_Item(Item_To_Complete);
+            UI_ApplicationCache_Gateway.Items.Add_SobekCM_Item(Item_To_Complete);
 
-            Database.SobekCM_Database.Add_Item_To_User_Folder(user.UserID, "Submitted Items", Item_To_Complete.BibID, Item_To_Complete.VID, 0, String.Empty, Tracer);
+            Database.SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, "Submitted Items", Item_To_Complete.BibID, Item_To_Complete.VID, 0, String.Empty, Tracer);
 
             // Save Bib_Level METS?
             //SobekCM.Resource_Object.Writers.OAI_Writer oaiWriter = new SobekCM.Resource_Object.Writers.OAI_Writer();
             //oaiWriter.Save_OAI_File(bibPackage, resource_folder + "\\oai_dc.xml", bibPackage.Processing_Parameters.Collection_Primary.ToLower(), createDate);
 
             // If there was no match, try to save to the tracking database
-            Database.SobekCM_Database.Tracking_Online_Submit_Complete(Item_To_Complete.Web.ItemID, user.Full_Name, String.Empty);
+            Database.SobekCM_Database.Tracking_Online_Submit_Complete(Item_To_Complete.Web.ItemID, RequestSpecificValues.Current_User.Full_Name, String.Empty);
 
 
 			// Save the MARC file
@@ -417,23 +381,23 @@ namespace SobekCM.Library.MySobekViewer
             MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
             string errorMessage;
             Dictionary<string, object> options = new Dictionary<string, object>();
-            options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, InstanceWide_Settings_Singleton.Settings.System_Name, InstanceWide_Settings_Singleton.Settings.System_Abbreviation);
+            options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, UI_ApplicationCache_Gateway.Settings.System_Name, UI_ApplicationCache_Gateway.Settings.System_Abbreviation);
             marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);          
 
             // Copy all the files over to the server 
-            string serverNetworkFolder = InstanceWide_Settings_Singleton.Settings.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
+            string serverNetworkFolder = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + Item_To_Complete.Web.AssocFilePath;
 
             // Create the folder
             if (!Directory.Exists(serverNetworkFolder))
                 Directory.CreateDirectory(serverNetworkFolder);
-            if (!Directory.Exists(serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name))
-                Directory.CreateDirectory(serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name);
+            if (!Directory.Exists(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name))
+                Directory.CreateDirectory(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name);
 
 			// Copy the static HTML page over first
-			if (File.Exists(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
+			if (File.Exists(user_in_process_directory + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html"))
 			{
-                File.Copy(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + InstanceWide_Settings_Singleton.Settings.Backup_Files_Folder_Name + "\\" + item.BibID + "_" + item.VID + ".html", true);
-				File.Delete(user_in_process_directory + "\\" + item.BibID + "_" + item.VID + ".html");
+                File.Copy(user_in_process_directory + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html", true);
+				File.Delete(user_in_process_directory + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html");
 			}
 
 			// Copy all the files 
@@ -445,10 +409,10 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Add this to the cache
-            itemList.Add_SobekCM_Item(Item_To_Complete);
+            UI_ApplicationCache_Gateway.Items.Add_SobekCM_Item(Item_To_Complete);
 
             // Incrememnt the count of number of items submitted by this user
-            user.Items_Submitted_Count++;
+            RequestSpecificValues.Current_User.Items_Submitted_Count++;
 
             // Delete any remaining items
             all_files = Directory.GetFiles(user_in_process_directory);
@@ -503,7 +467,7 @@ namespace SobekCM.Library.MySobekViewer
 
 		    Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
 
-		    string grouptitle = item.Behaviors.GroupTitle;
+            string grouptitle = RequestSpecificValues.Current_Item.Behaviors.GroupTitle;
 		    if (grouptitle.Length > 125)
 		    {
 			    Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "...</abbr></h1>");
@@ -526,8 +490,8 @@ namespace SobekCM.Library.MySobekViewer
 		    Output.WriteLine("  <h2>Add a new volume to this existing title/item group</h2>");
 		    Output.WriteLine("    <ul>");
 		    Output.WriteLine("      <li>Only enter data that you wish to override the data in the existing base volume.</li>");
-		    //Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + currentMode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
-		    Output.WriteLine("      <li>Click <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "help/addvolume\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on adding new volumes online.</li>");
+		    //Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
+		    Output.WriteLine("      <li>Click <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/addvolume\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on adding new volumes online.</li>");
 		    Output.WriteLine("     </ul>");
 		    Output.WriteLine("</div>");
 		    Output.WriteLine();
@@ -548,12 +512,12 @@ namespace SobekCM.Library.MySobekViewer
 		    Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
 		    Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
-		    Output.WriteLine("      <script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+		    Output.WriteLine("      <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
 		    Output.WriteLine();
 
 		    Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-		    Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-		    Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+		    Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+		    Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
 		    Output.WriteLine("        <button onclick=\"addvolume_save_form('_again'); return false;\" class=\"sbkMySobek_BigButton\">SAVE & ADD ANOTHER</button>");
 		    Output.WriteLine("      </div>");
 		    Output.WriteLine("      <br /><br />");
@@ -582,10 +546,10 @@ namespace SobekCM.Library.MySobekViewer
 		    Output.WriteLine("      </div>");
 		    Output.WriteLine();
 
-		    bool isMozilla = currentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
+		    bool isMozilla = RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
 
 		    // Create a new blank item for display purposes
-		    SobekCM_Item displayItem = new SobekCM_Item {BibID = item.BibID};
+		    SobekCM_Item displayItem = new SobekCM_Item {BibID = RequestSpecificValues.Current_Item.BibID};
 		    displayItem.Behaviors.IP_Restriction_Membership = ipRestrict;
 		    displayItem.Behaviors.Serial_Info.Clear();
 		    displayItem.Tracking.Born_Digital = bornDigital;
@@ -614,13 +578,13 @@ namespace SobekCM.Library.MySobekViewer
 			    }
 		    }
 
-		    template.Render_Template_HTML(Output, displayItem, currentMode.Skin == currentMode.Default_Skin ? currentMode.Skin.ToUpper() : currentMode.Skin, isMozilla, user, currentMode.Language, Translator, currentMode.Base_URL, 1);
+            template.Render_Template_HTML(Output, displayItem, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
 
 		    // Add the second buttons at the bottom of the form
 		    Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
 		    Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-		    Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-		    Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+		    Output.WriteLine("        <button onclick=\"addvolume_cancel_form(); return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+		    Output.WriteLine("        <button onclick=\"addvolume_save_form(''); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
 		    Output.WriteLine("      </div>");
 		    Output.WriteLine();
 

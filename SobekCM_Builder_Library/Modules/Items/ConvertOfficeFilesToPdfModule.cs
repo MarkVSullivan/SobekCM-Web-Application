@@ -2,7 +2,6 @@
 
 using System;
 using System.IO;
-using SobekCM.Library.Settings;
 
 #endregion
 
@@ -15,7 +14,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
 
             // Should we try to convert office files?
-            if (InstanceWide_Settings_Singleton.Settings.Convert_Office_Files_To_PDF)
+            if (Settings.Convert_Office_Files_To_PDF)
             {
                 try
                 {

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Web;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
@@ -142,7 +143,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        {
 		        string currViewer = CurrentMode.ViewerCode;
 		        CurrentMode.ViewerCode = CurrentMode.ViewerCode.ToLower().Replace("j", "") + "x";
-		        string toZoomable = CurrentMode.Redirect_URL();
+		        string toZoomable = UrlWriterHelper.Redirect_URL(CurrentMode);;
 		        CurrentMode.ViewerCode = currViewer;
 		        Output.WriteLine("\t\t<td id=\"sbkJiv_ImageZoomable\">");
 		        Output.WriteLine("Click on image below to switch to zoomable version<br />");

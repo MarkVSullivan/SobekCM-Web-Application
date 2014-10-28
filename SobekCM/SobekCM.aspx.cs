@@ -1,21 +1,19 @@
-﻿#region Includes
+﻿#region Using directives
 
 using System;
 using System.Web;
-using SobekCM.Core.Settings;
-using SobekCM.Library;
-using SobekCM.Library.Database;
+using System.Web.UI;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Settings;
-using SobekCM.Library.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
 namespace SobekCM
 {
-	public partial class SobekCM : System.Web.UI.Page
+	public partial class SobekCM : Page
 	{
 		private SobekCM_Page_Globals pageGlobals;
 
@@ -59,7 +57,7 @@ namespace SobekCM
 					}
 				}
 
-				if ((InstanceWide_Settings_Singleton.Settings.Web_Output_Caching_Minutes > 0) && (String.IsNullOrEmpty(Request.QueryString["refresh"])))
+				if ((UI_ApplicationCache_Gateway.Settings.Web_Output_Caching_Minutes > 0) && (String.IsNullOrEmpty(Request.QueryString["refresh"])))
 				{
 					if ((pageGlobals.currentMode.Mode != Display_Mode_Enum.Error) &&
 						(pageGlobals.currentMode.Mode != Display_Mode_Enum.My_Sobek) &&
@@ -78,7 +76,7 @@ namespace SobekCM
 						((pageGlobals.currentMode.Mode != Display_Mode_Enum.Item_Display) || ((pageGlobals.currentMode.ViewerCode.Length > 0) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("citation") < 0) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("allvolumes3") < 0))))
 					{
 						Response.Cache.SetCacheability(HttpCacheability.Private);
-						Response.Cache.SetMaxAge(new TimeSpan(0, InstanceWide_Settings_Singleton.Settings.Web_Output_Caching_Minutes, 0));
+						Response.Cache.SetMaxAge(new TimeSpan(0, UI_ApplicationCache_Gateway.Settings.Web_Output_Caching_Minutes, 0));
 					}
 					else
 					{
@@ -266,13 +264,6 @@ namespace SobekCM
 		}
 
 
-		protected override void OnUnload(EventArgs E)
-		{
-			if (HttpContext.Current.Session["Last_Exception"] == null)
-				SobekCM_Database.Verify_Item_Lookup_Object(true, ref Global.Item_List, null);
-
-			base.OnUnload(E);
-		}
 
 		#endregion
 
@@ -291,8 +282,8 @@ namespace SobekCM
 			if ((pageGlobals.currentMode == null) || (pageGlobals.currentMode.Request_Completed))
 				return;
 
-			if (!String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.System_Name))
-				Response.Output.Write(InstanceWide_Settings_Singleton.Settings.System_Name + " : SobekCM Digital Repository");
+			if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System_Name))
+				Response.Output.Write(UI_ApplicationCache_Gateway.Settings.System_Name + " : SobekCM Digital Repository");
 			else
 				Response.Output.Write("SobekCM Digital Repository");
 		}

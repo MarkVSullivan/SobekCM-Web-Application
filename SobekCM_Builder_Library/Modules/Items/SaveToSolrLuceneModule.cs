@@ -1,8 +1,7 @@
 ﻿#region Using directives
 
 using System;
-using SobekCM.Library.Settings;
-using SobekCM.Library.Solr;
+using SobekCM.Engine_Library.Solr;
 
 #endregion
 
@@ -14,11 +13,11 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
 
             // Save this to the Solr/Lucene database
-            if (InstanceWide_Settings_Singleton.Settings.Document_Solr_Index_URL.Length > 0)
+            if (Settings.Document_Solr_Index_URL.Length > 0)
             {
                 try
                 {
-                    Solr_Controller.Update_Index(InstanceWide_Settings_Singleton.Settings.Document_Solr_Index_URL, InstanceWide_Settings_Singleton.Settings.Page_Solr_Index_URL, Resource.Metadata, true);
+                    Solr_Controller.Update_Index(Settings.Document_Solr_Index_URL, Settings.Page_Solr_Index_URL, Resource.Metadata, true);
                 }
                 catch (Exception ee)
                 {

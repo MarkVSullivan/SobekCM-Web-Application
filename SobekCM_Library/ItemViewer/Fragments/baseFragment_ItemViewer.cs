@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.UI.WebControls;
+﻿#region Using directives
+
+using System;
 using SobekCM.Library.ItemViewer.Viewers;
+
+#endregion
 
 namespace SobekCM.Library.ItemViewer.Fragments
 {

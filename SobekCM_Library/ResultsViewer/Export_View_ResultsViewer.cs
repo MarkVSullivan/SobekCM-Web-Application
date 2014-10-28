@@ -6,12 +6,10 @@ using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using GemBox.Spreadsheet;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Results;
-using SobekCM.Core.Users;
-using SobekCM.Library.Settings;
+using SobekCM.Core.Results;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -23,12 +21,9 @@ namespace SobekCM.Library.ResultsViewer
     public class Export_File_ResultsViewer : abstract_ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Export_File_ResultsViewer class </summary>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        /// <param name="Current_User"> Current user object </param>
-        public Export_File_ResultsViewer(Item_Lookup_Object All_Items_Lookup, User_Object Current_User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Export_File_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            base.All_Items_Lookup = All_Items_Lookup;
-            currentUser = Current_User;
             Results_Per_Page = 1000;
         }
 
@@ -66,7 +61,7 @@ namespace SobekCM.Library.ResultsViewer
             // Prepare to build an output
             StringBuilder resultsBldr = new StringBuilder(5000);
 
-            int currentPage = CurrentMode.Page;
+            int currentPage = RequestSpecificValues.Current_Mode.Page;
             if (currentPage < 2)
             {
                 resultsBldr.Append("<br />" + Environment.NewLine + "<div class=\"SobekHomeText\">" + Environment.NewLine + "<blockquote>" + Environment.NewLine );
@@ -77,11 +72,11 @@ namespace SobekCM.Library.ResultsViewer
                 //currentMode.Page = 2;
                 //resultsBldr.Append("<a href=\"" + currentMode.Redirect_URL() + "\">Excel Spreadsheet file (XLSX)</a><br /><br />");
 
-                CurrentMode.Page = 3;
-                resultsBldr.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\">Excel Spreadsheet file (XLS)</a><br /><br />");
+                RequestSpecificValues.Current_Mode.Page = 3;
+                resultsBldr.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Excel Spreadsheet file (XLS)</a><br /><br />");
 
-                CurrentMode.Page = 4;
-                resultsBldr.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\">Comma-seperated value text file (CSV)</a><br /><br />");
+                RequestSpecificValues.Current_Mode.Page = 4;
+                resultsBldr.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Comma-seperated value text file (CSV)</a><br /><br />");
 
                 //currentMode.Page = 5;
                 //resultsBldr.Append("<a href=\"" + currentMode.Redirect_URL() + "\">HTML Table (HTML)</a><br /><br />");
@@ -99,17 +94,17 @@ namespace SobekCM.Library.ResultsViewer
             }
             else
             {
-                string filename = CurrentMode.SobekCM_Instance_Name;
+                string filename = RequestSpecificValues.Current_Mode.SobekCM_Instance_Name;
 
                 // Set the Gembox spreadsheet license key
 	           
 	            string from_db = String.Empty;
 	            string key = String.Empty;
-				if (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Spreadsheet Library License"))
+				if (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Spreadsheet Library License"))
 				{
 					try
 					{
-						key = InstanceWide_Settings_Singleton.Settings.Additional_Settings["Spreadsheet Library License"];
+						key = UI_ApplicationCache_Gateway.Settings.Additional_Settings["Spreadsheet Library License"];
 
 						SecurityInfo thisDecryptor = new SecurityInfo();
 						string encryptedPassword = thisDecryptor.DecryptString(from_db, "*h3kj(83", "unsalted");
@@ -125,7 +120,7 @@ namespace SobekCM.Library.ResultsViewer
 
                 // Create the excel file and worksheet
                 ExcelFile excelFile = new ExcelFile();
-                ExcelWorksheet excelSheet = excelFile.Worksheets.Add(CurrentMode.SobekCM_Instance_Name);
+                ExcelWorksheet excelSheet = excelFile.Worksheets.Add(RequestSpecificValues.Current_Mode.SobekCM_Instance_Name);
                 excelFile.Worksheets.ActiveWorksheet = excelSheet;
 
                 // Create the header cell style
@@ -145,7 +140,7 @@ namespace SobekCM.Library.ResultsViewer
                 const int columnSelector = 0;
                 int row = 0;
 
-                if (CurrentMode.Page != 4)
+                if (RequestSpecificValues.Current_Mode.Page != 4)
                 {
                     // Add the title
                     excelSheet.Cells[1, columnSelector].Value = "Search or browse result list";
@@ -219,14 +214,14 @@ namespace SobekCM.Library.ResultsViewer
                 row++;
 
                 // Add each row
-                foreach (iSearch_Title_Result titleResult in Paged_Results)
+                foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
                 {
                     for (int item_count = 0; item_count < titleResult.Item_Count; item_count++)
                     {
                         iSearch_Item_Result itemResult = titleResult.Get_Item(item_count);
 
                         excelSheet.Cells[row, columnSelector].Value = titleResult.BibID + "_" + itemResult.VID;
-                        excelSheet.Cells[row, columnSelector + 1].Value = CurrentMode.Base_URL + titleResult.BibID + "/" + itemResult.VID;
+                        excelSheet.Cells[row, columnSelector + 1].Value = RequestSpecificValues.Current_Mode.Base_URL + titleResult.BibID + "/" + itemResult.VID;
                         excelSheet.Cells[row, columnSelector + 2].Value = titleResult.GroupTitle.Replace("<i>","").Replace("</i>","").Replace("&amp;","&");
                         excelSheet.Cells[row, columnSelector + 3].Value = itemResult.Title.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
 						//excelSheet.Cells[row, columnSelector + 4].Value = itemResult.PubDate.Replace("<i>", "").Replace("</i>", "").Replace("&amp;", "&");
@@ -266,7 +261,7 @@ namespace SobekCM.Library.ResultsViewer
 
 
                 // Output in proper format to the user
-                switch (CurrentMode.Page)
+                switch (RequestSpecificValues.Current_Mode.Page)
                 {
                     //case 2:
                     //    System.Web.HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats";

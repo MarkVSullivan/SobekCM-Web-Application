@@ -1,32 +1,27 @@
 ﻿#region Using directives
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SobekCM.Core.Settings;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MemoryMgmt;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UploadiFive;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Divisions;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Skins;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
+using Image = System.Drawing.Image;
 
 #endregion
 
@@ -36,65 +31,33 @@ namespace SobekCM.Library.MySobekViewer
 
     public class Page_Image_Upload_MySobekViewer : abstract_MySobekViewer
     {
-        private readonly Aggregation_Code_Manager codeManager;
         private bool criticalErrorEncountered;
         private readonly string digitalResourceDirectory;
-        private readonly Dictionary<string, Wordmark_Icon> iconList;
-        private readonly SobekCM_Item item;
-        private readonly Item_Lookup_Object itemList;
         private readonly List<string> validationErrors;
-        private readonly SobekCM_Skin_Object webSkin;
 
-      #region Constructor
+        #region Constructor
 
-        /// <summary> Constructor for a new instance of the New_Group_And_Item_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Current_Item"> Digital resource selected for file management </param>
-        /// <param name="Item_List"> Allows individual items to be retrieved by various methods as <see cref="Single_Item"/> objects.</param>
-        /// <param name="Code_Manager"> Code manager contains the list of all valid aggregation codes </param>
-        /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
-        /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
-        /// <param name="Translator"> Language support object which handles simple translational duties </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public Page_Image_Upload_MySobekViewer(User_Object User,
-                                             SobekCM_Navigation_Object Current_Mode,
-                                             SobekCM_Item Current_Item,
-                                             Item_Lookup_Object Item_List,
-                                             Aggregation_Code_Manager Code_Manager,
-                                             Dictionary<string, Wordmark_Icon> Icon_Table,
-                                             SobekCM_Skin_Object HTML_Skin,
-                                             Language_Support_Info Translator,
-                                             Custom_Tracer Tracer)
-            : base(User)
+        /// <summary> Constructor for a new instance of the Page_Image_Upload_MySobekViewer class </summary>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Page_Image_Upload_MySobekViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Page_Image_Upload_MySobekViewer.Constructor", String.Empty);
-
-            // Save the parameters
-            codeManager = Code_Manager;
-            itemList = Item_List;
-            iconList = Icon_Table;
-            currentMode = Current_Mode;
-            webSkin = HTML_Skin;
-            this.validationErrors = validationErrors;
-            base.Translator = Translator;
-            item = Current_Item;
+            RequestSpecificValues.Tracer.Add_Trace("Page_Image_Upload_MySobekViewer.Constructor", String.Empty);
 
 
-            // If the user cannot edit this item, go back
-            if (!User.Can_Edit_This_Item( Current_Item.BibID, Current_Item.Bib_Info.SobekCM_Type_String, Current_Item.Bib_Info.Source.Code, Current_Item.Bib_Info.HoldingCode, Current_Item.Behaviors.Aggregation_Code_List ))
+            // If the RequestSpecificValues.Current_User cannot edit this RequestSpecificValues.Current_Item, go back
+            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item( RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List ))
             {
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
             // Determine the in process directory for this
-            digitalResourceDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + User.UserName.Replace(".", "").Replace("@", "") + "\\uploadimages\\" + Current_Item.METS_Header.ObjectID;
-            if (User.ShibbID.Trim().Length > 0)
-                digitalResourceDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + User.ShibbID + "\\uploadimages\\" + Current_Item.METS_Header.ObjectID;
+            digitalResourceDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\uploadimages\\" + RequestSpecificValues.Current_Item.METS_Header.ObjectID;
+            if (RequestSpecificValues.Current_User.ShibbID.Trim().Length > 0)
+                digitalResourceDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.ShibbID + "\\uploadimages\\" + RequestSpecificValues.Current_Item.METS_Header.ObjectID;
 
-            // Make the folder for the user in process directory
+            // Make the folder for the RequestSpecificValues.Current_User in process directory
             if (!Directory.Exists(digitalResourceDirectory))
                 Directory.CreateDirectory(digitalResourceDirectory);
             else
@@ -115,8 +78,8 @@ namespace SobekCM.Library.MySobekViewer
 						{
 							try
 							{
-								var tiffImg = System.Drawing.Image.FromFile(thisFile);
-								var mainImg = ScaleImage(tiffImg, InstanceWide_Settings_Singleton.Settings.JPEG_Width, InstanceWide_Settings_Singleton.Settings.JPEG_Height);
+								var tiffImg = Image.FromFile(thisFile);
+								var mainImg = ScaleImage(tiffImg, UI_ApplicationCache_Gateway.Settings.JPEG_Width, UI_ApplicationCache_Gateway.Settings.JPEG_Height);
 								mainImg.Save(jpeg, ImageFormat.Jpeg);
 								var thumbnailImg = ScaleImage(tiffImg, 150, 400);
 								thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
@@ -132,7 +95,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // If this is post-back, handle it
-            if (currentMode.isPostBack)
+            if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
                 string file_name_from_keys = String.Empty;
@@ -149,14 +112,14 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     if ((file_name_from_keys.Length > 0) && (label_from_keys.Length > 0))
                     {
-                        HttpContext.Current.Session["file_" + item.Web.ItemID + "_" + file_name_from_keys.Trim()] = label_from_keys.Trim();
+                        HttpContext.Current.Session["file_" + RequestSpecificValues.Current_Item.Web.ItemID + "_" + file_name_from_keys.Trim()] = label_from_keys.Trim();
                         file_name_from_keys = String.Empty;
                         label_from_keys = String.Empty;
                     }
 
                     if (thisKey == "url_input")
                     {
-                        item.Bib_Info.Location.Other_URL = HttpContext.Current.Request.Form[thisKey];
+                        RequestSpecificValues.Current_Item.Bib_Info.Location.Other_URL = HttpContext.Current.Request.Form[thisKey];
                     }
                 }
 
@@ -170,7 +133,7 @@ namespace SobekCM.Library.MySobekViewer
                             File.Delete(digitalResourceDirectory + "\\" + filename);
 
                         // Forward
-                        currentMode.Redirect();
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
                     }
                     catch
@@ -208,21 +171,21 @@ namespace SobekCM.Library.MySobekViewer
                                 // Do nothing - not a fatal problem
                             }
 
-                            // Redirect to the item
-                            currentMode.Mode = Display_Mode_Enum.Item_Display;
-                            currentMode.Redirect();
+                            // Redirect to the RequestSpecificValues.Current_Item
+                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                             break;
 
                         case 9:
-                            if (!complete_item_submission(item, null))
+                            if (!complete_item_submission(RequestSpecificValues.Current_Item, null))
                             {
-                                // Also clear the item from the cache
-                                Cached_Data_Manager.Remove_Digital_Resource_Object(item.BibID, item.VID, null);
+                                // Also clear the RequestSpecificValues.Current_Item from the cache
+                                Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, null);
 
-                                // Redirect to the item
-                                currentMode.Mode = Display_Mode_Enum.Item_Display;
-                                currentMode.ViewerCode = "qc";
-                                currentMode.Redirect();
+                                // Redirect to the RequestSpecificValues.Current_Item
+                                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                                RequestSpecificValues.Current_Mode.ViewerCode = "qc";
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                             }
                             break;                         
                     }
@@ -235,7 +198,7 @@ namespace SobekCM.Library.MySobekViewer
 		/// <param name="MaxWidth"> Maximum width for the new image </param>
 		/// <param name="maxHeight"> Maximum height for the new image </param>
 		/// <returns> Newly scaled image, without changing the original source image </returns>
-		public static System.Drawing.Image ScaleImage(System.Drawing.Image SourceImage, int MaxWidth, int maxHeight)
+		public static Image ScaleImage(Image SourceImage, int MaxWidth, int maxHeight)
 		{
 			var ratioX = (double)MaxWidth / SourceImage.Width;
 			var ratioY = (double)maxHeight / SourceImage.Height;
@@ -251,7 +214,7 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-        #region Method commpletes the item submission on the way to the congratulations screen
+        #region Method commpletes the RequestSpecificValues.Current_Item submission on the way to the congratulations screen
 
         private bool complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer )
         {
@@ -276,7 +239,7 @@ namespace SobekCM.Library.MySobekViewer
                 foreach (string thisFile in image_files)
                 {
                     // Create the new file object and compute a label
-                    FileInfo fileInfo = new System.IO.FileInfo(thisFile);
+                    FileInfo fileInfo = new FileInfo(thisFile);
                     SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
 
                     // Copy this file
@@ -287,7 +250,7 @@ namespace SobekCM.Library.MySobekViewer
                     else
                     {
                         File.Copy(thisFile, final_destination + "\\" + fileInfo.Name, true);
-                        item.Divisions.Physical_Tree.Add_File(newFile, "New Page");
+                        RequestSpecificValues.Current_Item.Divisions.Physical_Tree.Add_File(newFile, "New Page");
 
 
                         // Seperate code for JP2 and JPEG type files
@@ -296,7 +259,7 @@ namespace SobekCM.Library.MySobekViewer
                         {
                             if (!error_reading_file_occurred)
                             {
-                                if (!newFile.Compute_Jpeg2000_Attributes(item.Source_Directory))
+                                if (!newFile.Compute_Jpeg2000_Attributes(RequestSpecificValues.Current_Item.Source_Directory))
                                     error_reading_file_occurred = true;
                             }
                             jp2_added = true;
@@ -305,7 +268,7 @@ namespace SobekCM.Library.MySobekViewer
                         {
                             if (!error_reading_file_occurred)
                             {
-                                if (!newFile.Compute_Jpeg_Attributes(item.Source_Directory))
+                                if (!newFile.Compute_Jpeg_Attributes(RequestSpecificValues.Current_Item.Source_Directory))
                                     error_reading_file_occurred = true;
                             }
                             jpeg_added = true;
@@ -314,12 +277,12 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
 				// Add the JPEG2000 and JPEG-specific viewers
-				//item.Behaviors.Clear_Views();
+				//RequestSpecificValues.Current_Item.Behaviors.Clear_Views();
 				if (jpeg_added) 
 				{
 					// Is a JPEG view already existing?
 					bool jpeg_viewer_already_exists = false;
-					foreach (View_Object thisViewer in item.Behaviors.Views)
+                    foreach (View_Object thisViewer in RequestSpecificValues.Current_Item.Behaviors.Views)
 					{
 						if (thisViewer.View_Type == View_Enum.JPEG)
 						{
@@ -330,15 +293,15 @@ namespace SobekCM.Library.MySobekViewer
 
 					// Add the JPEG view if it did not already exists
 					if ( !jpeg_viewer_already_exists )
-						item.Behaviors.Add_View(View_Enum.JPEG);
+						RequestSpecificValues.Current_Item.Behaviors.Add_View(View_Enum.JPEG);
 				}
 
-				// If a JPEG2000 file was just added, ensure it exists as a view for this item
+				// If a JPEG2000 file was just added, ensure it exists as a view for this RequestSpecificValues.Current_Item
 				if (jp2_added)
 				{
 					// Is a JPEG view already existing?
 					bool jpg2000_viewer_already_exists = false;
-					foreach (View_Object thisViewer in item.Behaviors.Views)
+					foreach (View_Object thisViewer in RequestSpecificValues.Current_Item.Behaviors.Views)
 					{
 						if (thisViewer.View_Type == View_Enum.JPEG2000 )
 						{
@@ -349,7 +312,7 @@ namespace SobekCM.Library.MySobekViewer
 
 					// Add the JPEG2000 view if it did not already exists
 					if (!jpg2000_viewer_already_exists)
-						item.Behaviors.Add_View(View_Enum.JPEG2000);
+						RequestSpecificValues.Current_Item.Behaviors.Add_View(View_Enum.JPEG2000);
 				}
 
                 // Determine the total size of the package before saving
@@ -383,7 +346,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Save the rest of the metadata
                 Item_To_Complete.Save_SobekCM_METS();
 
-                // Finally, set the item for more processing if there were any files
+                // Finally, set the RequestSpecificValues.Current_Item for more processing if there were any files
                 if ((image_files.Length > 0) && ( Item_To_Complete.Web.ItemID > 0 ))
                 {
                     Database.SobekCM_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true, Tracer);
@@ -411,11 +374,11 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // This may be called from QC, so check on that as well
-                string userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
-                if (user.ShibbID.Trim().Length > 0)
-                    userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + user.ShibbID + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
+                string userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
+                if (RequestSpecificValues.Current_User.ShibbID.Trim().Length > 0)
+                    userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.ShibbID + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
 
-                // Make the folder for the user in process directory
+                // Make the folder for the RequestSpecificValues.Current_User in process directory
                 if (Directory.Exists(userInProcessDirectory))
                 {
                     foreach (string thisFile in Directory.GetFiles(userInProcessDirectory))
@@ -435,17 +398,17 @@ namespace SobekCM.Library.MySobekViewer
             }
             catch (Exception ee)
             {
-                validationErrors.Add("Error encountered during item save!");
+                validationErrors.Add("Error encountered during RequestSpecificValues.Current_Item save!");
                 validationErrors.Add(ee.ToString().Replace("\r", "<br />"));
 
                 // Set an initial flag 
                 criticalErrorEncountered = true;
 
-                string error_body = "<strong>ERROR ENCOUNTERED DURING ONLINE PAGE IMAGE UPLOAD</strong><br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Permanent Link: <a href=\"" + base.currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + base.currentMode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "</a><br />User: " + user.Full_Name + "<br /><br /></blockquote>" + ee.ToString().Replace("\n", "<br />");
+                string error_body = "<strong>ERROR ENCOUNTERED DURING ONLINE PAGE IMAGE UPLOAD</strong><br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Permanent Link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + base.RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "</a><br />RequestSpecificValues.Current_User: " + RequestSpecificValues.Current_User.Full_Name + "<br /><br /></blockquote>" + ee.ToString().Replace("\n", "<br />");
                 string error_subject = "Error during file management for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
-                string email_to = InstanceWide_Settings_Singleton.Settings.System_Error_Email;
+                string email_to = UI_ApplicationCache_Gateway.Settings.System_Error_Email;
                 if (email_to.Length == 0)
-                    email_to = InstanceWide_Settings_Singleton.Settings.System_Email;
+                    email_to = UI_ApplicationCache_Gateway.Settings.System_Email;
                 Database.SobekCM_Database.Send_Database_Email(email_to, error_subject, error_body, true, false, -1, -1);
             }
 
@@ -488,10 +451,10 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("File_Management_MySobekViewer.Write_HTML", "Add instructions");
 
-            Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
 
-			// Write the top item mimic html portion
-			Write_Item_Type_Top(Output, item);
+			// Write the top RequestSpecificValues.Current_Item mimic html portion
+			Write_Item_Type_Top(Output, RequestSpecificValues.Current_Item);
 
 			Output.WriteLine("<div id=\"container-inner1000\">");
 			Output.WriteLine("<div id=\"pagecontainer\">");
@@ -500,11 +463,11 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("  <br />");
 
             Output.WriteLine("  <h2>Upload Page Images</h2>");
-            Output.WriteLine("  <p>Upload the page images for your item.  You will then be directed to manage the pages and divisions to ensure the new page images appear in the correct order and are reflected in the table of contents.</p>");
+            Output.WriteLine("  <p>Upload the page images for your RequestSpecificValues.Current_Item.  You will then be directed to manage the pages and divisions to ensure the new page images appear in the correct order and are reflected in the table of contents.</p>");
 
-            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
-            Output.WriteLine("  <p><a href=\"" + currentMode.Redirect_URL() + "\">Click here to add download files instead.</a></p>");
-            currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+            Output.WriteLine("  <p><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Click here to add download files instead.</a></p>");
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
 
 			Output.WriteLine("  <br />");
         }
@@ -525,7 +488,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"phase\" name=\"phase\" value=\"\" />");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" ></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" ></script>");
 
             Output.WriteLine("<hr />");
             Output.WriteLine("<br />");
@@ -534,7 +497,7 @@ namespace SobekCM.Library.MySobekViewer
             string[] files = Directory.GetFiles(digitalResourceDirectory);
             if (files.Length > 0)
             {
-                Output.WriteLine("The following new page images will be added to the item once you click SUBMIT:");
+                Output.WriteLine("The following new page images will be added to the RequestSpecificValues.Current_Item once you click SUBMIT:");
 				Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
 				Output.WriteLine("  <tr style=\"min-height:22px;\" >");
 				Output.WriteLine("    <th style=\"width:350px;\">FILENAME</th>");
@@ -607,7 +570,7 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("</div>");
 			Output.WriteLine();
 
-			const string COMPLETION_MESSAGE = "Once all images are uploaded, press SUBMIT to finish this item.";
+			const string COMPLETION_MESSAGE = "Once all images are uploaded, press SUBMIT to finish this RequestSpecificValues.Current_Item.";
 
 			Output.WriteLine("<div class=\"sbkMySobek_FileCompletionMsg\">" + COMPLETION_MESSAGE + "</div>");
 			Output.WriteLine();
@@ -617,7 +580,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<br />");
             Output.WriteLine("The following extensions are accepted:");
             Output.WriteLine("<blockquote>");
-            Output.WriteLine(InstanceWide_Settings_Singleton.Settings.Upload_Image_Types.Replace(",", ", "));
+            Output.WriteLine(UI_ApplicationCache_Gateway.Settings.Upload_Image_Types.Replace(",", ", "));
             Output.WriteLine("</blockquote>");
             Output.WriteLine("</div>");
 			Output.WriteLine("</div>");
@@ -642,7 +605,7 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.add_upload_controls", String.Empty);
 
             StringBuilder filesBuilder = new StringBuilder(2000);
-            filesBuilder.AppendLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+            filesBuilder.AppendLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
             filesBuilder.AppendLine("Add a new page image for this package:");
             filesBuilder.AppendLine("<blockquote>");
 
@@ -652,11 +615,11 @@ namespace SobekCM.Library.MySobekViewer
 
 			UploadiFiveControl uploadControl = new UploadiFiveControl();
 			uploadControl.UploadPath = digitalResourceDirectory;
-			uploadControl.UploadScript = currentMode.Base_URL + "UploadiFiveFileHandler.ashx";
-			uploadControl.AllowedFileExtensions = InstanceWide_Settings_Singleton.Settings.Upload_Image_Types;
+			uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
+			uploadControl.AllowedFileExtensions = UI_ApplicationCache_Gateway.Settings.Upload_Image_Types;
 			uploadControl.SubmitWhenQueueCompletes = true;
 	        uploadControl.RemoveCompleted = true;
-			uploadControl.Swf = currentMode.Base_URL + "default/scripts/uploadify/uploadify.swf";
+			uploadControl.Swf = RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadify/uploadify.swf";
 			uploadControl.RevertToFlashVersion = true;
 			placeHolder.Controls.Add(uploadControl);
 
@@ -668,7 +631,7 @@ namespace SobekCM.Library.MySobekViewer
 
 		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
 		/// requests from the main HTML subwriter. </summary>
-		/// <value> This tells the HTML and mySobek writers to mimic the item viewer </value>
+		/// <value> This tells the HTML and mySobek writers to mimic the RequestSpecificValues.Current_Item viewer </value>
 		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
 		{
 			get

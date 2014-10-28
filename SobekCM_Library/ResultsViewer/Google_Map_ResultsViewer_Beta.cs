@@ -1,30 +1,26 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
-using SobekCM.Library.Navigation;
 using SobekCM.Tools;
+
+#endregion
 
 namespace SobekCM.Library.ResultsViewer
 {
     class Google_Map_ResultsViewer_Beta : abstract_ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Full_ResultsViewer class </summary>
-        /// <param name="CurrentMode"> Sobek object that holds useful information </param>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public Google_Map_ResultsViewer_Beta(SobekCM_Navigation_Object CurrentMode, Item_Lookup_Object All_Items_Lookup)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Google_Map_ResultsViewer_Beta(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            //create new tracer?
-            Custom_Tracer Tracer = new Custom_Tracer();
-
-            base.All_Items_Lookup = All_Items_Lookup;
-            
+ 
             //holds actions from page
             string payload = HttpContext.Current.Request.Form["payload"] ?? String.Empty;
             
@@ -32,14 +28,14 @@ namespace SobekCM.Library.ResultsViewer
             if (!String.IsNullOrEmpty(payload))
             {
                 //if (action == "action")
-                    Perform_Callback_Action(payload, Tracer);
+                Perform_Callback_Action(payload, RequestSpecificValues.Tracer);
             }
             else
             {
                 //do a search for all the items in this agg
-                string temp_AggregationId = CurrentMode.Aggregation;
+                string temp_AggregationId = RequestSpecificValues.Current_Mode.Aggregation;
                 string[] temp_AggregationList = temp_AggregationId.Split(' ');
-                Perform_Aggregation_Search(temp_AggregationList, Tracer);
+                Perform_Aggregation_Search(temp_AggregationList, RequestSpecificValues.Tracer);
             }
 
         }
@@ -47,7 +43,7 @@ namespace SobekCM.Library.ResultsViewer
         //could not get working
         public static void Refresh_MSRKey()
         {
-            //string[] aggregationIds = CurrentMode.Aggregation.Split(' ');
+            //string[] aggregationIds = RequestSpecificValues.Current_Mode.Aggregation.Split(' ');
             //int MSRKeyHashSpecial = 0;
             //foreach (string aggregationId in aggregationIds)
             //{
@@ -79,19 +75,19 @@ namespace SobekCM.Library.ResultsViewer
             mapSearchBuilder.AppendLine("     <input type=\"hidden\" id=\"payload\" name=\"payload\" value=\"\" /> ");
             //TEMP HEADER FILES
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&libraries=drawing\"></script> ");
-            mapSearchBuilder.AppendLine("     <script src=\"" + CurrentMode.Base_URL + "default/scripts/mapsearch/external_markerclusterer_compiled.js\"></script>  ");
+            mapSearchBuilder.AppendLine("     <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/external_markerclusterer_compiled.js\"></script>  ");
             mapSearchBuilder.AppendLine("     <script src=\"http://www.hlmatt.com/uf/part2/bin/js/external_jquery_1.10.2.js\"></script> ");
             mapSearchBuilder.AppendLine("     <script src=\"http://www.hlmatt.com/uf/part2/bin/js/external_jquery_ui.min.js\"></script> ");
             mapSearchBuilder.AppendLine("     <script src=\"http://www.hlmatt.com/uf/part2/bin/js/external_jquery_ui_labeledslider.js\"></script> ");
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"http://www.hlmatt.com/uf/part2/bin/js/external_gmaps_infobox.js\"></script> ");
-            mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapsearch/sobekcm_map_search.js\"></script> ");
+            mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/sobekcm_map_search.js\"></script> ");
             mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"http://www.hlmatt.com/uf/part2/bin/css/external_jquery_ui_1.10.4.css\"> ");
-            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_MapSearch.css\"> ");
+            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_MapSearch.css\"> ");
             // ADD SERVER2CLIENT VARS
             mapSearchBuilder.AppendLine("  ");
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\"> ");
             mapSearchBuilder.AppendLine("       function initServerToClientVars(){ ");
-            mapSearchBuilder.AppendLine("         baseURL = \"" + CurrentMode.Base_URL + "\"; ");
+            mapSearchBuilder.AppendLine("         baseURL = \"" + RequestSpecificValues.Current_Mode.Base_URL + "\"; ");
             //mapSearchBuilder.AppendLine("         MSRKey = \"" + HttpContext.Current.Session["MapSearchResultsKey"] + "\"; ");
             mapSearchBuilder.AppendLine("       } ");
             mapSearchBuilder.AppendLine("  ");
@@ -323,7 +319,7 @@ namespace SobekCM.Library.ResultsViewer
                 displaySearchResults.Rows.Add("swBounds", swx.ToString(), swy.ToString());
                 displaySearchResults.Rows.Add("neBounds", nex.ToString(), ney.ToString());
 
-                //assign and hold the current search result datatable, from now on we will be using this as the base layer...
+                //assign and hold the current search result datatable, from now on we will be using this as the base layer..
                 HttpContext.Current.Cache[MSRKey] = searchResults;
                 HttpContext.Current.Cache[MSRKey + "_Created"] = DateTime.Now;
 
@@ -432,7 +428,7 @@ namespace SobekCM.Library.ResultsViewer
                         displaySearchResults.Rows.Add("swBounds", swx.ToString(), swy.ToString());
                         displaySearchResults.Rows.Add("neBounds", nex.ToString(), ney.ToString());
 
-                        //assign and hold the current search result datatable, from now on we will be using this as the base layer...
+                        //assign and hold the current search result datatable, from now on we will be using this as the base layer..
                         HttpContext.Current.Cache[MSRKey] = searchResults;
                         HttpContext.Current.Cache[MSRKey + "_Created"] = DateTime.Now;
 

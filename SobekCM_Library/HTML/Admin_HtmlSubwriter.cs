@@ -4,25 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SobekCM.Core.Settings;
-using SobekCM.Library.MainWriters;
-using SobekCM.Library.Settings;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.AdminViewer;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
+using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.MySobekViewer;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Skins;
-using SobekCM.Core.Users;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -40,166 +34,124 @@ namespace SobekCM.Library.HTML
 	/// </ul></remarks>
     public class Admin_HtmlSubwriter: abstractHtmlSubwriter
     {
-        private readonly Aggregation_Code_Manager codeManager;
-        private readonly Item_Aggregation currentCollection;
-	    private readonly Dictionary<string, Wordmark_Icon> iconTable;
-        private readonly IP_Restriction_Ranges ipRestrictions;
-        private readonly Item_Lookup_Object itemList;
         private readonly iMySobek_Admin_Viewer adminViewer;
-	    private readonly Language_Support_Info translator;
-        private readonly User_Object user;
+
  
         #region Constructor, which also creates the applicable MySobekViewer object
 
         /// <summary> Constructor for a new instance of the Admin_HtmlSubwriter class </summary>
-        /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
-        /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
-        /// <param name="Translator"> Language support object which handles simple translational duties </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions </param>
-        /// <param name="Web_Skin_Collection"> Collection of all the web skins </param>
-        /// <param name="Current_User"> Currently logged on user </param>
-        /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
-        /// <param name="IP_Restrictions"> List of all IP Restriction ranges in use by this digital library </param>
-        /// <param name="URL_Portals"> List of all web portals into this system </param>
-        /// <param name="Thematic_Headings"> Headings under which all the highlighted collections on the home page are organized </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public Admin_HtmlSubwriter(  Aggregation_Code_Manager Code_Manager,
-                                     Item_Lookup_Object All_Items_Lookup,
-                                     Item_Aggregation Hierarchy_Object,
-                                     SobekCM_Skin_Object HTML_Skin,
-                                     Language_Support_Info Translator,
-                                     SobekCM_Navigation_Object Current_Mode,
-                                     Dictionary<string,string> Aggregation_Aliases,
-                                     SobekCM_Skin_Collection Web_Skin_Collection,
-                                     User_Object Current_User,
-                                     IP_Restriction_Ranges IP_Restrictions,
-                                     Dictionary<string, Wordmark_Icon> Icon_Table,
-                                     Portal_List URL_Portals,
-                                     List<Thematic_Heading> Thematic_Headings,
-                                     Custom_Tracer Tracer )
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Admin_HtmlSubwriter( RequestCache RequestSpecificValues ) : base ( RequestSpecificValues )
         {
 
-            Tracer.Add_Trace("Admin_HtmlSubwriter.Constructor", "Saving values and geting user object back from the session");
+            RequestSpecificValues.Tracer.Add_Trace("Admin_HtmlSubwriter.Constructor", "Saving values and geting RequestSpecificValues.Current_User object back from the session");
 
-	        codeManager = Code_Manager;
-            itemList = All_Items_Lookup;
-            Skin = HTML_Skin;
-            translator = Translator;
-            currentCollection = Hierarchy_Object;
-	        user = Current_User;
-            ipRestrictions = IP_Restrictions;
-            iconTable = Icon_Table;
-
-
-            // All Admin pages require a user being logged on
-			if (Current_User == null)
+            // All Admin pages require a RequestSpecificValues.Current_User being logged on
+            if (RequestSpecificValues.Current_User == null)
 			{
-				Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-				Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
-				Current_Mode.My_Sobek_SubMode = String.Empty;
-				Current_Mode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
 				return;
 			}
 
-            // If the user is not an admin, and admin was selected, reroute this
-			if ((!Current_User.Is_System_Admin) && (!Current_User.Is_Portal_Admin) && (Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
+            // If the RequestSpecificValues.Current_User is not an admin, and admin was selected, reroute this
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
             {
-                Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                Current_Mode.My_Sobek_SubMode = String.Empty;
-                Current_Mode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
-            Tracer.Add_Trace("Admin_HtmlSubwriter.Constructor", "Building the my sobek viewer object");
-            switch (Current_Mode.Admin_Type)
+            RequestSpecificValues.Tracer.Add_Trace("Admin_HtmlSubwriter.Constructor", "Building the my sobek viewer object");
+            switch (RequestSpecificValues.Current_Mode.Admin_Type)
             {
                 case Admin_Type_Enum.Aggregation_Single:
-                    adminViewer = new Aggregation_Single_AdminViewer(user, Current_Mode, codeManager, Thematic_Headings, Web_Skin_Collection, Tracer);
+                    adminViewer = new Aggregation_Single_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.Home:
-                    adminViewer = new Home_AdminViewer(user, Current_Mode, Tracer);
+                    adminViewer = new Home_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.Builder_Status:
-                    adminViewer = new Builder_AdminViewer(user, Current_Mode);
+                    adminViewer = new Builder_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.Skins:
-                    adminViewer = new Skins_AdminViewer(user, Current_Mode, Web_Skin_Collection, Tracer);
+                    adminViewer = new Skins_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.Aliases:
-                    adminViewer = new Aliases_AdminViewer(user, Current_Mode, Aggregation_Aliases, Code_Manager, Tracer);
+                    adminViewer = new Aliases_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.Wordmarks:
-                    adminViewer = new Wordmarks_AdminViewer(user, Current_Mode, Tracer);
+                    adminViewer = new Wordmarks_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.URL_Portals:
-                    adminViewer = new Portals_AdminViewer(user, Current_Mode, URL_Portals, Web_Skin_Collection, Tracer);
+                    adminViewer = new Portals_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.Users:
-                    adminViewer = new Users_AdminViewer(user, Current_Mode, codeManager, Tracer);
+                    adminViewer = new Users_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.User_Groups:
-                    adminViewer = new User_Group_AdminViewer(user, Current_Mode, codeManager, Tracer);
+                    adminViewer = new User_Group_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.Aggregations_Mgmt:
-                    adminViewer = new Aggregations_Mgmt_AdminViewer(user, Current_Mode, codeManager, Thematic_Headings, Tracer);
+                    adminViewer = new Aggregations_Mgmt_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.IP_Restrictions:
-                    adminViewer = new IP_Restrictions_AdminViewer(user, Current_Mode, ipRestrictions, Tracer);
+                    adminViewer = new IP_Restrictions_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.Thematic_Headings:
-                    adminViewer = new Thematic_Headings_AdminViewer(user, Current_Mode, Thematic_Headings, codeManager, Tracer);
+                    adminViewer = new Thematic_Headings_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.Settings:
-                    adminViewer = new Settings_AdminViewer(user, Current_Mode, Tracer);
+                    adminViewer = new Settings_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.Default_Metadata:
-                    if (Current_Mode.My_Sobek_SubMode.Length > 1)
+                    if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 1)
                     {
-                        string project_code = Current_Mode.My_Sobek_SubMode.Substring(1);
-                        Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Checking cache for valid project file");
-                        if (user != null)
+                        string project_code = RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(1);
+                        RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Checking cache for valid project file");
+                        if (RequestSpecificValues.Current_User != null)
                         {
-                            SobekCM_Item projectObject = Cached_Data_Manager.Retrieve_Project(user.UserID, project_code, Tracer);
+                            SobekCM_Item projectObject = Cached_Data_Manager.Retrieve_Project(RequestSpecificValues.Current_User.UserID, project_code, RequestSpecificValues.Tracer);
                             if (projectObject != null)
                             {
-                                Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Valid default metadata set found in cache");
-                                adminViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, projectObject, codeManager, iconTable, Skin, null, null, Tracer);
+                                RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Valid default metadata set found in cache");
+                                adminViewer = new Edit_Item_Metadata_MySobekViewer( projectObject, RequestSpecificValues);
                             }
                             else
                             {
-                                if (SobekCM_Database.Get_All_Template_DefaultMetadatas(Tracer).Tables[0].Select("MetadataCode='" + project_code + "'").Length > 0)
+                                if (SobekCM_Database.Get_All_Template_DefaultMetadatas(RequestSpecificValues.Tracer).Tables[0].Select("MetadataCode='" + project_code + "'").Length > 0)
                                 {
-                                    Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building default metadata set from (possible) PMETS");
-                                    string pmets_file = InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory + "projects\\" + Current_Mode.My_Sobek_SubMode.Substring(1) + ".pmets";
+                                    RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building default metadata set from (possible) PMETS");
+                                    string pmets_file = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "projects\\" + RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(1) + ".pmets";
                                     SobekCM_Item pmets_item = File.Exists(pmets_file) ? SobekCM_Item.Read_METS(pmets_file) : new SobekCM_Item();
                                     pmets_item.Bib_Info.Main_Title.Title = "Default metadata set for '" + project_code + "'";
                                     pmets_item.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Project;
                                     pmets_item.BibID = project_code.ToUpper();
                                     pmets_item.VID = "00001";
-                                    pmets_item.Source_Directory = InstanceWide_Settings_Singleton.Settings.Base_MySobek_Directory +  "projects\\";
+                                    pmets_item.Source_Directory = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory +  "projects\\";
 
-                                    Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Adding project file to cache");
+                                    RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Adding project file to cache");
 
-                                    Cached_Data_Manager.Store_Project(user.UserID, project_code, pmets_item, Tracer);
+                                    Cached_Data_Manager.Store_Project(RequestSpecificValues.Current_User.UserID, project_code, pmets_item, RequestSpecificValues.Tracer);
 
-                                    adminViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, pmets_item, codeManager, iconTable, Skin, null, null, Tracer);
+                                    adminViewer = new Edit_Item_Metadata_MySobekViewer(pmets_item, RequestSpecificValues);
                                 }
                             }
                         }
@@ -207,13 +159,9 @@ namespace SobekCM.Library.HTML
 
 
                     if (adminViewer == null)
-                        adminViewer = new Default_Metadata_AdminViewer(user, Current_Mode, Tracer);
+                        adminViewer = new Default_Metadata_AdminViewer(RequestSpecificValues);
                     break;
             }
-
-            // Pass in the navigation and translator information
-            adminViewer.CurrentMode = Current_Mode;
-            adminViewer.Translator = translator;
 
         }
 
@@ -255,10 +203,10 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
-				if (user == null)
+				if (RequestSpecificValues.Current_User == null)
 					return false;
 
-				if (( Mode.Admin_Type == Admin_Type_Enum.Wordmarks ) || ( Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single ))
+				if (( RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Wordmarks ) || ( RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single ))
 					return true;
 
 
@@ -272,7 +220,7 @@ namespace SobekCM.Library.HTML
         public override void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Admin_HtmlSubwriter.Write_Additional_HTML", "Adding any form elements popup divs");
-            if ((Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms))
+            if ((RequestSpecificValues.Current_Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms))
             {
                 adminViewer.Add_Popup_HTML(Output, Tracer);
             }
@@ -302,27 +250,27 @@ namespace SobekCM.Library.HTML
 	       // if (CurrentMode.Admin_Type == Admin_Type_Enum.Wordmarks)
 		   //     return false;
 
-            if ((!adminViewer.Contains_Popup_Forms) && (!Mode.Logon_Required))
+            if ((!adminViewer.Contains_Popup_Forms) && (!RequestSpecificValues.Current_Mode.Logon_Required))
             {
-                if ( Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single )
+                if ( RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single )
                 {
                     // Add the banner
-                    Add_Banner(Output, "sbkAhs_BannerDiv", Mode, Skin, currentCollection);
+                    Add_Banner(Output, "sbkAhs_BannerDiv", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Hierarchy_Object);
 
-                    // Add the user-specific main menu
-                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, Mode, user);
+                    // Add the RequestSpecificValues.Current_User-specific main menu
+                    MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues );
 
                     // Start the page container
                     Output.WriteLine("<div id=\"pagecontainer\">");
                     Output.WriteLine("<br />");
 
                     // Add the box with the title
-                    if ((Mode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (Mode.My_Sobek_SubMode != "submitted items"))
+                    if ((RequestSpecificValues.Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode != "submitted items"))
                     {
                         Output.WriteLine("<div class=\"SobekSearchPanel\">");
                         if (adminViewer != null)
                             Output.WriteLine("  <h1>" + adminViewer.Web_Title + "</h1>");
-                        else if (user != null) Output.WriteLine("  <h1>Welcome back, " + user.Nickname + "</h1>");
+                        else if (RequestSpecificValues.Current_User != null) Output.WriteLine("  <h1>Welcome back, " + RequestSpecificValues.Current_User.Nickname + "</h1>");
                         Output.WriteLine("</div>");
                         Output.WriteLine();
                     }
@@ -354,12 +302,12 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Admin_HtmlSubwriter.Add_Controls", "Build admin viewer and add controls");
 
             // Add the banner now
-            if ((Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms))
+            if ((RequestSpecificValues.Current_Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms))
             {
                 // Start to build the result to write, with the banner
                 StringBuilder header_builder = new StringBuilder();
                 StringWriter header_writer = new StringWriter(header_builder);
-                Add_Banner(header_writer, "sbkAhs_BannerDiv", Mode, Skin, currentCollection);
+                Add_Banner(header_writer, "sbkAhs_BannerDiv", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Hierarchy_Object);
 
                 // Now, add this literal
                 LiteralControl header_literal = new LiteralControl(header_builder.ToString());
@@ -387,34 +335,34 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
 #if DEBUG
-            Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Admin.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Admin.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Admin.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Admin.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #endif
 
             // If editing projects, add the mySobek stylesheet as well
-            if ((Mode.Admin_Type == Admin_Type_Enum.Default_Metadata) && (Mode.My_Sobek_SubMode.Length > 0))
+            if ((RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Default_Metadata) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0))
             {
 #if DEBUG
-                Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-				Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+				Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #endif
             }
 
 			// Add the uploader libraries if editing an item
-	        if (Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single)
+	        if (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single)
 	        {
 #if DEBUG
-                Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
-                Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadify/jquery.uploadify.js\" type=\"text/javascript\"></script>");
+                Output.WriteLine("  <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
+                Output.WriteLine("  <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadify/jquery.uploadify.js\" type=\"text/javascript\"></script>");
 #else
-		        Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.min.js\" type=\"text/javascript\"></script>");
-		        Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadify/jquery.uploadify.min.js\" type=\"text/javascript\"></script>");
+		        Output.WriteLine("  <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.min.js\" type=\"text/javascript\"></script>");
+		        Output.WriteLine("  <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadify/jquery.uploadify.min.js\" type=\"text/javascript\"></script>");
 #endif
 
-		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Mode.Base_URL + "default/scripts/uploadifive/uploadifive.css\">");
-		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Mode.Base_URL + "default/scripts/uploadify/uploadify.css\">");
+		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadifive/uploadifive.css\">");
+		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadify/uploadify.css\">");
 	        }
         }
 
@@ -433,7 +381,7 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
-				switch (Mode.Admin_Type)
+				switch (RequestSpecificValues.Current_Mode.Admin_Type)
 				{
 					case Admin_Type_Enum.Wordmarks:
 						return "sbkWav_ContainerInner";

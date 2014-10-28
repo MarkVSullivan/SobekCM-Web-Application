@@ -6,15 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
-using SobekCM.Core.Settings;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -37,24 +35,20 @@ namespace SobekCM.Library.AdminViewer
     public class Builder_AdminViewer : abstract_AdminViewer
     {
         /// <summary> Constructor for a new instance of the Builder_AdminViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        public Builder_AdminViewer(User_Object User, SobekCM_Navigation_Object Current_Mode)
-            : base(User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Builder_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            currentMode = Current_Mode;
-
             // Ensure the user is the system admin
-            if ((User == null) || ((!User.Is_System_Admin) && (!User.Is_Portal_Admin )))
+            if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin )))
             {
-                Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                Current_Mode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
            // If this is a postback, handle any events first
-            if ((Current_Mode.isPostBack) && ( User.Is_System_Admin ))
+            if ((RequestSpecificValues.Current_Mode.isPostBack) && (RequestSpecificValues.Current_User.Is_System_Admin))
             {
                 // Pull the hidden value
                 string save_value = HttpContext.Current.Request.Form["admin_builder_tosave"].ToUpper().Trim();
@@ -62,7 +56,7 @@ namespace SobekCM.Library.AdminViewer
                 {
                     // Set this value
                     SobekCM_Database.Set_Setting("Builder Operation Flag", save_value);
-					Current_Mode.Redirect();
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 }
             }
         }
@@ -99,13 +93,13 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("<!-- Hidden field to keep the newly requested status -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_builder_tosave\" name=\"admin_builder_tosave\" value=\"\" />");
-            Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 
             // Start to show the text 
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
             Output.WriteLine("  <p>The SobekCM builder is constantly loading new items and updates and building the full text indexes.  This page can be used to view and update the current status as well as view the most recent log files.</p>");
-            Output.WriteLine("  <p>For more information about the builder and possible actions from this screen, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/builder\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>For more information about the builder and possible actions from this screen, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/builder\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 			Output.WriteLine();
 
             // If missing values, display an error
@@ -124,7 +118,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <table class=\"sbkBav_table\">");
                 Output.WriteLine("    <tr><td>Current Status: </td><td><strong>" + operationFlag + "</strong></td><td>&nbsp;</td></tr>");
 
-	            if (user.Is_System_Admin)
+                if (RequestSpecificValues.Current_User.Is_System_Admin)
 	            {
 		            Output.WriteLine("    <tr>");
 		            Output.WriteLine("      <td>Next Status: </td>");
@@ -150,7 +144,7 @@ namespace SobekCM.Library.AdminViewer
 
 		            Output.WriteLine("        </select>");
 		            Output.WriteLine("      </td>");
-					Output.WriteLine("      <td><button title=\"Set new builder status\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_builder_status();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
+					Output.WriteLine("      <td><button title=\"Set new builder status\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_builder_status();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
 		            Output.WriteLine("    </tr>");
 	            }
 	            Output.WriteLine("  </table>");
@@ -159,7 +153,7 @@ namespace SobekCM.Library.AdminViewer
 
                 Output.WriteLine("  <h2>Recent Incoming Logs</h2>");
 
-				string logDirectory = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "extra\\logs";
+				string logDirectory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "extra\\logs";
 				string[] logFiles = Directory.GetFiles(logDirectory, "incoming*.html");
 
 	            if (logFiles.Length > 0)
@@ -190,8 +184,8 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine();
             Output.WriteLine("  <h2>Related Links</h2>");
 			Output.WriteLine("  <ul class=\"sbkBav_List\">");
-            Output.WriteLine("      <li><a href=\"" + currentMode.Base_URL + "l/internal/new\">Newly added or updated items</a></li>");
-            Output.WriteLine("      <li><a href=\"" + currentMode.Base_URL + "l/internal/failures\">Failed packages or builder errors</a></li>");
+            Output.WriteLine("      <li><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/internal/new\">Newly added or updated items</a></li>");
+            Output.WriteLine("      <li><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/internal/failures\">Failed packages or builder errors</a></li>");
             Output.WriteLine("  </ul>");
             Output.WriteLine("</div>");
 

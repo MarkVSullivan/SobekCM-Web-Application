@@ -1,21 +1,24 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.UI;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
-using SobekCM.Library;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Database;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
 using SobekCM.Core.Users;
+using SobekCM.Library.Database;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
+
+#endregion
 
 namespace SobekCM
 {
-	public partial class Files : System.Web.UI.Page
+	public partial class Files : Page
 	{
 		private string file_url;
 
@@ -33,20 +36,6 @@ namespace SobekCM
 
 					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", String.Empty);
 
-					// Don't really need to *build* these, so just define them as a new ones if null
-					if (Global.Checked_List == null)
-						Global.Checked_List = new Checked_Out_Items_List();
-					if (Global.Search_History == null)
-						Global.Search_History = new Recent_Searches();
-
-					// Make sure all the needed data is loaded into the Application State
-					Application_State_Builder.Build_Application_State(tracer, false, ref Global.Skins, ref Global.Translation,
-					                                                  ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
-					                                                  ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-                                                                      ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority, ref Global.User_Groups, ref Global.Search_Stop_Words);
-
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Application State validated or built");
-
 					// Check that something is saved for the original requested URL (may not exist if not forwarded)
 					if (!HttpContext.Current.Items.Contains("Original_URL"))
 						HttpContext.Current.Items["Original_URL"] = request.Url.ToString();
@@ -58,7 +47,7 @@ namespace SobekCM
 					{
 						// Create an error message 
 						string errorMessage;
-						if ((InstanceWide_Settings_Singleton.Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String)))
+                        if ((UI_ApplicationCache_Gateway.Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String)))
 						{
 							errorMessage = "No database connection string found!";
 							string configFileLocation = AppDomain.CurrentDomain.BaseDirectory + "config/sobekcm.xml";
@@ -84,7 +73,7 @@ namespace SobekCM
 							}
 							else
 							{
-								errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
+                                errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
 							}
 						}
 						// Wrap this into the SobekCM Exception
@@ -144,7 +133,7 @@ namespace SobekCM
 					if ((!String.IsNullOrEmpty(bibID)) && (!String.IsNullOrEmpty(vid)))
 					{
 						// Determine the new URL
-						StringBuilder urlBuilder = new StringBuilder(InstanceWide_Settings_Singleton.Settings.Image_Server_Network + bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8) + "\\" + vid + "\\" + url_relative_list[4], 250);
+                        StringBuilder urlBuilder = new StringBuilder(UI_ApplicationCache_Gateway.Settings.Image_Server_Network + bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8) + "\\" + vid + "\\" + url_relative_list[4], 250);
 						for (int i = 5; i < url_relative_list.Count; i++)
 						{
 							urlBuilder.Append("\\" + url_relative_list[i]);
@@ -159,8 +148,8 @@ namespace SobekCM
 						{
 							// Lookup the MIME type by extension
 							Mime_Type_Info mimeType = null;
-							if (Global.Mime_Types.ContainsKey(extension.ToLower()))
-								mimeType = Global.Mime_Types[extension.ToLower()];
+							if (UI_ApplicationCache_Gateway.Mime_Types.ContainsKey(extension.ToLower()))
+								mimeType = UI_ApplicationCache_Gateway.Mime_Types[extension.ToLower()];
 
 							if ((mimeType != null) && (!mimeType.isBlocked))
 							{
@@ -177,7 +166,7 @@ namespace SobekCM
 
 									if (HttpContext.Current.Session["IP_Range_Membership"] == null)
 									{
-										int ip_mask = Global.IP_Restrictions.Restrictive_Range_Membership(request.UserHostAddress);
+										int ip_mask = UI_ApplicationCache_Gateway.IP_Restrictions.Restrictive_Range_Membership(request.UserHostAddress);
 										HttpContext.Current.Session["IP_Range_Membership"] = ip_mask;
 									}
 
@@ -199,7 +188,7 @@ namespace SobekCM
 									// Should this be forwarded for this mimetype?
 									if (mimeType.shouldForward)
 									{
-										StringBuilder forwardBuilder = new StringBuilder(InstanceWide_Settings_Singleton.Settings.Image_URL + bibID.Substring(0, 2) + "/" + bibID.Substring(2, 2) + "/" + bibID.Substring(4, 2) + "/" + bibID.Substring(6, 2) + "/" + bibID.Substring(8) + "/" + vid + "/" + url_relative_list[4], 250);
+                                        StringBuilder forwardBuilder = new StringBuilder(UI_ApplicationCache_Gateway.Settings.Image_URL + bibID.Substring(0, 2) + "/" + bibID.Substring(2, 2) + "/" + bibID.Substring(4, 2) + "/" + bibID.Substring(6, 2) + "/" + bibID.Substring(8) + "/" + vid + "/" + url_relative_list[4], 250);
 										for (int i = 5; i < url_relative_list.Count; i++)
 										{
 											forwardBuilder.Append("/" + url_relative_list[i]);

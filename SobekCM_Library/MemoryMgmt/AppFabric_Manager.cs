@@ -5,12 +5,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.ApplicationServer.Caching;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Skins;
 using SobekCM.Resource_Object;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Skins;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -33,14 +32,14 @@ namespace SobekCM.Library.MemoryMgmt
         {
             lastErrorMessage = String.Empty;
 
-            if (InstanceWide_Settings_Singleton.Settings.Caching_Server.Length > 0)
+            if (UI_ApplicationCache_Gateway.Settings.Caching_Server.Length > 0)
             {
                 enabled = true;
             }
 
             if (enabled)
             {
-                if (PrepareClient(InstanceWide_Settings_Singleton.Settings.Caching_Server))
+                if (PrepareClient(UI_ApplicationCache_Gateway.Settings.Caching_Server))
                 {
                     keys = new Expiring_Item_Typed_List<string>(30);
                 }
@@ -171,7 +170,7 @@ namespace SobekCM.Library.MemoryMgmt
 
             if ( keys == null )
             {
-                if (PrepareClient(InstanceWide_Settings_Singleton.Settings.Caching_Server))
+                if (PrepareClient(UI_ApplicationCache_Gateway.Settings.Caching_Server))
                 {
                     keys = new Expiring_Item_Typed_List<string>(30);
                     return true;

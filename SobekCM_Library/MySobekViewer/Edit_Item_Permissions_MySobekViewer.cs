@@ -1,68 +1,56 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using SobekCM.Core.Settings;
-using SobekCM.Core.Users;
-using SobekCM.Library.Application_State;
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
-using SobekCM.Library.Skins;
 using SobekCM.Library.MemoryMgmt;
-using SobekCM.Resource_Object;
-using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Tools;
+using SobekCM.UI_Library;
+
+#endregion
 
 namespace SobekCM.Library.MySobekViewer
 {
     public class Edit_Item_Permissions_MySobekViewer : abstract_MySobekViewer
     {
-        private readonly SobekCM_Item currentItem;
-        private User_Object currentUser;
-        private List<User_Group> userGroups;
-        private IP_Restriction_Ranges ipRestrictions;
-
         private short ipRestrictionMask;
         private bool isDark;
         private DateTime? embargoDate;
 
-
-        public Edit_Item_Permissions_MySobekViewer(User_Object User, SobekCM_Navigation_Object Current_Mode, SobekCM_Item CurrentCurrentItem, SobekCM_Skin_Object HTML_Skin, Language_Support_Info Translator, List<User_Group> userGroups, IP_Restriction_Ranges ipRestrictions, Custom_Tracer Tracer )
-            : base(User)
+        /// <summary> Constructor for a new instance of the Edit_Item_Permissions_MySobekViewer class  </summary>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Edit_Item_Permissions_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            this.currentUser = User;
-            this.userGroups = userGroups;
-            this.ipRestrictions = ipRestrictions;
-            this.currentItem = CurrentCurrentItem;
-            this.currentMode = Current_Mode;
 
 
-            if ( currentUser == null ) 
+            if ( RequestSpecificValues.Current_User == null ) 
             {
-                currentMode.Mode = Display_Mode_Enum.Item_Display;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
             }
 
-            bool userCanEditItem = currentUser.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List);
+            bool userCanEditItem = RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List);
 
             if (!userCanEditItem)
             {
-                currentMode.Mode = Display_Mode_Enum.Item_Display;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
             }
 
             // Start by setting the values by the item (good the first time user comes here)
-            ipRestrictionMask = currentItem.Behaviors.IP_Restriction_Membership;
-            isDark = currentItem.Behaviors.Dark_Flag;
+            ipRestrictionMask = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
+            isDark = RequestSpecificValues.Current_Item.Behaviors.Dark_Flag;
 
             // Is there already a RightsMD module in the item?
             // Ensure this metadata module extension exists
-            RightsMD_Info rightsInfo = currentItem.Get_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY) as RightsMD_Info;
+            RightsMD_Info rightsInfo = RequestSpecificValues.Current_Item.Get_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY) as RightsMD_Info;
             if (( rightsInfo != null) && ( rightsInfo.Has_Embargo_End ))
             {
                 embargoDate = rightsInfo.Embargo_End;
@@ -70,7 +58,7 @@ namespace SobekCM.Library.MySobekViewer
             
 
             // Is this a postback?
-            if (currentMode.isPostBack)
+            if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 // Get the restriction mask and isDark flag
                 if (HttpContext.Current.Request.Form["restrictionMask"] != null)
@@ -100,7 +88,7 @@ namespace SobekCM.Library.MySobekViewer
                     // Is this to change accessibility?
                     if ((action == "public") || (action == "private") || (action == "restricted") || ( action == "dark" ))
                     {
-                        int current_mask = currentItem.Behaviors.IP_Restriction_Membership;
+                        int current_mask = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
                         switch (action)
                         {
                             case "public":
@@ -133,23 +121,23 @@ namespace SobekCM.Library.MySobekViewer
                     string behaviorRequest = HttpContext.Current.Request.Form["behaviors_request"].ToString();
                     if (behaviorRequest == "save")
                     {
-                        currentItem.Behaviors.IP_Restriction_Membership = ipRestrictionMask;
-                        currentItem.Behaviors.Dark_Flag = isDark;
+                        RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership = ipRestrictionMask;
+                        RequestSpecificValues.Current_Item.Behaviors.Dark_Flag = isDark;
 
                         // Save this to the database
-                        if (Resource_Object.Database.SobekCM_Database.Set_Item_Visibility(currentItem.Web.ItemID, ipRestrictionMask, isDark, embargoDate, currentUser.UserName))
+                        if (SobekCM_Database.Set_Item_Visibility(RequestSpecificValues.Current_Item.Web.ItemID, ipRestrictionMask, isDark, embargoDate, RequestSpecificValues.Current_User.UserName))
                         {
                             // Update the cached item
-                            Cached_Data_Manager.Remove_Digital_Resource_Object(currentItem.BibID, currentItem.VID, Tracer);
-                            Cached_Data_Manager.Store_Digital_Resource_Object(currentItem.BibID, currentItem.VID, currentItem, Tracer);
+                            Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
+                            Cached_Data_Manager.Store_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Current_Item, RequestSpecificValues.Tracer);
 
                             // Update the web.config
-                            Resource_Web_Config_Writer.Update_Web_Config(currentItem.Source_Directory, currentItem.Behaviors.Dark_Flag, (short)ipRestrictionMask, currentItem.Behaviors.Main_Thumbnail);
+                            Resource_Web_Config_Writer.Update_Web_Config(RequestSpecificValues.Current_Item.Source_Directory, RequestSpecificValues.Current_Item.Behaviors.Dark_Flag, (short)ipRestrictionMask, RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail);
 
                             // Send back to this page?
                         }
-                        currentMode.Mode = Display_Mode_Enum.Item_Display;
-                        currentMode.Redirect();
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
 
                     }
                 }
@@ -191,9 +179,9 @@ namespace SobekCM.Library.MySobekViewer
         {
             const string VISIBILITY = "VISIBILITY";
 
-            currentMode.Mode = Display_Mode_Enum.Item_Display;
-            string item_url = currentMode.Redirect_URL();
-            currentMode.Mode = Display_Mode_Enum.My_Sobek;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+            string item_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
 
             Tracer.Add_Trace("Edit_Item_Permissions_MySobekViewer.Write_ItemNavForm_Closing", "");
 
@@ -203,8 +191,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<input type=\"hidden\" id=\"restrictionMask\" name=\"restrictionMask\" value=\"" + ipRestrictionMask.ToString() + "\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"isDark\" name=\"isDark\" value=\"" + isDark.ToString() + "\" />");
 
-            // Write the top currentItem mimic html portion
-            Write_Item_Type_Top(Output, currentItem);
+            // Write the top RequestSpecificValues.Current_Item mimic html portion
+            Write_Item_Type_Top(Output, RequestSpecificValues.Current_Item);
 
             Output.WriteLine("<div id=\"container-inner1000\">");
             Output.WriteLine("<div id=\"pagecontainer\">");
@@ -212,11 +200,11 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<!-- Edit_Item_Permissions_MySobekViewer.Write_ItemNavForm_Closing -->");
             Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <h2>Edit item-level permissions for this currentItem</h2>");
+            Output.WriteLine("  <h2>Edit item-level permissions for this RequestSpecificValues.Current_Item</h2>");
             Output.WriteLine("  <ul>");
-            Output.WriteLine("    <li>Use this form to change visibility (and related embargo dates) on this currentItem </li>");
+            Output.WriteLine("    <li>Use this form to change visibility (and related embargo dates) on this RequestSpecificValues.Current_Item </li>");
             Output.WriteLine("    <li>This form also allows ip restriction and user group permissions to be set </li>");
-            Output.WriteLine("    <li>Click <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "help/itempermissions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing permissions online.</li>");
+            Output.WriteLine("    <li>Click <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/itempermissions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing permissions online.</li>");
             Output.WriteLine("  </ul>");
             Output.WriteLine("</div>");
             Output.WriteLine();
@@ -232,11 +220,11 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
             Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
-            Output.WriteLine("      <script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("      <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
             Output.WriteLine();
             Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-            Output.WriteLine("        <button onclick=\"window.location.href='" + item_url + "';return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-            Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("        <button onclick=\"window.location.href='" + item_url + "';return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("      </div>");
             Output.WriteLine("      <br /><br />");
             Output.WriteLine();
@@ -252,7 +240,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("              <button title=\"Add IP restriction to this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('restricted'); return false;\">RESTRICT ITEM</button>");
             else
             {
-                if (ipRestrictions.Count > 0 )
+                if (UI_ApplicationCache_Gateway.IP_Restrictions.Count > 0)
                     Output.WriteLine("              <button title=\"Add IP restriction to this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted\" onclick=\"set_item_access('restricted'); return false;\">RESTRICT ITEM</button>");
                 else
                     Output.WriteLine("              <button title=\"Add IP restriction to this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted\" onclick=\"alert('You must have at least one IP range entered in the system to use this option.\\n\\nAt least create an administrative range before assigning RESTRICTED to items'); return false;\">RESTRICT ITEM</button>");
@@ -270,15 +258,15 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("              <button title=\"Make item dark\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDark\" onclick=\"set_item_access('dark'); return false;\">DARKEN ITEM</button>");
 
 
-            // Should we add ability to delete this currentItem?
-            if (currentUser.Can_Delete_This_Item(currentItem.BibID, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
+            // Should we add ability to delete this RequestSpecificValues.Current_Item?
+            if (RequestSpecificValues.Current_User.Can_Delete_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
             {
                 // Determine the delete URL
-                currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Delete_Item;
-                string delete_url = currentMode.Redirect_URL();
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
-                Output.WriteLine("              <button title=\"Delete this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDelete\" onclick=\"if(confirm('Delete this currentItem completely?')) window.location.href = '" + delete_url + "'; return false;\">DELETE ITEM</button>");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Delete_Item;
+                string delete_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
+                Output.WriteLine("              <button title=\"Delete this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDelete\" onclick=\"if(confirm('Delete this RequestSpecificValues.Current_Item completely?')) window.location.href = '" + delete_url + "'; return false;\">DELETE ITEM</button>");
             }
 
             
@@ -304,13 +292,13 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("         <tr><td colspan=\"2\">&nbsp;</td></tr>");
 
-            if ((ipRestrictions.Count > 0) && (ipRestrictionMask > 0) && ( !isDark))
+            if ((UI_ApplicationCache_Gateway.IP_Restrictions.Count > 0) && (ipRestrictionMask > 0) && (!isDark))
             {
                 Output.WriteLine("         <tr>");
                 Output.WriteLine("           <th>Restriction Ranges:-</th>");
                 Output.WriteLine("           <td>");
 
-                foreach (IP_Restriction_Range thisRange in ipRestrictions.IpRanges)
+                foreach (IP_Restriction_Range thisRange in UI_ApplicationCache_Gateway.IP_Restrictions.IpRanges)
                 {
                     Output.WriteLine("             <input type='checkbox' checked='checked' id='range" + thisRange.RangeID + "' name='range" + thisRange.RangeID + "' value='" + thisRange.RangeID + "' /> <label for=\"range" + thisRange.RangeID + "\"><span title=\"" + HttpUtility.HtmlEncode(thisRange.Notes) + "\">" + thisRange.Title + "</span></label><br />");
                 }
@@ -327,8 +315,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine();
             Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");
             Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-            Output.WriteLine("        <button onclick=\"window.location.href='" + item_url + "';return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-            Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("        <button onclick=\"window.location.href='" + item_url + "';return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
+            Output.WriteLine("        <button onclick=\"behaviors_save_form(); return false;\" class=\"sbkMySobek_BigButton\"> SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("      </div>");
             Output.WriteLine("      <br />");
             Output.WriteLine("    </div>");
@@ -353,7 +341,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
         /// requests from the main HTML subwriter. </summary>
-        /// <value> This tells the HTML and mySobek writers to mimic the currentItem viewer </value>
+        /// <value> This tells the HTML and mySobek writers to mimic the RequestSpecificValues.Current_Item viewer </value>
         public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
         {
             get

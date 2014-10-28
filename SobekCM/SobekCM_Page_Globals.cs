@@ -1,32 +1,31 @@
 ﻿#region Using directives
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Divisions;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Items;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
+using SobekCM.Core.SiteMap;
+using SobekCM.Core.Skins;
+using SobekCM.Core.Users;
+using SobekCM.Core.WebContent;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.Database;
-using SobekCM.Library.Items;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.SiteMap;
-using SobekCM.Library.Skins;
-using SobekCM.Core.Users;
-using SobekCM.Library.WebContent;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -71,20 +70,8 @@ namespace SobekCM
 			{
 				tracer = new Custom_Tracer();
 				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", String.Empty);
+			    SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
 
-				// Don't really need to *build* these, so just define them as a new ones if null
-				if (Global.Checked_List == null)
-					Global.Checked_List = new Checked_Out_Items_List();
-				if (Global.Search_History == null)
-					Global.Search_History = new Recent_Searches();
-
-				// Make sure all the needed data is loaded into the Application State
-				Application_State_Builder.Build_Application_State(tracer, false, ref Global.Skins, ref Global.Translation,
-				                                                  ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
-				                                                  ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-                                                                  ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority, ref Global.User_Groups, ref Global.Search_Stop_Words);
-
-				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Application State validated or built");
 
 				// Check that something is saved for the original requested URL (may not exist if not forwarded)
 				if (!HttpContext.Current.Items.Contains("Original_URL"))
@@ -97,7 +84,7 @@ namespace SobekCM
 				{
 					// Create an error message 
 					string errorMessage = "Error caught while validating application state";
-					if ((InstanceWide_Settings_Singleton.Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String)))
+                    if ((UI_ApplicationCache_Gateway.Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String)))
 					{
 						errorMessage = "No database connection string found!";
 						string configFileLocation = AppDomain.CurrentDomain.BaseDirectory + "config/sobekcm.xml";
@@ -123,7 +110,7 @@ namespace SobekCM
 						}
 						else
 						{
-							errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + InstanceWide_Settings_Singleton.Settings.Database_Connections[0].Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
+							errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
 						}
 					}
 					// Wrap this into the SobekCM Exception
@@ -144,12 +131,12 @@ namespace SobekCM
 			// Analyze the response and get the mode
 			try
 			{
-				currentMode = new SobekCM_Navigation_Object(request.QueryString, base_url, request.UserLanguages, Global.Codes, Global.Collection_Aliases, ref Global.Item_List, Global.URL_Portals, tracer)
-					{
-						Base_URL = base_url,
-						isPostBack = isPostBack,
-						Browser_Type = request.Browser.Type.ToUpper()
-					};
+			    currentMode = new SobekCM_Navigation_Object();
+			    SobekCM_QueryString_Analyzer.Parse_Query(request.QueryString, currentMode, base_url, request.UserLanguages, UI_ApplicationCache_Gateway.Aggregations, UI_ApplicationCache_Gateway.Collection_Aliases, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.URL_Portals, tracer);
+
+                currentMode.Base_URL=base_url;
+			    currentMode.isPostBack = isPostBack;
+                currentMode.Browser_Type = request.Browser.Type.ToUpper();
 				currentMode.Set_Robot_Flag(request.UserAgent, request.UserHostAddress);
 			}
 			catch
@@ -166,20 +153,6 @@ namespace SobekCM
 
 
 			tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Navigation Object created from URI query string");
-
-
-			// Need to ensure the list of items was pulled for several modes
-			if (((currentMode.Writer_Type != Writer_Type_Enum.HTML) && (currentMode.Writer_Type != Writer_Type_Enum.HTML_Echo) && (currentMode.Writer_Type != Writer_Type_Enum.HTML_LoggedIn)) ||
-			    (currentMode.Mode == Display_Mode_Enum.Item_Display) ||
-			    (currentMode.Mode == Display_Mode_Enum.Item_Print) ||
-			    (currentMode.Mode == Display_Mode_Enum.Results) ||
-			    ((currentMode.Mode == Display_Mode_Enum.Aggregation) && ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Map))) ||
-			    (currentMode.Mode == Display_Mode_Enum.Public_Folder) ||
-			    ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Delete_Item) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_AutoFill_Volumes) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))))
-			{
-				SobekCM_Database.Verify_Item_Lookup_Object(true, ref Global.Item_List, tracer);
-			}
-
 
 			try
 			{
@@ -203,7 +176,7 @@ namespace SobekCM
 					// Determine which IP Ranges this IP address belongs to, if not already determined.
 					if (HttpContext.Current.Session["IP_Range_Membership"] == null)
 					{
-						int ip_mask = Global.IP_Restrictions.Restrictive_Range_Membership(request.UserHostAddress);
+						int ip_mask = UI_ApplicationCache_Gateway.IP_Restrictions.Restrictive_Range_Membership(request.UserHostAddress);
 						HttpContext.Current.Session["IP_Range_Membership"] = ip_mask;
 					}
 
@@ -370,7 +343,7 @@ namespace SobekCM
 				CurrentModeCheck.Info_Browse_Mode = "all";
 
 				HttpContext.Current.Response.Status = "301 Moved Permanently";
-				HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+				HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				currentMode.Request_Completed = true;
 				return;
@@ -382,7 +355,7 @@ namespace SobekCM
 				CurrentModeCheck.Mode = Display_Mode_Enum.Aggregation;
 				CurrentModeCheck.Aggregation_Type = Aggregation_Type_Enum.Home;
 				HttpContext.Current.Response.Status = "301 Moved Permanently";
-				HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+				HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				currentMode.Request_Completed = true;
 				return;
@@ -392,7 +365,7 @@ namespace SobekCM
 			if ((QueryString["b"] != null) || (QueryString["m"] != null) || (QueryString["g"] != null) || (QueryString["c"] != null) || (QueryString["s"] != null) || (QueryString["a"] != null))
 			{
 				HttpContext.Current.Response.Status = "301 Moved Permanently";
-				HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+				HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				currentMode.Request_Completed = true;
 				return;
@@ -421,7 +394,7 @@ namespace SobekCM
 				{
 					CurrentModeCheck.Statistics_Type = Statistics_Type_Enum.Usage_Overall;
 					HttpContext.Current.Response.Status = "301 Moved Permanently";
-					HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+					HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 					HttpContext.Current.ApplicationInstance.CompleteRequest();
 					currentMode.Request_Completed = true;
 					return;
@@ -436,7 +409,7 @@ namespace SobekCM
 						if (url_relative_depth > 3)
 						{
 							HttpContext.Current.Response.Status = "301 Moved Permanently";
-							HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+							HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 							HttpContext.Current.ApplicationInstance.CompleteRequest();
 							currentMode.Request_Completed = true;
 							return;
@@ -447,7 +420,7 @@ namespace SobekCM
 						if (url_relative_depth > 2)
 						{
 							HttpContext.Current.Response.Status = "301 Moved Permanently";
-							HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+							HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 							HttpContext.Current.ApplicationInstance.CompleteRequest();
 							currentMode.Request_Completed = true;
 							return;
@@ -458,7 +431,7 @@ namespace SobekCM
 						if (url_relative_depth > 2)
 						{
 							HttpContext.Current.Response.Status = "301 Moved Permanently";
-							HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+							HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 							HttpContext.Current.ApplicationInstance.CompleteRequest();
 							currentMode.Request_Completed = true;
 							return;
@@ -468,7 +441,7 @@ namespace SobekCM
 							if (url_relative_info[1] != "itemcount")
 							{
 								HttpContext.Current.Response.Status = "301 Moved Permanently";
-								HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 								HttpContext.Current.ApplicationInstance.CompleteRequest();
 								currentMode.Request_Completed = true;
 								return;
@@ -490,7 +463,7 @@ namespace SobekCM
 							if (url_relative_depth > 0)
 							{
 								HttpContext.Current.Response.Status = "301 Moved Permanently";
-								HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 								HttpContext.Current.ApplicationInstance.CompleteRequest();
 								currentMode.Request_Completed = true;
 								return;
@@ -503,7 +476,7 @@ namespace SobekCM
 							if (url_relative_depth > 1)
 							{
 								HttpContext.Current.Response.Status = "301 Moved Permanently";
-								HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 								HttpContext.Current.ApplicationInstance.CompleteRequest();
 								currentMode.Request_Completed = true;
 								return;
@@ -515,7 +488,7 @@ namespace SobekCM
 							if (url_relative_depth > 2)
 							{
 								HttpContext.Current.Response.Status = "301 Moved Permanently";
-								HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 								HttpContext.Current.ApplicationInstance.CompleteRequest();
 								currentMode.Request_Completed = true;
 								return;
@@ -524,7 +497,7 @@ namespace SobekCM
 
 						case Home_Type_Enum.Personalized:
 							HttpContext.Current.Response.Status = "301 Moved Permanently";
-							HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+							HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 							HttpContext.Current.ApplicationInstance.CompleteRequest();
 							currentMode.Request_Completed = true;
 							return;
@@ -540,7 +513,7 @@ namespace SobekCM
 					CurrentModeCheck.ViewerCode = String.Empty;
 
 					HttpContext.Current.Response.Status = "301 Moved Permanently";
-					HttpContext.Current.Response.AddHeader("Location", CurrentModeCheck.Redirect_URL());
+					HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
 					HttpContext.Current.ApplicationInstance.CompleteRequest();
 					currentMode.Request_Completed = true;
 					return;
@@ -592,10 +565,10 @@ namespace SobekCM
 			if (HttpContext.Current.Session["user"] == null)
 			{
 				// If this is a responce from Shibboleth/Gatorlink, get the user information and register them if necessary
-				string shibboleth_id = HttpContext.Current.Request.ServerVariables[InstanceWide_Settings_Singleton.Settings.Shibboleth_User_Identity_Attribute];
+				string shibboleth_id = HttpContext.Current.Request.ServerVariables[UI_ApplicationCache_Gateway.Settings.Shibboleth_User_Identity_Attribute];
 				if (shibboleth_id == null)
 				{
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", InstanceWide_Settings_Singleton.Settings.Shibboleth_User_Identity_Attribute + " server variable NOT found");
+					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Shibboleth_User_Identity_Attribute + " server variable NOT found");
 
 					// For debugging purposes, if this SHOULD have included SHibboleth information, show in the trace route
 					if (HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth"))
@@ -608,9 +581,9 @@ namespace SobekCM
 				}
 				else
 				{
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", InstanceWide_Settings_Singleton.Settings.Shibboleth_User_Identity_Attribute + " server variable found");
+					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Shibboleth_User_Identity_Attribute + " server variable found");
 
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", InstanceWide_Settings_Singleton.Settings.Shibboleth_User_Identity_Attribute + " server variable = '" + shibboleth_id + "'");
+					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Shibboleth_User_Identity_Attribute + " server variable = '" + shibboleth_id + "'");
 
 					if (shibboleth_id.Length > 0)
 					{
@@ -692,7 +665,7 @@ namespace SobekCM
 							currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
 							currentMode.Aggregation = String.Empty;
 						}
-						currentMode.Redirect();
+						UrlWriterHelper.Redirect(currentMode);
 					}
 				}
 
@@ -742,7 +715,7 @@ namespace SobekCM
 						if ((currentMode.Mode != Display_Mode_Enum.Item_Display) || (currentMode.BibID.Length > 0) || (currentMode.ItemID_DEPRECATED <= 0))
 						{
 							currentMode.Writer_Type = Writer_Type_Enum.HTML_LoggedIn;
-							currentMode.Redirect();
+							UrlWriterHelper.Redirect(currentMode);
 							return;
 						}
 					}
@@ -769,14 +742,14 @@ namespace SobekCM
 								// If this is really a deprecated URL, don't try to forwaard
 								if ((currentMode.BibID.Length > 0) || (currentMode.ItemID_DEPRECATED <= 0))
 								{
-									currentMode.Redirect();
+									UrlWriterHelper.Redirect(currentMode);
 									return;
 								}
 								break;
 
 							default:
 								currentMode.Writer_Type = Writer_Type_Enum.HTML;
-								currentMode.Redirect();
+								UrlWriterHelper.Redirect(currentMode);
 								return;
 
 						}
@@ -864,7 +837,7 @@ namespace SobekCM
 
 		public void Set_Main_Writer()
 		{
-			// Load the html writer
+			// If this is for HTML or HTML logged in, try to get the web skin object
 			string current_skin_code = currentMode.Skin.ToUpper();
 			if ((currentMode.Writer_Type == Writer_Type_Enum.HTML) || (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
 			{
@@ -893,7 +866,7 @@ namespace SobekCM
 				SobekCM_Assistant assistant = new SobekCM_Assistant();
 
 				// Try to get the web skin from the cache or skin collection, otherwise build it
-				htmlSkin = assistant.Get_HTML_Skin(current_skin_code, currentMode, Global.Skins, true, tracer);
+				htmlSkin = assistant.Get_HTML_Skin(current_skin_code, currentMode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, tracer);
 
 				// If there was no web skin returned, forward user to URL with no web skin. 
 				// This happens if the web skin code is invalid.  If a robot, just return a bad request 
@@ -910,69 +883,62 @@ namespace SobekCM
 					else
 					{
 						currentMode.Skin = String.Empty;
-						currentMode.Redirect();
+						UrlWriterHelper.Redirect(currentMode);
 						return;
 					}
 
 					return;
 				}
+            }
 
+            // Build the RequestCache object
+		    RequestCache RequestSpecificValues = new RequestCache(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject, currentItem, currentPage, htmlSkin, currentUser, publicFolder, siteMap, itemsInTitle, staticWebContent, tracer);
 
-
-				mainWriter = new Html_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject,
-				                                 currentItem, currentPage, htmlSkin, currentUser, Global.Translation, Global.Codes,
-				                                 Global.Item_List, Global.Stats_Date_Range,
-				                                 Global.Search_History, Global.Icon_List, Global.Thematic_Headings, publicFolder, Global.Collection_Aliases, Global.Skins, Global.Checked_List,
-				                                 Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent, Global.User_Groups, Global.Search_Stop_Words, tracer);
-			}
+            if ((currentMode.Writer_Type == Writer_Type_Enum.HTML) || (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
+            {
+                mainWriter = new Html_MainWriter(RequestSpecificValues);
+            }
 
 			// Load the OAI writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.OAI)
 			{
-				mainWriter = new Oai_MainWriter(HttpContext.Current.Request.QueryString, Global.Item_List);
+                mainWriter = new Oai_MainWriter(HttpContext.Current.Request.QueryString, RequestSpecificValues);
 			}
 
 			// Load the DataSet writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.DataSet)
 			{
-				mainWriter = new Dataset_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject, currentItem, currentPage);
+                mainWriter = new Dataset_MainWriter(RequestSpecificValues);
 			}
 
 			// Load the DataProvider writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.Data_Provider)
 			{
-				mainWriter = new DataProvider_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject, currentItem, currentPage);
+                mainWriter = new DataProvider_MainWriter(RequestSpecificValues);
 			}
 
 			// Load the XML writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.XML)
 			{
-				mainWriter = new Xml_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject, currentItem, currentPage);
+                mainWriter = new Xml_MainWriter(RequestSpecificValues);
 			}
 
 			// Load the JSON writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.JSON)
 			{
-				mainWriter = new Json_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject, currentItem, currentPage, Global.Item_List, InstanceWide_Settings_Singleton.Settings.Image_URL);
+                mainWriter = new Json_MainWriter(RequestSpecificValues, UI_ApplicationCache_Gateway.Settings.Image_URL);
 			}
 
 			// Load the HTML ECHO writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.HTML_Echo)
 			{
-				mainWriter = new Html_Echo_MainWriter(currentMode, browse_info_display_text);
+                mainWriter = new Html_Echo_MainWriter(RequestSpecificValues, browse_info_display_text);
 			}
 
 			// Default to HTML
 			if (mainWriter == null)
 			{
-				SobekCM_Assistant assistant = new SobekCM_Assistant();
-				htmlSkin = assistant.Get_HTML_Skin(currentMode, Global.Skins, true, tracer);
-
-				mainWriter = new Html_MainWriter(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject,
-				                                 currentItem, currentPage, htmlSkin, currentUser, Global.Translation, Global.Codes,
-				                                 Global.Item_List,
-				                                 Global.Stats_Date_Range, Global.Search_History, Global.Icon_List, Global.Thematic_Headings, publicFolder,
-				                                 Global.Collection_Aliases, Global.Skins, Global.Checked_List, Global.IP_Restrictions, Global.URL_Portals, siteMap, itemsInTitle, staticWebContent, Global.User_Groups, Global.Search_Stop_Words, tracer);
+                mainWriter = new Html_MainWriter(RequestSpecificValues);
 			}
 		}
 
@@ -1013,8 +979,8 @@ namespace SobekCM
 			}
 			else
 			{
-				if (!assistant.Get_Item(currentMode, Global.Item_List, InstanceWide_Settings_Singleton.Settings.Image_URL,
-				                        Global.Icon_List, Global.Item_Viewer_Priority, currentUser, tracer, out currentItem, out currentPage, out itemsInTitle))
+                if (!assistant.Get_Item(currentMode, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.Settings.Image_URL,
+                                        UI_ApplicationCache_Gateway.Icon_List, UI_ApplicationCache_Gateway.Item_Viewer_Priority, currentUser, tracer, out currentItem, out currentPage, out itemsInTitle))
 				{
 					if ((currentMode.Mode == Display_Mode_Enum.Legacy_URL) || (currentMode.Invalid_Item))
 					{
@@ -1029,7 +995,7 @@ namespace SobekCM
 						Email_Information("Unable to find metadata for valid item", null);
 						currentMode.Mode = Display_Mode_Enum.Aggregation;
 						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-						currentMode.Redirect();
+						UrlWriterHelper.Redirect(currentMode);
 						// return;
 					}
 				}
@@ -1045,7 +1011,7 @@ namespace SobekCM
 			tracer.Add_Trace("SobekCM_Page_Globals.Simple_Web_Content_Text_Block", "Retrieiving Simple Web Content Object");
 
 			SobekCM_Assistant assistant = new SobekCM_Assistant();
-			if (!assistant.Get_Simple_Web_Content_Text(currentMode, InstanceWide_Settings_Singleton.Settings.Base_Directory, tracer,
+            if (!assistant.Get_Simple_Web_Content_Text(currentMode, UI_ApplicationCache_Gateway.Settings.Base_Directory, tracer,
 			                                           out staticWebContent, out siteMap))
 			{
 				currentMode.Mode = Display_Mode_Enum.Error;
@@ -1078,7 +1044,7 @@ namespace SobekCM
 			}
 			else
 			{
-				if (!assistant.Get_Browse_Info(currentMode, hierarchyObject, InstanceWide_Settings_Singleton.Settings.Base_Directory, tracer, out thisBrowseObject, out searchResultStatistics, out pagedSearchResults, out staticWebContent))
+                if (!assistant.Get_Browse_Info(currentMode, hierarchyObject, UI_ApplicationCache_Gateway.Settings.Base_Directory, tracer, out thisBrowseObject, out searchResultStatistics, out pagedSearchResults, out staticWebContent))
 				{
 					currentMode.Mode = Display_Mode_Enum.Error;
 				}
@@ -1100,16 +1066,16 @@ namespace SobekCM
 				{
 					currentMode.Mode = Display_Mode_Enum.Aggregation;
 					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-					currentMode.Redirect();
+					UrlWriterHelper.Redirect(currentMode);
 					return;
 				}
 
 				SobekCM_Assistant assistant = new SobekCM_Assistant();
-				assistant.Get_Search_Results(currentMode, Global.Item_List, hierarchyObject,  Global.Search_Stop_Words, tracer, out searchResultStatistics, out pagedSearchResults);
+                assistant.Get_Search_Results(currentMode, UI_ApplicationCache_Gateway.Items, hierarchyObject, UI_ApplicationCache_Gateway.Search_Stop_Words, tracer, out searchResultStatistics, out pagedSearchResults);
 
-				if ((!currentMode.isPostBack) && (Global.Search_History != null))
+				if ((!currentMode.isPostBack) && (UI_ApplicationCache_Gateway.Search_History != null))
 				{
-					Global.Search_History.Add_New_Search(currentMode, HttpContext.Current.Request.UserHostAddress, currentMode.Search_Type, hierarchyObject.Name, currentMode.Search_String);
+                    UI_ApplicationCache_Gateway.Search_History.Add_New_Search(Get_Search_From_Mode(currentMode, HttpContext.Current.Request.UserHostAddress, currentMode.Search_Type, hierarchyObject.Name, currentMode.Search_String ));
 				}
 			}
 			catch (Exception ee)
@@ -1122,7 +1088,51 @@ namespace SobekCM
 			}
 		}
 
-		#endregion
+	    private Recent_Searches.Search Get_Search_From_Mode(SobekCM_Navigation_Object currentMode, string SessionIP, Search_Type_Enum Search_Type, string Aggregation, string Search_Terms)
+	    {
+	        Recent_Searches.Search returnValue = new Recent_Searches.Search();
+
+	        returnValue.Time = DateTime.Now.ToShortDateString().Replace("/", "-") + " " + DateTime.Now.ToShortTimeString().Replace(" ", "");
+
+	        // Save some of the values
+	        returnValue.SessionIP = SessionIP;
+	        switch (Search_Type)
+	        {
+	            case Search_Type_Enum.Advanced:
+	                returnValue.Search_Type = "Advanced";
+	                break;
+
+	            case Search_Type_Enum.Basic:
+	                returnValue.Search_Type = "Basic";
+	                break;
+
+	            case Search_Type_Enum.Newspaper:
+	                returnValue.Search_Type = "Newspaper";
+	                break;
+
+	            case Search_Type_Enum.Map:
+	                returnValue.Search_Type = "Map";
+	                break;
+
+	            default:
+	                returnValue.Search_Type = "Unknown";
+	                break;
+	        }
+
+	        // Save the collection as a link
+	        Display_Mode_Enum lastMode = currentMode.Mode;
+	        currentMode.Mode = Display_Mode_Enum.Aggregation;
+	        currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+	        returnValue.Aggregation = "<a href=\"" + UrlWriterHelper.Redirect_URL(currentMode) + "\">" + Aggregation.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>";
+
+	        // Save the search terms as a link to the search
+	        currentMode.Mode = lastMode;
+	        returnValue.Search_Terms = "<a href=\"" + UrlWriterHelper.Redirect_URL(currentMode) + "\">" + Search_Terms.Replace("&", "&amp;").Replace("\"", "&quot;") + "</a>";
+
+            return returnValue;
+	    }
+
+	    #endregion
 
 		#region Block for MySobek
 
@@ -1166,17 +1176,17 @@ namespace SobekCM
 			tracer.Add_Trace("SobekCM_Page_Globals.Get_Entire_Collection_Hierarchy", "Retrieving hierarchy information");
 
 			// Check that the current aggregation code is valid
-			if (!Global.Codes.isValidCode(currentMode.Aggregation))
+            if (!UI_ApplicationCache_Gateway.Aggregations.isValidCode(currentMode.Aggregation))
 			{
 				// Is there a "forward value"
-				if (Global.Collection_Aliases.ContainsKey(currentMode.Aggregation))
+                if (UI_ApplicationCache_Gateway.Collection_Aliases.ContainsKey(currentMode.Aggregation))
 				{
-					currentMode.Aggregation = Global.Collection_Aliases[currentMode.Aggregation];
+                    currentMode.Aggregation = UI_ApplicationCache_Gateway.Collection_Aliases[currentMode.Aggregation];
 				}
 			}
 
 			SobekCM_Assistant assistant = new SobekCM_Assistant();
-			if (!assistant.Get_Entire_Collection_Hierarchy(currentMode, Global.Codes, tracer, out hierarchyObject))
+            if (!assistant.Get_Entire_Collection_Hierarchy(currentMode, UI_ApplicationCache_Gateway.Aggregations, tracer, out hierarchyObject))
 			{
 				currentMode.Mode = Display_Mode_Enum.Error;
 			}
@@ -1197,13 +1207,9 @@ namespace SobekCM
 			HttpContext.Current.Application.RemoveAll();
 
 			// Refresh the application settings
-		    InstanceWide_Settings_Singleton.Refresh();
+		    UI_ApplicationCache_Gateway.ResetSettings();
 
-			// Reload all the information
-			Application_State_Builder.Build_Application_State(tracer, true, ref Global.Skins, ref Global.Translation,
-			                                                  ref Global.Codes, ref Global.Item_List, ref Global.Icon_List,
-			                                                  ref Global.Stats_Date_Range, ref Global.Thematic_Headings, ref Global.Collection_Aliases, ref Global.IP_Restrictions,
-                                                              ref Global.URL_Portals, ref Global.Mime_Types, ref Global.Item_Viewer_Priority, ref Global.User_Groups, ref Global.Search_Stop_Words);
+            UI_ApplicationCache_Gateway.ResetAll();
 
 			// Since this reset, send to the admin, memory management portion
 			currentMode.Mode = Display_Mode_Enum.Internal;
@@ -1276,7 +1282,7 @@ namespace SobekCM
 					      "Error Message: " + EmailTitle;
 				}
 
-				SobekCM_Database.Send_Database_Email(InstanceWide_Settings_Singleton.Settings.System_Error_Email, EmailTitle, err, true, false, -1, -1);
+                SobekCM_Database.Send_Database_Email(UI_ApplicationCache_Gateway.Settings.System_Error_Email, EmailTitle, err, true, false, -1, -1);
 
 			}
 			catch (Exception)
@@ -1288,7 +1294,7 @@ namespace SobekCM
 			if (Redirect)
 			{
 				// Forward to our error message
-				HttpContext.Current.Response.Redirect(InstanceWide_Settings_Singleton.Settings.System_Error_URL, false);
+                HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.System_Error_URL, false);
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				if (currentMode != null)
 					currentMode.Request_Completed = true;
@@ -1342,7 +1348,7 @@ namespace SobekCM
 				// Send this email
 				try
 				{
-					SobekCM_Database.Send_Database_Email(InstanceWide_Settings_Singleton.Settings.System_Error_Email, "SobekCM Exception Caught  [Invalid Item Requested]", builder.ToString(), false, false, -1, -1);
+                    SobekCM_Database.Send_Database_Email(UI_ApplicationCache_Gateway.Settings.System_Error_Email, "SobekCM Exception Caught  [Invalid Item Requested]", builder.ToString(), false, false, -1, -1);
 				}
 				catch (Exception)
 				{
@@ -1356,7 +1362,7 @@ namespace SobekCM
 			}
 
 			// Forward to our error message
-			HttpContext.Current.Response.Redirect(InstanceWide_Settings_Singleton.Settings.System_Error_URL, false);
+            HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.System_Error_URL, false);
 			HttpContext.Current.ApplicationInstance.CompleteRequest();
 			if (currentMode != null)
 				currentMode.Request_Completed = true;

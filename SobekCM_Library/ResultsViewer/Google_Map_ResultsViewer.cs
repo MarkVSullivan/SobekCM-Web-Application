@@ -6,15 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
 using SobekCM.Core.Search;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.Search;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -33,10 +29,10 @@ namespace SobekCM.Library.ResultsViewer
         private int polyCount;
 
         /// <summary> Constructor for a new instance of the Full_ResultsViewer class </summary>
-        /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-        public Google_Map_ResultsViewer(Item_Lookup_Object All_Items_Lookup)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Google_Map_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            base.All_Items_Lookup = All_Items_Lookup;
+            // Do nothing
         }
 
         ///// <summary> Gets the total number of results to display </summary>
@@ -61,14 +57,14 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // If results are null, or no results, return empty string
-            if ((Paged_Results == null) || (Results_Statistics == null) || (Results_Statistics.Total_Items <= 0))
+            if ((RequestSpecificValues.Paged_Results == null) || (RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Items <= 0))
                 return;
 
             // Get the text search redirect stem and (writer-adjusted) base url 
             string textRedirectStem = Text_Redirect_Stem;
-            string base_url = CurrentMode.Base_URL;
-            if (CurrentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-                base_url = CurrentMode.Base_URL + "l/";
+            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
             // Start the results
             StringBuilder resultsBldr = new StringBuilder("<br />\n");
@@ -105,7 +101,7 @@ namespace SobekCM.Library.ResultsViewer
             // Step through and add each item to the result set
             // All of the item rows to be displayed together are collected first, and then 
             // the information and google map are rendered.
-            foreach (iSearch_Title_Result titleResult in Paged_Results)
+            foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
             {
                 // If this new spatial does not match the last spatial, need to close out the last coordiante
                 // and render all the HTML and map script information
@@ -392,7 +388,7 @@ namespace SobekCM.Library.ResultsViewer
                 }
 
                 // Add the bib id and vid
-                if (CurrentMode.Internal_User)
+                if (RequestSpecificValues.Current_Mode.Internal_User)
                 {
                     Builder.AppendLine("            <tr height=\"10px\"><td>&nbsp;</td><td>BibID:</td><td>" + titleResult.BibID.ToUpper() + "</td></tr>");
                     if (!multiple)
@@ -401,11 +397,11 @@ namespace SobekCM.Library.ResultsViewer
                     }
                 }
 
-				for (int i = 0; i < Results_Statistics.Metadata_Labels.Count; i++)
+                for (int i = 0; i < RequestSpecificValues.Results_Statistics.Metadata_Labels.Count; i++)
 				{
-					string field = Results_Statistics.Metadata_Labels[i];
+                    string field = RequestSpecificValues.Results_Statistics.Metadata_Labels[i];
 					string value = titleResult.Metadata_Display_Values[i];
-					Metadata_Search_Field thisField = InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_Name(field);
+					Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
 					string display_field = string.Empty;
 					if (thisField != null)
 						display_field = thisField.Display_Term;
@@ -414,7 +410,7 @@ namespace SobekCM.Library.ResultsViewer
 
 					if (value == "*")
 					{
-						Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>" + VARIES_STRING + "</td></tr>");
+						Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>" + VARIES_STRING + "</td></tr>");
 					}
 					else if (value.Trim().Length > 0)
 					{
@@ -429,10 +425,10 @@ namespace SobekCM.Library.ResultsViewer
 								{
 									if (!value_found)
 									{
-										Builder.AppendLine("\t\t\t\t<tr valign=\"top\"><td>&nbsp;</td><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>");
+										Builder.AppendLine("\t\t\t\t<tr valign=\"top\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>");
 										value_found = true;
 									}
-									Builder.Append(System.Web.HttpUtility.HtmlEncode(thisValue) + "<br />");
+									Builder.Append(HttpUtility.HtmlEncode(thisValue) + "<br />");
 								}
 							}
 
@@ -443,7 +439,7 @@ namespace SobekCM.Library.ResultsViewer
 						}
 						else
 						{
-							Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + Translator.Get_Translation(display_field, CurrentMode.Language) + ":</td><td>" + System.Web.HttpUtility.HtmlEncode(value) + "</td></tr>");
+							Builder.AppendLine("\t\t\t\t<tr height=\"10px\"><td>&nbsp;</td><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>" + HttpUtility.HtmlEncode(value) + "</td></tr>");
 						}
 					}
 				}
@@ -686,7 +682,6 @@ namespace SobekCM.Library.ResultsViewer
             string[] allActions = sendData.Substring(0, index1).Split('~');
 
             //hold action type handle
-            string actionTypeHandle = null;
 
             //go through each item to action and check for ovelrays and item only not pois (ORDER does matter because these will be actiond to db before pois are actiond)
             for (int i = 0; i < allActions.Length; i++)
@@ -696,7 +691,7 @@ namespace SobekCM.Library.ResultsViewer
                 //split into action elements
                 string[] ar = allActions[i].Substring(0, index2).Split('|');
                 //determine the action type handle (position 0 in array)
-                actionTypeHandle = ar[0];
+                string actionTypeHandle = ar[0];
                 //determine the action type (position 1 in array)
                 string actionType = ar[1];
                 //based on actionType, parse into objects

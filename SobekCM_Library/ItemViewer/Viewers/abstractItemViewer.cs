@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Resource_Object;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Navigation;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
 
 #endregion
@@ -119,7 +120,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the button for the first page
 					CurrentMode.ViewerCode = currView.Replace( currSeq.ToString(), "1" );
-					string returnVal = CurrentMode.Redirect_URL();
+					string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);;
 				
 					// Restore the original sequence
 					CurrentMode.ViewerCode = currView;
@@ -143,7 +144,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the button for the previous page
 					CurrentMode.ViewerCode = currView.Replace( currSeq.ToString(), (currSeq - 1).ToString() );
-					string returnVal = CurrentMode.Redirect_URL();
+					string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);;
 
 					// Restore the original sequence
 					CurrentMode.ViewerCode = currView;
@@ -167,7 +168,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the button for the previous page
 					CurrentMode.ViewerCode = currView.Replace( currSeq.ToString(), (currSeq + 1).ToString() );
-					string returnVal = CurrentMode.Redirect_URL();
+					string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);;
 
 					// Restore the original sequence
 					CurrentMode.ViewerCode = currView;
@@ -191,7 +192,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 					// Add the button for the previous page
 					CurrentMode.ViewerCode = currView.Replace( currSeq.ToString(), PageCount.ToString() );
-					string returnVal = CurrentMode.Redirect_URL();
+					string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);;
 
 					// Restore the original sequence
 					CurrentMode.ViewerCode = currView;

@@ -3,7 +3,6 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using SobekCM.Library.Settings;
 
 #endregion
 
@@ -16,14 +15,14 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
 
             // Delete any pre-archive deletes
-            if (InstanceWide_Settings_Singleton.Settings.PreArchive_Files_To_Delete.Length > 0)
+            if (Settings.PreArchive_Files_To_Delete.Length > 0)
             {
                 // Get the list of files again
                 string[] files = Directory.GetFiles(resourceFolder);
                 foreach (string thisFile in files)
                 {
                     FileInfo thisFileInfo = new FileInfo(thisFile);
-                    if (Regex.Match(thisFileInfo.Name, InstanceWide_Settings_Singleton.Settings.PreArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
+                    if (Regex.Match(thisFileInfo.Name, Settings.PreArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
                     {
                         File.Delete(thisFile);
                     }
@@ -34,14 +33,14 @@ namespace SobekCM.Builder_Library.Modules.Items
             Archive_Any_Files(Resource);
 
             // Delete any remaining post-archive deletes
-            if (InstanceWide_Settings_Singleton.Settings.PostArchive_Files_To_Delete.Length > 0)
+            if (Settings.PostArchive_Files_To_Delete.Length > 0)
             {
                 // Get the list of files again
                 string[] files = Directory.GetFiles(resourceFolder);
                 foreach (string thisFile in files)
                 {
                     FileInfo thisFileInfo = new FileInfo(thisFile);
-                    if (Regex.Match(thisFileInfo.Name, InstanceWide_Settings_Singleton.Settings.PostArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
+                    if (Regex.Match(thisFileInfo.Name, Settings.PostArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
                     {
                         File.Delete(thisFile);
                     }
@@ -52,7 +51,7 @@ namespace SobekCM.Builder_Library.Modules.Items
         private void Archive_Any_Files(Incoming_Digital_Resource ResourcePackage)
         {
             // First see if this folder is even eligible for archiving and an archive drop box exists
-            if ((InstanceWide_Settings_Singleton.Settings.Archive_DropBox.Length > 0) && ((ResourcePackage.Source_Folder.Archive_All_Files) || (ResourcePackage.Source_Folder.Archive_TIFFs)))
+            if ((Settings.Archive_DropBox.Length > 0) && ((ResourcePackage.Source_Folder.Archive_All_Files) || (ResourcePackage.Source_Folder.Archive_TIFFs)))
             {
                 // Get the list of TIFFs
                 string[] tiff_files = Directory.GetFiles(ResourcePackage.Resource_Folder, "*.tif");
@@ -63,7 +62,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     try
                     {
                         // Calculate and create the archive directory
-                        string archiveDirectory = InstanceWide_Settings_Singleton.Settings.Archive_DropBox + "\\" + ResourcePackage.BibID + "\\" + ResourcePackage.VID;
+                        string archiveDirectory = Settings.Archive_DropBox + "\\" + ResourcePackage.BibID + "\\" + ResourcePackage.VID;
                         if (!Directory.Exists(archiveDirectory))
                             Directory.CreateDirectory(archiveDirectory);
 

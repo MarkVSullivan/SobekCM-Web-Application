@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿#region Using directives
+
+using System.Collections.Generic;
 using System.IO;
+
+#endregion
 
 namespace SobekCM.Library.Localization
 {

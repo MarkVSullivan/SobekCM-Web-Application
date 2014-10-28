@@ -1,17 +1,12 @@
 ﻿#region Using directives
 
-using System;
 using System.IO;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
+using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Skins;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
 
 #endregion
@@ -31,76 +26,23 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     /// </ul></remarks>
     public abstract class abstractAggregationViewer : iAggregationViewer
     {
-        protected string scriptActionName;
-        protected string scriptIncludeName;
+        /// <summary> Protected field contains the information specific to the current request </summary>
+        protected RequestCache RequestSpecificValues;
 
         /// <summary> Constructor for objects which implement this abstract class  </summary>
-        /// <param name="Current_Aggregation"> Current item aggregation object </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        protected abstractAggregationViewer(Item_Aggregation Current_Aggregation, SobekCM_Navigation_Object Current_Mode)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        protected abstractAggregationViewer(RequestCache RequestSpecificValues)
         {
-            currentCollection = Current_Aggregation;
-            currentMode = Current_Mode;
-        }
-
-        /// <summary> Protected field contains the current item aggregation information </summary>
-        protected Item_Aggregation currentCollection;
-
-        /// <summary> Protected field contains the mode / navigation information for the current request </summary>
-        protected SobekCM_Navigation_Object currentMode;
-
-        /// <summary> Protected field contains the current user object, which can dictate how the search box displays </summary>
-        protected User_Object currentUser;
-
-        /// <summary> Protected field contains the html interface to apply for the current request </summary>
-        protected SobekCM_Skin_Object htmlSkin;
-
-        /// <summary> Protected field contains the translation look-up dictionaries for user interface terms </summary>
-        protected Language_Support_Info translator;
-
-        /// <summary> Current mode which (may) tell how to display this collection </summary>
-        internal SobekCM_Navigation_Object CurrentMode
-        {
-            set { currentMode = value; }
-        }
-
-        /// <summary> Current collection for this viewer to display </summary>
-        internal Item_Aggregation CurrentObject
-        {
-            set { currentCollection = value; }
-        }
-
-        /// <summary> Current html interface for this viewer to display </summary>
-        internal SobekCM_Skin_Object HTML_Skin
-        {
-            set { htmlSkin = value; }
-        }
-
-        /// <summary> Current translation object </summary>
-        internal Language_Support_Info Translator
-        {
-            set { translator = value; }
-        }
-
-        /// <summary> Current user object </summary>
-        internal User_Object Current_User
-        {
-            set { currentUser = value; }
+            this.RequestSpecificValues = RequestSpecificValues;
         }
 
         #region iAggregationViewer Members
 
         /// <summary> Reference to the javascript used to initiate the search </summary>
-        public string Search_Script_Reference
-        {
-            get {  return scriptIncludeName ?? String.Empty; }
-        }
+        public string Search_Script_Reference { get; protected set; }
 
         /// <summary> Reference to the javascript method to be called </summary>
-        public string Search_Script_Action
-        {
-            get { return scriptActionName ?? String.Empty; }
-        }
+        public string Search_Script_Action { get; protected set; }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
         public abstract Item_Aggregation.CollectionViewsAndSearchesEnum Type { get; }
@@ -110,7 +52,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             get { return true; }
         }
-
 
         /// <summary> Flag indicates whether the secondary text requires controls </summary>
         /// <value> This defaults to FALSE but is overwritten by most collection viewers </value>
@@ -174,7 +115,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Write the quick tips
             Output.WriteLine("<!-- Add quick tips ( abstractAggregationViewer ) -->");
 
-            switch ( currentMode.Language )
+            switch ( RequestSpecificValues.Current_Mode.Language )
             {
                 case Web_Language_Enum.French:
 					Output.WriteLine("<div id=\"sbk_QuickTips\">");

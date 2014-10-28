@@ -7,11 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using SobekCM.Core.Configuration;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Solr;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
+using SobekCM.Engine_Library.Solr;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -92,7 +91,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Determine the value without any search
             string currentSearch = CurrentMode.Text_Search;
             CurrentMode.Text_Search = String.Empty;
-            string redirect_url = CurrentMode.Redirect_URL();
+            string redirect_url = UrlWriterHelper.Redirect_URL(CurrentMode);;
             CurrentMode.Text_Search = currentSearch;
             string button_text = String.Empty;
 
@@ -168,9 +167,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         // Get the URL for the first and previous buttons
                         CurrentMode.SubPage = 1;
-                        string firstButtonURL = CurrentMode.Redirect_URL();
+                        string firstButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);;
                         CurrentMode.SubPage = (ushort)(current_page - 1);
-                        string prevButtonURL = CurrentMode.Redirect_URL();
+                        string prevButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);;
 
                         buttonWriter.AppendLine("              <span class=\"sbkIsw_LeftPaginationButtons\">");
                         buttonWriter.AppendLine("                <button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
@@ -186,9 +185,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         // Get the URL for the first and previous buttons
                         CurrentMode.SubPage = (ushort)total_pages;
-                        string lastButtonURL = CurrentMode.Redirect_URL();
+                        string lastButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);;
                         CurrentMode.SubPage = (ushort)(current_page + 1);
-                        string nextButtonURL = CurrentMode.Redirect_URL();
+                        string nextButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);;
 
                         buttonWriter.AppendLine("              <span class=\"sbkIsw_RightPaginationButtons\">");
                         buttonWriter.AppendLine("                <button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + CurrentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
@@ -222,7 +221,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("        <table id=\"sbkTsv_ResultsTable\">");
 
                 string thumbnail_root = CurrentItem.Web.Source_URL;
-                string url_options = CurrentMode.URL_Options();
+                string url_options = UrlWriterHelper.URL_Options(CurrentMode);
                 if (url_options.Length > 0)
                 {
                     url_options = url_options + "&search=" + HttpUtility.UrlEncode(originalSearchString);
@@ -453,7 +452,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (thisTerm[0] == '"')
                 {
                     CurrentMode.Text_Search = thisTerm;
-                    output.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\">" + thisTerm.Replace("+", " ") + "</a>");
+                    output.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">" + thisTerm.Replace("+", " ") + "</a>");
 
                     if (fields[i][0] == '-')
                     {
@@ -471,7 +470,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 else
                 {
                     CurrentMode.Text_Search = thisTerm;
-                    output.Append("<a href=\"" + CurrentMode.Redirect_URL() + "\">'" + thisTerm + "'</a>");
+                    output.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">'" + thisTerm + "'</a>");
 
                     if (fields[i][0] == '-')
                     {
@@ -501,13 +500,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (!allOr)
             {
                 CurrentMode.Text_Search = allOrURL.ToString();
-                output.AppendLine("<br /><br />" + expand_language + " <a href=\"" + CurrentMode.Redirect_URL() + "\">" + allOrBldr + "</a>.");
+                output.AppendLine("<br /><br />" + expand_language + " <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">" + allOrBldr + "</a>.");
             }
 
             if ((!allAnd) && (results.TotalResults > 0))
             {
                 CurrentMode.Text_Search = allAndURL.ToString();
-                output.AppendLine("<br /><br />" + restrict_language + " <a href=\"" + CurrentMode.Redirect_URL() + "\">" + allAndBldr + "</a>.");
+                output.AppendLine("<br /><br />" + restrict_language + " <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">" + allAndBldr + "</a>.");
             }
 
             // Restore the original values

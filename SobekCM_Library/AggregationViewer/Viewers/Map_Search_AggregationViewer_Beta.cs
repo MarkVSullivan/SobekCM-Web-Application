@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Using directives
+
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Navigation;
+using SobekCM.Core.Aggregations;
 using SobekCM.Tools;
+
+#endregion
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
@@ -20,9 +19,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         }
 
         /// <summary> Constructor for a new instance of the Map_Search_AggregationViewer class </summary>
-        /// <param name="Current_Aggregation"> Current item aggregation object </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        public Map_Search_AggregationViewer_Beta(Item_Aggregation Current_Aggregation, SobekCM_Navigation_Object Current_Mode): base(Current_Aggregation, Current_Mode)
+        ///<param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Map_Search_AggregationViewer_Beta(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
 
             ////redirect
@@ -50,18 +48,18 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             //mapSearchBuilder.AppendLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-json-2.4.min.js\"></script> ");
 
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&libraries=drawing\"></script> ");
-            mapSearchBuilder.AppendLine("     <script src=\"" + Current_Mode.Base_URL + "default/scripts/mapsearch/external_markerclusterer_compiled.js\"></script>  ");
-            mapSearchBuilder.AppendLine("     <script src=\"" + Current_Mode.Base_URL + "default/scripts/mapsearch/external_jquery_1.10.2.js\"></script> ");
-            mapSearchBuilder.AppendLine("     <script src=\"" + Current_Mode.Base_URL + "default/scripts/mapsearch/external_jquery_ui.min.js\"></script> ");
-            mapSearchBuilder.AppendLine("     <script src=\"" + Current_Mode.Base_URL + "default/scripts/mapsearch/external_jquery_ui_labeledslider.js\"></script> ");
-            mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + Current_Mode.Base_URL + "default/scripts/mapsearch/external_gmaps_infobox.js\"></script> ");
-            mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + Current_Mode.Base_URL + "default/scripts/mapsearch/custom_geoObjects.js\"></script>  ");
-            mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + Current_Mode.Base_URL + "default/scripts/mapsearch/sobekcm_mapsearch.js\"></script> ");
-            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + Current_Mode.Base_URL + "default/external_jquery_ui_1.10.4.css\"> ");
-            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + Current_Mode.Base_URL + "default/SobekCM_MapSearch.css\"> ");
+            mapSearchBuilder.AppendLine("     <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/external_markerclusterer_compiled.js\"></script>  ");
+            mapSearchBuilder.AppendLine("     <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/external_jquery_1.10.2.js\"></script> ");
+            mapSearchBuilder.AppendLine("     <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/external_jquery_ui.min.js\"></script> ");
+            mapSearchBuilder.AppendLine("     <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/external_jquery_ui_labeledslider.js\"></script> ");
+            mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/external_gmaps_infobox.js\"></script> ");
+            mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/custom_geoObjects.js\"></script>  ");
+            mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/sobekcm_mapsearch.js\"></script> ");
+            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/external_jquery_ui_1.10.4.css\"> ");
+            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_MapSearch.css\"> ");
 
             //apply theming
-            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + Current_Mode.Base_URL + "default/themes/mapsearch/custom_theme_grey.css\"> ");
+            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/themes/mapsearch/custom_theme_grey.css\"> ");
 
             #endregion
 
@@ -331,7 +329,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             //end of custom content
             mapSearchBuilder.AppendLine("</td>");
 
-            scriptIncludeName = (mapSearchBuilder.ToString());
+            Search_Script_Reference = (mapSearchBuilder.ToString());
 
             #endregion
 

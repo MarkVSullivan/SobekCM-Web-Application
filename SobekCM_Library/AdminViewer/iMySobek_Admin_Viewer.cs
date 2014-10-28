@@ -1,21 +1,17 @@
+#region Using directives
+
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Navigation;
 using SobekCM.Tools;
+
+#endregion
 
 namespace SobekCM.Library.AdminViewer
 {
     public interface iMySobek_Admin_Viewer
     {
-        /// <summary> Sets the mode / navigation information for the current request </summary>
-        /// <remarks> This also sets all of the protected tab HTML fields, from the base interface in the navigation object </remarks>
-        SobekCM_Navigation_Object CurrentMode { set; }
-
-        /// <summary> Sets the translation / language support object for writing the user interface in multiple languages </summary>
-        Language_Support_Info Translator { get; set; }
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
         /// requests from the main HTML subwriter. </summary>

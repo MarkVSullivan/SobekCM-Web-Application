@@ -165,7 +165,8 @@ namespace SobekCM.Resource_Object.Divisions
                     else
                         metadataTerms.Add(new KeyValuePair<string, string>("MIME Type", "NONE"));
                 }
-
+                else
+                    metadataTerms.Add(new KeyValuePair<string, string>("MIME Type", "NONE"));
 
                 return metadataTerms;
             }

@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System.Collections.Generic;
+using SobekCM.Core.Settings;
 
 #endregion
 
@@ -8,12 +9,15 @@ namespace SobekCM.Builder_Library.Modules.Folders
 {
     public abstract class abstractFolderModule : iFolderModule
     {
+        public List<string> Arguments { get; set; }
+
+        public InstanceWide_Settings Settings { get; set; }
 
         public abstract void DoWork(Actionable_Builder_Source_Folder BuilderFolder, List<Incoming_Digital_Resource> IncomingPackages, List<Incoming_Digital_Resource> Deletes);
 
         public virtual void ReleaseResources()
         {
-            // Do nothing by default
+            Settings = null;
         }
 
         public event ModuleErrorLoggingDelegate Error;

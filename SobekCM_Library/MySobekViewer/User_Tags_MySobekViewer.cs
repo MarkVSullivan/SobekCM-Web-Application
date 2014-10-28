@@ -4,17 +4,18 @@ using System;
 using System.Data;
 using System.IO;
 using System.Linq;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
 
 #endregion
 
 namespace SobekCM.Library.MySobekViewer
 {
-    /// <summary> Class allows an authenticated user to view their own user tags, or tags by user or aggregation, depending on the current user's rights.</summary>
+    /// <summary> Class allows an authenticated RequestSpecificValues.Current_User to view their own RequestSpecificValues.Current_User tags, or tags by RequestSpecificValues.Current_User or aggregation, depending on the current RequestSpecificValues.Current_User's rights.</summary>
     /// <remarks> This class extends the <see cref="abstract_MySobekViewer"/> class.<br /><br />
     /// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
@@ -24,23 +25,22 @@ namespace SobekCM.Library.MySobekViewer
     /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
-    /// <li>The mySobek subwriter creates an instance of this viewer to display the user-entered descriptive tags </li>
+    /// <li>The mySobek subwriter creates an instance of this viewer to display the RequestSpecificValues.Current_User-entered descriptive tags </li>
     /// </ul></remarks>
     public class User_Tags_MySobekViewer : abstract_MySobekViewer
     {
         /// <summary> Constructor for a new instance of the User_Tags_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public User_Tags_MySobekViewer(User_Object User, Custom_Tracer Tracer) : base(User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public User_Tags_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("User_Tags_MySobekViewer.Constructor", String.Empty);
+            RequestSpecificValues.Tracer.Add_Trace("User_Tags_MySobekViewer.Constructor", String.Empty);
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         public override string Web_Title
         {
             get {
-                return currentMode.My_Sobek_SubMode.Length == 0 ? "My Descriptive Tags" : "Descriptive Tags";
+                return RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length == 0 ? "My Descriptive Tags" : "Descriptive Tags";
             }
         }
 
@@ -55,10 +55,10 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine();
 
             Output.WriteLine("<div class=\"SobekHomeText\">");
-            string submode = currentMode.My_Sobek_SubMode;
+            string submode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 
             // Is this either a sys admin or a collection admin/manager
-            if ((user.Is_System_Admin) || (user.Is_A_Collection_Manager_Or_Admin))
+            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_A_Collection_Manager_Or_Admin))
             {
                 Output.WriteLine("<blockquote>As a digital collection manager or administrator, you can use this screen to view descriptive tags added to collections of interest, as well as view the descriptive tags you have added to items.</blockquote>");
 
@@ -79,19 +79,19 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<br />Choose an aggregation below to view all tags for that aggregation:");
                 Output.WriteLine("<blockquote>");
 
-                foreach (User_Permissioned_Aggregation aggregation in user.PermissionedAggregations)
+                foreach (User_Permissioned_Aggregation aggregation in RequestSpecificValues.Current_User.PermissionedAggregations)
                 {
                     if (aggregation.IsCurator )
                     {
-                        currentMode.My_Sobek_SubMode = aggregation.Code;
-                        Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + "\">" + aggregation.Name + "</a><br /><br />");
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = aggregation.Code;
+                        Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggregation.Name + "</a><br /><br />");
                     }
                 }
 
-                if (user.Is_System_Admin)
+                if (RequestSpecificValues.Current_User.Is_System_Admin)
                 {
-                    currentMode.My_Sobek_SubMode = "all";
-                    Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + "\">All Aggregations</a><br /><br />");
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "all";
+                    Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">All Aggregations</a><br /><br />");
 
                 }
 
@@ -115,8 +115,8 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("</table>");
              
 
-                // Get the tags by this user
-                DataTable allTags = SobekCM_Database.View_Tags_By_User(user.UserID, Tracer);
+                // Get the tags by this RequestSpecificValues.Current_User
+                DataTable allTags = SobekCM_Database.View_Tags_By_User(RequestSpecificValues.Current_User.UserID, Tracer);
                 if ((allTags == null) || (allTags.Rows.Count == 0))
                 {
                     Output.WriteLine("<br /><br /><center><b>You have not added any descriptive tags to any items</b></center><br /><br />");
@@ -134,7 +134,7 @@ namespace SobekCM.Library.MySobekViewer
                         string vid = thisTagRow["VID"].ToString();
                         DateTime date = Convert.ToDateTime(thisTagRow["Date_Modified"]);
 
-                        Output.WriteLine(description + "<br /><i>Added by you on " + date.ToShortDateString() + "</i> &nbsp; &nbsp; &nbsp; ( <a href=\"?m=ldFC&b=" + bibid + "&v=" + vid + currentMode.URL_Options() + "\" target=\"" + bibid + vid + "\">view</a> )<br /><br />");
+                        Output.WriteLine(description + "<br /><i>Added by you on " + date.ToShortDateString() + "</i> &nbsp; &nbsp; &nbsp; ( <a href=\"?m=ldFC&b=" + bibid + "&v=" + vid + UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode) + "\" target=\"" + bibid + vid + "\">view</a> )<br /><br />");
                     }
 
                     Output.WriteLine("</blockquote>");
@@ -143,7 +143,7 @@ namespace SobekCM.Library.MySobekViewer
             }
             else
             {
-                bool char_found = submode.Any(thisChar => !Char.IsNumber(thisChar));
+                bool char_found = submode.Any(ThisChar => !Char.IsNumber(ThisChar));
                 if (char_found)
                 {
                     Output.WriteLine("<table width=\"750px\" border=\"0\" align=\"center\" cellpadding=\"1\" cellspacing=\"0\">");
@@ -187,10 +187,10 @@ namespace SobekCM.Library.MySobekViewer
                                 full_name = nick_name + " " + last_name;
                             }
 
-                            Output.Write(description + "<br /><i>Added by " + full_name + " on " + date.ToShortDateString() + "</i> &nbsp; &nbsp; &nbsp; ( <a href=\"?m=ldFC&b=" + bibid + "&v=" + vid + currentMode.URL_Options() + "\" target=\"" + bibid + vid + "\">view</a> | ");
-                            currentMode.My_Sobek_SubMode = thisTagRow["UserID"].ToString();
+                            Output.Write(description + "<br /><i>Added by " + full_name + " on " + date.ToShortDateString() + "</i> &nbsp; &nbsp; &nbsp; ( <a href=\"?m=ldFC&b=" + bibid + "&v=" + vid + UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode) + "\" target=\"" + bibid + vid + "\">view</a> | ");
+                            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = thisTagRow["UserID"].ToString();
 
-                            Output.WriteLine("<a href=\"" + currentMode.Redirect_URL() + "\">view all by this user</a> )<br /><br />");
+                            Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">view all by this RequestSpecificValues.Current_User</a> )<br /><br />");
                         }
 
                         Output.WriteLine("</blockquote>");
@@ -224,7 +224,7 @@ namespace SobekCM.Library.MySobekViewer
                     if ((allTags != null) && (allTags.Rows.Count > 0))
                     {
                         Output.WriteLine("<table width=\"700px\" border=\"0\" align=\"center\"><tr><td>");
-                        Output.WriteLine("<br />This user added the following " + allTags.Rows.Count + " descriptive tags:");
+                        Output.WriteLine("<br />This RequestSpecificValues.Current_User added the following " + allTags.Rows.Count + " descriptive tags:");
                         Output.WriteLine("<blockquote>");
 
                         foreach (DataRow thisTagRow in allTags.Rows)
@@ -244,7 +244,7 @@ namespace SobekCM.Library.MySobekViewer
                                 full_name = nick_name + " " + last_name;
                             }
 
-                            Output.WriteLine(description + "<br /><i>Added by " + full_name + " on " + date.ToShortDateString() + "</i> &nbsp; &nbsp; &nbsp; ( <a href=\"?m=ldFC&b=" + bibid + "&v=" + vid + currentMode.URL_Options() + "\" target=\"" + bibid + vid + "\">view</a> )<br /><br />");
+                            Output.WriteLine(description + "<br /><i>Added by " + full_name + " on " + date.ToShortDateString() + "</i> &nbsp; &nbsp; &nbsp; ( <a href=\"?m=ldFC&b=" + bibid + "&v=" + vid + UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode) + "\" target=\"" + bibid + vid + "\">view</a> )<br /><br />");
                         }
 
                         Output.WriteLine("</blockquote>");
@@ -253,7 +253,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     else
                     {
-                        Output.WriteLine("<br /><br /><center><b>This user has not added any descriptive tags to any items or it is not a valid userid.</b></center><br /><br />");
+                        Output.WriteLine("<br /><br /><center><b>This RequestSpecificValues.Current_User has not added any descriptive tags to any items or it is not a valid userid.</b></center><br /><br />");
                     }
                 }
             }

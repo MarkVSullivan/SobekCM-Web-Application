@@ -84,6 +84,10 @@
       <Project>{849c78a5-c60b-4faf-9efb-943753f64e56}</Project>
       <Name>SobekCM_Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj">
+      <Project>{c5d75f1a-c5d8-428d-bba3-ea946fd539e1}</Project>
+      <Name>SobekCM_Engine_Library</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SobekCM_Library\SobekCM_Library.csproj">
       <Project>{4426FF50-74C7-4B88-878B-EFB9BC2317BD}</Project>
       <Name>SobekCM_Library</Name>

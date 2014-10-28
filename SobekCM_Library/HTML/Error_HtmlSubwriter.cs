@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System.IO;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Tools;
 
 #endregion
@@ -15,7 +16,8 @@ namespace SobekCM.Library.HTML
 
         /// <summary> Constructor for a new instance of the Error_HtmlSubwriter class </summary>
         /// <param name="Invalid_Item"> Flag indicates if this is because an invalid item was requested </param>
-        public Error_HtmlSubwriter( bool Invalid_Item )
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Error_HtmlSubwriter( bool Invalid_Item, RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             invalidItem = Invalid_Item;
         }
@@ -32,7 +34,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<div id=\"pagecontainer\">");
             Output.WriteLine("<br />");
 
-            string url_options = Mode.URL_Options();
+            string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
             if (url_options.Length > 0)
                 url_options = "?" + url_options;
 
@@ -43,7 +45,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  The item indicated was not valid.");
                 Output.WriteLine("  <br /><br />");
 
-                Output.WriteLine("  Click <a href=\"" + Mode.Base_URL + "contact\">here</a> to report an error.");
+                Output.WriteLine("  Click <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "contact\">here</a> to report an error.");
                 Output.WriteLine("  <br /><br /><br /><br />");
                 Output.WriteLine("</span>");
                 Output.WriteLine();
@@ -56,15 +58,15 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <tr>");
                 Output.WriteLine("    <td align=\"center\" >");
                 string error_message = "Unknown error occurred";
-                if ((Mode != null) && (Mode.Error_Message.Length > 0))
+                if ((RequestSpecificValues.Current_Mode != null) && (RequestSpecificValues.Current_Mode.Error_Message.Length > 0))
                 {
-                    error_message = Mode.Error_Message;
+                    error_message = RequestSpecificValues.Current_Mode.Error_Message;
                 }
 
                 Output.WriteLine("      <b><h4>" + error_message + "</h4></b>");
                 Output.WriteLine("      <h5>We apologize for the inconvenience.</h5>");
-                Output.WriteLine("      <h5>Click <a href=\"" + Mode.Base_URL + url_options + "\">here</a> to return to the library.</h5>");
-                string returnurl = Mode.Base_URL + "contact?em=" + error_message.Replace(" ", "%20") + Mode.URL_Options();
+                Output.WriteLine("      <h5>Click <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + url_options + "\">here</a> to return to the library.</h5>");
+                string returnurl = RequestSpecificValues.Current_Mode.Base_URL + "contact?em=" + error_message.Replace(" ", "%20") + UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
                 Output.WriteLine("      <h5>Click <a href=\"" + returnurl + "\">here</a> to report the problem.</h5>");
                 Output.WriteLine("    </td>");
                 Output.WriteLine("  </tr>");
@@ -94,7 +96,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
-        public virtual void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
 

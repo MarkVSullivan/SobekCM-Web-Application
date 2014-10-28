@@ -3,10 +3,11 @@
 using System;
 using System.Data;
 using System.IO;
-using SobekCM.Core.Settings;
+using SobekCM.Core.Skins;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -16,21 +17,21 @@ namespace SobekCM.Library.Skins
     /// when a new skin is needed for a user request </summary>
 	public class SobekCM_Skin_Collection_Builder
 	{
-	    /// <summary> Populates/builds the main default HTML skin during application startup </summary>
+        /// <summary> Populates/builds the main default HTML skin during application startup </summary>
         /// <param name="Skin_List"> List of skin to populate with the default, commonly used skin</param>
         /// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering  </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> Most HTML skins are built as they are needed and then cached for a period of time.  The main default skins are
         /// permanently stored in this global <see cref="SobekCM_Skin_Collection"/> object.</remarks>
         public static bool Populate_Default_Skins(SobekCM_Skin_Collection Skin_List, Custom_Tracer tracer)
-		{
-		    if (tracer != null)
-		    {
-			    tracer.Add_Trace("SobekCM_Skin_Collection_Builder.Populate_Default_Skins", "Build the standard interfaces");
-		    }
+        {
+            if (tracer != null)
+            {
+                tracer.Add_Trace("SobekCM_Skin_Collection_Builder.Populate_Default_Skins", "Build the standard interfaces");
+            }
 
-		    // Get the data from the database
-            DataTable skinData = SobekCM_Database.Get_All_Web_Skins(tracer);
+            // Get the data from the database
+            DataTable skinData = Engine_Database.Get_All_Web_Skins(tracer);
 
             // Just return if the data appears bad..
             if ((skinData == null) || (skinData.Rows.Count == 0))
@@ -39,11 +40,12 @@ namespace SobekCM.Library.Skins
             // Clear existing interfaces
             Skin_List.Clear();
 
-			// Set the data table
+            // Set the data table
             Skin_List.Skin_Table = skinData;
 
-			return true;
-		}
+            return true;
+        }
+
 
 	    /// <summary> Builds a specific <see cref="SobekCM_Skin_Object"/> when needed by a user's request </summary>
 	    /// <param name="Skin_Row"> Row from a database query with basic information about the interface to build ( codes, override flags, banner link )</param>
@@ -59,7 +61,7 @@ namespace SobekCM.Library.Skins
 	        bool override_banner = Convert.ToBoolean(Skin_Row["OverrideBanner"]);
             string banner_link = Skin_Row["BannerLink"].ToString();
             string this_style = "design/skins/" + code + "/" + code + ".css";
-            if (!File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + code + "\\" + code + ".css"))
+            if (!File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + code + "\\" + code + ".css"))
                 this_style = String.Empty;
 
             // Build the interface, along with any overriding banner
@@ -69,7 +71,7 @@ namespace SobekCM.Library.Skins
                 string this_banner = String.Empty;
 
                 // Find the LANGUAGE-SPECIFIC high-bandwidth banner image
-                string[] banner_file = Directory.GetFiles(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code, "banner_" + Language_Code + ".*");
+                string[] banner_file = Directory.GetFiles(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code, "banner_" + Language_Code + ".*");
                 if (banner_file.Length > 0)
                 {
                     if (banner_link.Length > 0)
@@ -85,7 +87,7 @@ namespace SobekCM.Library.Skins
                 // If nothing was gotten, look for the ENGLISH banner image and use that
                 if ((this_banner.Length == 0) && (Language_Code.Length > 0) && (Language_Code != "en"))
                 {
-                    banner_file = Directory.GetFiles(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code, "banner.*");
+                    banner_file = Directory.GetFiles(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code, "banner.*");
                     if (banner_file.Length > 0)
                     {
                         if (banner_link.Length > 0)
@@ -121,38 +123,38 @@ namespace SobekCM.Library.Skins
             if ((Language_Code.Length > 0) && (Language_Code != "en"))
             {
                 // Assign the default locations for the banners
-                this_header = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/header_" + Language_Code + ".html";
-                this_footer = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/footer_" + Language_Code + ".html";
-                this_item_header = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/header_item_" + Language_Code + ".html";
-                this_item_footer = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/footer_item_" + Language_Code + ".html";
+                this_header = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html/header_" + Language_Code + ".html";
+                this_footer = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html/footer_" + Language_Code + ".html";
+                this_item_header = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html/header_item_" + Language_Code + ".html";
+                this_item_footer = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html/footer_item_" + Language_Code + ".html";
 
                 if (!File.Exists(this_header))
                 {
-                    this_header = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/header.html";
+                    this_header = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html/header.html";
                 }
 
                 if (!File.Exists(this_footer))
                 {
-                    this_footer = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/footer.html";
+                    this_footer = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html/footer.html";
                 }
 
                 if (!File.Exists(this_item_header))
                 {
-                    this_item_header = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/header_item.html";
+                    this_item_header = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html/header_item.html";
                 }
 
                 if (!File.Exists(this_item_footer))
                 {
-                    this_item_footer = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/footer_item.html";
+                    this_item_footer = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html/footer_item.html";
                 }
             }
             else
             {
                 // Assign the default locations for the banners
-                this_header = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/header.html";
-                this_footer = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/footer.html";
-                this_item_header = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/header_item.html";
-                this_item_footer = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + code + "/html/footer_item.html";
+                this_header = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html/header.html";
+                this_footer = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html/footer.html";
+                this_item_header = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html/header_item.html";
+                this_item_footer = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html/footer_item.html";
             }
 
             // If the item specific stuff doesn't exist, use the regular 

@@ -4,10 +4,9 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Web.UI.WebControls;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -96,7 +95,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             // Determine the string for the item URL
-            string itemURL = InstanceWide_Settings_Singleton.Settings.Image_URL + CurrentItem.Web.File_Root + "/";
+            string itemURL = UI_ApplicationCache_Gateway.Settings.Image_URL + CurrentItem.Web.File_Root + "/";
 
 			// Try to get the HTML for this
             string map = Get_Html_Page(CurrentItem.Web.Source_URL + "/" + htmlFile, Tracer);
@@ -104,7 +103,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Get the link for this item
             string itemLink = CurrentMode.Base_URL + "/" + CurrentItem.BibID + "/" + CurrentItem.VID;
 
-            string url_options = CurrentMode.URL_Options();
+            string url_options = UrlWriterHelper.URL_Options(CurrentMode);
             string urlOptions1 = String.Empty;
             string urlOptions2 = String.Empty;
             if (url_options.Length > 0)

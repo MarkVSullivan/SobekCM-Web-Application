@@ -33,6 +33,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,13 +41,52 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aggregations\Item_Aggregation.cs" />
+    <Compile Include="Aggregations\Item_Aggregation_Child_Page.cs" />
+    <Compile Include="Aggregations\Item_Aggregation_Custom_Directive.cs" />
+    <Compile Include="Aggregations\Item_Aggregation_Front_Banner.cs" />
+    <Compile Include="Aggregations\Item_Aggregation_Highlights.cs" />
+    <Compile Include="Aggregations\Item_Aggregation_Related_Aggregations.cs" />
+    <Compile Include="Aggregations\Thematic_Heading.cs" />
+    <Compile Include="ApplicationState\Aggregation_Code_Manager.cs" />
+    <Compile Include="ApplicationState\IP_Restriction_Address.cs" />
+    <Compile Include="ApplicationState\IP_Restriction_Range.cs" />
+    <Compile Include="ApplicationState\IP_Restriction_Ranges.cs" />
+    <Compile Include="ApplicationState\Language_Support_Info.cs" />
+    <Compile Include="ApplicationState\Multiple_Volume_Item.cs" />
+    <Compile Include="ApplicationState\Portal.cs" />
+    <Compile Include="ApplicationState\Portal_List.cs" />
+    <Compile Include="ApplicationState\Recent_Searches.cs" />
+    <Compile Include="ApplicationState\Single_Item.cs" />
+    <Compile Include="ApplicationState\Statistics_Dates.cs" />
+    <Compile Include="ApplicationState\Wordmark_Icon.cs" />
     <Compile Include="Configuration\Database_Instance_Configuration.cs" />
+    <Compile Include="Configuration\MapEditor_Configuration.cs" />
+    <Compile Include="Configuration\MapSearch_Configuration.cs" />
+    <Compile Include="Configuration\QualityControl_Configuration.cs" />
+    <Compile Include="Configuration\Shibboleth_Configuration.cs" />
     <Compile Include="Configuration\Web_Language_Enum.cs" />
     <Compile Include="Database\SobekCM_Database_Type_Enum.cs" />
+    <Compile Include="Items\SobekCM_Items_In_Title.cs" />
+    <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetFastSerializerSurrogate.cs" />
+    <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetHelper.cs" />
+    <Compile Include="MemoryMgmt\AdoNetHelper\FastSerializer.cs" />
+    <Compile Include="Navigation\NavigationStateEnums.cs" />
+    <Compile Include="Navigation\SobekCM_Navigation_Object.cs" />
+    <Compile Include="OAI\OAI_Record.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Results\iSearch_Item_Result.cs" />
+    <Compile Include="Results\iSearch_Title_Result.cs" />
+    <Compile Include="Results\Multiple_Paged_Results_Args.cs" />
     <Compile Include="Results\Private_Items_List.cs" />
     <Compile Include="Results\Private_Items_List_Item.cs" />
     <Compile Include="Results\Private_Items_List_Title.cs" />
+    <Compile Include="Results\Search_Facet.cs" />
+    <Compile Include="Results\Search_Facet_Aggregation.cs" />
+    <Compile Include="Results\Search_Results_Statistics.cs" />
+    <Compile Include="Results\Search_Result_Item_Tree.cs" />
+    <Compile Include="Results\Search_Result_Item_TreeNode.cs" />
+    <Compile Include="Results\Single_Paged_Results_Args.cs" />
     <Compile Include="Search\Metadata_Search_Field.cs" />
     <Compile Include="Serialization\iSerializationEvents.cs" />
     <Compile Include="Settings\Builder_Source_Folder.cs" />
@@ -54,6 +94,10 @@
     <Compile Include="Settings\InstanceWide_Settings.cs" />
     <Compile Include="Settings\Mime_Type_Info.cs" />
     <Compile Include="Settings\Workflow_Type.cs" />
+    <Compile Include="SiteMap\SobekCM_SiteMap.cs" />
+    <Compile Include="SiteMap\SobekCM_SiteMap_Node.cs" />
+    <Compile Include="Skins\SobekCM_Skin_Collection.cs" />
+    <Compile Include="Skins\SobekCM_Skin_Object.cs" />
     <Compile Include="Users\Public_User_Folder.cs" />
     <Compile Include="Users\User_Permissioned_Aggregation.cs" />
     <Compile Include="Users\User_Aggregation_Permissions.cs" />
@@ -61,8 +105,15 @@
     <Compile Include="Users\User_Group.cs" />
     <Compile Include="Users\User_Group_Member.cs" />
     <Compile Include="Users\User_Object.cs" />
+    <Compile Include="WebContent\HTML_Based_Content.cs" />
+    <Compile Include="WebContent\HTML_Based_Content_Reader.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj">
+      <Project>{a511ce4c-7bd6-4446-bca8-ab71f7aa8078}</Project>
+      <Name>SobekCM_Tools</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

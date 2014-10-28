@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System.IO;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Tools;
 
 #endregion
@@ -66,7 +67,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
 			// Replace item URL in the restricted message
 	        CurrentMode.ViewerCode = string.Empty;
-	        string msg = restrictedMessage.Replace("<%ITEMURL%>", CurrentMode.Redirect_URL());
+	        string msg = restrictedMessage.Replace("<%ITEMURL%>", UrlWriterHelper.Redirect_URL(CurrentMode));
 
 			Output.WriteLine("<td style=\"text-align:left;\" id=\"sbkRes_MainArea\">" + msg + "</td>");
         }

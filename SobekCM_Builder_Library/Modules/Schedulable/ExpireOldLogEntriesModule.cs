@@ -1,8 +1,10 @@
-﻿namespace SobekCM.Builder_Library.Modules.Schedulable
+﻿using SobekCM.Core.Settings;
+
+namespace SobekCM.Builder_Library.Modules.Schedulable
 {
     public class ExpireOldLogEntriesModule : abstractSchedulableModule
     {
-        public override void DoWork()
+        public override void DoWork(InstanceWide_Settings Settings)
         {
             // CLear the old logs
             //Console.WriteLine(dbInstance.Name + " - Expiring old log entries");

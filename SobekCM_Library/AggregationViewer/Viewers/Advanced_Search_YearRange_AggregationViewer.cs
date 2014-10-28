@@ -6,19 +6,16 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Caching;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Configuration;
-using SobekCM.Library.Database;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Search;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -38,30 +35,29 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 	public class Advanced_Search_YearRange_AggregationViewer: abstractAggregationViewer
     {
         /// <summary> Constructor for a new instance of the Advanced_Search_YearRange_AggregationViewer class </summary>
-        /// <param name="Current_Aggregation"> Current item aggregation object </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-		public Advanced_Search_YearRange_AggregationViewer(Item_Aggregation Current_Aggregation, SobekCM_Navigation_Object Current_Mode)
-			: base(Current_Aggregation, Current_Mode)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Advanced_Search_YearRange_AggregationViewer(RequestCache RequestSpecificValues)
+            : base(RequestSpecificValues)
         {
             // Compute the redirect stem to use
-            string fields = currentMode.Search_Fields;
-            string searchCollections = currentMode.SubAggregation;
-            Display_Mode_Enum lastMode = currentMode.Mode;
-			Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
-            currentMode.SubAggregation = String.Empty;
-            string searchString = currentMode.Search_String;
-            currentMode.Search_String = String.Empty;
-            currentMode.Search_Fields = String.Empty;
-            currentMode.Mode = Display_Mode_Enum.Results;
-            currentMode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
-            string redirectStem = currentMode.Redirect_URL();
-            currentMode.Search_String = searchString;
-            currentMode.Search_Fields = fields;
-            currentMode.SubAggregation = searchCollections;
-            currentMode.Mode = lastMode;
-	        currentMode.Aggregation_Type = aggrType;
+            string fields = RequestSpecificValues.Current_Mode.Search_Fields;
+            string searchCollections = RequestSpecificValues.Current_Mode.SubAggregation;
+            Display_Mode_Enum lastMode = RequestSpecificValues.Current_Mode.Mode;
+			Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
+            RequestSpecificValues.Current_Mode.SubAggregation = String.Empty;
+            string searchString = RequestSpecificValues.Current_Mode.Search_String;
+            RequestSpecificValues.Current_Mode.Search_String = String.Empty;
+            RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
+            RequestSpecificValues.Current_Mode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
+            string redirectStem = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Search_String = searchString;
+            RequestSpecificValues.Current_Mode.Search_Fields = fields;
+            RequestSpecificValues.Current_Mode.SubAggregation = searchCollections;
+            RequestSpecificValues.Current_Mode.Mode = lastMode;
+	        RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
 
-            scriptActionName = "Javascript:advanced_search_years_sobekcm('" + redirectStem + "')";
+            Search_Script_Action = "Javascript:advanced_search_years_sobekcm('" + redirectStem + "')";
 
         }
 
@@ -103,13 +99,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			}
 
 			// Get the list of years for this aggregation
-			string aggrCode = currentCollection.Code.ToLower();
+			string aggrCode = RequestSpecificValues.Hierarchy_Object.Code.ToLower();
 			string key = aggrCode + "_YearRanges";
 			List<int> yearRange = HttpContext.Current.Cache[key] as List<int>;
 			if (yearRange == null)
 			{
 				yearRange = new List<int>();
-				List<string> yearRangeString = SobekCM_Database.Get_Item_Aggregation_Metadata_Browse(aggrCode, "Temporal Year", Tracer);
+				List<string> yearRangeString = Engine_Database.Get_Item_Aggregation_Metadata_Browse(aggrCode, "Temporal Year", Tracer);
 				foreach (string thisYear in yearRangeString)
 				{
 					int result;
@@ -134,7 +130,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			//string select_subcollect = "Select subcollections to include in search:";
 
 
-			if (currentMode.Language == Web_Language_Enum.Spanish)
+			if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
 			{
 				searchLanguage = "Búsqueda de la:";
 				inLanguage = "en";
@@ -145,7 +141,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				contains_any_form = "Contiene todas las formas de los términos de búsqueda";
 			}
 
-			if (currentMode.Language == Web_Language_Enum.French)
+			if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
 			{
 				searchLanguage = "Recherche de:";
 				inLanguage = "en";
@@ -160,9 +156,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			string text2 = String.Empty;
 			string text3 = String.Empty;
 			string text4 = String.Empty;
-			if (currentMode.Search_String.Length > 0)
+			if (RequestSpecificValues.Current_Mode.Search_String.Length > 0)
 			{
-				string[] splitter = currentMode.Search_String.Split(",".ToCharArray());
+				string[] splitter = RequestSpecificValues.Current_Mode.Search_String.Split(",".ToCharArray());
 				text1 = splitter[0].Replace(" =", " or ");
 				if (splitter.Length > 1)
 				{
@@ -187,10 +183,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			string dropDownValue3 = "AU";
 			string dropDownValue4 = "TO";
 
-			if (currentMode.Search_Fields.Length > 0)
+			if (RequestSpecificValues.Current_Mode.Search_Fields.Length > 0)
 			{
 				// Parse by commas
-				string[] fieldSplitter = currentMode.Search_Fields.Replace(" ", "+").Split(",".ToCharArray());
+				string[] fieldSplitter = RequestSpecificValues.Current_Mode.Search_Fields.Replace(" ", "+").Split(",".ToCharArray());
 
 				dropDownValue1 = fieldSplitter[0];
 
@@ -291,7 +287,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 				Output.WriteLine("        <select name=\"YearDropDown1\" id=\"YearDropDown1\" class=\"sbkAsav_YearDropDown\">");
 				//	Output.WriteLine("          <option value=\"ZZ\"> </option>");
-				int currYear1 = currentMode.DateRange_Year1;
+				int currYear1 = RequestSpecificValues.Current_Mode.DateRange_Year1;
 				if ((currYear1 != -1) && (!yearRange.Contains(currYear1)))
 					Output.WriteLine("          <option selected=\"selected\" value=\"" + currYear1 + "\">" + currYear1 + "</option>");
 				if (currYear1 == -1)
@@ -313,7 +309,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 				Output.WriteLine("        <select name=\"YearDropDown2\" id=\"YearDropDown2\" class=\"sbkAsav_YearDropDown\">");
 				//	Output.WriteLine("          <option value=\"ZZ\"> </option>");
-				int currYear2 = currentMode.DateRange_Year1;
+				int currYear2 = RequestSpecificValues.Current_Mode.DateRange_Year1;
 				if ((currYear2 != -1) && (!yearRange.Contains(currYear2)))
 					Output.WriteLine("          <option selected=\"selected\" value=\"" + currYear2 + "\">" + currYear2 + "</option>");
 				if (currYear2 == -1)
@@ -336,13 +332,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				Output.WriteLine("        <span id=\"circular_progress\" class=\"hidden_progress\">&nbsp;</span> &nbsp; ");
 
 
-				if (currentCollection.Children_Count > 0)
+				if (RequestSpecificValues.Hierarchy_Object.Children_Count > 0)
 				{
-					Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + scriptActionName + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + currentMode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
+					Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
 				}
 				else
 				{
-					Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + scriptActionName + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + currentMode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
+					Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
 				}
 
 				Output.WriteLine("      </td>");
@@ -354,13 +350,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				Output.WriteLine("        <span id=\"circular_progress\" class=\"hidden_progress\">&nbsp;</span> &nbsp; ");
 
 
-				if (currentCollection.Children_Count > 0)
+				if (RequestSpecificValues.Hierarchy_Object.Children_Count > 0)
 				{
-					Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + scriptActionName + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + currentMode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
+					Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
 				}
 				else
 				{
-					Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + scriptActionName + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + currentMode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
+					Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
 				}
 
 				Output.WriteLine("      </td>");
@@ -370,7 +366,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 			Output.WriteLine("    <tr>");
 			Output.WriteLine("      <td colspan=\"2\" class=\"sbkAsav_SearchOptions\">" + searchOptions + "</span></td>");
-			Output.WriteLine("      <td style=\"vertical-align:middle;text-align:left;\"> &nbsp; &nbsp; <a href=\"" + currentMode.Base_URL + "help\" target=\"SEARCHHELP\" ><img src=\"" + currentMode.Base_URL + "design/skins/" + currentMode.Base_Skin + "/buttons/help_button.jpg\" alt=\"HELP\" /></a></td>");
+			Output.WriteLine("      <td style=\"vertical-align:middle;text-align:left;\"> &nbsp; &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "help\" target=\"SEARCHHELP\" ><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/help_button.jpg\" alt=\"HELP\" /></a></td>");
 			Output.WriteLine("      <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("    <tr>");
@@ -382,7 +378,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			Output.WriteLine("             <td>");
 			Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionContains\" value=\"contains\" /> <label for=\"precisionContains\">" + contains_exactly + "</label> <br />");
 			Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionResults\" value=\"results\" checked=\"checked\" /> <label for=\"precisionResults\">" + contains_any_form + "</label> <br />");
-			if (currentMode.Language == Web_Language_Enum.English)
+			if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.English)
 			{
 				Output.WriteLine("               <input type=\"radio\" name=\"precision\" id=\"precisionLike\" value=\"resultslike\" /> <label for=\"precisionLike\">" + CONTAINS_MEANING + "</label> ");
 			}
@@ -415,15 +411,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         private void add_drop_down_options(TextWriter Output, string DropValue )
         {
-            foreach (Metadata_Search_Field searchField in currentCollection.Advanced_Search_Fields.Select(InstanceWide_Settings_Singleton.Settings.Metadata_Search_Field_By_ID).Where(SearchField => SearchField != null))
+            foreach (Metadata_Search_Field searchField in RequestSpecificValues.Hierarchy_Object.Advanced_Search_Fields.Select(UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID).Where(SearchField => SearchField != null))
             {
                 if (searchField.Web_Code == DropValue)
                 {
-                    Output.WriteLine("          <option value=\"" + searchField.Web_Code + "\" selected=\"selected\" >" + translator.Get_Translation(searchField.Display_Term, currentMode.Language) + "</option>");
+                    Output.WriteLine("          <option value=\"" + searchField.Web_Code + "\" selected=\"selected\" >" + UI_ApplicationCache_Gateway.Translation.Get_Translation(searchField.Display_Term, RequestSpecificValues.Current_Mode.Language) + "</option>");
                 }
                 else
                 {
-                    Output.WriteLine("          <option value=\"" + searchField.Web_Code + "\">" + translator.Get_Translation(searchField.Display_Term, currentMode.Language) + "</option>");
+                    Output.WriteLine("          <option value=\"" + searchField.Web_Code + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(searchField.Display_Term, RequestSpecificValues.Current_Mode.Language) + "</option>");
                 }
             }
         }
@@ -433,13 +429,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string and_language = "and";
             string or_language = "or";
             string and_not_language = "and not";
-            if (currentMode.Language == Web_Language_Enum.French)
+            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
             {
                 and_language = "et";
                 or_language = "ou";
                 and_not_language = "et non";
             }
-            if (currentMode.Language == Web_Language_Enum.Spanish)
+            if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
             {
                 and_language = "y";
                 or_language = "o";

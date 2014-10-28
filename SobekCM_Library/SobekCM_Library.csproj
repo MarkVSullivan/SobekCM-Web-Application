@@ -119,26 +119,10 @@
   <ItemGroup>
     <Compile Include="AdminViewer\abstract_AdminViewer.cs" />
     <Compile Include="AdminViewer\iMySobek_Admin_Viewer.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Custom_Directive.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Front_Banner.cs" />
     <Compile Include="AggregationViewer\Viewers\Advanced_Search_YearRange_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Basic_Search_YearRange_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Map_Browse_AggregationViewer_Beta.cs" />
     <Compile Include="AggregationViewer\Viewers\Map_Search_AggregationViewer_Beta.cs" />
-    <Compile Include="Application State\Application_State_Builder.cs" />
-    <Compile Include="Application State\Checked_Out_Item.cs" />
-    <Compile Include="Application State\Checked_Out_Items_List.cs" />
-    <Compile Include="Application State\Aggregation_Code_Manager.cs" />
-    <Compile Include="Application State\Single_Item.cs" />
-    <Compile Include="Application State\IP_Restriction_Ranges.cs" />
-    <Compile Include="Application State\Item_Lookup_Object.cs" />
-    <Compile Include="Application State\Language_Support_Info.cs" />
-    <Compile Include="Application State\Multiple_Volume_Item.cs" />
-    <Compile Include="Application State\Portal.cs" />
-    <Compile Include="Application State\Portal_List.cs" />
-    <Compile Include="Application State\Recent_Searches.cs" />
-    <Compile Include="Application State\Statistics_Dates.cs" />
-    <Compile Include="Application State\Wordmark_Icon.cs" />
     <Compile Include="Citation\Elements\base types\checkBox_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Additional_Work_Needed_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Born_Digital_Element.cs" />
@@ -192,10 +176,6 @@
     <Compile Include="Citation\Elements\implemented elements\VRA_StylePeriod_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\VRA_Technique_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Serial_Hierarchy_Panel_Element.cs" />
-    <Compile Include="Configuration\MapEditor_Configuration.cs" />
-    <Compile Include="Configuration\MapSearch_Configuration.cs" />
-    <Compile Include="Configuration\Shibboleth_Configuration.cs" />
-    <Compile Include="Configuration\QualityControl_Configuration.cs" />
     <Compile Include="HTML\Admin_HtmlSubwriter.cs" />
     <Compile Include="HTML\HtmlSubwriter_Behaviors_Enum.cs" />
     <Compile Include="HTML\MainMenus_Helper_HtmlSubWriter.cs" />
@@ -365,25 +345,18 @@
     <Compile Include="Localization\SobekCM_LocalizationInfo.cs" />
     <Compile Include="MainWriters\DataProvider_MainWriter.cs" />
     <Compile Include="MySobekViewer\Edit_Item_Permissions_MySobekViewer.cs" />
+    <Compile Include="RequestCache.cs" />
     <Compile Include="ResultsViewer\Google_Map_ResultsViewer_Beta.cs" />
-    <Compile Include="Settings\InstanceWide_Settings_Builder.cs" />
-    <Compile Include="Settings\InstanceWide_Settings_Singleton.cs" />
+    <Compile Include="Skins\SobekCM_Skin_Collection_Builder.cs" />
+    <Compile Include="UI\UI_ApplicationCache_Gateway.cs" />
     <Compile Include="UploadiFive\UploadiFive_Settings.cs" />
     <Compile Include="MySobekViewer\Page_Image_Upload_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Track_Item_MySobekViewer.cs" />
-    <Compile Include="OAI\OAI_Record.cs" />
     <Compile Include="Resource_Web_Config_Writer.cs" />
-    <Compile Include="Statistics\SobekCM_Hit.cs" />
-    <Compile Include="Statistics\SobekCM_Log_Reader.cs" />
-    <Compile Include="Statistics\SobekCM_Session.cs" />
-    <Compile Include="Statistics\SobekCM_Stats_DataSet.cs" />
-    <Compile Include="Statistics\SobekCM_Stats_Reader_Processor.cs" />
     <Compile Include="UploadiFive\UploadiFive.cs" />
     <Compile Include="UploadiFive\UploadiFiveControl.cs" />
     <Compile Include="UploadiFive\UploadiFive_Enums.cs" />
     <Compile Include="UploadiFive\UploadiFive_Security_Token.cs" />
-    <Compile Include="WebContent\HTML_Based_Content_Reader.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Highlights.cs" />
     <Compile Include="AggregationViewer\Viewers\Item_Count_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Map_Browse_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Metadata_Browse_AggregationViewer.cs" />
@@ -391,13 +364,10 @@
     <Compile Include="AggregationViewer\Viewers\Rotating_Highlight_Search_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Full_Text_Search_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Usage_Statistics_AggregationViewer.cs" />
-    <Compile Include="Database\Database_Item_Result.cs" />
     <Compile Include="MySobekViewer\File_Management_MySobekViewer.cs" />
     <Compile Include="AdminViewer\Settings_AdminViewer.cs" />
     <Compile Include="AdminViewer\Thematic_Headings_AdminViewer.cs" />
     <Compile Include="MySobekViewer\User_Usage_Stats_MySobekViewer.cs" />
-    <Compile Include="Results\Multiple_Paged_Results_Args.cs" />
-    <Compile Include="Results\Single_Paged_Results_Args.cs" />
     <Compile Include="HTML\LegacyUrl_HtmlSubwriter.cs" />
     <Compile Include="ItemViewer\Viewers\Checked_Out_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -423,12 +393,8 @@
     <Compile Include="ItemViewer\Viewers\YouTube_Embedded_Video_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Items\SobekCM_Items_In_Title.cs" />
     <Compile Include="MainWriters\Html_Echo_MainWriter.cs" />
     <Compile Include="MARC_Record_Z3950_Retriever.cs" />
-    <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetFastSerializerSurrogate.cs" />
-    <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetHelper.cs" />
-    <Compile Include="MemoryMgmt\AdoNetHelper\FastSerializer.cs" />
     <Compile Include="MemoryMgmt\AppFabric_Manager.cs" />
     <Compile Include="MemoryMgmt\Cached_Data_Manager.cs" />
     <Compile Include="Citation\Elements\implemented elements\Acquisition_Note_Element.cs" />
@@ -506,19 +472,11 @@
     <Compile Include="Citation\Elements\nonstandard elements\Subject_Keyword_Standard_Form_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Title_Main_Form_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Viewer_Element.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Child_Page.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Related_Aggregations.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_XML_Reader.cs" />
-    <Compile Include="Aggregations\Thematic_Heading.cs" />
     <Compile Include="HTML\Print_Item_HtmlSubwriter.cs" />
     <Compile Include="HTML\Public_Folder_HtmlSubwriter.cs" />
     <Compile Include="Email\Item_Email_Helper.cs" />
     <Compile Include="MemoryMgmt\Cached_Object_Info.cs" />
     <Compile Include="MemoryMgmt\Expiring_Item_Typed_List.cs" />
-    <Compile Include="Database\Database_Title_Result.cs" />
-    <Compile Include="Results\iSearch_Item_Result.cs" />
-    <Compile Include="Results\iSearch_Title_Result.cs" />
-    <Compile Include="Results\Search_Results_Statistics.cs" />
     <Compile Include="AdminViewer\Home_AdminViewer.cs" />
     <Compile Include="AdminViewer\Aggregations_Mgmt_AdminViewer.cs" />
     <Compile Include="AdminViewer\Builder_AdminViewer.cs" />
@@ -539,11 +497,7 @@
     <Compile Include="AdminViewer\User_Group_AdminViewer.cs" />
     <Compile Include="MySobekViewer\User_Tags_MySobekViewer.cs" />
     <Compile Include="AdminViewer\Wordmarks_AdminViewer.cs" />
-    <Compile Include="Navigation\SobekCM_Navigation_Object.cs" />
-    <Compile Include="Navigation\SobekCM_QueryString_Analyzer_Legacy.cs" />
     <Compile Include="ResultsViewer\Bookshelf_View_ResultsViewer.cs" />
-    <Compile Include="Aggregations\Item_Aggregation.cs" />
-    <Compile Include="Aggregations\Item_Aggregation_Builder.cs" />
     <Compile Include="AggregationViewer\AggregationViewer_Factory.cs" />
     <Compile Include="AggregationViewer\Aggregation_Nav_Bar_HTML_Factory.cs" />
     <Compile Include="AggregationViewer\Viewers\abstractAggregationViewer.cs" />
@@ -583,15 +537,6 @@
     <Compile Include="HTML\PagedResults_HtmlSubwriter.cs" />
     <Compile Include="HTML\Search_Results_HtmlSubwriter.cs" />
     <Compile Include="HTML\Statistics_HtmlSubwriter.cs" />
-    <Compile Include="Results\Search_Facet.cs" />
-    <Compile Include="Results\Search_Facet_Aggregation.cs" />
-    <Compile Include="Search\SobekCM_Search_Object.cs" />
-    <Compile Include="SiteMap\SobekCM_SiteMap.cs" />
-    <Compile Include="SiteMap\SobekCM_SiteMap_Node.cs" />
-    <Compile Include="SiteMap\SobekCM_SiteMap_Reader.cs" />
-    <Compile Include="Skins\SobekCM_Skin_Collection.cs" />
-    <Compile Include="Skins\SobekCM_Skin_Collection_Builder.cs" />
-    <Compile Include="Skins\SobekCM_Skin_Object.cs" />
     <Compile Include="ItemViewer\ItemViewer_Factory.cs" />
     <Compile Include="ItemViewer\Item_Nav_Bar_HTML_Factory.cs" />
     <Compile Include="ItemViewer\Viewers\abstractItemViewer.cs">
@@ -634,13 +579,6 @@
     <Compile Include="ItemViewer\Viewers\TOC_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Items\Authority\Map_Features_DataSet.cs" />
-    <Compile Include="Items\Authority\Map_Streets_DataSet.cs" />
-    <Compile Include="Items\SobekCM_METS_Based_ItemBuilder.cs" />
-    <Compile Include="Items\SobekCM_Item_Factory.cs" />
-    <Compile Include="Navigation\iSobekCM_Navigation_Object.cs" />
-    <Compile Include="Navigation\SobekCM_QueryString_Analyzer.cs" />
-    <Compile Include="Navigation\iSobekCM_QueryString_Analyzer.cs" />
     <Compile Include="MainWriters\Dataset_MainWriter.cs" />
     <Compile Include="MainWriters\abstractMainWriter.cs" />
     <Compile Include="MainWriters\Oai_MainWriter.cs" />
@@ -655,15 +593,6 @@
     <Compile Include="ResultsViewer\No_Results_ResultsViewer.cs" />
     <Compile Include="ResultsViewer\Table_ResultsViewer.cs" />
     <Compile Include="ResultsViewer\Thumbnail_ResultsViewer.cs" />
-    <Compile Include="SobekCM_Traced_Exception.cs" />
-    <Compile Include="Solr\Solr_Controller.cs" />
-    <Compile Include="Solr\Solr_Documents_Searcher.cs" />
-    <Compile Include="Solr\Solr_Operations_Cache.cs" />
-    <Compile Include="Solr\Solr_Page_Result.cs" />
-    <Compile Include="Solr\Solr_Page_Results.cs" />
-    <Compile Include="Solr\Solr_Document_Result.cs" />
-    <Compile Include="Results\Search_Result_Item_Tree.cs" />
-    <Compile Include="Results\Search_Result_Item_TreeNode.cs" />
     <Compile Include="Citation\Template\Template.cs" />
     <Compile Include="Citation\Template\Template_Creator.cs" />
     <Compile Include="Citation\Template\Template_Page.cs" />
@@ -674,7 +603,6 @@
     <Compile Include="Text_Search_Term_Highlighter.cs" />
     <Compile Include="Email\URL_Email_Helper.cs" />
     <Compile Include="Email\Usage_Stats_Email_Helper.cs" />
-    <Compile Include="WebContent\HTML_Based_Content.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj">
@@ -715,9 +643,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Users\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

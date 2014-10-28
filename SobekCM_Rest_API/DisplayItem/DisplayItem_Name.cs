@@ -1,9 +1,6 @@
 ﻿#region Using directives
 
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Runtime.Serialization;
 
 #endregion

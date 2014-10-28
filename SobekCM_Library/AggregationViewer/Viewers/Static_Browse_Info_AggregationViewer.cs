@@ -4,19 +4,15 @@ using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Configuration;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
-using SobekCM.Library.WebContent;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -35,46 +31,35 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     /// </ul></remarks>
     public class Static_Browse_Info_AggregationViewer : abstractAggregationViewer
     {
-        private readonly Item_Aggregation_Child_Page browseObject;
-        private readonly HTML_Based_Content staticWebContent;
-
 	    /// <summary> Constructor for a new instance of the Static_Browse_Info_AggregationViewer class </summary>
-	    /// <param name="Browse_Object"> Browse or information object to be displayed </param>
-	    /// <param name="Static_Web_Content"> HTML content-based browse, info, or imple CMS-style web content objects.  These are objects which are read from a static HTML file and much of the head information must be maintained </param>
-	    /// <param name="Current_Collection"> Current collection being displayed</param>
-		/// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-	    /// <param name="Current_User"> Current user/session information </param>
-	    public Static_Browse_Info_AggregationViewer(Item_Aggregation_Child_Page Browse_Object, HTML_Based_Content Static_Web_Content, Item_Aggregation Current_Collection, SobekCM_Navigation_Object Current_Mode, User_Object Current_User ):base(Current_Collection, Current_Mode )
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Static_Browse_Info_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            browseObject = Browse_Object;
-            staticWebContent = Static_Web_Content;
-	        currentUser = Current_User;
-
-			bool isAdmin = (currentUser != null) && (currentUser.Is_Aggregation_Admin(currentCollection.Code));
-			if (( currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && ( !isAdmin))
-				currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+			bool isAdmin = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Aggregation_Admin(RequestSpecificValues.Hierarchy_Object.Code));
+			if (( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && ( !isAdmin))
+				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
 
 			NameValueCollection form = HttpContext.Current.Request.Form;
-			if ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (form["sbkSbia_ChildTextEdit"] != null) && ( currentUser != null ))
+			if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (form["sbkSbia_ChildTextEdit"] != null) && ( RequestSpecificValues.Current_User != null ))
 			{
-				string aggregation_folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "aggregations\\" + currentCollection.Code + "\\";
-				string file = aggregation_folder + browseObject.Get_Static_HTML_Source(currentMode.Language);
+				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\";
+				string file = aggregation_folder + RequestSpecificValues.Browse_Object.Get_Static_HTML_Source(RequestSpecificValues.Current_Mode.Language);
 
 				// Get the header information as well
 				if ( !String.IsNullOrEmpty(form["admin_childpage_title"]))
 				{
-					staticWebContent.Title = form["admin_childpage_title"];
+					RequestSpecificValues.Static_Web_Content.Title = form["admin_childpage_title"];
 				}
 				if (form["admin_childpage_author"] != null)
-					staticWebContent.Author = form["admin_childpage_author"];
+					RequestSpecificValues.Static_Web_Content.Author = form["admin_childpage_author"];
 				if (form["admin_childpage_date"] != null)
-					staticWebContent.Date = form["admin_childpage_date"];
+					RequestSpecificValues.Static_Web_Content.Date = form["admin_childpage_date"];
 				if (form["admin_childpage_description"] != null)
-					staticWebContent.Description = form["admin_childpage_description"];
+					RequestSpecificValues.Static_Web_Content.Description = form["admin_childpage_description"];
 				if (form["admin_childpage_keywords"] != null)
-					staticWebContent.Keywords = form["admin_childpage_keywords"];
+					RequestSpecificValues.Static_Web_Content.Keywords = form["admin_childpage_keywords"];
 				if (form["admin_childpage_extrahead"] != null)
-					staticWebContent.Extra_Head_Info = form["admin_childpage_extrahead"];
+					RequestSpecificValues.Static_Web_Content.Extra_Head_Info = form["admin_childpage_extrahead"];
 
 
 				// Make a backup from today, if none made yet
@@ -89,24 +74,24 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 
 				// Assign the new text
-				Static_Web_Content.Static_Text = form["sbkSbia_ChildTextEdit"];
-				Static_Web_Content.Date = DateTime.Now.ToLongDateString();
-				Static_Web_Content.Save_To_File(file);
+                RequestSpecificValues.Static_Web_Content.Static_Text = form["sbkSbia_ChildTextEdit"];
+                RequestSpecificValues.Static_Web_Content.Date = DateTime.Now.ToLongDateString();
+                RequestSpecificValues.Static_Web_Content.Save_To_File(file);
 
 				// Also save this change
-				SobekCM_Database.Save_Item_Aggregation_Milestone(currentCollection.Code, "Child page '" + browseObject.Code + "' edited (" + Web_Language_Enum_Converter.Enum_To_Name(currentMode.Language) + ")", currentUser.Full_Name);
+				SobekCM_Database.Save_Item_Aggregation_Milestone(RequestSpecificValues.Hierarchy_Object.Code, "Child page '" + RequestSpecificValues.Browse_Object.Code + "' edited (" + Web_Language_Enum_Converter.Enum_To_Name(RequestSpecificValues.Current_Mode.Language) + ")", RequestSpecificValues.Current_User.Full_Name);
 
 				// Forward along
-				currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
-				if ( Browse_Object.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY )
-					currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
+				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+                if (RequestSpecificValues.Browse_Object.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY)
+					RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
 				
-				string redirect_url = currentMode.Redirect_URL();
+				string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 				if (redirect_url.IndexOf("?") > 0)
 					redirect_url = redirect_url + "&refresh=always";
 				else
 					redirect_url = redirect_url + "?refresh=always";
-				currentMode.Request_Completed = true;
+				RequestSpecificValues.Current_Mode.Request_Completed = true;
 				HttpContext.Current.Response.Redirect(redirect_url, false);
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 			}
@@ -149,7 +134,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Static_Browse_Info_AggregationViewer.Add_Search_Box_HTML", "Adding HTML");
             }
 
-            Output.WriteLine("  <h1>" + browseObject.Get_Label(currentMode.Language) + "</h1>");
+            Output.WriteLine("  <h1>" + RequestSpecificValues.Browse_Object.Get_Label(RequestSpecificValues.Current_Mode.Language) + "</h1>");
         }
 
         /// <summary> Add the HTML to be displayed below the search box </summary>
@@ -164,11 +149,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
 			// Get the adjusted text for this user's session
-			string static_browse_info_text = staticWebContent.Apply_Settings_To_Static_Text(staticWebContent.Static_Text, currentCollection, htmlSkin.Skin_Code, htmlSkin.Base_Skin_Code, currentMode.Base_URL, currentMode.URL_Options(), Tracer);
-			bool isAdmin = (currentUser != null) && (currentUser.Is_Aggregation_Admin(currentCollection.Code));
+            string static_browse_info_text = RequestSpecificValues.Static_Web_Content.Apply_Settings_To_Static_Text(RequestSpecificValues.Static_Web_Content.Static_Text, RequestSpecificValues.Hierarchy_Object, RequestSpecificValues.HTML_Skin.Skin_Code, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode.Base_URL, UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode), Tracer);
+			bool isAdmin = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Aggregation_Admin(RequestSpecificValues.Hierarchy_Object.Code));
 
 
-			if ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (isAdmin))
+			if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (isAdmin))
 			{
 				const string TITLE_HELP = "Help for the title place holder";
 				const string AUTHOR_HELP = "Help for the author place holder";
@@ -189,38 +174,38 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				Output.WriteLine("      <tr>");
 				Output.WriteLine("        <td style=\"width:50px\">&nbsp;</td>");
 				Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_title\">Title:</label></td>");
-				Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_title\" id=\"admin_childpage_title\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(staticWebContent.Title) + "\" /></td>");
-				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + TITLE_HELP + "');\"  title=\"" + TITLE_HELP + "\" /></td>");
+				Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_title\" id=\"admin_childpage_title\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(RequestSpecificValues.Static_Web_Content.Title) + "\" /></td>");
+				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + TITLE_HELP + "');\"  title=\"" + TITLE_HELP + "\" /></td>");
 				Output.WriteLine("      </tr>");
 				Output.WriteLine("      <tr>");
 				Output.WriteLine("        <td>&nbsp;</td>");
 				Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_author\">Author:</label></td>");
-				Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_author\" id=\"admin_childpage_author\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(staticWebContent.Author) + "\" /></td>");
-				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + AUTHOR_HELP + "');\"  title=\"" + AUTHOR_HELP + "\" /></td>");
+				Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_author\" id=\"admin_childpage_author\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(RequestSpecificValues.Static_Web_Content.Author) + "\" /></td>");
+				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + AUTHOR_HELP + "');\"  title=\"" + AUTHOR_HELP + "\" /></td>");
 				Output.WriteLine("      </tr>");
 				Output.WriteLine("      <tr>");
 				Output.WriteLine("        <td>&nbsp;</td>");
 				Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_date\">Date:</label></td>");
-				Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_date\" id=\"admin_childpage_date\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(staticWebContent.Date) + "\" /></td>");
-				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + DATE_HELP + "');\"  title=\"" + DATE_HELP + "\" /></td>");
+				Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_date\" id=\"admin_childpage_date\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(RequestSpecificValues.Static_Web_Content.Date) + "\" /></td>");
+				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + DATE_HELP + "');\"  title=\"" + DATE_HELP + "\" /></td>");
 				Output.WriteLine("      </tr>");
 				Output.WriteLine("      <tr>");
 				Output.WriteLine("        <td>&nbsp;</td>");
 				Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_description\">Description:</label></td>");
-				Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_description\" id=\"admin_childpage_description\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(staticWebContent.Description) + "\" /></td>");
-				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + DESCRIPTION_HELP + "');\"  title=\"" + DESCRIPTION_HELP + "\" /></td>");
+				Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_description\" id=\"admin_childpage_description\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(RequestSpecificValues.Static_Web_Content.Description) + "\" /></td>");
+				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + DESCRIPTION_HELP + "');\"  title=\"" + DESCRIPTION_HELP + "\" /></td>");
 				Output.WriteLine("      </tr>");
 				Output.WriteLine("      <tr>");
 				Output.WriteLine("        <td>&nbsp;</td>");
 				Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\"><label for=\"admin_childpage_keywords\">Keywords:</label></td>");
-				Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_keywords\" id=\"admin_childpage_keywords\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(staticWebContent.Keywords) + "\" /></td>");
-				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + KEYWORDS_HELP + "');\"  title=\"" + KEYWORDS_HELP + "\" /></td>");
+				Output.WriteLine("        <td><input class=\"sbkSbia_HeaderInput sbk_Focusable\" name=\"admin_childpage_keywords\" id=\"admin_childpage_keywords\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(RequestSpecificValues.Static_Web_Content.Keywords) + "\" /></td>");
+				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + KEYWORDS_HELP + "');\"  title=\"" + KEYWORDS_HELP + "\" /></td>");
 				Output.WriteLine("      </tr>");
 				Output.WriteLine("      <tr style=\"vertical-align:top;\">");
 				Output.WriteLine("        <td>&nbsp;</td>");
 				Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\" style=\"padding-top:5px\"><label for=\"admin_childpage_extrahead\">HTML Head Info:</label></td>");
-				Output.WriteLine("        <td><textarea rows=\"3\" class=\"sbkSbia_HeaderTextArea sbk_Focusable\" name=\"admin_childpage_extrahead\" id=\"admin_childpage_extrahead\" type=\"text\">" + HttpUtility.HtmlEncode(staticWebContent.Extra_Head_Info) + "</textarea></td>");
-				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + currentMode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + EXTRA_HEAD_HELP + "');\"  title=\"" + EXTRA_HEAD_HELP + "\" /></td>");
+				Output.WriteLine("        <td><textarea rows=\"3\" class=\"sbkSbia_HeaderTextArea sbk_Focusable\" name=\"admin_childpage_extrahead\" id=\"admin_childpage_extrahead\" type=\"text\">" + HttpUtility.HtmlEncode(RequestSpecificValues.Static_Web_Content.Extra_Head_Info) + "</textarea></td>");
+				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + EXTRA_HEAD_HELP + "');\"  title=\"" + EXTRA_HEAD_HELP + "\" /></td>");
 				Output.WriteLine("      </tr>");
 				Output.WriteLine("    </table>");
 				Output.WriteLine("    <br />");
@@ -234,11 +219,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				Output.WriteLine();
 
 				Output.WriteLine("  <div id=\"sbkSbia_TextEditButtons\">");
-				currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
-				if ( browseObject.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY )
-					currentMode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
-				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + currentMode.Redirect_URL() + "';return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-				Output.WriteLine("    <button title=\"Save changes to this child page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+				if ( RequestSpecificValues.Browse_Object.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY )
+					RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
+				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+				Output.WriteLine("    <button title=\"Save changes to this child page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
 				Output.WriteLine("  </div>");
 				Output.WriteLine("</form>");
 				Output.WriteLine("<br /><br />");
@@ -246,16 +231,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			}
 			else
 			{
-				Aggregation_Type_Enum aggrType = currentMode.Aggregation_Type;
+				Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
 
 				// Output the adjusted home html
 				if (isAdmin)
 				{
 					Output.WriteLine("<div id=\"sbkSbia_MainTextEditable\">");
 					Output.WriteLine(static_browse_info_text);
-					currentMode.Aggregation_Type = Aggregation_Type_Enum.Child_Page_Edit;
-					Output.WriteLine("  <div id=\"sbkSbia_EditableTextLink\"><a href=\"" + currentMode.Redirect_URL() + "\" title=\"Edit this home text\"><img src=\"" + currentMode.Base_URL + "default/images/edit.gif\" alt=\"\" />edit content</a></div>");
-					currentMode.Aggregation_Type = aggrType;
+					RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Child_Page_Edit;
+					Output.WriteLine("  <div id=\"sbkSbia_EditableTextLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home text\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/edit.gif\" alt=\"\" />edit content</a></div>");
+					RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
 					Output.WriteLine("</div>");
 					Output.WriteLine();
 

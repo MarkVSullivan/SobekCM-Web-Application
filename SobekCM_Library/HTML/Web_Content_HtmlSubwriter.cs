@@ -7,13 +7,10 @@ using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.SiteMap;
-using SobekCM.Library.Skins;
-using SobekCM.Library.WebContent;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.SiteMap;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -26,37 +23,24 @@ namespace SobekCM.Library.HTML
     public class Web_Content_HtmlSubwriter : abstractHtmlSubwriter
     {
         private string breadcrumbs;
-        private readonly SobekCM_SiteMap siteMap;
-        private readonly HTML_Based_Content thisStaticBrowseObject;
 
         /// <summary> Constructor for a new instance of the Web_Content_HtmlSubwriter class </summary>
-        /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
-        /// <param name="Static_Web_Content"> Object contains all the basic information about this info display </param>
-        /// <param name="Site_Map"> Optional site map object used to render a navigational tree-view on left side of page</param>
-        public Web_Content_HtmlSubwriter(Item_Aggregation Hierarchy_Object, SobekCM_Navigation_Object Current_Mode, SobekCM_Skin_Object HTML_Skin, HTML_Based_Content Static_Web_Content, SobekCM_SiteMap Site_Map)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Web_Content_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
         {
-            base.Current_Aggregation = Hierarchy_Object;
-            Mode = Current_Mode;
-            Skin = HTML_Skin;
-
-            thisStaticBrowseObject = Static_Web_Content;
-            siteMap = Site_Map;
-
             // If there is a sitemap, check if this is a robot request and then if the URL
             // for the sitemap pages is URL restricted
-            if ((siteMap != null) && (siteMap.Is_URL_Restricted_For_Robots) && (Mode.Is_Robot))
+            if ((RequestSpecificValues.Site_Map != null) && (RequestSpecificValues.Site_Map.Is_URL_Restricted_For_Robots) && (RequestSpecificValues.Current_Mode.Is_Robot))
             {
-                if (Mode.Base_URL != siteMap.Restricted_Robot_URL)
+                if (RequestSpecificValues.Current_Mode.Base_URL != RequestSpecificValues.Site_Map.Restricted_Robot_URL)
                 {
-                    Mode.Base_URL = siteMap.Restricted_Robot_URL;
-                    string redirect_url = Mode.Redirect_URL();
+                    RequestSpecificValues.Current_Mode.Base_URL = RequestSpecificValues.Site_Map.Restricted_Robot_URL;
+                    string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                     HttpContext.Current.Response.Status = "301 Moved Permanently";
                     HttpContext.Current.Response.AddHeader("Location", redirect_url);
                     HttpContext.Current.ApplicationInstance.CompleteRequest();
-                    Mode.Request_Completed = true;
+                    RequestSpecificValues.Current_Mode.Request_Completed = true;
                     return;
                 }
             }
@@ -81,7 +65,7 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public void Add_Controls(PlaceHolder placeHolder, Custom_Tracer Tracer)
         {
-            if ((siteMap == null) || (Mode.Is_Robot))
+            if ((RequestSpecificValues.Site_Map == null) || (RequestSpecificValues.Current_Mode.Is_Robot))
                 return;
 
             Tracer.Add_Trace("Web_Content_HtmlSubwriter.Add_Controls", "Adding site map tree nav view");
@@ -102,16 +86,16 @@ namespace SobekCM.Library.HTML
 
 
             // Determine the base URL
-            string base_url = Mode.Base_URL;
-            if (Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
             {
                 base_url = base_url + "l/";
             }
 
             // Find the selected node
-            int selected_node = siteMap.Selected_NodeValue(Mode.Info_Browse_Mode);
+            int selected_node = RequestSpecificValues.Site_Map.Selected_NodeValue(RequestSpecificValues.Current_Mode.Info_Browse_Mode);
 
-            foreach (SobekCM_SiteMap_Node rootSiteMapNode in siteMap.RootNodes)
+            foreach (SobekCM_SiteMap_Node rootSiteMapNode in RequestSpecificValues.Site_Map.RootNodes)
             {
                 // Add the sitemaps root node first
                 TreeNode rootNode = new TreeNode
@@ -122,7 +106,7 @@ namespace SobekCM.Library.HTML
                 treeView1.Nodes.Add(rootNode);
 
                 // Was this node currently selected?
-                if (rootSiteMapNode.URL == Mode.Info_Browse_Mode)
+                if (rootSiteMapNode.URL == RequestSpecificValues.Current_Mode.Info_Browse_Mode)
                 {
                     rootNode.Text = string.Format("<span Title='{0}'>{1}</span>", rootSiteMapNode.Description, rootSiteMapNode.Title);
                     rootNode.Expand();
@@ -207,7 +191,7 @@ namespace SobekCM.Library.HTML
                             {
                                 string text = selectedNodeExpander.Parent.Text.Replace(" Namespace</a>","</a>").Replace(" Sub-Namespace</a>","</a>");
 
-                                breadcrumbBuilder.Insert(0, text + " <img src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/breadcrumbimg.gif\" alt=\">\" /><img src=\"" + Mode.Base_URL + "design/skins/" + Mode.Base_Skin + "/breadcrumbimg.gif\" alt=\">\" /> ");
+                                breadcrumbBuilder.Insert(0, text + " <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/breadcrumbimg.gif\" alt=\">\" /><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/breadcrumbimg.gif\" alt=\">\" /> ");
                             }
 
                             // step up another level
@@ -227,11 +211,11 @@ namespace SobekCM.Library.HTML
         /// <param name="e"> Event arguments includes the tree node which was expanded </param>
         void treeView1_TreeNodePopulate(object sender, TreeNodeEventArgs e)
         {
-            SobekCM_SiteMap_Node retrieved_node = siteMap.Node_By_Value(Convert.ToInt32(e.Node.Value));
+            SobekCM_SiteMap_Node retrieved_node = RequestSpecificValues.Site_Map.Node_By_Value(Convert.ToInt32(e.Node.Value));
 
             // Determine the base URL
-            string base_url = Mode.Base_URL;
-            if (Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
             {
                 base_url = base_url + "l/";
             }
@@ -275,13 +259,13 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Web_Content_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
             // The header is already drawn, so just start the main table here
-            if (siteMap != null)
+            if (RequestSpecificValues.Site_Map != null)
             {
                 Output.WriteLine("<table width=\"100%\">");
                 Output.WriteLine("<tr>");
-                if (siteMap.Width > 0)
+                if (RequestSpecificValues.Site_Map.Width > 0)
                 {
-                    Output.WriteLine("<td valign=\"top\" width=\"" + siteMap.Width + "px\">");
+                    Output.WriteLine("<td valign=\"top\" width=\"" + RequestSpecificValues.Site_Map.Width + "px\">");
                 }
                 else
                 {
@@ -289,10 +273,10 @@ namespace SobekCM.Library.HTML
                 }
 
                 // If this is a robot, just draw the links
-                if (Mode.Is_Robot)
+                if (RequestSpecificValues.Current_Mode.Is_Robot)
                 {
                     Output.WriteLine("<div class=\"SobekSiteMapTreeView\">");
-                    foreach (SobekCM_SiteMap_Node rootNode in siteMap.RootNodes)
+                    foreach (SobekCM_SiteMap_Node rootNode in RequestSpecificValues.Site_Map.RootNodes)
                     {
                         recursively_draw_sitemap_for_robots(Output, rootNode, String.Empty);
                     }
@@ -307,9 +291,9 @@ namespace SobekCM.Library.HTML
         {
 
             // Add this text
-            if ((Node.URL.Length > 0) && (Node.URL != Mode.Info_Browse_Mode))
+            if ((Node.URL.Length > 0) && (Node.URL != RequestSpecificValues.Current_Mode.Info_Browse_Mode))
             {
-                Output.WriteLine(Indent + "<a href='" + Mode.Base_URL + Node.URL + "' title='" + Node.Description + "'>" + Node.Title + "</a><br />");
+                Output.WriteLine(Indent + "<a href='" + RequestSpecificValues.Current_Mode.Base_URL + Node.URL + "' title='" + Node.Description + "'>" + Node.Title + "</a><br />");
             }
             else
             {
@@ -336,34 +320,34 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Web_Content_HtmlSubwriter.Write_Final_HTML", "Rendering HTML");
 
             // If there is a sitemap, move to the second part of the table
-            if (siteMap != null)
+            if (RequestSpecificValues.Site_Map != null)
             {
                 Output.WriteLine("</td>");
                 Output.WriteLine("<td valign=\"top\">");
             }
 
             // Save the current mode and browse
-            Display_Mode_Enum thisMode = Mode.Mode;
+            Display_Mode_Enum thisMode = RequestSpecificValues.Current_Mode.Mode;
 
-            if ((thisStaticBrowseObject.Banner.Length > 0) && (thisStaticBrowseObject.Banner.ToUpper().Trim() != "NONE"))
+            if ((RequestSpecificValues.Static_Web_Content.Banner.Length > 0) && (RequestSpecificValues.Static_Web_Content.Banner.ToUpper().Trim() != "NONE"))
             {
-                if (thisStaticBrowseObject.Banner.ToUpper().Trim() == "DEFAULT")
+                if (RequestSpecificValues.Static_Web_Content.Banner.ToUpper().Trim() == "DEFAULT")
                 {
-                    if ((Skin != null) && (Skin.Banner_HTML.Length > 0))
+                    if ((RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.Banner_HTML.Length > 0))
                     {
-                        Output.WriteLine(Skin.Banner_HTML);
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Banner_HTML);
                     }
                     else
                     {
-                        if (Current_Aggregation != null)
+                        if (RequestSpecificValues.Hierarchy_Object != null)
                         {
-                            Output.WriteLine("<img id=\"mainBanner\" src=\"" + Mode.Base_URL + Current_Aggregation.Banner_Image(Mode.Language, Skin) + "\" alt=\"MISSING BANNER\" /><br />");
+                            Output.WriteLine("<img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Hierarchy_Object.Banner_Image(RequestSpecificValues.Current_Mode.Language, RequestSpecificValues.HTML_Skin) + "\" alt=\"MISSING BANNER\" /><br />");
                         }
                     }
                 }
                 else
                 {
-                    Output.WriteLine("<img id=\"mainBanner\" src=\"" + thisStaticBrowseObject.Banner.Replace("<%BASEURL%>", Mode.Base_URL) + "\" alt=\"MISSING BANNER\" /><br />");
+                    Output.WriteLine("<img id=\"mainBanner\" src=\"" + RequestSpecificValues.Static_Web_Content.Banner.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL) + "\" alt=\"MISSING BANNER\" /><br />");
                 }
             }
 
@@ -375,13 +359,13 @@ namespace SobekCM.Library.HTML
 
             // Add the secondary HTML ot the home page
             Output.WriteLine("<div class=\"SobekResultsPanel\">");
-            Output.WriteLine(thisStaticBrowseObject.Static_Text);
+            Output.WriteLine(RequestSpecificValues.Static_Web_Content.Static_Text);
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
             Output.WriteLine();
 
             // If there is a sitemap, finish the main table
-            if (siteMap != null)
+            if (RequestSpecificValues.Site_Map != null)
             {
                 Output.WriteLine("</td>");
                 Output.WriteLine("</tr>");
@@ -393,7 +377,7 @@ namespace SobekCM.Library.HTML
         public override string WebPage_Title
         {
             get {
-                return thisStaticBrowseObject != null ? thisStaticBrowseObject.Title : "{0}";
+                return RequestSpecificValues.Static_Web_Content != null ? RequestSpecificValues.Static_Web_Content.Title : "{0}";
             }
         }
 
@@ -406,35 +390,35 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
             // Add any other meta tags here as well
-            if (thisStaticBrowseObject != null)
+            if (RequestSpecificValues.Static_Web_Content != null)
             {
-                if (thisStaticBrowseObject.Description.Length > 0)
+                if (RequestSpecificValues.Static_Web_Content.Description.Length > 0)
                 {
-                    Output.WriteLine("  <meta name=\"description\" content=\"" + thisStaticBrowseObject.Description + "\" />");
+                    Output.WriteLine("  <meta name=\"description\" content=\"" + RequestSpecificValues.Static_Web_Content.Description + "\" />");
                 }
-                if (thisStaticBrowseObject.Keywords.Length > 0)
+                if (RequestSpecificValues.Static_Web_Content.Keywords.Length > 0)
                 {
-                    Output.WriteLine("  <meta name=\"keywords\" content=\"" + thisStaticBrowseObject.Keywords + "\" />");
+                    Output.WriteLine("  <meta name=\"keywords\" content=\"" + RequestSpecificValues.Static_Web_Content.Keywords + "\" />");
                 }
-                if (thisStaticBrowseObject.Author.Length > 0)
+                if (RequestSpecificValues.Static_Web_Content.Author.Length > 0)
                 {
-                    Output.WriteLine("  <meta name=\"author\" content=\"" + thisStaticBrowseObject.Author + "\" />");
+                    Output.WriteLine("  <meta name=\"author\" content=\"" + RequestSpecificValues.Static_Web_Content.Author + "\" />");
                 }
             }
 
 
 			// Write the style sheet to use 
 #if DEBUG
-            Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #endif
 
             // If this is the static html web content view, add any special text which came from the original
             // static html file which was already read, which can include style sheets, etc..
-            if ((thisStaticBrowseObject != null) && (thisStaticBrowseObject.Extra_Head_Info.Length > 0))
+            if ((RequestSpecificValues.Static_Web_Content != null) && (RequestSpecificValues.Static_Web_Content.Extra_Head_Info.Length > 0))
             {
-                Output.WriteLine("  " + thisStaticBrowseObject.Extra_Head_Info.Trim());
+                Output.WriteLine("  " + RequestSpecificValues.Static_Web_Content.Extra_Head_Info.Trim());
             }
         }
 
@@ -443,7 +427,7 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
-				return siteMap != null ? String.Empty : base.Container_CssClass;
+                return RequestSpecificValues.Site_Map != null ? String.Empty : base.Container_CssClass;
 			}
 		}
     }

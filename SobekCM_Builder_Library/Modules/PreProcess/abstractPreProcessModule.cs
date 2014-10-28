@@ -1,8 +1,13 @@
-﻿namespace SobekCM.Builder_Library.Modules.PreProcess
+﻿using System.Collections.Generic;
+using SobekCM.Core.Settings;
+
+namespace SobekCM.Builder_Library.Modules.PreProcess
 {
     public abstract class abstractPreProcessModule : iPreProcessModule
     {
-        public abstract void DoWork();
+        public List<string> Arguments { get; set; }
+
+        public abstract void DoWork( InstanceWide_Settings Settings );
 
         public event ModuleErrorLoggingDelegate Error;
         public event ModuleStandardLoggingDelegate Process;

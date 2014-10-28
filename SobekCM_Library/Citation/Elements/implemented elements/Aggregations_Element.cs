@@ -2,16 +2,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
-using SobekCM.Resource_Object;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
 using SobekCM.Core.Users;
+using SobekCM.Resource_Object;
 
 #endregion
 
@@ -47,7 +45,7 @@ namespace SobekCM.Library.Citation.Elements
             if (items.Count == 0)
             {
                 SortedList<string, string> tempItemList = new SortedList<string, string>();
-                ReadOnlyCollection<Item_Aggregation_Related_Aggregations> subcollections = codeManager.All_Aggregations;
+                List<Item_Aggregation_Related_Aggregations> subcollections = codeManager.All_Aggregations;
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in subcollections)
                 {
                     if (!tempItemList.ContainsKey(thisAggr.Code))

@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using SobekCM.Library.Settings;
+using System.IO;
 
 #endregion
 
@@ -16,15 +16,15 @@ namespace SobekCM.Builder_Library.Modules.Folders
             try
             {
                 // Move all eligible packages from the FTP folders to the processing folders
-                if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
+                if (Settings.Builder_Verbose_Flag)
                     OnProcess("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: Checking incoming folder " + BuilderFolder.Inbound_Folder, String.Empty, String.Empty, String.Empty, -1);
 
                 if (BuilderFolder.Items_Exist_In_Inbound)
                 {
-                    if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
+                    if (Settings.Builder_Verbose_Flag)
                         OnProcess("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: Found either files or subdirectories in " + BuilderFolder.Inbound_Folder, String.Empty, String.Empty, String.Empty, -1);
 
-                    if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
+                    if (Settings.Builder_Verbose_Flag)
                         OnProcess("Checking inbound packages for aging and possibly moving to processing", String.Empty, String.Empty, String.Empty, -1);
 
                     String outMessage;
@@ -35,12 +35,26 @@ namespace SobekCM.Builder_Library.Modules.Folders
                     }
                     else
                     {
-                        if ((InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag) && (outMessage.Length > 0))
+                        if ((Settings.Builder_Verbose_Flag) && (outMessage.Length > 0))
                             OnProcess(outMessage, String.Empty, String.Empty, String.Empty, -1);
                     }
 
+                    // Try to get rid of any empty folders
+                    try
+                    {
+                        string[] subdirs = Directory.GetDirectories(BuilderFolder.Inbound_Folder);
+                        foreach (string thisSubdir in subdirs)
+                        {
+                            if ((Directory.GetFiles(thisSubdir).Length == 0) && (Directory.GetDirectories(thisSubdir).Length == 0))
+                            {
+                                Directory.Delete(thisSubdir);
+                            }
+                        }
+                    }
+                    catch {  }
+
                 }
-                else if (InstanceWide_Settings_Singleton.Settings.Builder_Verbose_Flag)
+                else if (Settings.Builder_Verbose_Flag)
                     OnProcess("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: No subdirectories or files found in incoming folder " + BuilderFolder.Inbound_Folder, String.Empty, String.Empty, String.Empty, -1);
             }
             catch (Exception ee)

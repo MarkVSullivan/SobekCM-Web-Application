@@ -5,20 +5,14 @@ using System.Data;
 using System.IO;
 using System.Web;
 using System.Web.UI.WebControls;
-using SobekCM.Resource_Object;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Database;
-using SobekCM.Library.Items;
+using SobekCM.Core.Items;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Library.MySobekViewer;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.Skins;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -37,192 +31,138 @@ namespace SobekCM.Library.HTML
     /// </ul></remarks>
     public class MySobek_HtmlSubwriter : abstractHtmlSubwriter
     {
-        private readonly Aggregation_Code_Manager codeManager;
-        private readonly Item_Aggregation currentCollection;
-        private readonly SobekCM_Item currentItem;
-        private readonly Dictionary<string, Wordmark_Icon> iconTable;
-	    private readonly Item_Lookup_Object itemList;
         private readonly abstract_MySobekViewer mySobekViewer;
-        private readonly List<iSearch_Title_Result> pagedResults;
-        private readonly Search_Results_Statistics resultsStatistics;
-        private readonly Statistics_Dates statsDates;
-        private readonly Language_Support_Info translator;
-        private readonly User_Object user;
  
         #region Constructor, which also creates the applicable MySobekViewer object
 
 	    /// <summary> Constructor for a new instance of the MySobek_HtmlSubwriter class </summary>
-	    /// <param name="Results_Statistics"> Information about the entire set of results for a browse of a user's bookshelf folder </param>
-	    /// <param name="Paged_Results"> Single page of results for a browse of a user's bookshelf folder, within the entire set </param>
-	    /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-	    /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
-	    /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
-	    /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
-	    /// <param name="Translator"> Language support object which handles simple translational duties </param>
-	    /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-	    /// <param name="Current_Item">Current item to edit, if the user is requesting to edit an item</param>
-	    /// <param name="Current_User"> Currently logged on user </param>
-	    /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
-	    /// <param name="Stats_Date_Range"> Object contains the start and end dates for the statistical data in the database </param>
-		/// <param name="HTML_Skin_Collection"> HTML Web skin collection which controls the overall appearance of this digital library </param>
-	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-	    public MySobek_HtmlSubwriter(Search_Results_Statistics Results_Statistics,
-                                     List<iSearch_Title_Result> Paged_Results,
-                                     Aggregation_Code_Manager Code_Manager,
-                                     Item_Lookup_Object All_Items_Lookup,
-                                     Item_Aggregation Hierarchy_Object,
-                                     SobekCM_Skin_Object HTML_Skin,
-                                     Language_Support_Info Translator,
-                                     SobekCM_Navigation_Object Current_Mode,
-                                     SobekCM_Item Current_Item,
-                                     User_Object Current_User,
-                                     Dictionary<string, Wordmark_Icon> Icon_Table,
-                                     Statistics_Dates Stats_Date_Range,
-									 SobekCM_Skin_Collection HTML_Skin_Collection,
-                                     List<User_Group> userGroups,
-                                     IP_Restriction_Ranges ipRestrictions,
-                                     Custom_Tracer Tracer )
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public MySobek_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
         {
 
-            Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Saving values and geting user object back from the session");
-
-            resultsStatistics = Results_Statistics;
-            pagedResults = Paged_Results;
-            codeManager = Code_Manager;
-            itemList = All_Items_Lookup;
-            Skin = HTML_Skin;
-            translator = Translator;
-            currentCollection = Hierarchy_Object;
-            currentItem = Current_Item;
-            user = Current_User;
-	        iconTable = Icon_Table;
-            statsDates = Stats_Date_Range;
+            RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Saving values and geting user object back from the session");
 
 
-            if (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Log_Out)
+
+            if (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Log_Out)
             {
-                Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Performing logout");
+                RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Performing logout");
 
                 HttpContext.Current.Session["user"] = null;
                 HttpContext.Current.Response.Redirect("?", false);
                 HttpContext.Current.ApplicationInstance.CompleteRequest();
-                Current_Mode.Request_Completed = true;
+                RequestSpecificValues.Current_Mode.Request_Completed = true;
                 return;
             }
 
-            if ((Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Logon) && (user != null) && (user.Is_Temporary_Password))
+            if ((RequestSpecificValues.Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Logon) && (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Temporary_Password))
             {
-                Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Password;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Password;
             }
 
-            if (Current_Mode.Logon_Required)
-                Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+            if (RequestSpecificValues.Current_Mode.Logon_Required)
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
 
-            Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building the my sobek viewer object");
-            switch (Current_Mode.My_Sobek_Type)
+            RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building the my sobek viewer object");
+            switch (RequestSpecificValues.Current_Mode.My_Sobek_Type)
             {
                 case My_Sobek_Type_Enum.Home:
-                    mySobekViewer = new Home_MySobekViewer(user, Tracer);
+                    mySobekViewer = new Home_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.New_Item:
-                    mySobekViewer = new New_Group_And_Item_MySobekViewer(user, Current_Mode, itemList, codeManager, iconTable, Skin, translator, HTML_Skin_Collection, Tracer);
+                    mySobekViewer = new New_Group_And_Item_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Folder_Management:
-                    mySobekViewer = new Folder_Mgmt_MySobekViewer(user, resultsStatistics, pagedResults, codeManager, itemList, currentCollection, Skin, translator, Current_Mode, Tracer);
+                    mySobekViewer = new Folder_Mgmt_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Saved_Searches:
-                    mySobekViewer = new Saved_Searches_MySobekViewer(user, translator, Current_Mode, Tracer);
+                    mySobekViewer = new Saved_Searches_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Preferences:
-                    mySobekViewer = new Preferences_MySobekViewer(user, Current_Mode, Tracer);
+                    mySobekViewer = new Preferences_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Logon:
-                    mySobekViewer = new Logon_MySobekViewer(Current_Mode, Tracer);
+                    mySobekViewer = new Logon_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.New_Password:
-                    mySobekViewer = new NewPassword_MySobekViewer(user, Tracer);
+                    mySobekViewer = new NewPassword_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Delete_Item:
-                    mySobekViewer = new Delete_Item_MySobekViewer(user, Current_Mode, currentItem, All_Items_Lookup, Tracer);
+                    mySobekViewer = new Delete_Item_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Edit_Item_Behaviors:
-                    mySobekViewer = new Edit_Item_Behaviors_MySobekViewer(user, Current_Mode, currentItem, codeManager, Tracer);
+                    mySobekViewer = new Edit_Item_Behaviors_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Edit_Item_Metadata:
-					mySobekViewer = new Edit_Item_Metadata_MySobekViewer(user, Current_Mode, itemList, currentItem, codeManager, iconTable, Skin, translator, HTML_Skin_Collection, Tracer);
+                    mySobekViewer = new Edit_Item_Metadata_MySobekViewer( RequestSpecificValues.Current_Item, RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Edit_Item_Permissions:
-                    mySobekViewer = new Edit_Item_Permissions_MySobekViewer(user, Current_Mode, currentItem, Skin, translator, userGroups, ipRestrictions, Tracer );
+                    mySobekViewer = new Edit_Item_Permissions_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.File_Management:
-					mySobekViewer = new File_Management_MySobekViewer(user, Current_Mode, Current_Item, itemList, codeManager, iconTable, Skin, translator, HTML_Skin_Collection, Tracer);
+                    mySobekViewer = new File_Management_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Edit_Group_Behaviors:
-                    mySobekViewer = new Edit_Group_Behaviors_MySobekViewer(user, Current_Mode, currentItem, codeManager, Tracer);
+                    mySobekViewer = new Edit_Group_Behaviors_MySobekViewer(RequestSpecificValues);
                     break;
 
 
 
                 case My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy:
-                    mySobekViewer = new Edit_Serial_Hierarchy_MySobekViewer(user);
+                    mySobekViewer = new Edit_Serial_Hierarchy_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Item_Tracking:
-                    mySobekViewer = new Track_Item_MySobekViewer(user, Current_Mode, Tracer);
+                    mySobekViewer = new Track_Item_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Group_Add_Volume:
                     // Pull the list of items tied to this group
-                    SobekCM_Items_In_Title itemsInTitle = Cached_Data_Manager.Retrieve_Items_In_Title(currentItem.BibID, Tracer);
+                    SobekCM_Items_In_Title itemsInTitle = Cached_Data_Manager.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
                     if (itemsInTitle == null)
                     {
                         // Get list of information about this item group and save the item list
-                        DataSet itemDetails = SobekCM_Database.Get_Item_Group_Details(currentItem.BibID, Tracer);
+                        DataSet itemDetails = Engine_Database.Get_Item_Group_Details(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
                         itemsInTitle = new SobekCM_Items_In_Title(itemDetails.Tables[1]);
 
                         // Store in cache if retrieved
-                        Cached_Data_Manager.Store_Items_In_Title(currentItem.BibID, itemsInTitle, Tracer);
+                        Cached_Data_Manager.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, itemsInTitle, RequestSpecificValues.Tracer);
                     }
-					mySobekViewer = new Group_Add_Volume_MySobekViewer(user, Current_Mode, itemList, currentItem, codeManager, iconTable, Skin, itemsInTitle, translator, HTML_Skin_Collection, Tracer);
+                    mySobekViewer = new Group_Add_Volume_MySobekViewer(RequestSpecificValues, itemsInTitle );
                     break;
 
                 case My_Sobek_Type_Enum.Group_AutoFill_Volumes:
-                    mySobekViewer = new Group_AutoFill_Volume_MySobekViewer(user);
+                    mySobekViewer = new Group_AutoFill_Volume_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Group_Mass_Update_Items:
-                    mySobekViewer = new Mass_Update_Items_MySobekViewer(user, Current_Mode, currentItem, codeManager, Tracer);
+                    mySobekViewer = new Mass_Update_Items_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.Page_Images_Management:
-                    mySobekViewer = new Page_Image_Upload_MySobekViewer(user, Current_Mode, Current_Item, itemList, codeManager, iconTable, Skin, translator, Tracer );
+                    mySobekViewer = new Page_Image_Upload_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.User_Tags:
-                    mySobekViewer = new User_Tags_MySobekViewer(user, Tracer);
+                    mySobekViewer = new User_Tags_MySobekViewer(RequestSpecificValues);
                     break;
 
                 case My_Sobek_Type_Enum.User_Usage_Stats:
-                    mySobekViewer = new User_Usage_Stats_MySobekViewer(user, Current_Mode, statsDates, Tracer);
+                    mySobekViewer = new User_Usage_Stats_MySobekViewer(RequestSpecificValues);
                     break;
             }
-
-            // Pass in the navigation and translator information
-            mySobekViewer.CurrentMode = Current_Mode;
-            mySobekViewer.Translator = translator;
-
         }
 
         #endregion
@@ -254,14 +194,14 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
-				if (user == null)
+				if (RequestSpecificValues.Current_User == null)
 					return false;
 
-				if (Mode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management)
+				if (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management)
 					return false;
 
-				if (((Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (Mode.My_Sobek_SubMode.Length > 0) && (Mode.My_Sobek_SubMode[0] == '8')) ||
-				    (Mode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
+				if (((RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0] == '8')) ||
+				    (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
 					return true;
 
 				return false;
@@ -278,35 +218,35 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
 #if DEBUG
-			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
-            Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_MySobek.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_MySobek.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 #else
-			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
-			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_MySobek.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_MySobek.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 #endif
 
 
 			// If we are currently uploading files, add those specific upload styles 
-			if (((Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (Mode.My_Sobek_SubMode.Length > 0) && (Mode.My_Sobek_SubMode[0] == '8')) || (Mode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
+			if (((RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0] == '8')) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
 			{
 #if DEBUG
-                Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
-                Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadify/jquery.uploadify.js\" type=\"text/javascript\"></script>");
+                Output.WriteLine("  <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
+                Output.WriteLine("  <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadify/jquery.uploadify.js\" type=\"text/javascript\"></script>");
 #else
-				Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.min.js\" type=\"text/javascript\"></script>");
-				Output.WriteLine("  <script src=\"" + Mode.Base_URL + "default/scripts/uploadify/jquery.uploadify.min.js\" type=\"text/javascript\"></script>");
+				Output.WriteLine("  <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.min.js\" type=\"text/javascript\"></script>");
+				Output.WriteLine("  <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadify/jquery.uploadify.min.js\" type=\"text/javascript\"></script>");
 #endif
 
-				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Mode.Base_URL + "default/scripts/uploadifive/uploadifive.css\">");
-				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Mode.Base_URL + "default/scripts/uploadify/uploadify.css\">");
+				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadifive/uploadifive.css\">");
+				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadify/uploadify.css\">");
 			}
 
 			if (( mySobekViewer != null ) && ( mySobekViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)))
 			{
 #if DEBUG
-                Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
 #else
-			Output.WriteLine("  <link href=\"" + Mode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 #endif
 			}
 		}
@@ -320,15 +260,15 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
-            if ((HttpContext.Current.Session["agreement_date"] == null) && (Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item ) && ((Mode.My_Sobek_SubMode.Length == 0) || (Mode.My_Sobek_SubMode[0] != '1')))
+            if ((HttpContext.Current.Session["agreement_date"] == null) && (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item ) && ((RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length == 0) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0] != '1')))
             {
-                Mode.My_Sobek_SubMode = "1";
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
             }
                 // A few cases skip the view selectors at the top entirely
 	        if (mySobekViewer.Standard_Navigation_Type == MySobek_Included_Navigation_Enum.Standard)
 	        {
 		        // Add the user-specific main menu
-		        MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, Mode, user);
+		        MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues);
 
 		        // Start the page container
 		        Output.WriteLine("<div id=\"pagecontainer\">");
@@ -342,13 +282,13 @@ namespace SobekCM.Library.HTML
 				Output.WriteLine("<ul class=\"sf-menu\">");
 
 				// Get ready to draw the tabs
-				string sobek_home_text = Mode.SobekCM_Instance_Abbreviation + " Home";
+				string sobek_home_text = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home";
 
 				// Add the 'SOBEK HOME' first menu option and suboptions
-				Mode.Mode = Display_Mode_Enum.Aggregation;
-				Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-				Mode.Home_Type = Home_Type_Enum.List;
-				Output.WriteLine("\t\t<li id=\"sbkUsm_Home\" class=\"sbkMenu_Home\"><a href=\"" + Mode.Redirect_URL() + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a></li>");
+				RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+				RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
+				Output.WriteLine("\t\t<li id=\"sbkUsm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a></li>");
 				Output.WriteLine("\t</ul></div>");
 
 				Output.WriteLine("<!-- Initialize the main user menu -->");
@@ -360,7 +300,7 @@ namespace SobekCM.Library.HTML
 				Output.WriteLine();
 
 				// Restore the current view information type
-				Mode.Mode = Display_Mode_Enum.My_Sobek;
+				RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
 
 				// Start the page container
 				Output.WriteLine("<div id=\"pagecontainer\">");
@@ -399,7 +339,7 @@ namespace SobekCM.Library.HTML
 		public override void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
 		{
 			Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_Additional_HTML", "Adding any form elements popup divs");
-			if ((Mode.Logon_Required) || (mySobekViewer.Contains_Popup_Forms))
+			if ((RequestSpecificValues.Current_Mode.Logon_Required) || (mySobekViewer.Contains_Popup_Forms))
 			{
 				mySobekViewer.Add_Popup_HTML(Output, Tracer);
 			}
@@ -449,12 +389,12 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
-				if ((Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (Mode.My_Sobek_SubMode.IndexOf("0.2") == 0))
+				if ((RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("0.2") == 0))
 					return "container-inner1000";
 
-				if ((Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors) || (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Behaviors) ||
-				    (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume) ||
-				    (Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items) || (Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item))
+				if ((RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Behaviors) ||
+				    (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume) ||
+				    (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item))
 				{
 					return "container-inner1000";
 				}

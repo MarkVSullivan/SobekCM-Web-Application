@@ -3,10 +3,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Navigation;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
 
 #endregion
@@ -20,33 +17,16 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This just prevents an empty set from having to be created over and over </remarks>
         protected static List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
 
-        /// <summary> Protected field contains the mode / navigation information for the current request </summary>
-        protected SobekCM_Navigation_Object currentMode;
-
-        /// <summary> Protected field contains the authenticated user information </summary>
-        protected User_Object user;
+        /// <summary> Protected field contains the information specific to the current request </summary>
+        protected RequestCache RequestSpecificValues;
 
         /// <summary> Constructor for a new instance of the abstract_AdminViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        protected abstract_AdminViewer(User_Object User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        protected abstract_AdminViewer(RequestCache RequestSpecificValues)
         {
-            user = User;
+            this.RequestSpecificValues = RequestSpecificValues;
         }
         
-
-        /// <summary> Sets the mode / navigation information for the current request </summary>
-        /// <remarks> This also sets all of the protected tab HTML fields, from the base interface in the navigation object </remarks>
-        public SobekCM_Navigation_Object CurrentMode
-        {
-            set
-            {
-                currentMode = value;
-            }
-        }
-
-        /// <summary> Sets the translation / language support object for writing the user interface in multiple languages </summary>
-        public Language_Support_Info Translator { get; set; }
-
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <remarks> Abstract property must be implemented by all extending classes </remarks>
         public abstract string Web_Title { get; }

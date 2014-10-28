@@ -3,16 +3,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
-using SobekCM.Core.Settings;
+using SobekCM.Core.Navigation;
 using SobekCM.Library.AdminViewer;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -50,31 +47,15 @@ namespace SobekCM.Library.MySobekViewer
         /// <remarks> This just prevents an empty set from having to be created over and over </remarks>
         protected static List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
 
-        /// <summary> Protected field contains the mode / navigation information for the current request </summary>
-        protected SobekCM_Navigation_Object currentMode;
-
-        /// <summary> Protected field contains the authenticated user information </summary>
-        protected User_Object user;
+        /// <summary> Protected field contains all the necessary, non-global data specific to the current request </summary>
+        protected RequestCache RequestSpecificValues;
 
         /// <summary> Constructor for a new instance of the abstract_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        protected abstract_MySobekViewer(User_Object User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        protected abstract_MySobekViewer(RequestCache RequestSpecificValues)
         {
-            user = User;
+            this.RequestSpecificValues = RequestSpecificValues;
         }
-
-        /// <summary> Sets the mode / navigation information for the current request </summary>
-        /// <remarks> This also sets all of the protected tab HTML fields, from the base interface in the navigation object </remarks>
-        public SobekCM_Navigation_Object CurrentMode
-        {
-            set
-            {
-                currentMode = value;
-            }
-        }
-
-        /// <summary> Sets the translation / language support object for writing the user interface in multiple languages </summary>
-        public Language_Support_Info Translator { get; set; }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <remarks> Abstract property must be implemented by all extending classes </remarks>
@@ -202,7 +183,7 @@ namespace SobekCM.Library.MySobekViewer
 				bool newspaper = Item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
 
 				// Does a custom setting override the default behavior to add a date?
-				if ((newspaper) && (InstanceWide_Settings_Singleton.Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (InstanceWide_Settings_Singleton.Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
+				if ((newspaper) && (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (UI_ApplicationCache_Gateway.Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
 					newspaper = false;
 
 				// Add the date if it should be added

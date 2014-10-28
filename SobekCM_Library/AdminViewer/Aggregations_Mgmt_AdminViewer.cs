@@ -10,18 +10,17 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Web;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Aggregations;
+using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -42,8 +41,6 @@ namespace SobekCM.Library.AdminViewer
     public class Aggregations_Mgmt_AdminViewer : abstract_AdminViewer
     {
         private readonly string actionMessage;
-        private readonly Aggregation_Code_Manager codeManager;
-		private readonly List<Thematic_Heading> thematicHeadings;
         private readonly string enteredCode;
         private readonly string enteredDescription;
         private readonly bool enteredIsActive;
@@ -55,20 +52,11 @@ namespace SobekCM.Library.AdminViewer
         private readonly string enteredType;
 
         /// <summary> Constructor for a new instance of the Aggregations_Mgmt_AdminViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="CurrentMode"> Mode / navigation information for the current request</param>
-        /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-		/// <param name="Thematic_Headings"> Headings under which all the highlighted collections on the home page are organized </param>       
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-		public Aggregations_Mgmt_AdminViewer(User_Object User, SobekCM_Navigation_Object CurrentMode, Aggregation_Code_Manager Code_Manager, List<Thematic_Heading> Thematic_Headings, Custom_Tracer Tracer)
-            : base(User)
+        public Aggregations_Mgmt_AdminViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Aggregations_Mgmt_AdminViewer.Constructor", String.Empty);
-
-            codeManager = Code_Manager;
-	        currentMode = CurrentMode;
-			thematicHeadings = Thematic_Headings;
+            RequestSpecificValues.Tracer.Add_Trace("Aggregations_Mgmt_AdminViewer.Constructor", String.Empty);
 
             // Set some defaults
             actionMessage = String.Empty;
@@ -82,16 +70,16 @@ namespace SobekCM.Library.AdminViewer
             enteredIsHidden = false;
 
             // If the user cannot edit this, go back
-            if (( user == null ) || ((!user.Is_System_Admin) && ( !user.Is_Portal_Admin )))
+            if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
             {
-                currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
             // If this is a postback, handle any events first
-            if (currentMode.isPostBack)
+            if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 try
                 {
@@ -116,10 +104,10 @@ namespace SobekCM.Library.AdminViewer
 					if ( delete_aggregation_code.Length > 0)
 					{
 						string delete_error;
-						int errorCode = SobekCM_Database.Delete_Item_Aggregation(delete_aggregation_code, user.Is_System_Admin, user.Full_Name, Tracer, out delete_error);
+                        int errorCode = SobekCM_Database.Delete_Item_Aggregation(delete_aggregation_code, RequestSpecificValues.Current_User.Is_System_Admin, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Tracer, out delete_error);
 						if (errorCode <= 0)
 						{
-							string delete_folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "aggregations\\" + delete_aggregation_code;
+							string delete_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + delete_aggregation_code;
 							if (SobekCM_File_Utilities.Delete_Folders_Recursively(delete_folder))
 								actionMessage = "Deleted '" + delete_aggregation_code + "' aggregation<br /><br />Unable to remove aggregation directory<br /><br />Some of the files may be in use";
 							else
@@ -132,9 +120,9 @@ namespace SobekCM.Library.AdminViewer
 
 
 						// Reload the list of all codes, to include this new one and the new hierarchy
-						lock (codeManager)
+						lock (UI_ApplicationCache_Gateway.Aggregations)
 						{
-							SobekCM_Database.Populate_Code_Manager(codeManager, Tracer);
+                            Engine_Database.Populate_Code_Manager(UI_ApplicationCache_Gateway.Aggregations, RequestSpecificValues.Tracer);
 						}
 					}
 
@@ -142,7 +130,7 @@ namespace SobekCM.Library.AdminViewer
                     // If there is a reset request here, purge the aggregation from the cache
                     if (reset_aggregation_code.Length > 0)
                     {
-                        Cached_Data_Manager.Remove_Item_Aggregation(reset_aggregation_code, Tracer);
+                        Cached_Data_Manager.Remove_Item_Aggregation(reset_aggregation_code, RequestSpecificValues.Tracer);
                     }
 
                     // If there was a save value continue to pull the rest of the data
@@ -206,11 +194,11 @@ namespace SobekCM.Library.AdminViewer
 								errors.Add("You must enter a CODE for this item aggregation");
 
 							}
-							else if (codeManager[new_aggregation_code.ToUpper()] != null)
+							else if (UI_ApplicationCache_Gateway.Aggregations[new_aggregation_code.ToUpper()] != null)
 							{
 								errors.Add("New code must be unique... <i>" + new_aggregation_code + "</i> already exists");
 							}
-							else if (InstanceWide_Settings_Singleton.Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
+							else if (UI_ApplicationCache_Gateway.Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
 							{
 								errors.Add("That code is a system-reserved keyword.  Try a different code.");
 							}
@@ -297,12 +285,12 @@ namespace SobekCM.Library.AdminViewer
 									thematicHeadingId = Convert.ToInt32(form["admin_aggr_heading"]);
 
                                 // Try to save the new item aggregation
-								if (SobekCM_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, thematicHeadingId, correct_type, is_active, is_hidden, new_link, parentid, user.Full_Name, Tracer))
+                                if (Engine_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, thematicHeadingId, correct_type, is_active, is_hidden, new_link, parentid, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Tracer))
                                 {
                                     // Ensure a folder exists for this, otherwise create one
                                     try
                                     {
-	                                    string folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "aggregations\\" + new_aggregation_code.ToLower();
+	                                    string folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + new_aggregation_code.ToLower();
 	                                    if (!Directory.Exists(folder))
 	                                    {
 		                                    // Create this directory and all the subdirectories
@@ -320,24 +308,24 @@ namespace SobekCM.Library.AdminViewer
 		                                    writer.Close();
 
 		                                    // Copy the default banner and buttons from images
-		                                    if (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_button.png"))
-			                                    File.Copy(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_button.png", folder + "/images/buttons/coll.png");
-		                                    if (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_button.gif"))
-			                                    File.Copy(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_button.gif", folder + "/images/buttons/coll.gif");
+		                                    if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.png"))
+			                                    File.Copy(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.png", folder + "/images/buttons/coll.png");
+		                                    if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.gif"))
+			                                    File.Copy(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.gif", folder + "/images/buttons/coll.gif");
 
                                             // Try to create a new custom banner
                                             bool custom_banner_created = false;
                                             // Create the banner with the name of the collection
-                                            if (Directory.Exists(InstanceWide_Settings_Singleton.Settings.Application_Server_Network + "\\default\\banner_images"))
+                                            if (Directory.Exists(UI_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images"))
                                             {
                                                 try
                                                 {
-                                                    string[] banners = Directory.GetFiles(InstanceWide_Settings_Singleton.Settings.Application_Server_Network + "\\default\\banner_images", "*.jpg");
+                                                    string[] banners = Directory.GetFiles(UI_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images", "*.jpg");
                                                     if (banners.Length > 0)
                                                     {
                                                         Random randomizer = new Random();
                                                         string banner_to_use = banners[randomizer.Next(0, banners.Length - 1)];
-                                                        Bitmap bitmap = (Bitmap)System.Drawing.Bitmap.FromFile(banner_to_use);
+                                                        Bitmap bitmap = (Bitmap) (Bitmap.FromFile(banner_to_use));
 
                                                         RectangleF rectf = new RectangleF(30, bitmap.Height - 55, bitmap.Width - 40, 40);
                                                         Graphics g = Graphics.FromImage(bitmap);
@@ -357,19 +345,19 @@ namespace SobekCM.Library.AdminViewer
                                                 }
                                                 catch (Exception ee)
                                                 {
-                                                    string msg = ee.Message;
+                                                    // Suppress this Error... 
                                                 }
                                             }
 
                                             if ((!custom_banner_created) && (!File.Exists(folder + "/images/banners/coll.jpg")))
                                             {
-                                                if (File.Exists(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_banner.jpg"))
-                                                    File.Copy(InstanceWide_Settings_Singleton.Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
+                                                if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_banner.jpg"))
+                                                    File.Copy(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
                                             }
 
 		                                    // Now, try to create the item aggregation and write the configuration file
-		                                    Item_Aggregation itemAggregation = Item_Aggregation_Builder.Get_Item_Aggregation(new_aggregation_code, String.Empty, null, false, false, Tracer);
-		                                    itemAggregation.Write_Configuration_File(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + itemAggregation.ObjDirectory);
+                                            Item_Aggregation itemAggregation = Item_Aggregation_Utilities.Get_Item_Aggregation(new_aggregation_code, String.Empty, null, false, false, RequestSpecificValues.Tracer);
+		                                    itemAggregation.Write_Configuration_File(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory);
 	                                    }
                                     }
                                     catch
@@ -378,9 +366,9 @@ namespace SobekCM.Library.AdminViewer
                                     }
 
                                     // Reload the list of all codes, to include this new one and the new hierarchy
-                                    lock (codeManager)
+                                    lock (UI_ApplicationCache_Gateway.Aggregations)
                                     {
-                                        SobekCM_Database.Populate_Code_Manager(codeManager, Tracer);
+                                        Engine_Database.Populate_Code_Manager(UI_ApplicationCache_Gateway.Aggregations, RequestSpecificValues.Tracer);
                                     }
 									if ( !String.IsNullOrEmpty(actionMessage))
 	                                    actionMessage = "New item aggregation <i>" + new_aggregation_code + "</i> saved successfully";
@@ -425,7 +413,7 @@ namespace SobekCM.Library.AdminViewer
         {
             Tracer.Add_Trace("Aggregations_Mgmt_AdminViewer.Write_ItemNavForm_Closing", "");
 
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -435,7 +423,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
 
             Output.WriteLine("<!-- Aggregations_Mgmt_AdminViewer.Write_ItemNavForm_Closing -->");
-            Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
 			if (actionMessage.Length > 0)
@@ -444,17 +432,17 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
 			}
 
-            Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/aggregations\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/aggregations\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
 
 
             // Find the matching type to display
             int index = 0;
-            if (currentMode.My_Sobek_SubMode.Length > 0)
+            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
             {
-                Int32.TryParse(currentMode.My_Sobek_SubMode, out index);
+                Int32.TryParse(RequestSpecificValues.Current_Mode.My_Sobek_SubMode, out index);
             }
 
-            if ((index <= 0) || (index > codeManager.Types_Count))
+            if ((index <= 0) || (index > UI_ApplicationCache_Gateway.Aggregations.Types_Count))
             {
 
                 Output.WriteLine("  <h2>New Item Aggregation</h2>");
@@ -507,7 +495,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("          <select class=\"sbkAsav_select_large\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\">");
                 if (enteredParent == String.Empty)
                     Output.WriteLine("            <option value=\"\" selected=\"selected\" ></option>");
-                foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.All_Aggregations)
+                foreach (Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
                 {
                     if (enteredParent == thisAggr.ID.ToString())
                     {
@@ -537,7 +525,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("        <td colspan=\"2\">");
 				Output.WriteLine("          <select class=\"sbkAsav_select_large\" name=\"admin_aggr_heading\" id=\"admin_aggr_heading\">");
 				Output.WriteLine("            <option value=\"-1\" selected=\"selected\" ></option>");
-				foreach (Thematic_Heading thisHeading in thematicHeadings)
+				foreach (Thematic_Heading thisHeading in UI_ApplicationCache_Gateway.Thematic_Headings)
 				{
 					Output.Write("            <option value=\"" + thisHeading.ThematicHeadingID + "\">" + HttpUtility.HtmlEncode(thisHeading.ThemeName) + "</option>");
 				}
@@ -562,7 +550,7 @@ namespace SobekCM.Library.AdminViewer
  
 
 				// Add the SAVE button
-				Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new item aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_aggr();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+				Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new item aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_aggr();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
 				Output.WriteLine("    </table>");
 				Output.WriteLine("  </div>");
 				Output.WriteLine();
@@ -571,25 +559,25 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <p>Select a type below to view all matching item aggregations:</p>");
                 Output.WriteLine("  <ul class=\"sbkAsav_List\">");
                 int i = 1;
-                foreach (string thisType in codeManager.All_Types)
+                foreach (string thisType in UI_ApplicationCache_Gateway.Aggregations.All_Types)
                 {
-                    currentMode.My_Sobek_SubMode = i.ToString();
-                    Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "\" >" + thisType.ToUpper() + "</a></li>");
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = i.ToString();
+                    Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >" + thisType.ToUpper() + "</a></li>");
                     i++;
                 }
-                currentMode.My_Sobek_SubMode = String.Empty;
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                 Output.WriteLine("  </ul>");
             }
             else
             {
-                string aggregationType = codeManager.All_Types[index - 1];
+                string aggregationType = UI_ApplicationCache_Gateway.Aggregations.All_Types[index - 1];
 
                 Output.WriteLine("  <h2>Other Actions</h2>");
                 Output.WriteLine("  <ul class=\"sbkAsav_List\">");
-                currentMode.My_Sobek_SubMode = String.Empty;
-                Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "\">Add new item aggregation</a></li>");
-                Output.WriteLine("    <li><a href=\"" + currentMode.Redirect_URL() + "#list\">View different aggregations</a></li>");
-                currentMode.My_Sobek_SubMode = index.ToString();
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Add new item aggregation</a></li>");
+                Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "#list\">View different aggregations</a></li>");
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = index.ToString();
                 Output.WriteLine("  </ul>");
 				Output.WriteLine();
 
@@ -616,7 +604,7 @@ namespace SobekCM.Library.AdminViewer
 
                 // Show all matching rows
                 string last_code = String.Empty;
-                foreach (Item_Aggregation_Related_Aggregations thisAggr in codeManager.Aggregations_By_Type(aggregationType))
+                foreach (Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_Type(aggregationType))
                 {
                     if (thisAggr.Code != last_code)
                     {
@@ -625,15 +613,15 @@ namespace SobekCM.Library.AdminViewer
                         // Build the action links
                         Output.WriteLine("    <tr>");
                         Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
-                        Output.Write("<a title=\"Click to edit this item aggregation\" href=\"" + currentMode.Base_URL + "l/admin/editaggr/" + thisAggr.Code + "\">edit</a> | ");
+                        Output.Write("<a title=\"Click to edit this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/admin/editaggr/" + thisAggr.Code + "\">edit</a> | ");
                         if (thisAggr.Active)
-                            Output.Write("<a title=\"Click to view this item aggregation\" href=\"" + currentMode.Base_URL + "l/" + thisAggr.Code + "\">view</a> | ");
+                            Output.Write("<a title=\"Click to view this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/" + thisAggr.Code + "\">view</a> | ");
                         else
                             Output.Write("view | ");
 
-						Output.Write("<a title=\"Click to delete this item aggregation\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr('" + thisAggr.Code + "');\">delete</a> | ");
+						Output.Write("<a title=\"Click to delete this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr('" + thisAggr.Code + "');\">delete</a> | ");
 
-                        Output.WriteLine("<a title=\"Click to reset the instance in the application cache\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return reset_aggr('" + thisAggr.Code + "');\">reset</a> )</td>");
+                        Output.WriteLine("<a title=\"Click to reset the instance in the application cache\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return reset_aggr('" + thisAggr.Code + "');\">reset</a> )</td>");
 
                         // Add the rest of the row with data
                         Output.WriteLine("      <td>" + thisAggr.Code + "</td>");

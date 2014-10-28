@@ -3,7 +3,6 @@
 using System.IO;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
 
 #endregion
@@ -25,8 +24,8 @@ namespace SobekCM.Library.MySobekViewer
     public class Edit_Serial_Hierarchy_MySobekViewer : abstract_MySobekViewer
     {
         /// <summary> Constructor for a new instance of the Edit_Serial_Hierarchy_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        public Edit_Serial_Hierarchy_MySobekViewer(User_Object User) : base(User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Edit_Serial_Hierarchy_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Everything done in base class constructor
         }

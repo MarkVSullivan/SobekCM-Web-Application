@@ -1,20 +1,20 @@
 ﻿#region Using directives
+
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Navigation;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
-using SobekCM.Resource_Object;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
+using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Database;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
 
 #endregion
 
@@ -56,22 +56,16 @@ namespace SobekCM.Library.MySobekViewer
         private readonly int page;
 
         /// <summary> Constructor for a new instance of the Track_Item_MySobekViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public Track_Item_MySobekViewer(User_Object User, SobekCM_Navigation_Object Current_Mode, Custom_Tracer Tracer)
-            : base(User)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Track_Item_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Track_Item_MySobekViewer.Constructor", String.Empty);
+            RequestSpecificValues.Tracer.Add_Trace("Track_Item_MySobekViewer.Constructor", String.Empty);
 
-            currentMode = Current_Mode;
-
-
-            //If there is no user, go back
-            if (user == null)
+            //If there is no RequestSpecificValues.Current_User, go back
+            if (RequestSpecificValues.Current_User == null)
             {
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                HttpContext.Current.Response.Redirect(currentMode.Redirect_URL());
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
             }
 
 
@@ -100,7 +94,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
             //Get the list of users who are possible Scanning/Processing technicians from the DB
-            tracking_users = Database.SobekCM_Database.Tracking_Get_Users_Scanning_Processing();
+            tracking_users = SobekCM_Database.Tracking_Get_Users_Scanning_Processing();
 
             foreach (DataRow row in tracking_users.Rows)
             {
@@ -112,12 +106,12 @@ namespace SobekCM.Library.MySobekViewer
                 user_list.Add(temp_user.UserName, temp_user);
             }
 
-            if (!user_list.ContainsKey(User.UserName))
-                user_list.Add(User.UserName, User);
+            if (!user_list.ContainsKey(RequestSpecificValues.Current_User.UserName))
+                user_list.Add(RequestSpecificValues.Current_User.UserName, RequestSpecificValues.Current_User);
 
             //Get the list of scanning equipment
             DataTable scanners = new DataTable();
-            scanners = Database.SobekCM_Database.Tracking_Get_Scanners_List();
+            scanners = SobekCM_Database.Tracking_Get_Scanners_List();
             foreach (DataRow row in scanners.Rows)
             {
                 scanners_list.Add(row["ScanningEquipment"].ToString());
@@ -131,13 +125,13 @@ namespace SobekCM.Library.MySobekViewer
             //Get the equipment value
             //if (HttpContext.Current.Session["Equipment"] != null && !String.IsNullOrEmpty(HttpContext.Current.Session["Equipment"].ToString()))
             //    equipment = HttpContext.Current.Session["Equipment"].ToString();
-            if (User.Get_Setting("Track_Item_MySobekViewer:Equipment") != null && !String.IsNullOrEmpty(User.Get_Setting("Track_Item_MySobekViewer:Equipment").ToString()))
-                equipment = User.Get_Setting("Track_Item_MySobekViewer:Equipment").ToString();
+            if (RequestSpecificValues.Current_User.Get_Setting("Track_Item_MySobekViewer:Equipment") != null && !String.IsNullOrEmpty(RequestSpecificValues.Current_User.Get_Setting("Track_Item_MySobekViewer:Equipment").ToString()))
+                equipment = RequestSpecificValues.Current_User.Get_Setting("Track_Item_MySobekViewer:Equipment").ToString();
 
             else
             {
                 equipment = scanners_list[0];
-                User.Add_Setting("Track_Item_MySobekViewer:Equipment", equipment);
+                RequestSpecificValues.Current_User.Add_Setting("Track_Item_MySobekViewer:Equipment", equipment);
                 //  HttpContext.Current.Session["Equipment"] = equipment;
             }
 
@@ -146,21 +140,21 @@ namespace SobekCM.Library.MySobekViewer
             {
                 equipment = HttpContext.Current.Request.Form["hidden_equipment"];
                 //   HttpContext.Current.Session["equipment"] = equipment;
-                User.Add_Setting("Track_Item_MySobekViewer:Equipment", equipment);
+                RequestSpecificValues.Current_User.Add_Setting("Track_Item_MySobekViewer:Equipment", equipment);
             }
 
 
-            //Also get the currently selected user
+            //Also get the currently selected RequestSpecificValues.Current_User
             if (HttpContext.Current.Session["Selected_User"] != null)
                 current_selected_user = (User_Object)HttpContext.Current.Session["Selected_User"];
 
             else
             {
-                current_selected_user = User;
+                current_selected_user = RequestSpecificValues.Current_User;
                 HttpContext.Current.Session["Selected_User"] = current_selected_user;
             }
 
-            //Check if the selected user has been changed
+            //Check if the selected RequestSpecificValues.Current_User has been changed
             if (!String.IsNullOrEmpty(HttpContext.Current.Request.Form["hidden_selected_username"]))
             {
                 current_selected_user = new User_Object();
@@ -170,7 +164,7 @@ namespace SobekCM.Library.MySobekViewer
                 HttpContext.Current.Session["Selected_User"] = current_selected_user;
             }
 
-            //Get the table of all previous entries created by this user, for display in the third edit tab
+            //Get the table of all previous entries created by this RequestSpecificValues.Current_User, for display in the third edit tab
             //        previous_workflows_this_user = Database.SobekCM_Database.Tracking_Get_All_Entries_By_User(current_selected_user.UserName);
 
             //Fetch the dictionaries of current work from the session
@@ -287,7 +281,7 @@ namespace SobekCM.Library.MySobekViewer
                 case "delete":
                     int WorkflowId = Convert.ToInt32(HttpContext.Current.Request.Form["Track_Item_hidden_value"]);
                     current_workflow_id = WorkflowId;
-                    Database.SobekCM_Database.Tracking_Delete_Workflow(WorkflowId);
+                    SobekCM_Database.Tracking_Delete_Workflow(WorkflowId);
                     if (page == 1 && current_workflows.ContainsKey(current_workflow_id.ToString()))
                         current_workflows.Remove(current_workflow_id.ToString());
                     else if (page == 2 && current_workflows_no_durations.ContainsKey(current_workflow_id.ToString()))
@@ -301,9 +295,9 @@ namespace SobekCM.Library.MySobekViewer
             //Get the table of any previously opened workflows for this item
             if (!String.IsNullOrEmpty(itemID.ToString()) && itemID != 0 && page == 1)
             {
-                DataView temp_open_workflows_all_users = new DataView(Database.SobekCM_Database.Tracking_Get_Open_Workflows(itemID, stage));
+                DataView temp_open_workflows_all_users = new DataView(SobekCM_Database.Tracking_Get_Open_Workflows(itemID, stage));
 
-                //Filter the open workflows associated with the currently selected user
+                //Filter the open workflows associated with the currently selected RequestSpecificValues.Current_User
                 open_workflows_from_DB = temp_open_workflows_all_users.ToTable().Clone();
 
                 foreach (DataRowView rowView in temp_open_workflows_all_users)
@@ -459,8 +453,8 @@ namespace SobekCM.Library.MySobekViewer
             //If this has not been previously saved, create a new entry in the DB
             if (thisWorkflowId == -1)
             {
-                //If this is a 'Start' event, use the event number, since there can be at max one event start  per item per user per day
-                //else use the unique Guid. This ensures there can be any number of 'close' events for an item per user per day
+                //If this is a 'Start' event, use the event number, since there can be at max one event start  per item per RequestSpecificValues.Current_User per day
+                //else use the unique Guid. This ensures there can be any number of 'close' events for an item per RequestSpecificValues.Current_User per day
                 string guidObj = Guid.NewGuid().ToString();
 
                 string stage_from_event = (page == 1) ? ((this_event == 1 || this_event == 3) ? this_event.ToString() : guidObj) : guidObj;
@@ -471,7 +465,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (page == 1)
                 {
                     //Save this to the DB
-                    this_workflow.WorkflowID = Database.SobekCM_Database.Tracking_Save_New_Workflow(thisItemID, current_selected_user.UserName, equipment, start_time_to_save, end_time_to_save, this_event, start_event_num, end_event_num, start_end_event_num);
+                    this_workflow.WorkflowID = SobekCM_Database.Tracking_Save_New_Workflow(thisItemID, current_selected_user.UserName, equipment, start_time_to_save, end_time_to_save, this_event, start_event_num, end_event_num, start_end_event_num);
 
                     current_workflow_id = this_workflow.WorkflowID;
                     key = current_workflow_id.ToString();
@@ -487,7 +481,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
 
                     //Save this workflow to the database
-                    this_workflow.WorkflowID = Database.SobekCM_Database.Tracking_Save_New_Workflow(thisItemID, current_selected_user.UserName, equipment, start_time_to_save, end_time_to_save, stage, start_event_num, end_event_num, start_end_event_num);
+                    this_workflow.WorkflowID = SobekCM_Database.Tracking_Save_New_Workflow(thisItemID, current_selected_user.UserName, equipment, start_time_to_save, end_time_to_save, stage, start_event_num, end_event_num, start_end_event_num);
 
                     current_workflow_id = this_workflow.WorkflowID;
                     key = current_workflow_id.ToString();
@@ -513,7 +507,7 @@ namespace SobekCM.Library.MySobekViewer
                 string key = thisWorkflowId.ToString();
                 current_workflow_id = thisWorkflowId;
 
-                Database.SobekCM_Database.Tracking_Update_Workflow(thisWorkflowId, thisItemID, current_selected_user.UserName, start_time_to_save, end_time_to_save, equipment, this_event, start_event_num, end_event_num);
+                SobekCM_Database.Tracking_Update_Workflow(thisWorkflowId, thisItemID, current_selected_user.UserName, start_time_to_save, end_time_to_save, equipment, this_event, start_event_num, end_event_num);
 
                 if (page == 1)
                 {
@@ -696,7 +690,7 @@ namespace SobekCM.Library.MySobekViewer
             if ((page == 1) && !current_workflows.ContainsKey(key) && (stage == 1 || stage == 3))
             {
                 //Save this workflow to the database
-                current_workflow_id = Database.SobekCM_Database.Tracking_Save_New_Workflow(itemID, current_selected_user.UserName, equipment, start_date_time, end_date_time, stage, start_event_num, end_event_num, start_end_event_num);
+                current_workflow_id = SobekCM_Database.Tracking_Save_New_Workflow(itemID, current_selected_user.UserName, equipment, start_date_time, end_date_time, stage, start_event_num, end_event_num, start_end_event_num);
 
                 //Add the workflow id obtained after saving to the database 
                 this_workflow.WorkflowID = current_workflow_id;
@@ -719,7 +713,7 @@ namespace SobekCM.Library.MySobekViewer
                     current_workflows.Remove(opened_key);
 
                 //Update this data in the database
-                Database.SobekCM_Database.Tracking_Update_Workflow(this_workflow.WorkflowID, itemID, current_selected_user.UserName, start_date_time, end_date_time, equipment, stage, start_event_num, end_event_num);
+                SobekCM_Database.Tracking_Update_Workflow(this_workflow.WorkflowID, itemID, current_selected_user.UserName, start_date_time, end_date_time, equipment, stage, start_event_num, end_event_num);
 
                 //Add the new row to the dictionary with the updated "end" information
                 current_workflows.Add(key, this_workflow);
@@ -732,7 +726,7 @@ namespace SobekCM.Library.MySobekViewer
                 else start_date_time = end_date_time;
 
                 //Save this workflow to the database
-                current_workflow_id = Database.SobekCM_Database.Tracking_Save_New_Workflow(itemID, current_selected_user.UserName, equipment, start_date_time, end_date_time, stage, start_event_num, end_event_num, start_end_event_num);
+                current_workflow_id = SobekCM_Database.Tracking_Save_New_Workflow(itemID, current_selected_user.UserName, equipment, start_date_time, end_date_time, stage, start_event_num, end_event_num, start_end_event_num);
 
                 //Add the workflow id obtained after saving to the database 
                 this_workflow.WorkflowID = current_workflow_id;
@@ -755,7 +749,7 @@ namespace SobekCM.Library.MySobekViewer
         private void Get_Bib_VID_from_ItemID(int item_ID)
         {
 
-            DataRow temp = Database.SobekCM_Database.Tracking_Get_Item_Info_from_ItemID(item_ID);
+            DataRow temp = SobekCM_Database.Tracking_Get_Item_Info_from_ItemID(item_ID);
             BibID = temp["BibID"].ToString();
             VID = temp["VID"].ToString();
             title = temp["Title"].ToString();
@@ -839,15 +833,15 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("Track_Item_MySobekViewer.Write_HTML", "Do nothing");
 
             //Include the js files
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.timers.min.js\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_track_item.js\" ></script>");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/jquery-ui.css\" />");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/timeentry/jquery.timeentry.min.js\"></script>");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\"  href=\"" + currentMode.Base_URL + "default/scripts/timeentry/jquery.timeentry.css\"/>");
-            //Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery.formatter.js\"></script>");
-            //Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/formatter.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.timers.min.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_track_item.js\" ></script>");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/jquery-ui.css\" />");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/timeentry/jquery.timeentry.min.js\"></script>");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\"  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/timeentry/jquery.timeentry.css\"/>");
+            //Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery.formatter.js\"></script>");
+            //Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/formatter.js\"></script>");
 
         }
 
@@ -862,11 +856,11 @@ namespace SobekCM.Library.MySobekViewer
 
             StringBuilder builder = new StringBuilder(2000);
             builder.AppendLine("<!-- Track_Item_MySobekViewer.Add_Controls -->");
-            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/SobekCM_MySobek.css\" /> ");
-            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + currentMode.Base_URL + "default/SobekCM_Admin.css\" /> ");
+            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_MySobek.css\" /> ");
+            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Admin.css\" /> ");
 
-            builder.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
-            builder.AppendLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
+            builder.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+            builder.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
 
             //Set the JavaScript global page value based on the currently selected tab
             builder.AppendLine("<script type=\"text/javascript\">");
@@ -894,8 +888,8 @@ namespace SobekCM.Library.MySobekViewer
             builder.AppendLine("<input type=\"hidden\" id=\"hidden_itemID\" name=\"hidden_itemID\" value=\"\"/>");
 
 
-            //Start the User, Equipment info table
-            builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>User and Equipment</h2></span>");
+            //Start the RequestSpecificValues.Current_User, Equipment info table
+            builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>RequestSpecificValues.Current_User and Equipment</h2></span>");
             builder.AppendLine("<table class=\"sbkTi_table\">");
             builder.AppendLine("<tr>");
             builder.AppendLine("          <td>Scanned/Processed by:</td>");
@@ -1112,7 +1106,7 @@ namespace SobekCM.Library.MySobekViewer
                     builder.AppendLine("<span id = \"TI_NewEntrySpan\" class=\"sbkTi_TrackingEntrySpanMouseOut\" onmouseover=\"return entry_span_mouseover(this.id);\" onmouseout=\"return entry_span_mouseout(this.id);\">");
                     builder.AppendLine("<table class=\"sbkTi_table\">");
 
-                    //If the user is trying to close an unopened entry, display an error message
+                    //If the RequestSpecificValues.Current_User is trying to close an unopened entry, display an error message
                     if (close_error == true)
                     {
                         builder.AppendLine("<tr><td colspan=\"4\">");
@@ -1176,7 +1170,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (open_workflows_from_DB != null && open_workflows_from_DB.Rows.Count > 0)
                 {
 
-                    //builder.AppendLine("<tr><th>Item</th><th>Workflow</th><th>Date</th><th>Start Time</th><th>End Time</th><th>User</th><th>Equipment</th></tr>");
+                    //builder.AppendLine("<tr><th>Item</th><th>Workflow</th><th>Date</th><th>Start Time</th><th>End Time</th><th>RequestSpecificValues.Current_User</th><th>Equipment</th></tr>");
                     foreach (DataRow row in open_workflows_from_DB.Rows)
                     {
                         string thisWorkflowID = row["ProgressID"].ToString();
@@ -1265,7 +1259,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Current Work History</h2></span>");
                 builder.AppendLine("<table id=\"sbkTi_tblCurrentTracking\" class=\"sbkSaav_Table\">");
-                builder.AppendLine("<tr><th>Item</th><th>Workflow</th><th>Date</th><th>Start Time</th><th>End Time</th><th>User</th><th>Equipment</th></tr>");
+                builder.AppendLine("<tr><th>Item</th><th>Workflow</th><th>Date</th><th>Start Time</th><th>End Time</th><th>RequestSpecificValues.Current_User</th><th>Equipment</th></tr>");
                 foreach (KeyValuePair<string, Tracking_Workflow> thisPair in current_workflows)
                 {
                     Tracking_Workflow this_workflow = thisPair.Value;
@@ -1492,7 +1486,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 builder.AppendLine("<span class=\"sbkTi_HomeText\"><h2>Current Work History</h2></span>");
                 builder.AppendLine("<table id=\"sbkTi_tblCurrentTracking2\" class=\"sbkSaav_Table\">");
-                builder.AppendLine("<tr><th>Item</th><th>Workflow</th><th>Date</th><th>User</th><th>Equipment</th></tr>");
+                builder.AppendLine("<tr><th>Item</th><th>Workflow</th><th>Date</th><th>RequestSpecificValues.Current_User</th><th>Equipment</th></tr>");
                 foreach (KeyValuePair<string, Tracking_Workflow> thisPair in current_workflows_no_durations)
                 {
                     Tracking_Workflow this_workflow = thisPair.Value;
@@ -1549,7 +1543,7 @@ namespace SobekCM.Library.MySobekViewer
             //    builder.AppendLine("<th>Start time</th>");
             //    builder.AppendLine("<th>End Time</th>");
             //    builder.AppendLine("<th>Equipment</th>");
-            //    builder.AppendLine("<th>User</th></tr>");
+            //    builder.AppendLine("<th>RequestSpecificValues.Current_User</th></tr>");
 
             //    foreach (DataRow thisRow in previous_workflows_this_user.Rows)
             //    {

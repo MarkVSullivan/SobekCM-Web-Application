@@ -2,17 +2,15 @@
 
 using System;
 using System.IO;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Results;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Configuration;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -35,12 +33,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         private readonly Private_Items_List privateItems;
 
         /// <summary> Constructor for a new instance of the Private_Items_AggregationViewer class </summary>
-        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Current_Aggregation"> Current item aggregation object to display </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public Private_Items_AggregationViewer(SobekCM_Navigation_Object Current_Mode, Item_Aggregation Current_Aggregation, Custom_Tracer Tracer): base(Current_Aggregation, Current_Mode)
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        public Private_Items_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            privateItems = SobekCM_Database.Tracking_Get_Aggregation_Private_Items(currentCollection.Code, (int) RESULTS_PER_PAGE, currentMode.Page, currentMode.Sort, Tracer);
+            privateItems = SobekCM_Database.Tracking_Get_Aggregation_Private_Items(RequestSpecificValues.Hierarchy_Object.Code, (int)RESULTS_PER_PAGE, RequestSpecificValues.Current_Mode.Page, RequestSpecificValues.Current_Mode.Sort, RequestSpecificValues.Tracer);
         }
 
         /// <summary> Gets flag which indicates whether to always use the home text as the secondary text </summary>
@@ -77,75 +73,75 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
 
             // Get the URL for the sort options
-            short sort = currentMode.Sort;
-            currentMode.Sort = 0;
-            string url = currentMode.Redirect_URL();
-            currentMode.Sort = sort;
+            short sort = RequestSpecificValues.Current_Mode.Sort;
+            RequestSpecificValues.Current_Mode.Sort = 0;
+            string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Sort = sort;
 
             Output.WriteLine("<span class=\"SobekResultsSort\">");
-            Output.WriteLine("    " + translator.Get_Translation("Sort By", currentMode.Language) + ": &nbsp;");
+            Output.WriteLine("    " + UI_ApplicationCache_Gateway.Translation.Get_Translation("Sort By", RequestSpecificValues.Current_Mode.Language) + ": &nbsp;");
             Output.WriteLine("    <select name=\"sorter_input\" onchange=\"javascript:sort_private_list('" + url + "')\" id=\"sorter_input\">");
-            if (currentMode.Sort == 0)
+            if (RequestSpecificValues.Current_Mode.Sort == 0)
             {
-                Output.WriteLine("      <option value=\"0\" selected=\"selected\">" + translator.Get_Translation("BibID / VID", currentMode.Language) + "</option>" + Environment.NewLine );
+                Output.WriteLine("      <option value=\"0\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID / VID", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
             }
             else
             {
-                Output.WriteLine("      <option value=\"0\">" + translator.Get_Translation("BibID / VID", currentMode.Language) + "</option>" + Environment.NewLine );
+                Output.WriteLine("      <option value=\"0\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID / VID", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
             }
 
-            if (currentMode.Sort == 1)
+            if (RequestSpecificValues.Current_Mode.Sort == 1)
             {
-                Output.WriteLine("      <option value=\"1\" selected=\"selected\">" + translator.Get_Translation("Title / VID", currentMode.Language) + "</option>" + Environment.NewLine );
+                Output.WriteLine("      <option value=\"1\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title / VID", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
             }
             else
             {
-                Output.WriteLine("      <option value=\"1\">" + translator.Get_Translation("Title / VID", currentMode.Language) + "</option>" + Environment.NewLine );
+                Output.WriteLine("      <option value=\"1\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title / VID", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
             }
 
-            if (currentMode.Sort == 2)
+            if (RequestSpecificValues.Current_Mode.Sort == 2)
             {
-                Output.WriteLine("      <option value=\"2\" selected=\"selected\">" + translator.Get_Translation("Last Activity Date (most recent first)", currentMode.Language) + "</option>" + Environment.NewLine );
+                Output.WriteLine("      <option value=\"2\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Activity Date (most recent first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
             }
             else
             {
-                Output.WriteLine("      <option value=\"2\">" + translator.Get_Translation("Last Activity Date (most recent first)", currentMode.Language) + "</option>" + Environment.NewLine );
+                Output.WriteLine("      <option value=\"2\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Activity Date (most recent first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
             }
 
-            if (currentMode.Sort == 3)
+            if (RequestSpecificValues.Current_Mode.Sort == 3)
             {
-                Output.WriteLine("      <option value=\"3\" selected=\"selected\">" + translator.Get_Translation("Last Milestone Date (most recent first)", currentMode.Language) + "</option>" + Environment.NewLine );
+                Output.WriteLine("      <option value=\"3\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Milestone Date (most recent first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
             }
             else
             {
-                Output.WriteLine("      <option value=\"3\">" + translator.Get_Translation("Last Milestone Date (most recent first)", currentMode.Language) + "</option>" + Environment.NewLine );
+                Output.WriteLine("      <option value=\"3\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Milestone Date (most recent first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
             }
 
-            if (currentMode.Sort == 4)
+            if (RequestSpecificValues.Current_Mode.Sort == 4)
             {
-                Output.WriteLine("      <option value=\"4\" selected=\"selected\">" + translator.Get_Translation("Last Activity Date (oldest first)", currentMode.Language) + "</option>" + Environment.NewLine );
+                Output.WriteLine("      <option value=\"4\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Activity Date (oldest first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
             }
             else
             {
-                Output.WriteLine("      <option value=\"4\">" + translator.Get_Translation("Last Activity Date (oldest first)", currentMode.Language) + "</option>" + Environment.NewLine );
+                Output.WriteLine("      <option value=\"4\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Activity Date (oldest first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
             }
 
-            if (currentMode.Sort == 5)
+            if (RequestSpecificValues.Current_Mode.Sort == 5)
             {
-                Output.WriteLine("      <option value=\"5\" selected=\"selected\">" + translator.Get_Translation("Last Milestone Date (oldest first)", currentMode.Language) + "</option>" + Environment.NewLine );
+                Output.WriteLine("      <option value=\"5\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Milestone Date (oldest first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
             }
             else
             {
-                Output.WriteLine("      <option value=\"5\">" + translator.Get_Translation("Last Milestone Date (oldest first)", currentMode.Language) + "</option>" + Environment.NewLine );
+                Output.WriteLine("      <option value=\"5\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Milestone Date (oldest first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
             }
 
-            if (currentMode.Sort == 6)
+            if (RequestSpecificValues.Current_Mode.Sort == 6)
             {
-                Output.WriteLine("      <option value=\"6\" selected=\"selected\">" + translator.Get_Translation("Embargo Date", currentMode.Language) + "</option>" + Environment.NewLine);
+                Output.WriteLine("      <option value=\"6\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Embargo Date", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
             }
             else
             {
-                Output.WriteLine("      <option value=\"6\">" + translator.Get_Translation("Embargo Date", currentMode.Language) + "</option>" + Environment.NewLine);
+                Output.WriteLine("      <option value=\"6\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Embargo Date", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
             }
             Output.WriteLine("    </select>");
             Output.WriteLine("</span>");
@@ -155,7 +151,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (privateItems.TotalTitles > RESULTS_PER_PAGE)
             {
                 // Get the language suffix for the buttons
-                string language_suffix = currentMode.Language_Code;
+                string language_suffix = RequestSpecificValues.Current_Mode.Language_Code;
                 if (language_suffix.Length > 0)
                     language_suffix = "_" + language_suffix;
 
@@ -165,7 +161,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 string next_page = "Next Page";
                 string last_page = "Last Page";
 
-                if (currentMode.Language == Web_Language_Enum.Spanish)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
                 {
                     first_page = "Primera Página";
                     previous_page = "Página Anterior";
@@ -173,7 +169,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     last_page = "Última Página";
                 }
 
-                if (currentMode.Language == Web_Language_Enum.French)
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
                 {
                     first_page = "Première Page";
                     previous_page = "Page Précédente";
@@ -182,20 +178,20 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 }
 
                 // Get the current page
-                ushort current_page = currentMode.Page;
+                ushort current_page = RequestSpecificValues.Current_Mode.Page;
 
                 // Should the previous and first buttons be enabled?
                 Output.WriteLine("  <span class=\"leftButtons\">");
                 if (current_page > 1)
                 {
-                    currentMode.Page = 1;
-                    Output.WriteLine("    &nbsp; &nbsp; &nbsp; <a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/first_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + first_page + "\" /></a> &nbsp; ");
-                    currentMode.Page = (ushort)(current_page - 1);
-                    Output.WriteLine("    <a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/previous_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + previous_page + "\" /></a>");
+                    RequestSpecificValues.Current_Mode.Page = 1;
+                    Output.WriteLine("    &nbsp; &nbsp; &nbsp; <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/first_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + first_page + "\" /></a> &nbsp; ");
+                    RequestSpecificValues.Current_Mode.Page = (ushort)(current_page - 1);
+                    Output.WriteLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/previous_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + previous_page + "\" /></a>");
                 }
                 else
                 {
-                    Output.WriteLine("    <img src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/no_button_spacer.gif\" />");
+                    Output.WriteLine("    <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/no_button_spacer.gif\" />");
                 }
                 Output.WriteLine("  </span>");
 
@@ -207,17 +203,17 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("  <span class=\"rightButtons\">");
                 if (current_page < pages)
                 {
-                    currentMode.Page = (ushort)(current_page + 1);
-                    Output.WriteLine("    <a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/next_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + next_page + "\" /></a>&nbsp;");
-                    currentMode.Page = pages;
-                    Output.WriteLine("    <a href=\"" + currentMode.Redirect_URL() + "\"><img src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/last_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + last_page + "\" /></a> &nbsp; &nbsp; &nbsp; ");
+                    RequestSpecificValues.Current_Mode.Page = (ushort)(current_page + 1);
+                    Output.WriteLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/next_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + next_page + "\" /></a>&nbsp;");
+                    RequestSpecificValues.Current_Mode.Page = pages;
+                    Output.WriteLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/last_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + last_page + "\" /></a> &nbsp; &nbsp; &nbsp; ");
                 }
                 else
                 {
-                    Output.WriteLine("    <img src=\"" + currentMode.Base_URL + "design/skins/" + htmlSkin.Base_Skin_Code + "/buttons/no_button_spacer.gif\" />");
+                    Output.WriteLine("    <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/no_button_spacer.gif\" />");
                 }
                 Output.WriteLine("  </span>");
-                currentMode.Page = current_page;
+                RequestSpecificValues.Current_Mode.Page = current_page;
 
                 Output.WriteLine("<br />");
             }
@@ -301,11 +297,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (thisTitle.Item_Count > 1)
                 {
                     // Draw the title row individually first
-                    Output.WriteLine("  <tr align=\"left\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onmousedown=\"window.location.href='" + currentMode.Base_URL + thisTitle.BibID + "'\">");
+                    Output.WriteLine("  <tr align=\"left\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onmousedown=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "'\">");
                     Output.WriteLine("    <td width=\"700px\" colspan=\"2\">");
                     Output.WriteLine("      <table>");
-                    Output.WriteLine("        <tr><td colspan=\"3\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "\"><span class=\"privateTableBibTitle\">" + thisTitle.Group_Title + "</span></a></td></tr>");
-                    Output.WriteLine("        <tr><td width=\"180px\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "\">" + thisTitle.BibID + "</a></td><td width=\"180px\">" + thisTitle.Type + "</td><td>( " + thisTitle.Item_Count + " volumes out of " + thisTitle.CompleteItemCount + " total volumes )</td></tr>");
+                    Output.WriteLine("        <tr><td colspan=\"3\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "\"><span class=\"privateTableBibTitle\">" + thisTitle.Group_Title + "</span></a></td></tr>");
+                    Output.WriteLine("        <tr><td width=\"180px\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "\">" + thisTitle.BibID + "</a></td><td width=\"180px\">" + thisTitle.Type + "</td><td>( " + thisTitle.Item_Count + " volumes out of " + thisTitle.CompleteItemCount + " total volumes )</td></tr>");
                     Output.WriteLine("      </table>");
                     Output.WriteLine("    </td>");
                     Output.WriteLine("    <td align=\"center\" width=\"200px\"><span class=\"privateTableBibDaysNumber\">" + Math.Floor( DateTime.Now.Subtract( thisTitle.LastActivityDate ).TotalDays ) + "</span><br />days ago</td>");
@@ -316,17 +312,17 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     foreach (Private_Items_List_Item thisItem in thisTitle.Items)
                     {
                         Output.WriteLine("  <tr><td width=\"125px\"></td><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
-                        Output.WriteLine("  <tr align=\"left\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onmousedown=\"window.location.href='" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "'\">");
+                        Output.WriteLine("  <tr align=\"left\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onmousedown=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "'\">");
                         Output.WriteLine("    <td width=\"125px\">");
                         Output.WriteLine("    <td width=\"575px\">");
                         Output.WriteLine("      <table>");
-                        Output.Write("        <tr><td colspan=\"3\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\"><span class=\"privateTableItemTitle\">" + thisItem.Title + "</span></a>");
+                        Output.Write("        <tr><td colspan=\"3\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\"><span class=\"privateTableItemTitle\">" + thisItem.Title + "</span></a>");
 
                         if (( !String.IsNullOrEmpty(thisItem.Creator) ) && ( thisItem.Creator.Length > 2 ))
                             Output.Write(" ( " + thisItem.Creator.Substring(2) + " )");
                         
                         Output.WriteLine("</td></tr>");
-                        Output.Write("        <tr><td width=\"180px\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\">" + thisTitle.BibID + " : " + thisItem.VID + "</a></td>");
+                        Output.Write("        <tr><td width=\"180px\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\">" + thisTitle.BibID + " : " + thisItem.VID + "</a></td>");
                         if ( !String.IsNullOrEmpty(thisItem.PubDate))
                             Output.WriteLine("<td>Dated " + thisItem.PubDate + "</td><td></td></tr>");
                         else
@@ -347,10 +343,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Private_Items_List_Item thisItem = thisTitle.Items[0];
 
                     // Draw the integrated title/item row
-                    Output.WriteLine("  <tr align=\"left\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onmousedown=\"window.location.href='" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "'\">");
+                    Output.WriteLine("  <tr align=\"left\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onmousedown=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "'\">");
                     Output.WriteLine("      <td width=\"700px\" colspan=\"2\">");
                     Output.WriteLine("          <table>");
-                    Output.WriteLine("              <tr><td colspan=\"3\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\"><span class=\"privateTableBibTitle\">" + thisItem.Title + "</span></a>");
+                    Output.WriteLine("              <tr><td colspan=\"3\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\"><span class=\"privateTableBibTitle\">" + thisItem.Title + "</span></a>");
 
 
                     if ((!String.IsNullOrEmpty(thisItem.Creator)) && (thisItem.Creator.Length > 2))
@@ -358,7 +354,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                     Output.WriteLine("</td></tr>");
 
-                    Output.Write("              <tr><td width=\"180px\"><a href=\"" + currentMode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\">" + thisTitle.BibID + " : " + thisItem.VID + "</a></td><td width=\"180px\">" + thisTitle.Type + "</td>");
+                    Output.Write("              <tr><td width=\"180px\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisTitle.BibID + "/" + thisItem.VID + "\">" + thisTitle.BibID + " : " + thisItem.VID + "</a></td><td width=\"180px\">" + thisTitle.Type + "</td>");
 
 
                     if (!String.IsNullOrEmpty(thisItem.PubDate))

@@ -7,17 +7,15 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Web;
-using SobekCM.Core.Settings;
+using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MemoryMgmt;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Settings;
 using SobekCM.Library.Skins;
-using SobekCM.Core.Users;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -38,39 +36,30 @@ namespace SobekCM.Library.AdminViewer
     public class Skins_AdminViewer : abstract_AdminViewer
     {
         private readonly string actionMessage;
-        private readonly SobekCM_Skin_Collection skinCollection;
 
         #region Constructor
 
         /// <summary> Constructor for a new instance of the Skins_AdminViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-		/// <param name="CurrentMode"> Mode / navigation information for the current request</param>
-        /// <param name="Web_Skin_Collection"> Contains the collection of all the default skins and the data to create any additional skins on request</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new html skin is handled here in the constructor </remarks>
-        public Skins_AdminViewer(User_Object User, SobekCM_Navigation_Object CurrentMode, SobekCM_Skin_Collection Web_Skin_Collection, Custom_Tracer Tracer)
-            : base(User)
+        public Skins_AdminViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
         {
-            Tracer.Add_Trace("Skins_AdminViewer.Constructor", String.Empty);
-
-            // Save the mode and settings  here
-			currentMode = CurrentMode;
-            skinCollection = Web_Skin_Collection;
+            RequestSpecificValues.Tracer.Add_Trace("Skins_AdminViewer.Constructor", String.Empty);
 
             // Set action message to nothing to start
             actionMessage = String.Empty;
 
-            // If the user cannot edit this, go back
-            if ((!user.Is_System_Admin) && ( !user.Is_Portal_Admin ))
+            // If the RequestSpecificValues.Current_User cannot edit this, go back
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && ( !RequestSpecificValues.Current_User.Is_Portal_Admin ))
             {
-                currentMode.Mode = Display_Mode_Enum.My_Sobek;
-                currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                currentMode.Redirect();
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
             // If this is a postback, handle any events first
-            if (currentMode.isPostBack)
+            if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 try
                 {
@@ -85,15 +74,15 @@ namespace SobekCM.Library.AdminViewer
                     // Was this a reset request?
                     if (reset_value.Length > 0)
                     {
-                        Tracer.Add_Trace("Skins_AdminViewer.Constructor", "Reset html skin '" + reset_value + "'");
+                        RequestSpecificValues.Tracer.Add_Trace("Skins_AdminViewer.Constructor", "Reset html skin '" + reset_value + "'");
 
-                        if (Web_Skin_Collection.Remove(reset_value))
+                        if (UI_ApplicationCache_Gateway.Web_Skin_Collection.Remove(reset_value))
                         {
                             actionMessage = "Removed skin <i>" + reset_value.ToUpper() + "</i> from the semi-permanent skin collection";
                         }
                         else
                         {
-                            int values_cleared = Cached_Data_Manager.Remove_Skin(reset_value, Tracer);
+                            int values_cleared = Cached_Data_Manager.Remove_Skin(reset_value, RequestSpecificValues.Tracer);
 
                             if (values_cleared == 0)
                             {
@@ -108,18 +97,18 @@ namespace SobekCM.Library.AdminViewer
                     }
 					else if (delete_value.Length > 0)
 					{
-						if (user.Is_System_Admin)
+						if (RequestSpecificValues.Current_User.Is_System_Admin)
 						{
-							Tracer.Add_Trace("Skins_AdminViewer.Constructor", "Delete skin '" + delete_value + "' from the database");
+                            RequestSpecificValues.Tracer.Add_Trace("Skins_AdminViewer.Constructor", "Delete skin '" + delete_value + "' from the database");
 
 							// Delete from the database
-							if (SobekCM_Database.Delete_Web_Skin(delete_value, false, Tracer))
+                            if (SobekCM_Database.Delete_Web_Skin(delete_value, false, RequestSpecificValues.Tracer))
 							{
 								// Set the deleted wordmark message
 								actionMessage = "Deleted web skin <i>" + delete_value + "</i>";
 
 								// Remove this web skin from the collection
-								SobekCM_Skin_Collection_Builder.Populate_Default_Skins(Web_Skin_Collection, Tracer);
+                                SobekCM_Skin_Collection_Builder.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
 							}
 							else
 							{
@@ -140,7 +129,7 @@ namespace SobekCM.Library.AdminViewer
                         // Or.. was this a save request
                         if (save_value.Length > 0)
                         {
-                            Tracer.Add_Trace("Skins_AdminViewer.Constructor", "Save html skin '" + save_value + "'");
+                            RequestSpecificValues.Tracer.Add_Trace("Skins_AdminViewer.Constructor", "Save html skin '" + save_value + "'");
 
                             bool override_banner = false;
                             bool override_header = false;
@@ -187,12 +176,12 @@ namespace SobekCM.Library.AdminViewer
                                 }
 
                                 // Save this new interface
-                                if (SobekCM_Database.Save_Web_Skin(save_value, new_base_code, override_banner, override_header, new_banner_link, new_notes, build_on_launch, suppress_top_nav, Tracer))
+                                if (SobekCM_Database.Save_Web_Skin(save_value, new_base_code, override_banner, override_header, new_banner_link, new_notes, build_on_launch, suppress_top_nav, RequestSpecificValues.Tracer))
                                 {
                                     // Ensure a folder exists for this, otherwise create one
                                     try
                                     {
-                                        string folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + save_value.ToLower();
+                                        string folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + save_value.ToLower();
                                         if (!Directory.Exists(folder))
                                         {
                                             // Create this directory and the necessary subdirectories
@@ -291,8 +280,8 @@ namespace SobekCM.Library.AdminViewer
                                             else
                                             {
                                                 // Copy the web skin information over?
-                                                string current_web_skin = currentMode.Skin;
-                                                string current_web_folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + current_web_skin;
+                                                string current_web_skin = RequestSpecificValues.Current_Mode.Skin;
+                                                string current_web_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + current_web_skin;
                                                 copy_entire_folder(current_web_folder, folder);
                                                 //if (File.Exists(current_web_folder + "\\" + current_web_skin + ".css"))
                                                 //{
@@ -322,13 +311,13 @@ namespace SobekCM.Library.AdminViewer
                                                 }
                                             }
 
-                                            // Irregardless of the user's choice on whether to copy the current skin, if there is NO base skin
+                                            // Irregardless of the RequestSpecificValues.Current_User's choice on whether to copy the current skin, if there is NO base skin
                                             // provided and the folder does not exist, then we'll copy over the base skin type of stuff, such
                                             // as buttons, tabs, etc...
                                             if (new_base_code.Length == 0)
                                             {
                                                 // What is the current base skin folder then?
-                                                string base_skin_folder = InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins/" + currentMode.Base_Skin;
+                                                string base_skin_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + RequestSpecificValues.Current_Mode.Base_Skin;
                                                 copy_entire_folder(base_skin_folder + "/buttons", folder + "/buttons");
                                                 copy_entire_folder(base_skin_folder + "/tabs", folder + "/tabs");
                                                 copy_entire_folder(base_skin_folder + "/zoom_controls", folder + "/zoom_controls");
@@ -342,9 +331,9 @@ namespace SobekCM.Library.AdminViewer
                                     }
 
                                     // Reload the list of all skins from the database, to include this new skin
-                                    lock (skinCollection)
+                                    lock (UI_ApplicationCache_Gateway.Web_Skin_Collection)
                                     {
-                                        SobekCM_Skin_Collection_Builder.Populate_Default_Skins(skinCollection, Tracer);
+                                        SobekCM_Skin_Collection_Builder.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
                                     }
 	                                if (String.IsNullOrEmpty(actionMessage))
 	                                {
@@ -359,27 +348,27 @@ namespace SobekCM.Library.AdminViewer
                                 // Try to create the directory
                                 try
                                 {
-                                    if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value))
+                                    if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value))
                                     {
-                                        Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value);
+                                        Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value);
                                     }
-                                    if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\html"))
+                                    if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\html"))
                                     {
-                                        Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\html");
+                                        Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\html");
                                     }
                                     if (new_base_code.Length == 0)
                                     {
-                                        if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons"))
+                                        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons"))
                                         {
-                                            Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons");
+                                            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons");
                                         }
-                                        if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs"))
+                                        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs"))
                                         {
-                                            Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs");
+                                            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs");
                                         }
-                                        if (!Directory.Exists(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls"))
+                                        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls"))
                                         {
-                                            Directory.CreateDirectory(InstanceWide_Settings_Singleton.Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls");
+                                            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls");
                                         }
                                     }
                                 }
@@ -419,13 +408,13 @@ namespace SobekCM.Library.AdminViewer
                                 }
 
                                 // Save this existing interface
-                                if (SobekCM_Database.Save_Web_Skin(save_value, edit_base_code, override_banner, override_header, edit_banner_link, edit_notes, build_on_launch, suppress_top_nav, Tracer))
+                                if (SobekCM_Database.Save_Web_Skin(save_value, edit_base_code, override_banner, override_header, edit_banner_link, edit_notes, build_on_launch, suppress_top_nav, RequestSpecificValues.Tracer))
                                 {
-                                    lock (skinCollection)
+                                    lock (UI_ApplicationCache_Gateway.Web_Skin_Collection)
                                     {
-                                        SobekCM_Skin_Collection_Builder.Populate_Default_Skins(skinCollection, Tracer);
+                                        SobekCM_Skin_Collection_Builder.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
                                     }
-                                    Cached_Data_Manager.Remove_Skin(save_value, Tracer);
+                                    Cached_Data_Manager.Remove_Skin(save_value, RequestSpecificValues.Tracer);
 
                                     actionMessage = "Edited existing html skin <i>" + save_value + "</i>";
                                 }
@@ -497,7 +486,7 @@ namespace SobekCM.Library.AdminViewer
             Tracer.Add_Trace("Skins_AdminViewer.Write_ItemNavForm_Closing", "Add any popup divisions for form elements");
 			
 			Output.WriteLine("<!-- Skins_AdminViewer.Write_ItemNavForm_Closing -->");
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -533,15 +522,15 @@ namespace SobekCM.Library.AdminViewer
 			// Add the buttons
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
 			Output.WriteLine("      <td colspan=\"3\">");
-			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return interface_form_close();\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Save changes to this existing web skin\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return interface_form_close();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this existing web skin\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("  </table>");
 			Output.WriteLine("</div>");
 			Output.WriteLine();
 
-            Output.WriteLine("<script src=\"" + currentMode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
 			if (!String.IsNullOrEmpty(actionMessage))
@@ -550,7 +539,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
 			}
 
-            Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + InstanceWide_Settings_Singleton.Settings.Help_URL(currentMode.Base_URL) + "adminhelp/webskins\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/webskins\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
 
             Output.WriteLine("  <h2>New Web Skin</h2>");
 			Output.WriteLine("  <div class=\"sbkSav_NewDiv\">");
@@ -575,7 +564,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td colspan=\"2\"><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_copycurrent\" id=\"admin_interface_copycurrent\" /> <label for=\"admin_interface_copycurrent\">Copy current files for this new web skin if folder does not exist?</label></td></tr>");
 
 			// Add the SAVE button
-			Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_interface();\">SAVE <img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+			Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td colspan=\"3\"><button title=\"Save new web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_interface();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
 		    Output.WriteLine("    </table>");
 		    Output.WriteLine("  </div>");
 			Output.WriteLine();
@@ -592,13 +581,13 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"4\"></td></tr>");
 
             // Get the view URL
-            string current_skin = currentMode.Skin;
-            currentMode.Skin = "TESTSKINCODE";
-            string view_url = currentMode.Redirect_URL();
-            currentMode.Skin = current_skin;
+            string current_skin = RequestSpecificValues.Current_Mode.Skin;
+            RequestSpecificValues.Current_Mode.Skin = "TESTSKINCODE";
+            string view_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Skin = current_skin;
 
             // Write the data for each interface
-            foreach (DataRow thisRow in skinCollection.Skin_Table.Rows)
+            foreach (DataRow thisRow in UI_ApplicationCache_Gateway.Web_Skin_Collection.Skin_Table.Rows)
             {
                 // Pull all these values
                 string code = thisRow["WebSkinCode"].ToString();
@@ -613,14 +602,14 @@ namespace SobekCM.Library.AdminViewer
                 // Build the action links
                 Output.WriteLine("    <tr>");
                 Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
-                Output.Write("<a title=\"Click to edit\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return interface_form_popup('" + code + "','" + base_code + "','" + bannerLink + "','" + notes + "','" + overrideBanner + "','" + overrideHeader + "','" + suppressTopNav + "','" + buildOnLaunch + "');\">edit</a> | ");
+                Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return interface_form_popup('" + code + "','" + base_code + "','" + bannerLink + "','" + notes + "','" + overrideBanner + "','" + overrideHeader + "','" + suppressTopNav + "','" + buildOnLaunch + "');\">edit</a> | ");
                 Output.Write("<a title=\"Click to view\" href=\"" + view_url.Replace("testskincode", code) + "\" >view</a> | ");
-				Output.Write("<a title=\"Click to reset\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\" onclick=\"reset_interface('" + code + "');\">reset</a> | ");
+				Output.Write("<a title=\"Click to reset\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"reset_interface('" + code + "');\">reset</a> | ");
 
-				if ( user.Is_System_Admin )	
-					Output.WriteLine("<a title=\"Click to delete this web skin\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_interface('" + code + "');\">delete</a> )</td>");
+				if ( RequestSpecificValues.Current_User.Is_System_Admin )	
+					Output.WriteLine("<a title=\"Click to delete this web skin\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_interface('" + code + "');\">delete</a> )</td>");
 				else
-					Output.WriteLine("<a title=\"Only SYSTEM administrators can delete web skins\" href=\"" + currentMode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"alert('Only SYSTEM administrators can delete web skins'); return false;\">delete</a> )</td>");
+					Output.WriteLine("<a title=\"Only SYSTEM administrators can delete web skins\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"alert('Only SYSTEM administrators can delete web skins'); return false;\">delete</a> )</td>");
 
 
                 // Add the rest of the row with data

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Using directives
+
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Settings;
+using SobekCM.UI_Library;
+
+#endregion
 
 namespace SobekCM.Library
 {
@@ -36,8 +36,8 @@ namespace SobekCM.Library
                     writer.WriteLine("            <ipSecurity allowUnlisted=\"false\">");
                     writer.WriteLine("                 <clear />");
                     writer.WriteLine("                 <add ipAddress=\"127.0.0.1\" allowed=\"true\" />");
-                    if (InstanceWide_Settings_Singleton.Settings.SobekCM_Web_Server_IP.Length > 0)
-                        writer.WriteLine("                 <add ipAddress=\"" + InstanceWide_Settings_Singleton.Settings.SobekCM_Web_Server_IP.Trim() + "\" allowed=\"true\" />");
+                    if (UI_ApplicationCache_Gateway.Settings.SobekCM_Web_Server_IP.Length > 0)
+                        writer.WriteLine("                 <add ipAddress=\"" + UI_ApplicationCache_Gateway.Settings.SobekCM_Web_Server_IP.Trim() + "\" allowed=\"true\" />");
                     writer.WriteLine("            </ipSecurity>");
                     writer.WriteLine("        </security>");
                     writer.WriteLine("        <modules runAllManagedModulesForAllRequests=\"true\" />");

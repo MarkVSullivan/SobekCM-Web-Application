@@ -5,15 +5,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
-using SobekCM.Core.Settings;
-using SobekCM.Library.Aggregations;
-using SobekCM.Library.Application_State;
-using SobekCM.Library.Navigation;
-using SobekCM.Library.Results;
-using SobekCM.Library.Settings;
-using SobekCM.Core.Users;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Tools;
-using SobekCM_UI_Library.Navigation;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -27,10 +23,6 @@ namespace SobekCM.Library.ResultsViewer
         /// <value> This currently always contains the constant value 20.</value>
         protected int Results_Per_Page = 20;
 
-        /// <summary> Protected field contains the current user information for the current request </summary>
-        protected User_Object currentUser;
-
-
         /// <summary> Protected field contains the current user IP restriction mask, used to determine
         /// if this use has access to IP restricted items </summary>
         protected int current_user_mask;
@@ -39,9 +31,13 @@ namespace SobekCM.Library.ResultsViewer
 
         private string textRedirectStem;
 
+        protected RequestCache RequestSpecificValues;
+
         /// <summary> Constructor for a new instance of the abstract_ResultsViewer class  </summary>
-        protected abstract_ResultsViewer()
+        protected abstract_ResultsViewer( RequestCache RequestSpecificValues )
         {
+            this.RequestSpecificValues = RequestSpecificValues;
+
             // Determine the current user mask
             current_user_mask = 0;
             if ((HttpContext.Current != null) && ( HttpContext.Current.Session["IP_Range_Membership"] != null ))
@@ -50,19 +46,13 @@ namespace SobekCM.Library.ResultsViewer
             }
         }
 
-        /// <summary> Complete list of search stop words, from the database </summary>
-        public List<string> Search_Stop_Words { get; set;  }
-
-        /// <summary> Sets the list of valid collection codes, including mapping from the Sobek collections to Greenstone collections </summary>
-        public Aggregation_Code_Manager Code_Manager { protected get; set; }
-
         /// <summary> Calculates the index for the last row to be displayed on the current result page </summary>
         public int LastRow
         {
             get	
             {	
                 // Determine which rows to display
-                return ( CurrentMode.Page * Results_Per_Page );
+                return (RequestSpecificValues.Current_Mode.Page * Results_Per_Page);
             }
         }
 
@@ -103,15 +93,12 @@ namespace SobekCM.Library.ResultsViewer
 
         #region iResultsViewer Members
 
-        /// <summary> Sets the lookup object used to pull basic information about any item loaded into this library </summary>
-        public Item_Lookup_Object All_Items_Lookup { protected get; set; }
-
         /// <summary> Gets the total number of results to display </summary>
         /// <value> This value can be override by child classes, but by default this returns the number of titles in the result set, unless this is a date sort, in which case the number of issues is returned </value>
         public virtual int Total_Results
         {
             get {
-                return CurrentMode.Sort >= 10 ? Results_Statistics.Total_Items : Results_Statistics.Total_Titles;
+                return RequestSpecificValues.Current_Mode.Sort >= 10 ? RequestSpecificValues.Results_Statistics.Total_Items : RequestSpecificValues.Results_Statistics.Total_Titles;
             }
         }
 
@@ -131,21 +118,6 @@ namespace SobekCM.Library.ResultsViewer
         /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
         public abstract void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer);
 
-        /// <summary> Set the current mode / navigation information for the current request </summary>
-        public SobekCM_Navigation_Object CurrentMode { protected get; set; }
-
-        /// <summary> Sets the single page of results for a search or browse, within the entire set </summary>
-        public List<iSearch_Title_Result> Paged_Results { protected get; set; }
-
-        /// <summary> Sets the information about the entire set of results for a search or browse</summary>
-        public Search_Results_Statistics Results_Statistics { protected get; set; }
-
-        /// <summary> Sets the current item aggregation under which these results are displayed </summary>
-        public Item_Aggregation HierarchyObject { protected get; set; }
-
-        /// <summary> Sets the language support object which handles simple translational duties </summary>
-        public Language_Support_Info Translator { get; set; }
-
         #endregion
 
         /// <summary> Returns the index for the first row to be displayed on the current page, and performs validation
@@ -159,10 +131,10 @@ namespace SobekCM.Library.ResultsViewer
 
         private string compute_image_redirect_stem()
         {
-            string url_options = CurrentMode.URL_Options();
-            if (CurrentMode.Coordinates.Length > 0)
+            string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
+            if (RequestSpecificValues.Current_Mode.Coordinates.Length > 0)
             {
-                return (url_options.Length > 0) ?  "?coord=" + CurrentMode.Coordinates + "&" + url_options : "?coord=" + CurrentMode.Coordinates;
+                return (url_options.Length > 0) ? "?coord=" + RequestSpecificValues.Current_Mode.Coordinates + "&" + url_options : "?coord=" + RequestSpecificValues.Current_Mode.Coordinates;
             }
             
             return (url_options.Length > 0) ? "?" + url_options : String.Empty;
@@ -175,7 +147,7 @@ namespace SobekCM.Library.ResultsViewer
             List<string> fields = new List<string>();
 
             // Split the terms correctly
-            SobekCM_Assistant.Split_Clean_Search_Terms_Fields(CurrentMode.Search_String, CurrentMode.Search_Fields, CurrentMode.Search_Type, terms, fields, Search_Stop_Words, CurrentMode.Search_Precision, ',');
+            SobekCM_Assistant.Split_Clean_Search_Terms_Fields(RequestSpecificValues.Current_Mode.Search_String, RequestSpecificValues.Current_Mode.Search_Fields, RequestSpecificValues.Current_Mode.Search_Type, terms, fields, UI_ApplicationCache_Gateway.Search_Stop_Words, RequestSpecificValues.Current_Mode.Search_Precision, ',');
 
             // See about a text search string 
             StringBuilder textSearcher = new StringBuilder();
@@ -201,15 +173,15 @@ namespace SobekCM.Library.ResultsViewer
                 }
             }
 
-            string url_options = CurrentMode.URL_Options();
-            if (CurrentMode.Coordinates.Length > 0)
+            string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
+            if (RequestSpecificValues.Current_Mode.Coordinates.Length > 0)
             {
-                return (url_options.Length > 0) ? "?coord=" + CurrentMode.Coordinates + "&" + url_options : "?coord=" + CurrentMode.Coordinates;
+                return (url_options.Length > 0) ? "?coord=" + RequestSpecificValues.Current_Mode.Coordinates + "&" + url_options : "?coord=" + RequestSpecificValues.Current_Mode.Coordinates;
             }
 
             if (textSearcher.Length > 0)
             {
-                if ((CurrentMode.Search_Type == Search_Type_Enum.Full_Text) || (text_included_in_search))
+                if ((RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Full_Text) || (text_included_in_search))
                 {
                     return (url_options.Length > 0) ? "/search?search=" + textSearcher + "&" + url_options :  "/search?search=" + textSearcher;
                 }
@@ -316,7 +288,7 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // Get the appropriate title result
-            iSearch_Title_Result titleResult = Paged_Results[Convert.ToInt32(resultsIndex)];
+            iSearch_Title_Result titleResult = RequestSpecificValues.Paged_Results[Convert.ToInt32(resultsIndex)];
 
             // Is this tree built?
             if (titleResult.Item_Tree == null)
@@ -327,9 +299,9 @@ namespace SobekCM.Library.ResultsViewer
             Search_Result_Item_TreeNode retrieved_node = titleResult.Item_Tree.Get_Node_By_Value(node_value);
             if (retrieved_node == null) return;
 
-            string base_url = CurrentMode.Base_URL;
-            if (CurrentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
-                base_url = CurrentMode.Base_URL + "l/";
+            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
             foreach (Search_Result_Item_TreeNode childNode in retrieved_node.ChildNodes)
             {
@@ -339,7 +311,7 @@ namespace SobekCM.Library.ResultsViewer
                                                  SelectAction = TreeNodeSelectAction.None
                                              };
 
-                string name = Translator.Get_Translation(childNode.Name, CurrentMode.Language);
+                string name = UI_ApplicationCache_Gateway.Translation.Get_Translation(childNode.Name, RequestSpecificValues.Current_Mode.Language);
                 string tooltip = String.Empty;
                 if (name.Length > 100)
                 {
