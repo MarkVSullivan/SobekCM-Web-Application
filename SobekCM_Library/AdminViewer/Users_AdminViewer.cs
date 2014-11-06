@@ -525,7 +525,7 @@ namespace SobekCM.Library.AdminViewer
 
 							// Determine if the aggregationPermissions need to be edited
 							bool update_aggregations = false;
-                            if (aggregations.Count != editUser.PermissionedAggregations.Count)
+                            if (editUser.PermissionedAggregations==null || (aggregations.Count != editUser.PermissionedAggregations.Count))
 							{
 								update_aggregations = true;
 							}
