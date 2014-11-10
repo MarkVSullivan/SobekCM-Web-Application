@@ -10,7 +10,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 
         InstanceWide_Settings Settings { get; set; }
 
-        void DoWork(Incoming_Digital_Resource Resource);
+        bool DoWork(Incoming_Digital_Resource Resource);
 
         void ReleaseResources();
 

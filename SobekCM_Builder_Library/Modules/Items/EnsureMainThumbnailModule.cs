@@ -11,7 +11,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class EnsureMainThumbnailModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             string startupPath = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
 
@@ -57,6 +57,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                     SobekCM_Database.Set_Item_Main_Thumbnail(Resource.BibID, Resource.VID, Resource.Metadata.Behaviors.Main_Thumbnail);
                 }
             }
+
+            return true;
         }
     }
 }

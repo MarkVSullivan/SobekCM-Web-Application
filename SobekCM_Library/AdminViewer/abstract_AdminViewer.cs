@@ -45,7 +45,18 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> By default, this returns an empty list </remarks>
         public virtual List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
         {
-            get { return emptybehaviors; }
+            get
+            {
+                List<HtmlSubwriter_Behaviors_Enum> returnVal = new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner };
+
+                if (Contains_Popup_Forms)
+                {
+                    returnVal.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Header);
+                    returnVal.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Footer);
+                }
+
+                return returnVal;
+            }
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of any form) </summary>

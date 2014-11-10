@@ -279,7 +279,7 @@ namespace SobekCM.Library.MySobekViewer
                 string base_url = RequestSpecificValues.Current_Mode.Base_URL;
                 try
                 {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Data_Directory, UI_ApplicationCache_Gateway.Translation, UI_ApplicationCache_Gateway.Aggregations, UI_ApplicationCache_Gateway.Icon_List, UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.HTML_Skin.Skin_Code);
+                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Data_Directory, RequestSpecificValues.HTML_Skin.Skin_Code);
                     if (!Directory.Exists(digitalResourceDirectory + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name))
                         Directory.CreateDirectory(digitalResourceDirectory + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name);
                     string filename = digitalResourceDirectory + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";

@@ -13,6 +13,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
 using SobekCM.EngineLibrary.ApplicationState;
 using SobekCM.Engine_Library.Aggregations;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Navigation;
@@ -35,50 +36,32 @@ namespace SobekCM.Library
     public class Static_Pages_Builder
     {
         private readonly SobekCM_Assistant assistant;
-        private Aggregation_Code_Manager codeManager;
         private readonly SobekCM_Navigation_Object currentMode;
 
         private int errors;
-        private readonly Dictionary<string, Wordmark_Icon> iconList;
-
 
         private readonly string primaryWebServerUrl;
         private readonly string staticSobekcmDataLocation;
 		private readonly string staticSobekcmLocation;
         private readonly Custom_Tracer tracer;
-        private readonly Language_Support_Info translations;
 
-	    private readonly SobekCM_Skin_Collection skinsCollection;
 	    private readonly string defaultSkin;
 
 
 	    /// <summary> Constructor for a new instance of the Static_Pages_Builder class </summary>
 	    /// <param name="Primary_Web_Server_URL"> URL for the primary web server </param>
 	    /// <param name="Static_Data_Location"> Network location for the data directory </param>
-	    /// <param name="Code_Manager"> Code manager contains the list of all valid aggregation codes </param>
-	    /// <param name="HTML_Skin_Collection"> HTML Web skin collection which controls the overall appearance of this digital library </param>
-	    /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
-	    /// <param name="Translator"> Language support object which handles simple translational duties </param>
 	    /// <param name="Default_Skin"> Default skin code </param>
-	    public Static_Pages_Builder(string Primary_Web_Server_URL, string Static_Data_Location,
-            Language_Support_Info Translator,
-            Aggregation_Code_Manager Code_Manager,
-            Dictionary<string, Wordmark_Icon> Icon_Table,
-			SobekCM_Skin_Collection HTML_Skin_Collection,
-			string Default_Skin)
+	    public Static_Pages_Builder(string Primary_Web_Server_URL, string Static_Data_Location, string Default_Skin)
         {
             primaryWebServerUrl = Primary_Web_Server_URL;
             staticSobekcmDataLocation = Static_Data_Location;
-		    staticSobekcmLocation = String.Empty;
+            staticSobekcmLocation = UI_ApplicationCache_Gateway.Settings.Application_Server_Network;
 
             tracer = new Custom_Tracer();
             assistant = new SobekCM_Assistant();
 
             // Save all the objects needed by the SobekCM Library
-            iconList = Icon_Table;
-            translations = Translator;
-            codeManager = Code_Manager;
-	        skinsCollection = HTML_Skin_Collection;
 		    defaultSkin = Default_Skin;
 
             // Create the mode object
@@ -90,73 +73,22 @@ namespace SobekCM.Library
                                   Language = Web_Language_Enum.English,
                                   Base_URL = primaryWebServerUrl
                               };
-        }
-
-	    /// <summary> Constructor for a new instance of the Static_Pages_Builder class </summary>
-	    /// <param name="Primary_Web_Server_URL"> URL for the primary web server </param>
-	    /// <param name="Static_Data_Location"> Network location for the data directory </param>
-	    /// <param name="Base_Network_Location"> Location where the web application files site for this </param>
-	    /// <remarks> This constructor pulls all the needed information from the database</remarks>
-	    public Static_Pages_Builder(string Primary_Web_Server_URL, string Static_Data_Location, string Base_Network_Location )
-        {
-            primaryWebServerUrl = Primary_Web_Server_URL;
-            staticSobekcmDataLocation = Static_Data_Location;
-	        staticSobekcmLocation = Base_Network_Location;
-
-            tracer = new Custom_Tracer();
-            assistant = new SobekCM_Assistant();
-
-            // Build all the objects needed by the SobekCM Library
-            iconList = new Dictionary<string, Wordmark_Icon>();
-            Engine_Database.Populate_Icon_List(iconList, tracer);
-
-            translations = new Language_Support_Info();
-            Engine_Database.Populate_Translations(translations, tracer);
-
-            codeManager = new Aggregation_Code_Manager();
-            Engine_Database.Populate_Code_Manager(codeManager, tracer);
-
-			Portal_List urlPortals = new Portal_List();
-            Engine_Database.Populate_URL_Portals(urlPortals, tracer);
-	        defaultSkin = urlPortals.Default_Portal.Default_Web_Skin;
-
-			skinsCollection = new SobekCM_Skin_Collection();
-			
 
             // Set some constant settings
             // SobekCM.Library.UI_ApplicationCache_Gateway.Settings.Watermarks_URL = primary_web_server_url + "/design/wordmarks/";
             UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative = primaryWebServerUrl;
 
-            // Create the mode object
-            currentMode = new SobekCM_Navigation_Object
-                              {
-                                  ViewerCode = "FC",
-								  Skin = defaultSkin,
-                                  Mode = Display_Mode_Enum.Item_Display,
-                                  Language = Web_Language_Enum.English,
-                                  Base_URL = primaryWebServerUrl
-                              };
+            // Ensure all the folders exist
+            if (!Directory.Exists(staticSobekcmDataLocation))
+                Directory.CreateDirectory(staticSobekcmDataLocation);
+            if (!Directory.Exists(staticSobekcmDataLocation + "\\rss"))
+                Directory.CreateDirectory(staticSobekcmDataLocation + "\\rss");
 
-
-			// Ensure all the folders exist
-		    if (!Directory.Exists(staticSobekcmDataLocation))
-			    Directory.CreateDirectory(staticSobekcmDataLocation);
-		    if (!Directory.Exists(staticSobekcmDataLocation + "\\rss"))
-			    Directory.CreateDirectory(staticSobekcmDataLocation + "\\rss");
 
             // Disable the cached data manager
             Cached_Data_Manager.Disabled = true;
         }
 
-		///// <summary> Gets the list of all items used during this creation process </summary>
-		///// <remarks> Access to this list allows new items to be added to the list </remarks>
-		//public Item_Lookup_Object Item_List
-		//{
-		//	get
-		//	{
-		//		return itemList;
-		//	}
-		//}
 
         /// <summary> Builds all of the site map files which point to the static HTML pages </summary>
         /// <returns> Number of site maps created ( Only 30,000 links are included in each site map ) </returns>
@@ -445,7 +377,7 @@ namespace SobekCM.Library
 	        currentMode.Skin = defaultSkin;
 
 			// Get the default web skin
-			SobekCM_Skin_Object defaultSkinObject = skinsCollection[defaultSkin] ?? assistant.Get_HTML_Skin(currentMode, skinsCollection, false, null);
+			SobekCM_Skin_Object defaultSkinObject = Engine_ApplicationCache_Gateway.Web_Skin_Collection[defaultSkin] ?? assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
 
 	        // Get the list of all collections
             DataTable allCollections = SobekCM_Database.Get_Codes_Item_Aggregations( null);
@@ -758,11 +690,11 @@ namespace SobekCM.Library
 		        currentMode.Skin = Aggregation.Web_Skins[0];
 
 			// Get the skin object
-			SobekCM_Skin_Object skinObject = skinsCollection[currentMode.Skin];
+            SobekCM_Skin_Object skinObject = Engine_ApplicationCache_Gateway.Web_Skin_Collection[currentMode.Skin];
 			if (skinObject == null)
 			{
-				skinObject = assistant.Get_HTML_Skin(currentMode, skinsCollection, false, null);
-				skinsCollection.Add(skinObject);
+                skinObject = assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
+                Engine_ApplicationCache_Gateway.Web_Skin_Collection.Add(skinObject);
 			}
 
 			StreamWriter writer = new StreamWriter(staticSobekcmDataLocation + Aggregation.Code.ToLower() + "_all.html", false);
@@ -863,8 +795,7 @@ namespace SobekCM.Library
             try
             {
                 // Build the code manager
-                codeManager = new Aggregation_Code_Manager();
-                Engine_Database.Populate_Code_Manager(codeManager, tracer);
+                Engine_ApplicationCache_Gateway.RefreshCodes();
             }
             catch(Exception)
             {
@@ -932,7 +863,7 @@ namespace SobekCM.Library
                 SobekCM_Item currentItem;
                 Page_TreeNode currentPage;
                 SobekCM_Items_In_Title itemsInTitle;
-				assistant.Get_Item(String.Empty, currentMode, Item_List, UI_ApplicationCache_Gateway.Settings.Image_URL, iconList, null, tracer, null, out currentItem, out currentPage, out itemsInTitle);
+				assistant.Get_Item(String.Empty, currentMode, Item_List, UI_ApplicationCache_Gateway.Settings.Image_URL, UI_ApplicationCache_Gateway.Icon_List, null, tracer, null, out currentItem, out currentPage, out itemsInTitle);
                 currentMode.Aggregation = String.Empty;
                 if (currentItem == null)
                     return false;
@@ -946,7 +877,7 @@ namespace SobekCM.Library
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
                 Dictionary<string, object> options = new Dictionary<string, object>();
-                options["MarcXML_File_ReaderWriter:Additional_Tags"] = currentItem.MARC_Sobek_Standard_Tags(codeManager.Get_Collection_Short_Name(currentMode.Aggregation), true, UI_ApplicationCache_Gateway.Settings.System_Name, UI_ApplicationCache_Gateway.Settings.System_Abbreviation);
+                options["MarcXML_File_ReaderWriter:Additional_Tags"] = currentItem.MARC_Sobek_Standard_Tags(UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(currentMode.Aggregation), true, UI_ApplicationCache_Gateway.Settings.System_Name, UI_ApplicationCache_Gateway.Settings.System_Abbreviation);
                 return marcWriter.Write_Metadata(marcFile, currentItem, options, out errorMessage);
             }
             catch
@@ -982,7 +913,7 @@ namespace SobekCM.Library
             SobekCM_Item currentItem;
             Page_TreeNode currentPage;
             SobekCM_Items_In_Title itemsInTitle;
-			assistant.Get_Item(String.Empty, currentMode, Item_List, UI_ApplicationCache_Gateway.Settings.Image_URL, iconList, null,  tracer, null, out currentItem, out currentPage, out itemsInTitle);
+            assistant.Get_Item(String.Empty, currentMode, Item_List, UI_ApplicationCache_Gateway.Settings.Image_URL, UI_ApplicationCache_Gateway.Icon_List, null, tracer, null, out currentItem, out currentPage, out itemsInTitle);
 		    if (currentItem == null)
 			    return false;
 
@@ -1364,7 +1295,7 @@ namespace SobekCM.Library
 							if ((aggrCode.ToUpper() != "I" + CurrentItem.Bib_Info.Source.Code.ToUpper()) &&
 								(aggrCode.ToUpper() != "I" + CurrentItem.Bib_Info.Location.Holding_Code.ToUpper()))
 							{
-								Item_Aggregation_Related_Aggregations thisAggr = codeManager[aggrCode];
+                                Item_Aggregation_Related_Aggregations thisAggr = UI_ApplicationCache_Gateway.Aggregations[aggrCode];
 								if ((thisAggr != null) && (thisAggr.Active))
 								{
 									breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +
@@ -1388,7 +1319,7 @@ namespace SobekCM.Library
 				    string source_code = CurrentItem.Bib_Info.Source.Code;
 				    if ((source_code[0] != 'i') && (source_code[0] != 'I'))
 					    source_code = "I" + source_code;
-				    Item_Aggregation_Related_Aggregations thisSourceAggr = codeManager[source_code];
+                    Item_Aggregation_Related_Aggregations thisSourceAggr = UI_ApplicationCache_Gateway.Aggregations[source_code];
 				    if ((thisSourceAggr != null) && (!thisSourceAggr.Hidden) && (thisSourceAggr.Active))
 				    {
 					    string source_name = thisSourceAggr.ShortName;
@@ -1409,7 +1340,7 @@ namespace SobekCM.Library
 					    if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
 						    holding_code = "I" + holding_code;
 
-					    Item_Aggregation_Related_Aggregations thisAggr = codeManager[holding_code];
+                        Item_Aggregation_Related_Aggregations thisAggr = UI_ApplicationCache_Gateway.Aggregations[holding_code];
 					    if ((thisAggr != null) && (!thisAggr.Hidden) && (thisAggr.Active))
 					    {
 						    string holding_name = thisAggr.ShortName;
@@ -1431,7 +1362,7 @@ namespace SobekCM.Library
 					    string holding_code = CurrentItem.Bib_Info.Location.Holding_Code;
 					    if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
 						    holding_code = "I" + holding_code;
-					    string holding_name = codeManager.Get_Collection_Short_Name(holding_code);
+                        string holding_name = UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(holding_code);
 					    if (holding_name.ToUpper() != "ADDED AUTOMATICALLY")
 					    {
 						    breadcrumb_builder.Append(" &nbsp;|&nbsp; <a href=\"" + currentMode.Base_URL +

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Web;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
@@ -36,14 +37,28 @@ namespace SobekCM.Library.AdminViewer
     {
         private readonly string actionMessage;
 
+        private string entered_portal_name;
+        private string entered_sys_abbrev;
+        private string entered_web_skin;
+        private string entered_aggregation;
+        private string entered_url_segment;
+        private string entered_base_purl;
+
+
         /// <summary> Constructor for a new instance of the Portals_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Portals_AdminViewer(RequestCache RequestSpecificValues) :  base(RequestSpecificValues)
         {
             RequestSpecificValues.Tracer.Add_Trace("Portals_AdminViewer.Constructor", String.Empty);
 
-            // Set action message to nothing to start
+            // Set action message to nothing to start and some defaults
             actionMessage = String.Empty;
+            entered_portal_name = String.Empty;
+            entered_sys_abbrev = String.Empty;
+            entered_web_skin = String.Empty;
+            entered_aggregation = String.Empty;
+            entered_url_segment = String.Empty;
+            entered_base_purl = String.Empty;
 
             // If the RequestSpecificValues.Current_User cannot edit this, go back
             if (( RequestSpecificValues.Current_User == null ) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && ( !RequestSpecificValues.Current_User.Is_Portal_Admin )))
@@ -80,22 +95,71 @@ namespace SobekCM.Library.AdminViewer
                                 int portalid = Convert.ToInt32(save_value);
 
                                 // Look for this to see if this was the pre-existing default
-		                        bool isDefault = UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.ID == portalid;
+                                bool isDefault = UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.ID == portalid;
 
 
-		                        // Don't edit if the URL segment is empty and this is NOT default
+                                // Don't edit if the URL segment is empty and this is NOT default
                                 if ((!isDefault) && (edit_url.Trim().Length == 0))
                                 {
-                                    actionMessage = "ERROR: Non default UI_ApplicationCache_Gateway.URL_Portals MUST have a url segment associated.";
+                                    actionMessage = "ERROR: Non default portals MUST have a url segment associated.";
+                                }
+                                else if (edit_name.Length == 0)
+                                {
+                                    actionMessage = "ERROR: Portal name is a REQUIRED field.";
+                                }
+                                else if (edit_abbr.Length == 0)
+                                {
+                                    actionMessage = "ERROR: System abbreviation is a REQUIRED field";
                                 }
                                 else
                                 {
-                                    // Now, save this portal information
-                                    int edit_id = SobekCM_Database.Edit_URL_Portal(portalid, edit_url, true, isDefault, edit_abbr, edit_name, edit_aggr, edit_skin, edit_purl, RequestSpecificValues.Tracer);
-                                    if (edit_id > 0)
-                                        actionMessage = "Edited existing URL portal '" + edit_name + "'";
+                                    // Look for matching portal or URL segment names
+                                    bool portal_name_match = false;
+                                    bool url_segment_match = false;
+                                    foreach (Portal thisPortal in UI_ApplicationCache_Gateway.URL_Portals.All_Portals)
+                                    {
+                                        if (thisPortal.ID != portalid)
+                                        {
+                                            if (String.Compare(thisPortal.Name, entered_portal_name, true) == 0)
+                                            {
+                                                portal_name_match = true;
+                                                break;
+                                            }
+
+                                            if (String.Compare(thisPortal.URL_Segment, entered_url_segment, true) == 0)
+                                            {
+                                                url_segment_match = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if (portal_name_match)
+                                    {
+                                        actionMessage = "ERROR: Portal name must be unique, and that name is already in use";
+                                    }
+                                    else if (url_segment_match)
+                                    {
+                                        actionMessage = "ERROR: URL segment must be unique, and that URL segment already exists";
+                                    }
                                     else
-                                        actionMessage = "Error editing URL portal.";
+                                    {
+                                        bool result = edit_abbr.All(C => Char.IsLetterOrDigit(C) || C == '_');
+                                        if (!result)
+                                        {
+                                            actionMessage = "ERROR: System abbreviation must include only letters and numbers";
+                                            edit_abbr = edit_abbr.Replace("\"", "");
+                                        }
+                                        else
+                                        {
+                                            // Now, save this portal information
+                                            int edit_id = SobekCM_Database.Edit_URL_Portal(portalid, edit_url, true, isDefault, edit_abbr, edit_name, edit_aggr, edit_skin, edit_purl, RequestSpecificValues.Tracer);
+                                            if (edit_id > 0)
+                                                actionMessage = "Edited existing URL portal '" + edit_name + "'";
+                                            else
+                                                actionMessage = "Error editing URL portal.";
+                                        }
+                                    }
                                 }
                                 break;
 
@@ -105,19 +169,87 @@ namespace SobekCM.Library.AdminViewer
 
                             case "new":
                                 // Get the values from the form for this new portal
-                                string new_name = form["admin_portal_name"];
-                                string new_abbr = form["admin_portal_abbr"];
-                                string new_skin = form["admin_portal_skin"];
-                                string new_aggr = form["admin_portal_aggregation"];
-                                string new_url = form["admin_portal_url"];
-                                string new_purl = form["admin_portal_purl"];
+                                entered_portal_name = form["admin_portal_name"];
+                                entered_sys_abbrev = form["admin_portal_abbr"];
+                                entered_web_skin = form["admin_portal_skin"].ToLower();
+                                entered_aggregation = form["admin_portal_aggregation"].ToLower();
+                                entered_url_segment = form["admin_portal_url"];
+                                entered_base_purl = form["admin_portal_purl"];
 
-                                // Save this to the database
-                                int new_id = SobekCM_Database.Edit_URL_Portal(-1, new_url, true, false, new_abbr, new_name, new_aggr, new_skin, new_purl, RequestSpecificValues.Tracer);
-                                if (new_id > 0)
-                                    actionMessage = "Saved new URL portal '" + new_name + "'";
+
+
+                                if (entered_portal_name.Length == 0)
+                                {
+                                    actionMessage = "ERROR: Portal name is a REQUIRED field.";
+                                }
+                                else if (entered_sys_abbrev.Length == 0)
+                                {
+                                    actionMessage = "ERROR: System abbreviation is a REQUIRED field.";
+                                }
+                                else if (entered_web_skin.Length == 0)
+                                {
+                                    actionMessage = "ERROR: Default web skin is a REQUIRED field.";
+                                }
+                                else if (entered_url_segment.Length == 0)
+                                {
+                                    actionMessage = "ERROR: URL segment is a REQUIRED field.";
+                                }
                                 else
-                                    actionMessage = "Error saving URL portal.";
+                                {
+                                    // Look for matching portal or URL segment names
+                                    bool portal_name_match = false;
+                                    bool url_segment_match = false;
+                                    foreach (Portal thisPortal in UI_ApplicationCache_Gateway.URL_Portals.All_Portals)
+                                    {
+                                        if (String.Compare(thisPortal.Name, entered_portal_name, true) == 0)
+                                        {
+                                            portal_name_match = true;
+                                            break;
+                                        }
+
+                                        if (String.Compare(thisPortal.URL_Segment, entered_url_segment, true) == 0)
+                                        {
+                                            url_segment_match = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (portal_name_match)
+                                    {
+                                        actionMessage = "ERROR: Portal name must be unique, and that name is already in use";
+                                    }
+                                    else if (url_segment_match)
+                                    {
+                                        actionMessage = "ERROR: URL segment must be unique, and that URL segment already exists";
+                                    }
+                                    else
+                                    {
+                                        bool result = entered_sys_abbrev.All(C => Char.IsLetterOrDigit(C) || C == '_');
+                                        if (!result)
+                                        {
+                                            actionMessage = "ERROR: System abbreviation must include only letters and numbers";
+                                            entered_sys_abbrev = entered_sys_abbrev.Replace("\"", "");
+                                        }
+                                        else
+                                        {
+                                            // Save this to the database
+                                            int new_id = SobekCM_Database.Edit_URL_Portal(-1, entered_url_segment, true, false, entered_sys_abbrev, entered_portal_name, entered_aggregation, entered_web_skin, entered_base_purl, RequestSpecificValues.Tracer);
+                                            if (new_id > 0)
+                                            {
+                                                actionMessage = "Saved new URL portal '" + entered_portal_name + "'";
+
+                                                entered_portal_name = String.Empty;
+                                                entered_sys_abbrev = String.Empty;
+                                                entered_web_skin = String.Empty;
+                                                entered_aggregation = String.Empty;
+                                                entered_url_segment = String.Empty;
+                                                entered_base_purl = String.Empty;
+                                            }
+                                            else
+                                                actionMessage = "Error saving URL portal.";
+                                        }
+                                    }
+                                }
                                 break;
                         }
                     }
@@ -205,8 +337,6 @@ namespace SobekCM.Library.AdminViewer
 				//Output.WriteLine("        <input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"form_portal_skin\" id=\"form_portal_skin\" type=\"text\" value=\"\" /></td>");
 
 				Output.WriteLine("        <select class=\"sbkPoav_select\" name=\"form_portal_skin\" id=\"form_portal_skin\">");
-				Output.WriteLine("          <option value=\"\"></option>");
-
 				foreach (string thisSkin in UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes)
 				{
 					Output.WriteLine("          <option value=\"" + thisSkin.ToLower() + "\">" + thisSkin.ToLower() + "</option>");
@@ -220,7 +350,22 @@ namespace SobekCM.Library.AdminViewer
 		        // Add the line for the default aggregation
 		        Output.WriteLine("    <tr>");
 		        Output.WriteLine("      <td><label for=\"form_portal_aggregation\">Default Aggregation:</label></td>");
-		        Output.WriteLine("      <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"form_portal_aggregation\" id=\"form_portal_aggregation\" type=\"text\" value=\"\" /></td>");
+                Output.WriteLine("        <td>");
+                Output.WriteLine("            <select class=\"sbkPoav_select sbkAdmin_Focusable\" name=\"form_portal_aggregation\" id=\"form_portal_aggregation\">");
+                Output.WriteLine("              <option value=\"\"></option>");
+                foreach (Core.Aggregations.Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
+                {
+                    if (thisAggr.Code != "ALL")
+                    {
+                        string display = thisAggr.Code.ToLower() + " - " + thisAggr.ShortName;
+                        if (display.Length > 40)
+                            display = display.Substring(0, 40) + "...";
+
+                        Output.WriteLine("              <option value=\"" + thisAggr.Code.ToUpper() + "\">" + HttpUtility.HtmlEncode(display) + "</option>");
+                    }
+                }
+                Output.WriteLine("            </select>");
+                Output.WriteLine("        </td>");
 		        Output.WriteLine("      <td><img class=\"sbkPoav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + AGGREGATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + AGGREGATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
 		        Output.WriteLine("    </tr>");
 
@@ -276,7 +421,8 @@ namespace SobekCM.Library.AdminViewer
 		        Output.WriteLine("  <div class=\"sbkPoav_NewDiv\">");
 		        Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
 
-		        Portal newPortal = new Portal(-1, String.Empty, String.Empty, String.Empty, String.Empty, String.Empty, String.Empty);
+                Portal newPortal = new Portal(-1, entered_portal_name, entered_sys_abbrev, entered_aggregation, entered_web_skin, entered_url_segment, entered_base_purl);
+
 
 		        // Add the line for the url portal name
 		        Output.WriteLine("      <tr>");
@@ -323,7 +469,33 @@ namespace SobekCM.Library.AdminViewer
 		        // Add the line for the default aggregation
 		        Output.WriteLine("      <tr>");
 		        Output.WriteLine("        <td><label for=\"admin_portal_aggregation\">Default Aggregation:</label></td>");
-		        Output.WriteLine("        <td><input class=\"sbkPoav_input sbkAdmin_Focusable\" name=\"admin_portal_aggregation\" id=\"admin_portal_aggregation\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(newPortal.Default_Aggregation) + "\" /></td>");
+	            Output.WriteLine("        <td>");
+                Output.WriteLine("            <select class=\"sbkPoav_select sbkAdmin_Focusable\" name=\"admin_portal_aggregation\" id=\"admin_portal_aggregation\">");
+	            if (entered_aggregation.Length == 0)
+	            {
+	                Output.WriteLine("              <option value=\"\" selected=\"selected\"></option>");
+	            }
+	            else
+	            {
+                    Output.WriteLine("              <option value=\"\"></option>");
+	            }
+
+	            foreach (Core.Aggregations.Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
+                {
+                    if (thisAggr.Code != "ALL")
+                    {
+                        string display = thisAggr.Code.ToLower() + " - " + thisAggr.ShortName;
+                        if (display.Length > 40)
+                            display = display.Substring(0, 40) + "...";
+
+                        if (String.Compare(thisAggr.Code, newPortal.Default_Aggregation, StringComparison.OrdinalIgnoreCase) == 0)
+                            Output.WriteLine("              <option value=\"" + thisAggr.Code + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(display) + "</option>");
+                        else
+                            Output.WriteLine("              <option value=\"" + thisAggr.Code + "\">" + HttpUtility.HtmlEncode(display) + "</option>");
+                    }
+                }
+                Output.WriteLine("            </select>");
+                Output.WriteLine("        </td>");
 		        Output.WriteLine("        <td><img class=\"sbkPoav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + AGGREGATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + AGGREGATION_HELP.Replace("'", "").Replace("\\", "\\\\").Replace("\n", " ") + "\" /></td>");
 		        Output.WriteLine("      </tr>");
 
@@ -350,17 +522,17 @@ namespace SobekCM.Library.AdminViewer
 	        }
 
 	        Output.WriteLine("  <h2>Existing URL Portals</h2>");
-            Output.WriteLine("  <p>The following URL UI_ApplicationCache_Gateway.URL_Portals are currently cached in this web application.</p>");
+            Output.WriteLine("  <p>The following URL portals are active:</p>");
 
             Output.WriteLine("  <table class=\"sbkPoav_Table sbkAdm_Table\">");
             Output.WriteLine("    <tr>");
 			if ( RequestSpecificValues.Current_User.Is_System_Admin )
 				Output.WriteLine("      <th class=\"sbkPoav_TableHeader1\">ACTIONS</th>");
-			Output.WriteLine("      <th class=\"sbkPoav_TableHeader2\">URL<br />SEGMENT</th>");
-			Output.WriteLine("      <th class=\"sbkPoav_TableHeader3\">SYSTEM<br />ABBREVIATION</th>");
-			Output.WriteLine("      <th class=\"sbkPoav_TableHeader4\">DEFAULT<br />WEB SKIN</th>");
-			Output.WriteLine("      <th class=\"sbkPoav_TableHeader5\">DEFAULT<br />AGGREGATION</th>");
-			Output.WriteLine("      <th class=\"sbkPoav_TableHeader6\">BASE<br />PURL</th>");
+            Output.WriteLine("      <th class=\"sbkPoav_TableHeader2\">PORTAL<br />NAME</th>");
+            Output.WriteLine("      <th class=\"sbkPoav_TableHeader3\">SYSTEM<br />ABBREVIATION</th>");
+            Output.WriteLine("      <th class=\"sbkPoav_TableHeader4\">DEFAULT<br />WEB SKIN</th>");
+            Output.WriteLine("      <th class=\"sbkPoav_TableHeader5\">DEFAULT<br />AGGREGATION</th>");
+			Output.WriteLine("      <th class=\"sbkPoav_TableHeader6\">URL<br />SEGMENT</th>");
             Output.WriteLine("    </tr>");
 
             // Write the default portal first
@@ -371,18 +543,19 @@ namespace SobekCM.Library.AdminViewer
 		        {
 			        Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
 			        Portal thisPortal = UI_ApplicationCache_Gateway.URL_Portals.Default_Portal;
-			        Output.WriteLine("      <a title=\"Edit this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">edit</a> ) </td>");
+			        Output.WriteLine("      <a title=\"Edit this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation.ToUpper() + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">edit</a> ) </td>");
 		        }
 		        else
 		        {
 			        Output.WriteLine("    <td>&nbsp;</td>");
 		        }
 	        }
+            Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Name) + "</td>");
+            Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Abbreviation) + "</td>");
+            Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Web_Skin) + "</td>");
+            Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Aggregation) + "</td>");
 	        Output.WriteLine("      <td id=\"sbkPoav_DefaultCell\">default</td>");
-            Output.WriteLine("      <td>" + UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Abbreviation + "</td>");
-            Output.WriteLine("      <td>" + UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Web_Skin + "</td>");
-            Output.WriteLine("      <td>" + UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Aggregation + "</td>");
-            Output.WriteLine("      <td>" + UI_ApplicationCache_Gateway.URL_Portals.Default_Portal.Base_PURL + "</td>");
+            
             Output.WriteLine("    </tr>");
 			Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"" + columns + "\"></td></tr>");
 
@@ -395,14 +568,14 @@ namespace SobekCM.Library.AdminViewer
 	                if (RequestSpecificValues.Current_User.Is_System_Admin)
 	                {
 		                Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
-		                Output.Write("<a title=\"Edit this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">edit</a> | ");
+		                Output.Write("<a title=\"Edit this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return portal_form_popup( '" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "','" + thisPortal.Abbreviation + "','" + thisPortal.Default_Web_Skin + "','" + thisPortal.Default_Aggregation.ToUpper() + "','" + thisPortal.URL_Segment + "','" + thisPortal.Base_PURL + "');\">edit</a> | ");
 		                Output.WriteLine("<a title=\"Delete this portal\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_portal('" + thisPortal.ID + "','" + HttpUtility.HtmlEncode(thisPortal.Name.Replace("'", "")) + "');\">delete</a> )</td>");
 	                }
-	                Output.WriteLine("      <td>" + thisPortal.URL_Segment + "</td>");
-                    Output.WriteLine("      <td>" + thisPortal.Abbreviation + "</td>");
-                    Output.WriteLine("      <td>" + thisPortal.Default_Web_Skin + "</td>");
-                    Output.WriteLine("      <td>" + thisPortal.Default_Aggregation + "</td>");
-                    Output.WriteLine("      <td>" + thisPortal.Base_PURL + "</td>");
+                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(thisPortal.Name) + "</td>");
+                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(thisPortal.Abbreviation) + "</td>");
+                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(thisPortal.Default_Web_Skin) + "</td>");
+                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(thisPortal.Default_Aggregation) + "</td>");
+                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(thisPortal.URL_Segment) + "</td>");
                     Output.WriteLine("    </tr>");
 					Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"" + columns + "\"></td></tr>");
                 }

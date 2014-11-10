@@ -10,7 +10,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class CheckForSsnModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             string resourceFolder = Resource.Resource_Folder;
             string bibID = Resource.BibID;
@@ -52,6 +52,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                 }
                 OnProcess("Possible SSN Located (" + ssn_text_file_name + ")", "Privacy Checking", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
             }
+
+            return true;
         }
     }
 }

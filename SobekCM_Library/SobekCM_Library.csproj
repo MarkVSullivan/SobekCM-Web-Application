@@ -593,7 +593,7 @@
     <Compile Include="ResultsViewer\No_Results_ResultsViewer.cs" />
     <Compile Include="ResultsViewer\Table_ResultsViewer.cs" />
     <Compile Include="ResultsViewer\Thumbnail_ResultsViewer.cs" />
-    <Compile Include="Citation\Template\Template.cs" />
+    <Compile Include="Citation\Template\CompleteTemplate.cs" />
     <Compile Include="Citation\Template\Template_Creator.cs" />
     <Compile Include="Citation\Template\Template_Page.cs" />
     <Compile Include="Citation\Template\Template_Panel.cs" />

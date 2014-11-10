@@ -9,6 +9,11 @@ namespace SobekCM.Builder_Library.Modules.Folders
 {
     public abstract class abstractFolderModule : iFolderModule
     {
+        protected abstractFolderModule()
+        {
+            Arguments = new List<string>();
+        }
+
         public List<string> Arguments { get; set; }
 
         public InstanceWide_Settings Settings { get; set; }

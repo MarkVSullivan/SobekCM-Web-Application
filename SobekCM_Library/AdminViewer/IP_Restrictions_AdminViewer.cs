@@ -39,12 +39,21 @@ namespace SobekCM.Library.AdminViewer
         private readonly IP_Restriction_Range thisRange;
 		private readonly string actionMessage;
 
+        private string entered_title;
+        private string entered_notes;
+        private string entered_message;
+
 		/// <summary> Constructor for a new instance of the IP_Restrictions_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new item aggregation alias is handled here in the constructor </remarks>
         public IP_Restrictions_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
 		    RequestSpecificValues.Tracer.Add_Trace("IP_Restrictions_AdminViewer.Constructor", String.Empty);
+
+            // Set some defaults
+            entered_title = String.Empty;
+		    entered_notes = String.Empty;
+            entered_message = String.Empty;
 
             // Ensure the RequestSpecificValues.Current_User is the system admin
             if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && ( !RequestSpecificValues.Current_User.Is_Portal_Admin )))
@@ -85,104 +94,121 @@ namespace SobekCM.Library.AdminViewer
 				if (action == "new")
 				{
 					// Pull the main values
-					string title = form["new_admin_title"].Trim();
-					string notes = form["new_admin_notes"].Trim();
-					string message = form["new_admin_message"].Trim();
+                    entered_title = form["new_admin_title"].Trim();
+                    entered_notes = form["new_admin_notes"].Trim();
+                    entered_message = form["new_admin_message"].Trim();
 
-					if ((title.Length == 0) || (message.Length == 0))
+                    if ((entered_title.Length == 0) || (entered_message.Length == 0))
 					{
 						actionMessage = "Both title and message are required fields";
 					}
 					else
 					{
-                        if (SobekCM_Database.Edit_IP_Range(-1, title, notes, message, RequestSpecificValues.Tracer))
-							actionMessage = "Saved new IP range '" + title + "'";
-						else
-							actionMessage = "Error saving new IP range '" + title + "'";
+                        if (SobekCM_Database.Edit_IP_Range(-1, entered_title, entered_notes, entered_message, RequestSpecificValues.Tracer))
+					    {
+					        actionMessage = "Saved new IP range '" + entered_title + "'";
+
+                            entered_title = String.Empty;
+                            entered_notes = String.Empty;
+                            entered_message = String.Empty;
+					    }
+					    else
+					        actionMessage = "Error saving new IP range '" + entered_title + "'";
 					}
 				}
-				else if (( details != null ) && ( thisRange != null ))
-				{
-					try
-					{
-						// Pull the main values
-						string title = form["admin_title"].Trim();
-						string notes = form["admin_notes"].Trim();
-						string message = form["admin_message"].Trim();
+                else if (action == "delete")
+                {
+                    int id_to_delete = Int32.Parse(form["admin_ip_delete"]);
 
-						if (title.Length == 0)
-						{
-							title = thisRange.Title;
-						}
+                    string delete_title = UI_ApplicationCache_Gateway.IP_Restrictions[id_to_delete].Title;
 
-						// Edit the main values in the database
+                    if (SobekCM_Database.Delete_IP_Range(id_to_delete, RequestSpecificValues.Tracer))
+                        actionMessage = "Deleted IP range '" + delete_title + "'";
+                    else
+                        actionMessage = "Error deleting new IP range '" + delete_title + "'";
+                }
+                else if ((details != null) && (thisRange != null))
+                {
+                    try
+                    {
+                        // Pull the main values
+                        string title = form["admin_title"].Trim();
+                        string notes = form["admin_notes"].Trim();
+                        string message = form["admin_message"].Trim();
+
+                        if (title.Length == 0)
+                        {
+                            title = thisRange.Title;
+                        }
+
+                        // Edit the main values in the database
                         SobekCM_Database.Edit_IP_Range(thisRange.RangeID, title, notes, message, RequestSpecificValues.Tracer);
-						thisRange.Title = title;
-						thisRange.Notes = notes;
-						thisRange.Item_Restricted_Statement = message;
+                        thisRange.Title = title;
+                        thisRange.Notes = notes;
+                        thisRange.Item_Restricted_Statement = message;
 
-						// Now check each individual IP address range
-						string[] getKeys = form.AllKeys;
-						int single_ip_index = 0;
-						foreach (string thisKey in getKeys)
-						{
-							// Is this for a new ip address?
-							if (thisKey.IndexOf("admin_ipstart_") == 0)
-							{
-								// Get the basic information for this single ip address
-								string ip_index = thisKey.Replace("admin_ipstart_", "");
-								string thisIpStart = form["admin_ipstart_" + ip_index].Trim();
-								string thisIpEnd = form["admin_ipend_" + ip_index].Trim();
-								string thisIpNote = form["admin_iplabel_" + ip_index].Trim();
+                        // Now check each individual IP address range
+                        string[] getKeys = form.AllKeys;
+                        int single_ip_index = 0;
+                        foreach (string thisKey in getKeys)
+                        {
+                            // Is this for a new ip address?
+                            if (thisKey.IndexOf("admin_ipstart_") == 0)
+                            {
+                                // Get the basic information for this single ip address
+                                string ip_index = thisKey.Replace("admin_ipstart_", "");
+                                string thisIpStart = form["admin_ipstart_" + ip_index].Trim();
+                                string thisIpEnd = form["admin_ipend_" + ip_index].Trim();
+                                string thisIpNote = form["admin_iplabel_" + ip_index].Trim();
 
-								// Does this match an existing IP range?
-								if ((ip_index.IndexOf("new") < 0) && (single_ip_index < details.Tables[1].Rows.Count))
-								{
-									// Get the pre-existing IP row
-									DataRow ipRow = details.Tables[1].Rows[single_ip_index];
-									int singleIpId = Convert.ToInt32(ipRow[0]);
-									if (thisIpStart.Length == 0)
-									{
+                                // Does this match an existing IP range?
+                                if ((ip_index.IndexOf("new") < 0) && (single_ip_index < details.Tables[1].Rows.Count))
+                                {
+                                    // Get the pre-existing IP row
+                                    DataRow ipRow = details.Tables[1].Rows[single_ip_index];
+                                    int singleIpId = Convert.ToInt32(ipRow[0]);
+                                    if (thisIpStart.Length == 0)
+                                    {
                                         SobekCM_Database.Delete_Single_IP(singleIpId, RequestSpecificValues.Tracer);
-									}
-									else
-									{
-										// Is this the same?
-										if ((thisIpStart != ipRow[1].ToString().Trim()) || (thisIpEnd != ipRow[2].ToString().Trim()) || (thisIpNote != ipRow[3].ToString().Trim()))
-										{
-											int edit_point_count = thisIpStart.Count(ThisChar => ThisChar == '.');
+                                    }
+                                    else
+                                    {
+                                        // Is this the same?
+                                        if ((thisIpStart != ipRow[1].ToString().Trim()) || (thisIpEnd != ipRow[2].ToString().Trim()) || (thisIpNote != ipRow[3].ToString().Trim()))
+                                        {
+                                            int edit_point_count = thisIpStart.Count(ThisChar => ThisChar == '.');
 
-											if (edit_point_count == 3)
-											{
+                                            if (edit_point_count == 3)
+                                            {
                                                 SobekCM_Database.Edit_Single_IP(singleIpId, thisRange.RangeID, thisIpStart, thisIpEnd, thisIpNote, RequestSpecificValues.Tracer);
-											}
-										}
-									}
+                                            }
+                                        }
+                                    }
 
-									// Be ready to look at the next pre-existing IP range
-									single_ip_index++;
-								}
-								else
-								{
-									// Just add this as a new single ip address
-									if (thisIpStart.Length > 0)
-									{
-										int add_point_count = thisIpStart.Count(ThisChar => ThisChar == '.');
+                                    // Be ready to look at the next pre-existing IP range
+                                    single_ip_index++;
+                                }
+                                else
+                                {
+                                    // Just add this as a new single ip address
+                                    if (thisIpStart.Length > 0)
+                                    {
+                                        int add_point_count = thisIpStart.Count(ThisChar => ThisChar == '.');
 
-										if (add_point_count == 3)
-										{
+                                        if (add_point_count == 3)
+                                        {
                                             SobekCM_Database.Edit_Single_IP(-1, thisRange.RangeID, thisIpStart, thisIpEnd, thisIpNote, RequestSpecificValues.Tracer);
-										}
-									}
-								}
-							}
-						}
-					}
-					catch (Exception)
-					{
-						actionMessage = "Error saving IP range";
-					}
-				}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        actionMessage = "Error saving IP range";
+                    }
+                }
  
 
                 // Repopulate the restriction table
@@ -235,6 +261,7 @@ namespace SobekCM.Library.AdminViewer
 			if ( thisRange != null )
 				Output.WriteLine("<input type=\"hidden\" id=\"rangeid\" name=\"rangeid\" value=\"" + thisRange.RangeID + "\" />");
 			Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_ip_delete\" name=\"admin_ip_delete\" value=\"\" />");
 			Output.WriteLine();
 
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
@@ -376,14 +403,14 @@ namespace SobekCM.Library.AdminViewer
 		        // Add line for range title
 		        Output.WriteLine("      <tr>");
 		        Output.WriteLine("        <td style=\"width:120px;\"><label for=\"admin_title\">Title:</label></td>");
-		        Output.WriteLine("        <td><input class=\"sbkIpav_large_input sbkAdmin_Focusable\" name=\"new_admin_title\" id=\"new_admin_title\" type=\"text\" value=\"\" /></td>");
+		        Output.WriteLine("        <td><input class=\"sbkIpav_large_input sbkAdmin_Focusable\" name=\"new_admin_title\" id=\"new_admin_title\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(entered_title) + "\" /></td>");
 		        Output.WriteLine("      </tr>");
 
 		        // Add the notes text area box
-		        Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_notes\">Notes:</label></td><td colspan=\"2\"><textarea rows=\"5\" name=\"new_admin_notes\" id=\"new_admin_notes\" class=\"sbkIpav_input sbkAdmin_Focusable\" ></textarea></td></tr>");
+                Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_notes\">Notes:</label></td><td colspan=\"2\"><textarea rows=\"5\" name=\"new_admin_notes\" id=\"new_admin_notes\" class=\"sbkIpav_input sbkAdmin_Focusable\" >" + HttpUtility.HtmlEncode(entered_notes) + "</textarea></td></tr>");
 
 		        // Add the message text area box
-		        Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_message\">Message:</label></td><td colspan=\"2\"><textarea rows=\"10\" name=\"new_admin_message\" id=\"new_admin_message\" class=\"sbkIpav_input sbkAdmin_Focusable\" ></textarea></td></tr>");
+                Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_message\">Message:</label></td><td colspan=\"2\"><textarea rows=\"10\" name=\"new_admin_message\" id=\"new_admin_message\" class=\"sbkIpav_input sbkAdmin_Focusable\" >" + HttpUtility.HtmlEncode(entered_message) + "</textarea></td></tr>");
 		        // Add the SAVE button
 				Output.WriteLine("      <tr style=\"height:30px; text-align: center;\"><td></td><td><button title=\"Save new IP restrictive range\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_ip_range();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
 		        Output.WriteLine("    </table>");
@@ -398,23 +425,51 @@ namespace SobekCM.Library.AdminViewer
 
 	        Output.WriteLine("  <h2>Existing Ranges</h2>");
             if (UI_ApplicationCache_Gateway.IP_Restrictions.Count == 0)
-	        {
-		        Output.WriteLine("  <p>No existing IP restrictive ranges exist.</p>");
-				if ( RequestSpecificValues.Current_User.Is_System_Admin )
-					Output.WriteLine("<p>To add one, enter the information above and press SAVE.</p>");
-	        }
-	        else
-	        {
-		        Output.WriteLine("  <p>Select an IP restrictive range below to view or edit:</p>");
-		        Output.WriteLine("  <ul id=\"sbkIpav_RangeList\">");
+            {
+                Output.WriteLine("  <p>No existing IP restrictive ranges exist.</p>");
+                if (RequestSpecificValues.Current_User.Is_System_Admin)
+                    Output.WriteLine("<p>To add one, enter the information above and press SAVE.</p>");
+            }
+            else
+            {
+                Output.WriteLine("  <p>The following IP restrictive ranges are active:</p>");
+                Output.WriteLine("  <table class=\"sbkIpav_MainTable sbkAdm_Table\">");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <th class=\"sbkIpav_MainTableHeader1\">ACTIONS</th>");
+                Output.WriteLine("      <th class=\"sbkIpav_MainTableHeader2\">TITLE</th>");
+                Output.WriteLine("      <th class=\"sbkIpav_MainTableHeader3\">NOTES</th>");
+                Output.WriteLine("    </tr>");
+                Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
-                for (int i = 0; i < UI_ApplicationCache_Gateway.IP_Restrictions.Count; i++)
-		        {
-                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = UI_ApplicationCache_Gateway.IP_Restrictions[i].RangeID.ToString();
-                    Output.WriteLine("<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + UI_ApplicationCache_Gateway.IP_Restrictions[i].Title + "</a></li>");
-		        }
+                string action_verb = "view";
+                if (RequestSpecificValues.Current_User.Is_System_Admin)
+                {
+                    action_verb = "edit";
+                }
 
-		        Output.WriteLine("  </ul>");
+                foreach ( IP_Restriction_Range existingRange in UI_ApplicationCache_Gateway.IP_Restrictions.IpRanges )
+                {
+                    Output.WriteLine("    <tr>");
+                    Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
+
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = existingRange.RangeID.ToString();
+                    Output.WriteLine("<a title=\"Click to " + action_verb + " this group of IP addresses\" href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + action_verb + "</a>");
+
+                    if (RequestSpecificValues.Current_User.Is_System_Admin)
+                        Output.WriteLine("| <a title=\"Click to delete this group of IP addresses\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_ip_group(" + existingRange.RangeID + ", '" + HttpUtility.HtmlEncode(existingRange.Title) + "');\">delete</a>");
+                    else
+                        Output.WriteLine("| <a title=\"Only SYSTEM administrators can delete a group of IP addresses\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"alert('Only SYSTEM administrators can delete a group of IP addresses'); return false;\">delete</a>");
+
+
+                    Output.WriteLine(" )</td>");
+
+                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(existingRange.Title) + "</td>");
+                    Output.WriteLine("      <td>" + HttpUtility.HtmlEncode(existingRange.Notes) + "</td>");
+                    Output.WriteLine("    </tr>");
+                    Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
+                }
+
+                Output.WriteLine("  </table>");
 	        }
 
 			Output.WriteLine("</div>");

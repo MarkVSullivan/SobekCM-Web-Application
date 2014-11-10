@@ -8,7 +8,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class ExtractTextFromPdfModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             string resourceFolder = Resource.Resource_Folder;
 
@@ -26,6 +26,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                     PDF_Tools.Extract_Text(thisPdf, resourceFolder + "\\" + fileName + "_pdf.txt");
                 }
             }
+
+            return true;
         }
     }
 }

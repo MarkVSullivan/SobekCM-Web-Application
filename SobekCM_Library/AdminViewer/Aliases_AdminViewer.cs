@@ -203,7 +203,18 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <tr style=\"height: 30px;\"><td style=\"width:120px;\"><label for=\"form_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><span class=\"form_linkline admin_existing_code_line\" id=\"form_forwarding_alias\"></span></td></tr>");
 
             // Add line for aggregation
-			Output.WriteLine("    <tr style=\"height: 30px;\"><td><label for=\"form_forwarding_code\">Item Aggregation:</label></td><td colspan=\"2\"><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"form_forwarding_code\" id=\"form_forwarding_code\" type=\"text\" value=\"\" /></td></tr>");
+            Output.WriteLine("    <tr style=\"height: 30px;\">");
+            Output.WriteLine("      <td><label for=\"form_forwarding_code\">Item Aggregation:</label></td>");
+            Output.WriteLine("      <td colspan=\"2\">");
+            Output.WriteLine("        <select class=\"sbkAav_input sbkAdmin_Focusable\" name=\"form_forwarding_code\" id=\"form_forwarding_code\">");
+            List<Core.Aggregations.Item_Aggregation_Related_Aggregations> aggrCodes = UI_ApplicationCache_Gateway.Aggregations.All_Aggregations;
+            foreach (Core.Aggregations.Item_Aggregation_Related_Aggregations thisAggr in aggrCodes)
+            {
+                Output.WriteLine("          <option value=\"" + thisAggr.Code.ToUpper() + "\">" + thisAggr.Code + " - " + thisAggr.ShortName + "</option>");
+            }
+            Output.WriteLine("        </select>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
 
 			// Add the buttons and close the table
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
@@ -239,7 +250,20 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        <tr><td style=\"width:120px;\"><label for=\"admin_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_alias\" id=\"admin_forwarding_alias\" type=\"text\" value=\"\" /></td></tr>");
 
             // Add line for aggregation
-			Output.WriteLine("        <tr><td><label for=\"admin_forwarding_code\">Item Aggregation:</label></td><td><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_code\" id=\"admin_forwarding_code\" type=\"text\" value=\"\" /></td><td><button title=\"Save new aggregation alias\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_alias();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+			Output.WriteLine("        <tr>");
+            Output.WriteLine("          <td><label for=\"admin_forwarding_code\">Item Aggregation:</label></td>");
+            Output.WriteLine("          <td colspan=\"2\">");
+            Output.WriteLine("            <select class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_code\" id=\"admin_forwarding_code\">");
+            Output.WriteLine("              <option value=\"\"></option>");
+            foreach (Core.Aggregations.Item_Aggregation_Related_Aggregations thisAggr in aggrCodes)
+            {
+                Output.WriteLine("              <option value=\"" + thisAggr.Code + "\">" + thisAggr.Code + " - " + HttpUtility.HtmlEncode(thisAggr.ShortName) + "</option>");
+
+            }
+            Output.WriteLine("            </select>");
+            Output.WriteLine("          </td>");
+            Output.WriteLine("          <td><button title=\"Save new aggregation alias\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_alias();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
+            Output.WriteLine("        </tr>");
 			Output.WriteLine("      </table>");
 			Output.WriteLine("    </div>");
             Output.WriteLine("  <br />");
@@ -264,13 +288,13 @@ namespace SobekCM.Library.AdminViewer
 			        sorter.Add(thisForward.Key, thisForward.Value);
 		        }
 
-		        // Write the data for each interface
+		        // Write the data for each alias
 		        foreach (KeyValuePair<string, string> thisForward in sorter)
 		        {
 			        // Build the action links
 			        Output.WriteLine("    <tr>");
 			        Output.Write("    <td class=\"sbkAdm_ActionLink\" >( ");
-			        Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return alias_form_popup('" + thisForward.Key + "','" + thisForward.Value + "');\">edit</a> | ");
+			        Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return alias_form_popup('" + thisForward.Key + "','" + thisForward.Value.ToUpper() + "');\">edit</a> | ");
 			        Output.Write("<a title=\"Click to view\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisForward.Key + "\" target=\"_PREVIEW\">view</a> | ");
 					if ( RequestSpecificValues.Current_User.Is_System_Admin )
 				        Output.Write("<a title=\"Delete this alias\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_alias('" + thisForward.Key + "');\">delete</a> )</td>");

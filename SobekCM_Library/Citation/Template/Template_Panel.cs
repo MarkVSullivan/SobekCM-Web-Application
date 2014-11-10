@@ -9,7 +9,7 @@ using SobekCM.Library.Citation.Elements;
 
 namespace SobekCM.Library.Citation.Template
 {
-    /// <summary> Stores the data about a single template panel (within a template page) in a <see cref="Template"/> object </summary>
+    /// <summary> Stores the data about a single template panel (within a template page) in a <see cref="CompleteTemplate"/> object </summary>
 	public class Template_Panel
 	{
         private readonly List<abstract_Element> elements;

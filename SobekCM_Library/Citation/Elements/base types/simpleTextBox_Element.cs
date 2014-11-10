@@ -308,7 +308,7 @@ namespace SobekCM.Library.Citation.Elements
 
         #region Methods Implementing the Abstract Methods from abstract_Element class
 
-        /// <summary> Reads the inner data from the Template XML format </summary>
+        /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This reads the default value from a <i>value</i> subelement and the <i>label</i> subelement, which is used in several of the classes that extend this one </remarks>
         protected override void Inner_Read_Data(XmlTextReader XMLReader)

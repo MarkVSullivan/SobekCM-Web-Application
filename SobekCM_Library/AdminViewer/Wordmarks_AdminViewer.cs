@@ -82,126 +82,144 @@ namespace SobekCM.Library.AdminViewer
                 {
                     // Pull the standard values
                     NameValueCollection form = HttpContext.Current.Request.Form;
-					if (form["admin_wordmark_code_delete"] != null)
+                    if (form["admin_wordmark_action"] != null)
 					{
+                        string action_value = form["admin_wordmark_action"].ToUpper().Trim();
 		                string delete_value = form["admin_wordmark_code_delete"].ToUpper().Trim();
 		                string save_value = form["admin_wordmark_code_tosave"].ToUpper().Trim();
-		                string new_wordmark_code = form["admin_wordmark_code"].ToUpper().Trim();
+
+                        string new_wordmark_code = String.Empty;
+                        if ( form["admin_wordmark_code"] != null )
+                            new_wordmark_code = form["admin_wordmark_code"].ToUpper().Trim();
 
 		                // Was this a reset request?
-		                if (delete_value.Length > 0)
-		                {
-							// If the value to delete does not have a period, then it has no extension, 
-							// so this is to delete a USED wordmark which is both a file AND in the database
-			                if (delete_value.IndexOf(".") < 0)
-			                {
-                                RequestSpecificValues.Tracer.Add_Trace("Wordmarks_AdminViewer.Constructor", "Delete wordmark '" + delete_value + "' from the database");
+					    if ((action_value == "DELETE") && (delete_value.Length > 0))
+					    {
+					        // If the value to delete does not have a period, then it has no extension, 
+					        // so this is to delete a USED wordmark which is both a file AND in the database
+					        if (delete_value.IndexOf(".") < 0)
+					        {
+					            RequestSpecificValues.Tracer.Add_Trace("Wordmarks_AdminViewer.Constructor", "Delete wordmark '" + delete_value + "' from the database");
 
-								// Get the wordmark, so we can also delete the file
-				                Wordmark_Icon deleteIcon = wordmarks[delete_value];
+					            // Get the wordmark, so we can also delete the file
+					            Wordmark_Icon deleteIcon = wordmarks[delete_value];
 
-								// Delete from the database
-                                if (SobekCM_Database.Delete_Icon(delete_value, RequestSpecificValues.Tracer))
-				                {
-									// Set the deleted wordmark message
+					            // Delete from the database
+					            if (SobekCM_Database.Delete_Icon(delete_value, RequestSpecificValues.Tracer))
+					            {
+					                // Set the deleted wordmark message
 					                actionMessage = "Deleted wordmark <i>" + delete_value + "</i>";
 
-									// Try to delete the file related to this wordmark now
-									if ((deleteIcon != null) && (File.Exists(wordmarkDirectory + "\\" + deleteIcon.Image_FileName)))
-									{
-										try
-										{
-											File.Delete(wordmarkDirectory + "\\" + deleteIcon.Image_FileName);
-										}
-										catch (Exception)
-										{
-											actionMessage = "Deleted wordmark <i>" + delete_value + "</i> but unable to delete the file <i>" + deleteIcon.Image_FileName + "</i>";
-										}
-									}
+					                // Try to delete the file related to this wordmark now
+					                if ((deleteIcon != null) && (File.Exists(wordmarkDirectory + "\\" + deleteIcon.Image_FileName)))
+					                {
+					                    try
+					                    {
+					                        File.Delete(wordmarkDirectory + "\\" + deleteIcon.Image_FileName);
+					                    }
+					                    catch (Exception)
+					                    {
+					                        actionMessage = "Deleted wordmark <i>" + delete_value + "</i> but unable to delete the file <i>" + deleteIcon.Image_FileName + "</i>";
+					                    }
+					                }
 
-									// Repull the wordmark list now
-									wordmarks = new Dictionary<string, Wordmark_Icon>();
-                                    Engine_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
-				                }
-				                else
-				                {
-									// Report the error
+					                // Repull the wordmark list now
+					                wordmarks = new Dictionary<string, Wordmark_Icon>();
+					                Engine_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
+					            }
+					            else
+					            {
+					                // Report the error
 					                if (SobekCM_Database.Last_Exception == null)
 					                {
-						                actionMessage = "Unable to delete wordmark <i>" + delete_value + "</i> since it is in use";
+					                    actionMessage = "Unable to delete wordmark <i>" + delete_value + "</i> since it is in use";
 					                }
 					                else
 					                {
-						                actionMessage = "Unknown error while deleting wordmark <i>" + delete_value + "</i>";
+					                    actionMessage = "Unknown error while deleting wordmark <i>" + delete_value + "</i>";
 					                }
-				                }
-			                }
-			                else
-			                {
-				                // This is to delete just a file, which presumably is unused by the system
-								// and does not appear in the database
-								// Try to delete the file related to this wordmark now
-								if (File.Exists(wordmarkDirectory + "\\" + delete_value))
-								{
-									try
-									{
-										File.Delete(wordmarkDirectory + "\\" + delete_value);
-										actionMessage = "Deleted unused image file <i>" + delete_value + "</i>";
-									}
-									catch (Exception)
-									{
-										actionMessage = "Unable to delete unused image <i>" + delete_value + "</i>";
-									}
-								}
-			                }
-		                }
-		                else
-		                {
-			                // Or.. was this a save request
-			                if (save_value.Length > 0)
-			                {
-				                RequestSpecificValues.Tracer.Add_Trace("Wordmarks_AdminViewer.Constructor", "Save wordmark '" + save_value + "'");
-
-				                // Was this to save a new interface (from the main page) or edit an existing (from the popup form)?
-				                if (save_value == new_wordmark_code)
-				                {
-					                string new_file = form["admin_wordmark_file"].Trim();
-					                string new_link = form["admin_wordmark_link"].Trim();
-					                string new_title = form["admin_wordmark_title"].Trim();
-
-					                // Save this new wordmark
-                                    if (SobekCM_Database.Save_Icon(new_wordmark_code, new_file, new_link, new_title, RequestSpecificValues.Tracer) > 0)
+					            }
+					        }
+					        else
+					        {
+					            // This is to delete just a file, which presumably is unused by the system
+					            // and does not appear in the database
+					            // Try to delete the file related to this wordmark now
+					            if (File.Exists(wordmarkDirectory + "\\" + delete_value))
+					            {
+					                try
 					                {
-						                actionMessage = "Saved new wordmark <i>" + save_value + "</i>";
+					                    File.Delete(wordmarkDirectory + "\\" + delete_value);
+					                    actionMessage = "Deleted unused image file <i>" + delete_value + "</i>";
 					                }
-					                else
+					                catch (Exception)
 					                {
-						                actionMessage = "Unable to save new wordmark <i>" + save_value + "</i>";
+					                    actionMessage = "Unable to delete unused image <i>" + delete_value + "</i>";
 					                }
-				                }
-				                else
-				                {
-					                string edit_file = form["form_wordmark_file"].Trim();
-					                string edit_link = form["form_wordmark_link"].Trim();
-					                string edit_title = form["form_wordmark_title"].Trim();
+					            }
+					        }
+					    }
+					    else
+					    {
+					        // Or.. was this a save request
+					        if (action_value == "NEW")
+					        {
+					            bool alphaNumericTest = save_value.All(C => Char.IsLetterOrDigit(C) || C == '_');
+					            if (save_value.Length == 0)
+					            {
+					                actionMessage = "ERROR: New wordmark code is a required field";
+					            }
+					            else if (!alphaNumericTest)
+					            {
+					                actionMessage = "ERROR: New wordmark code must be only letters and numbers";
+					                save_value = save_value.Replace("\"", "");
+					            }
+					            else
+					            {
+					                RequestSpecificValues.Tracer.Add_Trace("Wordmarks_AdminViewer.Constructor", "Save wordmark '" + save_value + "'");
 
-					                // Save this existing wordmark
-                                    if (SobekCM_Database.Save_Icon(save_value, edit_file, edit_link, edit_title, RequestSpecificValues.Tracer) > 0)
+					                // Was this to save a new interface (from the main page) or edit an existing (from the popup form)?
+					                if (save_value == new_wordmark_code)
 					                {
-						                actionMessage = "Edited existing wordmark <i>" + save_value + "</i>";
-					                }
-					                else
-					                {
-						                actionMessage = "Unable to edit existing wordmark <i>" + save_value + "</i>";
-					                }
-				                }
+					                    string new_file = form["admin_wordmark_file"].Trim();
+					                    string new_link = form["admin_wordmark_link"].Trim();
+					                    string new_title = form["admin_wordmark_title"].Trim();
 
-								// Repull the wordmark list now
-								wordmarks = new Dictionary<string, Wordmark_Icon>();
-                                Engine_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
-			                }
-		                }
-	                }
+					                    // Save this new wordmark
+					                    if (SobekCM_Database.Save_Icon(new_wordmark_code, new_file, new_link, new_title, RequestSpecificValues.Tracer) > 0)
+					                    {
+					                        actionMessage = "Saved new wordmark <i>" + save_value + "</i>";
+					                    }
+					                    else
+					                    {
+					                        actionMessage = "Unable to save new wordmark <i>" + save_value + "</i>";
+					                    }
+					                }
+					            }
+					        }
+
+					        if (action_value == "EDIT")
+					        {
+					            string edit_file = form["form_wordmark_file"].Trim();
+					            string edit_link = form["form_wordmark_link"].Trim();
+					            string edit_title = form["form_wordmark_title"].Trim();
+
+					            // Save this existing wordmark
+					            if (SobekCM_Database.Save_Icon(save_value, edit_file, edit_link, edit_title, RequestSpecificValues.Tracer) > 0)
+					            {
+					                actionMessage = "Edited existing wordmark <i>" + save_value + "</i>";
+					            }
+					            else
+					            {
+					                actionMessage = "Unable to edit existing wordmark <i>" + save_value + "</i>";
+					            }
+					        }
+
+					        // Repull the wordmark list now
+					        wordmarks = new Dictionary<string, Wordmark_Icon>();
+					        Engine_Database.Populate_Icon_List(wordmarks, RequestSpecificValues.Tracer);
+					    }
+					}
                 }
                 catch ( Exception )
                 {
@@ -252,6 +270,7 @@ namespace SobekCM.Library.AdminViewer
 
 			// Add the hidden field
 			Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_wordmark_action\" name=\"admin_wordmark_action\" value=\"\" />");
 			Output.WriteLine("<input type=\"hidden\" id=\"admin_wordmark_code_tosave\" name=\"admin_wordmark_code_tosave\" value=\"\" />");
 			Output.WriteLine("<input type=\"hidden\" id=\"admin_wordmark_code_delete\" name=\"admin_wordmark_code_delete\" value=\"\" />");
 			Output.WriteLine();
@@ -450,7 +469,7 @@ namespace SobekCM.Library.AdminViewer
 
 			        // Build the action links
 			        Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
-			        Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return wordmark_form_popup( '" + thisIcon.Code + "', '" + thisIcon.Title.Replace("'", "") + "','" + thisIcon.Image_FileName + "','" + thisIcon.Link + "');\">edit</a> | ");
+			        Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return wordmark_form_popup( '" + thisIcon.Code + "', '" + HttpUtility.HtmlEncode(thisIcon.Title.Replace("'", "")) + "','" + thisIcon.Image_FileName + "','" + HttpUtility.HtmlEncode(thisIcon.Link) + "');\">edit</a> | ");
 			        Output.Write("<a title=\"Click to delete\" href=\"javascript:delete_wordmark('" + thisIcon.Code + "');\">delete</a> )</span>");
 			        Output.WriteLine("</td>");
 
@@ -490,6 +509,7 @@ namespace SobekCM.Library.AdminViewer
 			// Add the upload controls to the file place holder
 			add_upload_controls(MainPlaceHolder, Tracer);
 		}
+
 
 		private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, Custom_Tracer Tracer)
 		{

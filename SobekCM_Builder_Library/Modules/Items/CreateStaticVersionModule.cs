@@ -16,7 +16,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             staticBuilder = null;
         }
 
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             // Only build the statyic builder when needed 
             if (staticBuilder == null)
@@ -51,6 +51,8 @@ namespace SobekCM.Builder_Library.Modules.Items
             {
                 OnError("Error creating static page for this resource", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
             }
+
+            return true;
         }
     }
 }

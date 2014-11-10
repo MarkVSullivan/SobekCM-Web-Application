@@ -9,7 +9,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class AddNewImagesAndViewsModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             // Ensure all new image files are linked to the METS file
             bool jpeg_added = false;
@@ -47,6 +47,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                     Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
                 }
             }
+
+            return true;
         }
     }
 }

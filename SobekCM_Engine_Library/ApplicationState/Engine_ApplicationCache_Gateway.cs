@@ -32,9 +32,25 @@ namespace SobekCM.Engine_Library.ApplicationState
         }
         
         
-        public static void RefreshAll()
+        public static bool RefreshAll()
         {
-            
+            bool error = !RefreshSettings();
+            error = error || !RefreshStatsDateRange();
+            error = error || !RefreshTranslations();
+            error = error || !RefreshWebSkins();
+            error = error || !RefreshCodes();
+            error = error || !RefreshItems();
+            error = error || !RefreshStopWords();
+            error = error || !RefreshIP_Restrictions();
+            error = error || !RefreshThematicHeadings();
+            error = error || !RefreshItemViewerPriority();
+            error = error || !RefreshUserGroups();
+            error = error || !RefreshCollectionAliases();
+            error = error || !RefreshMimeTypes();
+            error = error || !RefreshIcons();
+            error = error || !RefreshDefaultMetadataTemplates();
+
+            return !error;
         }
 
         #region Properties and methods for the statistics date range
@@ -827,6 +843,91 @@ namespace SobekCM.Engine_Library.ApplicationState
             }
         }
 
+
+        #endregion
+
+        #region Properties and methods about the default metadata sets and templates
+
+        private static List<Template> templateList;
+        private static List<Default_Metadata> defaultMetadataList;
+        private static readonly Object templateMetadataLock = new Object();
+
+        private static void load_metadata_template()
+        {
+            // Get the list of all projects
+            DataSet projectsSet = Engine_Database.Get_All_Template_DefaultMetadatas(null);
+            if (projectsSet != null)
+            {
+                if (templateList == null)
+                    templateList = new List<Template>();
+                else
+                    templateList.Clear();
+
+                if (defaultMetadataList == null)
+                    defaultMetadataList = new List<Default_Metadata>();
+                else
+                    defaultMetadataList.Clear();
+
+                // Add each default metadata set
+                foreach (DataRow thisRow in projectsSet.Tables[0].Rows)
+                {
+                    string code = thisRow["MetadataCode"].ToString();
+                    string name = thisRow["MetadataName"].ToString();
+                    string description = thisRow["Description"].ToString();
+
+                    defaultMetadataList.Add(new Default_Metadata(code, name, description));
+                }
+
+                // Add each project
+                foreach (DataRow thisRow in projectsSet.Tables[1].Rows)
+                {
+                    string code = thisRow["TemplateCode"].ToString();
+                    string name = thisRow["TemplateName"].ToString();
+                    string description = thisRow["Description"].ToString();
+
+                    templateList.Add(new Template(code, name, description));
+                }
+            }  
+        }
+
+        public static List<Default_Metadata> Global_Default_Metadata
+        {
+            get
+            {
+                lock (templateMetadataLock)
+                {
+                    if ((templateList == null) || ( defaultMetadataList == null ))
+                    {
+                        load_metadata_template();
+                    }
+
+                    return defaultMetadataList;
+                }
+            }
+        }
+
+        public static List<Template> Templates
+        {
+            get
+            {
+                lock (templateMetadataLock)
+                {
+                    if ((templateList == null) || (defaultMetadataList == null))
+                    {
+                        load_metadata_template();
+                    }
+
+                    return templateList;
+                }
+            }
+        }
+
+        public static bool RefreshDefaultMetadataTemplates()
+        {
+            defaultMetadataList = null;
+            templateList = null;
+            return true;
+        }
 
         #endregion
     }

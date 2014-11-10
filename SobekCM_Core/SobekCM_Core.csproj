@@ -49,6 +49,7 @@
     <Compile Include="Aggregations\Item_Aggregation_Related_Aggregations.cs" />
     <Compile Include="Aggregations\Thematic_Heading.cs" />
     <Compile Include="ApplicationState\Aggregation_Code_Manager.cs" />
+    <Compile Include="ApplicationState\Default_Metadata.cs" />
     <Compile Include="ApplicationState\IP_Restriction_Address.cs" />
     <Compile Include="ApplicationState\IP_Restriction_Range.cs" />
     <Compile Include="ApplicationState\IP_Restriction_Ranges.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="ApplicationState\Recent_Searches.cs" />
     <Compile Include="ApplicationState\Single_Item.cs" />
     <Compile Include="ApplicationState\Statistics_Dates.cs" />
+    <Compile Include="ApplicationState\Template.cs" />
     <Compile Include="ApplicationState\Wordmark_Icon.cs" />
     <Compile Include="Configuration\Database_Instance_Configuration.cs" />
     <Compile Include="Configuration\MapEditor_Configuration.cs" />

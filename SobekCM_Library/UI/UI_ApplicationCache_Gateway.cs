@@ -26,6 +26,21 @@ namespace SobekCM.UI_Library
             Engine_ApplicationCache_Gateway.RefreshSettings();
         }
 
+        public static void ResetDefaultMetadataTemplates()
+        {
+            Engine_ApplicationCache_Gateway.RefreshDefaultMetadataTemplates();
+        }
+
+        public static List<Default_Metadata> Global_Default_Metadata
+        {
+            get { return Engine_ApplicationCache_Gateway.Global_Default_Metadata; }
+        }
+
+        public static List<Template> Templates
+        {
+            get { return Engine_ApplicationCache_Gateway.Templates; }
+        }
+
         public static List<Thematic_Heading> Thematic_Headings
         {
             get { return Engine_ApplicationCache_Gateway.Thematic_Headings; }

@@ -9,7 +9,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class AddTrackingWorkflowModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             // Clear the flag for additional work
             SobekCM_Database.Update_Additional_Work_Needed_Flag(Resource.Metadata.Web.ItemID, false, null);
@@ -22,6 +22,8 @@ namespace SobekCM.Builder_Library.Modules.Items
             {
                 Resource_Object.Database.SobekCM_Database.Update_Digitization_Milestone(Resource.Metadata.Web.ItemID, 4, DateTime.Now);
             }
+
+            return true;
         }
     }
 }

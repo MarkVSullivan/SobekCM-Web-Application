@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
+using SobekCM.Core.Serialization;
 
 #endregion
 
@@ -13,28 +14,33 @@ namespace SobekCM.Core.ApplicationState
     /// <summary> Contains all of the IP ranges which may be used to restrict access
     /// to digital resources within this library </summary>
     [DataContract]
-    public class IP_Restriction_Ranges
+    public class IP_Restriction_Ranges : iSerializationEvents
     {
         private readonly Object thisLock = new Object();
+        private Dictionary<int, IP_Restriction_Range> rangeDictionary;
 
         /// <summary> Constructor for a new instance of the IP_Restriction_Ranges class </summary>
         public IP_Restriction_Ranges(  )
         {
             IpRanges = new List<IP_Restriction_Range>();
+            rangeDictionary = new Dictionary<int, IP_Restriction_Range>();
         }
 
         /// <summary> Collection of all the IP restriction ranges </summary>
         [DataMember]
         public List<IP_Restriction_Range> IpRanges { get; set; }
 
-        /// <summary> Gets an IP restriction range by index from this collection </summary>
-        /// <param name="Index"> Index of the restriction range to get </param>
+        /// <summary> Gets an IP restriction range by rangeID from this collection </summary>
+        /// <param name="RangeID"> RangeID of the restriction range to get </param>
         /// <returns> Requested IP restriction range </returns>
-        public IP_Restriction_Range this[int Index]
+        public IP_Restriction_Range this[int RangeID]
         {
             get
             {
-                return Index < IpRanges.Count ? IpRanges[Index] : null;
+                if (rangeDictionary.ContainsKey(RangeID))
+                    return rangeDictionary[RangeID];
+                else
+                    return null;
             }
         }
 
@@ -56,6 +62,7 @@ namespace SobekCM.Core.ApplicationState
                 DataColumn startColumn = All_Ranges.Columns["StartIP"];
                 DataColumn endColumn = All_Ranges.Columns["EndIP"];
 
+                rangeDictionary.Clear();
                 IpRanges.Clear();
                 IP_Restriction_Range currentRange = null;
                 foreach (DataRow thisRow in All_Ranges.Rows)
@@ -64,8 +71,10 @@ namespace SobekCM.Core.ApplicationState
                     int ipRangeId = Convert.ToInt32(thisRow[1]);
                     if ((currentRange == null) || (currentRange.RangeID != ipRangeId))
                     {
-                        currentRange = new IP_Restriction_Range(ipRangeId, thisRow[0].ToString(), thisRow[2].ToString());
+                        currentRange = new IP_Restriction_Range(ipRangeId, thisRow[0].ToString(), thisRow[2].ToString(), thisRow[5].ToString());
                         IpRanges.Add(currentRange);
+
+                        rangeDictionary[currentRange.RangeID] = currentRange;
                     }
 
                     // Add all the IP addresses to this
@@ -104,6 +113,20 @@ namespace SobekCM.Core.ApplicationState
 
                 return returnMask;
             }
+        }
+
+        public void PostUnSerialization()
+        {
+            if (rangeDictionary == null)
+                rangeDictionary = new Dictionary<int, IP_Restriction_Range>();
+            else
+                rangeDictionary.Clear();
+
+            foreach (IP_Restriction_Range thisRange in IpRanges)
+            {
+                rangeDictionary[thisRange.RangeID] = thisRange;
+            }
+
         }
     }
 

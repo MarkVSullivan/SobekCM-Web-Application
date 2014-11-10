@@ -17,10 +17,10 @@ using SobekCM.Resource_Object;
 
 namespace SobekCM.Library.Citation.Template
 {
-    /// <summary> Template object stores all the information about an individual metadata template and all 
+    /// <summary> CompleteTemplate object stores all the information about an individual metadata template and all 
     /// of the elements contained within the panels and pages of the template </summary>
     [Serializable]
-    public class Template
+    public class CompleteTemplate
     {
         #region Template_Upload_Types enum
 
@@ -47,8 +47,8 @@ namespace SobekCM.Library.Citation.Template
 
         #region Constructors
 
-        /// <summary> Constructor for a new instance of the Template class </summary>
-        public Template()
+        /// <summary> Constructor for a new instance of the CompleteTemplate class </summary>
+        public CompleteTemplate()
         {
             // Set some defaults
             Title = String.Empty;
@@ -69,9 +69,9 @@ namespace SobekCM.Library.Citation.Template
             Email_Upon_Receipt = String.Empty;
         }
 
-        /// <summary> Constructor for a new instance of the Template class </summary>
+        /// <summary> Constructor for a new instance of the CompleteTemplate class </summary>
         /// <param name="Name">Name of this template</param>
-        public Template( string Name )
+        public CompleteTemplate( string Name )
         {
             // Set some defaults
             Title = Name;
@@ -164,23 +164,23 @@ namespace SobekCM.Library.Citation.Template
 
         #region Methods to read and write in the template XML format
 
-        /// <summary> Static method reads a template XML configuraton file and creates the <see cref="Template"/> object  </summary>
+        /// <summary> Static method reads a template XML configuraton file and creates the <see cref="CompleteTemplate"/> object  </summary>
         /// <param name="XmlFile"> Filename of the template XML configuraiton file to read </param>
         /// <returns> Fully built template object </returns>
         /// <remarks> This utilizes the <see cref="Template_XML_Reader"/> class to do the actual reading</remarks>
-        public static Template Read_XML_Template(string XmlFile)
+        public static CompleteTemplate Read_XML_Template(string XmlFile)
         {
             return Read_XML_Template(XmlFile, false);
         }
 
-        /// <summary> Static method reads a template XML configuraton file and creates the <see cref="Template"/> object  </summary>
+        /// <summary> Static method reads a template XML configuraton file and creates the <see cref="CompleteTemplate"/> object  </summary>
         /// <param name="XmlFile"> Filename of the template XML configuraiton file to read </param>
         /// <param name="ExcludeDivisions"> Flag indicates whether to include the structure map, if included in the template file </param>
         /// <returns> Fully built template object </returns>
         /// <remarks> This utilizes the <see cref="Template_XML_Reader"/> class to do the actual reading</remarks>
-        public static Template Read_XML_Template( string XmlFile, bool ExcludeDivisions )
+        public static CompleteTemplate Read_XML_Template( string XmlFile, bool ExcludeDivisions )
         {
-            Template returnValue = new Template();
+            CompleteTemplate returnValue = new CompleteTemplate();
             Template_XML_Reader reader = new Template_XML_Reader();
             reader.Read_XML( XmlFile, returnValue, ExcludeDivisions );
             returnValue.Build_Final_Adjustment_And_Checks();

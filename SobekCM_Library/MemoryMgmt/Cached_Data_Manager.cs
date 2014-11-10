@@ -1861,7 +1861,7 @@ namespace SobekCM.Library.MemoryMgmt
 		/// <param name="Template_Code"> Code which specifies the template to retrieve </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Requested template object for online submissions and editing</returns>
-		public static Template Retrieve_Template(string Template_Code, Custom_Tracer Tracer)
+		public static CompleteTemplate Retrieve_Template(string Template_Code, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
 			if (Disabled)
@@ -1877,14 +1877,14 @@ namespace SobekCM.Library.MemoryMgmt
 
 			// Try to get this object
 			object returnValue = HttpContext.Current.Cache.Get(key);
-			return (returnValue != null) ? (Template) returnValue : null;
+			return (returnValue != null) ? (CompleteTemplate) returnValue : null;
 		}
 
 		/// <summary> Stores the template ( for online submission and editing ) to the cache or caching server </summary>
 		/// <param name="Template_Code"> Code for the template to store </param>
-		/// <param name="StoreObject"> Template object for online submissions and editing to store</param>
+		/// <param name="StoreObject"> CompleteTemplate object for online submissions and editing to store</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Store_Template(string Template_Code, Template StoreObject, Custom_Tracer Tracer)
+		public static void Store_Template(string Template_Code, CompleteTemplate StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
 			if (Disabled)

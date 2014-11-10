@@ -20,7 +20,7 @@ namespace SobekCM.Library.Citation.Template
             writer.WriteLine("<input_template>");
             writer.WriteLine("");
             writer.WriteLine("	<!-- Define the information about this input template -->");
-            writer.WriteLine("	<name>Metadata Template</name>");
+            writer.WriteLine("	<name>Metadata CompleteTemplate</name>");
             writer.WriteLine("	<name language=\"spa\">Plantilla </name>");
             writer.WriteLine("	<name language=\"fre\">Calibre </name>");
             writer.WriteLine("	<notes>Demo template</notes>");

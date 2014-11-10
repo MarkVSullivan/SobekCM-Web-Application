@@ -33,12 +33,10 @@ namespace SobekCM.Library.Database
 	{
 
         private const int LOOKAHEAD_FACTOR = 5;
-       
 
 		private static string connectionString;
 		private static Exception lastException;
 
-		
 
 		#region Temporary dataset work 
 
@@ -1653,6 +1651,42 @@ namespace SobekCM.Library.Database
 				return false;
 			}
 		}
+
+        /// <summary> Delete a complete IP range group </summary>
+        /// <param name="IdToDelete"> Primary key of the IP range to delete </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Delete_IP_Range' stored procedure </remarks> 
+        public static bool Delete_IP_Range(int IdToDelete, Custom_Tracer Tracer)
+	    {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Delete_IP_Range", "Delete an existing IP restriction range");
+            }
+
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[1];
+                parameters[0] = new SqlParameter("@rangeid", IdToDelete);
+
+                // Execute the stored procedure
+                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_IP_Range", parameters);
+
+                // Return true if successful
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Delete_IP_Range", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Delete_IP_Range", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Delete_IP_Range", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+	    }
 
 		#endregion
 
@@ -3779,22 +3813,6 @@ namespace SobekCM.Library.Database
 		}
 
 
-		/// <summary> Gets the dataset with all default metadata and all templates </summary>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> DataSet with list of all default metadata sets and tables </returns>
-		/// <remarks> This calls the 'mySobek_Get_All_Template_DefaultMetadatas' stored procedure</remarks> 
-        public static DataSet Get_All_Template_DefaultMetadatas(Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("SobekCM_Database.Get_All_Projects_DefaultMetadatas", String.Empty);
-			}
-
-			// Define a temporary dataset
-			DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_All_Template_DefaultMetadatas");
-			return tempSet;
-		}
-
 		/// <summary> Updates an existing item aggregation's data that appears in the basic edit aggregation form </summary>
 		/// <param name="Code"> Code for this item aggregation </param>
 		/// <param name="Name"> Name for this item aggregation </param>
@@ -3998,8 +4016,8 @@ namespace SobekCM.Library.Database
 		/// <param name="Can_Delete_All"> Flag indicates if this user can delete anything in the repository </param>
 		/// <param name="Is_System_Admin"> Flag indicates if this user is a system Administrator</param>
 		/// <param name="Include_Tracking_Standard_Forms"> Flag indicates if this user should have tracking portions appear in their standard forms </param>
-		/// <param name="Edit_Template"> Template name for editing non-MARC records </param>
-		/// <param name="Edit_Template_MARC"> Template name for editing MARC-derived records </param>
+		/// <param name="Edit_Template"> CompleteTemplate name for editing non-MARC records </param>
+		/// <param name="Edit_Template_MARC"> CompleteTemplate name for editing MARC-derived records </param>
 		/// <param name="Clear_Projects_Templates"> Flag indicates whether to clear projects and templates for this user </param>
 		/// <param name="Clear_Aggregation_Links"> Flag indicates whether to clear item aggregationPermissions linked to this user</param>
 		/// <param name="Clear_User_Groups"> Flag indicates whether to clear user group membership for this user </param>
@@ -4888,13 +4906,15 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Saves a new default metadata set, or edits an existing default metadata name </summary>
-		/// <param name="Code"> Code for the new default metadata set, or set to edit </param>
-		/// <param name="Name"> Descriptive name for this default metadata set </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'mySobek_Save_DefaultMetadata' stored procedure</remarks> 
-		public static bool Save_Default_Metadata(string Code, string Name, Custom_Tracer Tracer)
+	    /// <summary> Saves a new default metadata set, or edits an existing default metadata name </summary>
+	    /// <param name="Code"> Code for the new default metadata set, or set to edit </param>
+	    /// <param name="Name"> Name for this default metadata set </param>
+	    /// <param name="Description"> Full description for this default metadata set </param>
+	    /// <param name="UserID"> UserID, if this is not a global default metadata set </param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <returns> TRUE if successful, otherwise FALSE </returns>
+	    /// <remarks> This calls the 'mySobek_Save_DefaultMetadata' stored procedure</remarks> 
+	    public static bool Save_Default_Metadata(string Code, string Name, string Description, int UserID, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -4904,9 +4924,14 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[2];
+				SqlParameter[] paramList = new SqlParameter[4];
 				paramList[0] = new SqlParameter("@metadata_code", Code);
-				paramList[1] = new SqlParameter("@metadata_name", Name);
+                paramList[1] = new SqlParameter("@metadata_name", Name);
+                paramList[2] = new SqlParameter("@description", Description);
+                paramList[3] = new SqlParameter("@userid", UserID);
+
+                if (UserID <= 0)
+                    paramList[3].Value = DBNull.Value;
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_DefaultMetadata", paramList);
@@ -4943,10 +4968,10 @@ namespace SobekCM.Library.Database
 			{
 				// Build the parameter list
 				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@project_code", Code);
+				paramList[0] = new SqlParameter("@MetadataCode", Code);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Delete_Project", paramList);
+                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Delete_DefaultMetadata", paramList);
 
 				// Succesful, so return true
 				return true;
@@ -4966,11 +4991,12 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Saves a new template, or edits an existing template name </summary>
 		/// <param name="Code"> Code for the new template, or template to edit </param>
-		/// <param name="Name"> Descriptive name for this template </param>
+		/// <param name="Name"> Name for this template </param>
+		/// <param name="Description"> Complete description of this template </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Save_Template' stored procedure</remarks> 
-		public static bool Save_Template(string Code, string Name, Custom_Tracer Tracer)
+		public static bool Save_Template(string Code, string Name, string Description, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -4980,9 +5006,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[2];
+				SqlParameter[] paramList = new SqlParameter[3];
 				paramList[0] = new SqlParameter("@project_code", Code);
 				paramList[1] = new SqlParameter("@project_name", Name);
+                paramList[2] = new SqlParameter("@description", Name);
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_Template", paramList);
@@ -7069,7 +7096,7 @@ namespace SobekCM.Library.Database
             connect.Close();
         }
 
-        /// <summary> Delete a project, Template link from the database </summary>
+        /// <summary> Delete a project, CompleteTemplate link from the database </summary>
         /// <param name="Tracer"></param>
         /// <param name="ProjectID"></param>
         /// <param name="TemplateID"></param>
@@ -7096,7 +7123,7 @@ namespace SobekCM.Library.Database
             }
             catch (Exception ee)
             {
-                throw new ApplicationException("Error deleting Project-Template link" + ee.Message);
+                throw new ApplicationException("Error deleting Project-CompleteTemplate link" + ee.Message);
             }
             connect.Close();
         }

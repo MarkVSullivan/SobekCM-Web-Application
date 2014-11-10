@@ -45,14 +45,14 @@ namespace SobekCM.Library.MySobekViewer
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>The mySobek subwriter creates an instance of this viewer for submitting a new digital resource </li>
-    /// <li>This viewer uses the <see cref="SobekCM.Library.Citation.Template.Template"/> class to display the correct elements for editing </li>
+    /// <li>This viewer uses the <see cref="CompleteTemplate"/> class to display the correct elements for editing </li>
     /// </ul></remarks>
     public class New_Group_And_Item_MySobekViewer : abstract_MySobekViewer
     {
         private bool criticalErrorEncountered;
         private readonly int currentProcessStep;
         private SobekCM_Item item;
-        private readonly Template template;
+        private readonly CompleteTemplate completeTemplate;
         private readonly string templateCode = "ir";
         private readonly string toolTitle;
         private readonly int totalTemplatePages;
@@ -81,15 +81,15 @@ namespace SobekCM.Library.MySobekViewer
             else
                 userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.UserName.Replace(".","").Replace("@","") + "\\newgroup";
 
-            // Handle postback for changing the template or project
+            // Handle postback for changing the CompleteTemplate or project
             templateCode = RequestSpecificValues.Current_User.Current_Template;
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 string action1 = HttpContext.Current.Request.Form["action"];
-                if ((action1 != null) && ((action1 == "template") || (action1 == "project")))
+                if ((action1 != null) && ((action1 == "CompleteTemplate") || (action1 == "project")))
                 {
                     string newvalue = HttpContext.Current.Request.Form["phase"];
-                    if ((action1 == "template") && ( newvalue != templateCode ))
+                    if ((action1 == "CompleteTemplate") && ( newvalue != templateCode ))
                     {
                         RequestSpecificValues.Current_User.Current_Template = newvalue;
                         templateCode = RequestSpecificValues.Current_User.Current_Template;
@@ -104,38 +104,38 @@ namespace SobekCM.Library.MySobekViewer
                 }
             }
 
-            // Load the template
+            // Load the CompleteTemplate
             templateCode = RequestSpecificValues.Current_User.Current_Template;
-            template = Cached_Data_Manager.Retrieve_Template(templateCode, RequestSpecificValues.Tracer);
-            if ( template != null )
+            completeTemplate = Cached_Data_Manager.Retrieve_Template(templateCode, RequestSpecificValues.Tracer);
+            if ( completeTemplate != null )
             {
-                RequestSpecificValues.Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Constructor", "Found template in cache");
+                RequestSpecificValues.Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Constructor", "Found CompleteTemplate in cache");
             }
             else
             {
-                RequestSpecificValues.Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Constructor", "Reading template");
+                RequestSpecificValues.Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Constructor", "Reading CompleteTemplate");
 
-                // Read this template
+                // Read this CompleteTemplate
                 Template_XML_Reader reader = new Template_XML_Reader();
-                template = new Template();
-                reader.Read_XML( UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\" + templateCode + ".xml", template, true);
+                completeTemplate = new CompleteTemplate();
+                reader.Read_XML( UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\" + templateCode + ".xml", completeTemplate, true);
 
-                // Add the current codes to this template
-                template.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
+                // Add the current codes to this CompleteTemplate
+                completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
                 // Save this into the cache
-                Cached_Data_Manager.Store_Template(templateCode, template, RequestSpecificValues.Tracer);
+                Cached_Data_Manager.Store_Template(templateCode, completeTemplate, RequestSpecificValues.Tracer);
             }
 
-            // Determine the number of total template pages
-            totalTemplatePages = template.InputPages_Count;
-            if (template.Permissions_Agreement.Length > 0)
+            // Determine the number of total CompleteTemplate pages
+            totalTemplatePages = completeTemplate.InputPages_Count;
+            if (completeTemplate.Permissions_Agreement.Length > 0)
                 totalTemplatePages++;
-            if (template.Upload_Types != Template.Template_Upload_Types.None)
+            if (completeTemplate.Upload_Types != CompleteTemplate.Template_Upload_Types.None)
                 totalTemplatePages++;
 
-            // Determine the title for this template, or use a default
-            toolTitle = template.Title;
+            // Determine the title for this CompleteTemplate, or use a default
+            toolTitle = completeTemplate.Title;
             if (toolTitle.Length == 0)
                 toolTitle = "Self-Submittal Tool";
 
@@ -147,9 +147,9 @@ namespace SobekCM.Library.MySobekViewer
                 Int32.TryParse(RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(0), out currentProcessStep);
             }
 
-            // If this is process step 1 and there is no permissions statement in the template,
+            // If this is process step 1 and there is no permissions statement in the CompleteTemplate,
             // just go to step 2
-            if ((currentProcessStep == 1) && (template.Permissions_Agreement.Length == 0))
+            if ((currentProcessStep == 1) && (completeTemplate.Permissions_Agreement.Length == 0))
             {
                 // Delete any pre-existing agreement from an earlier aborted submission process
                 if (File.Exists(userInProcessDirectory + "\\agreement.txt"))
@@ -162,11 +162,11 @@ namespace SobekCM.Library.MySobekViewer
             // If there is a boundary infraction here, go back to step 2
             if (currentProcessStep < 0)
                 currentProcessStep = 2;
-            if ((currentProcessStep > template.InputPages.Count + 1 ) && ( currentProcessStep != 8 ) && ( currentProcessStep != 9 ))
+            if ((currentProcessStep > completeTemplate.InputPages.Count + 1 ) && ( currentProcessStep != 8 ) && ( currentProcessStep != 9 ))
                 currentProcessStep = 2;
 
-            // If this is to enter a file or URL, and the template does not include this, skip over this step
-            if (( currentProcessStep == 8 ) && ( template.Upload_Types == Template.Template_Upload_Types.None ))
+            // If this is to enter a file or URL, and the CompleteTemplate does not include this, skip over this step
+            if (( currentProcessStep == 8 ) && ( completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.None ))
             {
                 // For now, just forward to the next phase
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "9";
@@ -209,8 +209,8 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Constructor", "Reading existing METS file<br />(" + existing_mets[0] + ")");
                     item = SobekCM_Item.Read_METS(existing_mets[0]);
 
-                    // Set the visibility information from the template
-                    item.Behaviors.IP_Restriction_Membership = template.Default_Visibility;
+                    // Set the visibility information from the CompleteTemplate
+                    item.Behaviors.IP_Restriction_Membership = completeTemplate.Default_Visibility;
                 }
 
                 // If there is still no item, just create a new one
@@ -332,7 +332,7 @@ namespace SobekCM.Library.MySobekViewer
                     HttpContext.Current.Session["agreement_date"] = null;
                     HttpContext.Current.Session["item"] = null;
 
-                    // Clear any temporarily assigned current project and template
+                    // Clear any temporarily assigned current project and CompleteTemplate
                     RequestSpecificValues.Current_User.Current_Default_Metadata = null;
                     RequestSpecificValues.Current_User.Current_Template = null;
 
@@ -382,7 +382,7 @@ namespace SobekCM.Library.MySobekViewer
                     string next_phase = HttpContext.Current.Request.Form["phase"];
 
                     // If this goes from step 1 to step 2, write the permissions first
-                    if ((currentProcessStep == 1) && (next_phase == "2") && ( template.Permissions_Agreement.Length > 0 ))
+                    if ((currentProcessStep == 1) && (next_phase == "2") && ( completeTemplate.Permissions_Agreement.Length > 0 ))
                     {
 						// Store this agreement in the session state
                         DateTime agreement_date = DateTime.Now;
@@ -396,7 +396,7 @@ namespace SobekCM.Library.MySobekViewer
                         writer.WriteLine("User: " + RequestSpecificValues.Current_User.Full_Name + " ( " + RequestSpecificValues.Current_User.ShibbID + " )");
                         writer.WriteLine("Date: " + agreement_date.ToString());
                         writer.WriteLine();
-                        writer.WriteLine(template.Permissions_Agreement);
+                        writer.WriteLine(completeTemplate.Permissions_Agreement);
                         writer.Flush();
                         writer.Close();
 
@@ -414,7 +414,7 @@ namespace SobekCM.Library.MySobekViewer
                     if ((currentProcessStep > 1) && (currentProcessStep < 8))
                     {
                         // Save to the item
-                        template.Save_To_Bib(item, RequestSpecificValues.Current_User, currentProcessStep - 1);
+                        completeTemplate.Save_To_Bib(item, RequestSpecificValues.Current_User, currentProcessStep - 1);
                         item.Save_METS();
                         HttpContext.Current.Session["Item"] = item;
 
@@ -490,8 +490,8 @@ namespace SobekCM.Library.MySobekViewer
             // If this is past the agreement phase, check that an agreement exists
             if (currentProcessStep > 1)
             {
-                // Validate that an agreement.txt file exists, if the template has permissions
-                if (( template.Permissions_Agreement.Length > 0 ) && (!File.Exists(userInProcessDirectory + "\\agreement.txt")))
+                // Validate that an agreement.txt file exists, if the CompleteTemplate has permissions
+                if (( completeTemplate.Permissions_Agreement.Length > 0 ) && (!File.Exists(userInProcessDirectory + "\\agreement.txt")))
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -527,7 +527,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // If this is for step 8, ensure that this even takes this information, or go to step 9
-            if (( currentProcessStep == 8 ) && ( template.Upload_Types == Template.Template_Upload_Types.None ))
+            if (( currentProcessStep == 8 ) && ( completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.None ))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "9";
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -539,14 +539,14 @@ namespace SobekCM.Library.MySobekViewer
             if ( currentProcessStep == 9 )
             {
                 // Only check if this is mandatory
-                if (( template.Upload_Mandatory ) && ( template.Upload_Types != Template.Template_Upload_Types.None ))
+                if (( completeTemplate.Upload_Mandatory ) && ( completeTemplate.Upload_Types != CompleteTemplate.Template_Upload_Types.None ))
                 {
                     // Does this require either a FILE or URL?
                     bool required_file_present = false;
                     bool required_url_present = false;
 
                     // If this accepts files, check for acceptable files
-                    if (( template.Upload_Types == Template.Template_Upload_Types.File ) || ( template.Upload_Types == Template.Template_Upload_Types.URL ))
+                    if (( completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File ) || ( completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.URL ))
                     {
                         // Get list of files in this package
                         string[] all_files = Directory.GetFiles(userInProcessDirectory);
@@ -558,7 +558,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
 
                     // If this accepts URLs, check for a URL
-                    if (( template.Upload_Types == Template.Template_Upload_Types.URL ) || ( template.Upload_Types == Template.Template_Upload_Types.File_or_URL ))
+                    if (( completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.URL ) || ( completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL ))
                     {
                         if ( item.Bib_Info.Location.Other_URL.Length > 0 )
                         {
@@ -688,7 +688,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Step through and add each file 
                 Item_To_Complete.Divisions.Download_Tree.Clear();
-                if ((template.Upload_Types == Template.Template_Upload_Types.File_or_URL) || (template.Upload_Types == Template.Template_Upload_Types.File))
+                if ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File))
                 {
                     // Step through each file
 
@@ -785,7 +785,7 @@ namespace SobekCM.Library.MySobekViewer
                 Item_To_Complete.DiskSize_MB = size;
 
                 // BibID and VID will be automatically assigned
-                Item_To_Complete.BibID = template.BibID_Root;
+                Item_To_Complete.BibID = completeTemplate.BibID_Root;
                 Item_To_Complete.VID = String.Empty;
 
                 // Set some values in the tracking portion
@@ -830,7 +830,7 @@ namespace SobekCM.Library.MySobekViewer
                 string base_url = RequestSpecificValues.Current_Mode.Base_URL;
                 try
                 {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Data_Directory, UI_ApplicationCache_Gateway.Translation, UI_ApplicationCache_Gateway.Aggregations, UI_ApplicationCache_Gateway.Icon_List, UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.HTML_Skin.Skin_Code);
+                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Data_Directory, RequestSpecificValues.HTML_Skin.Skin_Code);
                     string filename = userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
                     staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
 
@@ -932,7 +932,7 @@ namespace SobekCM.Library.MySobekViewer
                     SobekCM_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true, Tracer);
                 }
 
-                // Clear any temporarily assigned current project and template
+                // Clear any temporarily assigned current project and CompleteTemplate
                 RequestSpecificValues.Current_User.Current_Default_Metadata = null;
                 RequestSpecificValues.Current_User.Current_Template = null;
 
@@ -955,13 +955,13 @@ namespace SobekCM.Library.MySobekViewer
 
             if (!criticalErrorEncountered)
             {
-                // Send email to the email from the template, if one was provided
+                // Send email to the email from the CompleteTemplate, if one was provided
 
-                if (template.Email_Upon_Receipt.Length > 0)
+                if (completeTemplate.Email_Upon_Receipt.Length > 0)
                 {
                     string body = "New item submission complete!<br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Submittor: " + RequestSpecificValues.Current_User.Full_Name + " ( " + RequestSpecificValues.Current_User.Email + " )<br />Link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + Item_To_Complete.BibID + ":" + Item_To_Complete.VID + "</a></blockquote>";
                     string subject = "Item submission complete for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
-                    SobekCM_Database.Send_Database_Email(template.Email_Upon_Receipt, subject, body, true, false, -1, -1);
+                    SobekCM_Database.Send_Database_Email(completeTemplate.Email_Upon_Receipt, subject, body, true, false, -1, -1);
                 }
 
                 // If the RequestSpecificValues.Current_User wants to have a message sent, send one
@@ -979,16 +979,16 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-        /// <summary> Gets the banner from the current template, if there is one </summary>
+        /// <summary> Gets the banner from the current CompleteTemplate, if there is one </summary>
         public string Current_Template_Banner
         {
             get {
-                return template != null ? template.Banner : String.Empty;
+                return completeTemplate != null ? completeTemplate.Banner : String.Empty;
             }
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
-        /// <value> This returns the title of the current <see cref="SobekCM.Library.Citation.Template.Template"/> object </value>
+        /// <value> This returns the title of the current <see cref="CompleteTemplate"/> object </value>
         public override string Web_Title
         {
             get 
@@ -1002,7 +1002,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This adds the template HTML for step 2 and the congratulations text for step 4 </remarks>
+        /// <remarks> This adds the CompleteTemplate HTML for step 2 and the congratulations text for step 4 </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Write_HTML", "Do nothing");
@@ -1014,24 +1014,24 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("<br />");
                 Output.Write("<h2>Step " + totalTemplatePages + " of " + totalTemplatePages + ": ");
                 string explanation = String.Empty;
-                switch( template.Upload_Types)
+                switch( completeTemplate.Upload_Types)
                 {
-                    case Template.Template_Upload_Types.File:
+                    case CompleteTemplate.Template_Upload_Types.File:
                         Output.Write("Upload Files");
                         explanation = "Upload the related files for your new item.  You can also provide labels for each file, once they are uploaded.";
                         break;
 
-                    case Template.Template_Upload_Types.File_or_URL:
+                    case CompleteTemplate.Template_Upload_Types.File_or_URL:
                         Output.Write("Upload Files or Enter URL");
                         explanation = "Upload the related files or enter a URL for your new item.  You can also provide labels for each file, once they are uploaded.";
                         break;
 
-                    case Template.Template_Upload_Types.URL:
+                    case CompleteTemplate.Template_Upload_Types.URL:
                         explanation = "Enter a URL for this new item.";
                         Output.Write("Enter URL");
                         break;
                 }
-                Output.WriteLine(template.Upload_Mandatory
+                Output.WriteLine(completeTemplate.Upload_Mandatory
                                      ? " ( <i>Required</i> )</h2>"
                                      : " ( Optional )</h2>");
                 Output.WriteLine("<blockquote>" + explanation + "</blockquote><br />"); 
@@ -1050,7 +1050,7 @@ namespace SobekCM.Library.MySobekViewer
                 Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Write_ItemNavForm_Closing", "");
             }
 
-            string templateLabel = "Template";
+            string templateLabel = "CompleteTemplate";
             string projectLabel = "Default Metadata";
             const string COL1_WIDTH = "15px";
             const string COL2_WIDTH = "140px";
@@ -1080,12 +1080,12 @@ namespace SobekCM.Library.MySobekViewer
             {
 				Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
                 Output.WriteLine("<br />");
-                if (template.Permissions_Agreement.Length > 0)
+                if (completeTemplate.Permissions_Agreement.Length > 0)
                 {
                     Output.WriteLine("<h2>Step 1 of " + totalTemplatePages + ": Grant of Permission</h2>");
 
                     Output.WriteLine("<blockquote>You must read and accept the below permissions to continue.<br /><br />");
-                    Output.WriteLine(template.Permissions_Agreement.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL));
+                    Output.WriteLine(completeTemplate.Permissions_Agreement.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL));
                //     Output.WriteLine("<p>Please review the <a href=\"?g=ufirg&amp;m=hitauthor_faq#policies&amp;n=gs\">Policies</A> if you have any questions or please contact us with any questions prior to submitting files. </p>\n");
                     Output.WriteLine("<table style=\"width:700px\">");
                     Output.WriteLine("  <tr style=\"text-align:right\">");
@@ -1100,7 +1100,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
                 else
                 {
-                    Output.WriteLine("<strong>Step 1 of " + totalTemplatePages + ": Confirm Template and Project</strong><br />");
+                    Output.WriteLine("<strong>Step 1 of " + totalTemplatePages + ": Confirm CompleteTemplate and Project</strong><br />");
                     Output.WriteLine("<blockquote>");
                     Output.WriteLine("<table style=\"width:720px\">");
                     Output.WriteLine("  <tr>");
@@ -1115,11 +1115,11 @@ namespace SobekCM.Library.MySobekViewer
 
                 if ((RequestSpecificValues.Current_User.Templates.Count > 1) || (RequestSpecificValues.Current_User.Default_Metadata_Sets.Count > 1))
                 {
-                    string changeable = "template and default metadata";
+                    string changeable = "CompleteTemplate and default metadata";
                     if (RequestSpecificValues.Current_User.Default_Metadata_Sets.Count == 0)
                         changeable = "default metadata";
                     if (RequestSpecificValues.Current_User.Templates.Count == 0)
-                        changeable = "template";
+                        changeable = "CompleteTemplate";
 
                     string current_template = RequestSpecificValues.Current_User.Current_Template;
                     string current_project = RequestSpecificValues.Current_User.Current_Default_Metadata;
@@ -1191,24 +1191,24 @@ namespace SobekCM.Library.MySobekViewer
 
             #endregion
 
-            #region Add the template and surrounding HTML for the template page step(s)
+            #region Add the CompleteTemplate and surrounding HTML for the CompleteTemplate page step(s)
 
-            if ((currentProcessStep >= 2) && (currentProcessStep <= (template.InputPages_Count + 1)))
+            if ((currentProcessStep >= 2) && (currentProcessStep <= (completeTemplate.InputPages_Count + 1)))
             {
 				Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 
 				Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
                 Output.WriteLine("<br />");
-                string template_page_title = template.InputPages[currentProcessStep - 2].Title;
+                string template_page_title = completeTemplate.InputPages[currentProcessStep - 2].Title;
                 if (template_page_title.Length == 0)
                     template_page_title = "Item Description";
-                string template_page_instructions = template.InputPages[currentProcessStep - 2].Instructions;
+                string template_page_instructions = completeTemplate.InputPages[currentProcessStep - 2].Instructions;
                 if (template_page_instructions.Length == 0)
                     template_page_instructions = "Enter the basic information to describe your new item";
 
                 // Get the adjusted process step number ( for skipping permissions, usual step1 )
                 int adjusted_process_step = currentProcessStep;
-                if (template.Permissions_Agreement.Length == 0)
+                if (completeTemplate.Permissions_Agreement.Length == 0)
                     adjusted_process_step--;
 
 				Output.WriteLine("<h2>Step " + adjusted_process_step + " of " + totalTemplatePages + ": " + template_page_title + "</h2>");
@@ -1228,9 +1228,9 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 int next_step = currentProcessStep + 1;
-                if (currentProcessStep == template.InputPages_Count + 1)
+                if (currentProcessStep == completeTemplate.InputPages_Count + 1)
                 {
-                    next_step = template.Upload_Types == Template.Template_Upload_Types.None ? 9 : 8;
+                    next_step = completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.None ? 9 : 8;
                 }
 				Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
 				Output.WriteLine("  <div class=\"graytabscontent\">");
@@ -1252,7 +1252,7 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("      <br /><br />");
 				Output.WriteLine();
 
-                string popup_forms = template.Render_Template_HTML(Output, item, RequestSpecificValues.Current_Mode.Skin, RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, currentProcessStep - 1);
+                string popup_forms = completeTemplate.Render_Template_HTML(Output, item, RequestSpecificValues.Current_Mode.Skin, RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, currentProcessStep - 1);
 
 
 				// Add the bottom buttons
@@ -1289,7 +1289,7 @@ namespace SobekCM.Library.MySobekViewer
 
             if (currentProcessStep == 8)
             {
-                if ((template.Upload_Types == Template.Template_Upload_Types.File) || (template.Upload_Types == Template.Template_Upload_Types.File_or_URL))
+                if ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL))
                 {
                     string[] all_files = Directory.GetFiles(userInProcessDirectory);
                     SortedList<string, List<string>> image_files = new SortedList<string, List<string>>();
@@ -1504,7 +1504,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
 
-                if ((template.Upload_Types == Template.Template_Upload_Types.File_or_URL) || (template.Upload_Types == Template.Template_Upload_Types.URL))
+                if ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.URL))
                 {
                     Output.WriteLine("Enter a URL for this digital resource:");
                     Output.WriteLine("<blockquote>");
@@ -1513,17 +1513,17 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 string completion_message;
-                switch (template.Upload_Types)
+                switch (completeTemplate.Upload_Types)
                 {
-                    case Template.Template_Upload_Types.URL:
+                    case CompleteTemplate.Template_Upload_Types.URL:
                         completion_message = "Once the URL is entered, press SUBMIT to finish this item.";
                         break;
 
-                    case Template.Template_Upload_Types.File_or_URL:
+                    case CompleteTemplate.Template_Upload_Types.File_or_URL:
                         completion_message = "Once you enter any files and/or URL, press SUBMIT to finish this item.";
                         break;
 
-                    case Template.Template_Upload_Types.File:
+                    case CompleteTemplate.Template_Upload_Types.File:
                         completion_message = "Once all files are uploaded, press SUBMIT to finish this item.";
                         break;
 
@@ -1534,7 +1534,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
 				Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
-				Output.WriteLine("      <button onclick=\"return new_upload_next_phase(" + (template.InputPages.Count + 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
+				Output.WriteLine("      <button onclick=\"return new_upload_next_phase(" + (completeTemplate.InputPages.Count + 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
 				Output.WriteLine("      <button onclick=\"return new_upload_next_phase(9);\" class=\"sbkMySobek_BigButton\"> SUBMIT <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
 				Output.WriteLine("      <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
 				Output.WriteLine("</div>");
@@ -1579,7 +1579,7 @@ namespace SobekCM.Library.MySobekViewer
             StringBuilder filesBuilder = new StringBuilder(2000);
             filesBuilder.AppendLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
 
-            if ((template.Upload_Types == Template.Template_Upload_Types.File) || (template.Upload_Types == Template.Template_Upload_Types.File_or_URL))
+            if ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL))
             {
                 filesBuilder.AppendLine("Add a new item for this package:");
                 filesBuilder.AppendLine("<blockquote>");
@@ -1774,12 +1774,12 @@ namespace SobekCM.Library.MySobekViewer
                 item.Bib_Info.Location.Holding_Name = RequestSpecificValues.Current_User.Organization;
             }
 
-            // Set some values from the template
-            if (template.Include_User_As_Author)
+            // Set some values from the CompleteTemplate
+            if (completeTemplate.Include_User_As_Author)
             {
                 item.Bib_Info.Main_Entity_Name.Full_Name = RequestSpecificValues.Current_User.Family_Name + ", " + RequestSpecificValues.Current_User.Given_Name;
             }
-            item.Behaviors.IP_Restriction_Membership = template.Default_Visibility;
+            item.Behaviors.IP_Restriction_Membership = completeTemplate.Default_Visibility;
 
             item.VID = "00001";
             item.BibID = "TEMP000001";
@@ -1789,9 +1789,9 @@ namespace SobekCM.Library.MySobekViewer
             item.METS_Header.Modify_Date = item.METS_Header.Create_Date;
             item.METS_Header.Creator_Individual = RequestSpecificValues.Current_User.Full_Name;
             if ( project_code.Length == 0 )
-                item.METS_Header.Add_Creator_Org_Notes("Created using template '" + templateCode + "'");
+                item.METS_Header.Add_Creator_Org_Notes("Created using CompleteTemplate '" + templateCode + "'");
             else
-                item.METS_Header.Add_Creator_Org_Notes("Created using template '" + templateCode + "' and project '" + project_code + "'.");
+                item.METS_Header.Add_Creator_Org_Notes("Created using CompleteTemplate '" + templateCode + "' and project '" + project_code + "'.");
 
             if (item.Bib_Info.Main_Title.Title.ToUpper().IndexOf("PROJECT LEVEL METADATA") == 0)
                 item.Bib_Info.Main_Title.Clear();

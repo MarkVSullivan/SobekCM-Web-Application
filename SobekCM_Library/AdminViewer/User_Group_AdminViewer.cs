@@ -11,6 +11,7 @@ using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -104,7 +105,7 @@ namespace SobekCM.Library.AdminViewer
                     string[] getKeys = form.AllKeys;
 
                     bool successful_save = true;
-                    bool can_editall = editGroup.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
+                    bool can_editall = (editGroup.Editable_Regular_Expressions != null ) && ( editGroup.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}"));
 
                     bool can_submit = false;
                     bool is_internal = false;
@@ -313,11 +314,11 @@ namespace SobekCM.Library.AdminViewer
 
                     // Determine if the projects and templates need to be updated
                     bool update_templates_projects = false;
-                    if ((templates.Count != editGroup.Templates.Count) || (projects.Count != editGroup.Default_Metadata_Sets.Count))
+                    if ((templates.Count != editGroup.Templates_Count) || (projects.Count != editGroup.Default_Metadata_Sets_Count))
                     {
                         update_templates_projects = true;
                     }
-                    else
+                    else if (( templates.Count > 0 ) || ( projects.Count > 0 ))
                     {
                         // Check all of the templates
                         if (templates.Any(template => !editGroup.Templates.Contains(template)))
@@ -337,11 +338,11 @@ namespace SobekCM.Library.AdminViewer
 
                     // Determine if the aggregationPermissions need to be edited
                     bool update_aggregations = false;
-                    if (aggregations.Count != editGroup.Aggregations.Count)
+                    if (aggregations.Count != editGroup.Aggregations_Count)
                     {
                         update_aggregations = true;
                     }
-                    else
+                    else if (aggregations.Count > 0)
                     {
                         // Build a dictionary of the user aggregationPermissions as well
                         Dictionary<string, User_Permissioned_Aggregation> existingAggr = editGroup.Aggregations.ToDictionary(thisAggr => thisAggr.Code);
@@ -545,7 +546,7 @@ namespace SobekCM.Library.AdminViewer
                 text_builder.Append("Can submit items<br />");
             if (editGroup.IsInternalUser)
                 text_builder.Append("Is internal user<br />");     
-            if (editGroup.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}"))
+            if (( editGroup.Editable_Regular_Expressions != null ) && ( editGroup.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}")))
             {
                 text_builder.Append("Can edit all items<br />");
             }
@@ -562,9 +563,12 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Build the templates list
-            foreach (string thisTemplate in editGroup.Templates)
+            if (editGroup.Templates_Count > 0)
             {
-                text_builder.Append(thisTemplate + "<br />");
+                foreach (string thisTemplate in editGroup.Templates)
+                {
+                    text_builder.Append(thisTemplate + "<br />");
+                }
             }
             if (text_builder.Length == 0)
             {
@@ -577,8 +581,11 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Build the projects list
-            foreach (string thisProject in editGroup.Default_Metadata_Sets)
-                text_builder.Append(thisProject + "<br />");
+            if (editGroup.Default_Metadata_Sets_Count > 0)
+            {
+                foreach (string thisProject in editGroup.Default_Metadata_Sets)
+                    text_builder.Append(thisProject + "<br />");
+            }
             if (text_builder.Length == 0)
             {
                 Output.WriteLine("  <tr valign=\"top\"><td><b>Default_Metadata:</b></td><td><i>none</i></td></tr>");
@@ -596,7 +603,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <span class=\"SobekAdminTitle\">User Membership</span>");
             Output.WriteLine("  <br />");
             Output.WriteLine("  <blockquote>");
-            if (editGroup.Users.Count == 0)
+            if (editGroup.Users_Count == 0)
             {
                 Output.WriteLine("<i> &nbsp;This user group does not currently contain any users</i>");
             }
@@ -616,7 +623,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <span class=\"SobekAdminTitle\">Aggregations</span>");
             Output.WriteLine("  <br />");
             Output.WriteLine("  <blockquote>");
-            if (editGroup.Aggregations.Count == 0)            
+            if (editGroup.Aggregations_Count == 0)            
             {
                 Output.WriteLine("<i> &nbsp;No special aggregation rights are assigned to this user group</i>");
             }
@@ -740,7 +747,7 @@ namespace SobekCM.Library.AdminViewer
                                  ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_internal\" id=\"admin_user_internal\" checked=\"checked\" /> <label for=\"admin_user_internal\">Is internal user</label> <br />"
                                  : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_internal\" id=\"admin_user_internal\" /> <label for=\"admin_user_internal\">Is internal user</label> <br />");
 
-            bool canEditAll = editGroup.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
+            bool canEditAll = ( editGroup.Editable_Regular_Expressions != null ) && ( editGroup.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}"));
             Output.WriteLine(canEditAll
                                  ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_editall\" id=\"admin_user_editall\" checked=\"checked\" /> <label for=\"admin_user_editall\">Can edit <u>all</u> items</label> <br />"
                                  : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_editall\" id=\"admin_user_editall\" /> <label for=\"admin_user_editall\">Can edit <u>all</u> items</label> <br />");
@@ -757,7 +764,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <blockquote>");
             Output.WriteLine("    <table width=\"600px\">");
 
-            DataSet projectTemplateSet = SobekCM_Database.Get_All_Template_DefaultMetadatas(Tracer);
+            DataSet projectTemplateSet = Engine_Database.Get_All_Template_DefaultMetadatas(Tracer);
 
             Output.WriteLine("      <tr valign=\"top\" >");
             Output.WriteLine("        <td wdith=\"300px\">");
@@ -774,7 +781,7 @@ namespace SobekCM.Library.AdminViewer
                 string template_code = thisTemplate["TemplateCode"].ToString();
 
                 Output.Write("  <tr align=\"left\"><td><input type=\"checkbox\" name=\"admin_user_template_" + template_code + "\" id=\"admin_user_template_" + template_code + "\"");
-                if (user_templates.Contains(template_code))
+                if (( user_templates != null ) && ( user_templates.Contains(template_code)))
                 {
                     Output.Write(" checked=\"checked\"");
                 }
@@ -805,7 +812,7 @@ namespace SobekCM.Library.AdminViewer
                 string project_code = thisProject["MetadataCode"].ToString();
 
                 Output.Write("  <tr align=\"left\"><td><input type=\"checkbox\" name=\"admin_user_project_" + project_code + "\" id=\"admin_user_project_" + project_code + "\"");
-                if (user_projects.Contains(project_code))
+                if (( user_projects != null ) && ( user_projects.Contains(project_code)))
                 {
                     Output.Write(" checked=\"checked\"");
                 }
@@ -837,7 +844,12 @@ namespace SobekCM.Library.AdminViewer
 
             // Get the list of collections lists in the user object
             List<User_Permissioned_Aggregation> aggregations_in_editable_user = editGroup.Aggregations;
-            Dictionary<string, User_Permissioned_Aggregation> lookup_aggs = aggregations_in_editable_user.ToDictionary(thisAggr => thisAggr.Code.ToLower());
+            Dictionary<string, User_Permissioned_Aggregation> lookup_aggs;
+            if (aggregations_in_editable_user != null)
+                lookup_aggs = aggregations_in_editable_user.ToDictionary(thisAggr => thisAggr.Code.ToLower());
+            else
+                lookup_aggs = new Dictionary<string, User_Permissioned_Aggregation>();
+
 
 
 			// Determine if this is a detailed view of rights

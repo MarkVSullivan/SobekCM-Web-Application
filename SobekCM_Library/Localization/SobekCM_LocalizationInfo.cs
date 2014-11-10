@@ -1780,10 +1780,10 @@ namespace SobekCM.Library.Localization
             New_Group_And_Item_MySobekViewer.Add_Localization_String( "Return To My Home", "Return to my home");
             New_Group_And_Item_MySobekViewer.Add_Localization_String( "Search Indexes May Take A Couple Minutes To Build At Which Time This Item Will Be Discoverable Through The Search Interface", "\"Search indexes may take a couple minutes to build, at which time this item will be discoverable through the search interface\"");
             New_Group_And_Item_MySobekViewer.Add_Localization_String( "SIZE", "SIZE");
-            New_Group_And_Item_MySobekViewer.Add_Localization_String( "Step 1 Of XXX Confirm Template And Project", "Step 1 of %1: Confirm Template and Project ");
+            New_Group_And_Item_MySobekViewer.Add_Localization_String( "Step 1 Of XXX Confirm CompleteTemplate And Project", "Step 1 of %1: Confirm CompleteTemplate and Project ");
             New_Group_And_Item_MySobekViewer.Add_Localization_String( "Step 1 Of XXX Grant Of Permission", "Step 1 of %1: Grant of Permission");
             New_Group_And_Item_MySobekViewer.Add_Localization_String( "SUBMIT", "SUBMIT");
-            New_Group_And_Item_MySobekViewer.Add_Localization_String( "Template", "Template");
+            New_Group_And_Item_MySobekViewer.Add_Localization_String( "CompleteTemplate", "CompleteTemplate");
             New_Group_And_Item_MySobekViewer.Add_Localization_String( "The Following Errors Were Detected", "The following errors were detected:");
             New_Group_And_Item_MySobekViewer.Add_Localization_String( "The Following Files Are Already Uploaded For This Package And Will Be Included As Downloads", "The following files are already uploaded for this package and will be included as downloads");
             New_Group_And_Item_MySobekViewer.Add_Localization_String( "To Change Your Default XXX Select", "\"To change your default %1, select\"");
@@ -1973,7 +1973,7 @@ namespace SobekCM.Library.Localization
             Preferences_MySobekViewer.Add_Localization_String( "Selfsubmittal Preferences", "Self-Submittal Preferences");
             Preferences_MySobekViewer.Add_Localization_String( "Send Me An Email When I Submit New Items", "Send me an email when I submit new items");
             Preferences_MySobekViewer.Add_Localization_String( "Send Me Monthly Usage Statistics For My Items", "Send me monthly usage statistics for my items");
-            Preferences_MySobekViewer.Add_Localization_String( "Template", "Template");
+            Preferences_MySobekViewer.Add_Localization_String( "CompleteTemplate", "CompleteTemplate");
             Preferences_MySobekViewer.Add_Localization_String( "That Username Is Taken Please Choose Another", "That username is taken.  Please choose another.");
             Preferences_MySobekViewer.Add_Localization_String( "The Following Errors Were Detected", "The following errors were detected:");
             Preferences_MySobekViewer.Add_Localization_String( "Ufids Are Always Eight Digits", "UFIDs are always eight digits");

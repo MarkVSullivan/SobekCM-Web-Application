@@ -8,7 +8,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class GetPageCountFromPdfModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             // If there are no pages, look for a PDF we can use to get a page count
             if (Resource.Metadata.Divisions.Physical_Tree.Pages_PreOrder.Count <= 0)
@@ -21,6 +21,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                         Resource.Metadata.Divisions.Page_Count = pdf_page_count;
                 }
             }
+
+            return true;
         }
     }
 }

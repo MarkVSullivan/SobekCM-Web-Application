@@ -29,11 +29,11 @@ namespace SobekCM.Library.MySobekViewer
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>The mySobek subwriter creates an instance of this viewer to display the RequestSpecificValues.Current_Item's behaviors for editing</li>
-    /// <li>This viewer uses the <see cref="SobekCM.Library.Citation.Template.Template"/> class to display the correct elements for editing </li>
+    /// <li>This viewer uses the <see cref="CompleteTemplate"/> class to display the correct elements for editing </li>
     /// </ul></remarks>
     public class Edit_Item_Behaviors_MySobekViewer : abstract_MySobekViewer
     {
-        private readonly Template template;
+        private readonly CompleteTemplate completeTemplate;
 
         #region Constructor
 
@@ -52,25 +52,25 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             const string TEMPLATE_CODE = "itembehaviors";
-            template = Cached_Data_Manager.Retrieve_Template(TEMPLATE_CODE, RequestSpecificValues.Tracer);
-            if (template != null)
+            completeTemplate = Cached_Data_Manager.Retrieve_Template(TEMPLATE_CODE, RequestSpecificValues.Tracer);
+            if (completeTemplate != null)
             {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Found template in cache");
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Found CompleteTemplate in cache");
             }
             else
             {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Reading template file");
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Reading CompleteTemplate file");
 
-                // Read this template
+                // Read this CompleteTemplate
                 Template_XML_Reader reader = new Template_XML_Reader();
-                template = new Template();
-                reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\defaults\\" + TEMPLATE_CODE + ".xml", template, true);
+                completeTemplate = new CompleteTemplate();
+                reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\defaults\\" + TEMPLATE_CODE + ".xml", completeTemplate, true);
 
-                // Add the current codes to this template
-                template.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
+                // Add the current codes to this CompleteTemplate
+                completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
                 // Save this into the cache
-                Cached_Data_Manager.Store_Template(TEMPLATE_CODE, template, RequestSpecificValues.Tracer);
+                Cached_Data_Manager.Store_Template(TEMPLATE_CODE, completeTemplate, RequestSpecificValues.Tracer);
             }
 
             // See if there was a hidden request
@@ -89,7 +89,7 @@ namespace SobekCM.Library.MySobekViewer
                 string oldTrackingBox = RequestSpecificValues.Current_Item.Tracking.Tracking_Box;
 
                 // Save these changes to bib
-                template.Save_To_Bib(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_User, 1);
+                completeTemplate.Save_To_Bib(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_User, 1);
 
                 // Save the behaviors
                 SobekCM_Database.Save_Behaviors(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_Item.Behaviors.Text_Searchable, false );
@@ -143,7 +143,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This class does nothing, since the template html is added in the <see cref="Write_ItemNavForm_Closing" /> method </remarks>
+        /// <remarks> This class does nothing, since the CompleteTemplate html is added in the <see cref="Write_ItemNavForm_Closing" /> method </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Write_HTML", "Do nothing");
@@ -179,7 +179,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine();
 
-			Output.WriteLine("<a name=\"template\"> </a>");
+			Output.WriteLine("<a name=\"CompleteTemplate\"> </a>");
 			Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
 			Output.WriteLine("  <div class=\"tabs\">");
 			Output.WriteLine("    <ul>");
@@ -201,7 +201,7 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine();
 
 	        bool isMozilla = RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
-	        template.Render_Template_HTML(Output, RequestSpecificValues.Current_Item, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
+	        completeTemplate.Render_Template_HTML(Output, RequestSpecificValues.Current_Item, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
 
 			// Add the second buttons at the bottom of the form
 			Output.WriteLine();

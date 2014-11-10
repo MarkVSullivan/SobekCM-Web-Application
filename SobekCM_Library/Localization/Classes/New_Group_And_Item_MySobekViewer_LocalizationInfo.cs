@@ -142,7 +142,7 @@ namespace SobekCM.Library.Localization.Classes
                     SIZE = Value;
                     break;
 
-                case "Step 1 Of XXX Confirm Template And Project":
+                case "Step 1 Of XXX Confirm CompleteTemplate And Project":
                     Step1OfXXXConfirmTemplateAndProject = Value;
                     break;
 
@@ -154,7 +154,7 @@ namespace SobekCM.Library.Localization.Classes
                     SUBMIT = Value;
                     break;
 
-                case "Template":
+                case "CompleteTemplate":
                     Template = Value;
                     break;
 
@@ -306,7 +306,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'SIZE' localization string </remarks>
         public string SIZE { get; private set; }
 
-        /// <remarks> 'Step 1 of %1: Confirm Template and Project ' localization string </remarks>
+        /// <remarks> 'Step 1 of %1: Confirm CompleteTemplate and Project ' localization string </remarks>
         public string Step1OfXXXConfirmTemplateAndProject { get; private set; }
 
         /// <remarks> 'Step 1 of %1: Grant of Permission' localization string </remarks>
@@ -315,7 +315,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'SUBMIT' localization string </remarks>
         public string SUBMIT { get; private set; }
 
-        /// <remarks> 'Template' localization string </remarks>
+        /// <remarks> 'CompleteTemplate' localization string </remarks>
         public string Template { get; private set; }
 
         /// <remarks> 'The following errors were detected:' localization string </remarks>

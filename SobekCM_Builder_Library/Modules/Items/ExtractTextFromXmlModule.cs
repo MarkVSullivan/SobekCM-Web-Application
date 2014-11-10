@@ -8,7 +8,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class ExtractTextFromXmlModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             string resourceFolder = Resource.Resource_Folder;
 
@@ -32,6 +32,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                     }
                 }
             }
+
+            return true;
         }
     }
 }

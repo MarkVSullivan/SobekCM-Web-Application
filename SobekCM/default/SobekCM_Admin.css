@@ -178,8 +178,9 @@ input.sbkSaav_NewChildCode { width: 155px; margin-top: 2px; margin-bottom: 4px; 
 
 /** Aliases_AdminViewer */
 .sbkAav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
-.sbkAav_PopupDiv { position:fixed; background-color:#eeeeee; width:370px; height:170px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
+.sbkAav_PopupDiv { position:fixed; background-color:#eeeeee; width:670px; height:170px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
 input.sbkAav_input  { width: 120px; margin-right: 10px; margin-top: 6px; }
+select.sbkAav_input  { margin-right: 10px; margin-top: 6px; }
 .sbkAav_Table { margin-left:42px; }
 .sbkAav_TableHeader1 { width: 160px; padding-left: 15px;}
 .sbkAav_TableHeader2 { width: 180px; }
@@ -214,6 +215,10 @@ textarea.sbkIpav_input { width: 466px; margin-top: 6px; }
 .sbkIpav_TableHeader2 { width: 135px; }
 .sbkIpav_TableHeader3 { width: 135px; }
 .sbkIpav_TableHeader4 { width: 250px; }
+.sbkIpav_MainTable { margin-left:42px; }
+.sbkIpav_MainTableHeader1 { width: 110px; padding-left: 5px;}
+.sbkIpav_MainTableHeader2 { width: 270px; }
+.sbkIpav_MainTableHeader3 { width: 380px; }
 
 /** Portals_AdminViewer **/
 .sbkPoav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;padding-left: 30px;padding-top: 10px; } 
@@ -225,23 +230,28 @@ select.sbkPoav_select { width: 302px; }
 .sbkPoav_HelpButton { border: 0; padding-left:5px; margin-top:3px; cursor:pointer; }
 .sbkPoav_Table { margin-left:12px; }
 .sbkPoav_TableHeader1 { width: 85px; padding-left: 15px;}
-.sbkPoav_TableHeader2 { width: 130px; }
+.sbkPoav_TableHeader2 { width: 220px; }
 .sbkPoav_TableHeader3 { width: 110px; }
-.sbkPoav_TableHeader4 { width: 85px; }
-.sbkPoav_TableHeader5 { width: 105px; }
-.sbkPoav_TableHeader6 { width: 180px; }
+.sbkPoav_TableHeader4 { width: 90px; }
+.sbkPoav_TableHeader5 { width: 110px; }
+.sbkPoav_TableHeader6 { width: 170px; }
 #sbkPoav_DefaultCell { font-weight: bold;font-style: italic; }
 
 /** Default_Metadata_AdminViewer **/
 .sbkPav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
-.sbkPav_PopupDiv { position:fixed; background-color:#eeeeee; width:675px; height:165px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
+.sbkPav_PopupDiv { position:fixed; background-color:#eeeeee; width:675px; height:235px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
 input.sbkPav_small_input  {  width: 120px; margin-right: 10px; margin-top: 6px; }
 input.sbkPav_large_input  {  width: 463px; margin-right: 15px; margin-top: 6px; }
-select.sbkPav_select { width: 120px; margin-top: 6px; }
+select.sbkPav_select { width: 465px; margin-top: 6px; }
 .sbkPav_Table { margin-left:42px; }
 .sbkPav_TableHeader1 { width: 160px; padding-left: 15px;}
 .sbkPav_TableHeader2 { width: 140px; }
 .sbkPav_TableHeader3 { width: 450px; }
+.sbkPav_descriptionRow { vertical-align: top;  }
+.sbkPav_descriptionRow  td { padding-top: 6px; }
+#form_project_desc { width: 463px; height: 60px; }
+#admin_project_desc { width: 463px; height: 60px; }
+.sbkPav_DescriptionCell { font-style: italic; }
 
 /** Settings_AdminViewer **/
 #sbkSeav_ContainerInner { margin: 0 auto; padding:0; width: 1100px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
@@ -272,6 +282,8 @@ input.sbkSeav_CustomValue_Input { width: 300px; }
 input.sbkSav_small_input  {  width: 120px; margin-right: 10px; margin-top: 6px; }
 input.sbkSav_small_input1  {  width: 120px; margin-right: 25px; margin-top: 6px; }
 input.sbkSav_small_input2  {  width: 120px; margin-right: 15px; margin-top: 6px; }
+select.sbkSav_small_input1  {  width: 120px; margin-right: 20px; margin-top: 6px; }
+select.sbkSav_small_input2  {  width: 120px; margin-right: 25px; margin-top: 6px; }
 input.sbkSav_large_input  {  width: 463px; margin-right: 15px; margin-top: 6px; }
 input.sbkSav_checkbox { padding-top: 3px;border: 0; }
 .sbkSav_Table { margin-left:12px; }

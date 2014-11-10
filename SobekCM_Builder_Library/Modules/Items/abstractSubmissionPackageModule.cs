@@ -9,7 +9,12 @@ namespace SobekCM.Builder_Library.Modules.Items
 
         public InstanceWide_Settings Settings { get; set; }
 
-        public abstract void DoWork(Incoming_Digital_Resource Resource);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Resource"></param>
+        /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
+        public abstract bool DoWork(Incoming_Digital_Resource Resource);
 
         public virtual void ReleaseResources()
         {

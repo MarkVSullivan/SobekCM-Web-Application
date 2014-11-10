@@ -54,7 +54,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly DateTime? materialRecdDate;
         private readonly string materialRecdNotes;
         private string message;
-        private readonly Template template;
+        private readonly CompleteTemplate completeTemplate;
         private readonly string title;
         private readonly string trackingBox;
 
@@ -96,31 +96,31 @@ namespace SobekCM.Library.MySobekViewer
                 return;
             }
 
-            // Determine the default template code 
+            // Determine the default CompleteTemplate code 
             string template_code = "addvolume";
             if (!RequestSpecificValues.Current_User.Include_Tracking_In_Standard_Forms)
                 template_code = "addvolume_notracking";
 
-            // Load this template
-            template = Cached_Data_Manager.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
-            if (template != null)
+            // Load this CompleteTemplate
+            completeTemplate = Cached_Data_Manager.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
+            if (completeTemplate != null)
             {
-                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Found template in cache");
+                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Found CompleteTemplate in cache");
             }
             else
             {
-                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Reading template file");
+                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Reading CompleteTemplate file");
 
-                // Read this template
+                // Read this CompleteTemplate
                 Template_XML_Reader reader = new Template_XML_Reader();
-                template = new Template();
-                reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\defaults\\" + template_code + ".xml", template, true);
+                completeTemplate = new CompleteTemplate();
+                reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\defaults\\" + template_code + ".xml", completeTemplate, true);
 
-                // Add the current codes to this template
-                template.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
+                // Add the current codes to this CompleteTemplate
+                completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
                 // Save this into the cache
-                Cached_Data_Manager.Store_Template(template_code, template, RequestSpecificValues.Tracer);
+                Cached_Data_Manager.Store_Template(template_code, completeTemplate, RequestSpecificValues.Tracer);
             }
 
             // See if there was a hidden request
@@ -166,8 +166,8 @@ namespace SobekCM.Library.MySobekViewer
 						saveItem.Bib_Info.Location.Other_URL_Display_Label = String.Empty;
 						saveItem.Bib_Info.Location.Other_URL_Note = String.Empty;
 
-                        // Save the template changes to this item
-                        template.Save_To_Bib(saveItem, RequestSpecificValues.Current_User, 1);
+                        // Save the CompleteTemplate changes to this item
+                        completeTemplate.Save_To_Bib(saveItem, RequestSpecificValues.Current_User, 1);
 
                         // Save this item and copy over
                         complete_item_submission(saveItem, RequestSpecificValues.Tracer);
@@ -334,7 +334,7 @@ namespace SobekCM.Library.MySobekViewer
             string base_url = RequestSpecificValues.Current_Mode.Base_URL;
             try
             {
-                Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Data_Directory, UI_ApplicationCache_Gateway.Translation, UI_ApplicationCache_Gateway.Aggregations, UI_ApplicationCache_Gateway.Icon_List, UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.HTML_Skin.Skin_Code);
+                Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Data_Directory, RequestSpecificValues.HTML_Skin.Skin_Code);
                 string filename = user_in_process_directory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
                 staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
 
@@ -447,7 +447,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This class does nothing, since the template html is added in the <see cref="Write_ItemNavForm_Closing" /> method </remarks>
+        /// <remarks> This class does nothing, since the CompleteTemplate html is added in the <see cref="Write_ItemNavForm_Closing" /> method </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Write_HTML", "Do nothing");
@@ -501,7 +501,7 @@ namespace SobekCM.Library.MySobekViewer
 			    Output.WriteLine("" + message + "<br />");
 		    }
 
-		    Output.WriteLine("<a name=\"template\"> </a>");
+		    Output.WriteLine("<a name=\"CompleteTemplate\"> </a>");
 		    Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
 		    Output.WriteLine("  <div class=\"tabs\">");
 		    Output.WriteLine("    <ul>");
@@ -578,7 +578,7 @@ namespace SobekCM.Library.MySobekViewer
 			    }
 		    }
 
-            template.Render_Template_HTML(Output, displayItem, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
+            completeTemplate.Render_Template_HTML(Output, displayItem, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
 
 		    // Add the second buttons at the bottom of the form
 		    Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to bottom of form -->");

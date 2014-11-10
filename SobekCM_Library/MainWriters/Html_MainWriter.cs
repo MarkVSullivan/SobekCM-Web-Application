@@ -15,6 +15,7 @@ using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
+using SobekCM.Library.MySobekViewer;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
@@ -409,10 +410,13 @@ namespace SobekCM.Library.MainWriters
 		            Admin_HtmlSubwriter adminWriter = subwriter as Admin_HtmlSubwriter;
 					if (adminWriter != null )
                     {
+                        bool add_footer = false;
 						// If the my sobek writer contains pop up forms, add the header here first
-						if (adminWriter.Contains_Popup_Forms)
+						if ((adminWriter.Contains_Popup_Forms) && ( !adminWriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)))
 						{
-							StringBuilder header_builder = new StringBuilder();
+                            add_footer = true;
+
+							StringBuilder header_builder = new StringBuilder("Html_Mainwriter:Line415");
 							StringWriter header_writer = new StringWriter(header_builder);
 							Display_Header(header_writer, Tracer);
 							LiteralControl header_literal = new LiteralControl(header_builder.ToString());
@@ -423,7 +427,7 @@ namespace SobekCM.Library.MainWriters
                         adminWriter.Add_Controls(Main_Place_Holder, Tracer);
 
 						// Finally, add the footer
-						if (adminWriter.Contains_Popup_Forms)
+                        if (add_footer)
 						{
 							StringBuilder footer_builder = new StringBuilder();
 							StringWriter footer_writer = new StringWriter(footer_builder);

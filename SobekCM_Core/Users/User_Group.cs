@@ -89,7 +89,11 @@ namespace SobekCM.Core.Users
         [DataMember(EmitDefaultValue = false)]
         public List<User_Permissioned_Aggregation> Aggregations
         {
-            get { return aggregations.Aggregations; }
+            get
+            {
+                if ( aggregations != null ) return aggregations.Aggregations;
+                return null;
+            }
         }
 
         /// <summary> List of regular expressions for checking for edit by bibid </summary>
@@ -104,6 +108,30 @@ namespace SobekCM.Core.Users
         public List<User_Group_Member> Users
         {
             get { return users; }
+        }
+
+        /// <summary> Return the number of templates tied to this user group </summary>
+        public int Templates_Count
+        {
+            get { return templates == null ? 0 : templates.Count; }
+        }
+
+        /// <summary> Return the number of default metadata sets tied to this user group </summary>
+        public int Default_Metadata_Sets_Count
+        {
+            get { return defaultMetadataSets == null ? 0 : defaultMetadataSets.Count; }
+        }
+
+        /// <summary> Return the number of aggregations tied to this user group </summary>
+        public int Aggregations_Count
+        {
+            get { return aggregations == null ? 0 : aggregations.Aggregations.Count; ; }
+        }
+
+        /// <summary> Return the number of users tied to this user group </summary>
+        public int Users_Count
+        {
+            get { return users == null ? 0 : users.Count; ; }
         }
 
         #endregion

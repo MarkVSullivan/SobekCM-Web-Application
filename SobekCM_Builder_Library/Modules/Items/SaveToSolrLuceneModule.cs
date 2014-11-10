@@ -9,7 +9,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class SaveToSolrLuceneModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
 
             // Save this to the Solr/Lucene database
@@ -26,6 +26,8 @@ namespace SobekCM.Builder_Library.Modules.Items
 
                 }
             }
+
+            return true;
         }
     }
 }

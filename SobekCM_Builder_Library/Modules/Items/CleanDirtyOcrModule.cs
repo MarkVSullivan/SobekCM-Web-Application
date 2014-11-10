@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.IO;
 
 #endregion
@@ -8,7 +9,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class CleanDirtyOcrModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             string resourceFolder = Resource.Resource_Folder;
 
@@ -26,11 +27,15 @@ namespace SobekCM.Builder_Library.Modules.Items
                         Text_Cleaner.Clean_Text_File(textFile);
                     }
                 }
+
+                return true;
             }
-            catch
+            catch 
             {
 
             }
+
+            return true;
         }
     }
 }

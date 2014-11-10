@@ -13,6 +13,8 @@ using SobekCM.Builder_Library.Modules.Folders;
 using SobekCM.Builder_Library.Modules.Items;
 using SobekCM.Builder_Library.Modules.PostProcess;
 using SobekCM.Builder_Library.Modules.PreProcess;
+using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Database;
 using SobekCM.Tools.Logs;
@@ -33,7 +35,6 @@ namespace SobekCM.Builder
         private string ghostscriptExecutable;
         
         private DataSet incomingFileInstructions;
-        private readonly Aggregation_Code_Manager codeManager;
         private readonly LogFileXHTML logger;
         
         
@@ -97,12 +98,6 @@ namespace SobekCM.Builder
 
 
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Created Static Pages Builder", verbose, String.Empty, String.Empty, -1);
-
-            // Get the list of collection codes
-            codeManager = new Aggregation_Code_Manager();
-            SobekCM_Database.Populate_Code_Manager(codeManager, null);
-
-            Add_NonError_To_Log("Worker_BulkLoader.Constructor: Populated code manager with " + codeManager.All_Aggregations.Count + " aggregations.", verbose, String.Empty, String.Empty, -1);
 
             // Set some defaults
             aborted = false;
@@ -406,8 +401,12 @@ namespace SobekCM.Builder
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
         public bool Refresh_Settings_And_Item_List()
         {
-            // Reload the settings
-            settings = InstanceWide_Settings_Builder.Build_Settings(dbInstance);
+            Engine_Database.Connection_String = dbInstance.Connection_String;
+            Resource_Object.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
+            Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
+
+            // Reload all the other data
+            Engine_ApplicationCache_Gateway.RefreshAll();
 
 		    if (settings == null)
 		    {
@@ -417,17 +416,11 @@ namespace SobekCM.Builder
 		    settings.ImageMagick_Executable = imageMagickExecutable;
 		    settings.Ghostscript_Executable = ghostscriptExecutable;
 
-            Resource_Object.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
-            Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
-
             // Save the item table
 		    itemTable = SobekCM_Database.Get_Item_List(true, null).Tables[0];
 
-
-
             return true;
         }
-
 
         #endregion
 
@@ -577,7 +570,11 @@ namespace SobekCM.Builder
                 // Do all the item processing per instance config
                 foreach (iSubmissionPackageModule thisModule in processItemModules)
                 {
-                    thisModule.DoWork(ResourcePackage);
+                    if (!thisModule.DoWork(ResourcePackage))
+                    {
+                        Add_Error_To_Log("Unable to complete new/replacement for " + ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, ResourcePackage.BuilderLogId);
+                        return;
+                    }
                 }
 
                 // Save these collections to mark them for refreshing the RSS feeds, etc..

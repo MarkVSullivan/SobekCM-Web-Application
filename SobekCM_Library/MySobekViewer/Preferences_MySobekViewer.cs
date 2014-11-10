@@ -10,6 +10,7 @@ using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -115,7 +116,7 @@ namespace SobekCM.Library.MySobekViewer
 			unitLabel = "Unit";
 			selfSubmittalPrefLabel = "Self-Submittal Preferences";
 			sendEmailLabel = "Send me an email when I submit new items";
-			templateLabel = "Template";
+			templateLabel = "CompleteTemplate";
 			projectLabel = "Default Metadata";
 			defaultRightsLabel = "Default Rights";
 			rightsExplanationLabel = "(These are the default rights you give for sharing, repurposing, or remixing your item to other users. You can set this with each new item you submit, but this will be the default that appears.)";
@@ -415,7 +416,7 @@ namespace SobekCM.Library.MySobekViewer
 						if (user.UserID == 1)
 						{
 							// Add each template and project
-                            DataSet projectTemplateSet = SobekCM_Database.Get_All_Template_DefaultMetadatas(RequestSpecificValues.Tracer);
+                            DataSet projectTemplateSet = Engine_Database.Get_All_Template_DefaultMetadatas(RequestSpecificValues.Tracer);
 							List<string> templates = (from DataRow thisTemplate in projectTemplateSet.Tables[1].Rows select thisTemplate["TemplateCode"].ToString()).ToList();
 							List<string> projects = (from DataRow thisProject in projectTemplateSet.Tables[0].Rows select thisProject["MetadataCode"].ToString()).ToList();
 

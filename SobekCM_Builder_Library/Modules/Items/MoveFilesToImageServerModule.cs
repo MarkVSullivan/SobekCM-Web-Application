@@ -10,7 +10,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class MoveFilesToImageServerModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             // Determine if this is actually already IN the final image server spot first
             // Determine the file root for this
@@ -21,7 +21,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 
             // If this is re-processing the resource in situ, then just return.. nothing to move
             if (NormalizePath(Resource.Resource_Folder) == NormalizePath(serverPackageFolder))
-                return;
+                return true;
 
             // Clear the list of new images files here, since moving the package will recalculate this
             Resource.NewImageFiles.Clear();
@@ -30,7 +30,10 @@ namespace SobekCM.Builder_Library.Modules.Items
             if (!Move_All_Files_To_Image_Server(Resource, Resource.NewImageFiles, serverPackageFolder))
             {
                 OnError("Error moving some files to the image server for " + Resource.BibID + ":" + Resource.VID, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
+                return false;
             }
+
+            return true;
         }
 
         public static string NormalizePath(string path)

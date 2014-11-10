@@ -61,7 +61,7 @@ namespace SobekCM.Builder
                 Console.WriteLine("FATAL ERROR pulling latest settings from the database: " + Library.Database.SobekCM_Database.Last_Exception.Message);
                 return;
             }
-            if (!Engine_ApplicationCache_Gateway.RefreshSettings())
+            if (!Engine_ApplicationCache_Gateway.RefreshAll())
             {
                 Console.WriteLine("Error using database settings to refresh SobekCM_Library_Settings in Worker_Controller constructor");
             }
@@ -77,8 +77,6 @@ namespace SobekCM.Builder
         /// <summary> Continuously execute the processes in a recurring background thread </summary>
         public void Execute_In_Background()
         {
-			// Load all the settings
-            Engine_ApplicationCache_Gateway.RefreshSettings();
 
             // Set the variable which will control background execution
 	        int time_between_polls = Engine_ApplicationCache_Gateway.Settings.Builder_Override_Seconds_Between_Polls;
@@ -282,6 +280,7 @@ namespace SobekCM.Builder
 						Database_Instance_Configuration dbInstance = instances[i];
 
 						// Set the database connection strings
+					    Engine_Database.Connection_String = dbInstance.Connection_String;
 						SobekCM_Database.Connection_String = dbInstance.Connection_String;
 						Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
 
@@ -331,7 +330,7 @@ namespace SobekCM.Builder
 								preloader_logger.AddNonError(dbInstance.Name + " - Rebuilding all static pages");
 								long staticRebuildLogId = Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Rebuilding all static pages", String.Empty);
 
-								Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Application_Server_Network);
+                                Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Static_Pages_Location, Engine_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Web_Skin);
 								builder.Rebuild_All_Static_Pages(preloader_logger, false, Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory, dbInstance.Name, staticRebuildLogId);
 
 							}

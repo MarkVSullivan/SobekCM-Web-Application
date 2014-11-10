@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
@@ -185,6 +186,7 @@ namespace SobekCM.Library.AdminViewer
                             }
 
 							// Validate the code
+
 							if (new_aggregation_code.Length > 20)
 							{
 								errors.Add("New aggregation code must be twenty characters long or less");
@@ -192,16 +194,24 @@ namespace SobekCM.Library.AdminViewer
 							else if (new_aggregation_code.Length == 0)
 							{
 								errors.Add("You must enter a CODE for this item aggregation");
-
 							}
 							else if (UI_ApplicationCache_Gateway.Aggregations[new_aggregation_code.ToUpper()] != null)
 							{
 								errors.Add("New code must be unique... <i>" + new_aggregation_code + "</i> already exists");
 							}
-							else if (UI_ApplicationCache_Gateway.Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
-							{
-								errors.Add("That code is a system-reserved keyword.  Try a different code.");
-							}
+                            else if (UI_ApplicationCache_Gateway.Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
+                            {
+                                errors.Add("That code is a system-reserved keyword.  Try a different code.");
+                            }
+                            else
+                            {
+                                bool alphaNumericTest = new_aggregation_code.All(C => Char.IsLetterOrDigit(C) || C == '_');
+                                if (!alphaNumericTest)
+                                {
+                                    errors.Add("New aggregation code must be only letters and numbers");
+                                    new_aggregation_code = new_aggregation_code.Replace("\"", "");
+                                }
+                            }
 
                             // Was there a type and name
                             if (new_type.Length == 0)

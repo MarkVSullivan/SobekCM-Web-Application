@@ -13,7 +13,6 @@ using SobekCM.Core.Skins;
 using SobekCM.EngineLibrary.ApplicationState;
 using SobekCM.Library;
 using SobekCM.Core.Aggregations;
-using SobekCM.Library.Application_State;
 using SobekCM.Library.MemoryMgmt;
 using SobekCM.Core.Navigation;
 
@@ -66,13 +65,6 @@ namespace SobekCM.Builder_Library.Statistics
 
             // Build the application state
             Custom_Tracer tracer = new Custom_Tracer();
-
-            // Make sure all the needed data is loaded into the Application State
-            Application_State_Builder.Build_Application_State(tracer, false, ref Skins, ref Translation,
-                                                              ref Codes, ref Item_Lookup_Object, ref Icon_List,
-                                                              ref Stats_Date_Range, ref Thematic_Headings,
-                                                              ref Collection_Aliases,
-                                                              ref URL_Portals, ref Mime_Types, ref Item_Viewer_Priority, ref User_Groups);
 
             // The cache needs to be disabled
             Cached_Data_Manager.Disabled = true;

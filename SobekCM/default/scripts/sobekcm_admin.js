@@ -27,6 +27,24 @@ function clear_setting(key) {
 	return false;
 }
 
+// Verify deletion of the existing project in the database and file
+function delete_ip_group(groupid, title) {
+    var input_box = confirm("Do you really want to delete project '" + title + "'?");
+    if (input_box == true) {
+        // Set the hidden value this data
+        var hiddenfield = document.getElementById('admin_ip_delete');
+        hiddenfield.value = groupid;
+
+        var hiddenfield = document.getElementById('action');
+        hiddenfield.value = 'delete';
+
+        document.itemNavForm.submit();
+    }
+
+    // Return false to prevent another return trip to the server
+    return false;
+}
+
 
 // Clear the text boxes for a single IP address
 function clear_ip_address(key) 
@@ -104,7 +122,7 @@ function delete_aggr(Code) {
 }
 
 // Populate the project form and show it
-function project_form_popup(code, name  ) 
+function project_form_popup(code, name, description  ) 
 {
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_project_tosave');
@@ -113,6 +131,7 @@ function project_form_popup(code, name  )
     // Populate the visible fields
     document.getElementById('form_project_code').innerHTML = code + ' &nbsp; &nbsp ';
     document.getElementById('form_project_name').value = name;
+    document.getElementById('form_project_desc').value = description;
 
     // Toggle the project form
     blanket_size('form_project', 215 );
@@ -139,6 +158,7 @@ function project_form_close()
     // Clear the data
     document.getElementById('form_project_code').innerHTML = '';
     document.getElementById('form_project_name').value = '';
+    document.getElementById('form_project_desc').value = '';
     
     // Close the associated form
     popdown( 'form_project' );    
@@ -285,7 +305,7 @@ function reset_interface( code )
     return false;
 }
 
-// Verify deletion of the existing wordmark in the database and file
+// Verify deletion of the existing web skin in the database and file
 function delete_interface(code) {
 	var input_box = confirm("Do you really want to delete web skin '" + code + "'?");
 	if (input_box == true) {
@@ -584,6 +604,9 @@ function wordmark_form_popup(code, title, file, link )
     // Populate the hidden value this data
     var hiddenfield = document.getElementById('admin_wordmark_code_tosave');
     hiddenfield.value = code;
+
+    var hiddenfield2 = document.getElementById('admin_wordmark_action');
+    hiddenfield2.value = 'edit';
     
 	// Populate the visible fields
     document.getElementById('form_wordmark_code').innerHTML = code + ' &nbsp; &nbsp ';
@@ -633,6 +656,9 @@ function save_new_wordmark()
     var hiddenfield = document.getElementById('admin_wordmark_code_tosave');
     var codefield = document.getElementById('admin_wordmark_code');
     hiddenfield.value = codefield.value;
+
+    var hiddenfield2 = document.getElementById('admin_wordmark_action');
+    hiddenfield2.value = 'new';
  
     // Return TRUE to force a return trip to the server
     return true;
@@ -647,6 +673,9 @@ function delete_wordmark( code )
         // Set the hidden value this data
         var hiddenfield = document.getElementById('admin_wordmark_code_delete');
         hiddenfield.value = code;
+
+        var hiddenfield2 = document.getElementById('admin_wordmark_action');
+        hiddenfield2.value = 'delete';
  
         document.sbkAdm_AddedForm.submit();
     }
@@ -662,6 +691,9 @@ function delete_wordmark_file(code) {
 		// Set the hidden value this data
 		var hiddenfield = document.getElementById('admin_wordmark_code_delete');
 		hiddenfield.value = code;
+
+		var hiddenfield2 = document.getElementById('admin_wordmark_action');
+		hiddenfield2.value = 'delete';
 
 		document.sbkAdm_AddedForm.submit();
 	}

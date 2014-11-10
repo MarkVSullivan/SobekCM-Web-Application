@@ -10,8 +10,12 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class CreateImageDerivativesModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        private bool returnValue;
+
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
+            returnValue = true;
+
             string resourceFolder = Resource.Resource_Folder;
             string bibID = Resource.BibID;
             string vid = Resource.VID;
@@ -28,7 +32,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 // Only continue if some exist
                 if ((jpeg_files.Length > 0) || (tiff_files.Length > 0))
                 {
-                    string startupPath = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+                    string startupPath = Environment.CurrentDirectory;
 
                     // Create the image process object for creating 
                     Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, Path.Combine(startupPath,  "Kakadu"), true, true, Settings.JPEG_Width, Settings.JPEG_Height, false, Settings.Thumbnail_Width, Settings.Thumbnail_Height);
@@ -84,6 +88,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                     }
                 }
             }
+
+            return returnValue;
         }
 
         void imageProcessor_New_Task_String(string NewMessage, long ParentLogID, string BibID_VID)
@@ -100,6 +106,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             else
             {
                 OnError(NewMessage, BibID_VID, String.Empty, ParentLogID);
+                returnValue = false;
             }
         }
     }

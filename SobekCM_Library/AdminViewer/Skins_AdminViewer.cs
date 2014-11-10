@@ -6,8 +6,10 @@ using System;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Web;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Skins;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -175,206 +177,228 @@ namespace SobekCM.Library.AdminViewer
                                     copycurrent = true;
                                 }
 
-                                // Save this new interface
-                                if (SobekCM_Database.Save_Web_Skin(save_value, new_base_code, override_banner, override_header, new_banner_link, new_notes, build_on_launch, suppress_top_nav, RequestSpecificValues.Tracer))
+                                // Only real validation needed is that this is a new wek skin name and is alphanumeric
+                                bool result = save_value.All(C => Char.IsLetterOrDigit(C) || C == '_');
+                                bool existing_already = UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes.Any(thisSkinCode => String.Equals(thisSkinCode, save_value, StringComparison.CurrentCultureIgnoreCase));
+
+                                if ((!result) || ( existing_already ))
                                 {
-                                    // Ensure a folder exists for this, otherwise create one
-                                    try
+                                    if (!result)
                                     {
-                                        string folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + save_value.ToLower();
-                                        if (!Directory.Exists(folder))
-                                        {
-                                            // Create this directory and the necessary subdirectories
-                                            Directory.CreateDirectory(folder);
-
-                                            // Create a default stylesheet
-                                            StreamWriter writer = new StreamWriter(folder + "\\" + save_value.ToLower() + ".css");
-                                            writer.WriteLine("/*  Skin-specific stylesheet used to override values from the base stylesheets */");
-                                            writer.WriteLine();
-                                            writer.WriteLine();
-                                            writer.Flush();
-                                            writer.Close();
-
-                                            // Create the html subdirectory
-                                            Directory.CreateDirectory(folder + "/html");
-
-                                            // Do the rest differently depending on whether we should copy the current files
-                                            if (!copycurrent)
-                                            {
-                                                // Write the default header file
-                                                writer = new StreamWriter(folder + "\\html\\header.html");
-                                                writer.WriteLine("<div id=\"container-inner\">");
-                                                writer.WriteLine();
-                                                writer.WriteLine("<!-- Add the standard header buttons -->");
-                                                writer.WriteLine("<div style=\"width: 100%; background-color: #eeeeee; color: Black; height:30px;\">");
-                                                writer.WriteLine("<%BREADCRUMBS%>");
-                                                writer.WriteLine("<div style=\"float: right\"><%MYSOBEK%></div>");
-                                                writer.WriteLine("</div>");
-                                                writer.WriteLine();
-                                                writer.WriteLine("<%BANNER%>");
-                                                writer.WriteLine();
-                                                writer.WriteLine("<div id=\"pagecontainer\">");
-                                                writer.WriteLine();
-                                                writer.WriteLine("<!-- Blankets out the rest of the web form when a pop-up form is envoked -->");
-                                                writer.WriteLine("<div id=\"blanket_outer\" style=\"display:none;\"></div>");
-                                                writer.Flush();
-                                                writer.Close();
-
-                                                // Write the default header_item file
-                                                writer = new StreamWriter(folder + "/html/header_item.html");
-                                                writer.WriteLine("<!-- Blankets out the rest of the web form when a pop-up form is envoked -->");
-                                                writer.WriteLine("<div id=\"blanket_outer\" style=\"display:none;\"></div>");
-                                                writer.WriteLine();
-                                                writer.WriteLine("<!-- Add the standard header buttons -->");
-                                                writer.WriteLine("<div style=\"width: 100%; background-color: #eeeeee; color: Black; height:30px;\">");
-                                                writer.WriteLine("<%BREADCRUMBS%>");
-                                                writer.WriteLine("<div style=\"float: right\"><%MYSOBEK%></div>");
-                                                writer.WriteLine("</div>");
-                                                writer.WriteLine();
-                                                writer.WriteLine("<%BANNER%>");                                                    
-                                                writer.Flush();
-                                                writer.Close();
-
-                                                // Write the default footer file
-                                                writer = new StreamWriter(folder + "/html/footer.html");
-                                                writer.WriteLine("</div> <!-- END PAGE CONTAINER DIV -->");
-                                                writer.WriteLine();
-                                                writer.WriteLine("<!-- Add most the standard footer buttons -->");
-                                                writer.WriteLine("<center>");
-                                                writer.WriteLine("<a href=\"<%BASEURL%>contact<%?URLOPTS%>\">Contact Us</a> | ");
-                                                writer.WriteLine("<a href=\"<%BASEURL%>preferences<%?URLOPTS%>\">Preferences</a> | ");
-                                                writer.WriteLine("<a href=\"http://ufdc.ufl.edu/sobekcm\">Technical Aspects</a> | ");
-                                                writer.WriteLine("<a href=\"<%BASEURL%>stats<%?URLOPTS%>\">Statistics</a> | ");
-                                                writer.WriteLine("<a href=\"<%BASEURL%>internal<%?URLOPTS%>\">Internal</a> | ");
-                                                writer.WriteLine("<a href=\"<%BASEURL%>admin<%?URLOPTS%>\">Admin</a>");
-                                                writer.WriteLine("</center>");
-                                                writer.WriteLine("<br />");
-                                                writer.WriteLine("<br />");
-                                                writer.WriteLine("<span style=\"color: Gray; font-size: 0.8em;\">");
-                                                writer.WriteLine("To edit this footer or header, edit header.html or footer.html at:  " + folder + "\\html\\ <br />");
-                                                writer.WriteLine("</span>");
-                                                writer.WriteLine();
-                                                writer.WriteLine("</div> <!-- END CONTAINER INNER -->");      
-                                                writer.Flush();
-                                                writer.Close();
-
-                                                // Write the default footer item file
-                                                writer = new StreamWriter(folder + "/html/footer_item.html");
-                                                writer.WriteLine("<!-- Add most the standard footer buttons -->");
-                                                writer.WriteLine("<center>");
-                                                writer.WriteLine("<a href=\"<%BASEURL%>contact<%?URLOPTS%>\">Contact Us</a> | ");
-                                                writer.WriteLine("<a href=\"<%BASEURL%>preferences<%?URLOPTS%>\">Preferences</a> | ");
-                                                writer.WriteLine("<a href=\"http://ufdc.ufl.edu/sobekcm\">Technical Aspects</a> | ");
-                                                writer.WriteLine("<a href=\"<%BASEURL%>stats<%?URLOPTS%>\">Statistics</a> | ");
-                                                writer.WriteLine("<a href=\"<%BASEURL%>internal<%?URLOPTS%>\">Internal</a> | ");
-                                                writer.WriteLine("<a href=\"<%BASEURL%>admin<%?URLOPTS%>\">Admin</a>");
-                                                writer.WriteLine("</center>");
-                                                writer.WriteLine("<br />");
-                                                writer.WriteLine("<br />");
-                                                writer.WriteLine("<span style=\"color: Gray; font-size: 0.8em;\">");
-                                                writer.WriteLine("To edit this footer or header, edit header.html or footer.html at:  " + folder + "\\html\\ <br />");
-                                                writer.WriteLine("</span>");
-                                                writer.Flush();
-                                                writer.Close();
-                                            }
-                                            else
-                                            {
-                                                // Copy the web skin information over?
-                                                string current_web_skin = RequestSpecificValues.Current_Mode.Skin;
-                                                string current_web_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + current_web_skin;
-                                                copy_entire_folder(current_web_folder, folder);
-                                                //if (File.Exists(current_web_folder + "\\" + current_web_skin + ".css"))
-                                                //{
-                                                //    File.Copy(current_web_folder + "\\" + current_web_skin + ".css", folder + "\\" + new_interface_code + ".css", true );
-                                                //}
-                                                //if (File.Exists(current_web_folder + "\\html\\header.html"))
-                                                //{
-                                                //    File.Copy(current_web_folder + "\\html\\header.html", folder + "\\html\\header.html");
-                                                //}
-                                                //if (File.Exists(current_web_folder + "\\html\\header_item.html"))
-                                                //{
-                                                //    File.Copy(current_web_folder + "\\html\\header_item.html", folder + "\\html\\header_item.html");
-                                                //}
-                                                //if (File.Exists(current_web_folder + "\\html\\footer.html"))
-                                                //{
-                                                //    File.Copy(current_web_folder + "\\html\\footer.html", folder + "\\html\\footer.html");
-                                                //}
-                                                //if (File.Exists(current_web_folder + "\\html\\footer_item.html"))
-                                                //{
-                                                //    File.Copy(current_web_folder + "\\html\\footer_item.html", folder + "\\html\\footer_item.html");
-                                                //}
-                                                if (File.Exists(folder + "\\" + current_web_skin + ".css"))
-                                                {
-                                                    if (File.Exists(folder + "\\" + new_interface_code + ".css"))
-                                                        File.Delete(folder + "\\" + new_interface_code + ".css");
-                                                    File.Move( folder + "\\" + current_web_skin + ".css", folder + "\\" + new_interface_code + ".css" );                                                        
-                                                }
-                                            }
-
-                                            // Irregardless of the RequestSpecificValues.Current_User's choice on whether to copy the current skin, if there is NO base skin
-                                            // provided and the folder does not exist, then we'll copy over the base skin type of stuff, such
-                                            // as buttons, tabs, etc...
-                                            if (new_base_code.Length == 0)
-                                            {
-                                                // What is the current base skin folder then?
-                                                string base_skin_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + RequestSpecificValues.Current_Mode.Base_Skin;
-                                                copy_entire_folder(base_skin_folder + "/buttons", folder + "/buttons");
-                                                copy_entire_folder(base_skin_folder + "/tabs", folder + "/tabs");
-                                                copy_entire_folder(base_skin_folder + "/zoom_controls", folder + "/zoom_controls");
-                                            }
-
-                                        }
+                                        actionMessage = "ERROR: New web skin code must be only letters and numbers";
+                                        save_value = save_value.Replace("\"", "");
                                     }
-                                    catch (Exception )
+                                    else
                                     {
-	                                    actionMessage = "Error creating some of the files for the new web skin";
+                                        actionMessage = "ERROR: New web skin code already exists!";
                                     }
-
-                                    // Reload the list of all skins from the database, to include this new skin
-                                    lock (UI_ApplicationCache_Gateway.Web_Skin_Collection)
-                                    {
-                                        SobekCM_Skin_Collection_Builder.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
-                                    }
-	                                if (String.IsNullOrEmpty(actionMessage))
-	                                {
-		                                actionMessage = "Saved new html skin <i>" + save_value + "</i>";
-	                                }
                                 }
                                 else
                                 {
-                                    actionMessage = "Unable to save new html skin <i>" + save_value + "</i>";
-                                }
 
-                                // Try to create the directory
-                                try
-                                {
-                                    if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value))
+                                    // Save this new interface
+                                    if (SobekCM_Database.Save_Web_Skin(save_value, new_base_code, override_banner, override_header, new_banner_link, new_notes, build_on_launch, suppress_top_nav, RequestSpecificValues.Tracer))
                                     {
-                                        Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value);
+                                        // Ensure a folder exists for this, otherwise create one
+                                        try
+                                        {
+                                            string folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + save_value.ToLower();
+                                            if (!Directory.Exists(folder))
+                                            {
+                                                // Create this directory and the necessary subdirectories
+                                                Directory.CreateDirectory(folder);
+
+                                                // Create a default stylesheet
+                                                StreamWriter writer = new StreamWriter(folder + "\\" + save_value.ToLower() + ".css");
+                                                writer.WriteLine("/*  Skin-specific stylesheet used to override values from the base stylesheets */");
+                                                writer.WriteLine();
+                                                writer.WriteLine();
+                                                writer.Flush();
+                                                writer.Close();
+
+                                                // Create the html subdirectory
+                                                Directory.CreateDirectory(folder + "/html");
+
+                                                // Do the rest differently depending on whether we should copy the current files
+                                                if (!copycurrent)
+                                                {
+                                                    // Write the default header file
+                                                    writer = new StreamWriter(folder + "\\html\\header.html");
+                                                    writer.WriteLine("<div id=\"container-inner\">");
+                                                    writer.WriteLine();
+                                                    writer.WriteLine("<!-- Add the standard header buttons -->");
+                                                    writer.WriteLine("<div style=\"width: 100%; background-color: #eeeeee; color: Black; height:30px;\">");
+                                                    writer.WriteLine("<%BREADCRUMBS%>");
+                                                    writer.WriteLine("<div style=\"float: right\"><%MYSOBEK%></div>");
+                                                    writer.WriteLine("</div>");
+                                                    writer.WriteLine();
+                                                    writer.WriteLine("<%BANNER%>");
+                                                    writer.WriteLine();
+                                                    writer.WriteLine("<div id=\"pagecontainer\">");
+                                                    writer.WriteLine();
+                                                    writer.WriteLine("<!-- Blankets out the rest of the web form when a pop-up form is envoked -->");
+                                                    writer.WriteLine("<div id=\"blanket_outer\" style=\"display:none;\"></div>");
+                                                    writer.Flush();
+                                                    writer.Close();
+
+                                                    // Write the default header_item file
+                                                    writer = new StreamWriter(folder + "/html/header_item.html");
+                                                    writer.WriteLine("<!-- Blankets out the rest of the web form when a pop-up form is envoked -->");
+                                                    writer.WriteLine("<div id=\"blanket_outer\" style=\"display:none;\"></div>");
+                                                    writer.WriteLine();
+                                                    writer.WriteLine("<!-- Add the standard header buttons -->");
+                                                    writer.WriteLine("<div style=\"width: 100%; background-color: #eeeeee; color: Black; height:30px;\">");
+                                                    writer.WriteLine("<%BREADCRUMBS%>");
+                                                    writer.WriteLine("<div style=\"float: right\"><%MYSOBEK%></div>");
+                                                    writer.WriteLine("</div>");
+                                                    writer.WriteLine();
+                                                    writer.WriteLine("<%BANNER%>");
+                                                    writer.Flush();
+                                                    writer.Close();
+
+                                                    // Write the default footer file
+                                                    writer = new StreamWriter(folder + "/html/footer.html");
+                                                    writer.WriteLine("</div> <!-- END PAGE CONTAINER DIV -->");
+                                                    writer.WriteLine();
+                                                    writer.WriteLine("<!-- Add most the standard footer buttons -->");
+                                                    writer.WriteLine("<center>");
+                                                    writer.WriteLine("<a href=\"<%BASEURL%>contact<%?URLOPTS%>\">Contact Us</a> | ");
+                                                    writer.WriteLine("<a href=\"<%BASEURL%>preferences<%?URLOPTS%>\">Preferences</a> | ");
+                                                    writer.WriteLine("<a href=\"http://ufdc.ufl.edu/sobekcm\">Technical Aspects</a> | ");
+                                                    writer.WriteLine("<a href=\"<%BASEURL%>stats<%?URLOPTS%>\">Statistics</a> | ");
+                                                    writer.WriteLine("<a href=\"<%BASEURL%>internal<%?URLOPTS%>\">Internal</a> | ");
+                                                    writer.WriteLine("<a href=\"<%BASEURL%>admin<%?URLOPTS%>\">Admin</a>");
+                                                    writer.WriteLine("</center>");
+                                                    writer.WriteLine("<br />");
+                                                    writer.WriteLine("<br />");
+                                                    writer.WriteLine("<span style=\"color: Gray; font-size: 0.8em;\">");
+                                                    writer.WriteLine("To edit this footer or header, edit header.html or footer.html at:  " + folder + "\\html\\ <br />");
+                                                    writer.WriteLine("</span>");
+                                                    writer.WriteLine();
+                                                    writer.WriteLine("</div> <!-- END CONTAINER INNER -->");
+                                                    writer.Flush();
+                                                    writer.Close();
+
+                                                    // Write the default footer item file
+                                                    writer = new StreamWriter(folder + "/html/footer_item.html");
+                                                    writer.WriteLine("<!-- Add most the standard footer buttons -->");
+                                                    writer.WriteLine("<center>");
+                                                    writer.WriteLine("<a href=\"<%BASEURL%>contact<%?URLOPTS%>\">Contact Us</a> | ");
+                                                    writer.WriteLine("<a href=\"<%BASEURL%>preferences<%?URLOPTS%>\">Preferences</a> | ");
+                                                    writer.WriteLine("<a href=\"http://ufdc.ufl.edu/sobekcm\">Technical Aspects</a> | ");
+                                                    writer.WriteLine("<a href=\"<%BASEURL%>stats<%?URLOPTS%>\">Statistics</a> | ");
+                                                    writer.WriteLine("<a href=\"<%BASEURL%>internal<%?URLOPTS%>\">Internal</a> | ");
+                                                    writer.WriteLine("<a href=\"<%BASEURL%>admin<%?URLOPTS%>\">Admin</a>");
+                                                    writer.WriteLine("</center>");
+                                                    writer.WriteLine("<br />");
+                                                    writer.WriteLine("<br />");
+                                                    writer.WriteLine("<span style=\"color: Gray; font-size: 0.8em;\">");
+                                                    writer.WriteLine("To edit this footer or header, edit header.html or footer.html at:  " + folder + "\\html\\ <br />");
+                                                    writer.WriteLine("</span>");
+                                                    writer.Flush();
+                                                    writer.Close();
+                                                }
+                                                else
+                                                {
+                                                    // Copy the web skin information over?
+                                                    string current_web_skin = RequestSpecificValues.Current_Mode.Skin;
+                                                    string current_web_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + current_web_skin;
+                                                    copy_entire_folder(current_web_folder, folder);
+                                                    //if (File.Exists(current_web_folder + "\\" + current_web_skin + ".css"))
+                                                    //{
+                                                    //    File.Copy(current_web_folder + "\\" + current_web_skin + ".css", folder + "\\" + new_interface_code + ".css", true );
+                                                    //}
+                                                    //if (File.Exists(current_web_folder + "\\html\\header.html"))
+                                                    //{
+                                                    //    File.Copy(current_web_folder + "\\html\\header.html", folder + "\\html\\header.html");
+                                                    //}
+                                                    //if (File.Exists(current_web_folder + "\\html\\header_item.html"))
+                                                    //{
+                                                    //    File.Copy(current_web_folder + "\\html\\header_item.html", folder + "\\html\\header_item.html");
+                                                    //}
+                                                    //if (File.Exists(current_web_folder + "\\html\\footer.html"))
+                                                    //{
+                                                    //    File.Copy(current_web_folder + "\\html\\footer.html", folder + "\\html\\footer.html");
+                                                    //}
+                                                    //if (File.Exists(current_web_folder + "\\html\\footer_item.html"))
+                                                    //{
+                                                    //    File.Copy(current_web_folder + "\\html\\footer_item.html", folder + "\\html\\footer_item.html");
+                                                    //}
+                                                    if (File.Exists(folder + "\\" + current_web_skin + ".css"))
+                                                    {
+                                                        if (File.Exists(folder + "\\" + new_interface_code + ".css"))
+                                                            File.Delete(folder + "\\" + new_interface_code + ".css");
+                                                        File.Move(folder + "\\" + current_web_skin + ".css", folder + "\\" + new_interface_code + ".css");
+                                                    }
+                                                }
+
+                                                // Irregardless of the RequestSpecificValues.Current_User's choice on whether to copy the current skin, if there is NO base skin
+                                                // provided and the folder does not exist, then we'll copy over the base skin type of stuff, such
+                                                // as buttons, tabs, etc...
+                                                if (new_base_code.Length == 0)
+                                                {
+                                                    // What is the current base skin folder then?
+                                                    string base_skin_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + RequestSpecificValues.Current_Mode.Base_Skin;
+                                                    copy_entire_folder(base_skin_folder + "/buttons", folder + "/buttons");
+                                                    copy_entire_folder(base_skin_folder + "/tabs", folder + "/tabs");
+                                                }
+
+                                            }
+                                        }
+                                        catch (Exception ee)
+                                        {
+                                            actionMessage = "Error creating some of the files for the new web skin";
+                                        }
+
+                                        // Reload the list of all skins from the database, to include this new skin
+                                        lock (UI_ApplicationCache_Gateway.Web_Skin_Collection)
+                                        {
+                                            SobekCM_Skin_Collection_Builder.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
+                                        }
+                                        if (String.IsNullOrEmpty(actionMessage))
+                                        {
+                                            actionMessage = "Saved new html skin <i>" + save_value + "</i>";
+                                        }
                                     }
-                                    if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\html"))
+                                    else
                                     {
-                                        Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\html");
+                                        actionMessage = "Unable to save new html skin <i>" + save_value + "</i>";
                                     }
-                                    if (new_base_code.Length == 0)
+
+
+
+                                    // Try to create the directory
+                                    try
                                     {
-                                        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons"))
+                                        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value))
                                         {
-                                            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons");
+                                            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value);
                                         }
-                                        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs"))
+                                        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\html"))
                                         {
-                                            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs");
+                                            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\html");
                                         }
-                                        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls"))
+                                        if (new_base_code.Length == 0)
                                         {
-                                            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls");
+                                            if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons"))
+                                            {
+                                                Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons");
+                                            }
+                                            if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs"))
+                                            {
+                                                Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs");
+                                            }
+                                            if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls"))
+                                            {
+                                                Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls");
+                                            }
                                         }
                                     }
-                                }
-                                catch (Exception)
-                                {
-                                    actionMessage = "Error creating all the necessary folders";
+                                    catch (Exception ee)
+                                    {
+                                        actionMessage = "Error creating all the necessary folders";
+                                    }
+
                                 }
                             }
                             else
@@ -435,6 +459,9 @@ namespace SobekCM.Library.AdminViewer
 
         private void  copy_entire_folder( string SourceFolder, string DestinationFolder )
         {
+            if (!Directory.Exists(SourceFolder))
+                return;
+
             // Does the destination folder exist?
             if (!Directory.Exists(DestinationFolder))
                 Directory.CreateDirectory(DestinationFolder);
@@ -505,7 +532,17 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <tr style=\"height:25px;\">");
 			Output.WriteLine("      <td style=\"width:112px;\"><label for=\"form_interface_code\">Web Skin Code:</label></td>");
             Output.WriteLine("      <td style=\"width:220px;\"><span class=\"form_linkline admin_existing_code_line\" id=\"form_interface_code\"></span></td>");
-			Output.WriteLine("      <td style=\"text-align:right;\"><label for=\"form_interface_basecode\">Base Skin Code:</label> &nbsp; <input class=\"sbkSav_small_input1 sbkAdmin_Focusable\" name=\"form_interface_basecode\" id=\"form_interface_basecode\" type=\"text\" value=\"\" /></td>");
+            Output.WriteLine("      <td style=\"text-align:right;\">");
+            Output.WriteLine("        <label for=\"form_interface_basecode\">Base Skin Code:</label> &nbsp; ");
+            Output.WriteLine("        <select class=\"sbkSav_small_input1 sbkAdmin_Focusable\" name=\"form_interface_basecode\" id=\"form_interface_basecode\">");
+            Output.WriteLine("          <option value=\"\"></option>");
+            foreach (string thisSkinCode in UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes)
+            {
+                Output.WriteLine("          <option value=\"" + thisSkinCode.ToUpper() + "\">" + thisSkinCode + "</option>");
+            }
+
+            Output.WriteLine("        </select>");
+            Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 
             // Add line for banner link
@@ -549,7 +586,18 @@ namespace SobekCM.Library.AdminViewer
 	        Output.WriteLine("      <tr style=\"height:25px;\">");
 			Output.WriteLine("        <td style=\"width:112px;\"><label for=\"admin_interface_code\">Web Skin Code:</label></td>");
 			Output.WriteLine("        <td style=\"width:220px;\"><input class=\"sbkSav_small_input sbkAdmin_Focusable\" name=\"admin_interface_code\" id=\"admin_interface_code\" type=\"text\" value=\"\" /></td>");
-			Output.WriteLine("        <td style=\"text-align:right;\"><label for=\"admin_interface_basecode\">Base Skin Code:</label> &nbsp; <input class=\"sbkSav_small_input2 sbkAdmin_Focusable\" name=\"admin_interface_basecode\" id=\"admin_interface_basecode\" type=\"text\" value=\"\" /></td>");
+            Output.WriteLine("        <td style=\"text-align:right;\">");
+            Output.WriteLine("          <label for=\"admin_interface_basecode\">Base Skin Code:</label> &nbsp; ");
+            Output.WriteLine("          <select class=\"sbkSav_small_input2 sbkAdmin_Focusable\" name=\"admin_interface_basecode\" id=\"admin_interface_basecode\">");
+            Output.WriteLine("            <option value=\"\"></option>");
+
+            foreach (string thisSkinCode in UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes)
+            {
+                Output.WriteLine("            <option value=\"" + thisSkinCode.ToUpper() + "\">" + thisSkinCode + "</option>");
+            }
+
+            Output.WriteLine("          </select>");
+            Output.WriteLine("        </td>");
 			Output.WriteLine("      </tr>");
 
             // Add line for banner link
@@ -602,7 +650,7 @@ namespace SobekCM.Library.AdminViewer
                 // Build the action links
                 Output.WriteLine("    <tr>");
                 Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
-                Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return interface_form_popup('" + code + "','" + base_code + "','" + bannerLink + "','" + notes + "','" + overrideBanner + "','" + overrideHeader + "','" + suppressTopNav + "','" + buildOnLaunch + "');\">edit</a> | ");
+                Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return interface_form_popup('" + code + "','" + base_code.ToUpper() + "','" + bannerLink + "','" + notes + "','" + overrideBanner + "','" + overrideHeader + "','" + suppressTopNav + "','" + buildOnLaunch + "');\">edit</a> | ");
                 Output.Write("<a title=\"Click to view\" href=\"" + view_url.Replace("testskincode", code) + "\" >view</a> | ");
 				Output.Write("<a title=\"Click to reset\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"reset_interface('" + code + "');\">reset</a> | ");
 

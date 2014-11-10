@@ -35,14 +35,14 @@ namespace SobekCM.Library.MySobekViewer
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>The mySobek subwriter creates an instance of this viewer to display the item for editing</li>
-    /// <li>This viewer uses the <see cref="SobekCM.Library.Citation.Template.Template"/> class to display the correct elements for editing </li>
+    /// <li>This viewer uses the <see cref="CompleteTemplate"/> class to display the correct elements for editing </li>
     /// </ul></remarks>
     public class Edit_Item_Metadata_MySobekViewer : abstract_MySobekViewer
     {
         private readonly bool isProject;
         private readonly double page;
         private string popUpFormsHtml;
-        private readonly Template template;
+        private readonly CompleteTemplate completeTemplate;
 	    private readonly string delayed_popup;
 
         private SobekCM_Item item;
@@ -78,25 +78,25 @@ namespace SobekCM.Library.MySobekViewer
             {
                 template_code = RequestSpecificValues.Current_User.Edit_Template_MARC_Code;
             }
-            template = Cached_Data_Manager.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
-            if (template != null)
+            completeTemplate = Cached_Data_Manager.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
+            if (completeTemplate != null)
             {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Found template in cache");
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Found CompleteTemplate in cache");
             }
             else
             {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Reading template file");
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Reading CompleteTemplate file");
 
-                // Read this template
+                // Read this CompleteTemplate
                 Template_XML_Reader reader = new Template_XML_Reader();
-                template = new Template();
-                reader.Read_XML( UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\edit\\" + template_code + ".xml", template, true);
+                completeTemplate = new CompleteTemplate();
+                reader.Read_XML( UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\edit\\" + template_code + ".xml", completeTemplate, true);
 
-                // Add the current codes to this template
-                template.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
+                // Add the current codes to this CompleteTemplate
+                completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
                 // Save this into the cache
-                Cached_Data_Manager.Store_Template(template_code, template, RequestSpecificValues.Tracer);
+                Cached_Data_Manager.Store_Template(template_code, completeTemplate, RequestSpecificValues.Tracer);
             }
 
             // Get the current page number, or default to 1
@@ -156,7 +156,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
 		        // Save these changes to bib
-		        template.Save_To_Bib(item, RequestSpecificValues.Current_User, ((int) page));
+		        completeTemplate.Save_To_Bib(item, RequestSpecificValues.Current_User, ((int) page));
 
 		        // See if the RequestSpecificValues.Current_User asked for a new element of a complex form type
 		        delayed_popup = String.Empty;
@@ -219,7 +219,7 @@ namespace SobekCM.Library.MySobekViewer
 						if (isProject)
 							RequestSpecificValues.Current_Mode.My_Sobek_SubMode = page_requested + item.BibID;
 
-						HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "#template", false);
+						HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "#CompleteTemplate", false);
 						HttpContext.Current.ApplicationInstance.CompleteRequest();
 						RequestSpecificValues.Current_Mode.Request_Completed = true;
 					}
@@ -294,7 +294,7 @@ namespace SobekCM.Library.MySobekViewer
 					Output.WriteLine("</li>");
 				}
 
-				if (template.Code.ToUpper().IndexOf("MARC") > 0)
+				if (completeTemplate.Code.ToUpper().IndexOf("MARC") > 0)
 				{
 					Output.WriteLine("      <li>To open detailed edit forms, click on the linked metadata values.</li>");
 				}
@@ -314,8 +314,8 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("</div>");
 			Output.WriteLine();
 
-			Output.WriteLine("<!-- Buttons to select each template page -->");
-			Output.WriteLine("<a name=\"template\"> </a>");
+			Output.WriteLine("<!-- Buttons to select each CompleteTemplate page -->");
+			Output.WriteLine("<a name=\"CompleteTemplate\"> </a>");
 			Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
 			Output.WriteLine("  <div class=\"tabs\">");
 			Output.WriteLine("    <ul>");
@@ -325,12 +325,12 @@ namespace SobekCM.Library.MySobekViewer
 			string current_submode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 			if (current_submode.Length == 0)
 				current_submode = "1";
-			while (page_iterator <= template.InputPages.Count)
+			while (page_iterator <= completeTemplate.InputPages.Count)
 			{
 				if (current_submode[0].ToString() == page_iterator.ToString())
-					Output.Write("      <li class=\"tabActiveHeader\">" + template.InputPages[page_iterator - 1].Title + "</li>");
+					Output.Write("      <li class=\"tabActiveHeader\">" + completeTemplate.InputPages[page_iterator - 1].Title + "</li>");
 				else
-					Output.Write("      <li onclick=\"editmetadata_newpage('" + page_iterator + "');\">" + template.InputPages[page_iterator - 1].Title + "</li>");
+					Output.Write("      <li onclick=\"editmetadata_newpage('" + page_iterator + "');\">" + completeTemplate.InputPages[page_iterator - 1].Title + "</li>");
 
 				page_iterator++;
 			}
@@ -366,14 +366,14 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine();
 
 
-			Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Add_Controls", "Render template html");
+			Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Add_Controls", "Render CompleteTemplate html");
 			if (!preview)
 			{
 				if (page >= 1)
 				{
 					bool isMozilla = RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
 
-					popUpFormsHtml = template.Render_Template_HTML(Output, item, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, ((int)page));
+					popUpFormsHtml = completeTemplate.Render_Template_HTML(Output, item, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, ((int)page));
 				}
 			}
 			else
@@ -561,7 +561,7 @@ namespace SobekCM.Library.MySobekViewer
                 string base_url = RequestSpecificValues.Current_Mode.Base_URL;
                 try
                 {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Data_Directory, UI_ApplicationCache_Gateway.Translation, UI_ApplicationCache_Gateway.Aggregations, UI_ApplicationCache_Gateway.Icon_List, UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.HTML_Skin.Skin_Code);
+                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Data_Directory, RequestSpecificValues.HTML_Skin.Skin_Code);
                     string filename = user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html";
                     staticBuilder.Create_Item_Citation_HTML(item, filename, UI_ApplicationCache_Gateway.Settings.Image_Server_Network + item.Web.AssocFilePath);
 
@@ -699,23 +699,23 @@ namespace SobekCM.Library.MySobekViewer
             string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = current_submode;
 
-            Output.WriteLine("  function preview1() {if (document.itemNavForm.pickme) location='" + redirect_url.Replace("ZZZZZ", "preview") + "#template'}");
-            Output.WriteLine("  function preview2() {if (document.itemNavForm.pickme) location='" + redirect_url.Replace("ZZZZZ", "marc") + "#template'}");
-            Output.WriteLine("  function preview3() {if (document.itemNavForm.pickme) location='" + redirect_url.Replace("ZZZZZ", "mets") + "#template'}");
+            Output.WriteLine("  function preview1() {if (document.itemNavForm.pickme) location='" + redirect_url.Replace("ZZZZZ", "preview") + "#CompleteTemplate'}");
+            Output.WriteLine("  function preview2() {if (document.itemNavForm.pickme) location='" + redirect_url.Replace("ZZZZZ", "marc") + "#CompleteTemplate'}");
+            Output.WriteLine("  function preview3() {if (document.itemNavForm.pickme) location='" + redirect_url.Replace("ZZZZZ", "mets") + "#CompleteTemplate'}");
             Output.WriteLine("</script>");
 
             Output.WriteLine("<center>");
             Output.WriteLine(Preview_Mode == "preview"
 								 ? "<input type=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfPreview\" checked=\"checked\" /><label for=\"sbkTypeOfPreview\">Standard View</label> &nbsp; &nbsp; "
-								 : "<input type=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfPreview\" onchange=\"location='" + redirect_url.Replace("ZZZZZ", "preview") + "#template';\" /><label for=\"sbkTypeOfPreview\">Standard View</label> &nbsp; &nbsp; ");
+								 : "<input type=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfPreview\" onchange=\"location='" + redirect_url.Replace("ZZZZZ", "preview") + "#CompleteTemplate';\" /><label for=\"sbkTypeOfPreview\">Standard View</label> &nbsp; &nbsp; ");
 
             Output.WriteLine(Preview_Mode == "marc"
 								 ? "<input type=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfMarc\" checked=\"checked\" /><label for=\"sbkTypeOfMarc\">MARC View</label> &nbsp; &nbsp; "
-								 : "<input TYPE=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfMarc\" onchange=\"location='" + redirect_url.Replace("ZZZZZ", "marc") + "#template';\" /><label for=\"sbkTypeOfMarc\">MARC View</label> &nbsp; &nbsp; ");
+								 : "<input TYPE=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfMarc\" onchange=\"location='" + redirect_url.Replace("ZZZZZ", "marc") + "#CompleteTemplate';\" /><label for=\"sbkTypeOfMarc\">MARC View</label> &nbsp; &nbsp; ");
 
             Output.WriteLine(Preview_Mode == "mets"
 								 ? "<input type=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfMets\" checked=\"checked\" /><label for=\"sbkTypeOfMets\">METS View</label>"
-								 : "<input type=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfMets\" onchange=\"location='" + redirect_url.Replace("ZZZZZ", "mets") + "#template';\" /><label for=\"sbkTypeOfMets\">METS View</label>");
+								 : "<input type=\"radio\" name=\"sbkPreviewType\" id=\"sbkTypeOfMets\" onchange=\"location='" + redirect_url.Replace("ZZZZZ", "mets") + "#CompleteTemplate';\" /><label for=\"sbkTypeOfMets\">METS View</label>");
 
             Output.WriteLine("</center>");
             Output.WriteLine("<br />");

@@ -9,7 +9,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class CleanWebResourceFolderModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             try
             {
@@ -49,6 +49,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                 // Log as a warning
                 OnProcess("WARNING: Unable to perform final cleanup on web folder", "Warning", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
             }
+
+            return true;
         }
     }
 }

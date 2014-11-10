@@ -86,7 +86,7 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine();
         }
 
-        /// <summary> Reads the inner data from the Template XML format </summary>
+        /// <summary> Reads the inner data from the CompleteTemplate XML format </summary>
         /// <param name="XMLReader"> Current template xml configuration reader </param>
         /// <remarks> This does nothing in the checkbox elements </remarks>
         protected override void Inner_Read_Data(XmlTextReader XMLReader)

@@ -10,13 +10,13 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class ReloadMetsAndBasicDbInfoModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             // Load the METS file
             if (!Resource.Load_METS())
             {
                 OnError("Error reading most recent METS file from " + Resource.BibID + ":" + Resource.VID, Resource.BibID + ":" + Resource.VID, String.Empty, Resource.BuilderLogId);
-                return;
+                return false;
             }
 
             // Add thumbnail, aggregation informaiton, and dark/access information from the database 
@@ -65,7 +65,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 }
             }
 
-
+            return true;
         }
     }
 }

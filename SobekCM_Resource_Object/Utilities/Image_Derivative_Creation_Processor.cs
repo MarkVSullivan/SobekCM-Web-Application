@@ -135,7 +135,7 @@ namespace SobekCM.Resource_Object.Utilities
 			if (kakaduErrorEncountered)
 			{
 				Kakadu_Failures++;
-				OnErrorEncountered("Warning: Error during JPEG2000 creation for " + BibID + ":" + VID, ParentLogId, BibID + ":" + VID);
+				OnErrorEncountered("WARNING: Error during JPEG2000 creation for " + BibID + ":" + VID, ParentLogId, BibID + ":" + VID);
 			}
 
 			// Delete the temporary folder

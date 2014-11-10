@@ -10,7 +10,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class CopyToArchiveFolderModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             string resourceFolder = Resource.Resource_Folder;
 
@@ -30,7 +30,8 @@ namespace SobekCM.Builder_Library.Modules.Items
             }
 
             // Archive any files, per the folder instruction
-            Archive_Any_Files(Resource);
+            if (!Archive_Any_Files(Resource))
+                return false;
 
             // Delete any remaining post-archive deletes
             if (Settings.PostArchive_Files_To_Delete.Length > 0)
@@ -46,10 +47,14 @@ namespace SobekCM.Builder_Library.Modules.Items
                     }
                 }
             }
+
+            return true;
         }
 
-        private void Archive_Any_Files(Incoming_Digital_Resource ResourcePackage)
+        private bool Archive_Any_Files(Incoming_Digital_Resource ResourcePackage)
         {
+            bool returnValue = true;
+
             // First see if this folder is even eligible for archiving and an archive drop box exists
             if ((Settings.Archive_DropBox.Length > 0) && ((ResourcePackage.Source_Folder.Archive_All_Files) || (ResourcePackage.Source_Folder.Archive_TIFFs)))
             {
@@ -87,9 +92,12 @@ namespace SobekCM.Builder_Library.Modules.Items
                     catch (Exception ee)
                     {
                         OnError("Copy to archive failed for " + ResourcePackage.BibID + ":" + ResourcePackage.VID + "\n" + ee.Message, ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.METS_Type_String, ResourcePackage.BuilderLogId);
+                        returnValue = false;
                     }
                 }
             }
+
+            return returnValue;
         }
 
     }

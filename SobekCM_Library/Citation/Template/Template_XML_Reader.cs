@@ -9,16 +9,16 @@ using SobekCM.Library.Citation.Elements;
 
 namespace SobekCM.Library.Citation.Template
 {
-    /// <summary> Reader for the template XML configuration file which stores the information about a single metadata template </summary>
+    /// <summary> Reader for the CompleteTemplate XML configuration file which stores the information about a single metadata CompleteTemplate </summary>
     public class Template_XML_Reader
     {
         private bool complexMainTitleExists;
 
-        /// <summary> Reads the template XML configuration file specified into a template object </summary>
-        /// <param name="XML_File"> Filename of the template XML configuraiton file to read  </param>
-        /// <param name="thisTemplate"> Template object to populate form the configuration file </param>
-        /// <param name="exclude_divisions"> Flag indicates whether to include the structure map, if included in the template file </param>
-        public void Read_XML( string XML_File, Template thisTemplate, bool exclude_divisions )
+        /// <summary> Reads the CompleteTemplate XML configuration file specified into a CompleteTemplate object </summary>
+        /// <param name="XML_File"> Filename of the CompleteTemplate XML configuraiton file to read  </param>
+        /// <param name="ThisCompleteTemplate"> CompleteTemplate object to populate form the configuration file </param>
+        /// <param name="exclude_divisions"> Flag indicates whether to include the structure map, if included in the CompleteTemplate file </param>
+        public void Read_XML( string XML_File, CompleteTemplate ThisCompleteTemplate, bool exclude_divisions )
         {
             // Set some default for this read
             complexMainTitleExists = false;
@@ -30,20 +30,20 @@ namespace SobekCM.Library.Citation.Template
             // create the node reader
             XmlNodeReader nodeReader = new XmlNodeReader( templateXml );
 
-            // Read through all main input template tag is found
+            // Read through all main input CompleteTemplate tag is found
             move_to_node( nodeReader, "input_template" );
 
-            // Process all of the header information for this template
-            process_template_header( nodeReader, thisTemplate );
+            // Process all of the header information for this CompleteTemplate
+            process_template_header( nodeReader, ThisCompleteTemplate );
 
             // Process all of the input portion / hierarchy
-            process_inputs(nodeReader, thisTemplate, exclude_divisions);
+            process_inputs(nodeReader, ThisCompleteTemplate, exclude_divisions);
 
             // Process any constant sectoin
-            process_constants( nodeReader, thisTemplate );
+            process_constants( nodeReader, ThisCompleteTemplate );
         }
 
-        private void process_template_header( XmlNodeReader nodeReader, Template thisTemplate )
+        private void process_template_header( XmlNodeReader nodeReader, CompleteTemplate ThisCompleteTemplate )
         {
             // Read all the nodes
             while ( nodeReader.Read() )
@@ -65,11 +65,11 @@ namespace SobekCM.Library.Citation.Template
                     switch (nodeName)
                     {
                         case "BANNER":
-                            thisTemplate.Banner = read_text_node(nodeReader);
+                            ThisCompleteTemplate.Banner = read_text_node(nodeReader);
                             break;
 
                         case "INCLUDEUSERASAUTHOR":
-                            thisTemplate.Include_User_As_Author = Convert.ToBoolean(read_text_node(nodeReader));
+                            ThisCompleteTemplate.Include_User_As_Author = Convert.ToBoolean(read_text_node(nodeReader));
                             break;
 
                         case "UPLOADS":
@@ -77,62 +77,62 @@ namespace SobekCM.Library.Citation.Template
                             switch (upload_type_text)
                             {
                                 case "NONE":
-                                    thisTemplate.Upload_Types = Template.Template_Upload_Types.None;
+                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.None;
                                     break;
 
                                 case "FILE":
-                                    thisTemplate.Upload_Types = Template.Template_Upload_Types.File;
+                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.File;
                                     break;
 
                                 case "URL":
-                                    thisTemplate.Upload_Types = Template.Template_Upload_Types.URL;
+                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.URL;
                                     break;
 
                                 case "FILE_OR_URL":
-                                    thisTemplate.Upload_Types = Template.Template_Upload_Types.File_or_URL;
+                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.File_or_URL;
                                     break;
 
                                 default:
-                                    thisTemplate.Upload_Types = Template.Template_Upload_Types.File;
+                                    ThisCompleteTemplate.Upload_Types = CompleteTemplate.Template_Upload_Types.File;
                                     break;
 
                             }
                             break;
 
                         case "UPLOADMANDATORY":
-                            thisTemplate.Upload_Mandatory = Convert.ToBoolean(read_text_node(nodeReader));
+                            ThisCompleteTemplate.Upload_Mandatory = Convert.ToBoolean(read_text_node(nodeReader));
                             break;
 
                         case "NAME":
-                            thisTemplate.Title = read_text_node(nodeReader);
+                            ThisCompleteTemplate.Title = read_text_node(nodeReader);
                             break;
 
                         case "PERMISSIONS":
-                            thisTemplate.Permissions_Agreement = read_text_node(nodeReader);
+                            ThisCompleteTemplate.Permissions_Agreement = read_text_node(nodeReader);
                             break;
 
                         case "NOTES":
-                            thisTemplate.Notes = (thisTemplate.Notes + "  " + read_text_node(nodeReader)).Trim();
+                            ThisCompleteTemplate.Notes = (ThisCompleteTemplate.Notes + "  " + read_text_node(nodeReader)).Trim();
                             break;
 
                         case "DATECREATED":
                             DateTime dateCreated;
                             if (DateTime.TryParse(read_text_node(nodeReader), out dateCreated))
-                                thisTemplate.DateCreated = dateCreated;
+                                ThisCompleteTemplate.DateCreated = dateCreated;
                             break;
 
                         case "LASTMODIFIED":
                             DateTime lastModified;
                             if (DateTime.TryParse(read_text_node(nodeReader), out lastModified))
-                                thisTemplate.LastModified = lastModified;
+                                ThisCompleteTemplate.LastModified = lastModified;
                             break;
 
                         case "CREATOR":
-                            thisTemplate.Creator = read_text_node(nodeReader);
+                            ThisCompleteTemplate.Creator = read_text_node(nodeReader);
                             break;
 
                         case "BIBIDROOT":
-                            thisTemplate.BibID_Root = read_text_node(nodeReader);
+                            ThisCompleteTemplate.BibID_Root = read_text_node(nodeReader);
                             break;
 
                         case "DEFAULTVISIBILITY":
@@ -140,24 +140,24 @@ namespace SobekCM.Library.Citation.Template
                             switch (visibilityValue)
                             {
                                 case "PRIVATE":
-                                    thisTemplate.Default_Visibility = -1;
+                                    ThisCompleteTemplate.Default_Visibility = -1;
                                     break;
                                     
                                 case "PUBLIC":
-                                    thisTemplate.Default_Visibility = 0;
+                                    ThisCompleteTemplate.Default_Visibility = 0;
                                     break;
                             }
                             break;
 
                         case "EMAILUPONSUBMIT":
-                            thisTemplate.Email_Upon_Receipt = read_text_node(nodeReader);
+                            ThisCompleteTemplate.Email_Upon_Receipt = read_text_node(nodeReader);
                             break;
                     }
                 }
             }
         }
 
-        private void process_inputs( XmlNodeReader nodeReader, Template thisTemplate, bool exclude_divisions )
+        private void process_inputs( XmlNodeReader nodeReader, CompleteTemplate ThisCompleteTemplate, bool exclude_divisions )
         {
             // Keep track of the current pages and panels
             Template_Page currentPage = null;
@@ -186,9 +186,9 @@ namespace SobekCM.Library.Citation.Template
                         // Set the inPanel flag to false
                         inPanel = false;
 
-                        // Create the new page and add to this template
+                        // Create the new page and add to this CompleteTemplate
                         currentPage = new Template_Page();
-                        thisTemplate.Add_Page( currentPage );
+                        ThisCompleteTemplate.Add_Page( currentPage );
                     }
 
                     // Does this start a new panel?
@@ -235,7 +235,7 @@ namespace SobekCM.Library.Citation.Template
                     // Is this a new element?
                     if ((nodeName == "ELEMENT") && (nodeReader.HasAttributes) && (currentPanel != null))
                     {
-                        abstract_Element currentElement = process_element( nodeReader, thisTemplate.InputPages.Count );
+                        abstract_Element currentElement = process_element( nodeReader, ThisCompleteTemplate.InputPages.Count );
                         if (( currentElement != null ) && (( !exclude_divisions ) || ( currentElement.Type != Element_Type.Structure_Map )))
                             currentPanel.Add_Element( currentElement );
                     }
@@ -349,7 +349,7 @@ namespace SobekCM.Library.Citation.Template
             return newElement;
         }
 
-        private void process_constants( XmlNodeReader nodeReader, Template thisTemplate )
+        private void process_constants( XmlNodeReader nodeReader, CompleteTemplate ThisCompleteTemplate )
         {
             // Read all the nodes
             while ( nodeReader.Read() )
@@ -370,7 +370,7 @@ namespace SobekCM.Library.Citation.Template
                     if (newConstant != null)
                     {
                         newConstant.isConstant = true;
-                        thisTemplate.Add_Constant(newConstant);
+                        ThisCompleteTemplate.Add_Constant(newConstant);
                     }
                 }
             }

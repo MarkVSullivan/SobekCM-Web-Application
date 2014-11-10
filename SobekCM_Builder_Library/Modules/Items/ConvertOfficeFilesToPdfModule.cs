@@ -9,7 +9,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class ConvertOfficeFilesToPdfModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             string resourceFolder = Resource.Resource_Folder;
 
@@ -100,6 +100,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                     OnError(ee.Message, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
                 }
             }
+
+            return true;
         }
 
 

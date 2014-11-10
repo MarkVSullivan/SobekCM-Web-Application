@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 
 namespace SobekCM.Library.Citation.Template
 {
-	/// <summary> Stores the data about a single page in a <see cref="Template"/> object </summary>
+	/// <summary> Stores the data about a single page in a <see cref="CompleteTemplate"/> object </summary>
 	public class Template_Page
 	{
 	    private readonly List<Template_Panel> panels;

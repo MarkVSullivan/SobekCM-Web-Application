@@ -170,7 +170,7 @@ namespace SobekCM.Library.Localization.Classes
                     SendMeMonthlyUsageStatisticsForMyItems = Value;
                     break;
 
-                case "Template":
+                case "CompleteTemplate":
                     Template = Value;
                     break;
 

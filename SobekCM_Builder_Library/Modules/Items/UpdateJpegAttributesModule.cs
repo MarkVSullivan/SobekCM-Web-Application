@@ -10,7 +10,7 @@ namespace SobekCM.Builder_Library.Modules.Items
 {
     public class UpdateJpegAttributesModule : abstractSubmissionPackageModule
     {
-        public override void DoWork(Incoming_Digital_Resource Resource)
+        public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             // Now, just look for the data being present in each file
             if (Directory.Exists(Resource.Resource_Folder))
@@ -31,6 +31,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                     }
                 }
             }
+
+            return true;
         }
 
         /// <summary> Computes the attributes (width, height) for a JPEG file </summary>

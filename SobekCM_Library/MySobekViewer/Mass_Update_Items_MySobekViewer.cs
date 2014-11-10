@@ -30,12 +30,12 @@ namespace SobekCM.Library.MySobekViewer
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>The mySobek subwriter creates an instance of this viewer to display the behaviors for mass updating</li>
-    /// <li>This viewer uses the <see cref="SobekCM.Library.Citation.Template.Template"/> class to display the correct elements for editing </li>
+    /// <li>This viewer uses the <see cref="CompleteTemplate"/> class to display the correct elements for editing </li>
     /// </ul></remarks>
     public class Mass_Update_Items_MySobekViewer : abstract_MySobekViewer
     {
         private readonly SobekCM_Item item;
-        private readonly Template template;
+        private readonly CompleteTemplate completeTemplate;
 
         #region Constructor
 
@@ -65,25 +65,25 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             const string TEMPLATE_CODE = "massupdate";
-            template = Cached_Data_Manager.Retrieve_Template(TEMPLATE_CODE, RequestSpecificValues.Tracer);
-            if (template != null)
+            completeTemplate = Cached_Data_Manager.Retrieve_Template(TEMPLATE_CODE, RequestSpecificValues.Tracer);
+            if (completeTemplate != null)
             {
-                RequestSpecificValues.Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", "Found template in cache");
+                RequestSpecificValues.Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", "Found CompleteTemplate in cache");
             }
             else
             {
-                RequestSpecificValues.Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", "Reading template file");
+                RequestSpecificValues.Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", "Reading CompleteTemplate file");
 
-                // Read this template
+                // Read this CompleteTemplate
                 Template_XML_Reader reader = new Template_XML_Reader();
-                template = new Template();
-                reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\defaults\\" + TEMPLATE_CODE + ".xml", template, true);
+                completeTemplate = new CompleteTemplate();
+                reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\defaults\\" + TEMPLATE_CODE + ".xml", completeTemplate, true);
 
-                // Add the current codes to this template
-                template.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
+                // Add the current codes to this CompleteTemplate
+                completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
                 // Save this into the cache
-                Cached_Data_Manager.Store_Template(TEMPLATE_CODE, template, RequestSpecificValues.Tracer);
+                Cached_Data_Manager.Store_Template(TEMPLATE_CODE, completeTemplate, RequestSpecificValues.Tracer);
             }
 
             // See if there was a hidden request
@@ -98,7 +98,7 @@ namespace SobekCM.Library.MySobekViewer
             else if (hidden_request == "save")
             {
                 // Save these changes to bib
-                template.Save_To_Bib(item, RequestSpecificValues.Current_User, 1);
+                completeTemplate.Save_To_Bib(item, RequestSpecificValues.Current_User, 1);
 
                 // Save the behaviors
                 SobekCM_Database.Save_Behaviors(item, false, true );
@@ -191,7 +191,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("</div>");
             Output.WriteLine();
 
-			Output.WriteLine("<a name=\"template\"> </a>");
+			Output.WriteLine("<a name=\"CompleteTemplate\"> </a>");
 			Output.WriteLine("<div id=\"tabContainer\" class=\"fulltabs\">");
 			Output.WriteLine("  <div class=\"tabs\">");
 			Output.WriteLine("    <ul>");
@@ -213,7 +213,7 @@ namespace SobekCM.Library.MySobekViewer
 
 	        bool isMozilla = RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
 
-	        template.Render_Template_HTML(Output, item, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
+	        completeTemplate.Render_Template_HTML(Output, item, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
 
 			// Add the second buttons at the bottom of the form
 			Output.WriteLine();
