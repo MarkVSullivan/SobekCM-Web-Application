@@ -134,10 +134,10 @@ namespace SobekCM.Library
                     // Add the string to the builder
                     builder.Append(Source_Text.Substring(current_start, last_match_location - current_start));
                     if (!last_match_in_tag)
-                        builder.Append(HIGHLIGHT_START);
+                        builder.Append(Highlight_Start);
                     builder.Append(Source_Text.Substring(last_match_location, termLength[last_match]));
                     if (!last_match_in_tag)
-                        builder.Append(HIGHLIGHT_END);
+                        builder.Append(Highlight_End);
 
                     // Set the current index correctly
                     current_start = last_match_location + termLength[last_match];

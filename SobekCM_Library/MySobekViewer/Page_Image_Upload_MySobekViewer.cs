@@ -318,7 +318,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Determine the total size of the package before saving
                 string[] all_files_final = Directory.GetFiles(final_destination);
                 double size = all_files_final.Aggregate<string, double>(0, (current, thisFile) => current + (((new FileInfo(thisFile)).Length)/1024));
-                Item_To_Complete.DiskSize_MB = size;
+                Item_To_Complete.DiskSize_KB = size;
 
                 // Save to the database
                 try

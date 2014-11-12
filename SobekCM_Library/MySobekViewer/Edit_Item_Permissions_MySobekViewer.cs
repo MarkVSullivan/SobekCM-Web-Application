@@ -131,6 +131,10 @@ namespace SobekCM.Library.MySobekViewer
                             Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
                             Cached_Data_Manager.Store_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Current_Item, RequestSpecificValues.Tracer);
 
+                            // Also clear any searches or browses ( in the future could refine this to only remove those
+                            // that are impacted by this save... but this is good enough for now )
+                            Cached_Data_Manager.Clear_Search_Results_Browses();
+
                             // Update the web.config
                             Resource_Web_Config_Writer.Update_Web_Config(RequestSpecificValues.Current_Item.Source_Directory, RequestSpecificValues.Current_Item.Behaviors.Dark_Flag, (short)ipRestrictionMask, RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail);
 

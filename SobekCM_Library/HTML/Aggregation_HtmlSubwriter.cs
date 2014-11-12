@@ -629,7 +629,7 @@ namespace SobekCM.Library.HTML
             {
                 string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
 
-                if (collectionViewer.Search_Script_Action.Length > 0)
+                if ( !String.IsNullOrEmpty(collectionViewer.Search_Script_Action))
                 {
                     Output.WriteLine("<form name=\"search_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
                 }

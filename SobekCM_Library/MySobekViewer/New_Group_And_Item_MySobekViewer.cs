@@ -782,7 +782,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Determine the total size of the package before saving
                 string[] all_files_final = Directory.GetFiles(userInProcessDirectory);
                 double size = all_files_final.Aggregate<string, double>(0, (Current, ThisFile) => Current + (((new FileInfo(ThisFile)).Length)/1024));
-                Item_To_Complete.DiskSize_MB = size;
+                Item_To_Complete.DiskSize_KB = size;
 
                 // BibID and VID will be automatically assigned
                 Item_To_Complete.BibID = completeTemplate.BibID_Root;
@@ -956,7 +956,6 @@ namespace SobekCM.Library.MySobekViewer
             if (!criticalErrorEncountered)
             {
                 // Send email to the email from the CompleteTemplate, if one was provided
-
                 if (completeTemplate.Email_Upon_Receipt.Length > 0)
                 {
                     string body = "New item submission complete!<br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Submittor: " + RequestSpecificValues.Current_User.Full_Name + " ( " + RequestSpecificValues.Current_User.Email + " )<br />Link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + Item_To_Complete.BibID + ":" + Item_To_Complete.VID + "</a></blockquote>";
@@ -972,6 +971,10 @@ namespace SobekCM.Library.MySobekViewer
                     string subject2 = "Item submission complete for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
                     SobekCM_Database.Send_Database_Email(RequestSpecificValues.Current_User.Email, subject2, body2, true, false, -1, -1 );
                 }
+
+                // Also clear any searches or browses ( in the future could refine this to only remove those
+                // that are impacted by this save... but this is good enough for now )
+                Cached_Data_Manager.Clear_Search_Results_Browses();
             }
 
             return criticalErrorEncountered;

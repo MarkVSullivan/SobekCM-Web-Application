@@ -161,12 +161,14 @@ namespace SobekCM.Library.AdminViewer
 	            if (form["admin_settings_order"] == "category")
 	            {
 		            RequestSpecificValues.Current_User.Add_Setting("Settings_AdminViewer:Category_View", "true");
+                    Library.Database.SobekCM_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Settings_AdminViewer:Category_View", "true");
 		            category_view = true;
 	            }
 
 				if (form["admin_settings_order"] == "alphabetical")
 				{
 					RequestSpecificValues.Current_User.Add_Setting("Settings_AdminViewer:Category_View", "false");
+                    Library.Database.SobekCM_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Settings_AdminViewer:Category_View", "false");
 					category_view = false;
 				}
 

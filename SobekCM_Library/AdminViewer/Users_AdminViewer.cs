@@ -278,12 +278,12 @@ namespace SobekCM.Library.AdminViewer
 							}
 
 							// Determine the name for the actual edit templates from the combo box selection
-							editUser.Edit_Template_Code = "edit";
-							editUser.Edit_Template_MARC_Code = "editmarc";
+							editUser.Edit_Template_Code_Simple = "edit";
+							editUser.Edit_Template_Code_Complex = "editmarc";
 							if (editTemplate == "internal")
 							{
-								editUser.Edit_Template_Code = "edit_internal";
-								editUser.Edit_Template_MARC_Code = "editmarc_internal";
+								editUser.Edit_Template_Code_Simple = "edit_internal";
+								editUser.Edit_Template_Code_Complex = "editmarc_internal";
 							}
 
 							// Determine if the projects and templates need to be updated
@@ -578,7 +578,7 @@ namespace SobekCM.Library.AdminViewer
                         SobekCM_Database.Save_User(editUser, String.Empty, RequestSpecificValues.Current_User.Authentication_Type, RequestSpecificValues.Tracer);
 
 						// Update the basic RequestSpecificValues.Current_User information
-                        SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_System_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code, editUser.Edit_Template_MARC_Code, true, true, true, RequestSpecificValues.Tracer);
+                        SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_System_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code_Simple, editUser.Edit_Template_Code_Complex, true, true, true, RequestSpecificValues.Tracer);
 
 						// Update projects, if necessary
                         if (editUser.Default_Metadata_Sets.Count > 0)
@@ -778,7 +778,7 @@ namespace SobekCM.Library.AdminViewer
                 text_builder.Remove(0, text_builder.Length);
             }
 
-            Output.WriteLine("  <tr valign=\"top\"><td><b>Edit Templates:</b></td><td>" + editUser.Edit_Template_MARC_Code + "<br />" + editUser.Edit_Template_Code + "</td></tr>");
+            Output.WriteLine("  <tr valign=\"top\"><td><b>Edit Templates:</b></td><td>" + editUser.Edit_Template_Code_Complex + "<br />" + editUser.Edit_Template_Code_Simple + "</td></tr>");
 
             // Build the templates list
             foreach (string thisTemplate in editUser.Templates)
@@ -1072,7 +1072,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("          Edit Templates: &nbsp; ");
                     Output.WriteLine("          <select class=\"admin_user_select\" name=\"admin_user_edittemplate\" id=\"admin_user_edittemplate\">");
 
-                    if (editUser.Edit_Template_Code.ToUpper().IndexOf("INTERNAL") >= 0)
+                    if (editUser.Edit_Template_Code_Simple.ToUpper().IndexOf("INTERNAL") >= 0)
                     {
                         Output.WriteLine("            <option value=\"internal\" selected=\"selected\">Internal</option>");
                         Output.WriteLine("            <option value=\"standard\">Standard</option>");

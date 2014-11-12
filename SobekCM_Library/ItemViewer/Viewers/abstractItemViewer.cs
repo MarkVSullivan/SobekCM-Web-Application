@@ -326,7 +326,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 i = xml_safe.IndexOf("&", i + 1);
             }
-            return xml_safe.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").Replace("[", "").Replace("]", "");
+            return xml_safe.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
         }
 	}
 }

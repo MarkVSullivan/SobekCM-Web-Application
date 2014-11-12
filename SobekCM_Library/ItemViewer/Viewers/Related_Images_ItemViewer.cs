@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Engine_Library.Navigation;
@@ -331,6 +332,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//Outer div which contains all the thumbnails
 			Output.WriteLine("<div style=\"margin:5px;text-align:center;\">");
 
+            // Get any search terms for highlighting purposes
+            List<string> terms = new List<string>();
+            if (CurrentMode.Text_Search.Trim().Length > 0)
+            {
+                string[] splitter = CurrentMode.Text_Search.Replace("\"", "").Split(" ".ToCharArray());
+                terms.AddRange(from thisSplit in splitter where thisSplit.Trim().Length > 0 select thisSplit.Trim());
+            }
+
 
 			// Step through each page in the item
 			for (int page_index = page*images_per_page; (page_index < (page + 1)*images_per_page) && (page_index < CurrentItem.Web.Static_PageCount); page_index++)
@@ -404,7 +413,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("    <tr>");
-                Output.WriteLine("      <td style=\"text-align:center\">" + thisPage.Label + "</td>");
+                Output.WriteLine("      <td style=\"text-align:center\">" + Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(thisPage.Label, terms, "<span class=\"sbkRi_TextHighlight\">", "</span>") + "</td>");
                 Output.WriteLine("    </tr>");
                 Output.WriteLine("  </table>");
                 Output.WriteLine();

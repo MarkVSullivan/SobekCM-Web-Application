@@ -2183,8 +2183,8 @@ namespace SobekCM.Library.Database
 			user.Default_Rights = userRow["Rights"].ToString();
 			user.Preferred_Language = userRow["Language"].ToString();
 			user.Is_Internal_User = Convert.ToBoolean(userRow["Internal_User"]);
-			user.Edit_Template_Code = userRow["EditTemplate"].ToString();
-			user.Edit_Template_MARC_Code = userRow["EditTemplateMarc"].ToString();
+			user.Edit_Template_Code_Simple = userRow["EditTemplate"].ToString();
+			user.Edit_Template_Code_Complex = userRow["EditTemplateMarc"].ToString();
 			user.Can_Delete_All = Convert.ToBoolean(userRow["Can_Delete_All_Items"]);
 			user.Is_System_Admin = Convert.ToBoolean(userRow["IsSystemAdmin"]);
 			user.Is_Portal_Admin = Convert.ToBoolean(userRow["IsPortalAdmin"]);

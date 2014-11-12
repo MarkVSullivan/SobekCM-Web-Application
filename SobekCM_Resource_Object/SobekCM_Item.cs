@@ -33,8 +33,7 @@ namespace SobekCM.Resource_Object
         private Web_Info web;
 
         private int total_order;
-        private double size_mb;
- //       private string main_thumbnail;
+        //       private string main_thumbnail;
 
         // Flags used while editing a resource in the online SobekCM digital repository 
         private bool using_complex_template;
@@ -56,7 +55,7 @@ namespace SobekCM.Resource_Object
             analyzed_for_complex_content = false;
             contains_complex_content = false;
             using_complex_template = false;
-            size_mb = 0;
+            DiskSize_KB = 0;
   //          main_thumbnail = String.Empty;
             
             // If there is a metadata configuration which calls for a metadata
@@ -85,7 +84,7 @@ namespace SobekCM.Resource_Object
             analyzed_for_complex_content = false;
             contains_complex_content = false;
             using_complex_template = false;
-            size_mb = 0;
+            DiskSize_KB = 0;
 
             // Copy over all the data
             if (OAI_Record.hasCreators)
@@ -239,12 +238,8 @@ namespace SobekCM.Resource_Object
             }
         }
 
-        /// <summary> Size of the entire package on disk </summary>
-        public double DiskSize_MB
-        {
-            get { return size_mb; }
-            set { size_mb = value; }
-        }
+        /// <summary> Size of the entire package on disk (in kilobytes ) </summary>
+        public double DiskSize_KB { get; set; }
 
 
         /// <summary> Gets a flag that indicates if the data in this item contains complex content

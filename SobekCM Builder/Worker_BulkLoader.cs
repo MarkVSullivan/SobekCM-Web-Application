@@ -61,6 +61,9 @@ namespace SobekCM.Builder
         private readonly List<iPostProcessModule> postProcessModules;
         private readonly List<iFolderModule> folderModules;
 
+        private readonly int new_item_limit;
+        private bool still_pending_items;
+
 
 	    ///  <summary> Constructor for a new instance of the Worker_BulkLoader class </summary>
 	    ///  <param name="Logger"> Log file object for logging progress </param>
@@ -77,6 +80,11 @@ namespace SobekCM.Builder
 	        dbInstance = DbInstance;
 	        ghostscriptExecutable = GhostscriptExecutable;
 	        imageMagickExecutable = ImageMagickExecutable;
+
+	        if (multiInstanceBuilder)
+	            new_item_limit = 100;
+	        else
+	            new_item_limit = -1;
  
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Start", verbose, String.Empty, String.Empty, -1);
 
@@ -174,11 +182,13 @@ namespace SobekCM.Builder
         #region Main Method that steps through each package and performs work
 
         /// <summary> Performs the bulk loader process and handles any incoming digital resources </summary>
-        public void Perform_BulkLoader( bool Verbose )
+        /// <returns> TRUE if there are still pending items to be processed, otherwise FALSE </returns>
+        public bool Perform_BulkLoader( bool Verbose )
         {
 
             verbose = Verbose;
             finalmessage = String.Empty;
+            still_pending_items = false;
 
             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Start", verbose, String.Empty, String.Empty, -1);
 
@@ -187,7 +197,7 @@ namespace SobekCM.Builder
             {
                 Add_Error_To_Log("Worker_BulkLoader.Perform_BulkLoader: Error refreshing settings and item list", String.Empty, String.Empty, -1);
                 finalmessage = "Error refreshing settings and item list";
-                return;
+                return false;
             }
 
             // If not already verbose, check settings
@@ -203,7 +213,7 @@ namespace SobekCM.Builder
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Aborted (line 137)", verbose, String.Empty, String.Empty, -1);
                 finalmessage = "Aborted per database request";
-                return; 
+                return false; 
             }
             else
             {
@@ -250,7 +260,7 @@ namespace SobekCM.Builder
                 Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Aborted (line 151)", verbose, String.Empty, String.Empty, -1);
                 finalmessage = "Aborted per database request";
                 ReleaseResources();
-                return;
+                return false;
             }
 
             // Create the seperate queues for each type of incoming digital resource files
@@ -278,7 +288,7 @@ namespace SobekCM.Builder
                             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Aborted (line 151)", verbose, String.Empty, String.Empty, -1);
                             finalmessage = "Aborted per database request";
                             ReleaseResources();
-                            return;
+                            return false;
                         }
 
                         thisModule.DoWork(actionFolder, incoming_packages, deletes);
@@ -297,7 +307,7 @@ namespace SobekCM.Builder
                 Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Aborted (line 179)", verbose, String.Empty, String.Empty, -1);
                 finalmessage = "Aborted per database request";
                 ReleaseResources();
-                return;
+                return false;
             }
 
             // If there were no packages to process further stop here
@@ -307,7 +317,7 @@ namespace SobekCM.Builder
                 if (finalmessage.Length == 0)
                     finalmessage = "No New Packages - Process Complete";
                 ReleaseResources();
-                return;
+                return false;
             }
 
             // Iterate through all non-delete resources ready for processing
@@ -366,6 +376,8 @@ namespace SobekCM.Builder
 
 
             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Done", verbose, String.Empty, String.Empty, -1);
+
+            return still_pending_items;
 
         }
 
@@ -522,6 +534,8 @@ namespace SobekCM.Builder
 
             try
             {
+                int number_packages_processed = 0;
+
                 // Step through each package and handle all the files and metadata
                 Add_NonError_To_Log("....Processing incoming packages", "Standard", String.Empty, String.Empty, -1);
                 IncomingPackages.Sort();
@@ -536,6 +550,16 @@ namespace SobekCM.Builder
 
                     Process_Single_Incoming_Package(resourcePackage);
 
+                    if (new_item_limit > 0)
+                    {
+                        number_packages_processed++;
+                        if (number_packages_processed >= new_item_limit)
+                        {
+                            still_pending_items = true;
+                            Add_NonError_To_Log("....Still pending packages, but moving to next instances and will return for these", "Standard", String.Empty, String.Empty, -1);
+                            return;
+                        }
+                    }
                 }
             }
             catch (Exception ee)

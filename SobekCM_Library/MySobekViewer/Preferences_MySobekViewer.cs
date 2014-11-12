@@ -380,7 +380,7 @@ namespace SobekCM.Library.MySobekViewer
 					user.Unit = unit.Trim();
 					user.Set_Default_Template(template.Trim());
 					// See if the project is different, if this is not registration
-                    if ((!registration) && (user.Default_Metadata_Sets[0] != project.Trim()))
+                    if ((!registration) && (user.Default_Metadata_Sets_Count > 0 ) && ( user.Default_Metadata_Sets[0] != project.Trim()))
 					{
 						// Determine the in process directory for this
 						string user_in_process_directory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + user.UserName;

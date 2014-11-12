@@ -135,11 +135,11 @@ namespace SobekCM.Builder_Library
         {
             get
             {
-                return Metadata.DiskSize_MB;
+                return Metadata.DiskSize_KB;
             }
             set
             {
-                Metadata.DiskSize_MB = value;
+                Metadata.DiskSize_KB = value;
             }
         }
 

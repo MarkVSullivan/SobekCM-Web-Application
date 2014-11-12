@@ -39,19 +39,19 @@ namespace SobekCM.Library.ItemViewer
                         allVolumeCode = Current_Mode.ViewerCode;
                     if (resource_type_upper.IndexOf("NEWSPAPER") >= 0)
                     {
-                        returnVal.Add(HTML_Helper(Skin_Code, allVolumeCode, Translator.Get_Translation("ALL ISSUES", Current_Mode.Language), Current_Mode));
+                        returnVal.Add(HTML_Helper(Skin_Code, allVolumeCode, Translator.Get_Translation("All Issues", Current_Mode.Language), Current_Mode));
                     }
                     else
                     {
                         if (resource_type_upper.IndexOf("MAP") >= 0)
                         {
-                            returnVal.Add(HTML_Helper(Skin_Code, allVolumeCode, Translator.Get_Translation("RELATED MAPS", Current_Mode.Language), Current_Mode));
+                            returnVal.Add(HTML_Helper(Skin_Code, allVolumeCode, Translator.Get_Translation("Related Maps", Current_Mode.Language), Current_Mode));
                         }
                         else
                         {
                             returnVal.Add(resource_type_upper.IndexOf("AERIAL") >= 0
-                                              ? HTML_Helper(Skin_Code, allVolumeCode, Translator.Get_Translation("RELATED FLIGHTS", Current_Mode.Language), Current_Mode)
-                                              : HTML_Helper(Skin_Code, allVolumeCode, Translator.Get_Translation("ALL VOLUMES", Current_Mode.Language), Current_Mode));
+                                              ? HTML_Helper(Skin_Code, allVolumeCode, Translator.Get_Translation("Related Flights", Current_Mode.Language), Current_Mode)
+                                              : HTML_Helper(Skin_Code, allVolumeCode, Translator.Get_Translation("All Volumes", Current_Mode.Language), Current_Mode));
                         }
                     }
                     break;
@@ -59,37 +59,37 @@ namespace SobekCM.Library.ItemViewer
                 case View_Enum.CITATION:
                     if ((Current_Mode.ViewerCode == "citation") || ( Current_Mode.ViewerCode == "marc" ) || ( Current_Mode.ViewerCode == "metadata" ) || ( Current_Mode.ViewerCode == "usage" ))
                     {
-                        returnVal.Add(HTML_Helper(Skin_Code, Current_Mode.ViewerCode, Translator.Get_Translation("CITATION", Current_Mode.Language), Current_Mode));
+                        returnVal.Add(HTML_Helper(Skin_Code, Current_Mode.ViewerCode, Translator.Get_Translation("Citation", Current_Mode.Language), Current_Mode));
                     }
                     else
                     {
-                        returnVal.Add(HTML_Helper(Skin_Code, "citation", Translator.Get_Translation("CITATION", Current_Mode.Language), Current_Mode));
+                        returnVal.Add(HTML_Helper(Skin_Code, "citation", Translator.Get_Translation("Citation", Current_Mode.Language), Current_Mode));
                     }
                     break;
 
 				case View_Enum.DATASET_CODEBOOK:
-					returnVal.Add(HTML_Helper(Skin_Code, "dscodebook", Translator.Get_Translation("DATA STRUCTURE", Current_Mode.Language), Current_Mode));
+					returnVal.Add(HTML_Helper(Skin_Code, "dscodebook", Translator.Get_Translation("Data Structure", Current_Mode.Language), Current_Mode));
 					break;
 
 				case View_Enum.DATASET_REPORTS:
-					returnVal.Add(HTML_Helper(Skin_Code, "dsreports", Translator.Get_Translation("REPORTS", Current_Mode.Language), Current_Mode));
+					returnVal.Add(HTML_Helper(Skin_Code, "dsreports", Translator.Get_Translation("Reports", Current_Mode.Language), Current_Mode));
 					break;
 
 				case View_Enum.DATASET_VIEWDATA:
-					returnVal.Add(HTML_Helper(Skin_Code, "dsview", Translator.Get_Translation("EXPLORE DATA", Current_Mode.Language), Current_Mode));
+					returnVal.Add(HTML_Helper(Skin_Code, "dsview", Translator.Get_Translation("Explore Data", Current_Mode.Language), Current_Mode));
 					break;
 
                 case View_Enum.DOWNLOADS:
-                    returnVal.Add(HTML_Helper(Skin_Code, "downloads", Translator.Get_Translation("DOWNLOADS", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper(Skin_Code, "downloads", Translator.Get_Translation("Downloads", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.FEATURES:
-                    returnVal.Add(HTML_Helper(Skin_Code, "features", Translator.Get_Translation("FEATURES", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper(Skin_Code, "features", Translator.Get_Translation("Features", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.FLASH:
                     returnVal.Add(Item_View.Label.Length == 0
-                                      ? HTML_Helper(Skin_Code, "flash", Translator.Get_Translation("FLASH VIEW", Current_Mode.Language), Current_Mode)
+                                      ? HTML_Helper(Skin_Code, "flash", Translator.Get_Translation("Flash View", Current_Mode.Language), Current_Mode)
                                       : HTML_Helper(Skin_Code, "flash", Translator.Get_Translation(Item_View.Label.ToUpper(), Current_Mode.Language), Current_Mode));
                     break;
 
@@ -98,24 +98,24 @@ namespace SobekCM.Library.ItemViewer
                     {
                         if (Current_Mode.ViewerCode == "mapsearch")
                         {
-                            returnVal.Add( HTML_Helper(Skin_Code, "mapsearch", Translator.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode));
+                            returnVal.Add( HTML_Helper(Skin_Code, "mapsearch", Translator.Get_Translation("Map Search", Current_Mode.Language), Current_Mode));
                         }
                         else
                         {
                             if (( Current_Item.Web.Static_PageCount > 1 ) || ( Current_Item.Bib_Info.SobekCM_Type != TypeOfResource_SobekCM_Enum.Map ))
                             {
-                                returnVal.Add(HTML_Helper(Skin_Code, "map", Translator.Get_Translation("SEARCH RESULTS", Current_Mode.Language), Current_Mode));
+                                returnVal.Add(HTML_Helper(Skin_Code, "map", Translator.Get_Translation("Search Results", Current_Mode.Language), Current_Mode));
                             }
                             else
                             {
-                                returnVal.Add(HTML_Helper(Skin_Code, "map", Translator.Get_Translation("MAP COVERAGE", Current_Mode.Language), Current_Mode));
+                                returnVal.Add(HTML_Helper(Skin_Code, "map", Translator.Get_Translation("Map Coverage", Current_Mode.Language), Current_Mode));
                             }
  
                         }
                     }
                     else
                     {
-                        returnVal.Add(HTML_Helper(Skin_Code, "map", Translator.Get_Translation("MAP IT!", Current_Mode.Language), Current_Mode));
+                        returnVal.Add(HTML_Helper(Skin_Code, "map", Translator.Get_Translation("Map It!", Current_Mode.Language), Current_Mode));
                     }
                     break;
 
@@ -124,24 +124,24 @@ namespace SobekCM.Library.ItemViewer
                     {
                         if (Current_Mode.ViewerCode == "mapsearchbeta")
                         {
-                            returnVal.Add(HTML_Helper(Skin_Code, "mapsearchbeta", Translator.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode));
+                            returnVal.Add(HTML_Helper(Skin_Code, "mapsearchbeta", Translator.Get_Translation("Map Search", Current_Mode.Language), Current_Mode));
                         }
                         else
                         {
                             if ((Current_Item.Web.Static_PageCount > 1) || (Current_Item.Bib_Info.SobekCM_Type != TypeOfResource_SobekCM_Enum.Map_Beta))
                             {
-                                returnVal.Add(HTML_Helper(Skin_Code, "mapbeta", Translator.Get_Translation("SEARCH RESULTS", Current_Mode.Language), Current_Mode));
+                                returnVal.Add(HTML_Helper(Skin_Code, "mapbeta", Translator.Get_Translation("Search Results", Current_Mode.Language), Current_Mode));
                             }
                             else
                             {
-                                returnVal.Add(HTML_Helper(Skin_Code, "mapbeta", Translator.Get_Translation("MAP COVERAGE", Current_Mode.Language), Current_Mode));
+                                returnVal.Add(HTML_Helper(Skin_Code, "mapbeta", Translator.Get_Translation("Map Coverage", Current_Mode.Language), Current_Mode));
                             }
 
                         }
                     }
                     else
                     {
-                        returnVal.Add(HTML_Helper(Skin_Code, "map", Translator.Get_Translation("MAP IT!", Current_Mode.Language), Current_Mode));
+                        returnVal.Add(HTML_Helper(Skin_Code, "map", Translator.Get_Translation("Map It!", Current_Mode.Language), Current_Mode));
                     }
                     break;
 
@@ -152,32 +152,32 @@ namespace SobekCM.Library.ItemViewer
                     break;
 
                 case View_Enum.JPEG:
-                    returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "j", Translator.Get_Translation("STANDARD", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "j", Translator.Get_Translation("Standard", Current_Mode.Language), Current_Mode));
                     break;
 
 				case View_Enum.JPEG_TEXT_TWO_UP:
-					returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "u", Translator.Get_Translation("PAGE IMAGE WITH TEXT", Current_Mode.Language), Current_Mode));
+					returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "u", Translator.Get_Translation("Page Image with Text", Current_Mode.Language), Current_Mode));
 					break;
 
                 case View_Enum.JPEG2000:
                     if (Show_Zoomable)
                     {
-                        returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "x", Translator.Get_Translation("ZOOMABLE", Current_Mode.Language), Current_Mode));
+                        returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "x", Translator.Get_Translation("Zoomable", Current_Mode.Language), Current_Mode));
                     }
                     break;
 
 				case View_Enum.PDF:
-					returnVal.Add(HTML_Helper(Skin_Code, "pdf", Translator.Get_Translation("PDF VIEWER", Current_Mode.Language), Current_Mode));
+					returnVal.Add(HTML_Helper(Skin_Code, "pdf", Translator.Get_Translation("PDF Viewer", Current_Mode.Language), Current_Mode));
 					break;
 
                 case View_Enum.RELATED_IMAGES:
                     returnVal.Add(Current_Mode.ViewerCode.IndexOf("thumbs") >= 0
-                                      ? HTML_Helper(Skin_Code, Current_Mode.ViewerCode, Translator.Get_Translation("THUMBNAILS", Current_Mode.Language), Current_Mode)
-                                      : HTML_Helper(Skin_Code, "thumbs", Translator.Get_Translation("THUMBNAILS", Current_Mode.Language), Current_Mode));
+                                      ? HTML_Helper(Skin_Code, Current_Mode.ViewerCode, Translator.Get_Translation("Thumbnails", Current_Mode.Language), Current_Mode)
+                                      : HTML_Helper(Skin_Code, "thumbs", Translator.Get_Translation("Thumbnails", Current_Mode.Language), Current_Mode));
                     break;
 
 				case View_Enum.SEARCH:
-					returnVal.Add(HTML_Helper(Skin_Code, "search", Translator.Get_Translation("SEARCH", Current_Mode.Language), Current_Mode));
+					returnVal.Add(HTML_Helper(Skin_Code, "search", Translator.Get_Translation("Search", Current_Mode.Language), Current_Mode));
 					break;
 
                 case View_Enum.SIMPLE_HTML_LINK:
@@ -185,11 +185,11 @@ namespace SobekCM.Library.ItemViewer
                     break;
 
                 case View_Enum.STREETS:
-                    returnVal.Add(HTML_Helper(Skin_Code, "streets", Translator.Get_Translation("STREETS", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper(Skin_Code, "streets", Translator.Get_Translation("Streets", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.TEXT:
-                    returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "t", Translator.Get_Translation("PAGE TEXT", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper_PageView(Skin_Code, Page_Sequence.ToString() + "t", Translator.Get_Translation("Page Text", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.TOC:
@@ -197,11 +197,11 @@ namespace SobekCM.Library.ItemViewer
                     break;
                     
                 case View_Enum.RESTRICTED:
-                    returnVal.Add(HTML_Helper(Skin_Code, "restricted", Translator.Get_Translation("RESTRICTED", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper(Skin_Code, "restricted", Translator.Get_Translation("Restricted", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.EAD_CONTAINER_LIST:
-                    returnVal.Add(HTML_Helper(Skin_Code, "container", Translator.Get_Translation("CONTAINER LIST", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper(Skin_Code, "container", Translator.Get_Translation("Container List", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.EAD_DESCRIPTION:
@@ -211,15 +211,15 @@ namespace SobekCM.Library.ItemViewer
                     break;
 
                 case View_Enum.PAGE_TURNER:
-                    returnVal.Add(HTML_Helper(Skin_Code, "pageturner#page/1/mode/2up", Translator.Get_Translation("PAGE TURNER", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper(Skin_Code, "pageturner#page/1/mode/2up", Translator.Get_Translation("Page Turner", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.YOUTUBE_VIDEO:
-                    returnVal.Add(HTML_Helper(Skin_Code, "youtube", Translator.Get_Translation("VIDEO", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper(Skin_Code, "youtube", Translator.Get_Translation("Video", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.EMBEDDED_VIDEO:
-                    returnVal.Add(HTML_Helper(Skin_Code, "video", Translator.Get_Translation("VIDEO", Current_Mode.Language), Current_Mode));
+                    returnVal.Add(HTML_Helper(Skin_Code, "video", Translator.Get_Translation("Video", Current_Mode.Language), Current_Mode));
                     break;
 
                 case View_Enum.TRACKING:

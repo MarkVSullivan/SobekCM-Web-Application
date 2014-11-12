@@ -47,7 +47,6 @@ namespace SobekCM.Library.MySobekViewer
 
         private SobekCM_Item item;
 
-
         #region Constructor
 
         /// <summary> Constructor for a new instance of the Edit_Item_Metadata_MySobekViewer class </summary>
@@ -73,10 +72,10 @@ namespace SobekCM.Library.MySobekViewer
             // Is this a project
             isProject = item.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project;
 
-	        string template_code = RequestSpecificValues.Current_User.Edit_Template_Code;
+	        string template_code = RequestSpecificValues.Current_User.Edit_Template_Code_Simple;
             if ((isProject) || (item.Contains_Complex_Content) || (item.Using_Complex_Template))
             {
-                template_code = RequestSpecificValues.Current_User.Edit_Template_MARC_Code;
+                template_code = RequestSpecificValues.Current_User.Edit_Template_Code_Complex;
             }
             completeTemplate = Cached_Data_Manager.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
             if (completeTemplate != null)
@@ -274,31 +273,37 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("      <li>Enter the data for this item below and press the SAVE button when all your edits are complete.</li>");
 				Output.WriteLine("      <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
 
-				if ((item.Using_Complex_Template) || (item.Contains_Complex_Content))
-				{
-					if (item.Contains_Complex_Content)
-					{
-						Output.WriteLine("      <li>You are using the full editing form because this item contains complex elements or was derived from MARC.</li>");
-					}
-					else
-					{
-						Output.Write("      <li>You are using the full editing form.  Click");
-						Output.Write("<a href=\"#\" onclick=\"editmetadata_simplify();return false;\">here to return to the simplified version</a>.");
-						Output.WriteLine("</li>");
-					}
-				}
-				else
-				{
-					Output.WriteLine("      <li>You are using the simplified editing form.  Click");
-					Output.Write("<a href=\"#\" onclick=\"editmetadata_complicate();return false;\">here to use the full form</a>.");
-					Output.WriteLine("</li>");
-				}
+                // This whole section only applies if the simple and complex templates are different
+			    if (String.Compare(RequestSpecificValues.Current_User.Edit_Template_Code_Complex, RequestSpecificValues.Current_User.Edit_Template_Code_Simple, true) != 0)
+			    {
+			        if ((item.Using_Complex_Template) || (item.Contains_Complex_Content))
+			        {
+			            if (item.Contains_Complex_Content)
+			            {
+			                Output.WriteLine("      <li>You are using the full editing form because this item contains complex elements or was derived from MARC.</li>");
+			            }
+			            else
+			            {
+			                Output.Write("      <li>You are using the full editing form.  Click");
+			                Output.Write("<a href=\"#\" onclick=\"editmetadata_simplify();return false;\">here to return to the simplified version</a>.");
+			                Output.WriteLine("</li>");
+			            }
+			        }
+			        else
+			        {
+			            Output.WriteLine("      <li>You are using the simplified editing form.  Click");
+			            Output.Write("<a href=\"#\" onclick=\"editmetadata_complicate();return false;\">here to use the full form</a>.");
+			            Output.WriteLine("</li>");
+			        }
 
-				if (completeTemplate.Code.ToUpper().IndexOf("MARC") > 0)
-				{
-					Output.WriteLine("      <li>To open detailed edit forms, click on the linked metadata values.</li>");
-				}
-				Output.WriteLine("      <li>Click <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/editinstructions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing metadata online.</li>");
+			        if (completeTemplate.Code.ToUpper().IndexOf("MARC") > 0)
+			        {
+			            Output.WriteLine("      <li>To open detailed edit forms, click on the linked metadata values.</li>");
+			        }
+			    }
+
+
+			    Output.WriteLine("      <li>Click <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/editinstructions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing metadata online.</li>");
 			}
 			else
 			{
@@ -674,6 +679,10 @@ namespace SobekCM.Library.MySobekViewer
                 Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, item.BibID, item.VID, null);
                 Cached_Data_Manager.Remove_Digital_Resource_Object(item.BibID, item.VID, null);
                 Cached_Data_Manager.Remove_Items_In_Title(item.BibID, null);
+
+                // Also clear any searches or browses ( in the future could refine this to only remove those
+                // that are impacted by this save... but this is good enough for now )
+                Cached_Data_Manager.Clear_Search_Results_Browses();
 
 
                 // Forward to the display item again

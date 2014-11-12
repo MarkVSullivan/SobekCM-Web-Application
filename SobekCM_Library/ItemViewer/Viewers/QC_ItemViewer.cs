@@ -217,17 +217,37 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			autonumber_number_system = HttpContext.Current.Request.Form["Autonumber_number_system"] ?? String.Empty;
 			hidden_autonumber_filename = HttpContext.Current.Request.Form["Autonumber_last_filename"] ?? String.Empty;
 		    temp = HttpContext.Current.Request.Form["QC_sortable_option"] ?? "-1";
+
+            // Check for sortable ( aka, Drag and drop pages ) setting - is it different than user's setting?
 		    if (Int32.TryParse(temp, out makeSortable) && (makeSortable > 0) && (makeSortable <= 3))
 		    {
-		        CurrentUser.Add_Setting("QC_ItemViewer:SortableMode",makeSortable);
+		        if (makeSortable.ToString() != Current_User.Get_Setting("QC_ItemViewer:SortableMode", "NULL"))
+		        {
+		            CurrentUser.Add_Setting("QC_ItemViewer:SortableMode", makeSortable);
+                    Library.Database.SobekCM_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:SortableMode", makeSortable.ToString());
+		        }
 		    }
+
+            // Check for the autonumber option - is it different than user's setting?
             temp = HttpContext.Current.Request.Form["QC_autonumber_option"] ?? "-1";
             if ((Int32.TryParse(temp, out autonumber_mode)) && ( autonumber_mode >= 0 ) && ( autonumber_mode <= 2 ))
             {
-				CurrentUser.Add_Setting("QC_ItemViewer:AutonumberingMode", autonumber_mode);
+                if (autonumber_mode.ToString() != Current_User.Get_Setting("QC_ItemViewer:AutonumberingMode", "NULL"))
+                {
+                    CurrentUser.Add_Setting("QC_ItemViewer:AutonumberingMode", autonumber_mode);
+                    Library.Database.SobekCM_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:AutonumberingMode", autonumber_mode.ToString());
+                }
             }
-            
 
+            // Check for size of thumbnail specified from the URL  - is it different than user's settings?
+            if (CurrentMode.Size_Of_Thumbnails > 0)
+            {
+                if (CurrentMode.Size_Of_Thumbnails.ToString() != Current_User.Get_Setting("QC_ItemViewer:ThumbnailSize", "NULL"))
+                {
+                    CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails);
+                    Library.Database.SobekCM_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails.ToString());
+                }
+            }
 
 			//Get any notes/comments entered by the user
 			notes = HttpContext.Current.Request.Form["txtComments"] ?? String.Empty;
@@ -1240,7 +1260,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Determine the total size of the package before saving
 				string[] all_files_final = Directory.GetFiles(userInProcessDirectory);
 				double size = all_files_final.Aggregate<string, double>(0, (current, thisFile) => current + (((new FileInfo(thisFile)).Length)/1024));
-				qc_item.DiskSize_MB = size;
+				qc_item.DiskSize_KB = size;
 			}
 			catch (Exception ee)
 			{

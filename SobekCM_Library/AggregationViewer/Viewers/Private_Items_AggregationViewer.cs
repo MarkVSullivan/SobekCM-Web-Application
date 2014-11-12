@@ -5,6 +5,7 @@ using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Results;
+using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -36,6 +37,58 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Private_Items_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
+            // Ensure user has some permissions on this aggregation, or is a power/internal user or admin before showing
+            // them this list
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            {
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Core.Navigation.Aggregation_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
+
+            // Does this user have permissions on this itgem
+            if (RequestSpecificValues.Current_User.PermissionedAggregations != null)
+            {
+                // Do they have some special permissions against this aggregation?
+                string aggrCodeUpper = RequestSpecificValues.Hierarchy_Object.Code.ToUpper();
+                bool special_permissions_found = false;
+                foreach (User_Permissioned_Aggregation permissions in RequestSpecificValues.Current_User.PermissionedAggregations)
+                {
+                    if (String.Compare(permissions.Code, RequestSpecificValues.Hierarchy_Object.Code, true) == 0)
+                    {
+                        if ((permissions.CanChangeVisibility) || (permissions.CanDelete) || (permissions.CanEditBehaviors) || (permissions.CanEditItems) ||
+                            (permissions.CanEditMetadata) || (permissions.CanPerformQc) || (permissions.CanUploadFiles) || (permissions.IsAdmin) || (permissions.IsCurator))
+                        {
+                            special_permissions_found = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Are they a portal/system admin or power user?
+                if ((!special_permissions_found) && ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin)))
+                    special_permissions_found = true;
+
+                // If no permissions, forward them back
+                if (!special_permissions_found)
+                {
+                    RequestSpecificValues.Current_Mode.Aggregation_Type = Core.Navigation.Aggregation_Type_Enum.Home;
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    return;
+                }
+            }
+            else
+            {
+                // Are they a portal/system admin or power user?
+                if ((!RequestSpecificValues.Current_User.Is_Internal_User) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin))
+                {
+                    RequestSpecificValues.Current_Mode.Aggregation_Type = Core.Navigation.Aggregation_Type_Enum.Home;
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    return;
+                }
+            }
+
+            // Get the list of private items
             privateItems = SobekCM_Database.Tracking_Get_Aggregation_Private_Items(RequestSpecificValues.Hierarchy_Object.Code, (int)RESULTS_PER_PAGE, RequestSpecificValues.Current_Mode.Page, RequestSpecificValues.Current_Mode.Sort, RequestSpecificValues.Tracer);
         }
 

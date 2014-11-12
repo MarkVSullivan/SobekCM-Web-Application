@@ -177,8 +177,8 @@ namespace SobekCM.Core.Users
             Unit = String.Empty;
             College = String.Empty;
             Organization_Code = String.Empty;
-            Edit_Template_Code = String.Empty;
-            Edit_Template_MARC_Code = String.Empty;
+            Edit_Template_Code_Simple = String.Empty;
+            Edit_Template_Code_Complex = String.Empty;
             aggregationPermissions = new User_Aggregation_Permissions();
             editableRegexes = new List<string>();
             folders = new SortedList<string, User_Folder>();
@@ -271,8 +271,8 @@ namespace SobekCM.Core.Users
 			if ((!userSettings.ContainsKey(Option_Key)) || (userSettings[Option_Key] != Option_Value))
 			{
 				userSettings[Option_Key] = Option_Value;
-                //if ( Update_Database )
-                //    Database.SobekCM_Database.Set_User_Setting(UserID, Option_Key, Option_Value.ToString());
+                
+               // Engine_Database.Set_User_Setting(UserID, Option_Key, Option_Value.ToString());
 			}
 		}
 
@@ -445,11 +445,11 @@ namespace SobekCM.Core.Users
         /// <summary> User's email address </summary>
         public string Email { get; set; }
 
-        /// <summary>User's template code for editing non-MARC records </summary>
-        public string Edit_Template_Code { get; set; }
+        /// <summary>User's template code for editing simple (non-MARC) records </summary>
+        public string Edit_Template_Code_Simple { get; set; }
 
-        /// <summary> User's template code editing MARC records  </summary>
-        public string Edit_Template_MARC_Code { get; set; }
+        /// <summary> User's template code editing complex (MARC) records  </summary>
+        public string Edit_Template_Code_Complex { get; set; }
 
 		/// <summary> Enumeration indicates how the user authenticated with the system ( i.e., Sobek, Shibboleth, or LDAP ) </summary>
         public User_Authentication_Type_Enum Authentication_Type { get; set; }
@@ -457,7 +457,12 @@ namespace SobekCM.Core.Users
         /// <summary> List of item aggregation permissions associated with this user </summary>
         public List<User_Permissioned_Aggregation> PermissionedAggregations
         {
-            get { return aggregationPermissions.Aggregations; }
+            get
+            {
+                if (aggregationPermissions == null)
+                    return null;
+                return aggregationPermissions.Aggregations;
+            }
         }
 
         /// <summary> List of regular expressions for checking for edit by bibid </summary>
@@ -476,6 +481,24 @@ namespace SobekCM.Core.Users
         public ReadOnlyCollection<User_Folder> Folders
         {
             get { return new ReadOnlyCollection<User_Folder>(folders.Values); }
+        }
+
+        /// <summary> Return the number of templates tied to this user group </summary>
+        public int Templates_Count
+        {
+            get { return templates == null ? 0 : templates.Count; }
+        }
+
+        /// <summary> Return the number of default metadata sets tied to this user group </summary>
+        public int Default_Metadata_Sets_Count
+        {
+            get { return defaultMetadataSets == null ? 0 : defaultMetadataSets.Count; }
+        }
+
+        /// <summary> Return the number of aggregations tied to this user group </summary>
+        public int PermissionedAggregations_Count
+        {
+            get { return aggregationPermissions == null ? 0 : aggregationPermissions.Aggregations.Count; ; }
         }
 
         /// <summary> Flag indicates if this user was just registered </summary>

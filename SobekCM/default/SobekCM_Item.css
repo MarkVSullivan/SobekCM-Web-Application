@@ -124,6 +124,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 #sbkRi_Thumbnailsizeselect a img:hover { background-color: #888888; }
 .sbkRi_Thumbnail { border-radius: 5px; background-color: #333333; pointer-events: all; display:inline-block; text-align:center; padding:4px;font-size: 0.80em;color: white; }
 .sbkRi_Thumbnail:hover { background-color: #888888; }
+.sbkRi_TextHighlight { background:yellow;color: black; font-weight:bold; }
 
 /* JPEG_ITEMVIEWER (Standard Page View) */
 #sbkJiv_Image { text-align: center; }

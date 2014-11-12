@@ -175,6 +175,10 @@ namespace SobekCM.Library.MySobekViewer
                         // Clear the volume list
                         Cached_Data_Manager.Remove_Items_In_Title(saveItem.BibID, RequestSpecificValues.Tracer);
 
+                        // Also clear any searches or browses ( in the future could refine this to only remove those
+                        // that are impacted by this save... but this is good enough for now )
+                        Cached_Data_Manager.Clear_Search_Results_Browses();
+
                         // Forward differently depending on request
                         switch (hidden_request)
                         {

@@ -87,6 +87,25 @@ namespace SobekCM.Library.MemoryMgmt
 			AppFabric_Manager.Clear_All_Keys();
 		}
 
+        /// <summary> Clears all search results and browses from the in-memory cache  </summary>
+	    public static void Clear_Search_Results_Browses()
+	    {
+            // Get collection of keys in the Cache
+            List<string> keys = (from DictionaryEntry thisItem in HttpContext.Current.Cache select thisItem.Key.ToString()).ToList();
+
+            // Delete all items from the Cache
+            foreach (string key in keys)
+            {
+                if ((key.IndexOf("PAGEDBROWSE_") == 0) || (key.IndexOf("PAGEDRESULTS_") == 0) || (key.IndexOf("TOTALBROWSE_") == 0) || (key.IndexOf("TOTALRESULTS_") == 0))
+                {
+                    HttpContext.Current.Cache.Remove(key);
+                }
+            }
+
+            // Clear the list of keys in the caching server ( this may need some refinement in the future.. if we ever use the AppFabric manager again )
+            AppFabric_Manager.Clear_All_Keys();
+	    }
+
 		#region Static methods relating to storing and retrieving (assumed private) user's folders
 
 		/// <summary> Retrieves a (assumed private) user's folder browse by user id and folder name </summary>

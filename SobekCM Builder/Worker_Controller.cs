@@ -271,6 +271,8 @@ namespace SobekCM.Builder
 					feedNextBuildTime = DateTime.Now.Add(new TimeSpan(0, 10, 0));
 				}
 
+                bool skip_sleep = false;
+
 				// Step through each instance
 				for (int i = 0; i < instances.Count; i++)
 				{
@@ -335,7 +337,7 @@ namespace SobekCM.Builder
 
 							}
 
-							Run_BulkLoader(loaders[i], verbose);
+                            skip_sleep = skip_sleep || Run_BulkLoader(loaders[i], verbose);
 
 							// Look for abort
 							if ((!aborted) && (dbInstance.Can_Abort) && (CheckForAbort()))
@@ -368,7 +370,8 @@ namespace SobekCM.Builder
 	            publish_log_file(local_log_name);
 
                 // Sleep for correct number of milliseconds
-                Thread.Sleep(1000 * time_between_polls);
+                if ( !skip_sleep )
+                    Thread.Sleep(1000 * time_between_polls);
 
 
             } while (DateTime.Now.Hour < BULK_LOADER_END_HOUR);
@@ -469,11 +472,11 @@ namespace SobekCM.Builder
 			}
 		}
 
-        private void Run_BulkLoader(Worker_BulkLoader Prebuilder, bool Verbose)
+        private bool Run_BulkLoader(Worker_BulkLoader Prebuilder, bool Verbose)
         {
             try
             {
-                Prebuilder.Perform_BulkLoader( Verbose );
+                bool returnValue = Prebuilder.Perform_BulkLoader( Verbose );
 
                 // Save information about this last run
                 Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Current_Builder_Version);
@@ -482,10 +485,12 @@ namespace SobekCM.Builder
 
                 if (Prebuilder.Aborted)
                     aborted = true;
+
+                return returnValue;
             }
             catch ( Exception ee)
             {
-
+                return false;
             }
         }
   
