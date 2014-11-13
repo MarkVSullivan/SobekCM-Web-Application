@@ -8,7 +8,7 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
-using SobekCM.Library.MemoryMgmt;
+using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Tools;

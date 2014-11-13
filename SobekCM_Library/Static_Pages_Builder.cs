@@ -18,7 +18,7 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
-using SobekCM.Library.MemoryMgmt;
+using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Library.Skins;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;

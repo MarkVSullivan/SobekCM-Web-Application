@@ -18,7 +18,7 @@ using SobekCM.Library.Citation.Template;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.MemoryMgmt;
+using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Library.UploadiFive;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
@@ -106,7 +106,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // Load the CompleteTemplate
             templateCode = RequestSpecificValues.Current_User.Current_Template;
-            completeTemplate = Cached_Data_Manager.Retrieve_Template(templateCode, RequestSpecificValues.Tracer);
+            completeTemplate = null; //Cached_Data_Manager.Retrieve_Template(templateCode, RequestSpecificValues.Tracer);
             if ( completeTemplate != null )
             {
                 RequestSpecificValues.Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Constructor", "Found CompleteTemplate in cache");
@@ -124,7 +124,7 @@ namespace SobekCM.Library.MySobekViewer
                 completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
                 // Save this into the cache
-                Cached_Data_Manager.Store_Template(templateCode, completeTemplate, RequestSpecificValues.Tracer);
+                // Cached_Data_Manager.Store_Template(templateCode, completeTemplate, RequestSpecificValues.Tracer);
             }
 
             // Determine the number of total CompleteTemplate pages

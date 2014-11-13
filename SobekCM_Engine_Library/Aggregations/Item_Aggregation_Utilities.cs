@@ -7,6 +7,7 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Results;
 using SobekCM.Core.WebContent;
+using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Tools;
@@ -89,18 +90,18 @@ namespace SobekCM.Engine_Library.Aggregations
                         hierarchyObject.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + hierarchyObject.ObjDirectory);
 					}
 
-                    //// Now, save this to the cache
-                    //if ((!IsRobot) && ( StoreInCache ))
-                    //{
-                    //    Cached_Data_Manager.Store_Item_Aggregation(AggregationCode, Language_Code, hierarchyObject, Tracer);
-                    //}
-                    //else
-                    //{
-                    //    if (Tracer != null)
-                    //    {
-                    //        Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Skipping storing item aggregation on cache due to robot flag");
-                    //    }
-                    //}
+                    // Now, save this to the cache
+                    if ((!IsRobot) && (StoreInCache))
+                    {
+                        Cached_Data_Manager.Store_Item_Aggregation(AggregationCode, Language_Code, hierarchyObject, Tracer);
+                    }
+                    else
+                    {
+                        if (Tracer != null)
+                        {
+                            Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Skipping storing item aggregation on cache due to robot flag");
+                        }
+                    }
 
 					// Return this built hierarchy object
 					return hierarchyObject;

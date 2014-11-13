@@ -29,11 +29,17 @@ namespace SobekCM.Library.AggregationViewer
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange:
 					return SearchType2 == Search_Type_Enum.Advanced;
 
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_MimeType:
+                    return SearchType2 == Search_Type_Enum.Advanced;
+
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search:
                     return SearchType2 == Search_Type_Enum.Basic;
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_YearRange:
 					return SearchType2 == Search_Type_Enum.Basic;
+
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_MimeType:
+                    return SearchType2 == Search_Type_Enum.Basic;
 
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.FullText_Search:
                     return SearchType2 == Search_Type_Enum.Full_Text;
@@ -70,10 +76,12 @@ namespace SobekCM.Library.AggregationViewer
 			{
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search:
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange:
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_MimeType:
 					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Advanced, Translations.Get_Translation("Advanced Search", Current_Mode.Language), Current_Mode);
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search:
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_YearRange:
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_MimeType:
 					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Basic, Translations.Get_Translation("Basic Search", Current_Mode.Language), Current_Mode);
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search:

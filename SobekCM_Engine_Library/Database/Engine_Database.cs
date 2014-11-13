@@ -1061,6 +1061,7 @@ namespace SobekCM.Engine_Library.Database
 
         
 		/// <summary> Perform a metadata search against items in the database and return one page of results </summary>
+        /// <param name="Link1"> Link for the first term, can only be used to NOT the first term ( 2=NOT )</param>
 		/// <param name="Term1"> First search term for this metadata search </param>
 		/// <param name="Field1"> Field number to search for (or -1 to search all fields)</param>
 		/// <param name="Link2"> Link between the first and second terms ( 0=AND, 1=OR, 2=AND NOT )</param>
@@ -1103,7 +1104,7 @@ namespace SobekCM.Engine_Library.Database
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Small arguments object which contains the page of results and optionally statistics about results for the entire search, including complete counts and facet information </returns>
 		/// <remarks> This calls the 'SobekCM_Metadata_Search_Paged' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Perform_Metadata_Search_Paged(string Term1, int Field1,
+		public static Multiple_Paged_Results_Args Perform_Metadata_Search_Paged(int Link1, string Term1, int Field1,
 																				int Link2, string Term2, int Field2, int Link3, string Term3, int Field3, int Link4, string Term4, int Field4,
 																				int Link5, string Term5, int Field5, int Link6, string Term6, int Field6, int Link7, string Term7, int Field7,
 																				int Link8, string Term8, int Field8, int Link9, string Term9, int Field9, int Link10, string Term10, int Field10,
@@ -1123,9 +1124,10 @@ namespace SobekCM.Engine_Library.Database
 			{
 
 				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Metadata_Search_Paged2", connect)
+				SqlCommand executeCommand = new SqlCommand("SobekCM_Metadata_Search_Paged", connect)
 												{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
 
+                executeCommand.Parameters.AddWithValue("@link1", Link1);
 				executeCommand.Parameters.AddWithValue("@term1", Term1);
 				executeCommand.Parameters.AddWithValue("@field1", Field1);
 				executeCommand.Parameters.AddWithValue("@link2", Link2);

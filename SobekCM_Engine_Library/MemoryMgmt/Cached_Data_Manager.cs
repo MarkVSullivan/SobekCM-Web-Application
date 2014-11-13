@@ -15,15 +15,16 @@ using SobekCM.Core.Results;
 using SobekCM.Core.SiteMap;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Solr;
-using SobekCM.Library.Citation.Template;
+//using SobekCM.Library.Citation.Template;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
-using SobekCM.UI_Library;
+//using SobekCM.UI_Library;
 
 #endregion
 
-namespace SobekCM.Library.MemoryMgmt
+namespace SobekCM.Engine.MemoryMgmt
 {
 	/// <summary> Static class manages the local and distributed caches and handles all requests for object retrieval and object storing </summary>
 	public class Cached_Data_Manager
@@ -36,7 +37,7 @@ namespace SobekCM.Library.MemoryMgmt
 		/// <summary> Static constructor initializes several variables </summary>
 		static Cached_Data_Manager()
 		{
-			caching_serving_enabled = UI_ApplicationCache_Gateway.Settings.Caching_Server.Length > 0;
+			caching_serving_enabled = Engine_ApplicationCache_Gateway.Settings.Caching_Server.Length > 0;
 			Disabled = false;
 		}
 
@@ -1874,57 +1875,57 @@ namespace SobekCM.Library.MemoryMgmt
 
 		#endregion
 
-		#region Static methods relating to storing and retrieving templates (for online submission and editing)
+        #region Static methods relating to storing and retrieving templates (for online submission and editing)
 
-		/// <summary> Retrieves the template ( for online submission and editing ) from the cache or caching server </summary>
-		/// <param name="Template_Code"> Code which specifies the template to retrieve </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Requested template object for online submissions and editing</returns>
-		public static CompleteTemplate Retrieve_Template(string Template_Code, Custom_Tracer Tracer)
-		{
-			// If the cache is disabled, just return before even tracing
-			if (Disabled)
-				return null;
+        ///// <summary> Retrieves the template ( for online submission and editing ) from the cache or caching server </summary>
+        ///// <param name="Template_Code"> Code which specifies the template to retrieve </param>
+        ///// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        ///// <returns> Requested template object for online submissions and editing</returns>
+        //public static CompleteTemplate Retrieve_Template(string Template_Code, Custom_Tracer Tracer)
+        //{
+        //    // If the cache is disabled, just return before even tracing
+        //    if (Disabled)
+        //        return null;
 
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Template", "");
-			}
+        //    if (Tracer != null)
+        //    {
+        //        Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Template", "");
+        //    }
 
-			// Determine the key
-			string key = "TEMPLATE_" + Template_Code;
+        //    // Determine the key
+        //    string key = "TEMPLATE_" + Template_Code;
 
-			// Try to get this object
-			object returnValue = HttpContext.Current.Cache.Get(key);
-			return (returnValue != null) ? (CompleteTemplate) returnValue : null;
-		}
+        //    // Try to get this object
+        //    object returnValue = HttpContext.Current.Cache.Get(key);
+        //    return (returnValue != null) ? (CompleteTemplate) returnValue : null;
+        //}
 
-		/// <summary> Stores the template ( for online submission and editing ) to the cache or caching server </summary>
-		/// <param name="Template_Code"> Code for the template to store </param>
-		/// <param name="StoreObject"> CompleteTemplate object for online submissions and editing to store</param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Store_Template(string Template_Code, CompleteTemplate StoreObject, Custom_Tracer Tracer)
-		{
-			// If the cache is disabled, just return before even tracing
-			if (Disabled)
-				return;
+        ///// <summary> Stores the template ( for online submission and editing ) to the cache or caching server </summary>
+        ///// <param name="Template_Code"> Code for the template to store </param>
+        ///// <param name="StoreObject"> CompleteTemplate object for online submissions and editing to store</param>
+        ///// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        //public static void Store_Template(string Template_Code, CompleteTemplate StoreObject, Custom_Tracer Tracer)
+        //{
+        //    // If the cache is disabled, just return before even tracing
+        //    if (Disabled)
+        //        return;
 
-			// Determine the key
-			string key = "TEMPLATE_" + Template_Code;
+        //    // Determine the key
+        //    string key = "TEMPLATE_" + Template_Code;
 
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Cached_Data_Manager.Store_Template", "Adding object '" + key + "' to the cache with expiration of thirty minutes");
-			}
+        //    if (Tracer != null)
+        //    {
+        //        Tracer.Add_Trace("Cached_Data_Manager.Store_Template", "Adding object '" + key + "' to the cache with expiration of thirty minutes");
+        //    }
 
-			// Store this on the cache
-			if (HttpContext.Current.Cache[key] == null)
-			{
-				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(30));
-			}
-		}
+        //    // Store this on the cache
+        //    if (HttpContext.Current.Cache[key] == null)
+        //    {
+        //        HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(30));
+        //    }
+        //}
 
-		#endregion
+        #endregion
 
 		#region Static methods relating to storing and retrieving project objects
 
@@ -2070,15 +2071,15 @@ namespace SobekCM.Library.MemoryMgmt
 				}
 			}
 
-			// Do the same thing for the remote cache
-			foreach (Cached_Object_Info cachedObject in AppFabric_Manager.Cached_Items)
-			{
-				if ((cachedObject.Object_Key == "SKIN_" + Skin_Code.ToLower()) || (cachedObject.Object_Key.IndexOf("SKIN_" + Skin_Code.ToLower() + "_") == 0))
-				{
-					AppFabric_Manager.Expire_Item(cachedObject.Object_Key);
-					values_cleared++;
-				}
-			}
+            //// Do the same thing for the remote cache
+            //foreach (Cached_Object_Info cachedObject in AppFabric_Manager.Cached_Items)
+            //{
+            //    if ((cachedObject.Object_Key == "SKIN_" + Skin_Code.ToLower()) || (cachedObject.Object_Key.IndexOf("SKIN_" + Skin_Code.ToLower() + "_") == 0))
+            //    {
+            //        AppFabric_Manager.Expire_Item(cachedObject.Object_Key);
+            //        values_cleared++;
+            //    }
+            //}
 
 			return values_cleared;
 		}

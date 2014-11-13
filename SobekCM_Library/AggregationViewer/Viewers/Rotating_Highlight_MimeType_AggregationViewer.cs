@@ -27,17 +27,18 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     /// <li>The HTML writer will create the necessary subwriter.  For a collection-level request, an instance of the  <see cref="Aggregation_HtmlSubwriter"/> class is created. </li>
     /// <li>To display the requested collection view, the collection subwriter will creates an instance of this class </li>
     /// </ul></remarks>
-    public class Rotating_Highlight_Search_AggregationViewer : abstractAggregationViewer
+    public class Rotating_Highlight_MimeType_AggregationViewer : abstractAggregationViewer
     {
         private readonly string arg1;
         private readonly string arg2;
         private readonly string browse_url;
         private readonly string textBoxValue;
-	    private readonly Item_Aggregation_Front_Banner frontBannerInfo;
+        private readonly Item_Aggregation_Front_Banner frontBannerInfo;
 
-        /// <summary> Constructor for a new instance of the Rotating_Highlight_Search_AggregationViewer class </summary>
+        /// <summary> Constructor for a new instance of the Rotating_Highlight_MimeType_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Rotating_Highlight_Search_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Rotating_Highlight_MimeType_AggregationViewer(RequestCache RequestSpecificValues)
+            : base(RequestSpecificValues)
         {
             // Determine the sub text to use
             const string SUB_CODE = "s=";
@@ -51,7 +52,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Determine the complete script action name
             Display_Mode_Enum displayMode = RequestSpecificValues.Current_Mode.Mode;
-	        Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
+            Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
             Search_Type_Enum searchType = RequestSpecificValues.Current_Mode.Search_Type;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
             RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Basic;
@@ -69,29 +70,29 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if ((!RequestSpecificValues.Current_Mode.Show_Selection_Panel) || (RequestSpecificValues.Hierarchy_Object.Children_Count == 0))
             {
                 Search_Script_Action = "basic_search_sobekcm('" + arg1 + "', '" + browse_url + "')";
-             }
+            }
             else
             {
                 Search_Script_Action = "basic_select_search_sobekcm('" + arg1 + "', '" + SUB_CODE + "')";
                 arg2 = SUB_CODE;
-             }
+            }
             RequestSpecificValues.Current_Mode.Mode = displayMode;
-	        RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
+            RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
             RequestSpecificValues.Current_Mode.Search_Type = searchType;
             RequestSpecificValues.Current_Mode.Search_String = search_string;
 
-			// Get the front banner
-	        frontBannerInfo = RequestSpecificValues.Hierarchy_Object.Front_Banner_Image(RequestSpecificValues.Current_Mode.Language);
+            // Get the front banner
+            frontBannerInfo = RequestSpecificValues.Hierarchy_Object.Front_Banner_Image(RequestSpecificValues.Current_Mode.Language);
         }
 
         /// <summary> Sets the sharing buttons HTML to display over the banner </summary>
         public string Sharing_Buttons_HTML { private get; set; }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
-        /// <value> This returns the <see cref="Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search"/> enumerational value </value>
+        /// <value> This returns the <see cref="Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_MimeType_Search"/> enumerational value </value>
         public override Item_Aggregation.CollectionViewsAndSearchesEnum Type
         {
-            get { return Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search; }
+            get { return Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_MimeType_Search; }
         }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
@@ -111,10 +112,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Rotating_Highlight_Search_AggregationViewer.Add_Search_Box_HTML", "Adding html for search box");
+                Tracer.Add_Trace("Rotating_Highlight_MimeType_AggregationViewer.Add_Search_Box_HTML", "Adding html for search box");
             }
 
             string search_collection = "Search Collection";
+            const string INCLUDE_NO_MIMETYPE = "Include items with no images";
+
             //string include_privates = "Include non-public items";
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
             {
@@ -130,28 +133,28 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/contentslider.js\" > </script>");
                 Output.WriteLine("<!-- *****************************************");
-                Output.WriteLine( "    * Featured Content Slider- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)");
+                Output.WriteLine("    * Featured Content Slider- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)");
                 Output.WriteLine("     * This notice MUST stay intact for legal use");
                 Output.WriteLine("     * Visit Dynamic Drive at http://www.dynamicdrive.com/ for this script and 100s more");
                 Output.WriteLine("     *********************************************** -->");
             }
 
-			Output.WriteLine("<div id=\"sbkRhav_BannerBack\">");
+            Output.WriteLine("<div id=\"sbkRhav_BannerBack\">");
             Output.WriteLine("  <table class=\"sbkRhav_RotatingBanner\">");
             Output.WriteLine("    <tr>");
 
 
 
-			if (frontBannerInfo.Banner_Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT)
-			{
-				string banner_image = RequestSpecificValues.Current_Mode.Base_URL + "design/" + RequestSpecificValues.Hierarchy_Object.ObjDirectory + frontBannerInfo.Image_File.Replace("\\", "/");
-				Output.Write("      <td class=\"sbkRhav_RotatingBannerLeft\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
+            if (frontBannerInfo.Banner_Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT)
+            {
+                string banner_image = RequestSpecificValues.Current_Mode.Base_URL + "design/" + RequestSpecificValues.Hierarchy_Object.ObjDirectory + frontBannerInfo.Image_File.Replace("\\", "/");
+                Output.Write("      <td class=\"sbkRhav_RotatingBannerLeft\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
                 Output.WriteLine(Sharing_Buttons_HTML.Replace("span", "div"));
                 Output.WriteLine("");
-				Output.WriteLine("        <div class=\"sbkRhav_RotatingBannerLeftSearch\">");
+                Output.WriteLine("        <div class=\"sbkRhav_RotatingBannerLeftSearch\">");
                 Output.WriteLine("          <table>");
                 Output.WriteLine("            <tr>");
-				Output.WriteLine("              <td colspan=\"2\" class=\"sbkRhav_SearchPrompt\">");
+                Output.WriteLine("              <td colspan=\"2\" class=\"sbkRhav_SearchPrompt\">");
                 Output.WriteLine("                 <label for=\"SobekHomeBannerSearchBox\">" + search_collection + ":</label>");
                 Output.WriteLine("              </td>");
                 Output.WriteLine("            </tr>");
@@ -159,6 +162,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("              <td><input name=\"u_search\" type=\"text\" id=\"SobekHomeBannerSearchBox\" class=\"sbkRhav_SearchBox sbk_Focusable\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
                 Output.WriteLine("              <td><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
                 Output.WriteLine("            </tr>");
+
+                Output.WriteLine("            <tr>");
+                Output.WriteLine("              <td colspan=\"2\">");
+                Output.WriteLine("                &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"mimetypeCheck\" id=\"mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label>");
+                Output.WriteLine("              </td>");
+                Output.WriteLine("            </tr>");
+
                 Output.WriteLine("          </table>");
                 Output.WriteLine("        </div>");
                 Output.WriteLine("      </td>");
@@ -248,11 +258,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if (frontBannerInfo.Banner_Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT)
             {
-				string banner_image = RequestSpecificValues.Current_Mode.Base_URL + "design/" + RequestSpecificValues.Hierarchy_Object.ObjDirectory + frontBannerInfo.Image_File.Replace("\\", "/"); 
-				Output.WriteLine("      <td class=\"sbkRhav_RotatingBannerRight\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
+                string banner_image = RequestSpecificValues.Current_Mode.Base_URL + "design/" + RequestSpecificValues.Hierarchy_Object.ObjDirectory + frontBannerInfo.Image_File.Replace("\\", "/");
+                Output.WriteLine("      <td class=\"sbkRhav_RotatingBannerRight\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
                 Output.WriteLine(Sharing_Buttons_HTML.Replace("span", "div"));
                 Output.WriteLine("");
-				Output.WriteLine("        <div class=\"sbkRhav_RotatingBannerRightSearch\">");
+                Output.WriteLine("        <div class=\"sbkRhav_RotatingBannerRightSearch\">");
                 Output.WriteLine("          <table>");
                 Output.WriteLine("            <tr>");
                 Output.WriteLine("              <td colspan=\"2\" class=\"sbkRhav_SearchPrompt\">");
@@ -261,7 +271,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("            <tr style=\"vertical-align:bottom\">");
                 Output.WriteLine("              <td><input name=\"u_search\" type=\"text\" id=\"SobekHomeBannerSearchBox\" class=\"sbkRhav_SearchBox sbk_Focusable\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
-				Output.WriteLine("              <td><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
+                Output.WriteLine("              <td><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
+                Output.WriteLine("            </tr>");
+                Output.WriteLine("            <tr>");
+                Output.WriteLine("              <td colspan=\"2\">");
+                Output.WriteLine("                &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"mimetypeCheck\" id=\"mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label>");
+                Output.WriteLine("              </td>");
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("          </table>");
                 Output.WriteLine("        </div>");
@@ -271,7 +286,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
-			Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
 
             //if ((currentUser != null) && (currentUser.Is_System_Admin))
             //{

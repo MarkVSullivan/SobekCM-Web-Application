@@ -119,10 +119,13 @@
   <ItemGroup>
     <Compile Include="AdminViewer\abstract_AdminViewer.cs" />
     <Compile Include="AdminViewer\iMySobek_Admin_Viewer.cs" />
+    <Compile Include="AggregationViewer\Viewers\Advanced_Search_MimeType_AggregationViewer.cs" />
+    <Compile Include="AggregationViewer\Viewers\Basic_Search_MimeType_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Advanced_Search_YearRange_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Basic_Search_YearRange_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Map_Browse_AggregationViewer_Beta.cs" />
     <Compile Include="AggregationViewer\Viewers\Map_Search_AggregationViewer_Beta.cs" />
+    <Compile Include="AggregationViewer\Viewers\Rotating_Highlight_MimeType_AggregationViewer.cs" />
     <Compile Include="Citation\Elements\base types\checkBox_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Additional_Work_Needed_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Born_Digital_Element.cs" />
@@ -395,8 +398,6 @@
     </Compile>
     <Compile Include="MainWriters\Html_Echo_MainWriter.cs" />
     <Compile Include="MARC_Record_Z3950_Retriever.cs" />
-    <Compile Include="MemoryMgmt\AppFabric_Manager.cs" />
-    <Compile Include="MemoryMgmt\Cached_Data_Manager.cs" />
     <Compile Include="Citation\Elements\implemented elements\Acquisition_Note_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Container_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Creator_Fixed_Role_Element.cs" />
@@ -475,8 +476,6 @@
     <Compile Include="HTML\Print_Item_HtmlSubwriter.cs" />
     <Compile Include="HTML\Public_Folder_HtmlSubwriter.cs" />
     <Compile Include="Email\Item_Email_Helper.cs" />
-    <Compile Include="MemoryMgmt\Cached_Object_Info.cs" />
-    <Compile Include="MemoryMgmt\Expiring_Item_Typed_List.cs" />
     <Compile Include="AdminViewer\Home_AdminViewer.cs" />
     <Compile Include="AdminViewer\Aggregations_Mgmt_AdminViewer.cs" />
     <Compile Include="AdminViewer\Builder_AdminViewer.cs" />

@@ -12,7 +12,7 @@ using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.MemoryMgmt;
+using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database;
@@ -77,7 +77,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 template_code = RequestSpecificValues.Current_User.Edit_Template_Code_Complex;
             }
-            completeTemplate = Cached_Data_Manager.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
+            completeTemplate = null; // Cached_Data_Manager.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
             if (completeTemplate != null)
             {
                 RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Found CompleteTemplate in cache");
@@ -95,7 +95,7 @@ namespace SobekCM.Library.MySobekViewer
                 completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
                 // Save this into the cache
-                Cached_Data_Manager.Store_Template(template_code, completeTemplate, RequestSpecificValues.Tracer);
+               // Cached_Data_Manager.Store_Template(template_code, completeTemplate, RequestSpecificValues.Tracer);
             }
 
             // Get the current page number, or default to 1

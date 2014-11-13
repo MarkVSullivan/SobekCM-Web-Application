@@ -25,7 +25,6 @@ namespace SobekCM.Core.Aggregations
     public class Item_Aggregation
     {
 
-
         #region CollectionViewsAndSearchesEnum enum
 
         /// <summary>
@@ -47,6 +46,10 @@ namespace SobekCM.Core.Aggregations
             /// <summary> Advanced search type allows boolean searching with four different search fields </summary>
             Advanced_Search,
 
+            /// <summary> Advanced search type allows boolean searching with four different search fields but also
+            ///  ability to select items that have SOME mimetype ( i.e., some digital resources ) </summary>
+            Advanced_Search_MimeType,
+
 			/// <summary> Advanced search type allows boolean searching with four different search fields 
 			/// and allows a range of years to be included in the search </summary>
 			Advanced_Search_YearRange,
@@ -56,6 +59,10 @@ namespace SobekCM.Core.Aggregations
 
             /// <summary> Basic search type allows metadata searching with one search field </summary>
             Basic_Search,
+
+            /// <summary> Basic search type allows metadata searching with one search field but also ability to 
+            /// select items that have SOME mimetype ( i.e., some digital resources )</summary>
+            Basic_Search_MimeType,
 
 			/// <summary> Basic search type allows metadata searching with one search field and allows a
 			/// range of years to be included in the search </summary>
@@ -96,6 +103,10 @@ namespace SobekCM.Core.Aggregations
 
             /// <summary> Home page search which includes the rotating highlight to the left of a special banner </summary>
             Rotating_Highlight_Search,
+            
+            /// <summary> Home page search which includes the rotating highlight to the left of a special banner with one 
+            /// search field but also ability to select items that have SOME mimetype ( i.e., some digital resources )</summary>
+            Rotating_Highlight_MimeType_Search,
 
             /// <summary> Static browse or info view with simply displays static html within the collection wrapper </summary>
             Static_Browse_Info,
@@ -349,10 +360,19 @@ namespace SobekCM.Core.Aggregations
                         home_search_found = true;
                         break;
 
-					case 'Y':
-						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Basic_Search_YearRange);
-						home_search_found = true;
+                    case 'W':
+                        viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Basic_Search_MimeType);
+                        home_search_found = true;
+                        break;
+
+					case 'X':
+						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Advanced_Search_MimeType);
 						break;
+
+                    case 'Y':
+                        viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Basic_Search_YearRange);
+                        home_search_found = true;
+                        break;
 
 					case 'Z':
 						viewsAndSearches.Add(CollectionViewsAndSearchesEnum.Advanced_Search_YearRange);
@@ -565,6 +585,8 @@ namespace SobekCM.Core.Aggregations
                     returnValue.Add(Search_Type_Enum.Basic);
 				if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Basic_Search_YearRange))
 					returnValue.Add(Search_Type_Enum.Basic);
+                if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Basic_Search_MimeType))
+                    returnValue.Add(Search_Type_Enum.Basic);
                 if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Newspaper_Search))
                     returnValue.Add(Search_Type_Enum.Newspaper);
                 if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Map_Search))
@@ -579,6 +601,8 @@ namespace SobekCM.Core.Aggregations
                     returnValue.Add(Search_Type_Enum.Advanced);
 				if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Advanced_Search_YearRange))
 					returnValue.Add(Search_Type_Enum.Advanced);
+                if (viewsAndSearches.Contains(CollectionViewsAndSearchesEnum.Advanced_Search_MimeType))
+                    returnValue.Add(Search_Type_Enum.Advanced);
 
                 return new ReadOnlyCollection<Search_Type_Enum>(returnValue);
             }

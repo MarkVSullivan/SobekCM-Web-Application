@@ -12,7 +12,7 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Database;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.MemoryMgmt;
+using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Library.MySobekViewer;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;

@@ -27,7 +27,7 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Engine_Library.SiteMap;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Database;
-using SobekCM.Library.MemoryMgmt;
+using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Library.Skins;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -1410,15 +1410,13 @@ namespace SobekCM.Library
                     // Find the joiner
                     if ((Web_Fields[i][0] == '+') || (Web_Fields[i][0] == '=') || (Web_Fields[i][0] == '-'))
                     {
-                        if (i != 0)
-                        {
-                            if (Web_Fields[i][0] == '+')
-                                links.Add(0);
-                            if (Web_Fields[i][0] == '=')
-                                links.Add(1);
-                            if (Web_Fields[i][0] == '-')
-                                links.Add(2);
-                        }
+                        if (Web_Fields[i][0] == '+')
+                            links.Add(0);
+                        if (Web_Fields[i][0] == '=')
+                            links.Add(1);
+                        if (Web_Fields[i][0] == '-')
+                            links.Add(2);
+
                         Web_Fields[i] = Web_Fields[i].Substring(1);
                     }
                     else
@@ -1493,7 +1491,7 @@ namespace SobekCM.Library
             else
             {
                 // Finish filling up the fields and links
-                while (links.Count < 9)
+                while (links.Count < 10)
                     links.Add(0);
                 while (db_fields.Count < 10)
                     db_fields.Add(-1);
@@ -1519,7 +1517,7 @@ namespace SobekCM.Library
                                 }
                                 else
                                 {
-                                    switch (links[i - 1])
+                                    switch (links[i])
                                     {
                                         case 0:
                                             searchBuilder.Append(" AND ");
@@ -1550,8 +1548,9 @@ namespace SobekCM.Library
                 else
                 {
                     // Perform search in the database
-                    Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(db_terms[0], db_fields[0], links[0], db_terms[1], db_fields[1], links[1], db_terms[2], db_fields[2], links[2], db_terms[3],
-                                                                                                            db_fields[3], links[3], db_terms[4], db_fields[4], links[4], db_terms[5], db_fields[5], links[5], db_terms[6], db_fields[6], links[6], db_terms[7], db_fields[7], links[7], db_terms[8], db_fields[8],                                                                                        links[8], db_terms[9], db_fields[9], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                    Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(links[0], db_terms[0], db_fields[0], links[1], db_terms[1], db_fields[1], links[2], db_terms[2], db_fields[2], links[3], db_terms[3],
+                                                                                                            db_fields[3], links[4], db_terms[4], db_fields[4], links[5], db_terms[5], db_fields[5], links[6], db_terms[6], db_fields[6], links[7], db_terms[7], db_fields[7], links[8], db_terms[8], db_fields[8],
+                                                                                                            links[9], db_terms[9], db_fields[9], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
 					if (Need_Search_Statistics)
                         Complete_Result_Set_Info = returnArgs.Statistics;
                     Paged_Results = returnArgs.Paged_Results;

@@ -55,6 +55,9 @@
     <Compile Include="ApplicationState\Checked_Out_Items_List.cs" />
     <Compile Include="ApplicationState\Engine_ApplicationCache_Gateway.cs" />
     <Compile Include="ApplicationState\Item_Lookup_Object.cs" />
+    <Compile Include="MemoryMgmt\AppFabric_Manager.cs" />
+    <Compile Include="MemoryMgmt\Cached_Data_Manager.cs" />
+    <Compile Include="MemoryMgmt\Cached_Object_Info.cs" />
     <Compile Include="Database\Database_Item_Result.cs" />
     <Compile Include="Database\Database_Title_Result.cs" />
     <Compile Include="Database\Engine_Database.cs" />
@@ -66,6 +69,7 @@
     </Compile>
     <Compile Include="Items\SobekCM_Item_Factory.cs" />
     <Compile Include="Items\SobekCM_METS_Based_ItemBuilder.cs" />
+    <Compile Include="MemoryMgmt\Expiring_Item_Typed_List.cs" />
     <Compile Include="Navigation\SobekCM_QueryString_Analyzer.cs" />
     <Compile Include="Navigation\UrlWriterHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -92,6 +96,7 @@
       <Name>SobekCM_Tools</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -9,7 +9,7 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.MemoryMgmt;
+using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Tools;
@@ -65,7 +65,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             const string TEMPLATE_CODE = "massupdate";
-            completeTemplate = Cached_Data_Manager.Retrieve_Template(TEMPLATE_CODE, RequestSpecificValues.Tracer);
+            completeTemplate = null; //Cached_Data_Manager.Retrieve_Template(TEMPLATE_CODE, RequestSpecificValues.Tracer);
             if (completeTemplate != null)
             {
                 RequestSpecificValues.Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", "Found CompleteTemplate in cache");
@@ -83,7 +83,7 @@ namespace SobekCM.Library.MySobekViewer
                 completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
                 // Save this into the cache
-                Cached_Data_Manager.Store_Template(TEMPLATE_CODE, completeTemplate, RequestSpecificValues.Tracer);
+                //Cached_Data_Manager.Store_Template(TEMPLATE_CODE, completeTemplate, RequestSpecificValues.Tracer);
             }
 
             // See if there was a hidden request

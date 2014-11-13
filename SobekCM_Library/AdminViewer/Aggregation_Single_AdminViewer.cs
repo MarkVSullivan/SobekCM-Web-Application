@@ -21,7 +21,7 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.MemoryMgmt;
+using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Library.UploadiFive;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
@@ -725,15 +725,18 @@ namespace SobekCM.Library.AdminViewer
 			StringBuilder displayOptionsBldr = new StringBuilder();
 			if (Form["admin_aggr_basicsearch"] != null) displayOptionsBldr.Append("B");
 			if (Form["admin_aggr_basicsearch_years"] != null) displayOptionsBldr.Append("Y");
+            if (Form["admin_aggr_basicsearch_mimetype"] != null) displayOptionsBldr.Append("W");
 			if (Form["admin_aggr_dloctextsearch"] != null) displayOptionsBldr.Append("C");
 			if (Form["admin_aggr_textsearch"] != null) displayOptionsBldr.Append("F");
 			if (Form["admin_aggr_newspsearch"] != null) displayOptionsBldr.Append("N");
 			if (Form["admin_aggr_advsearch"] != null) displayOptionsBldr.Append("A");
 			if (Form["admin_aggr_advsearch_years"] != null) displayOptionsBldr.Append("Z");
+            if (Form["admin_aggr_advsearch_mimetype"] != null) displayOptionsBldr.Append("X");
 			if (Form["admin_aggr_mapsearch"] != null) displayOptionsBldr.Append("M");
             if (Form["admin_aggr_mapsearchbeta"] != null) displayOptionsBldr.Append("Q");
 			if (Form["admin_aggr_mapbrowse"] != null) displayOptionsBldr.Append("G");
 			if (Form["admin_aggr_allitems"] != null) displayOptionsBldr.Append("I");
+            
 
 			itemAggregation.Display_Options = displayOptionsBldr.ToString();
 		}
@@ -753,6 +756,8 @@ namespace SobekCM.Library.AdminViewer
 			const string ALL_ITEMS_HELP = "All and New Item browses help place holder";
 			const string MAP_BROWSE_HELP = "Map browse help place holder";
 			const string MAP_SEARCH_BOUNDING_HELP = "Map search starting bounding box help place holder";
+            const string BASIC_MIMETYPE_SEARCH_HELP = "Basic search which enables you to filter out or include items that have digital resources.";
+		    const string ADVANCED_MIMETYPE_HELP = "Advanced search which enables you to filter out or include items that have digital resources.";
 
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
@@ -788,6 +793,20 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
+            // Add line for basic search ( with mime-type exclusion )
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+            Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_basicsearch_mimetype\" id=\"admin_aggr_basicsearch_mimetype\"");
+            if (itemAggregation.Display_Options.IndexOf("W") >= 0)
+                Output.Write(" checked=\"checked\"");
+            Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch_mimetype\">Basic search (with mime-type filter)</label>");
+            Output.WriteLine("        </td>");
+            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + BASIC_MIMETYPE_SEARCH_HELP + "');\"  title=\"" + BASIC_MIMETYPE_SEARCH_HELP + "\" /></td></tr></table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
+
 			// Add line for advanced search type
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
 			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
@@ -802,7 +821,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
-			// Add line for advanced saerch with year range
+			// Add line for advanced search with year range
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
 			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    <td>");
@@ -815,6 +834,20 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + ADVANCED_YEARS_HELP + "');\"  title=\"" + ADVANCED_YEARS_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
+
+            // Add line for advanced search with MIME-TYPE exclusion type
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+            Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_advsearch_mimetype\" id=\"admin_aggr_advsearch_mimetype\"");
+            if (itemAggregation.Display_Options.IndexOf("X") >= 0)
+                Output.Write(" checked=\"checked\"");
+            Output.WriteLine(" /> <label for=\"admin_aggr_advsearch\">Advanced Search (with mime-type filter)</label>");
+            Output.WriteLine("        </td>");
+            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + ADVANCED_HELP + "');\"  title=\"" + ADVANCED_MIMETYPE_HELP + "\" /></td></tr></table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
 
 			// Add line for full text search
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
@@ -872,19 +905,22 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
-            // Add line for Map saerch beta
-            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-            Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
-            Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-            Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_mapsearchbeta\" id=\"admin_aggr_mapsearchbeta\"");
-            if (itemAggregation.Display_Options.IndexOf("Q") >= 0)
-                Output.Write(" checked=\"checked\"");
-            Output.WriteLine(" /> <label for=\"admin_aggr_mapsearchbeta\">Map Search (Beta)</label>");
-            Output.WriteLine("        </td>");
-            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + MAP_SEARCH_BETA_HELP + "');\"  title=\"" + MAP_SEARCH_HELP + "\" /></td></tr></table>");
-            Output.WriteLine("     </td>");
-            Output.WriteLine("  </tr>");
+            //// Add line for Map saerch beta
+            //Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            //Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
+            //Output.WriteLine("    <td>");
+            //Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+            //Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_mapsearchbeta\" id=\"admin_aggr_mapsearchbeta\"");
+            //if (itemAggregation.Display_Options.IndexOf("Q") >= 0)
+            //    Output.Write(" checked=\"checked\"");
+            //Output.WriteLine(" /> <label for=\"admin_aggr_mapsearchbeta\">Map Search (Beta)</label>");
+            //Output.WriteLine("        </td>");
+            //Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + MAP_SEARCH_BETA_HELP + "');\"  title=\"" + MAP_SEARCH_HELP + "\" /></td></tr></table>");
+            //Output.WriteLine("     </td>");
+            //Output.WriteLine("  </tr>");
+
+
+            
 
 
 			// Add line for all/new item browses type

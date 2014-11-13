@@ -24,6 +24,9 @@ namespace SobekCM.Library.AggregationViewer
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search:
                     return new Advanced_Search_AggregationViewer(RequestSpecificValues);
 
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_MimeType:
+                    return new Advanced_Search_MimeType_AggregationViewer(RequestSpecificValues);
+
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange:
                     return new Advanced_Search_YearRange_AggregationViewer(RequestSpecificValues);
 
@@ -38,6 +41,14 @@ namespace SobekCM.Library.AggregationViewer
 
 				case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_YearRange:
                     return new Basic_Search_YearRange_AggregationViewer(RequestSpecificValues);
+
+                case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_MimeType:
+                    Item_Aggregation_Front_Banner frontBannerImage2 = RequestSpecificValues.Hierarchy_Object.Front_Banner_Image(RequestSpecificValues.Current_Mode.Language);
+                    if ((frontBannerImage2 != null) && (RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0))
+                    {
+                        return new Rotating_Highlight_MimeType_AggregationViewer(RequestSpecificValues);
+                    }
+                    return new Basic_Search_MimeType_AggregationViewer(RequestSpecificValues);
 
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.FullText_Search:
                     return new Full_Text_Search_AggregationViewer(RequestSpecificValues);
@@ -73,6 +84,8 @@ namespace SobekCM.Library.AggregationViewer
                 case Search_Type_Enum.Advanced:
                     if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange))
                         return new Advanced_Search_YearRange_AggregationViewer(RequestSpecificValues);
+                    if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_MimeType))
+                        return new Advanced_Search_MimeType_AggregationViewer(RequestSpecificValues);
                     return new Advanced_Search_AggregationViewer(RequestSpecificValues);
 
                 case Search_Type_Enum.Basic:
