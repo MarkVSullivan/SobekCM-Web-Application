@@ -418,7 +418,7 @@ namespace SobekCM.Builder
             Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
 
             // Reload all the other data
-            Engine_ApplicationCache_Gateway.RefreshAll();
+            Engine_ApplicationCache_Gateway.RefreshAll(dbInstance);
 
 		    if (settings == null)
 		    {

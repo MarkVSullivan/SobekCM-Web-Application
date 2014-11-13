@@ -61,6 +61,7 @@ namespace SobekCM.Core.Skins
 	    public void Clear()
 	    {
 	        DefaultSkins.Clear();
+            Skin_Table = null;
 	    }
 
         /// <summary> Returns the ordered list of all skin codes </summary>

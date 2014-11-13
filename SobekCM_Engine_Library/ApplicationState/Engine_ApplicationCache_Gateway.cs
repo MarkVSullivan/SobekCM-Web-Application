@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
@@ -30,25 +31,47 @@ namespace SobekCM.Engine_Library.ApplicationState
         {
             Last_Refresh = DateTime.Now;
         }
-        
+
+        public static bool RefreshAll( Database_Instance_Configuration DbInstance )
+        {
+            bool error = !RefreshSettings(DbInstance);
+            error = error | !RefreshStatsDateRange();
+            error = error | !RefreshTranslations();
+            error = error | !RefreshWebSkins();
+            error = error | !RefreshCodes();
+            error = error | !RefreshItems();
+            error = error | !RefreshStopWords();
+            error = error | !RefreshIP_Restrictions();
+            error = error | !RefreshThematicHeadings();
+            error = error | !RefreshItemViewerPriority();
+            error = error | !RefreshUserGroups();
+            error = error | !RefreshCollectionAliases();
+            error = error | !RefreshMimeTypes();
+            error = error | !RefreshIcons();
+            error = error | !RefreshDefaultMetadataTemplates();
+            error = error | !RefreshUrlPortals();
+
+            return !error;
+        }
         
         public static bool RefreshAll()
         {
             bool error = !RefreshSettings();
-            error = error || !RefreshStatsDateRange();
-            error = error || !RefreshTranslations();
-            error = error || !RefreshWebSkins();
-            error = error || !RefreshCodes();
-            error = error || !RefreshItems();
-            error = error || !RefreshStopWords();
-            error = error || !RefreshIP_Restrictions();
-            error = error || !RefreshThematicHeadings();
-            error = error || !RefreshItemViewerPriority();
-            error = error || !RefreshUserGroups();
-            error = error || !RefreshCollectionAliases();
-            error = error || !RefreshMimeTypes();
-            error = error || !RefreshIcons();
-            error = error || !RefreshDefaultMetadataTemplates();
+            error = error | !RefreshStatsDateRange();
+            error = error | !RefreshTranslations();
+            error = error | !RefreshWebSkins();
+            error = error | !RefreshCodes();
+            error = error | !RefreshItems();
+            error = error | !RefreshStopWords();
+            error = error | !RefreshIP_Restrictions();
+            error = error | !RefreshThematicHeadings();
+            error = error | !RefreshItemViewerPriority();
+            error = error | !RefreshUserGroups();
+            error = error | !RefreshCollectionAliases();
+            error = error | !RefreshMimeTypes();
+            error = error | !RefreshIcons();
+            error = error | !RefreshDefaultMetadataTemplates();
+            error = error | !RefreshUrlPortals();
 
             return !error;
         }
@@ -176,12 +199,12 @@ namespace SobekCM.Engine_Library.ApplicationState
                     // Get the data from the database
                     DataTable skinData = Engine_Database.Get_All_Web_Skins(null);
 
+                    // Clear existing interfaces
+                    webSkins.Clear();
+
                     // Just return if the data appears bad..
                     if ((skinData == null) || (skinData.Rows.Count == 0))
                         return false;
-
-                    // Clear existing interfaces
-                    webSkins.Clear();
 
                     // Set the data table
                     webSkins.Skin_Table = skinData;
@@ -380,6 +403,31 @@ namespace SobekCM.Engine_Library.ApplicationState
 
         private static InstanceWide_Settings settings;
         private static readonly Object settingsLock = new Object();
+
+        /// <summary> Refresh the settings object by pulling the data back from the database </summary>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        public static bool RefreshSettings(Database_Instance_Configuration DbInstance )
+        {
+            try
+            {
+                lock (settingsLock)
+                {
+                    if (settings == null)
+                        settings = InstanceWide_Settings_Builder.Build_Settings(DbInstance);
+                    else
+                    {
+                        InstanceWide_Settings newSettings = InstanceWide_Settings_Builder.Build_Settings(DbInstance);
+                        settings = newSettings;
+                    }
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         /// <summary> Refresh the settings object by pulling the data back from the database </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>

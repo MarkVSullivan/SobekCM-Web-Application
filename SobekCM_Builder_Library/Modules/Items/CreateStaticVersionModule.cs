@@ -18,6 +18,8 @@ namespace SobekCM.Builder_Library.Modules.Items
 
         public override bool DoWork(Incoming_Digital_Resource Resource)
         {
+            return true;
+
             // Only build the statyic builder when needed 
             if (staticBuilder == null)
             {

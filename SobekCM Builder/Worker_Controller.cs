@@ -325,8 +325,6 @@ namespace SobekCM.Builder
 								Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Expiring old log entries", String.Empty);
 								Library.Database.SobekCM_Database.Builder_Expire_Log_Entries(Engine_ApplicationCache_Gateway.Settings.Builder_Log_Expiration_Days);
 
-
-
 								// Rebuild all the static pages
 								Console.WriteLine(dbInstance.Name + " - Rebuilding all static pages");
 								preloader_logger.AddNonError(dbInstance.Name + " - Rebuilding all static pages");
