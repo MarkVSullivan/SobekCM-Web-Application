@@ -62,9 +62,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
             arg2 = String.Empty;
             arg1 = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
             browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
             if ((!RequestSpecificValues.Current_Mode.Show_Selection_Panel) || (RequestSpecificValues.Hierarchy_Object.Children_Count == 0))
@@ -116,7 +119,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             string search_collection = "Search Collection";
-            const string INCLUDE_NO_MIMETYPE = "Include items with no images";
+            const string INCLUDE_NO_MIMETYPE = "Include items with records only";
 
             //string include_privates = "Include non-public items";
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
@@ -165,7 +168,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                 Output.WriteLine("            <tr>");
                 Output.WriteLine("              <td colspan=\"2\">");
-                Output.WriteLine("                &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"mimetypeCheck\" id=\"mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label>");
+                Output.WriteLine("                &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkRhav_mimetypeCheck\" id=\"sbkRhav_mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkRhav_mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label>");
                 Output.WriteLine("              </td>");
                 Output.WriteLine("            </tr>");
 
@@ -275,7 +278,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("            <tr>");
                 Output.WriteLine("              <td colspan=\"2\">");
-                Output.WriteLine("                &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"mimetypeCheck\" id=\"mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label>");
+                Output.WriteLine("                &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkRhav_mimetypeCheck\" id=\"sbkRhav_mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkRhav_mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label>");
                 Output.WriteLine("              </td>");
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("          </table>");

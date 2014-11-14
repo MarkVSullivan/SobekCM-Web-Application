@@ -852,6 +852,8 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 .sbkAsav_YearDropDown { width:80px;}
 .sbkAsav_SearchOptions { vertical-align:middle;text-align:right;color:#888;font-size:1.1em;font-weight:bold;}
 #sbkAsav_ButtonArrow { padding-left:5px;}
+#sbkAsav_mimetypeCheck { margin-left: 40px; }
+
 
 /** Basic_Search_AggregationViewer (and related) **/
 #sbkBsav_SearchPanel { width:100%;}

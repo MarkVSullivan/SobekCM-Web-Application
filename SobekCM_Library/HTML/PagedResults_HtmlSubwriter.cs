@@ -1296,30 +1296,41 @@ namespace SobekCM.Library.HTML
 								term_counter++;
 								Output.Write("<div id=\"searchterm" + term_counter + "\" class=\"sbkPrsw_SearchTerm\">");
 
-								// Add the term
-								if (terms[i].Contains(" "))
-								{
-									Output.Write("\"" + terms[i].Replace("''''", "'").Replace("''", "'") + "\" ");
-									length_of_explanation += terms[i].Length + 1;
-								}
-								else
-								{
-									Output.Write("'" + terms[i].Replace("''''", "'").Replace("''", "'") + "' ");
-									length_of_explanation += terms[i].Length + 3;
-								}
 
-								// Does the field start with a negative?
-								if (fields[i][0] == '-')
-								{
-									Output.Write(and_not_language);
-									length_of_explanation += and_not_language.Length;
-									fields[i] = fields[i].Substring(1);
-								}
+                                // Special code for MIMETYPE of NOT NONE
+							    string write_value;
+							    if ((String.Compare(terms[i], "NONE", true) == 0) && (String.Compare(fields[i], "-MI", true) == 0))
+							    {
+							        write_value = "items with files ";
+							        Output.Write("items with files ");
+							    }
+							    else
+							    {
+							        // Add the term
+							        if (terms[i].Contains(" "))
+							        {
+							            Output.Write("\"" + terms[i].Replace("''''", "'").Replace("''", "'") + "\" ");
+							            length_of_explanation += terms[i].Length + 1;
+							        }
+							        else
+							        {
+							            Output.Write("'" + terms[i].Replace("''''", "'").Replace("''", "'") + "' ");
+							            length_of_explanation += terms[i].Length + 3;
+							        }
 
-								string write_value = Search_Label_from_Sobek_Code(fields[i]).ToLower() + " ";
-								Output.Write(write_value);
+							        // Does the field start with a negative?
+							        if (fields[i][0] == '-')
+							        {
+							            Output.Write(and_not_language);
+							            length_of_explanation += and_not_language.Length;
+							            fields[i] = fields[i].Substring(1);
+							        }
 
-								// Determine URL of this search without this one term
+							        write_value = Search_Label_from_Sobek_Code(fields[i]).ToLower() + " ";
+							        Output.Write(write_value);
+							    }
+
+							    // Determine URL of this search without this one term
 								if (terms.Count > 1)
 								{
 									termsBuilder.Clear();

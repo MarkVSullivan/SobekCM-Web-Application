@@ -13,7 +13,6 @@ using SobekCM.Core.Skins;
 using SobekCM.EngineLibrary.ApplicationState;
 using SobekCM.Library;
 using SobekCM.Core.Aggregations;
-using SobekCM.Library.MemoryMgmt;
 using SobekCM.Core.Navigation;
 
 using SobekCM.Library.Skins;
@@ -65,9 +64,6 @@ namespace SobekCM.Builder_Library.Statistics
 
             // Build the application state
             Custom_Tracer tracer = new Custom_Tracer();
-
-            // The cache needs to be disabled
-            Cached_Data_Manager.Disabled = true;
 
             // Set the constant settings base directory value to the production location
             UI_ApplicationCache_Gateway.Settings.Base_Directory = SobekCM_Web_App_Directory;

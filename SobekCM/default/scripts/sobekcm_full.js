@@ -188,7 +188,7 @@ function remove_aggr_from_myhome(aggregationCode) {
 }
 
 function remove_aggregation() {
-	input_box = confirm("Do you really want to remove this from your personlized home page?");
+	var input_box = confirm("Do you really want to remove this from your personlized home page?");
 	if (input_box == true) {
 		// Populate the hidden value this data
 		var hiddenfield = document.getElementById('item_action');
@@ -201,7 +201,7 @@ function remove_aggregation() {
 }
 
 function add_aggregation() {
-	input_box = confirm("Do you really want to add this to your personlized home page?");
+	var input_box = confirm("Do you really want to add this to your personlized home page?");
 	if (input_box == true) {
 		// Populate the hidden value this data
 		var hiddenfield = document.getElementById('item_action');
@@ -214,7 +214,7 @@ function add_aggregation() {
 }
 
 function make_folder_private(foldername) {
-	input_box = confirm("Do you really want to make this folder private?");
+	var input_box = confirm("Do you really want to make this folder private?");
 	if (input_box == true) {
 		// Populate the hidden value this data
 		var hiddenfield = document.getElementById('item_action');
@@ -229,7 +229,7 @@ function make_folder_private(foldername) {
 
 
 function delete_folder(folder) {
-	input_box = confirm("Do you really want to delete this folder?");
+	var input_box = confirm("Do you really want to delete this folder?");
 	if (input_box == true) {
 		// Populate the hidden value this data
 		var hiddenfield = document.getElementById('item_action');
@@ -254,7 +254,7 @@ function refresh_bookshelves() {
 }
 
 function change_folder_visibility(folder, new_status) {
-	input_box = confirm("Do you really want to make this folder " + new_status + "?");
+	var input_box = confirm("Do you really want to make this folder " + new_status + "?");
 	if (input_box == true) {
 		// Populate the hidden value this data
 		var hiddenfield = document.getElementById('item_action');
@@ -390,7 +390,7 @@ function move_all(items_included) {
 
 // Remove a search
 function delete_search(id) {
-	input_box = confirm("Do you really want to remove this search from your list of saved searches?");
+	var input_box = confirm("Do you really want to remove this search from your list of saved searches?");
 	if (input_box == true) {
 		// Set the hidden value this data
 		var hiddenfield = document.getElementById('item_action');
@@ -408,7 +408,7 @@ function delete_search(id) {
 
 // Remove an item from a bookshelf
 function remove_item(id) {
-	input_box = confirm("Do you really want to remove this item from this bookshelf?");
+	var input_box = confirm("Do you really want to remove this item from this bookshelf?");
 	if (input_box == true) {
 		// Set the hidden value this data
 		var hiddenfield = document.getElementById('item_action');
@@ -426,7 +426,7 @@ function remove_item(id) {
 }
 
 function delete_tag(id) {
-	input_box = confirm("Do you really want to remove this descriptive tag?");
+	var input_box = confirm("Do you really want to remove this descriptive tag?");
 	if (input_box == true) {
 		// Populate the hidden value this data
 		var hiddenfield = document.getElementById('item_action');
@@ -685,12 +685,22 @@ function fnTrapKD(event, type, arg1, arg2, browseurl) {
 
 
 // Advanced search
-function advanced_search_sobekcm(root) {
+function advanced_search_sobekcm(root, browseurl ) {
 	// Collect and trim the users's search string
 	var term = trimString(document.search_form.Textbox1.value).replace(",", "+").replace(" ", "+") + "," + trimString(document.search_form.Textbox2.value).replace(",", "+").replace(" ", "+") + "," + trimString(document.search_form.Textbox3.value).replace(",", "+").replace(" ", "+") + "," + trimString(document.search_form.Textbox4.value).replace(",", "+").replace(" ", "+");
 	var fields = document.search_form.Dropdownlist1.value + "," + document.search_form.andOrNotBox1.value + document.search_form.Dropdownlist2.value + "," + document.search_form.andOrNotBox2.value + document.search_form.Dropdownlist3.value + "," + document.search_form.andOrNotBox3.value + document.search_form.Dropdownlist4.value;
 
-	if (term.length > 0) {
+    // Look for the MIMETYPE filter
+	if (document.getElementById('sbkAsav_mimetypeCheck') != null)
+	{
+	    if (!document.getElementById('sbkAsav_mimetypeCheck').checked) {
+	        term = term + ',NONE';
+	        fields = fields + ',-MI';
+	    } 
+	} 
+
+
+	if (term.length > 3) {
 		// Show the progress spinner
 		var circular_div = document.getElementById("circular_progress");
 		circular_div.className = "shown_progress_gray";
@@ -719,6 +729,9 @@ function advanced_search_sobekcm(root) {
 
 		// Change the the browser location to the new url
 		window.location.href = url;
+	}
+	else if (browseurl.length > 0) {
+	    window.location.href = browseurl;
 	}
 }
 
@@ -788,7 +801,7 @@ function advanced_select_search_sobekcm(root, next_level) {
 }
 
 // Advanced search
-function advanced_search_years_sobekcm(root) {
+function advanced_search_years_sobekcm(root, browseurl) {
 	// Collect and trim the users's search string
 	var term = trimString(document.search_form.Textbox1.value).replace(",", "+").replace(" ", "+") + "," + trimString(document.search_form.Textbox2.value).replace(",", "+").replace(" ", "+") + "," + trimString(document.search_form.Textbox3.value).replace(",", "+").replace(" ", "+") + "," + trimString(document.search_form.Textbox4.value).replace(",", "+").replace(" ", "+");
 	var fields = document.search_form.Dropdownlist1.value + "," + document.search_form.andOrNotBox1.value + document.search_form.Dropdownlist2.value + "," + document.search_form.andOrNotBox2.value + document.search_form.Dropdownlist3.value + "," + document.search_form.andOrNotBox3.value + document.search_form.Dropdownlist4.value;
@@ -807,7 +820,7 @@ function advanced_search_years_sobekcm(root) {
 		}
 	}
 
-	if (term.length > 0) {
+	if (term.length > 3) {
 		// Show the progress spinner
 		var circular_div = document.getElementById("circular_progress");
 		circular_div.className = "shown_progress_gray";
@@ -836,6 +849,9 @@ function advanced_search_years_sobekcm(root) {
 
 		// Change the the browser location to the new url
 		window.location.href = url;
+	}
+	else if (browseurl.length > 0) {
+	    window.location.href = browseurl;
 	}
 }
 
@@ -911,8 +927,39 @@ function fulltext_select_search_sobekcm(root, next_level) {
 
 // Basic search
 function basic_search_sobekcm(root, browseurl) {
-	// Collect and trim the users's search string
-	var term = trimString(document.search_form.u_search.value).replace(",", " ");
+    // Collect and trim the users's search string
+    var term = trimString(document.search_form.u_search.value).replace(",", " ");
+
+    // Look for the MIMETYPE filter (on basic type search )
+    if ((document.getElementById('sbkBsav_mimetypeCheck') != null) && (!document.getElementById('sbkBsav_mimetypeCheck').checked))
+    {
+        term = 'NONE,' + term;
+        var fieldsm = '-MI,ZZ';
+
+        // Build the destination url by placing the selection option first
+        var urlm = root + "?t=" + term + "&f=" + fieldsm;
+        if (root.indexOf("?") > 0)
+            urlm = root + "&t=" + term + "&f=" + fieldsm;
+
+        window.location.href = urlm;
+        return;
+    }
+
+    // Look for the MIMETYPE filter ( on rotating home search )
+    if ((document.getElementById('sbkRhav_mimetypeCheck') != null) && (!document.getElementById('sbkRhav_mimetypeCheck').checked)) {
+        term = 'NONE,' + term;
+        var fieldsm = '-MI,ZZ';
+
+        // Build the destination url by placing the selection option first
+        var urlm = root + "?t=" + term + "&f=" + fieldsm;
+        if (root.indexOf("?") > 0)
+            urlm = root + "&t=" + term + "&f=" + fieldsm;
+
+        window.location.href = urlm;
+        return;
+    }
+    
+
 	if ((term.length > 0) && (term != '*')) {
 
 		if (term.toLowerCase() == "floridaxx") {
@@ -931,8 +978,8 @@ function basic_search_sobekcm(root, browseurl) {
 
 			// Build the destination url by placing the selection option first and redirect
 			var url = root + "?t=" + term;
-			if (root.indexOf("?") > 0)
-				url = root + "&t=" + term
+		    if (root.indexOf("?") > 0)
+		        url = root + "&t=" + term;
 
 			window.location.href = url;
 		}
@@ -1365,7 +1412,7 @@ function popup_keypress_focus(windowname, linkname, focusname, windowheight, win
 		//toggle(windowname);	
 	}
 	else {
-		theKeyPressed = evt.charCode || evt.keyCode;
+		var theKeyPressed = evt.charCode || evt.keyCode;
 		if (theKeyPressed != 9) {
 			popup(windowname);
 			//blanket_size(windowname, linkname, windowheight );
@@ -1875,7 +1922,7 @@ function itemwriter_load() {
 
 // Remove an item from the bookshelves from the item viewer
 function remove_item_itemviewer() {
-	input_box = confirm("Do you really want to remove this item from all bookshelves?");
+	var input_box = confirm("Do you really want to remove this item from all bookshelves?");
 	if (input_box == true) {
 		// Set the hidden value this data
 		var hiddenfield = document.getElementById('item_action');
@@ -2219,8 +2266,8 @@ function dataset_rowselected(this_) {
 //Set the width of the thumbnail and its parent span
 function SetParentSpanWidth(imageID, parentID) {
 	$ = document;
-	$parent = $.getElementById(parentID);
-	$child = $.getElementById(imageID);
+	var $parent = $.getElementById(parentID);
+	var $child = $.getElementById(imageID);
 	$child.style.width = $child.offsetWidth + 'px';
 	$child.style.display = 'block';
 

@@ -58,6 +58,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
             arg2 = String.Empty;
             arg1 = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 			RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";

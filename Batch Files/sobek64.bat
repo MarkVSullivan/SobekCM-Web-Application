@@ -47,6 +47,7 @@ rmdir %iis%\SobekCM\mySobek\projects /s /q
 rmdir %iis%\SobekCM\mySobek\inProcess /s /q
 rmdir %iis%\SobekCM\obj /s /q
 rmdir %iis%\SobekCM\Properties /s /q
+rmdir %iis%\SobekCM\content /s /q
 echo.
 cd c:\windows\microsoft.net\framework64\v4.0.30319
 aspnet_compiler -v /SobekCM "%source%\SobekCM_Web_WiX_Installer\Staging64"

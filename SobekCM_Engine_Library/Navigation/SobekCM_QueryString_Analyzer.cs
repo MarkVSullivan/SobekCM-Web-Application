@@ -871,6 +871,28 @@ namespace SobekCM.Engine_Library.Navigation
 								Navigator.Home_Type = Home_Type_Enum.Personalized;
 								break;
 
+
+                            case "inprocess":
+                                Navigator.Aggregation = String.Empty;
+                                Navigator.Mode = Display_Mode_Enum.Aggregation;
+                                Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
+                                Navigator.Aggregation_Type = Aggregation_Type_Enum.Private_Items;
+                                Navigator.Page = 1;
+                                if (url_relative_list.Count > 1)
+                                {
+                                    if (is_String_Number(url_relative_list[1]))
+                                        Navigator.Page = Convert.ToUInt16(url_relative_list[1]);
+                                }
+                                if ((QueryString["o"] != null) && (is_String_Number(QueryString["o"])))
+                                {
+                                    Navigator.Sort = Convert.ToInt16(QueryString["o"]);
+                                }
+                                else
+                                {
+                                    Navigator.Sort = 0;
+                                }
+                                break;
+
 							case "all":
 							case "new":
 							case "edit":

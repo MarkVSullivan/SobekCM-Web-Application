@@ -512,8 +512,16 @@ namespace SobekCM.Library.HTML
         /// <param name="Current_User"> Currently logged on user, to determine specific rights </param>
         public override void Write_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
         {
-	        if ((Current_User != null) && ( RequestSpecificValues.Current_Mode.Aggregation.Length > 0 ) && ( RequestSpecificValues.Current_Mode.Aggregation.ToUpper() != "ALL" ) && ((Current_User.Is_Aggregation_Curator(RequestSpecificValues.Current_Mode.Aggregation)) || (Current_User.Is_Internal_User) || ( Current_User.Can_Edit_All_Items( RequestSpecificValues.Current_Mode.Aggregation ))))
-            {
+
+	        if ((Current_User != null) && (    (Current_User.Is_Aggregation_Curator(RequestSpecificValues.Current_Mode.Aggregation)) 
+                                            || (Current_User.Is_Internal_User) 
+                                            || ( Current_User.Can_Edit_All_Items( RequestSpecificValues.Current_Mode.Aggregation ))))
+	        {
+
+                bool isAll = (RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() == "ALL");
+
+
+
 				Output.WriteLine("  <table id=\"sbk_InternalHeader\">");
                 Output.WriteLine("    <tr style=\"height:45px;\">");
                 Output.WriteLine("      <td style=\"text-align:left; width:100px;\">");
@@ -532,21 +540,52 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
                 Output.WriteLine("          <button title=\"View Private Items\" class=\"intheader_button_aggr view_private_items\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" ></button>");
 
-                // Add button to view item count information
-				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Item_Count;
-                Output.WriteLine("          <button title=\"View Item Count\" class=\"intheader_button_aggr show_item_count\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                // For the ALL top-level collectin, just send them to the top-level existing stats pages
+	            if (isAll)
+	            {
+	                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Statistics;
 
-                // Add button to view usage statistics information
-				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Usage_Statistics;
-                Output.WriteLine("          <button title=\"View Usage Statistics\" class=\"intheader_button_aggr show_usage_statistics\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+	                // Add button to view item count information
+                    RequestSpecificValues.Current_Mode.Statistics_Type = Statistics_Type_Enum.Item_Count_Standard_View;
+	                Output.WriteLine("          <button title=\"View Item Count\" class=\"intheader_button_aggr show_item_count\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
 
-                // Add admin view is system administrator
-                if ((Current_User.Is_System_Admin) || (Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
-                {
-                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
-                    Output.WriteLine("          <button title=\"Edit Administrative Information\" class=\"intheader_button_aggr admin_view_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" ></button>");
-                }
+                    // Add button to view usage statistics information
+                    RequestSpecificValues.Current_Mode.Statistics_Type = Statistics_Type_Enum.Usage_Overall;
+                    Output.WriteLine("          <button title=\"View Usage Statistics\" class=\"intheader_button_aggr show_usage_statistics\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+
+                    // Add admin view is system administrator
+                    if ((Current_User.Is_System_Admin) || (Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
+                    {
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+                        string prevAggrCode = RequestSpecificValues.Current_Mode.Aggregation;
+                        RequestSpecificValues.Current_Mode.Aggregation = "all";
+                        Output.WriteLine("          <button title=\"Edit Administrative Information\" class=\"intheader_button_aggr admin_view_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" ></button>");
+                        RequestSpecificValues.Current_Mode.Aggregation = prevAggrCode;
+                    }
+
+	            }
+	            else
+	            {
+                    // Add button to view item count information
+                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Item_Count;
+                    Output.WriteLine("          <button title=\"View Item Count\" class=\"intheader_button_aggr show_item_count\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+
+                    // Add button to view usage statistics information
+                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Usage_Statistics;
+                    Output.WriteLine("          <button title=\"View Usage Statistics\" class=\"intheader_button_aggr show_usage_statistics\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+
+                    // Add admin view is system administrator
+                    if ((Current_User.Is_System_Admin) || (Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
+                    {
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+                        Output.WriteLine("          <button title=\"Edit Administrative Information\" class=\"intheader_button_aggr admin_view_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" ></button>");
+                    }
+	            }
+
+
+
 
                 Output.WriteLine("      </td>");
 
@@ -586,15 +625,11 @@ namespace SobekCM.Library.HTML
 			// Draw the banner and add links to the other views first
 	        if (collectionViewer.Type != Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search)
 	        {
-		        // If this skin has top-level navigation suppressed, skip the top tabs
-		        if (RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation)
-		        {
-			        Output.WriteLine("<br />");
-		        }
-				else if (collectionViewer.Type != Item_Aggregation.CollectionViewsAndSearchesEnum.DataSet_Browse)
+		        if (collectionViewer.Type != Item_Aggregation.CollectionViewsAndSearchesEnum.DataSet_Browse)
 		        {
 			        // Add the main aggrgeation menu here
-                    MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(Output, RequestSpecificValues);
+                    if (!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation)
+                        MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(Output, RequestSpecificValues);
 
 					// Start the page container
 					Output.WriteLine("<div id=\"pagecontainer\">");
@@ -603,7 +638,8 @@ namespace SobekCM.Library.HTML
 				else
 				{
 					// Add the main aggrgeation menu here
-                    MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, false);
+                    if (RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation)
+                        MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, false);
 
 					// Start the (optional) page container
 					Output.WriteLine("<div id=\"sbkAhs_ResultsPageContainer\">");

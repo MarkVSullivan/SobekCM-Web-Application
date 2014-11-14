@@ -2582,7 +2582,7 @@ namespace SobekCM.Library.HTML
 				Output.WriteLine("<div class=\"sbkShw_MainText\">");
                 Output.WriteLine("<p>The " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Name + " ( " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " ) is comprised of collections, organized into collection groups and subdivided into subcollections.  Currently, there are " + items + " total items in " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ", which make up " + titles + " different titles.   In all, there are over " + page_string + " million pages in " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ".</p>");
 
-                if (IncludesFytd)
+                if ((IncludesFytd) && ( total_row[0] != null ))
                 {
                     ytd_titles = titles - Convert.ToInt32(total_row[0][9]);
                     ytd_items = items - Convert.ToInt32(total_row[0][10]);

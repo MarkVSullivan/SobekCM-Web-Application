@@ -270,51 +270,89 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Internal_HtmlSubwriter.add_wordmarks", "Rendering HTML");
 
-            Output.WriteLine("<br />");
-            Output.WriteLine("");
-            Output.WriteLine("</div>");
-            Output.WriteLine("<center>");
-            Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" width=\"1000px\" class=\"statsTable\">");
-            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"5\"></td></tr>");
-            Output.WriteLine("  <tr align=\"center\" valign=\"bottom\" >");
-
-            int current_column = 0;
-            SortedList<string, Wordmark_Icon> sortedIcons = new SortedList<string, Wordmark_Icon>();
-            foreach( Wordmark_Icon thisIcon in UI_ApplicationCache_Gateway.Icon_List.Values )
+            if (UI_ApplicationCache_Gateway.Icon_List.Count > 0)
             {
-                sortedIcons.Add( thisIcon.Code, thisIcon);
-            }
-           
-            foreach ( Wordmark_Icon thisIcon in sortedIcons.Values )
-            {
-                Output.Write("    <td width=\"200px\">");
-                if (thisIcon.Link.Length > 0)
-                    Output.Write("<a href=\"" + thisIcon.Link + "\" target=\"_blank\">");
-                Output.Write("<img border=\"0px\" class=\"SobekcmItemWorkdmark\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/wordmarks/" + thisIcon.Image_FileName + "\"");
-                if ( thisIcon.Title.Length > 0)
-                    Output.Write(" title=\"" + thisIcon.Title + "\"");
-                Output.Write(" />");
-                if (thisIcon.Link.Length > 0)
-                    Output.Write("</a>");
-                Output.WriteLine("<br /><b>" + thisIcon.Code + "</b></td>");
+                Output.WriteLine("<br />");
+                Output.WriteLine("");
 
-                current_column++;
-
-                if (current_column >= 5)
+                if ((RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin)))
                 {
-                    Output.WriteLine("  </tr>");
-                    Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"5\"></td></tr>");
-                    Output.WriteLine("  <tr align=\"center\" valign=\"bottom\" >");
-                    current_column = 0;
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
+
+                    Output.Write("Since you are an administrator, you can <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">manage the wordmarks from the admin screen</a>.<br />");
+
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Internal;
                 }
+
+                Output.WriteLine("</div>");
+                Output.WriteLine("<center>");
+                Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" width=\"1000px\" class=\"statsTable\">");
+                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"5\"></td></tr>");
+                Output.WriteLine("  <tr align=\"center\" valign=\"bottom\" >");
+
+                int current_column = 0;
+                SortedList<string, Wordmark_Icon> sortedIcons = new SortedList<string, Wordmark_Icon>();
+                foreach (Wordmark_Icon thisIcon in UI_ApplicationCache_Gateway.Icon_List.Values)
+                {
+                    sortedIcons.Add(thisIcon.Code, thisIcon);
+                }
+
+                foreach (Wordmark_Icon thisIcon in sortedIcons.Values)
+                {
+                    Output.Write("    <td width=\"200px\">");
+                    if (thisIcon.Link.Length > 0)
+                        Output.Write("<a href=\"" + thisIcon.Link + "\" target=\"_blank\">");
+                    Output.Write("<img border=\"0px\" class=\"SobekcmItemWorkdmark\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/wordmarks/" + thisIcon.Image_FileName + "\"");
+                    if (thisIcon.Title.Length > 0)
+                        Output.Write(" title=\"" + thisIcon.Title + "\"");
+                    Output.Write(" />");
+                    if (thisIcon.Link.Length > 0)
+                        Output.Write("</a>");
+                    Output.WriteLine("<br /><b>" + thisIcon.Code + "</b></td>");
+
+                    current_column++;
+
+                    if (current_column >= 5)
+                    {
+                        Output.WriteLine("  </tr>");
+                        Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"5\"></td></tr>");
+                        Output.WriteLine("  <tr align=\"center\" valign=\"bottom\" >");
+                        current_column = 0;
+                    }
+                }
+
+                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"5\"></td></tr>");
+
+                Output.WriteLine("</table>");
+                Output.WriteLine("</center>");
+                Output.WriteLine("<br /><br />");
+                Output.WriteLine("<div id=\"pagecontainer_resumed\">");
             }
+            else
+            {
+                Output.WriteLine("<br /><br />");
+                Output.WriteLine("<div style=\"text-align:center;width:100%;\">No wordmarks in this system</div>");
 
-            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"5\"></td></tr>");
+                Output.WriteLine("<br /><br />");
 
-            Output.WriteLine("</table>");
-            Output.WriteLine("</center>");
-            Output.WriteLine("<br /><br />");
-            Output.WriteLine("<div id=\"pagecontainer_resumed\">");
+                if ((RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin)))
+                {
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
+
+                    Output.Write("Since you are an administrator, you can <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">manage the wordmarks from the admin screen</a>.<br />");
+
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Internal;
+                }
+                else
+                {
+
+                    Output.WriteLine("<div style=\"text-align:center;width:100%;\">Administrators may add wordmarks through the wordmarks admin screens</div>");
+                }
+
+                Output.WriteLine("<br /><br />");
+            }
         }
 
         #endregion

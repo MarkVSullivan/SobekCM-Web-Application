@@ -36,8 +36,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     {
         /// <summary> Constructor for a new instance of the Advanced_Search_YearRange_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Advanced_Search_YearRange_AggregationViewer(RequestCache RequestSpecificValues)
-            : base(RequestSpecificValues)
+        public Advanced_Search_YearRange_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Compute the redirect stem to use
             string fields = RequestSpecificValues.Current_Mode.Search_Fields;
@@ -45,20 +44,26 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Display_Mode_Enum lastMode = RequestSpecificValues.Current_Mode.Mode;
 			Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
             RequestSpecificValues.Current_Mode.SubAggregation = String.Empty;
+
             string searchString = RequestSpecificValues.Current_Mode.Search_String;
             RequestSpecificValues.Current_Mode.Search_String = String.Empty;
             RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
             RequestSpecificValues.Current_Mode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
             string redirectStem = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
+            string browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
             RequestSpecificValues.Current_Mode.Search_String = searchString;
             RequestSpecificValues.Current_Mode.Search_Fields = fields;
             RequestSpecificValues.Current_Mode.SubAggregation = searchCollections;
             RequestSpecificValues.Current_Mode.Mode = lastMode;
 	        RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
 
-            Search_Script_Action = "Javascript:advanced_search_years_sobekcm('" + redirectStem + "')";
-
+            Search_Script_Action = "Javascript:advanced_search_years_sobekcm('" + redirectStem + "','" + browse_url + "')";
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>

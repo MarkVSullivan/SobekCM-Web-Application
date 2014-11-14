@@ -1230,12 +1230,12 @@ namespace SobekCM.Library.MainWriters
 			if ((HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth")) || (RequestSpecificValues.Current_Mode.Trace_Flag_Simple) || ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin)))
             {
                 Output.WriteLine("<style type=\"text/css\">");
-                Output.WriteLine("table.RequestSpecificValues.Traceroute { border-width: 2px; border-style: solid; border-color: gray; border-collapse: collapse; background-color: white; font-size: small; }");
-                Output.WriteLine("table.RequestSpecificValues.Traceroute th { border-width: 2px; padding: 3px; border-style: solid; border-color: gray; background-color: gray; color: white; }");
-                Output.WriteLine("table.RequestSpecificValues.Traceroute td { border-width: 2px; padding: 3px; border-style: solid; border-color: gray;	background-color: white; }");
+                Output.WriteLine("table.Traceroute { border-width: 2px; border-style: solid; border-color: gray; border-collapse: collapse; background-color: white; font-size: small; }");
+                Output.WriteLine("table.Traceroute th { border-width: 2px; padding: 3px; border-style: solid; border-color: gray; background-color: gray; color: white; }");
+                Output.WriteLine("table.Traceroute td { border-width: 2px; padding: 3px; border-style: solid; border-color: gray;	background-color: white; }");
                 Output.WriteLine("</style>");
-				Output.WriteLine("<a href=\"\" onclick=\"return show_trace_route()\" id=\"sbkHmw_RequestSpecificValues.TracerouterShowLink\">show trace route (sys admin)</a>");
-				Output.WriteLine("<div id=\"sbkHmw_RequestSpecificValues.Tracerouter\" style=\"display:none;\">");
+                Output.WriteLine("<a href=\"\" onclick=\"return show_trace_route()\" id=\"sbkHmw_TraceRouterShowLink\">show trace route (sys admin)</a>");
+                Output.WriteLine("<div id=\"sbkHmw_TraceRouter\" style=\"display:none;\">");
 
                 Output.WriteLine("<br /><br /><b>URL REWRITE</b>");
                 if (HttpContext.Current.Items["Original_URL"] == null)

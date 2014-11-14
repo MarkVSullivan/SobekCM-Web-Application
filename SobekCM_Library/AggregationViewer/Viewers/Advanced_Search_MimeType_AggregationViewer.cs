@@ -32,8 +32,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     {
         /// <summary> Constructor for a new instance of the Advanced_Search_MimeType_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Advanced_Search_MimeType_AggregationViewer(RequestCache RequestSpecificValues)
-            : base(RequestSpecificValues)
+        public Advanced_Search_MimeType_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             // Compute the redirect stem to use
             string fields = RequestSpecificValues.Current_Mode.Search_Fields;
@@ -42,17 +41,24 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
             RequestSpecificValues.Current_Mode.SubAggregation = String.Empty;
             string searchString = RequestSpecificValues.Current_Mode.Search_String;
+
             RequestSpecificValues.Current_Mode.Search_String = String.Empty;
             RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
             RequestSpecificValues.Current_Mode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
             string redirectStem = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
+            string browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
             RequestSpecificValues.Current_Mode.Search_String = searchString;
             RequestSpecificValues.Current_Mode.Search_Fields = fields;
             RequestSpecificValues.Current_Mode.SubAggregation = searchCollections;
             RequestSpecificValues.Current_Mode.Mode = lastMode;
             RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
-            Search_Script_Action = "advanced_search_sobekcm('" + redirectStem + "')";
+            Search_Script_Action = "advanced_search_sobekcm('" + redirectStem + "', '" + browse_url + "')";
 
         }
 
@@ -101,7 +107,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string contains_exactly = "Contains exactly the search terms";
             string contains_any_form = "Contains any form of the search terms";
             const string CONTAINS_MEANING = "Contains the search term or terms of similar meaning";
-            const string INCLUDE_NO_MIMETYPE = "Include items with no images";
+            const string INCLUDE_NO_MIMETYPE = "Include items with records only";
 
             //string select_collect_groups = "Select collection groups to include in search:";
             //string select_collect = "Select collections to include in search:";
@@ -255,7 +261,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("    </tr>");
 
             Output.WriteLine("    <tr style=\"height:50px; vertical-align:middle;\">");
-            Output.WriteLine("      <td colspan=\"4\">&nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"mimetypeCheck\" id=\"mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label></td>");
+            Output.WriteLine("      <td colspan=\"4\">&nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkAsav_mimetypeCheck\" id=\"sbkAsav_mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkAsav_mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label></td>");
             Output.WriteLine("      <td style=\"text-align:right;\">");
             Output.WriteLine("        <span id=\"circular_progress\" class=\"hidden_progress\">&nbsp;</span> &nbsp; ");
 
