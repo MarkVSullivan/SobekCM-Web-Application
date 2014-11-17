@@ -173,6 +173,7 @@
     <Compile Include="Citation\Elements\implemented elements\VRA_StylePeriod_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\VRA_Technique_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Serial_Hierarchy_Panel_Element.cs" />
+    <Compile Include="Citation\Elements\nonstandard elements\Zoological_Taxonomy_Form_Element.cs" />
     <Compile Include="HTML\Admin_HtmlSubwriter.cs" />
     <Compile Include="HTML\HtmlSubwriter_Behaviors_Enum.cs" />
     <Compile Include="HTML\MainMenus_Helper_HtmlSubWriter.cs" />

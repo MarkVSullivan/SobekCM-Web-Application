@@ -498,7 +498,7 @@ namespace SobekCM.Core.Users
         /// <summary> Return the number of aggregations tied to this user group </summary>
         public int PermissionedAggregations_Count
         {
-            get { return aggregationPermissions == null ? 0 : aggregationPermissions.Aggregations.Count; ; }
+            get { return ((aggregationPermissions == null) || ( aggregationPermissions.Aggregations == null )) ? 0 : aggregationPermissions.Aggregations.Count; ; }
         }
 
         /// <summary> Flag indicates if this user was just registered </summary>

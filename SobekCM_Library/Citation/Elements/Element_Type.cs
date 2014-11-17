@@ -347,6 +347,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Wordmark/Icon element type maps to <see cref="Wordmark_Element"/> </summary>
         Wordmark,
 
+        /// <summary> Zoological taxononic information - complete classification </summary>
+        Zoological_Taxonomy,
+
         /// <summary> Zoological taxononic information - class classification </summary>
         ZT_Class,
 
@@ -739,7 +742,10 @@ namespace SobekCM.Library.Citation.Elements
                 case "WORDMARK":
                     return Element_Type.Wordmark;
 
-                case "ZT_CLASS":
+                case "ZOOLOGICAL_TAXONOMY":
+                    return Element_Type.Zoological_Taxonomy;
+
+                case "ZT_Class":
                     return Element_Type.ZT_Class;
 
                 case "ZT_COMMONNAME":

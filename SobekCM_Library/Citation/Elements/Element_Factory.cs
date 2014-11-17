@@ -385,6 +385,9 @@ namespace SobekCM.Library.Citation.Elements
                 case Element_Type.Wordmark:
                     return new Wordmark_Element();
 
+                case Element_Type.Zoological_Taxonomy:
+                    return new Zoological_Taxonomy_Form_Element();
+
                 default:
                     return null;
             }

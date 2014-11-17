@@ -23,6 +23,7 @@ namespace SobekCM.Library.MySobekViewer
         private short ipRestrictionMask;
         private bool isDark;
         private DateTime? embargoDate;
+        private bool restrictedSelected;
 
         /// <summary> Constructor for a new instance of the Edit_Item_Permissions_MySobekViewer class  </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -47,6 +48,8 @@ namespace SobekCM.Library.MySobekViewer
             // Start by setting the values by the item (good the first time user comes here)
             ipRestrictionMask = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
             isDark = RequestSpecificValues.Current_Item.Behaviors.Dark_Flag;
+            restrictedSelected = (ipRestrictionMask > 0);
+
 
             // Is there already a RightsMD module in the item?
             // Ensure this metadata module extension exists
@@ -77,6 +80,19 @@ namespace SobekCM.Library.MySobekViewer
                         embargoDate = embargoDateNew;
                     }
                 }
+
+                // If this was restrcted, there will be some checkboxes to determine ip restriction mask
+                short checked_mask = 0;
+
+                // Determine the IP restriction mask
+                foreach (IP_Restriction_Range thisRange in UI_ApplicationCache_Gateway.IP_Restrictions.IpRanges)
+                {
+                    // Is this check box checked?
+                    if (HttpContext.Current.Request.Form["range" + thisRange.RangeID] != null)
+                    {
+                        checked_mask += ((short)Math.Pow(2, (thisRange.RangeID - 1)));
+                    }
+                }
                 
 
                 // Handle any request from the internal header for the item
@@ -94,20 +110,24 @@ namespace SobekCM.Library.MySobekViewer
                             case "public":
                                 ipRestrictionMask = 0;
                                 isDark = false;
+                                restrictedSelected = false;
                                 break;
 
                             case "private":
                                 ipRestrictionMask = -1;
                                 isDark = false;
+                                restrictedSelected = false;
                                 break;
 
                             case "restricted":
-                                ipRestrictionMask = 1;
+                                ipRestrictionMask = short.Parse(HttpContext.Current.Request.Form["selectRestrictionMask"]);
+                                restrictedSelected = true;
                                 isDark = false;
                                 break;
 
                             case "dark":
                                 isDark = true;
+                                restrictedSelected = false;
                                 break;
                         }
 
@@ -124,25 +144,24 @@ namespace SobekCM.Library.MySobekViewer
                         RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership = ipRestrictionMask;
                         RequestSpecificValues.Current_Item.Behaviors.Dark_Flag = isDark;
 
+                        if ( checked_mask > 0 )
+                            ipRestrictionMask = checked_mask;
+
                         // Save this to the database
                         if (SobekCM_Database.Set_Item_Visibility(RequestSpecificValues.Current_Item.Web.ItemID, ipRestrictionMask, isDark, embargoDate, RequestSpecificValues.Current_User.UserName))
                         {
-                            // Update the cached item
+                            // Update the web.config
+                            Resource_Web_Config_Writer.Update_Web_Config(RequestSpecificValues.Current_Item.Source_Directory, RequestSpecificValues.Current_Item.Behaviors.Dark_Flag, (short)ipRestrictionMask, RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail);
+
+                            // Remove the cached item
                             Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
-                            Cached_Data_Manager.Store_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Current_Item, RequestSpecificValues.Tracer);
 
                             // Also clear any searches or browses ( in the future could refine this to only remove those
                             // that are impacted by this save... but this is good enough for now )
                             Cached_Data_Manager.Clear_Search_Results_Browses();
-
-                            // Update the web.config
-                            Resource_Web_Config_Writer.Update_Web_Config(RequestSpecificValues.Current_Item.Source_Directory, RequestSpecificValues.Current_Item.Behaviors.Dark_Flag, (short)ipRestrictionMask, RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail);
-
-                            // Send back to this page?
                         }
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-
                     }
                 }
             }
@@ -187,12 +206,17 @@ namespace SobekCM.Library.MySobekViewer
             string item_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
 
+            short selectIpMask = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
+            if (selectIpMask == 0)
+                selectIpMask = 1;
+
             Tracer.Add_Trace("Edit_Item_Permissions_MySobekViewer.Write_ItemNavForm_Closing", "");
 
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
             Output.WriteLine("<input type=\"hidden\" id=\"permissions_action\" name=\"permissions_action\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"behaviors_request\" name=\"behaviors_request\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"restrictionMask\" name=\"restrictionMask\" value=\"" + ipRestrictionMask.ToString() + "\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"selectRestrictionMask\" name=\"selectRestrictionMask\" value=\"" + selectIpMask + "\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"isDark\" name=\"isDark\" value=\"" + isDark.ToString() + "\" />");
 
             // Write the top RequestSpecificValues.Current_Item mimic html portion
@@ -235,12 +259,12 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("        <div class=\"sbkMyEip_SetAccessText\">SET ACCESS RESTRICTIONS:</div>");
 
-            if (( ipRestrictionMask == 0) && ( !isDark ))
+            if (( ipRestrictionMask == 0) && ( !isDark ) && ( !restrictedSelected ))
                 Output.WriteLine("              <button title=\"Make item public\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPublic sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('public'); return false;\">PUBLIC ITEM</button>");
             else
                 Output.WriteLine("              <button title=\"Make item public\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPublic\" onclick=\"set_item_access('public'); return false;\">PUBLIC ITEM</button>");
 
-            if ((ipRestrictionMask > 0) && (!isDark))
+            if ((restrictedSelected) && (!isDark))
                 Output.WriteLine("              <button title=\"Add IP restriction to this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonRestricted sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('restricted'); return false;\">RESTRICT ITEM</button>");
             else
             {
@@ -251,7 +275,7 @@ namespace SobekCM.Library.MySobekViewer
 
             }
 
-            if ((ipRestrictionMask < 0) && (!isDark))
+            if ((ipRestrictionMask < 0) && (!isDark) && (!restrictedSelected))
                 Output.WriteLine("              <button title=\"Make item private\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPrivate sbkMyEip_VisButtonCurrent\" onclick=\"set_item_access('private'); return false;\">PRIVATE ITEM</button>");
             else
                 Output.WriteLine("              <button title=\"Make item private\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonPrivate\" onclick=\"set_item_access('private'); return false;\">PRIVATE ITEM</button>");
@@ -270,7 +294,7 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Delete_Item;
                 string delete_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
-                Output.WriteLine("              <button title=\"Delete this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDelete\" onclick=\"if(confirm('Delete this RequestSpecificValues.Current_Item completely?')) window.location.href = '" + delete_url + "'; return false;\">DELETE ITEM</button>");
+                Output.WriteLine("              <button title=\"Delete this item\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDelete\" onclick=\"if(confirm('Delete this item completely?')) window.location.href = '" + delete_url + "'; return false;\">DELETE ITEM</button>");
             }
 
             
@@ -281,7 +305,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("      <table class=\"sbkMyEip_EntryTable\">");
 
 
-            if ((isDark) || (ipRestrictionMask != 0))
+            if ((isDark) || (ipRestrictionMask != 0) || ( restrictedSelected ))
             {
                 Output.WriteLine("         <tr>");
                 Output.WriteLine("           <th>Embargo Date:</th>");
@@ -296,15 +320,27 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("         <tr><td colspan=\"2\">&nbsp;</td></tr>");
 
-            if ((UI_ApplicationCache_Gateway.IP_Restrictions.Count > 0) && (ipRestrictionMask > 0) && (!isDark))
+            if ((UI_ApplicationCache_Gateway.IP_Restrictions.Count > 0) && (restrictedSelected) && (!isDark))
             {
                 Output.WriteLine("         <tr>");
                 Output.WriteLine("           <th>Restriction Ranges:-</th>");
                 Output.WriteLine("           <td>");
 
+                // At least always select the FIRST ip range, if restricted is selected
+                short forComparison = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
+                if (forComparison == 0)
+                    forComparison = 1;
                 foreach (IP_Restriction_Range thisRange in UI_ApplicationCache_Gateway.IP_Restrictions.IpRanges)
                 {
-                    Output.WriteLine("             <input type='checkbox' checked='checked' id='range" + thisRange.RangeID + "' name='range" + thisRange.RangeID + "' value='" + thisRange.RangeID + "' /> <label for=\"range" + thisRange.RangeID + "\"><span title=\"" + HttpUtility.HtmlEncode(thisRange.Notes) + "\">" + thisRange.Title + "</span></label><br />");
+                    int comparison = forComparison & ((short)Math.Pow(2, thisRange.RangeID - 1));
+                    if (comparison == 0)
+                    {
+                        Output.WriteLine("             <input type='checkbox' id='range" + thisRange.RangeID + "' name='range" + thisRange.RangeID + "' value='" + thisRange.RangeID + "' /> <label for=\"range" + thisRange.RangeID + "\"><span title=\"" + HttpUtility.HtmlEncode(thisRange.Notes) + "\">" + thisRange.Title + "</span></label><br />");
+                    }
+                    else
+                    {
+                        Output.WriteLine("             <input type='checkbox' checked='checked' id='range" + thisRange.RangeID + "' name='range" + thisRange.RangeID + "' value='" + thisRange.RangeID + "' /> <label for=\"range" + thisRange.RangeID + "\"><span title=\"" + HttpUtility.HtmlEncode(thisRange.Notes) + "\">" + thisRange.Title + "</span></label><br />");
+                    }
                 }
 
                 Output.WriteLine("           </td>");

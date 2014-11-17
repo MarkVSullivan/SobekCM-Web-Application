@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 #endregion
 
@@ -240,5 +241,78 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         }
 
         #endregion
+
+        /// <summary> Return this zoological taxonomy as a single string </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+            if (!String.IsNullOrEmpty(kingdom))
+                builder.Append(kingdom);
+            if (!String.IsNullOrEmpty(phylum))
+            {
+                if (builder.Length > 0)
+                    builder.Append(" -- ");
+                builder.Append(phylum);
+            }
+            if (!String.IsNullOrEmpty(classs))
+            {
+                if (builder.Length > 0)
+                    builder.Append(" -- ");
+                builder.Append(classs);
+            }
+            if (!String.IsNullOrEmpty(phylum))
+            {
+                if (builder.Length > 0)
+                    builder.Append(" -- ");
+                builder.Append(phylum);
+            }
+            if (!String.IsNullOrEmpty(order))
+            {
+                if (builder.Length > 0)
+                    builder.Append(" -- ");
+                builder.Append(order);
+            }
+            if (!String.IsNullOrEmpty(family))
+            {
+                if (builder.Length > 0)
+                    builder.Append(" -- ");
+                builder.Append(family);
+            }
+            if (!String.IsNullOrEmpty(genus))
+            {
+                if (builder.Length > 0)
+                    builder.Append(" -- ");
+                builder.Append(genus);
+            }
+            if (!String.IsNullOrEmpty(specificEpithet))
+            {
+                if (builder.Length > 0)
+                    builder.Append(" -- ");
+                builder.Append(specificEpithet);
+            }
+            if (builder.Length > 0 )
+                return builder.ToString();
+            if (!String.IsNullOrEmpty(commonName))
+                return commonName;
+            return String.Empty;
+        }
+
+        /// <summary> Clear all the data withiin this zoological taxonomy object </summary>
+        public void Clear()
+        {
+            classs = String.Empty;
+            commonName = String.Empty;
+            family = String.Empty;
+            genus = String.Empty;
+            higherClassification = String.Empty;
+            kingdom = String.Empty;
+            order = String.Empty;
+            phylum = String.Empty;
+            scientificName = String.Empty;
+            specificEpithet = String.Empty;
+            taxonRank = String.Empty;
+
+        }
     }
 }

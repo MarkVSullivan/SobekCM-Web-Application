@@ -231,13 +231,13 @@ namespace SobekCM.Library.MainWriters
                                     if (comparison == 0)
                                     {
                                         int restriction = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
-                                        int restriction_counter = 0;
+                                        int restriction_counter = 1;
                                         while (restriction % 2 != 1)
                                         {
                                             restriction = restriction >> 1;
                                             restriction_counter++;
                                         }
-                                        if (Engine_ApplicationCache_Gateway.IP_Restrictions.Count > restriction_counter)
+                                        if (Engine_ApplicationCache_Gateway.IP_Restrictions[restriction_counter] != null )
                                             restriction_message = Engine_ApplicationCache_Gateway.IP_Restrictions[restriction_counter].Item_Restricted_Statement;
                                         else
                                             restriction_message = "Restricted Item";

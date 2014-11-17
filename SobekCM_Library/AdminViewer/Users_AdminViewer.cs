@@ -64,7 +64,7 @@ namespace SobekCM.Library.AdminViewer
 			// Set the action message to clear initially
 			actionMessage = String.Empty;
 
-			// Get the RequestSpecificValues.Current_User to edit, if there was a RequestSpecificValues.Current_User id in the submode
+			// Get the user to edit, if there was a user id in the submode
 			editUser = null;
 			if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
 			{
@@ -590,7 +590,7 @@ namespace SobekCM.Library.AdminViewer
 						}
 
 						// Update templates, if necessary
-						if (editUser.Templates.Count > 0)
+						if (editUser.Templates_Count > 0)
 						{
                             if (!SobekCM_Database.Update_SobekCM_User_Templates(editUser.UserID, editUser.Templates, RequestSpecificValues.Tracer))
 							{
@@ -599,12 +599,15 @@ namespace SobekCM.Library.AdminViewer
 						}
 
 						// Save the aggregationPermissions linked to this RequestSpecificValues.Current_User
-                        if (!SobekCM_Database.Update_SobekCM_User_Aggregations(editUser.UserID, editUser.PermissionedAggregations, RequestSpecificValues.Tracer))
-						{
-							successful_save = false;
-						}
+					    if (editUser.PermissionedAggregations_Count > 0)
+					    {
+					        if (!SobekCM_Database.Update_SobekCM_User_Aggregations(editUser.UserID, editUser.PermissionedAggregations, RequestSpecificValues.Tracer))
+					        {
+					            successful_save = false;
+					        }
+					    }
 
-						// Save the RequestSpecificValues.Current_User group links
+					    // Save the RequestSpecificValues.Current_User group links
 						List<User_Group> userGroup = Engine_Database.Get_All_User_Groups(RequestSpecificValues.Tracer);
 						Dictionary<string, int> groupnames_to_id = new Dictionary<string, int>();
 						foreach (User_Group thisRow in userGroup)
@@ -752,7 +755,7 @@ namespace SobekCM.Library.AdminViewer
             if (editUser.Can_Submit)
                 text_builder.Append("Can submit items<br />");
             if (editUser.Is_Internal_User)
-                text_builder.Append("Is internal RequestSpecificValues.Current_User<br />");            
+                text_builder.Append("Is power user<br />");            
             if (editUser.Editable_Regular_Expressions.Any(ThisRegularExpression => ThisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}"))
             {
                 text_builder.Append("Can edit all items<br />");
@@ -1037,11 +1040,11 @@ namespace SobekCM.Library.AdminViewer
                                          : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_submit\" id=\"admin_user_submit\" /> <label for=\"admin_user_submit\">Can submit items</label> <br />");
 
                     Output.WriteLine(editUser.Is_Internal_User
-                                         ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_internal\" id=\"admin_user_internal\" checked=\"checked\" /> <label for=\"admin_user_internal\">Is internal RequestSpecificValues.Current_User</label> <br />"
-                                         : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_internal\" id=\"admin_user_internal\" /> <label for=\"admin_user_internal\">Is internal RequestSpecificValues.Current_User</label> <br />");
+                                         ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_internal\" id=\"admin_user_internal\" checked=\"checked\" /> <label for=\"admin_user_internal\">Is power user</label> <br />"
+                                         : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_internal\" id=\"admin_user_internal\" /> <label for=\"admin_user_internal\">Is power user</label> <br />");
 
-                    bool canEditAll = editUser.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
-                    Output.WriteLine(canEditAll
+                   // bool canEditAll = editUser.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
+                    Output.WriteLine(editUser.Should_Be_Able_To_Edit_All_Items
                                          ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_editall\" id=\"admin_user_editall\" checked=\"checked\" /> <label for=\"admin_user_editall\">Can edit <u>all</u> items</label> <br />"
                                          : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_editall\" id=\"admin_user_editall\" /> <label for=\"admin_user_editall\">Can edit <u>all</u> items</label> <br />");
 

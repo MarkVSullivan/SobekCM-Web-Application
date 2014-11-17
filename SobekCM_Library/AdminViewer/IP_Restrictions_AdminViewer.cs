@@ -77,7 +77,7 @@ namespace SobekCM.Library.AdminViewer
             details = null;
             if ((index >= 1) && (index <= UI_ApplicationCache_Gateway.IP_Restrictions.Count))
             {
-                thisRange = UI_ApplicationCache_Gateway.IP_Restrictions[index - 1];
+                thisRange = UI_ApplicationCache_Gateway.IP_Restrictions[index];
                 if (thisRange != null)
                 {
                     details = SobekCM_Database.Get_IP_Restriction_Range_Details(thisRange.RangeID, RequestSpecificValues.Tracer);
@@ -111,6 +111,9 @@ namespace SobekCM.Library.AdminViewer
                             entered_title = String.Empty;
                             entered_notes = String.Empty;
                             entered_message = String.Empty;
+
+                            // Need to recalcualte the IP range membership for the current user
+					        HttpContext.Current.Session["IP_Range_Membership"] = null;
 					    }
 					    else
 					        actionMessage = "Error saving new IP range '" + entered_title + "'";
@@ -123,7 +126,12 @@ namespace SobekCM.Library.AdminViewer
                     string delete_title = UI_ApplicationCache_Gateway.IP_Restrictions[id_to_delete].Title;
 
                     if (SobekCM_Database.Delete_IP_Range(id_to_delete, RequestSpecificValues.Tracer))
+                    {
                         actionMessage = "Deleted IP range '" + delete_title + "'";
+
+                        // Need to recalcualte the IP range membership for the current user
+                        HttpContext.Current.Session["IP_Range_Membership"] = null;
+                    }
                     else
                         actionMessage = "Error deleting new IP range '" + delete_title + "'";
                 }
@@ -203,6 +211,9 @@ namespace SobekCM.Library.AdminViewer
                                 }
                             }
                         }
+
+                        // Need to recalcualte the IP range membership for the current user
+                        HttpContext.Current.Session["IP_Range_Membership"] = null;
                     }
                     catch (Exception)
                     {

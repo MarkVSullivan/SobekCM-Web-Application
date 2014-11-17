@@ -1268,6 +1268,68 @@ function close_spatial_form( windowname )
     return false;
 }
 
+
+function close_zootaxon_form(windowname) {
+    diff = windowname.replace('form_zootaxon_', '');
+    var linkspan = document.getElementById('form_zootaxon_term_' + diff);
+
+    new_link_text = '';
+
+    var kingdominput = document.getElementById('formzootaxonkingdom_' + diff);
+    if ((kingdominput != null) && ((trimString(kingdominput.value)).length > 0))
+        new_link_text = new_link_text + ' -- ' + trimString(kingdominput.value);
+
+    var phyluminput = document.getElementById('formzootaxonphylum_' + diff);
+    if ((phyluminput != null) && ((trimString(phyluminput.value)).length > 0))
+        new_link_text = new_link_text + ' -- ' + trimString(phyluminput.value);
+
+    var classinput = document.getElementById('formzootaxonclass_' + diff);
+    if ((classinput != null) && ((trimString(classinput.value)).length > 0))
+        new_link_text = new_link_text + ' -- ' + trimString(classinput.value);
+
+    var orderinput = document.getElementById('formzootaxonorder_' + diff);
+    if ((orderinput != null) && ((trimString(orderinput.value)).length > 0))
+        new_link_text = new_link_text + ' -- ' + trimString(orderinput.value);
+
+    var familyinput = document.getElementById('formzootaxonfamily_' + diff);
+    if ((familyinput != null) && ((trimString(familyinput.value)).length > 0))
+        new_link_text = new_link_text + ' -- ' + trimString(familyinput.value);
+
+    var genusinput = document.getElementById('formzootaxongenus_' + diff);
+    if ((genusinput != null) && ((trimString(genusinput.value)).length > 0))
+        new_link_text = new_link_text + ' -- ' + trimString(genusinput.value);
+
+    var speciesinput = document.getElementById('formzootaxonspecies_' + diff);
+    if ((speciesinput != null) && ((trimString(speciesinput.value)).length > 0))
+        new_link_text = new_link_text + ' -- ' + trimString(speciesinput.value);
+
+    var commoninput = document.getElementById('formzootaxoncommon_' + diff);
+    if ((commoninput != null) && ((trimString(commoninput.value)).length > 0))
+        new_link_text = new_link_text + ' -- ' + trimString(commoninput.value);
+  
+
+    if (new_link_text.length > 0) {
+        new_link_text = new_link_text.substring(4);
+        linkspan.className = 'form_linkline form_zootaxon_line';
+    }
+    else {
+        new_link_text = "<i>No taxonomic information</i>";
+        linkspan.className = 'form_linkline_empty form_taxon_line';
+    }
+
+    // Use the new calculated text for the link    
+    linkspan.innerHTML = new_link_text;
+
+    // Close the associated form
+    popdown(windowname);
+
+    // Return focus
+    linkspan.focus();
+
+    // Return false to prevent a return trip to the server
+    return false;
+}
+
 function close_maintitle_form( windowname )
 {
     var linkspan = document.getElementById('form_maintitle_term');

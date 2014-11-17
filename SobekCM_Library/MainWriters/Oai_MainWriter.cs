@@ -8,11 +8,13 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.OAI;
 using SobekCM.Library.Database;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
+
 
 #endregion
 
@@ -53,6 +55,9 @@ namespace SobekCM.Library.MainWriters
             // Load the list of OAI sets
             oaiSets = SobekCM_Database.Get_OAI_Sets();
             queryString = Query_String;
+
+            // Set the response type
+            HttpContext.Current.Response.ContentType = "text/xml";
         }
 
         /// <summary> Gets the enumeration of the type of main writer </summary>
@@ -306,6 +311,7 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("<set>");
                 Output.WriteLine("<setSpec>" + thisRow["Code"].ToString().ToLower() + "</setSpec>");
                 Output.WriteLine("<setName>" + thisRow["Name"].ToString().Replace("&","&amp;").Replace("\"", "&quot;") + "</setName>");
+                Output.WriteLine("<setDescription>");
                 Output.WriteLine("<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">");
                 Output.WriteLine("\t<dc:title>" + thisRow["Name"].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</dc:title> ");
                 Output.WriteLine("\t<dc:identifier>" + UI_ApplicationCache_Gateway.Settings.OAI_Resource_Identifier_Base + ":" + thisRow["Code"].ToString().ToLower() + "</dc:identifier>");
@@ -317,6 +323,7 @@ namespace SobekCM.Library.MainWriters
                     Output.WriteLine("\t" + thisRow["OAI_Metadata"].ToString().Replace("&", "&amp;").Replace("\"", "&quot;"));
                 }
                 Output.WriteLine("</oai_dc:dc>");
+                Output.WriteLine("</setDescription>");
                 Output.WriteLine("</set>");
             }
 
@@ -482,17 +489,15 @@ namespace SobekCM.Library.MainWriters
             // Step through each record
             foreach (OAI_Record thisRecord in records)
             {
-                Output.Write("<record><header><identifier>" + UI_ApplicationCache_Gateway.Settings.OAI_Resource_Identifier_Base + thisRecord.BibID + "</identifier><datestamp>" + thisRecord.Last_Modified_Date.Year + "-" + thisRecord.Last_Modified_Date.Month.ToString().PadLeft(2, '0') + "-" + thisRecord.Last_Modified_Date.Day.ToString().PadLeft(2, '0') + "</datestamp>");
+                if (!headers_only)
+                    Output.Write("<record>");
+                Output.Write("<header><identifier>" + UI_ApplicationCache_Gateway.Settings.OAI_Resource_Identifier_Base + thisRecord.BibID + "</identifier><datestamp>" + thisRecord.Last_Modified_Date.Year + "-" + thisRecord.Last_Modified_Date.Month.ToString().PadLeft(2, '0') + "-" + thisRecord.Last_Modified_Date.Day.ToString().PadLeft(2, '0') + "</datestamp>");
                 if (set_code.Length > 0)
                     Output.Write("<setSpec>" + UI_ApplicationCache_Gateway.Settings.OAI_Resource_Identifier_Base + set_code + "</setSpec>");
                 Output.Write("</header>");
                 if (!headers_only)
                 {
                     Output.WriteLine("<metadata><oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">" + thisRecord.Record + "</oai_dc:dc></metadata></record>");
-                }
-                else
-                {
-                    Output.WriteLine("</record>");
                 }
             }
 

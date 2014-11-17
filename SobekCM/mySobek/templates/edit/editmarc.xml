@@ -119,6 +119,10 @@
 				<element type="VRA_StylePeriod" />
 				<element type="VRA_Technique" />
 			</panel>
+      <panel>
+        <name language="eng">Zoological Taxonomic Information (DarwinCore) </name>
+        <element type="Zoological_Taxonomy" />
+       </panel>
 		</page>
 	</inputs>
 

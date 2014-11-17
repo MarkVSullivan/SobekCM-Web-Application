@@ -24,10 +24,10 @@ namespace SobekCM.Core.Settings
         private const string BACKUP_FILES_FOLDER_NAME = "sobek_files";
 
         /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
-        private const string CURRENT_WEB_VERSION = "4.01";
+        private const string CURRENT_WEB_VERSION = "4.02.002";
 
         /// <summary> Current version number associated with this SobekCM builder application </summary>
-        private const string CURRENT_BUILDER_VERSION = "4.01";
+        private const string CURRENT_BUILDER_VERSION = "4.02";
 
         /// <summary> Number of ticks that a complete package must age before being processed </summary>
         /// <value> This is currently set to 15 minutes (in ticks) </value>

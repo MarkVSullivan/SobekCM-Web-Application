@@ -4277,7 +4277,7 @@ namespace SobekCM.Library.Database
 				SqlParameter[] paramList = new SqlParameter[34];
 				paramList[0] = new SqlParameter("@UserID", UserID);
 
-				if (Aggregations.Count > 0)
+				if (( Aggregations != null ) && ( Aggregations.Count > 0))
 				{
 					paramList[1] = new SqlParameter("@AggregationCode1", Aggregations[0].Code);
 					paramList[2] = new SqlParameter("@canSelect1", Aggregations[0].CanSelect);
@@ -4306,7 +4306,7 @@ namespace SobekCM.Library.Database
 					paramList[11] = new SqlParameter("@isAdmin1", false);
 				}
 
-				if (Aggregations.Count > 1)
+				if (( Aggregations != null ) && ( Aggregations.Count > 1))
 				{
 					paramList[12] = new SqlParameter("@AggregationCode2", Aggregations[1].Code);
 					paramList[13] = new SqlParameter("@canSelect2", Aggregations[1].CanSelect);
@@ -4336,7 +4336,7 @@ namespace SobekCM.Library.Database
 				}
 
 
-				if (Aggregations.Count > 2)
+				if (( Aggregations != null ) && ( Aggregations.Count > 2))
 				{
 					paramList[23] = new SqlParameter("@AggregationCode3", Aggregations[2].Code);
 					paramList[24] = new SqlParameter("@canSelect3", Aggregations[2].CanSelect);
@@ -4369,7 +4369,7 @@ namespace SobekCM.Library.Database
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Aggregations_Link", paramList);
 
 				int currentIndex = 3;
-				while (Aggregations.Count > currentIndex)
+				while (( Aggregations != null ) && ( Aggregations.Count > currentIndex))
 				{
 					// Build the parameter list for the first run
 					paramList[0] = new SqlParameter("@UserID", UserID);
@@ -6374,7 +6374,7 @@ namespace SobekCM.Library.Database
 			DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_OAI_Sets");
 
 			// If there was no data for this collection and entry point, return null (an ERROR occurred)
-			if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+			if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null))
 			{
 				return null;
 			}

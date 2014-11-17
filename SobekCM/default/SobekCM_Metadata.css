@@ -447,6 +447,12 @@ input.formead_input { width: 450px; margin-right: 15px; margin-top: 6px; }
 input.formspatial_input  { width: 360px; margin-right: 15px; margin-top: 6px; }
 input.formspatial_small_input  {  width: 120px; margin-top: 6px; }
 
+/** Zoological_Taxonomy_Form_Element */
+.form_zootaxon_line { width: 650px; }
+.zootaxon_popup_div {width:550px; height:370px; }  
+#form_zootaxon_div { padding-top: 6px; } 
+input.formzootaxon_input { width: 360px; margin-right: 15px; margin-top: 6px; }
+
 /** IR_Type_Element **/
 select.ir_type_input { width: 200px; margin-top: 6px; }
 input.irtype_other_input  { width: 180px; margin-right: 10px; margin-top: 6px; }
