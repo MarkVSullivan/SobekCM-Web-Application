@@ -352,9 +352,9 @@ namespace SobekCM.Library.HTML
             // If this was in fact restricted by IP address, restrict now
             if (itemRestrictedFromUserByIp)
             {
-                if ((PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Citation) &&
+                if ((PageViewer==null)||((PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Citation) &&
                     (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.MultiVolume) &&
-                    (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Related_Images))
+                    (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Related_Images)))
                 {
                     PageViewer = new Restricted_ItemViewer(Item_Restricted_Message);
                     RequestSpecificValues.Current_Mode.ViewerCode = "res";
