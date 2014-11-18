@@ -355,7 +355,7 @@ namespace SobekCM.Management_Tool
             // Must have a value (and be valid with write access) to the main builder folder
             // to be able to import things
             string dropbox = SobekCM_Library_Settings.Main_Builder_Input_Folder;
-            if ((dropbox.Length == 0) || ( !Directory.Exists(dropbox)))
+            if (( String.IsNullOrEmpty(dropbox)) || ( !Directory.Exists(dropbox)))
             {
                 MessageBox.Show(
                     "The system-wide setting for the 'Main Builder Input Folder' is either not set or is not set correctly.  This directory must exist and be accessible from the machine you are running the SMaRT Tool from in order to import records.",

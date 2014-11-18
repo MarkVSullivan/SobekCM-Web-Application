@@ -306,7 +306,7 @@ namespace SobekCM.Library
 
                 return !error;
             }
-            catch
+            catch (Exception ee)
             {
                 return false;
             }

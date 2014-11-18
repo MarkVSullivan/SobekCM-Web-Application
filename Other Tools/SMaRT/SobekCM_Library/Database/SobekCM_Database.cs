@@ -5385,7 +5385,6 @@ namespace SobekCM.Library.Database
 			try
 			{
 				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@include_items", true);
 				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Settings", paramList);
 				return tempSet;
 			}
@@ -5407,7 +5406,6 @@ namespace SobekCM.Library.Database
 			try
 			{
 				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@include_items", false);
 				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Settings", paramList);
 				if ((tempSet.Tables.Count > 0) && (tempSet.Tables[0].Rows.Count > 0))
 				{

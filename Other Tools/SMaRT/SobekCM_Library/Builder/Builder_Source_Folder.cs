@@ -30,7 +30,7 @@ namespace SobekCM.Library.Builder
             Allow_Deletes = Convert.ToBoolean(Source_Data_Row["Allow_Deletes"]);
             Allow_Folders_No_Metadata = Convert.ToBoolean(Source_Data_Row["Allow_Folders_No_Metadata"]);
             Allow_Metadata_Updates = Convert.ToBoolean(Source_Data_Row["Allow_Metadata_Updates"]);
-            Contains_Institutional_Folders = Convert.ToBoolean(Source_Data_Row["Contains_Institutional_Folders"]);
+         //   Contains_Institutional_Folders = Convert.ToBoolean(Source_Data_Row["Contains_Institutional_Folders"]);
         }
 
         /// <summary> Constructor for a new instance of the Builder_Source_Folder class </summary>

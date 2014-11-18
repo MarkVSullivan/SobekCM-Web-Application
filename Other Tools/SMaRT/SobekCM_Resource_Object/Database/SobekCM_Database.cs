@@ -466,7 +466,7 @@ namespace SobekCM.Resource_Object.Database
 				param_list[i++] = new SqlParameter("@Author", author_builder.ToString());
 				param_list[i++] = new SqlParameter("@Spatial_KML", spatial_kml);
 				param_list[i++] = new SqlParameter("@Spatial_KML_Distance", spatial_distance);
-				param_list[i++] = new SqlParameter("@DiskSize_MB", thisPackage.DiskSize_MB);
+				param_list[i++] = new SqlParameter("@DiskSize_KB", thisPackage.DiskSize_KB);
 				param_list[i++] = new SqlParameter("@Spatial_Display", spatialDisplayBuilder.ToString());
 				param_list[i++] = new SqlParameter("@Institution_Display", institutionDisplayBuilder.ToString());
 				param_list[i++] = new SqlParameter("@Edition_Display", thisPackage.Bib_Info.Origin_Info.Edition);
@@ -1611,7 +1611,7 @@ namespace SobekCM.Resource_Object.Database
 			Save_Item_Args returnVal = Save_Item( GroupID, thisPackage.VID, thisPackage.Divisions.Page_Count, thisPackage.Divisions.Files.Count,
 				thisPackage.Bib_Info.Main_Title.NonSort + thisPackage.Bib_Info.Main_Title.Title, thisPackage.Bib_Info.sortSafeTitle(thisPackage.Bib_Info.Main_Title.Title, false),
 				link, CreateDate, pubdate, thisPackage.Bib_Info.sortSafeDate(pubdate), holding_code, 
-				source_code, author_builder.ToString(), spatial_kml, spatial_distance, thisPackage.DiskSize_MB, donor, publisher_builder.ToString(),
+				source_code, author_builder.ToString(), spatial_kml, spatial_distance, thisPackage.DiskSize_KB, donor, publisher_builder.ToString(),
 				spatialDisplayBuilder.ToString(),institutionDisplayBuilder.ToString(), thisPackage.Bib_Info.Origin_Info.Edition, materialDisplayBuilder.ToString(),
 				measurements, stylePeriodDisplayBuilder.ToString(), techniqueDisplayBuilder.ToString(), subjectsDisplayBuilder.ToString());
 
@@ -2318,7 +2318,7 @@ namespace SobekCM.Resource_Object.Database
 		/// <param name="Author"> Display field includes all authors' names </param>
 		/// <param name="Spatial_KML"> List of main coordinate points in the main display for this item</param>
 		/// <param name="Spatial_KML_Distance"> Distance of the hypotenuse of the bounding box made up by the coordinates in this item </param>
-		/// <param name="DiskSize_MB"> Total size (in MB) of this entire package on the digital library </param>
+		/// <param name="DiskSize_KB"> Total size (in KB) of this entire package on the digital library </param>
 		/// <param name="Donor">Donor string to display for this item within any search or browse results</param>
 		/// <param name="Publisher">Publishers string to display for this item within any search or browse results ( multiple publishers are seperated by a '|' character )</param>
 		/// <param name="Edition"> Edition/state string to display for this item within any search or browse results</param>
@@ -2333,8 +2333,8 @@ namespace SobekCM.Resource_Object.Database
 		/// <remarks> This calls the 'SobekCM_Save_Item' stored procedure in the SobekCM database </remarks>
 		protected static Save_Item_Args Save_Item(int GroupID, string VID, int PageCount, int FileCount,
 			string Title, string SortTitle, string Link, DateTime CreateDate, string PubDate, int SortDate,
-			string Holding_Code, string Source_Code, string Author, string Spatial_KML, double Spatial_KML_Distance, 
-			double DiskSize_MB, string Donor, string Publisher, string Spatial_Display, string Institution_Display, 
+			string Holding_Code, string Source_Code, string Author, string Spatial_KML, double Spatial_KML_Distance,
+            double DiskSize_KB, string Donor, string Publisher, string Spatial_Display, string Institution_Display, 
 			string Edition, string Material_Display, string Measurement_Display, string StylePeriod_Display, string Technique_Display,
 			string Subjects_Display )
 		{
@@ -2358,7 +2358,7 @@ namespace SobekCM.Resource_Object.Database
 				param_list[13] = new SqlParameter("@Author", Author);
 				param_list[14] = new SqlParameter("@Spatial_KML", Spatial_KML);
 				param_list[15] = new SqlParameter("@Spatial_KML_Distance", Spatial_KML_Distance);
-				param_list[16] = new SqlParameter("@DiskSize_MB", DiskSize_MB);
+                param_list[16] = new SqlParameter("@DiskSize_KB", DiskSize_KB);
 				param_list[17] = new SqlParameter("@Spatial_Display", Spatial_Display);
 				param_list[18] = new SqlParameter("@Institution_Display", Institution_Display);
 				param_list[19] = new SqlParameter("@Edition_Display", Edition );
@@ -3317,10 +3317,10 @@ namespace SobekCM.Resource_Object.Database
 		/// <param name="VID"> Volume identifier for the item/volume to update </param>
 		/// <param name="PageCount"> Number of pages linked to this item in the library </param>
 		/// <param name="FileCount"> Number of page image files linked to this item in the library </param>
-		/// <param name="DiskSize_MB"> Size of the entire digital resource on the image server  </param>
+		/// <param name="DiskSize_KB"> Size of the entire digital resource on the image server  </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Update_Item_Online_Statistics' stored procedure </remarks> 
-		public static bool Update_Item_Online_Statistics(string BibID, string VID, int PageCount, int FileCount, double DiskSize_MB)
+        public static bool Update_Item_Online_Statistics(string BibID, string VID, int PageCount, int FileCount, double DiskSize_KB)
 		{
 			try
 			{
@@ -3330,7 +3330,7 @@ namespace SobekCM.Resource_Object.Database
 				param_list[1] = new SqlParameter("@vid", VID);
 				param_list[2] = new SqlParameter("@pagecount", PageCount);
 				param_list[3] = new SqlParameter("@filecount", FileCount);
-				param_list[4] = new SqlParameter("@disksize_mb", DiskSize_MB);
+                param_list[4] = new SqlParameter("@disksize_kb", DiskSize_KB);
 
 				// Execute this query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Update_Item_Online_Statistics", param_list);

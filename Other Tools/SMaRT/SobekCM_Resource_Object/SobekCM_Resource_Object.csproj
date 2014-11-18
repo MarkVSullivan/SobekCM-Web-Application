@@ -114,10 +114,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.ApplicationBlocks.Data">
-      <HintPath>..\..\..\..\..\..\..\inetpub\wwwroot\UFDC\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
+      <HintPath>..\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\..\..\..\..\..\..\inetpub\wwwroot\UFDC\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="SolrNet">
       <HintPath>..\DLLs\SolrNet\SolrNet.dll</HintPath>
@@ -139,10 +139,10 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Zoom.Net">
-      <HintPath>..\..\..\..\..\..\..\inetpub\wwwroot\UFDC\DLLs\Zoom.net\Zoom.Net.dll</HintPath>
+      <HintPath>..\DLLs\Zoom.net\Zoom.Net.dll</HintPath>
     </Reference>
     <Reference Include="Zoom.Net.YazSharp">
-      <HintPath>..\..\..\..\..\..\..\inetpub\wwwroot\UFDC\DLLs\Zoom.net\Zoom.Net.YazSharp.dll</HintPath>
+      <HintPath>..\DLLs\Zoom.net\Zoom.Net.YazSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

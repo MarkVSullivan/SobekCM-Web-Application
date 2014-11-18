@@ -131,15 +131,15 @@ namespace SobekCM.Library.Builder
         }
 
         /// <summary> Gets or sets the size (in MBs) of all the files and metadata for this resource </summary>
-        public double DiskSpace_MB
+        public double DiskSpace_KB
         {
             get
             {
-                return bibPackage.DiskSize_MB;
+                return bibPackage.DiskSize_KB;
             }
             set
             {
-                bibPackage.DiskSize_MB = value;
+                bibPackage.DiskSize_KB = value;
             }
         }
 

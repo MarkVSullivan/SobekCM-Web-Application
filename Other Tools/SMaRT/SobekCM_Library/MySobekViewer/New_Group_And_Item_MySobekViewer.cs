@@ -711,7 +711,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Determine the total size of the package before saving
                 string[] all_files_final = Directory.GetFiles(userInProcessDirectory);
                 double size = all_files_final.Aggregate<string, double>(0, (current, thisFile) => current + (((new FileInfo(thisFile)).Length)/1024));
-                Item_To_Complete.DiskSize_MB = size;
+                Item_To_Complete.DiskSize_KB = size;
 
                 // BibID and VID will be automatically assigned
                 Item_To_Complete.BibID = template.BibID_Root;

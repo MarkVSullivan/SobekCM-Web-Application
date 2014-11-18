@@ -32,7 +32,7 @@ namespace SobekCM.Resource_Object
         private Web_Info web;
 
         private int total_order;
-        private double size_mb;
+        private double sizeKb;
 
         // Flags used while editing a resource in the online SobekCM digital repository 
         private bool using_complex_template;
@@ -54,7 +54,7 @@ namespace SobekCM.Resource_Object
             analyzed_for_complex_content = false;
             contains_complex_content = false;
             using_complex_template = false;
-            size_mb = 0;
+            sizeKb = 0;
 
             // If there is a metadata configuration which calls for a metadata
             // extension module to always be used, add it now
@@ -82,7 +82,7 @@ namespace SobekCM.Resource_Object
             analyzed_for_complex_content = false;
             contains_complex_content = false;
             using_complex_template = false;
-            size_mb = 0;
+            sizeKb = 0;
 
             // Copy over all the data
             if (OAI_Record.hasCreators)
@@ -237,10 +237,10 @@ namespace SobekCM.Resource_Object
         }
 
         /// <summary> Size of the entire package on disk </summary>
-        public double DiskSize_MB
+        public double DiskSize_KB
         {
-            get { return size_mb; }
-            set { size_mb = value; }
+            get { return sizeKb; }
+            set { sizeKb = value; }
         }
 
  
