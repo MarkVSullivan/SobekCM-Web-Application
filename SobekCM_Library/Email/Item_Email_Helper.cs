@@ -1,7 +1,6 @@
 ﻿#region Using directives
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using SobekCM.Library.Database;
 using SobekCM.Resource_Object;
@@ -294,8 +293,25 @@ namespace SobekCM.Library.Email
                 {
                     subject = Item.Bib_Info.Main_Title.ToString().Substring(0, 35).Replace("&quot;", "\"") + "...";
                 }
-                int error_count = email_recepients.Count(thisEmailRecepient => !SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, subject, messageBuilder.ToString(), true, false, -1, UserID ));
 
+                int error_count = 0;
+                foreach (string thisReceipient in email_recepients)
+                {
+                    if (CC_List.Length > 0)
+                    {
+                        if (!SobekCM_Database.Send_Database_Email(thisReceipient.Trim() + "," + CC_List, subject, messageBuilder.ToString(), true, false, -1, UserID))
+                        {
+                            error_count++;
+                        }
+                    }
+                    else
+                    {
+                        if (!SobekCM_Database.Send_Database_Email(thisReceipient.Trim(), subject, messageBuilder.ToString(), true, false, -1, UserID))
+                        {
+                            error_count++;
+                        }
+                    }
+                }
                 return error_count <= 0;
             }
             catch
@@ -557,8 +573,25 @@ namespace SobekCM.Library.Email
                 {
                     subject = Item.Bib_Info.Main_Title.ToString().Substring(0, 35).Replace("&quot;", "\"") + "...";
                 }
-                int error_count = email_recepients.Count(thisEmailRecepient => !SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, subject, messageBuilder.ToString(), false, false, -1, UserID));
 
+                int error_count = 0;
+                foreach (string thisReceipient in email_recepients)
+                {
+                    if (CC_List.Length > 0)
+                    {
+                        if (!SobekCM_Database.Send_Database_Email(thisReceipient.Trim() + "," + CC_List, subject, messageBuilder.ToString(), false, false, -1, UserID))
+                        {
+                            error_count++;
+                        }
+                    }
+                    else
+                    {
+                        if (!SobekCM_Database.Send_Database_Email(thisReceipient.Trim(), subject, messageBuilder.ToString(), false, false, -1, UserID))
+                        {
+                            error_count++;
+                        }
+                    }
+                }
                 return error_count <= 0;
             }
             catch 

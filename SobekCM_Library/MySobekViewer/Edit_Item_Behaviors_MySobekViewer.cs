@@ -6,6 +6,7 @@ using System.IO;
 using System.Web;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -52,7 +53,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             const string TEMPLATE_CODE = "itembehaviors";
-            completeTemplate = null; //Cached_Data_Manager.Retrieve_Template(TEMPLATE_CODE, RequestSpecificValues.Tracer);
+            completeTemplate = Template_MemoryMgmt_Utility.Retrieve_Template(TEMPLATE_CODE, RequestSpecificValues.Tracer);
             if (completeTemplate != null)
             {
                 RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Found CompleteTemplate in cache");
@@ -70,7 +71,7 @@ namespace SobekCM.Library.MySobekViewer
                 completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
                 // Save this into the cache
-                //Cached_Data_Manager.Store_Template(TEMPLATE_CODE, completeTemplate, RequestSpecificValues.Tracer);
+                Template_MemoryMgmt_Utility.Store_Template(TEMPLATE_CODE, completeTemplate, RequestSpecificValues.Tracer);
             }
 
             // See if there was a hidden request

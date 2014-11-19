@@ -142,7 +142,7 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-        #region Method commpletes the RequestSpecificValues.Current_Item submission on the way to the congratulations screen
+        #region Method commpletes the item submission on the way to the congratulations screen
 
         private bool complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer )
         {
@@ -377,7 +377,7 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("  <br />");
 
             Output.WriteLine("  <h2>Manage Downloads</h2>");
-            Output.WriteLine("  <p>Upload the download files for your RequestSpecificValues.Current_Item.  You can also provide labels for each file, once they are uploaded.</p>");
+            Output.WriteLine("  <p>Upload the download files for your item.  You can also provide labels for each file, once they are uploaded.</p>");
             
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
             Output.WriteLine("  <p><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Click here to upload page images instead.</a></p>");
@@ -578,7 +578,7 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("</div>");
 			Output.WriteLine();
 
-            const string COMPLETION_MESSAGE = "Once all files are uploaded, press SUBMIT to finish this RequestSpecificValues.Current_Item.";
+            const string COMPLETION_MESSAGE = "Once all files are uploaded, press SUBMIT to finish this item.";
 
             Output.WriteLine("<div class=\"sbkMySobek_FileCompletionMsg\">" + COMPLETION_MESSAGE + "</div>");
 			Output.WriteLine();

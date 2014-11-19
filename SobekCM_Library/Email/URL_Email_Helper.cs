@@ -56,7 +56,14 @@ namespace SobekCM.Library.Email
                 string[] email_recepients = Recepient_List.Split(";,".ToCharArray());
                 foreach (string thisEmailRecepient in email_recepients)
                 {
-                    SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), true, false, -1, UserID );
+                    if (CC_List.Length > 0)
+                    {
+                        SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), true, false, -1, UserID);
+                    }
+                    else
+                    {
+                        SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim(), URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), true, false, -1, UserID);
+                    }
                 }
                 return String.Empty;
             }
@@ -88,7 +95,14 @@ namespace SobekCM.Library.Email
                 string[] email_recepients = Recepient_List.Split(";,".ToCharArray());
                 foreach (string thisEmailRecepient in email_recepients)
                 {
-                    SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), false, false, -1, UserID);
+                    if (CC_List.Length > 0)
+                    {
+                        SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), false, false, -1, UserID);
+                    }
+                    else
+                    {
+                        SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim(), URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), false, false, -1, UserID);
+                    }
                 }
                 return String.Empty;
 

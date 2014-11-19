@@ -164,7 +164,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("        var imgStr = '" + translator.Get_Translation("Page", CurrentMode.Language) + "' + this.getPageNum(index);");
             for (int i = 0; i < files.Count; i++)
             {
-                Output.WriteLine("        if (index == " + (i + 2) + ") imgStr = '" + pagename[i] + "';");
+                Output.WriteLine("        if (index == " + (i + 2) + ") imgStr = '" + pagename[i].Replace("&","&amp;").Replace("'","&apos;").Replace("\"", "&quot;") + "';");
+
             }
 
 

@@ -30,7 +30,7 @@ namespace SobekCM.Engine.MemoryMgmt
 	public class Cached_Data_Manager
 	{
 		private static readonly bool caching_serving_enabled;
-		private const int LOCALLY_CACHED_AGGREGATION_LIMIT = 10;
+		private const int LOCALLY_CACHED_AGGREGATION_LIMIT = 1000;
 		private const int LOCALLY_CACHED_ITEM_LIMIT = 1;
 		private const int LOCALLY_CACHED_SKINS_LIMIT = 5;
 
@@ -1727,9 +1727,9 @@ namespace SobekCM.Engine.MemoryMgmt
 			}
 
 			// Determine the key
-			string key = "AGGR_" + Aggregation_Code;
+			string key = "AGGR_" + Aggregation_Code.ToUpper();
 			if ((Language_Code.Length > 0) && (Language_Code != "en"))
-				key = key + "_" + Language_Code;
+                key = key + "_" + Language_Code.ToUpper();
 
 			// See if this is in the local cache first
 			Item_Aggregation returnValue = HttpContext.Current.Cache.Get(key) as Item_Aggregation;
@@ -1791,37 +1791,42 @@ namespace SobekCM.Engine.MemoryMgmt
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		public static void Store_Item_Aggregation(string Aggregation_Code, string Language_Code, Item_Aggregation StoreObject, Custom_Tracer Tracer)
 		{
-			// If the cache is disabled, just return before even tracing
-			if (Disabled)
-				return;
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Cached_Data_Manager.Store_Item_Aggregation", "Entering Store_Item_Aggregation method");
+            }
 
-			// Determine the key
-			string key = "AGGR_" + Aggregation_Code;
+			// If the cache is disabled, just return before even tracing
+		    if (Disabled)
+		    {
+                Tracer.Add_Trace("Cached_Data_Manager.Store_Item_Aggregation", "Caching is disabled");
+		        return;
+		    }
+
+		    // Determine the key
+            string key = "AGGR_" + Aggregation_Code.ToUpper();
 			if ((Language_Code.Length > 0) && (Language_Code != "en"))
-				key = key + "_" + Language_Code;
+                key = key + "_" + Language_Code.ToUpper();
 
 			// Check the number of item aggregationPermissions currently locally cached
-			int items_cached = 0;
-			int local_expiration = 15;
-			if (Aggregation_Code != "all")
-			{
-				local_expiration = 1;
-				if ((LOCALLY_CACHED_AGGREGATION_LIMIT > 0) && ( caching_serving_enabled ))
-				{
-					items_cached += HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("AGGR_") == 0);
-				}
-			}
+            //int items_cached = 0;
+            int local_expiration = 15;
+            //if (Aggregation_Code != "all")
+            //{
+            //    local_expiration = 1;
+            //    if ((LOCALLY_CACHED_AGGREGATION_LIMIT > 0) && ( caching_serving_enabled ))
+            //    {
+            //        items_cached += HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("AGGR_") == 0);
+            //    }
+            //}
 
 			// Locally cache if this doesn't exceed the limit
-			if ((items_cached < LOCALLY_CACHED_AGGREGATION_LIMIT) || (Aggregation_Code == "all") || (!caching_serving_enabled))
+			if (Tracer != null)
 			{
-				if (Tracer != null)
-				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + local_expiration + " minute(s)");
-				}
+				Tracer.Add_Trace("Cached_Data_Manager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + local_expiration + " minute(s)");
+			}
 
 				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(local_expiration));
-			}
 
 			// try to store in the caching server, if enabled
 			if ((caching_serving_enabled) && ( Aggregation_Code != "all" ))

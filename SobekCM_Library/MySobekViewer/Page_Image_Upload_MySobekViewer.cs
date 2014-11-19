@@ -214,7 +214,7 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-        #region Method commpletes the RequestSpecificValues.Current_Item submission on the way to the congratulations screen
+        #region Method commpletes the item submission on the way to the congratulations screen
 
         private bool complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer )
         {
@@ -398,7 +398,7 @@ namespace SobekCM.Library.MySobekViewer
             }
             catch (Exception ee)
             {
-                validationErrors.Add("Error encountered during RequestSpecificValues.Current_Item save!");
+                validationErrors.Add("Error encountered during item save!");
                 validationErrors.Add(ee.ToString().Replace("\r", "<br />"));
 
                 // Set an initial flag 
@@ -463,7 +463,7 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("  <br />");
 
             Output.WriteLine("  <h2>Upload Page Images</h2>");
-            Output.WriteLine("  <p>Upload the page images for your RequestSpecificValues.Current_Item.  You will then be directed to manage the pages and divisions to ensure the new page images appear in the correct order and are reflected in the table of contents.</p>");
+            Output.WriteLine("  <p>Upload the page images for your item.  You will then be directed to manage the pages and divisions to ensure the new page images appear in the correct order and are reflected in the table of contents.</p>");
 
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
             Output.WriteLine("  <p><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Click here to add download files instead.</a></p>");
@@ -497,7 +497,7 @@ namespace SobekCM.Library.MySobekViewer
             string[] files = Directory.GetFiles(digitalResourceDirectory);
             if (files.Length > 0)
             {
-                Output.WriteLine("The following new page images will be added to the RequestSpecificValues.Current_Item once you click SUBMIT:");
+                Output.WriteLine("The following new page images will be added to the item once you click SUBMIT:");
 				Output.WriteLine("<table class=\"sbkMySobek_FileTable\">");
 				Output.WriteLine("  <tr style=\"min-height:22px;\" >");
 				Output.WriteLine("    <th style=\"width:350px;\">FILENAME</th>");
@@ -570,7 +570,7 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("</div>");
 			Output.WriteLine();
 
-			const string COMPLETION_MESSAGE = "Once all images are uploaded, press SUBMIT to finish this RequestSpecificValues.Current_Item.";
+			const string COMPLETION_MESSAGE = "Once all images are uploaded, press SUBMIT to finish this item.";
 
 			Output.WriteLine("<div class=\"sbkMySobek_FileCompletionMsg\">" + COMPLETION_MESSAGE + "</div>");
 			Output.WriteLine();
