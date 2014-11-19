@@ -176,7 +176,7 @@ namespace SobekCM
 					// Determine which IP Ranges this IP address belongs to, if not already determined.
 					if (HttpContext.Current.Session["IP_Range_Membership"] == null)
 					{
-						int ip_mask = UI_ApplicationCache_Gateway.IP_Restrictions.Restrictive_Range_Membership(request.UserHostAddress);
+					    int ip_mask = UI_ApplicationCache_Gateway.IP_Restrictions.Restrictive_Range_Membership(request.UserHostAddress);
 						HttpContext.Current.Session["IP_Range_Membership"] = ip_mask;
 					}
 

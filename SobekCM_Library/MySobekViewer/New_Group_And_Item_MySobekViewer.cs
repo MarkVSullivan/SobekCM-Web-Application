@@ -78,9 +78,9 @@ namespace SobekCM.Library.MySobekViewer
 
             // Determine the in process directory for this
             if (RequestSpecificValues.Current_User.ShibbID.Trim().Length > 0)
-                userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.ShibbID + "\\newgroup";
+                userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location, RequestSpecificValues.Current_User.ShibbID + "\\newgroup");
             else
-                userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.UserName.Replace(".","").Replace("@","") + "\\newgroup";
+                userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location, RequestSpecificValues.Current_User.UserName.Replace(".","").Replace("@","") + "\\newgroup");
 
             // Handle postback for changing the CompleteTemplate or project
             templateCode = RequestSpecificValues.Current_User.Current_Template;

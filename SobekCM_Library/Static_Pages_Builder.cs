@@ -84,9 +84,6 @@ namespace SobekCM.Library
             if (!Directory.Exists(staticSobekcmDataLocation + "\\rss"))
                 Directory.CreateDirectory(staticSobekcmDataLocation + "\\rss");
 
-
-            // Disable the cached data manager
-            Cached_Data_Manager.Disabled = true;
         }
 
 

@@ -43,7 +43,7 @@ namespace SobekCM.Engine.MemoryMgmt
 
 		/// <summary> Flag indicates if the cache is entirely disabled </summary>
 		/// <remarks> This flag is utilized, in particular, by the builder which has no access to the web's local or distributed cache </remarks>
-		public static bool Disabled { get; set; }
+        public static bool Disabled { get; private set; }
 
 		/// <summary> Read-only list of basic information about all the objects stored in the local cache </summary>
 		public static ReadOnlyCollection<Cached_Object_Info> Locally_Cached_Objects

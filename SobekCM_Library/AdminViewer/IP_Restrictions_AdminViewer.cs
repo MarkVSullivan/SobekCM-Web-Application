@@ -75,7 +75,7 @@ namespace SobekCM.Library.AdminViewer
             // If there was an index included, try to pull the information about it
             thisRange = null;
             details = null;
-            if ((index >= 1) && (index <= UI_ApplicationCache_Gateway.IP_Restrictions.Count))
+            if (index >= 1) 
             {
                 thisRange = UI_ApplicationCache_Gateway.IP_Restrictions[index];
                 if (thisRange != null)

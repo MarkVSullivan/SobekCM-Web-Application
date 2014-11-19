@@ -523,9 +523,9 @@ namespace SobekCM.Library.MySobekViewer
             else
             {
                 // Determine the in process directory for this
-                string user_bib_vid_process_directory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.ShibbID + "\\metadata_updates\\" + item.BibID + "_" + item.VID;
+                string user_bib_vid_process_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location, RequestSpecificValues.Current_User.ShibbID + "\\metadata_updates\\" + item.BibID + "_" + item.VID);
                 if (RequestSpecificValues.Current_User.ShibbID.Trim().Length == 0)
-                    user_bib_vid_process_directory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\metadata_updates\\" + item.BibID + "_" + item.VID;
+                    user_bib_vid_process_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location, RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\metadata_updates\\" + item.BibID + "_" + item.VID);
 
                 // Ensure the folder exists and is empty to start with
                 if (!Directory.Exists(user_bib_vid_process_directory))
