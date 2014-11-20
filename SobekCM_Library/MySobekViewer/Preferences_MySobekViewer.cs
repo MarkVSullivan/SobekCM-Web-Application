@@ -116,7 +116,7 @@ namespace SobekCM.Library.MySobekViewer
 			unitLabel = "Unit";
 			selfSubmittalPrefLabel = "Self-Submittal Preferences";
 			sendEmailLabel = "Send me an email when I submit new items";
-			templateLabel = "CompleteTemplate";
+			templateLabel = "Template";
 			projectLabel = "Default Metadata";
 			defaultRightsLabel = "Default Rights";
 			rightsExplanationLabel = "(These are the default rights you give for sharing, repurposing, or remixing your item to other users. You can set this with each new item you submit, but this will be the default that appears.)";

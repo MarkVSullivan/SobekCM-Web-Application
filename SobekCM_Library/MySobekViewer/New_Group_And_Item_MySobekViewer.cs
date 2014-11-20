@@ -87,10 +87,10 @@ namespace SobekCM.Library.MySobekViewer
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
                 string action1 = HttpContext.Current.Request.Form["action"];
-                if ((action1 != null) && ((action1 == "CompleteTemplate") || (action1 == "project")))
+                if ((action1 != null) && ((action1 == "template") || (action1 == "project")))
                 {
                     string newvalue = HttpContext.Current.Request.Form["phase"];
-                    if ((action1 == "CompleteTemplate") && ( newvalue != templateCode ))
+                    if ((action1 == "template") && ( newvalue != templateCode ))
                     {
                         RequestSpecificValues.Current_User.Current_Template = newvalue;
                         templateCode = RequestSpecificValues.Current_User.Current_Template;
@@ -1054,7 +1054,7 @@ namespace SobekCM.Library.MySobekViewer
                 Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.Write_ItemNavForm_Closing", "");
             }
 
-            string templateLabel = "CompleteTemplate";
+            string templateLabel = "Template";
             string projectLabel = "Default Metadata";
             const string COL1_WIDTH = "15px";
             const string COL2_WIDTH = "140px";
@@ -1119,11 +1119,11 @@ namespace SobekCM.Library.MySobekViewer
 
                 if ((RequestSpecificValues.Current_User.Templates.Count > 1) || (RequestSpecificValues.Current_User.Default_Metadata_Sets.Count > 1))
                 {
-                    string changeable = "CompleteTemplate and default metadata";
+                    string changeable = "template and default metadata";
                     if (RequestSpecificValues.Current_User.Default_Metadata_Sets.Count == 0)
                         changeable = "default metadata";
                     if (RequestSpecificValues.Current_User.Templates.Count == 0)
-                        changeable = "CompleteTemplate";
+                        changeable = "template";
 
                     string current_template = RequestSpecificValues.Current_User.Current_Template;
                     string current_project = RequestSpecificValues.Current_User.Current_Default_Metadata;

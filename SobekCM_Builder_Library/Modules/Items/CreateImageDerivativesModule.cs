@@ -32,10 +32,11 @@ namespace SobekCM.Builder_Library.Modules.Items
                 // Only continue if some exist
                 if ((jpeg_files.Length > 0) || (tiff_files.Length > 0))
                 {
-                    string startupPath = Environment.CurrentDirectory;
+                    string startupPath = Path.GetDirectoryName(System.Reflection.Assembly.GetCallingAssembly().Location);
+                    string kakadu_path = Path.Combine(startupPath, "Kakadu");
 
                     // Create the image process object for creating 
-                    Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, Path.Combine(startupPath,  "Kakadu"), true, true, Settings.JPEG_Width, Settings.JPEG_Height, false, Settings.Thumbnail_Width, Settings.Thumbnail_Height);
+                    Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, kakadu_path, true, true, Settings.JPEG_Width, Settings.JPEG_Height, false, Settings.Thumbnail_Width, Settings.Thumbnail_Height);
                     imageProcessor.New_Task_String += imageProcessor_New_Task_String;
                     imageProcessor.Error_Encountered += imageProcessor_Error_Encountered;
 
