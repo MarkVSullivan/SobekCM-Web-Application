@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
+using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Settings;
@@ -553,7 +554,7 @@ namespace SobekCM.Builder
                     if (new_item_limit > 0)
                     {
                         number_packages_processed++;
-                        if (number_packages_processed >= new_item_limit)
+                        if (number_packages_processed >= Builder_Settings.Instance_Package_Limit)
                         {
                             still_pending_items = true;
                             Add_NonError_To_Log("....Still pending packages, but moving to next instances and will return for these", "Standard", String.Empty, String.Empty, -1);

@@ -491,7 +491,7 @@ namespace SobekCM.Library.HTML
                 if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results) && (RequestSpecificValues.Results_Statistics.Total_Items == 0))
                 {
                     Output.WriteLine("<div class=\"sbkPrsw_DescPanel\" style=\"margin-top:10px\">");
-                    Show_Search_Info(Output);
+                    Show_Search_Info(Output, true);
                     Output.WriteLine("</div>");
                     Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">&nbsp;</div>");
                     return true;
@@ -580,8 +580,8 @@ namespace SobekCM.Library.HTML
                     descriptionBuilder.Append("<div class=\"sbkPrsw_ResultsExplanation\">");
                     StringBuilder searchInfoBuilder = new StringBuilder();
                     StringWriter writer = new StringWriter(searchInfoBuilder);
-                    Show_Search_Info(writer);
-                    summation = searchInfoBuilder.ToString().Replace("<i>", "").Replace("</i>", "").Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26").Replace("</td>", "");
+                    Show_Search_Info(writer, false);
+                    summation = remove_html_tags(searchInfoBuilder.ToString()).Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26");
                     descriptionBuilder.Append(searchInfoBuilder);
                     descriptionBuilder.Append("</div>");
                     DESCRIPTION = descriptionBuilder.ToString();
@@ -851,24 +851,24 @@ namespace SobekCM.Library.HTML
                 if (RequestSpecificValues.Current_User != null)
                 {
                     Output.WriteLine("<!-- Email form -->");
-                    Output.WriteLine("<div class=\"email_popup_div\" id=\"form_email\" style=\"display:none;\">");
-                    Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">S<span class=\"smaller\">END THIS</span> " + currentTitle + "<span class=\"smaller\"> TO A</span> F<span class=\"smaller\">RIEND</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+                    Output.WriteLine("<div class=\"form_email sbk_PopupForm\" id=\"form_email\" style=\"display:none;\">");
+                    Output.WriteLine("  <div class=\"sbk_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left\">Send this " + currentTitle + " to a Friend</td><td style=\"text-align:right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
                     Output.WriteLine("  <br />");
                     Output.WriteLine("  <fieldset><legend>Enter the email information below &nbsp; </legend>");
                     Output.WriteLine("    <br />");
-                    Output.WriteLine("    <table class=\"popup_table\">");
+                    Output.WriteLine("    <table class=\"sbk_PopupTable\">");
 
 
                     // Add email address line
-                    Output.Write("      <tr align=\"left\"><td width=\"80px\"><label for=\"email_address\">To:</label></td>");
-                    Output.WriteLine("<td><input class=\"email_input\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + RequestSpecificValues.Current_User.Email + "\" onfocus=\"javascript:textbox_enter('email_address', 'email_input_focused')\" onblur=\"javascript:textbox_leave('email_address', 'email_input')\" /></td></tr>");
+                    Output.Write("      <tr><td style=\"width:80px\"><label for=\"email_address\">To:</label></td>");
+                    Output.WriteLine("<td><input class=\"email_input sbk_Focusable\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"" + RequestSpecificValues.Current_User.Email + "\" /></td></tr>");
 
                     // Add comments area
-                    Output.Write("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"email_comments\">Comments:</label></td>");
-                    Output.WriteLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"email_comments\" id=\"email_comments\" class=\"email_textarea\" onfocus=\"javascript:textbox_enter('email_comments','email_textarea_focused')\" onblur=\"javascript:textbox_leave('email_comments','email_textarea')\"></textarea></td></tr>");
+                    Output.Write("      <tr style=\"vertical-align:top\"><td><br /><label for=\"email_comments\">Comments:</label></td>");
+                    Output.WriteLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"email_comments\" id=\"email_comments\" class=\"email_textarea sbk_Focusable\" ></textarea></td></tr>");
 
                     // Add format area
-                    Output.Write("      <tr align=\"left\" valign=\"top\"><td>Format:</td>");
+                    Output.Write("      <tr style=\"vertical-align:top\"><td>Format:</td>");
                     Output.Write("<td><input type=\"radio\" name=\"email_format\" id=\"email_format_html\" value=\"html\" checked=\"checked\" /> <label for=\"email_format_html\">HTML</label> &nbsp; &nbsp; ");
                     Output.WriteLine("<input type=\"radio\" name=\"email_format\" id=\"email_format_text\" value=\"text\" /> <label for=\"email_format_text\">Plain Text</label></td></tr>");
 
@@ -876,9 +876,13 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("    </table>");
                     Output.WriteLine("    <br />");
                     Output.WriteLine("  </fieldset><br />");
-                    Output.WriteLine("  <center><a href=\"\" onclick=\"return email_form_close();\"><img border=\"0\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/send_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
+                    Output.WriteLine("  <div style=\"text-align:center; font-size:1.3em;\">");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return email_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SEND </button>");
+                    Output.WriteLine("  </div><br />");
                     Output.WriteLine("</div>");
                     Output.WriteLine();
+
                 }
 
                 #endregion
@@ -891,8 +895,8 @@ namespace SobekCM.Library.HTML
                     if (RequestSpecificValues.Current_User != null)
                     {
                         Output.WriteLine("<!-- Save search/browse -->");
-                        Output.WriteLine("<div class=\"add_popup_div\" id=\"add_item_form\" style=\"display:none;\">");
-                        Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">A<span class=\"smaller\">DD THIS</span> " + currentTitle + "<span class=\"smaller\"> TO YOUR</span> S<span class=\"smaller\">AVED</span> S<span class=\"smaller\">EARCHES</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"add_item_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+                        Output.WriteLine("<div class=\"add_popup_div\" id=\"save_search_form\" style=\"display:none;\">");
+                        Output.WriteLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">A<span class=\"smaller\">DD THIS</span> " + currentTitle + "<span class=\"smaller\"> TO YOUR</span> S<span class=\"smaller\">AVED</span> S<span class=\"smaller\">EARCHES</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"save_search_form_close()\">X</a> &nbsp; </td></tr></table></div>");
                         Output.WriteLine("  <br />");
                         Output.WriteLine("  <fieldset><legend>Enter notes for this " + currentName + " &nbsp; </legend>");
                         Output.WriteLine("    <br />");
@@ -905,7 +909,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("    </table>");
                         Output.WriteLine("    <br />");
                         Output.WriteLine("  </fieldset><br />");
-                        Output.WriteLine("  <center><a href=\"\" onclick=\"return add_item_form_close();\"><img border=\"0\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
+                        Output.WriteLine("  <center><a href=\"\" onclick=\"return save_search_form_close();\"><img border=\"0\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/cancel_button_g.gif\" alt=\"CLOSE\" /></a> &nbsp; &nbsp; <input type=\"image\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/save_button_g.gif\" value=\"Submit\" alt=\"Submit\"></center><br />");
                         Output.WriteLine("</div>");
                         Output.WriteLine();
                     }
@@ -963,7 +967,7 @@ namespace SobekCM.Library.HTML
                 if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results) && (RequestSpecificValues.Results_Statistics.Total_Items == 0))
                 {
                     Output.WriteLine("<div class=\"sbkPrsw_DescPanel\" style=\"margin-top:10px\">");
-                    Show_Search_Info(Output);
+                    Show_Search_Info(Output, true);
                     Output.WriteLine("</div>");
                     Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">&nbsp;</div>");
                     return true;
@@ -1003,8 +1007,8 @@ namespace SobekCM.Library.HTML
                     descriptionBuilder.Append("<div class=\"sbkPrsw_ResultsExplanation\">");
                     StringBuilder searchInfoBuilder = new StringBuilder();
                     StringWriter writer = new StringWriter(searchInfoBuilder);
-                    Show_Search_Info(writer);
-                    summation = searchInfoBuilder.ToString().Replace("<i>", "").Replace("</i>", "").Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26").Replace("</td>", "");
+                    Show_Search_Info(writer, false);
+                    summation = remove_html_tags(searchInfoBuilder.ToString()).Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26");
                     descriptionBuilder.Append(searchInfoBuilder);
                     descriptionBuilder.Append("</div>");
                     DESCRIPTION = descriptionBuilder.ToString();
@@ -1161,10 +1165,49 @@ namespace SobekCM.Library.HTML
 			return true;
 		}
 
+        private static string remove_html_tags(string MixedHtmlText )
+        {
+            StringBuilder builder = new StringBuilder(MixedHtmlText.Length);
+            bool inTag = false;
+            char lastChar = '_';
+            foreach (char thisChar in MixedHtmlText)
+            {
+                switch( thisChar )
+                {
+                    case '>':
+                        inTag = false;
+                        break;
+
+                    case '<':
+                        inTag = true;
+                        break;
+
+                    case ' ':
+                        if ((!inTag) && ( lastChar != ' ' ))
+                        {
+                            builder.Append(' ');
+                            lastChar = ' ';
+                        }
+                        break;
+
+                    default:
+                        if (!inTag)
+                        {
+                            builder.Append(thisChar);
+                            lastChar = thisChar;
+                        }
+                        break;
+                }
+            }
+
+            return builder.ToString();
+        }
+
 		/// <summary> Renders the text about this search (i.e., &quot;Your search for ... resulted in ...&quot; )
 		/// directly to the output stream </summary>
 		/// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
-		protected void Show_Search_Info(TextWriter Output)
+        /// <param name="IncludeResultCount"> Flag tells whether to include the number of results in the text </param>
+		protected void Show_Search_Info(TextWriter Output, bool IncludeResultCount )
 		{
 			string and_language = "and ";
 			string or_language = "or ";
@@ -1465,6 +1508,9 @@ namespace SobekCM.Library.HTML
 					Output.Write(on_one_date, RequestSpecificValues.Current_Mode.DateRange_Year1);
 				}
 			}
+
+            if (!IncludeResultCount)
+                return;
 
             if ((RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Titles == 0))
 			{

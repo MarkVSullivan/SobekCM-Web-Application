@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using SobekCM.Builder_Library.Settings;
 using SobekCM.Library.Database;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Utilities;
@@ -23,6 +24,10 @@ namespace SobekCM.Builder_Library.Modules.Folders
         {
             if (Settings.Builder_Verbose_Flag)
                 OnProcess("ValidateAndClassifyModule.Perform_BulkLoader: Begin validating and classifying packages in incoming/process folders", "Verbose", String.Empty, String.Empty, -1);
+
+            // If the maximum number of (incoming, non-delete) packages have already been set aside to process, no need to continue on this folder
+            if (IncomingPackages.Count >= Builder_Settings.Instance_Package_Limit)
+                return;
 
             try
             {
@@ -180,6 +185,10 @@ namespace SobekCM.Builder_Library.Modules.Folders
                                     }
                                 }
                             }
+
+                            // If the maximum number of (incoming, non-delete) packages has now been met, no need to classify anymore
+                            if (IncomingPackages.Count >= Builder_Settings.Instance_Package_Limit)
+                                return;
                         }
                     }
                 }

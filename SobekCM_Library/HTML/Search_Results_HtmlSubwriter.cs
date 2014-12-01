@@ -18,7 +18,7 @@ namespace SobekCM.Library.HTML
         private PagedResults_HtmlSubwriter writeResult;
 
         /// <summary> Constructor for a new instance of the Search_Results_HtmlSubwriter class </summary>
-        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        /// <param name="RequestSpecificValues"> All the neFcessary, non-global data specific to the current request </param>
         public Search_Results_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
         {
             // Do nothing

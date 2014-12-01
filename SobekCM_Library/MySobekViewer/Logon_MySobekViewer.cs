@@ -91,8 +91,17 @@ namespace SobekCM.Library.MySobekViewer
                         string raw_url = HttpContext.Current.Items["Original_URL"].ToString();
                         if (raw_url.ToLower().IndexOf("my/logon") > 0)
                         {
-                            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                            if (RequestSpecificValues.Current_Mode.Return_URL.Length > 0)
+                            {
+                                HttpContext.Current.Response.Redirect(RequestSpecificValues.Current_Mode.Return_URL, false);
+                                RequestSpecificValues.Current_Mode.Request_Completed = true;
+                                return;
+                            }
+                            else
+                            {
+                                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                            }
                         }
                         else
                         {

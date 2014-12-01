@@ -1666,23 +1666,37 @@ function save_search_form_open(linkname, id) {
 	hiddenfield.value = 'save_search';
 
 	// Toggle the save search form
-	blanket_size('add_item_form', linkname, 90);
+	blanket_size('save_search_form', linkname, 90);
 
 	// Position this form differently, since it is buried in the middle of the form
-	var popUpDiv = document.getElementById('add_item_form');
+	var popUpDiv = document.getElementById('save_search_form');
 	popUpDiv.style.left = '120px';
 
 	toggle('blanket_outer');
-	toggle('add_item_form');
+	toggle('save_search_form');
 
 	// Create the draggable object to allow this window to be dragged around
-	$("#add_item_form").draggable();
+	$("#save_search_form").draggable();
 
 	// Put focus on the notes
 	var focusfield = document.getElementById('add_notes');
 	focusfield.focus();
 
 	return false;
+}
+
+
+// Close the add item form
+function save_search_form_close() {
+    // Clear the hidden value this data
+    var hiddenfield = document.getElementById('item_action');
+    hiddenfield.value = '';
+
+    // Close the associated form
+    popdown('save_search_form');
+
+    // Return false to prevent a return trip to the server
+    return false;
 }
 
 

@@ -2996,20 +2996,20 @@ namespace SobekCM.Library.HTML
 		    Output.WriteLine("    window.onload = function() { ");
 		    if (date1.HasValue)
 		    {
-			    Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date1input\", target_cssClass:\"smallinput\", launcher:\"calendar1img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + date1.Value.Year + ", month:" + date1.Value.Month + ", day:" + date1.Value.Day + "	} 	});");
+                Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date1input\", target_cssClass:\"sbkShw_smallinput\", launcher:\"calendar1img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + date1.Value.Year + ", month:" + date1.Value.Month + ", day:" + date1.Value.Day + "	} 	});");
 		    }
 		    else
 		    {
-			    Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date1input\", target_cssClass:\"smallinput\", launcher:\"calendar1img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + DateTime.Now.Year + ", month:" + DateTime.Now.Month + ", day:" + DateTime.Now.Day + "	} 	});");
+                Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date1input\", target_cssClass:\"sbkShw_smallinput\", launcher:\"calendar1img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + DateTime.Now.Year + ", month:" + DateTime.Now.Month + ", day:" + DateTime.Now.Day + "	} 	});");
 		    }
 
 		    if (date2.HasValue)
 		    {
-			    Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date2input\", target_cssClass:\"smallinput\", launcher:\"calendar2img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + date2.Value.Year + ", month:" + date2.Value.Month + ", day:" + date2.Value.Day + "	} 	});");
+                Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date2input\", target_cssClass:\"sbkShw_smallinput\", launcher:\"calendar2img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + date2.Value.Year + ", month:" + date2.Value.Month + ", day:" + date2.Value.Day + "	} 	});");
 		    }
 		    else
 		    {
-			    Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date2input\", target_cssClass:\"smallinput\", launcher:\"calendar2img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + DateTime.Now.Year + ", month:" + DateTime.Now.Month + ", day:" + DateTime.Now.Day + "	} 	});");
+                Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date2input\", target_cssClass:\"sbkShw_smallinput\", launcher:\"calendar2img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + DateTime.Now.Year + ", month:" + DateTime.Now.Month + ", day:" + DateTime.Now.Day + "	} 	});");
 		    }
 		    Output.WriteLine("    }; ");
 		    Output.WriteLine("  </script>");
@@ -3021,11 +3021,11 @@ namespace SobekCM.Library.HTML
 		    Output.WriteLine("        <td>From:</td>");
 		    if (date1.HasValue)
 		    {
-			    Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"smallinput\" value=\"" + date1.Value.ToShortDateString() + "\" onfocus=\"textbox_enter_default_value(this, 'smallinput');\" onblur=\"textbox_leave_default_value(this, 'smallinput');\" /></td>");
+                Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"sbkShw_smallinput\" value=\"" + date1.Value.ToShortDateString() + "\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
 		    }
 		    else
 		    {
-			    Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"smallinput_initial\" value=\"mm/dd/yyyy\" onfocus=\"textbox_enter_default_value(this, 'smallinput');\" onblur=\"textbox_leave_default_value(this, 'smallinput');\" /></td>");
+                Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"sbkShw_smallinput_initial\" value=\"mm/dd/yyyy\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
 		    }
 		    Output.WriteLine("        <td style=\"width:50px;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/calendar_button.png\" title=\"Show a calendar to select this date\"  onclick=\"return false;\" name=\"calendar1img\" ID=\"calendar1img\" class=\"calendar_button\" /></td>");
 		    Output.WriteLine("        <td>&nbsp;</td>");
@@ -3036,11 +3036,11 @@ namespace SobekCM.Library.HTML
 		    Output.WriteLine("        <td>To:</td>");
 		    if (date2.HasValue)
 		    {
-			    Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"smallinput\" value=\"" + date2.Value.ToShortDateString() + "\" onfocus=\"textbox_enter_default_value(this, 'smallinput');\" onblur=\"textbox_leave_default_value(this, 'smallinput');\" /></td>");
+                Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"sbkShw_smallinput\" value=\"" + date2.Value.ToShortDateString() + "\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
 		    }
 		    else
 		    {
-			    Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"smallinput_initial\" value=\"mm/dd/yyyy\" onfocus=\"textbox_enter_default_value(this, 'smallinput');\" onblur=\"textbox_leave_default_value(this, 'smallinput');\" /></td>");
+                Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"sbkShw_smallinput_initial\" value=\"mm/dd/yyyy\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
 		    }
 		    Output.WriteLine("        <td><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/calendar_button.png\" title=\"Show a calendar to select this date\" onclick=\"return false;\" name=\"calendar2img\" ID=\"calendar2img\" class=\"calendar_button\" /></td>");
 		    Output.WriteLine("        <td>");

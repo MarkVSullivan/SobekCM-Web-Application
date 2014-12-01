@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.Configuration;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
@@ -256,6 +257,10 @@ namespace SobekCM.Builder
 				preloader_logger.AddError("No active databases in config file... Aborting");
 				return;
 			}
+
+            // Set the maximum number of packages to process before moving to the next instance
+            if (loaders.Count > 1)
+                Builder_Settings.Instance_Package_Limit = 100;
 
 	        bool firstRun = true;
 

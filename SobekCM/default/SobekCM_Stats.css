@@ -91,3 +91,7 @@
 
 .sbkShw_RoundButton { background-color: #7d90d5; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 4px 10px 2px 10px; cursor: pointer; font-size: 1.1em; letter-spacing: 0.5px; }
 .sbkShw_RoundButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
+
+
+.sbkShw_smallinput { width: 120px; color: Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
+.sbkShw_smallinput_initial { width: 120px; color: Gray; font-style:italic; border-style:solid; border-width: 1px; border-color: #7f9db9; }

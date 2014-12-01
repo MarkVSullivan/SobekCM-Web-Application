@@ -587,13 +587,23 @@ namespace SobekCM.Library.HTML
                     {
                         Output.WriteLine("    <span id=\"sendbutton\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
 
-                        Output.WriteLine("    <span id=\"savebutton\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + save_text + "</span></span>");
+                        Output.WriteLine("    <span id=\"savebutton\" class=\"action-sf-menu-item\" onclick=\"save_search_form_open();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + save_text + "</span></span>");
                     }
                     else
                     {
-                        Output.WriteLine("    <span id=\"sendbutton\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
+                        string returnUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        Display_Mode_Enum currMode = RequestSpecificValues.Current_Mode.Mode;
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+                        RequestSpecificValues.Current_Mode.Return_URL = returnUrl;
+                        string logOnUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        RequestSpecificValues.Current_Mode.Mode = currMode;
+                        RequestSpecificValues.Current_Mode.Return_URL = String.Empty;
 
-                        Output.WriteLine("    <span id=\"savebutton\" class=\"action-sf-menu-item\" onclick=\"window.location='?m=hmh';\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + save_text + "</span></span>");
+
+                        Output.WriteLine("    <span id=\"sendbutton\" class=\"action-sf-menu-item\" onclick=\"window.location='" + logOnUrl + "';\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
+
+                        Output.WriteLine("    <span id=\"savebutton\" class=\"action-sf-menu-item\" onclick=\"window.location='" + logOnUrl + "';\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + save_text + "</span></span>");
                     }
 
                     Output.WriteLine("    <span id=\"sharebutton\" class=\"action-sf-menu-item\" onclick=\"return toggle_share_form2('share_button');\"><span id=\"sharebuttonspan\">Share</span></span>");
