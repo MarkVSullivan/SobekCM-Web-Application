@@ -1,3 +1,5 @@
+/** Update SobekCM from 4.01 to 4.02 ***/
+
 
 CREATE TABLE [dbo].[SobekCM_Item_Viewer_Priority](
 	[ItemViewPriorityID] [int] IDENTITY(1,1) NOT NULL,
