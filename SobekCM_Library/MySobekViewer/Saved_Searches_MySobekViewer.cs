@@ -64,10 +64,15 @@ namespace SobekCM.Library.MySobekViewer
             get { return "My Saved Searches"; }
         }
 
-        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
+        public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Do nothing
+        }
+
+        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area with the form </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Saved_Searches_MySobekViewer.Write_HTML", String.Empty);
             DataTable searchesTable = SobekCM_Database.Get_User_Searches(RequestSpecificValues.Current_User.UserID, Tracer);

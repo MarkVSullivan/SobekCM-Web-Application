@@ -518,7 +518,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // If this is submitted items, don't show the folders
             string redirect_url = String.Empty;
-            if (properFolderName != "Submitted Items")
+            if ( properFolderName != "Submitted Items")
             {
                 // Determine the redirect
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "XXXXXXXXXXXXXXXXXX";
@@ -788,6 +788,9 @@ namespace SobekCM.Library.MySobekViewer
 
         private void add_children_nodes(TreeNode ParentNode, User_Folder ThisFolder, string SelectedFolder, string RedirectURL, List<TreeNode> SelectedNodes )
         {
+            if (ThisFolder.Child_Count == 0)
+                return;
+
             foreach (User_Folder childFolders in ThisFolder.Children)
             {
                 TreeNode folderNode = new TreeNode

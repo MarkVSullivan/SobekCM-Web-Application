@@ -513,7 +513,6 @@ namespace SobekCM.Library.MySobekViewer
 	    /// <summary> Add the HTML to be displayed in the main SobekCM viewer area with the form </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This class does nothing, since this form is added as controls, not HTML </remarks>
 		public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Preferences_MySobekViewer.Write_HTML", "Do nothing");

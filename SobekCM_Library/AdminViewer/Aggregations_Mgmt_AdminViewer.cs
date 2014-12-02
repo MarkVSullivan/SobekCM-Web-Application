@@ -205,7 +205,7 @@ namespace SobekCM.Library.AdminViewer
                             }
                             else
                             {
-                                bool alphaNumericTest = new_aggregation_code.All(C => Char.IsLetterOrDigit(C) || C == '_');
+                                bool alphaNumericTest = new_aggregation_code.All(C => Char.IsLetterOrDigit(C) || C == '_' || C == '-');
                                 if (!alphaNumericTest)
                                 {
                                     errors.Add("New aggregation code must be only letters and numbers");
