@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{072795B1-9409-4DF9-8422-34B44B479CE3}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SobekCM_Stats_Reader</RootNamespace>
+    <AssemblyName>SobekCM Stats Reader</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Round_Button.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Round_Button.designer.cs">
+      <DependentUpon>Round_Button.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SobekCM_Database_Selection_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SobekCM_Database_Selection_Form.designer.cs">
+      <DependentUpon>SobekCM_Database_Selection_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Stats_Reader_UserSettings.cs" />
+    <Compile Include="Stats_Setup_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Stats_Setup_Form.Designer.cs">
+      <DependentUpon>Stats_Setup_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows_Appearance_Checker.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Round_Button.resx">
+      <DependentUpon>Round_Button.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SobekCM_Database_Selection_Form.resx">
+      <DependentUpon>SobekCM_Database_Selection_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Stats_Setup_Form.resx">
+      <DependentUpon>Stats_Setup_Form.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\SobekCM_Builder_Library\SobekCM_Builder_Library.csproj">
+      <Project>{211c5d6b-f983-4cff-ab58-302a6ecfe14f}</Project>
+      <Name>SobekCM_Builder_Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\SobekCM_Core\SobekCM_Core.csproj">
+      <Project>{849c78a5-c60b-4faf-9efb-943753f64e56}</Project>
+      <Name>SobekCM_Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\SobekCM_Engine_Library\SobekCM_Engine_Library.csproj">
+      <Project>{c5d75f1a-c5d8-428d-bba3-ea946fd539e1}</Project>
+      <Name>SobekCM_Engine_Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\SobekCM_Library\SobekCM_Library.csproj">
+      <Project>{4426ff50-74c7-4b88-878b-efb9bc2317bd}</Project>
+      <Name>SobekCM_Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
+      <Project>{395c2621-ce19-41e0-aa1a-abdb37f6e815}</Project>
+      <Name>SobekCM_Resource_Object</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\SobekCM_Tools\SobekCM_Tools.csproj">
+      <Project>{a511ce4c-7bd6-4446-bca8-ab71f7aa8078}</Project>
+      <Name>SobekCM_Tools</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

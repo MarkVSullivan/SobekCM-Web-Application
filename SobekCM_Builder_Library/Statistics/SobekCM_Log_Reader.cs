@@ -11,6 +11,7 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Skins;
 using SobekCM.EngineLibrary.ApplicationState;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Library;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
@@ -150,7 +151,8 @@ namespace SobekCM.Builder_Library.Statistics
                     {
                         SobekCM_Navigation_Object currentMode = new SobekCM_Navigation_Object();
                         SobekCM_QueryString_Analyzer.Parse_Query(queryStringCollection, currentMode, hit.SobekCM_URL,
-                            new string[] {"en"}, Codes, Collection_Aliases, Item_Lookup_Object, URL_Portals, null);
+                            new string[] { "en" }, Engine_ApplicationCache_Gateway.Codes, Engine_ApplicationCache_Gateway.Collection_Aliases,
+                            Engine_ApplicationCache_Gateway.Items, Engine_ApplicationCache_Gateway.URL_Portals, null);
 
                         if (currentMode != null)
                             currentMode.Set_Robot_Flag(hit.UserAgent, hit.IP);
