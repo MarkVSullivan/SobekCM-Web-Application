@@ -542,7 +542,8 @@ namespace SobekCM.Library.AdminViewer
 										if ((adminAggr.CanSelect != existingAggr[adminAggr.Code].CanSelect) || (adminAggr.CanEditMetadata != existingAggr[adminAggr.Code].CanEditMetadata) ||
 											(adminAggr.CanEditBehaviors != existingAggr[adminAggr.Code].CanEditBehaviors) || (adminAggr.CanPerformQc != existingAggr[adminAggr.Code].CanPerformQc) ||
 											(adminAggr.CanUploadFiles != existingAggr[adminAggr.Code].CanUploadFiles) || (adminAggr.CanChangeVisibility != existingAggr[adminAggr.Code].CanChangeVisibility) ||
-											(adminAggr.CanDelete != existingAggr[adminAggr.Code].CanDelete) || (adminAggr.IsCurator != existingAggr[adminAggr.Code].IsCurator) || (adminAggr.OnHomePage != existingAggr[adminAggr.Code].OnHomePage))
+											(adminAggr.CanDelete != existingAggr[adminAggr.Code].CanDelete) || (adminAggr.IsCurator != existingAggr[adminAggr.Code].IsCurator) ||
+                                            (adminAggr.OnHomePage != existingAggr[adminAggr.Code].OnHomePage) || (adminAggr.IsAdmin != existingAggr[adminAggr.Code].IsAdmin))
 										{
 											update_aggregations = true;
 											break;

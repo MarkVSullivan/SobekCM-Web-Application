@@ -639,6 +639,9 @@ namespace SobekCM.Core.Settings
 
         #endregion
 
+
+        public Shibboleth_Configuration Shibboleth { get; set; }
+
         /// <summary> Gets the user-in-process directory </summary>
         /// <param name="CurrentUser"> Current user, for which to find the in-process directory </param>
         /// <param name="DirectoryName"> Subdirectory requested </param>

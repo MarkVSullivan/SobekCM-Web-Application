@@ -1428,28 +1428,31 @@ namespace SobekCM.Library
 
                 DataView viewer = new DataView(AllItems.Tables[0]) {Sort = "CreateDate DESC"};
 
-                StreamWriter rss_writer = new StreamWriter(RssFeedLocation + Collection_Code + "_rss.xml");
+                StreamWriter rss_writer = new StreamWriter(RssFeedLocation + Collection_Code + "_rss.xml", false, Encoding.UTF8);
                 rss_writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-                rss_writer.WriteLine("<rss version=\"2.0\">");
+                rss_writer.WriteLine("<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
                 rss_writer.WriteLine("<channel>");
                 rss_writer.WriteLine("<title>" + Collection_Title.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;") + " (All Items) </title>");
                 rss_writer.WriteLine("<link>" + primaryWebServerUrl+ "data/rss/" + Collection_Code + "_rss.xml</link>");
+                rss_writer.WriteLine("<atom:link href=\"" + primaryWebServerUrl + "rss/" + Collection_Code + "_rss.xml\" rel=\"self\" type=\"application/rss+xml\" />");
                 rss_writer.WriteLine("<description></description>");
                 rss_writer.WriteLine("<language>en</language>");
-                rss_writer.WriteLine("<copyright>Copyright 2008-2011</copyright>");
-                rss_writer.WriteLine("<lastBuildDate>" + DateTime.Now.ToUniversalTime().ToLongTimeString() + "</lastBuildDate>");
+                rss_writer.WriteLine("<copyright>Copyright " + DateTime.Now.Year + "</copyright>");
+                rss_writer.WriteLine("<lastBuildDate>" + DateTime_Helper.ToRfc822(DateTime.Now) + "</lastBuildDate>");
+
                 rss_writer.WriteLine("");
 
-                StreamWriter short_rss_writer = new StreamWriter(RssFeedLocation + Collection_Code + "_short_rss.xml");
+                StreamWriter short_rss_writer = new StreamWriter(RssFeedLocation + Collection_Code + "_short_rss.xml", false, Encoding.UTF8);
                 short_rss_writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-                short_rss_writer.WriteLine("<rss version=\"2.0\">");
+                short_rss_writer.WriteLine("<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">");
                 short_rss_writer.WriteLine("<channel>");
                 short_rss_writer.WriteLine("<title>" + Collection_Title.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;") + " (Most Recent Items) </title>");
-                short_rss_writer.WriteLine("<link>" + primaryWebServerUrl + "data/rss/" + Collection_Code + "_short_rss.xml</link>");
+                short_rss_writer.WriteLine("<link>" + primaryWebServerUrl + "rss/" + Collection_Code + "_short_rss.xml</link>");
+                short_rss_writer.WriteLine("<atom:link href=\"" + primaryWebServerUrl + "rss/" + Collection_Code + "_short_rss.xml\" rel=\"self\" type=\"application/rss+xml\" />");
                 short_rss_writer.WriteLine("<description></description>");
                 short_rss_writer.WriteLine("<language>en</language>");
-                short_rss_writer.WriteLine("<copyright>Copyright 2008</copyright>");
-                short_rss_writer.WriteLine("<lastBuildDate>" + DateTime.Now.ToUniversalTime().ToLongTimeString() + "</lastBuildDate>");
+                short_rss_writer.WriteLine("<copyright>Copyright " + DateTime.Now.Year + "</copyright>");
+                short_rss_writer.WriteLine("<lastBuildDate>" + DateTime_Helper.ToRfc822(DateTime.Now) + "</lastBuildDate>");
                 short_rss_writer.WriteLine("");
 
                 foreach (DataRowView thisRowView in viewer)
@@ -1465,62 +1468,17 @@ namespace SobekCM.Library
                         short_rss_writer.WriteLine("<title>" + thisRowView.Row["Title"].ToString().Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;") + "</title>");
                         short_rss_writer.WriteLine("<description></description>");
 
-
                         short_rss_writer.WriteLine("<link>" + primaryWebServerUrl + bibid + "/" + vid + "</link>");
-                        try
-                        {
-                            string create_date_string = thisRowView.Row["CreateDate"].ToString();
-                            DateTime dateTime = Convert.ToDateTime(create_date_string).ToUniversalTime();
-                            if (create_date_string.Length > 0)
-                            {
-                                string month = "UNK";
-                                switch (dateTime.Month)
-                                {
-                                    case 1:
-                                        month = "Jan";
-                                        break;
-                                    case 2:
-                                        month = "Feb";
-                                        break;
-                                    case 3:
-                                        month = "Mar";
-                                        break;
-                                    case 4:
-                                        month = "Apr";
-                                        break;
-                                    case 5:
-                                        month = "May";
-                                        break;
-                                    case 6:
-                                        month = "Jun";
-                                        break;
-                                    case 7:
-                                        month = "Jul";
-                                        break;
-                                    case 8:
-                                        month = "Aug";
-                                        break;
-                                    case 9:
-                                        month = "Sep";
-                                        break;
-                                    case 10:
-                                        month = "Oct";
-                                        break;
-                                    case 11:
-                                        month = "Nov";
-                                        break;
-                                    case 12:
-                                        month = "Dec";
-                                        break;
 
-                                }
-                                short_rss_writer.WriteLine("<pubDate>" + dateTime.DayOfWeek.ToString() + ", " + dateTime.Day + " " + month + " " + dateTime.Year + " " + dateTime.Hour + ":" + dateTime.Minute.ToString().PadLeft(2, '0') + ":" + dateTime.Second.ToString().PadLeft(2, '0') + " GMT </pubDate>");
-                            }
-                        }
-                        catch ( Exception )
+                        string create_date_string = thisRowView.Row["CreateDate"].ToString();
+                        DateTime dateTime;
+                        if (DateTime.TryParse(create_date_string, out dateTime))
                         {
-                            // Do nothing here
+                            string formattedDate = DateTime_Helper.ToRfc822(dateTime);
+                            short_rss_writer.WriteLine("<pubDate>" + formattedDate + " </pubDate>");
                         }
+
+                        short_rss_writer.WriteLine("<guid>" + primaryWebServerUrl + bibid + "/" + vid + "</guid>");
                         short_rss_writer.WriteLine("</item>");
                         short_rss_writer.WriteLine("");
                     }
@@ -1530,60 +1488,15 @@ namespace SobekCM.Library
                     rss_writer.WriteLine("<description></description>");
                     rss_writer.WriteLine("<link>" + primaryWebServerUrl + bibid + "/" + vid + "</link>");
 
-                    try
+                    string create_date_string2 = thisRowView.Row["CreateDate"].ToString();
+                    DateTime dateTime2;
+                    if (DateTime.TryParse(create_date_string2, out dateTime2))
                     {
-                        string create_date_string = thisRowView.Row["CreateDate"].ToString();
-                        DateTime dateTime = Convert.ToDateTime(create_date_string).ToUniversalTime();
-                        if (create_date_string.Length > 0)
-                        {
-                            string month = "UNK";
-                            switch (dateTime.Month)
-                            {
-                                case 1:
-                                    month = "Jan";
-                                    break;
-                                case 2:
-                                    month = "Feb";
-                                    break;
-                                case 3:
-                                    month = "Mar";
-                                    break;
-                                case 4:
-                                    month = "Apr";
-                                    break;
-                                case 5:
-                                    month = "May";
-                                    break;
-                                case 6:
-                                    month = "Jun";
-                                    break;
-                                case 7:
-                                    month = "Jul";
-                                    break;
-                                case 8:
-                                    month = "Aug";
-                                    break;
-                                case 9:
-                                    month = "Sep";
-                                    break;
-                                case 10:
-                                    month = "Oct";
-                                    break;
-                                case 11:
-                                    month = "Nov";
-                                    break;
-                                case 12:
-                                    month = "Dec";
-                                    break;
+                        string formattedDate = DateTime_Helper.ToRfc822(dateTime2);
+                        rss_writer.WriteLine("<pubDate>" + formattedDate + " </pubDate>");
+                    }
 
-                            }
-                            rss_writer.WriteLine("<pubDate>" + dateTime.DayOfWeek.ToString() + ", " + dateTime.Day + " " + month + " " + dateTime.Year + " " + dateTime.Hour + ":" + dateTime.Minute.ToString().PadLeft(2, '0') + ":" + dateTime.Second.ToString().PadLeft(2, '0') + " GMT </pubDate>");
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        // Do nothing here
-                    }
+                    rss_writer.WriteLine("<guid>" + primaryWebServerUrl + bibid + "/" + vid + "</guid>");
                     rss_writer.WriteLine("</item>");
                     rss_writer.WriteLine("");
                 }

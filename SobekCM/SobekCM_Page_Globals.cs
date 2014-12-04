@@ -565,111 +565,195 @@ namespace SobekCM
 			if (HttpContext.Current.Session["user"] == null)
 			{
 				// If this is a responce from Shibboleth/Gatorlink, get the user information and register them if necessary
-				string shibboleth_id = HttpContext.Current.Request.ServerVariables[UI_ApplicationCache_Gateway.Settings.Shibboleth_User_Identity_Attribute];
-				if (shibboleth_id == null)
-				{
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Shibboleth_User_Identity_Attribute + " server variable NOT found");
+			    if ((UI_ApplicationCache_Gateway.Settings.Shibboleth != null) && (UI_ApplicationCache_Gateway.Settings.Shibboleth.Enabled))
+			    {
+			        string shibboleth_id = HttpContext.Current.Request.ServerVariables[UI_ApplicationCache_Gateway.Settings.Shibboleth.UserIdentityAttribute];
+			        if (shibboleth_id == null)
+			        {
+			            if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			            {
+                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Shibboleth.UserIdentityAttribute + " server variable NOT found");
 
-					// For debugging purposes, if this SHOULD have included SHibboleth information, show in the trace route
-					if (HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth"))
-					{
-						foreach (string var in HttpContext.Current.Request.ServerVariables)
-						{
-							tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variables: " + var + " --> " + HttpContext.Current.Request.ServerVariables[var]);
-						}
-					}
-				}
-				else
-				{
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Shibboleth_User_Identity_Attribute + " server variable found");
+			                // For debugging purposes, if this SHOULD have included SHibboleth information, show in the trace route
+			                if (HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth"))
+			                {
+			                    foreach (string var in HttpContext.Current.Request.ServerVariables)
+			                    {
+			                        tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variables: " + var + " --> " + HttpContext.Current.Request.ServerVariables[var]);
+			                    }
+			                }
+			            }
+			        }
+			        else
+			        {
+			            if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			            {
+                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Shibboleth.UserIdentityAttribute + " server variable found");
 
-					tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Shibboleth_User_Identity_Attribute + " server variable = '" + shibboleth_id + "'");
+                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Shibboleth.UserIdentityAttribute + " server variable = '" + shibboleth_id + "'");
 
-					if (shibboleth_id.Length > 0)
-					{
-						tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Pulling from database by shibboleth id");
+			                // For debugging purposes, if this SHOULD have included SHibboleth information, show in the trace route
+                            if (HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth"))
+                            {
+                                foreach (string var in HttpContext.Current.Request.ServerVariables)
+                                {
+                                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variables: " + var + " --> " + HttpContext.Current.Request.ServerVariables[var]);
+                                }
+                            }
+			            }
 
-						User_Object possible_user_by_shibboleth_id = SobekCM_Database.Get_User(shibboleth_id, tracer);
+			            if (shibboleth_id.Length > 0)
+			            {
+			                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Pulling from database by shibboleth id");
 
-						// Check to see if we got a valid user back
-						if (possible_user_by_shibboleth_id != null)
-						{
-							tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting session user from shibboleth id");
-							possible_user_by_shibboleth_id.Authentication_Type = User_Authentication_Type_Enum.Shibboleth;
-							HttpContext.Current.Session["user"] = possible_user_by_shibboleth_id;
-						}
-						else
-						{
-							tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "User from shibboleth id was null.. adding user");
+			                User_Object possible_user_by_shibboleth_id = SobekCM_Database.Get_User(shibboleth_id, tracer);
 
-							// First pull the data from the Shibboleth session
-							string email = String.Empty;
-							string lastname = String.Empty;
-							string firstname = String.Empty;
-							if (HttpContext.Current.Request.ServerVariables["HTTP_EPPN"] != null)
-								email = HttpContext.Current.Request.ServerVariables["HTTP_EPPN"];
-							if (HttpContext.Current.Request.ServerVariables["HTTP_SN"] != null)
-								lastname = HttpContext.Current.Request.ServerVariables["HTTP_SN"];
-							if (HttpContext.Current.Request.ServerVariables["HTTP_GIVENNAME"] != null)
-								firstname = HttpContext.Current.Request.ServerVariables["HTTP_GIVENNAME"];
+			                // Check to see if we got a valid user back
+			                if (possible_user_by_shibboleth_id != null)
+			                {
+			                    if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                    {
+			                        // Set the user information from the server variables here 
+			                        foreach (string var in HttpContext.Current.Request.ServerVariables)
+			                        {
+			                            User_Object_Attribute_Mapping_Enum mapping = UI_ApplicationCache_Gateway.Settings.Shibboleth.Get_User_Object_Mapping(var);
+			                            if (mapping != User_Object_Attribute_Mapping_Enum.NONE)
+			                            {
+			                                string value = HttpContext.Current.Request.ServerVariables[var];
 
-							// Now build the user object
-							User_Object newUser = new User_Object();
-							if ((HttpContext.Current.Request.ServerVariables["HTTP_PRIMARY-AFFILIATION"] != null) && (HttpContext.Current.Request.ServerVariables["HTTP_PRIMARY-AFFILIATION"].IndexOf("F") >= 0))
-								newUser.Can_Submit = true;
-							else
-								newUser.Can_Submit = false;
-							newUser.Send_Email_On_Submission = true;
-							newUser.Email = email;
-							newUser.Family_Name = lastname;
-							newUser.Given_Name = firstname;
-							newUser.Organization = "University of Florida";
-							newUser.ShibbID = shibboleth_id;
-							newUser.UserID = -1;
-							if (email.Length > 0)
-								newUser.UserName = email;
-							else
-								newUser.UserName = newUser.Family_Name + shibboleth_id;
+			                                if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                                {
+			                                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variable " + var + " ( " + value + " ) would have been mapped to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(mapping));
+			                                }
+			                            }
+			                            else if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                            {
+			                                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variable " + var + " is not mapped to a user attribute");
+			                            }
+			                        }
 
-							// Set a random password
-							StringBuilder passwordBuilder = new StringBuilder();
-							Random randomGenerator = new Random(DateTime.Now.Millisecond);
-							for (int i = 0; i < 5; i++)
-							{
-								int randomNumber = randomGenerator.Next(97, 122);
-								passwordBuilder.Append((char) randomNumber);
+			                        // Set any constants as well
+			                        foreach (KeyValuePair<User_Object_Attribute_Mapping_Enum, string> constantMapping in UI_ApplicationCache_Gateway.Settings.Shibboleth.Constants)
+			                        {
+			                            if (constantMapping.Key != User_Object_Attribute_Mapping_Enum.NONE)
+			                            {
+			                                if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                                {
+			                                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Constant value ( " + constantMapping.Value + " ) would have been set to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Key));
+			                                }
+			                            }
+			                        }
+			                    }
 
-								int randomNumber2 = randomGenerator.Next(65, 90);
-								passwordBuilder.Append((char) randomNumber2);
-							}
-							string password = passwordBuilder.ToString();
+			                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting session user from shibboleth id");
+			                    possible_user_by_shibboleth_id.Authentication_Type = User_Authentication_Type_Enum.Shibboleth;
+			                    HttpContext.Current.Session["user"] = possible_user_by_shibboleth_id;
+			                }
+			                else
+			                {
+			                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "User from shibboleth id was null.. adding user");
 
-							// Now, save this user
-							SobekCM_Database.Save_User(newUser, password, newUser.Authentication_Type, tracer);
+			                    // Now build the user object
+			                    User_Object newUser = new User_Object();
+			                    if ((HttpContext.Current.Request.ServerVariables["HTTP_PRIMARY-AFFILIATION"] != null) && (HttpContext.Current.Request.ServerVariables["HTTP_PRIMARY-AFFILIATION"].IndexOf("F") >= 0))
+			                        newUser.Can_Submit = true;
+			                    else
+			                        newUser.Can_Submit = false;
+			                    newUser.Send_Email_On_Submission = true;
+			                    newUser.Email = String.Empty;
+			                    newUser.Family_Name = String.Empty;
+			                    newUser.Given_Name = String.Empty;
+			                    newUser.Organization = String.Empty;
+			                    newUser.ShibbID = shibboleth_id;
+			                    newUser.UserID = -1;
 
-							// Now, pull back out of the database
-							User_Object possible_user_by_shib2 = SobekCM_Database.Get_User(shibboleth_id, tracer);
-							possible_user_by_shib2.Is_Just_Registered = true;
-							possible_user_by_shib2.Authentication_Type = User_Authentication_Type_Enum.Shibboleth;
-							HttpContext.Current.Session["user"] = possible_user_by_shib2;
-						}
+			                    // Set the user information from the server variables here 
+			                    foreach (string var in HttpContext.Current.Request.ServerVariables)
+			                    {
+			                        User_Object_Attribute_Mapping_Enum mapping = UI_ApplicationCache_Gateway.Settings.Shibboleth.Get_User_Object_Mapping(var);
+			                        if (mapping != User_Object_Attribute_Mapping_Enum.NONE)
+			                        {
+			                            string value = HttpContext.Current.Request.ServerVariables[var];
+			                            newUser.Set_Value(mapping, value);
 
-						if (HttpContext.Current.Session["user"] != null)
-						{
-							currentMode.Mode = Display_Mode_Enum.My_Sobek;
-							currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-						}
-						else
-						{
-							currentMode.Mode = Display_Mode_Enum.Aggregation;
-							currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-							currentMode.Aggregation = String.Empty;
-						}
-						UrlWriterHelper.Redirect(currentMode);
-					}
-				}
+			                            if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                            {
+			                                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variable " + var + " ( " + value + " ) mapped to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(mapping));
+			                            }
+			                        }
+			                        else if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                        {
+			                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variable " + var + " is not mapped to a user attribute");
+			                        }
+			                    }
 
-				// If the user information is still missing , but the SobekUser cookie exists, then pull 
+			                    // Set any constants as well
+			                    foreach (KeyValuePair<User_Object_Attribute_Mapping_Enum, string> constantMapping in UI_ApplicationCache_Gateway.Settings.Shibboleth.Constants)
+			                    {
+			                        if (constantMapping.Key != User_Object_Attribute_Mapping_Enum.NONE)
+			                        {
+			                            newUser.Set_Value(constantMapping.Key, constantMapping.Value);
+
+			                            if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                            {
+			                                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting constant value ( " + constantMapping.Value + " ) to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Key));
+			                            }
+			                        }
+			                    }
+
+			                    // Set the username
+			                    if (String.IsNullOrEmpty(newUser.UserName))
+			                    {
+			                        if (newUser.Email.Length > 0)
+			                            newUser.UserName = newUser.Email;
+			                        else
+			                            newUser.UserName = newUser.Family_Name + shibboleth_id;
+			                    }
+
+			                    // Set a random password
+			                    StringBuilder passwordBuilder = new StringBuilder();
+			                    Random randomGenerator = new Random(DateTime.Now.Millisecond);
+			                    for (int i = 0; i < 5; i++)
+			                    {
+			                        int randomNumber = randomGenerator.Next(97, 122);
+			                        passwordBuilder.Append((char) randomNumber);
+
+			                        int randomNumber2 = randomGenerator.Next(65, 90);
+			                        passwordBuilder.Append((char) randomNumber2);
+			                    }
+			                    string password = passwordBuilder.ToString();
+
+			                    // Now, save this user
+			                    SobekCM_Database.Save_User(newUser, password, newUser.Authentication_Type, tracer);
+
+			                    // Now, pull back out of the database
+			                    User_Object possible_user_by_shib2 = SobekCM_Database.Get_User(shibboleth_id, tracer);
+			                    possible_user_by_shib2.Is_Just_Registered = true;
+			                    possible_user_by_shib2.Authentication_Type = User_Authentication_Type_Enum.Shibboleth;
+			                    HttpContext.Current.Session["user"] = possible_user_by_shib2;
+			                }
+
+			                if (HttpContext.Current.Session["user"] != null)
+			                {
+			                    currentMode.Mode = Display_Mode_Enum.My_Sobek;
+			                    currentMode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+			                }
+			                else
+			                {
+			                    currentMode.Mode = Display_Mode_Enum.Aggregation;
+			                    currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
+			                    currentMode.Aggregation = String.Empty;
+			                }
+
+			                if (!UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                {
+			                    UrlWriterHelper.Redirect(currentMode);
+			                }
+			            }
+			        }
+			    }
+
+			    // If the user information is still missing , but the SobekUser cookie exists, then pull 
 				// the user information from the SobekUser cookie in the current requests
 				if ((HttpContext.Current.Session["user"] == null) && (HttpContext.Current.Request.Cookies["SobekUser"] != null))
 				{

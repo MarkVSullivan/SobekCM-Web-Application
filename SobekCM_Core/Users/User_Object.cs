@@ -37,7 +37,7 @@ namespace SobekCM.Core.Users
 
 	#endregion
 
-	#region User_Authentication_Type_Enum and helped class
+	#region User_Object_Attribute_Mapping and helper class
 
 	/// <summary> Enumeration of the main public elements associated with a user </summary>
 	/// <remarks> This is used for mapping during authentication (usually the first time a user logs on) </remarks>
@@ -77,54 +77,98 @@ namespace SobekCM.Core.Users
 		Username
 	}
 
-	/// <summary> Static helper class is used to convert strings to the enumeration for
-	/// the user object attribute mapping </summary>
-	public static class User_Object_Attribute_Mapping_Enum_Converter
-	{
-		/// <summary> Convert a string to the enumeration for the user object attribute mapping </summary>
-		/// <param name="Value"> String value </param>
-		/// <returns> Enumeration value, or User_Object_Attribute_Mapping_Enum.NONE </returns>
-		public static User_Object_Attribute_Mapping_Enum ToEnum(string Value)
-		{
-			switch (Value)
-			{
-				case "USERNAME":
-					return User_Object_Attribute_Mapping_Enum.Username;
-					
-				case "EMAIL":
-					return User_Object_Attribute_Mapping_Enum.Email;
+    /// <summary> Static helper class is used to convert strings to the enumeration for
+    /// the user object attribute mapping </summary>
+    public static class User_Object_Attribute_Mapping_Enum_Converter
+    {
 
-				case "FIRSTNAME":
-					return User_Object_Attribute_Mapping_Enum.Firstname;
+        /// <summary> Convert a string to the enumeration for the user object attribute mapping </summary>
+        /// <param name="Value"> String value </param>
+        /// <returns> Enumeration value, or User_Object_Attribute_Mapping_Enum.NONE </returns>
+        public static User_Object_Attribute_Mapping_Enum ToEnum(string Value)
+        {
+            switch (Value)
+            {
+                case "USERNAME":
+                    return User_Object_Attribute_Mapping_Enum.Username;
 
-				case "LASTNAME":
-					return User_Object_Attribute_Mapping_Enum.Lastname;
+                case "EMAIL":
+                    return User_Object_Attribute_Mapping_Enum.Email;
 
-				case "NICKNAME":
-					return User_Object_Attribute_Mapping_Enum.Nickname;
+                case "FIRSTNAME":
+                    return User_Object_Attribute_Mapping_Enum.Firstname;
 
-				case "NOTES":
-					return User_Object_Attribute_Mapping_Enum.Notes;
+                case "LASTNAME":
+                    return User_Object_Attribute_Mapping_Enum.Lastname;
 
-				case "ORGANIZATION":
-					return User_Object_Attribute_Mapping_Enum.Organization;
+                case "NICKNAME":
+                    return User_Object_Attribute_Mapping_Enum.Nickname;
 
-				case "ORGCODE":
-					return User_Object_Attribute_Mapping_Enum.OrgCode;
+                case "NOTES":
+                    return User_Object_Attribute_Mapping_Enum.Notes;
 
-				case "COLLEGE":
-					return User_Object_Attribute_Mapping_Enum.College;
+                case "ORGANIZATION":
+                    return User_Object_Attribute_Mapping_Enum.Organization;
 
-				case "DEPARTMENT":
-					return User_Object_Attribute_Mapping_Enum.Department;
+                case "ORGCODE":
+                    return User_Object_Attribute_Mapping_Enum.OrgCode;
 
-				default:
-					return User_Object_Attribute_Mapping_Enum.NONE;
-			}
-		}
-	}
+                case "COLLEGE":
+                    return User_Object_Attribute_Mapping_Enum.College;
 
-	#endregion
+                case "DEPARTMENT":
+                    return User_Object_Attribute_Mapping_Enum.Department;
+
+                default:
+                    return User_Object_Attribute_Mapping_Enum.NONE;
+            }
+        }
+
+        /// <summary> Convert the enumeration for the user object attribute mapping to a string </summary>
+        /// <param name="Value"> Enumeration value </param>
+        /// <returns> String value </returns>
+        public static string ToString(User_Object_Attribute_Mapping_Enum Value)
+        {
+            switch (Value)
+            {
+                case User_Object_Attribute_Mapping_Enum.Username:
+                    return "USERNAME";
+
+                case User_Object_Attribute_Mapping_Enum.Email:
+                    return "EMAIL";
+
+                case User_Object_Attribute_Mapping_Enum.Firstname:
+                    return "FIRSTNAME";
+
+                case User_Object_Attribute_Mapping_Enum.Lastname:
+                    return "LASTNAME";
+
+                case User_Object_Attribute_Mapping_Enum.Nickname:
+                    return "NICKNAME";
+
+                case User_Object_Attribute_Mapping_Enum.Notes:
+                    return "NOTES";
+
+                case User_Object_Attribute_Mapping_Enum.Organization:
+                    return "ORGANIZATION";
+
+                case User_Object_Attribute_Mapping_Enum.OrgCode:
+                    return "ORGCODE";
+
+                case User_Object_Attribute_Mapping_Enum.College:
+                    return "COLLEGE";
+
+                case User_Object_Attribute_Mapping_Enum.Department:
+                    return "DEPARTMENT";
+
+                default:
+                    return "NONE";
+            }
+        }
+    }
+
+
+    #endregion
 
 	/// <summary> Represents a single mySobek user, including personal information, permissions,
     /// and preferences.  </summary>
@@ -809,6 +853,55 @@ namespace SobekCM.Core.Users
         }
 
         #endregion
+
+        /// <summary> Set a value on this user object, based on the user object attribute mapping enumeration </summary>
+        /// <param name="Mapping"> Field to set in this user object </param>
+        /// <param name="Value"> Value to set that field to </param>
+	    public void Set_Value(User_Object_Attribute_Mapping_Enum Mapping, string Value)
+	    {
+            switch (Mapping)
+            {
+                case User_Object_Attribute_Mapping_Enum.Username:
+                    UserName = Value;
+                    break;
+
+                case User_Object_Attribute_Mapping_Enum.Email:
+                    Email = Value;
+                    break;
+
+                case User_Object_Attribute_Mapping_Enum.Firstname:
+                    Given_Name = Value;
+                    break;
+
+                case User_Object_Attribute_Mapping_Enum.Lastname:
+                    Family_Name = Value;
+                    break;
+
+                case User_Object_Attribute_Mapping_Enum.Nickname:
+                    Nickname = Value;
+                    break;
+
+                case User_Object_Attribute_Mapping_Enum.Notes:
+                    Internal_Notes = Value;
+                    break;
+
+                case User_Object_Attribute_Mapping_Enum.Organization:
+                    Organization = Value;
+                    break;
+
+                case User_Object_Attribute_Mapping_Enum.OrgCode:
+                    Organization_Code = Value;
+                    break;
+
+                case User_Object_Attribute_Mapping_Enum.College:
+                    College = Value;
+                    break;
+
+                case User_Object_Attribute_Mapping_Enum.Department:
+                    Department = Value;
+                    break;
+            }
+	    }
 
         
         /// <summary> Determines if this user can edit this item, based on several different criteria </summary>

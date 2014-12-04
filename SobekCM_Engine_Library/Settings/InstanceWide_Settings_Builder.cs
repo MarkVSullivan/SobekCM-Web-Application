@@ -10,6 +10,7 @@ using System.Xml;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Database;
 using SobekCM.Core.Search;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 
 #endregion
@@ -58,6 +59,16 @@ namespace SobekCM.Core.Settings
 
             DataSet sobekCMSettings = Engine_Database.Get_Settings_Complete(null);
             Refresh(returnValue, sobekCMSettings);
+
+            // Also try to read the configuration files
+            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config"))
+            {
+                returnValue.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config");
+            }
+            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config"))
+            {
+                returnValue.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config");
+            }
 
             return returnValue;
         }

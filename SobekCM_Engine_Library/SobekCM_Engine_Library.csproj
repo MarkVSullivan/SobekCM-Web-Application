@@ -55,6 +55,7 @@
     <Compile Include="ApplicationState\Checked_Out_Items_List.cs" />
     <Compile Include="ApplicationState\Engine_ApplicationCache_Gateway.cs" />
     <Compile Include="ApplicationState\Item_Lookup_Object.cs" />
+    <Compile Include="Configuration\Shibboleth_Configuration_Reader.cs" />
     <Compile Include="MemoryMgmt\AppFabric_Manager.cs" />
     <Compile Include="MemoryMgmt\Cached_Data_Manager.cs" />
     <Compile Include="MemoryMgmt\Cached_Object_Info.cs" />

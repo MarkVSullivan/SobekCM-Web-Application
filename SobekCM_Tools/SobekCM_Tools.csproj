@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Custom_Tracer.cs" />
+    <Compile Include="DateTime_Helper.cs" />
     <Compile Include="Logs\LogFileXHTML.cs" />
     <Compile Include="Logs\LogFileXHTML_Style.cs" />
     <Compile Include="Logs\LogFile_Exception.cs" />
