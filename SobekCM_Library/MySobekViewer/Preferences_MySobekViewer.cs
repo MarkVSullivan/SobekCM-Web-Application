@@ -567,9 +567,9 @@ namespace SobekCM.Library.MySobekViewer
 			else
 			{
 				Output.WriteLine("  <tr><td style=\"width:" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + userNameLabel + ":</td><td>" + user.UserName + "</td></tr>");
-				if (user.ShibbID.Trim().Length > 0)
+				if ((user.ShibbID.Trim().Length > 0) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth != null ) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth.Enabled ) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth.Label.Length > 0 ))
 				{
-					Output.WriteLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name + ":</td><td>" + user.ShibbID + "</td></tr>");
+                    Output.WriteLine("  <tr><td width=\"" + col1Width + "\">&nbsp;</td><td class=\"sbkPmsv_InputLabel\">" + UI_ApplicationCache_Gateway.Settings.Shibboleth.Label + ":</td><td>" + user.ShibbID + "</td></tr>");
 				}
 			}
 
@@ -599,9 +599,9 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefDepartment\">" + departmentLabel + ":</label></td><td><input id=\"prefDepartment\" name=\"prefDepartment\" class=\"preferences_large_input sbk_Focusable\" value=\"" + department + "\"type=\"text\" /></td></tr>");
 			Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefUnit\">" + unitLabel + ":</label></td><td><input id=\"prefUnit\" name=\"prefUnit\" class=\"preferences_large_input sbk_Focusable\" value=\"" + unit + "\" type=\"text\" /></td></tr>");
 
-			if ((registration) && (UI_ApplicationCache_Gateway.Settings.Shibboleth_System_URL.Length > 0))
+            if ((registration) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth != null ) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth.Enabled ) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth.Label.Length > 0 ))
 			{
-				Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefUfid\">" + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name + ":</label></td><td><input id=\"prefUfid\" name=\"prefUfid\" class=\"preferences_small_input sbk_Focusable\" value=\"" + ufid + "\" type=\"text\" />    &nbsp; &nbsp; (optionally provides access through Gatorlink)</td></tr>");
+                Output.WriteLine("  <tr><td>&nbsp;</td><td class=\"sbkPmsv_InputLabel\"><label for=\"prefUfid\">" + UI_ApplicationCache_Gateway.Settings.Shibboleth.Label + ":</label></td><td><input id=\"prefUfid\" name=\"prefUfid\" class=\"preferences_small_input sbk_Focusable\" value=\"" + ufid + "\" type=\"text\" />    &nbsp; &nbsp; (optionally provides access through Gatorlink)</td></tr>");
 			}
 
 

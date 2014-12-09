@@ -169,16 +169,17 @@ namespace SobekCM.Library.MySobekViewer
 			{
 				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid myDLOC logon</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with myDLOC authentication</a>.</li>");
 
-				if ((UI_ApplicationCache_Gateway.Settings.Shibboleth_System_URL.Length > 0) && (UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name.Length > 0))
+
+				if (( UI_ApplicationCache_Gateway.Settings.Shibboleth != null ) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth.Enabled ) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth.Label.Length > 0 )&& ( UI_ApplicationCache_Gateway.Settings.Shibboleth.ShibbolethURL.Length > 0 ))
 				{
-					Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_URL + "\">Sign on with your " + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name + " here</a>.</li>");
+                    Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + UI_ApplicationCache_Gateway.Settings.Shibboleth.Label + " ID</span>, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Shibboleth.ShibbolethURL + "\">Sign on with your " + UI_ApplicationCache_Gateway.Settings.Shibboleth.Label + " here</a>.</li>");
 				}
 			}
 			else
 			{
-				if ((UI_ApplicationCache_Gateway.Settings.Shibboleth_System_URL.Length > 0) && (UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name.Length > 0))
-				{
-					Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name + " ID</span>, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_URL + "\">Sign on with your " + UI_ApplicationCache_Gateway.Settings.Shibboleth_System_Name + " here</a>.</li>");
+                if ((UI_ApplicationCache_Gateway.Settings.Shibboleth != null) && (UI_ApplicationCache_Gateway.Settings.Shibboleth.Enabled) && (UI_ApplicationCache_Gateway.Settings.Shibboleth.Label.Length > 0) && (UI_ApplicationCache_Gateway.Settings.Shibboleth.ShibbolethURL.Length > 0))
+                {
+                    Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + UI_ApplicationCache_Gateway.Settings.Shibboleth.Label + " ID</span>, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Shibboleth.ShibbolethURL + "\">Sign on with your " + UI_ApplicationCache_Gateway.Settings.Shibboleth.Label + " here</a>.</li>");
 				}
 
 				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " logon</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " authentication here</a>.</li>");

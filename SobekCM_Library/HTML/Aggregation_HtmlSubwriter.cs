@@ -143,6 +143,9 @@ namespace SobekCM.Library.HTML
 			if (( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit ) && ( form["sbkAghsw_HomeTextEdit"] != null))
 			{
 				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\";
+			    if (!Directory.Exists(aggregation_folder))
+			        Directory.CreateDirectory(aggregation_folder);
+
 				string file = aggregation_folder + RequestSpecificValues.Hierarchy_Object.Home_Page_File(RequestSpecificValues.Current_Mode.Language);
 
 				// Make a backup from today, if none made yet

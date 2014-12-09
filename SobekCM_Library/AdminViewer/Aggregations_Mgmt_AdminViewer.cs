@@ -308,6 +308,7 @@ namespace SobekCM.Library.AdminViewer
 		                                    Directory.CreateDirectory(folder + "/html");
 		                                    Directory.CreateDirectory(folder + "/images");
 		                                    Directory.CreateDirectory(folder + "/html/home");
+                                            Directory.CreateDirectory(folder + "/html/custom/home");
 		                                    Directory.CreateDirectory(folder + "/images/buttons");
 		                                    Directory.CreateDirectory(folder + "/images/banners");
 

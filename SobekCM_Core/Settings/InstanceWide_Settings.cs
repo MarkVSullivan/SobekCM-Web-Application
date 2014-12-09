@@ -257,18 +257,6 @@ namespace SobekCM.Core.Settings
         [DataMember]
         public string OAI_Repository_Name { get; set; }
 
-        /// <summary> Gets the name of the attribute from Shibboleth which holds the user identity information, for user identification </summary>
-        [DataMember]
-        public string Shibboleth_User_Identity_Attribute { get; set; }
-
-        /// <summary> Gets the URL for any related Shibboleth authentication system </summary>
-        [DataMember]
-        public string Shibboleth_System_URL { get; set; }
-
-        /// <summary> Gets the system name for any related Shibboleth authentication system (i.e., Gatorlink )</summary>
-        [DataMember]
-        public string Shibboleth_System_Name { get; set; }
-
         /// <summary> Gets the regular expression for matching files names to delete BEFORE archiving
         /// incoming digital resource files </summary>
         [DataMember]

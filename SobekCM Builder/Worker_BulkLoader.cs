@@ -143,7 +143,7 @@ namespace SobekCM.Builder
                 new ExtractTextFromHtmlModule(), 
                 new ExtractTextFromXmlModule(), 
                 new OcrTiffsModule(), 
-                new CleanDirtyOcrModule(), 
+             //   new CleanDirtyOcrModule(), 
                 new CheckForSsnModule(), 
                 new CreateImageDerivativesModule(), 
                 new CopyToArchiveFolderModule(), 

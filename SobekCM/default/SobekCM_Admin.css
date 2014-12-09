@@ -22,9 +22,9 @@
 .sbkAdm_HomeText h2 { color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; }
 .sbkAdm_HomeText p { padding-left: 42px; }
 
-.sbkAdm_ActionLink { color:Gray; }
-.sbkAdm_ActionLink a:link { color:Gray; }
-.sbkAdm_ActionLink a:visited { color:Gray; }
+.sbkAdm_ActionLink { color:#444444; }
+.sbkAdm_ActionLink a:link { color:#444444; }
+.sbkAdm_ActionLink a:visited { color:#444444; }
 .sbkAdm_ActionLink a:hover { color:Blue; text-decoration:underline; }
 
 
@@ -34,6 +34,8 @@
 
 .sbkAdm_RoundButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 4px 10px 4px 10px; cursor: pointer; letter-spacing: 0.5px; }
 .sbkAdm_RoundButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
+.sbkAdm_RoundButton:disabled { background-color: #444444;cursor: default; }
+.sbkAdm_RoundButton[disabled]:hover {background-color: #444444; -webkit-box-shadow: none;box-shadow: none;cursor: default; }
 .sbkAdm_UploadButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px;margin-left: 20px; }
 .sbkAdm_UploadButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
 
@@ -66,10 +68,7 @@
 	color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; 
 }
 
-.SobekAdminActionLink
-{
-	color:Gray; 
-}
+
 
 .add_new_link { color: Black; font-size: 0.9em; vertical-align:baseline;  }
 .add_new_link a:link { color: Black; text-decoration:none; vertical-align: baseline; }
@@ -122,6 +121,12 @@ textarea.sbkSaav_input  { margin-top: 6px; font-size: small;}
 .sbkSaav_TableLabel2 { font-weight: bold;padding-top: 12px; }
 .sbkSaav_HelpButton { padding-left:5px; cursor:pointer; border:0; }
 .sbkSaav_InnerTable { margin: 0;padding: 0;display: inline-block; }
+.sbkSaav_InnerTable a:link { color:#444444;text-decoration: none; }
+.sbkSaav_InnerTable a:visited {color: #444444;text-decoration: none; }
+.sbkSaav_InnerTable a:hover { color:#000080;text-decoration: underline; }
+.sbkSaav_HomeTable a:link { color:#444444;text-decoration: none; }
+.sbkSaav_HomeTable a:visited {color: #444444;text-decoration: none; }
+.sbkSaav_HomeTable a:hover { color:#000080;text-decoration: underline; }
 .sbkSaav_InnerTable2 { margin: 0;padding: 4px 0 0 0; }
 .sbkSaav_checkbox { border: 0;}
 .sbkSaav_ButtonImg { padding-right: 40px; }
@@ -389,3 +394,5 @@ input.users_large_input_focused  {  color:#0000a8;  width: 400px; margin-top: 6p
 
 /** Class used for all administrative boxes which take focus */
 .sbkAdmin_Focusable:focus { color:#0000a8; background-color: #fbf7b4; }
+
+.SobekAdminActionLink { color:#444444; }

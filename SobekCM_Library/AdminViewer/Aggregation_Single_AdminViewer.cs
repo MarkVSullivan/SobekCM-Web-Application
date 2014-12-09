@@ -1498,22 +1498,62 @@ namespace SobekCM.Library.AdminViewer
 			{
 				switch (action)
 				{
-					case "enable_css":
-						itemAggregation.CSS_File = itemAggregation.Code + ".css";
-						string file = aggregationDirectory + "\\" + itemAggregation.CSS_File;
-						if (!File.Exists(file))
+                    case "enable_custom_home":
+                        string custom_home = aggregationDirectory + "\\html\\custom\\home\\custom_home.html";
+						if (!Directory.Exists(aggregationDirectory + "\\html\\custom\\home"))
+							Directory.CreateDirectory(aggregationDirectory + "\\html\\custom\\home");
+                        itemAggregation.Custom_Home_Page_Source_File = "html\\custom\\home\\custom_home.html";;
+                        if (!File.Exists(custom_home))
 						{
-							StreamWriter writer = new StreamWriter(file);
-							writer.WriteLine("/**  Aggregation-level CSS for " + itemAggregation.Code + " **/");
+                            StreamWriter writer = new StreamWriter(custom_home);
+                            writer.WriteLine("<html>");
+                            writer.WriteLine("<head>");
+                            writer.WriteLine("<title>Custom home page for " + itemAggregation.ShortName + "</title>");
+                            writer.WriteLine("</head>");
+                            writer.WriteLine("<body>");
+							writer.WriteLine("<br /><br />THIS IS THE DEFAULT CUSTOM HOME PAGE FOR THIS COLLECTION<br /><br /><br />");
+                            writer.WriteLine("</body>");
+                            writer.WriteLine("</html>");
 							writer.WriteLine();
 							writer.Flush();
 							writer.Close();
 						}
 						break;
 
-					case "disable_css":
-						itemAggregation.CSS_File = String.Empty;
+                    case "delete_custom_home":
+				        string file_to_delete = Form["admin_aggr_custom_home"];
+				        if (!String.IsNullOrEmpty(file_to_delete))
+				        {
+				            string custom_home_delete_file = aggregationDirectory + "\\html\\custom\\home\\" + file_to_delete;
+				            if (File.Exists(custom_home_delete_file))
+				            {
+                                try
+                                {
+                                    File.Delete(custom_home_delete_file);
+                                }
+                                catch { }
+				            }
+				        }
+                        if ( itemAggregation.Custom_Home_Page_Source_File == "html\\custom\\home\\" + file_to_delete )
+                            itemAggregation.Custom_Home_Page_Source_File = String.Empty;
 						break;
+
+                    case "enable_css":
+                        itemAggregation.CSS_File = itemAggregation.Code + ".css";
+                        string file = aggregationDirectory + "\\" + itemAggregation.CSS_File;
+                        if (!File.Exists(file))
+                        {
+                            StreamWriter writer = new StreamWriter(file);
+                            writer.WriteLine("/**  Aggregation-level CSS for " + itemAggregation.Code + " **/");
+                            writer.WriteLine();
+                            writer.Flush();
+                            writer.Close();
+                        }
+                        break;
+
+                    case "disable_css":
+                        itemAggregation.CSS_File = String.Empty;
+                        break;
 
 					case "add_home":
 						string language = Form["admin_aggr_new_home_lang"];
@@ -1634,9 +1674,16 @@ namespace SobekCM.Library.AdminViewer
 			// Set the custom home source file
 			if (Form["admin_aggr_custom_home"] != null)
 			{
-				itemAggregation.Custom_Home_Page_Source_File = Form["admin_aggr_custom_home"].Trim();
+			    string custom_home_file_name = Form["admin_aggr_custom_home"];
+                if ((String.IsNullOrEmpty(custom_home_file_name)) || (!File.Exists(aggregationDirectory + "\\html\\custom\\home\\" + custom_home_file_name)))
+			    {
+			        itemAggregation.Custom_Home_Page_Source_File = String.Empty;
+			    }
+			    else
+                {
+                    itemAggregation.Custom_Home_Page_Source_File = "html\\custom\\home\\" + custom_home_file_name;
+                }
 			}
-
 		}
 
 
@@ -1714,29 +1761,37 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\" style=\"width:140px\">Custom Home Page:</label></td>");
 			Output.WriteLine("    <td>");
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
-			Output.WriteLine("      <tr>");
-			Output.WriteLine("        <td>");
+			Output.WriteLine("        <tr>");
+			
 
 			// Get the list of all HTML at the top-level
-			string[] html_files = Directory.GetFiles(aggregationDirectory, "*.htm*");
+		    if (!Directory.Exists(aggregationDirectory + "\\html\\custom\\home"))
+		        Directory.CreateDirectory(aggregationDirectory + "\\html\\custom\\home");
+            string[] html_files = Directory.GetFiles(aggregationDirectory + "\\html\\custom\\home", "*.htm*");
 			if (html_files.Length == 0)
 			{
-				Output.WriteLine("          <span style=\"font-style:italic; padding-right: 5px;\">No html source files</span>");
+				Output.WriteLine("          <td><span style=\"font-style:italic; padding-right: 5px;\">No html source files</span></td>");
+                Output.WriteLine("          <td><button title=\"Enable a completely custom home page\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_enable_custom_home();\">ENABLE</button></td>");
 			}
 			else
 			{
+                Output.WriteLine("          <td>");
+
 				// Start the select box
-				Output.Write("          <select class=\"sbkSaav_SelectSingle\" name=\"admin_aggr_custom_home\" id=\"admin_aggr_custom_home\">");
+                Output.Write("            <select class=\"sbkSaav_SelectSingle\" name=\"admin_aggr_custom_home\" id=\"admin_aggr_custom_home\" onchange=\"aggr_edit_custom_home_selectchange();\">");
 
 				// Add the NONE option first
-				Output.Write(itemAggregation.Custom_Home_Page_Source_File.Length == 0 ? "<option value=\"\" selected=\"selected\" ></option>" : "<option value=\"\"></option>");
+			    bool custom_home_exists = itemAggregation.Custom_Home_Page_Source_File.Length > 0;
+                Output.Write(!custom_home_exists ? "<option value=\"\" selected=\"selected\" ></option>" : "<option value=\"\"></option>");
 
 				// Add each possible source file
+			    string current_file = itemAggregation.Custom_Home_Page_Source_File.Replace("html\\custom\\home\\", "");
+
 				foreach (string thisFile in html_files)
 				{
 					string thisFileName = (new FileInfo(thisFile)).Name;
 
-					if (String.Compare(itemAggregation.Custom_Home_Page_Source_File, thisFileName, StringComparison.OrdinalIgnoreCase) == 0)
+                    if (String.Compare(current_file, thisFileName, StringComparison.OrdinalIgnoreCase) == 0)
 					{
 						Output.Write("<option value=\"" + thisFileName + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(thisFileName) + "</option>");
 					}
@@ -1745,11 +1800,19 @@ namespace SobekCM.Library.AdminViewer
 						Output.Write("<option value=\"" + thisFileName + "\">" + HttpUtility.HtmlEncode(thisFileName) + "</option>");
 					}
 				}
-				Output.WriteLine("</select>");
+				Output.WriteLine("</select> &nbsp; &nbsp; ");
+                Output.WriteLine("          </td>");
+			    Output.Write("          <td style=\"padding-right:10px;\"><button title=\"Delete this custom home page file\" class=\"sbkAdm_RoundButton\" id=\"customHomePageDeleteButton\" onclick=\"return aggr_edit_delete_custom_home();\"");
+                if ( !custom_home_exists )
+    			    Output.Write(" disabled=\"disabled\"");
+                Output.WriteLine(">DELETE</button></td>");
+                Output.WriteLine("          <td><button title=\"Add a new custom home page file\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_enable_css();\">ADD</button></td>");
 			}
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + CUSTOM_HOME_PAGE + "');\"  title=\"" + CUSTOM_HOME_PAGE + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
+			
+			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + CUSTOM_HOME_PAGE + "');\"  title=\"" + CUSTOM_HOME_PAGE + "\" /></td>");
+            Output.WriteLine("        </tr>");
+            Output.WriteLine("      </table>");
+			Output.WriteLine("    </td>");
 			Output.WriteLine("  </tr>");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Home Page Text</td></tr>");

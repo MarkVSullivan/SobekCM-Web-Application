@@ -170,9 +170,6 @@ namespace SobekCM.Core.Settings
                 Get_String_Value(settingsDictionary, "PostArchive Files To Delete", SettingsObject, X => X.PostArchive_Files_To_Delete, String.Empty);
                 Get_String_Value(settingsDictionary, "PreArchive Files To Delete", SettingsObject, X => X.PreArchive_Files_To_Delete, String.Empty);
                 Get_String_Value(settingsDictionary, "Privacy Email Address", SettingsObject, X => X.Privacy_Email_Address, String.Empty);
-                Get_String_Value(settingsDictionary, "Shibboleth System URL", SettingsObject, X => X.Shibboleth_System_URL, String.Empty);
-                Get_String_Value(settingsDictionary, "Shibboleth User Identity Attribute", SettingsObject, X => X.Shibboleth_User_Identity_Attribute, String.Empty);
-                Get_String_Value(settingsDictionary, "Shibboleth System Name", SettingsObject, X => X.Shibboleth_System_Name, String.Empty);
                 Get_Boolean_Value(settingsDictionary, "Show Florida SUS Settings", SettingsObject, X => X.Show_Florida_SUS_Settings, ref error, false);
                 Get_String_Value(settingsDictionary, "SobekCM Image Server", SettingsObject, X => X.SobekCM_ImageServer, String.Empty);
                 Get_String_Value(settingsDictionary, "SobekCM Web Server IP", SettingsObject, X => X.SobekCM_Web_Server_IP, String.Empty);

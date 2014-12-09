@@ -769,6 +769,40 @@ function new_aggr_edit_page(page) {
     return false;
 }
 
+
+function aggr_edit_enable_custom_home() {
+    var hiddenfield = document.getElementById('admin_aggr_action');
+    hiddenfield.value = 'enable_custom_home';
+    document.itemNavForm.submit();
+    return false;
+}
+
+function aggr_edit_delete_custom_home() {
+    var hiddenfield = document.getElementById('admin_aggr_custom_home');
+    var strSelect = hiddenfield.options[hiddenfield.selectedIndex].value;
+    if (strSelect.length == 0) return false;
+
+    var input_box = confirm("Do you really want to delete the custom home page source file '" + strSelect + "'?");
+    if (input_box == true) {
+        var hiddenfield = document.getElementById('admin_aggr_action');
+        hiddenfield.value = 'delete_custom_home';
+        document.itemNavForm.submit();
+    }
+
+    // Return false to prevent another return trip to the server
+    return false;
+}
+
+function aggr_edit_custom_home_selectchange() {
+    var hiddenfield = document.getElementById('admin_aggr_custom_home');
+    var strSelect = hiddenfield.options[hiddenfield.selectedIndex].value;
+    if (strSelect.length > 0) {
+        document.getElementById("customHomePageDeleteButton").disabled = false;
+    } else {
+        document.getElementById("customHomePageDeleteButton").disabled = true;
+    }
+}
+
 function save_css_edits() {
 	var hiddenfield = document.getElementById('admin_aggr_save');
 	hiddenfield.value = 'e';
