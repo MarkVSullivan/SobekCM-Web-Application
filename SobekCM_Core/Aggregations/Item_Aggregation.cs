@@ -68,6 +68,10 @@ namespace SobekCM.Core.Aggregations
 			/// range of years to be included in the search </summary>
 			Basic_Search_YearRange,
 
+            /// <summary> Custom home page overrides most of the normal home page writing mechanism and just displays
+            /// a static HTML file </summary>
+            Custom_Home_Page,
+
             /// <summary> Browse from a dataset which is pulled in some manner </summary>
             DataSet_Browse,
 

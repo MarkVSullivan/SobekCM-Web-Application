@@ -117,6 +117,7 @@
     <Compile Include="AggregationViewer\Viewers\Basic_Search_MimeType_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Advanced_Search_YearRange_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Basic_Search_YearRange_AggregationViewer.cs" />
+    <Compile Include="AggregationViewer\Viewers\Custom_Home_Page_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Map_Browse_AggregationViewer_Beta.cs" />
     <Compile Include="AggregationViewer\Viewers\Map_Search_AggregationViewer_Beta.cs" />
     <Compile Include="AggregationViewer\Viewers\Rotating_Highlight_MimeType_AggregationViewer.cs" />
@@ -176,6 +177,7 @@
     <Compile Include="Citation\Elements\nonstandard elements\Zoological_Taxonomy_Form_Element.cs" />
     <Compile Include="Citation\Template_MemoryMgmt_Utility.cs" />
     <Compile Include="HTML\Admin_HtmlSubwriter.cs" />
+    <Compile Include="HTML\HeaderFooter_Helper_HtmlSubWriter.cs" />
     <Compile Include="HTML\HtmlSubwriter_Behaviors_Enum.cs" />
     <Compile Include="HTML\MainMenus_Helper_HtmlSubWriter.cs" />
     <Compile Include="ItemViewer\Fragments\AddRemove_Fragment_ItemViewer.cs">
