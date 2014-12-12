@@ -13,6 +13,7 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.AggregationViewer;
@@ -236,7 +237,10 @@ namespace SobekCM.Library.HTML
 				{
 					case Aggregation_Type_Enum.Home:
 					case Aggregation_Type_Enum.Home_Edit:
-                        collectionViewer = AggregationViewer_Factory.Get_Viewer(base.RequestSpecificValues.Hierarchy_Object.Views_And_Searches[0], RequestSpecificValues);
+                        if (String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.Custom_Home_Page_Source_File))
+                        {
+                            collectionViewer = AggregationViewer_Factory.Get_Viewer(base.RequestSpecificValues.Hierarchy_Object.Views_And_Searches[0], RequestSpecificValues);
+                        }
 						break;
 
 					case Aggregation_Type_Enum.Browse_Info:
@@ -314,7 +318,7 @@ namespace SobekCM.Library.HTML
             get
             {
                 // When editing the aggregation details, the banner should be included here
-                if (collectionViewer.Type == Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search)
+                if (( collectionViewer == null ) || ( collectionViewer.Type == Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search))
                 {
                     return new List<HtmlSubwriter_Behaviors_Enum>
                         {
@@ -624,6 +628,18 @@ namespace SobekCM.Library.HTML
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_HTML", "Rendering HTML");
+
+            // Is this the custom home page viewer?
+            if ((collectionViewer == null) && (!String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.Custom_Home_Page_Source_File)))
+            {
+                string path = "/design/aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/" + RequestSpecificValues.Hierarchy_Object.Custom_Home_Page_Source_File ;
+                string file = HttpContext.Current.Server.MapPath(path);
+                HTML_Based_Content fileContent = HTML_Based_Content_Reader.Read_HTML_File(file, true, Tracer);
+                Output.Write(fileContent.Static_Text);
+                
+
+                return true;
+            }
 			
 			// Draw the banner and add links to the other views first
 	        if (collectionViewer.Type != Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search)
@@ -2295,9 +2311,12 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-		        Output.WriteLine("<!-- Close the pagecontainer div -->");
-		        Output.WriteLine("</div>");
-		        Output.WriteLine();
+            if (collectionViewer != null)
+            {
+                Output.WriteLine("<!-- Close the pagecontainer div -->");
+                Output.WriteLine("</div>");
+                Output.WriteLine();
+            }
 
 	        // Add the scripts needed
 #if DEBUG
