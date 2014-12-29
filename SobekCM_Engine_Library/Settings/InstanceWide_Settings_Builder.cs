@@ -60,7 +60,7 @@ namespace SobekCM.Core.Settings
             DataSet sobekCMSettings = Engine_Database.Get_Settings_Complete(null);
             Refresh(returnValue, sobekCMSettings);
 
-            // Also try to read the configuration files
+            // Try to read the SHIBBOLETH configuration file
             if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config"))
             {
                 returnValue.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config");
@@ -68,6 +68,16 @@ namespace SobekCM.Core.Settings
             else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config"))
             {
                 returnValue.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config");
+            }
+
+            // Try to read the CONTACT FORM configuration file
+            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_contactform.config"))
+            {
+                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_contactform.config");
+            }
+            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_contactform.config"))
+            {
+                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_contactform.config");
             }
 
             return returnValue;

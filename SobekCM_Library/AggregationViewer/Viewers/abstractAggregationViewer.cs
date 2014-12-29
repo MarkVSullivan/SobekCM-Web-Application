@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
@@ -29,6 +30,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Protected field contains the information specific to the current request </summary>
         protected RequestCache RequestSpecificValues;
 
+        /// <summary> Empty list of behaviors, returned by default </summary>
+        /// <remarks> This just prevents an empty set from having to be created over and over </remarks>
+        protected static List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
+
         /// <summary> Constructor for objects which implement this abstract class  </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         protected abstractAggregationViewer(RequestCache RequestSpecificValues)
@@ -47,17 +52,19 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
         public abstract Item_Aggregation.CollectionViewsAndSearchesEnum Type { get; }
 
-        /// <summary>Flag indicates whether to always use the home text as the secondary text </summary>
-        public virtual bool Always_Display_Home_Text
-        {
-            get { return true; }
-        }
-
-        /// <summary> Flag indicates whether the secondary text requires controls </summary>
+ /// <summary> Flag indicates whether the secondary text requires controls </summary>
         /// <value> This defaults to FALSE but is overwritten by most collection viewers </value>
         public virtual bool Secondary_Text_Requires_Controls
         {
             get { return false; }
+        }
+
+        /// <summary> Gets the collection of special behaviors which this aggregation viewer
+        /// requests from the main HTML subwriter. </summary>
+        /// <remarks> By default, this returns an empty list </remarks>
+        public virtual List<HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors
+        {
+            get { return emptybehaviors; }
         }
 
         /// <summary> Flag which indicates whether the selection panel should be displayed </summary>

@@ -44,6 +44,9 @@
 
 		/// <summary> This mySobek viewer should mimic the item subwriter, since it mostly
 		/// allows a logged on user to edit something about a single item </summary>
-        MySobek_Subwriter_Mimic_Item_Subwriter
+        MySobek_Subwriter_Mimic_Item_Subwriter,
+
+        /// <summary> Used by aggregation viewers to tell the aggregation writer to NOT write out the home page text </summary>
+        Aggregation_Suppress_Home_Text
     }
 }

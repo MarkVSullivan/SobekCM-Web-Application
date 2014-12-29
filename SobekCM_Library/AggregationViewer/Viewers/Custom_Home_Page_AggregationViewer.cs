@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using SobekCM.Core.WebContent;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
@@ -25,7 +26,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             string path = "/design/aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/" + RequestSpecificValues.Hierarchy_Object.Custom_Home_Page_Source_File;
             string file = HttpContext.Current.Server.MapPath(path);
-            HTML_Based_Content fileContent = HTML_Based_Content_Reader.Read_HTML_File(file, true, Tracer);
+            homePageInfo = HTML_Based_Content_Reader.Read_HTML_File(file, true, RequestSpecificValues.Tracer);
         }
 
 
@@ -48,13 +49,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
         }
 
-        /// <summary> Flag indicates whether the secondary text requires controls </summary>
-        /// <value> This property always returns the value FALSE </value>
-        public override bool Always_Display_Home_Text
+        /// <summary> Gets the collection of special behaviors which this aggregation viewer  requests from the main HTML subwriter. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors
         {
             get
             {
-                return false;
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                        {
+                            HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text
+                        };
             }
         }
 
@@ -77,7 +80,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Advanced_Search_AggregationViewer.Add_Secondary_HTML", "Adding simple search tips");
             }
 
-            Add_Simple_Search_Tips(Output, Tracer);
+            Output.Write(homePageInfo.Static_Text);
         }
 
     }

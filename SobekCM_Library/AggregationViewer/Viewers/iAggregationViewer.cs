@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
@@ -46,11 +47,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Gets the reference to the javascript method to be called </summary>
         string Search_Script_Action { get; }
 
-        /// <summary> Gets flag which indicates whether to always use the home text as the secondary text </summary>
-        bool Always_Display_Home_Text { get; }
-
         /// <summary> Gets flag which indicates whether the secondary text requires controls </summary>
         bool Secondary_Text_Requires_Controls { get; }
+
+        /// <summary> Gets the collection of special behaviors which this aggregation viewer
+        /// requests from the main HTML subwriter. </summary>
+        List<HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors { get; }
 
         /// <summary> Gets flag which indicates whether the selection panel should be displayed </summary>
         Selection_Panel_Display_Enum Selection_Panel_Display { get; }

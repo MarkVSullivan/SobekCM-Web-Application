@@ -58,6 +58,9 @@ namespace SobekCM.Core.Users
 		/// <summary> Maps to the FIRSTNAME address of this user </summary>
 		Firstname,
 
+        /// <summary> Full name of this user ( FIRSTNAME followed by LASTNAME ) </summary>
+        Fullname,
+
 		/// <summary> Maps to the LASTNAME address of this user </summary>
 		Lastname,
 
@@ -87,7 +90,7 @@ namespace SobekCM.Core.Users
         /// <returns> Enumeration value, or User_Object_Attribute_Mapping_Enum.NONE </returns>
         public static User_Object_Attribute_Mapping_Enum ToEnum(string Value)
         {
-            switch (Value)
+            switch (Value.ToUpper())
             {
                 case "USERNAME":
                     return User_Object_Attribute_Mapping_Enum.Username;
@@ -100,6 +103,9 @@ namespace SobekCM.Core.Users
 
                 case "LASTNAME":
                     return User_Object_Attribute_Mapping_Enum.Lastname;
+
+                case "FULLNAME":
+                    return User_Object_Attribute_Mapping_Enum.Fullname;
 
                 case "NICKNAME":
                     return User_Object_Attribute_Mapping_Enum.Nickname;
@@ -542,7 +548,7 @@ namespace SobekCM.Core.Users
         /// <summary> Return the number of aggregations tied to this user group </summary>
         public int PermissionedAggregations_Count
         {
-            get { return ((aggregationPermissions == null) || ( aggregationPermissions.Aggregations == null )) ? 0 : aggregationPermissions.Aggregations.Count; ; }
+            get { return ((aggregationPermissions == null) || ( aggregationPermissions.Aggregations == null )) ? 0 : aggregationPermissions.Aggregations.Count; }
         }
 
         /// <summary> Flag indicates if this user was just registered </summary>
@@ -614,7 +620,7 @@ namespace SobekCM.Core.Users
             string aggrCodeUpper = AggregationCode.ToUpper();
             if (aggregationPermissions != null && aggregationPermissions.Aggregations!=null)
                 return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.OnHomePage).FirstOrDefault();
-            else return false;
+            return false;
         }
 
         /// <summary> Checks to see if this user can perform curatorial tasks against an item aggregation </summary>
@@ -628,8 +634,7 @@ namespace SobekCM.Core.Users
             string aggrCodeUpper = AggregationCode.ToUpper();
             if (aggregationPermissions != null && aggregationPermissions.Aggregations != null)
                 return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsCurator).FirstOrDefault();
-            else 
-                return false;
+            return false;
         }
 
 		/// <summary> Checks to see if this user can perform administrative tasks against an item aggregation </summary>
@@ -644,9 +649,8 @@ namespace SobekCM.Core.Users
 
             if(aggregationPermissions !=null && aggregationPermissions.Aggregations!=null)
 			  return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.IsAdmin).FirstOrDefault();
-            else
-               return false;
-        }
+		    return false;
+		}
 
         /// <summary> Checks to see if this user can edit all the items within this aggregation </summary>
         /// <param name="AggregationCode"> Code for this item aggregation </param>
@@ -660,8 +664,7 @@ namespace SobekCM.Core.Users
 
             if (aggregationPermissions != null && aggregationPermissions.Aggregations != null)
                 return (from thisAggregation in aggregationPermissions.Aggregations where thisAggregation.Code == aggrCodeUpper select thisAggregation.CanEditItems).FirstOrDefault();
-            else
-                return false;
+            return false;
         }
 
         /// <summary> This checks that the folder name exists, and returns the proper format </summary>
@@ -700,7 +703,7 @@ namespace SobekCM.Core.Users
                 return ParentFolder;
             if (ParentFolder.Children != null)
                 return ParentFolder.Children.Select(ChildFolder => recurse_to_get_folder(ChildFolder, FolderName)).FirstOrDefault(ReturnValue => ReturnValue != null);
-            else return null;
+            return null;
         }
 
         #endregion
@@ -791,6 +794,7 @@ namespace SobekCM.Core.Users
 
         /// <summary> Adds a default metadata set to the list of sets this user can select </summary>
         /// <param name="MetadataSet">Code for this default metadata set</param>
+        /// <param name="Group_Defined"> Defined at the user group level (versus at the instance level) </param>
         /// <remarks>This must match the name of one of the project METS (.pmets) files in the mySobek\projects folder</remarks>
         public void Add_Default_Metadata_Set(string MetadataSet, bool Group_Defined)
         {
@@ -857,7 +861,7 @@ namespace SobekCM.Core.Users
         /// <summary> Set a value on this user object, based on the user object attribute mapping enumeration </summary>
         /// <param name="Mapping"> Field to set in this user object </param>
         /// <param name="Value"> Value to set that field to </param>
-	    public void Set_Value(User_Object_Attribute_Mapping_Enum Mapping, string Value)
+	    public void Set_Value_By_Mapping(User_Object_Attribute_Mapping_Enum Mapping, string Value)
 	    {
             switch (Mapping)
             {
@@ -903,9 +907,55 @@ namespace SobekCM.Core.Users
             }
 	    }
 
-        
+        /// <summary> Gets a value from this user object, based on the user object attribute mapping enumeration </summary>
+        /// <param name="Mapping"> Field to get from this user object </param>
+        public string Get_Value_By_Mapping(User_Object_Attribute_Mapping_Enum Mapping)
+        {
+            switch (Mapping)
+            {
+                case User_Object_Attribute_Mapping_Enum.Username:
+                    return UserName;
+
+                case User_Object_Attribute_Mapping_Enum.Email:
+                    return Email;
+
+                case User_Object_Attribute_Mapping_Enum.Firstname:
+                    return Given_Name;
+
+                case User_Object_Attribute_Mapping_Enum.Lastname:
+                    return Family_Name;
+
+                case User_Object_Attribute_Mapping_Enum.Nickname:
+                    return Nickname;
+
+                case User_Object_Attribute_Mapping_Enum.Fullname:
+                    return Full_Name;
+
+                case User_Object_Attribute_Mapping_Enum.Notes:
+                    return Internal_Notes;
+
+                case User_Object_Attribute_Mapping_Enum.Organization:
+                    return Organization;
+
+                case User_Object_Attribute_Mapping_Enum.OrgCode:
+                    return Organization_Code;
+
+                case User_Object_Attribute_Mapping_Enum.College:
+                    return College;
+
+                case User_Object_Attribute_Mapping_Enum.Department:
+                    return Department;
+            }
+
+            return String.Empty;
+        }
+
         /// <summary> Determines if this user can edit this item, based on several different criteria </summary>
-        /// <param name="Item">SobekCM Item to check</param>
+        /// <param name="BibID"> BibID for the item </param>
+        /// <param name="ItemType"> Type of the item </param>
+        /// <param name="SourceCode"> Source code for the item </param>
+        /// <param name="HoldingCode"> Holding code for the item </param>
+        /// <param name="Aggregations"> List  of all aggregations codes linked to the item </param>
         /// <returns>TRUE if the user can edit this item, otherwise FALSE</returns>
         public bool Can_Edit_This_Item( string BibID, string ItemType, string SourceCode, string HoldingCode, ICollection<string> Aggregations )
         {
@@ -939,9 +989,13 @@ namespace SobekCM.Core.Users
             return editableRegexes.Select(RegexString => new Regex(RegexString)).Any(MyReg => MyReg.IsMatch(BibID.ToUpper()));
         }
 
-		/// <summary> Determines if this user can edit this item, based on several different criteria </summary>
-		/// <param name="Item">SobekCM Item to check</param>
-		/// <returns>TRUE if the user can edit this item, otherwise FALSE</returns>
+
+        /// <summary> Determines if this user can edit this item, based on several different criteria </summary>
+        /// <param name="BibID"> BibID for the item to check </param>
+        /// <param name="SourceCode"> Source code for the item </param>
+        /// <param name="HoldingCode"> Holding code for the item </param>
+        /// <param name="Aggregations"> List  of all aggregations codes linked to the item </param>
+        /// <returns>TRUE if the user can edit this item, otherwise FALSE</returns>
         public bool Can_Delete_This_Item(string BibID, string SourceCode, string HoldingCode, ICollection<string> Aggregations)
 		{
 			if ((Can_Delete_All) || ( Is_System_Admin ))
@@ -973,21 +1027,6 @@ namespace SobekCM.Core.Users
         {
             return DES_EncryptString(Given_Name + "sobekh" + Family_Name, IP.Replace(".", "").PadRight(8, '%').Substring(0, 8), Email.Length > 8 ? Email.Substring(0, 8) : Email.PadLeft(8, 'd'));
         }
-
-        ///// <summary> Gets the user-in-process directory </summary>
-        ///// <param name="Directory_Name"> Subdirectory requested </param>
-        ///// <returns> Full path to the requested user-in-process directory </returns>
-        //public string User_InProcess_Directory(string Directory_Name)
-        //{
-        //    /// TODO: This should not reference the settings (I think)
-            
-        //    // Determine the in process directory for this
-        //    string userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + UserName.Replace(".", "").Replace("@", "") + "\\" + Directory_Name;
-        //    if (ShibbID.Trim().Length > 0)
-        //        userInProcessDirectory = InstanceWide_Settings_Singleton.Settings.In_Process_Submission_Location + "\\" + ShibbID + "\\" + Directory_Name;
-
-        //    return userInProcessDirectory;
-        //}
 
         /// <summary> Encrypt a string, given the string.  </summary>
         /// <param name="Source"> String to encrypt </param>

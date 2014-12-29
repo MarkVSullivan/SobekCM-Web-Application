@@ -501,7 +501,7 @@ namespace SobekCM.Library.AdminViewer
 	        bool show_florida_sus = (settings.ContainsKey("Show Florida SUS Settings")) && (String.Compare(settings["Show Florida SUS Settings"], "true", StringComparison.OrdinalIgnoreCase) == 0);
 
 	        Output.WriteLine("  <div id=\"sbkSeav_Explanation\">");
-	        Output.WriteLine("    <p>This form allows a RequestSpecificValues.Current_User to view and edit all the main system-wide settings which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.</p>");
+	        Output.WriteLine("    <p>This form allows a user to view and edit all the main system-wide settings which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.</p>");
             Output.WriteLine("    <p>For more information about these settings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 	        Output.WriteLine("  </div>");
             Output.WriteLine();

@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using SobekCM.Core.Aggregations;
@@ -211,13 +212,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
         }
 
-        /// <summary> Gets flag which indicates whether to always use the home text as the secondary text </summary>
-        /// <value> This property always returns the value FALSE </value>
-        public override bool Always_Display_Home_Text
+        /// <summary> Gets the collection of special behaviors which this aggregation viewer  requests from the main HTML subwriter. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors
         {
             get
             {
-                return false;
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                        {
+                            HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text
+                        };
             }
         }
 

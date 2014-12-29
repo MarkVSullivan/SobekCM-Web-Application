@@ -42,7 +42,7 @@ input.sbkMySobek_checkbox { padding-top: 3px;border: 0; }
 .sbkMySobek_UploadButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px;margin-left: 20px; }
 .sbkMySobek_UploadButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
 
-.sbkMySobek_BigButton {font-size: 15px; background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 4px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px; }
+.sbkMySobek_BigButton {font-size: 13px; background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 4px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px; }
 .sbkMySobek_BigButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
 
 .sbkMySobek_RoundButton_RightImg { vertical-align: top; padding-left: 3px; padding-top: 1px;} 

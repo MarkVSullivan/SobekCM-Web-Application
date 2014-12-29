@@ -33,6 +33,7 @@ namespace SobekCM.Library.HTML
     public class Aggregation_HtmlSubwriter : abstractHtmlSubwriter
     {
         private readonly abstractAggregationViewer collectionViewer;
+        private List<HtmlSubwriter_Behaviors_Enum> behaviors;
         private string leftButtons;
         private string rightButtons;
         private const int RESULTS_PER_PAGE = 20;
@@ -59,6 +60,8 @@ namespace SobekCM.Library.HTML
 			}
 			else if ( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit )
 				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+
+            #region Handle post backs from the mySobek sharing, emailin, etc.. buttons
 
             NameValueCollection form = HttpContext.Current.Request.Form;
             if ( form["item_action"] != null)
@@ -140,8 +143,11 @@ namespace SobekCM.Library.HTML
                     }
                 }
             }
+            #endregion
 
-			if (( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit ) && ( form["sbkAghsw_HomeTextEdit"] != null))
+            #region Handle post backs from editing the home page text 
+
+            if (( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit ) && ( form["sbkAghsw_HomeTextEdit"] != null))
 			{
 				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\";
 			    if (!Directory.Exists(aggregation_folder))
@@ -189,8 +195,10 @@ namespace SobekCM.Library.HTML
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 
 				return;
-			}
-            
+            }
+
+            #endregion
+
             // If this is a search, verify it is a valid search type
             if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Search)
             {
@@ -226,6 +234,8 @@ namespace SobekCM.Library.HTML
                 }
             }
 
+            #region Create the new subviewer to handle this request
+
             if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Search)
             {
                 collectionViewer = AggregationViewer_Factory.Get_Viewer(RequestSpecificValues.Current_Mode.Search_Type, RequestSpecificValues);
@@ -237,10 +247,14 @@ namespace SobekCM.Library.HTML
 				{
 					case Aggregation_Type_Enum.Home:
 					case Aggregation_Type_Enum.Home_Edit:
-                        if (String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.Custom_Home_Page_Source_File))
-                        {
-                            collectionViewer = AggregationViewer_Factory.Get_Viewer(base.RequestSpecificValues.Hierarchy_Object.Views_And_Searches[0], RequestSpecificValues);
-                        }
+				        if (String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.Custom_Home_Page_Source_File))
+				        {
+				            collectionViewer = AggregationViewer_Factory.Get_Viewer(base.RequestSpecificValues.Hierarchy_Object.Views_And_Searches[0], RequestSpecificValues);
+				        }
+				        else
+				        {
+				            collectionViewer = new Custom_Home_Page_AggregationViewer(RequestSpecificValues);
+				        }
 						break;
 
 					case Aggregation_Type_Enum.Browse_Info:
@@ -307,7 +321,15 @@ namespace SobekCM.Library.HTML
                         RequestSpecificValues.Current_Mode.Show_Selection_Panel = true;
                         break;
                 }
+
+                behaviors = collectionViewer.AggregationViewer_Behaviors;
             }
+            else
+            {
+                behaviors = emptybehaviors;
+            }
+
+            #endregion
         }
 
         /// <summary> Gets the collection of special behaviors which this subwriter
@@ -318,14 +340,7 @@ namespace SobekCM.Library.HTML
             get
             {
                 // When editing the aggregation details, the banner should be included here
-                if (( collectionViewer == null ) || ( collectionViewer.Type == Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search))
-                {
-                    return new List<HtmlSubwriter_Behaviors_Enum>
-                        {
-                            HtmlSubwriter_Behaviors_Enum.Suppress_Banner
-                        };
-                }
-                return emptybehaviors;
+                return collectionViewer == null ? emptybehaviors : collectionViewer.AggregationViewer_Behaviors;
             }
         }
 
@@ -1027,7 +1042,7 @@ namespace SobekCM.Library.HTML
 
             // Add the secondary HTML ot the home page
             bool finish_page = true;
-            if (((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home )) || (collectionViewer.Always_Display_Home_Text))
+            if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home ) && ( !behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text)))
             {
                 finish_page = add_home_html(Output, Tracer);
             }

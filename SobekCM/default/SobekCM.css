@@ -277,12 +277,6 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 
 
 
-
-
-    
-
-
-
 .SobekSiteMapTreeView
 {
     FONT-WEIGHT: bold; FONT-SIZE: 11px; COLOR: Blue;  WIDTH: 100%; FONT-FAMILY: Arial, Helvetica, sans-serif; BACKGROUND-COLOR: #ffffff; text-decoration:none; text-align: left;
@@ -516,7 +510,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 .sbk_hoverTooltipStyle .qtip-content{padding: 10px;background-color: White; color: Black}
 
 
-/* Used for the CONTACT US ( and PREFERENCES) page */
+/* Used for the PREFERENCES (and contact popup form?)     page */
 .SobekContactBox { WIDTH: 250px; color: Blue; background-color: White; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 .SobekContactBox_focused { WIDTH: 250px; color: #0000a8; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
@@ -530,6 +524,22 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 #defaultViewDropDown { width: 140px; color: Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 #defaultSortDropDown { width: 140px; color: Blue; border-style:solid; border-width: 1px; border-color: #7f9db9; }
 
+
+/** Used for Contact_HtmlSubwriter CONTACT FORM page **/
+.sbkChsw_Panel { position: relative; margin-left: auto; margin-right: auto; BORDER: #ccc 1px solid; padding: 0; FONT-SIZE: small; WIDTH: 750px; BACKGROUND-COLOR: #eee; white-space:nowrap; text-align:left; }
+.sbkChsw_Panel h1 { FONT-SIZE: 1.4em; COLOR: #999; TEXT-ALIGN: left; height: 22px; margin-left: 25px; padding-top:6px; }
+.sbkChsw_SubPanel { padding-left: 50px; }
+.sbkChsw_ElementBlock  { padding-left: 50px; }
+.sbkChsw_ExplanationText { font-weight: bold;padding: 10px 0 15px 0; }
+.sbkChsw_Element  { padding: 0 0 15px 0; }
+.sbkChsw_Element input[type=text] { width: 300px; }
+.sbkChsw_Element input[type=checkbox] { margin-left: 50px; }
+.sbkChsw_Element input[type=radio] { margin-left: 50px; }
+.sbkChsw_Element textarea  { margin-left: 50px; width: 500px;height: 160px;}
+#sbkChsw_ButtonDiv  { margin-left: auto;margin-right: auto;text-align: center;padding-top: 40px;padding-bottom: 20px;}
+.sbkChsw_Button {font-size: 15px; background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 4px 10px 3px 10px; cursor: pointer; letter-spacing: 0.5px; }
+.sbkChsw_Button:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
+.sbkChsw_Errors { padding-left: 50px;font-weight: bold;color: red;}
 
 /* Used for the STATISTICS page */
 .statsTable { font-size: 0.95em; }

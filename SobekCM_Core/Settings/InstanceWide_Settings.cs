@@ -627,8 +627,16 @@ namespace SobekCM.Core.Settings
 
         #endregion
 
+        #region Links to larger configuration objects
 
+        /// <summary> Configuration for shibboleth authentication for this instance </summary>
         public Shibboleth_Configuration Shibboleth { get; set; }
+
+        /// <summary> Configuration for the default contact form for this instance </summary>
+        public ContactForm_Configuration ContactForm { get; set; }
+
+        #endregion
+        
 
         /// <summary> Gets the user-in-process directory </summary>
         /// <param name="CurrentUser"> Current user, for which to find the in-process directory </param>

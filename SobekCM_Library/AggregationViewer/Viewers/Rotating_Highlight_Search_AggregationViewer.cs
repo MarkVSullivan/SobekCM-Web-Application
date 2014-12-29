@@ -107,6 +107,18 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
         }
 
+        /// <summary> Gets the collection of special behaviors which this aggregation viewer  requests from the main HTML subwriter. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                        {
+                            HtmlSubwriter_Behaviors_Enum.Suppress_Banner
+                        };
+            }
+        }
+
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>

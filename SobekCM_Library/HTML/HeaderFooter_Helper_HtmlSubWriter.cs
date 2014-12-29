@@ -1,95 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
+using System.Web;
+using SobekCM.Core.Aggregations;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.Navigation;
+using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Navigation;
+using SobekCM.Resource_Object.Behaviors;
+using SobekCM.UI_Library;
 
 namespace SobekCM.Library.HTML
 {
+    /// <summary> Class is a helper class used for writing the header and footers for HTML responses </summary>
     public static class HeaderFooter_Helper_HtmlSubWriter
     {
+
         /// <summary> Add the header to the output </summary>
         /// <param name="Output"> Stream to which to write the HTML for this header </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public static void Add_Header(TextWriter Output, RequestCache RequestSpecificValues)
+        /// <param name="Container_CssClass"> Class name for the container around the page </param>
+        /// <param name="Behaviors"> List of behaviors from the html subwriters </param>
+        public static void Add_Header(TextWriter Output, RequestCache RequestSpecificValues, string Container_CssClass, List<HtmlSubwriter_Behaviors_Enum> Behaviors)
         {
-            Tracer.Add_Trace("Html_MainWriter.Display_Header", "Adding header to HTML");
-
-            // If the subwriter is NULL, do nothing (but sure seems like an error!)
-            if (subwriter == null)
-                return;
-
-            // Get the list of behaviors here
-            List<HtmlSubwriter_Behaviors_Enum> behaviors = subwriter.Subwriter_Behaviors;
-
-            // If no header should be added, just return
-            if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
-                return;
-
-            // Should the internal header be added?
-            if ((subwriter != null) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative) && (RequestSpecificValues.Current_User != null))
-            {
-
-                bool displayHeader = false;
-                if ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_System_Admin))
-                {
-                    displayHeader = true;
-                }
-                else
-                {
-                    switch (RequestSpecificValues.Current_Mode.Mode)
-                    {
-                        case Display_Mode_Enum.Item_Display:
-                            if (RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
-                                displayHeader = true;
-                            break;
-
-                        case Display_Mode_Enum.Aggregation:
-                        case Display_Mode_Enum.Results:
-                        case Display_Mode_Enum.Search:
-                            if ((RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Current_Mode.Aggregation)) || (RequestSpecificValues.Current_User.Can_Edit_All_Items(RequestSpecificValues.Current_Mode.Aggregation)))
-                            {
-                                displayHeader = true;
-                            }
-                            break;
-                    }
-                }
-
-                if ((displayHeader) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
-                {
-                    string return_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                    if ((HttpContext.Current != null) && (HttpContext.Current.Session["Original_URL"] != null))
-                        return_url = HttpContext.Current.Session["Original_URL"].ToString();
-
-                    Output.WriteLine("<!-- Start the internal header -->");
-                    Output.WriteLine("<form name=\"internalHeaderForm\" method=\"post\" action=\"" + return_url + "\" id=\"internalHeaderForm\"> ");
-                    Output.WriteLine();
-                    Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
-                    Output.WriteLine("<input type=\"hidden\" id=\"internal_header_action\" name=\"internal_header_action\" value=\"\" />");
-                    Output.WriteLine();
-
-                    // Is the header currently hidden?
-                    if (HttpContext.Current != null && ((HttpContext.Current.Session["internal_header"] != null) && (HttpContext.Current.Session["internal_header"].ToString() == "hidden")))
-                    {
-                        Output.WriteLine("  <table cellspacing=\"0\" id=\"internalheader\">");
-                        Output.WriteLine("    <tr>");
-                        Output.WriteLine("      <td align=\"left\">");
-                        Output.WriteLine("        <button title=\"Show Internal Header\" class=\"intheader_button_aggr show_intheader_button_aggr\" onclick=\"return show_internal_header();\"></button>");
-                        Output.WriteLine("      </td>");
-                        Output.WriteLine("    </tr>");
-                        Output.WriteLine("  </table>");
-                    }
-                    else
-                    {
-                        subwriter.Write_Internal_Header_HTML(Output, RequestSpecificValues.Current_User);
-                    }
-
-                    Output.WriteLine("</form>");
-                    Output.WriteLine("<!-- End the internal header -->");
-                    Output.WriteLine();
-                }
-            }
-
             // Get the url options
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
             string modified_url_options = String.Empty;
@@ -97,7 +31,7 @@ namespace SobekCM.Library.HTML
                 modified_url_options = "?" + url_options;
 
             // Determine which header and footer to display
-            bool useItemHeader = (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Print) || (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter));
+            bool useItemHeader = (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Print) || (Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter));
 
             // Create the breadcrumbs text
             string breadcrumbs = "&nbsp; &nbsp; ";
@@ -328,7 +262,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Determine which container to use, depending on the current mode
-            string container_inner = subwriter.Container_CssClass;
+            string container_inner = Container_CssClass;
 
             // Get the skin url
             string skin_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "skins/" + RequestSpecificValues.Current_Mode.Skin + "/";
@@ -344,7 +278,7 @@ namespace SobekCM.Library.HTML
 
             // Determine the possible banner to display
             string banner = String.Empty;
-            if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
+            if (!Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
             {
                 if ((RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.Override_Banner))
                 {
@@ -398,9 +332,70 @@ namespace SobekCM.Library.HTML
 
                 }
             }
+        }
 
-            Output.WriteLine(String.Empty);
+        /// <summary> Add the header to the output </summary>
+        /// <param name="Output"> Stream to which to write the HTML for this header </param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        /// <param name="Behaviors"> List of behaviors from the html subwriters </param>
+        public static void Add_Footer(TextWriter Output, RequestCache RequestSpecificValues, List<HtmlSubwriter_Behaviors_Enum> Behaviors)
+        {
+            // Determine which header and footer to display
+            bool useItemFooter = (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Print) || (Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter));
 
+            // Get the current contact URL
+            Display_Mode_Enum thisMode = RequestSpecificValues.Current_Mode.Mode;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
+            string contact = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+            // Restore the old mode
+            RequestSpecificValues.Current_Mode.Mode = thisMode;
+
+            // Get the URL options
+            string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
+            string urlOptions1 = String.Empty;
+            string urlOptions2 = String.Empty;
+            if (url_options.Length > 0)
+            {
+                urlOptions1 = "?" + url_options;
+                urlOptions2 = "&" + url_options;
+            }
+
+            // Get the base url
+            string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+            if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                base_url = base_url + "l/";
+
+            // Get the skin url
+            string skin_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "skins/" + RequestSpecificValues.HTML_Skin.Skin_Code + "/";
+
+            bool end_div = !((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Simple_HTML_CMS) && (RequestSpecificValues.Site_Map != null));
+
+            string VERSION = UI_ApplicationCache_Gateway.Settings.Current_Web_Version;
+            if (VERSION.IndexOf(" ") > 0)
+                VERSION = VERSION.Split(" ".ToCharArray())[0];
+
+            if (useItemFooter)
+            {
+                Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
+            }
+            else
+            {
+                if (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive)
+                {
+                    if (!end_div)
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "").Trim());
+                    else
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "</div>").Trim());
+                }
+                else
+                {
+                    if (!end_div)
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim());
+                    else
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Trim() + Environment.NewLine + "</div>");
+                }
+            }
         }
     }
 }

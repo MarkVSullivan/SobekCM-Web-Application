@@ -291,7 +291,7 @@ namespace SobekCM.Library.AdminViewer
             const string ABBREVIATION_HELP = "Abbreviation for the system, when accessed through this url portal.\n\nFor example, 'dLOC', or UFDC.";
             const string WEB_SKIN_HELP = "Default web skin under which this url portal should be displayed.  If none is probided, it will default to the system web skin.";
             const string AGGREGATION_HELP = "Default aggregation which should be displayed under this url portal.  If none is provided, this url portal will display the main system home page.";
-            const string URL_SEGMENT_HELP = "URL segment used for matching purposes to determine which url portal a RequestSpecificValues.Current_User is accessing this system from.\n\nA blank URL portal will make this the default portal.";
+            const string URL_SEGMENT_HELP = "URL segment used for matching purposes to determine which url portal a user is accessing this system from.\n\nA blank URL portal will make this the default portal.";
             const string BASE_PURL_HELP = "Base permanent link URL to be used when constructing permanent URLs for items which do not have itt explicitly entered.\n\nA blank value here will result in the current URL being used as the base for the purl.";
 
             Tracer.Add_Trace("Portals_AdminViewer.Write_ItemNavForm_Closing", "Adds the portal information to the main form");
@@ -404,8 +404,8 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
 			}
 
-            Output.WriteLine("  <p>URL UI_ApplicationCache_Gateway.URL_Portals allow the same SobekCM library to have a very different look and feel and encompass different item aggregations.  Each portal is defined by the incoming URL and the URL for each incoming request is analyzed to ensure it is handled correctly.</p>");
-            Output.WriteLine("  <p>For more information about URL UI_ApplicationCache_Gateway.URL_Portals, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/UI_ApplicationCache_Gateway.URL_Portals\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>URL portals allow the same SobekCM library to have a very different look and feel and encompass different item aggregations.  Each portal is defined by the incoming URL and the URL for each incoming request is analyzed to ensure it is handled correctly.</p>");
+            Output.WriteLine("  <p>For more information about URL portals, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/portals\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 
 			// Add portal admin message
 			int columns = 6;

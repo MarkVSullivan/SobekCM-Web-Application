@@ -160,13 +160,6 @@ function focus_element(focusname) {
 
 
 function send_contact_email() {
-
-	// Verify there is either a subject or note
-	var notesfield = document.getElementById("notesTextBox");
-	var subjectfield = document.getElementById("subjectTextBox");
-	if ((notesfield.innerHTML.length == 0) && (subjectfield.value.length == 0))
-		return false;
-
 	// Populate the hidden value this data
 	var hiddenfield = document.getElementById('item_action');
 	hiddenfield.value = 'email';

@@ -674,7 +674,7 @@ namespace SobekCM
 			                        if (mapping != User_Object_Attribute_Mapping_Enum.NONE)
 			                        {
 			                            string value = HttpContext.Current.Request.ServerVariables[var];
-			                            newUser.Set_Value(mapping, value);
+			                            newUser.Set_Value_By_Mapping(mapping, value);
 
 			                            if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
 			                            {
@@ -692,7 +692,7 @@ namespace SobekCM
 			                    {
 			                        if (constantMapping.Key != User_Object_Attribute_Mapping_Enum.NONE)
 			                        {
-			                            newUser.Set_Value(constantMapping.Key, constantMapping.Value);
+                                        newUser.Set_Value_By_Mapping(constantMapping.Key, constantMapping.Value);
 
 			                            if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
 			                            {

@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
@@ -92,15 +93,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             privateItems = SobekCM_Database.Tracking_Get_Aggregation_Private_Items(RequestSpecificValues.Hierarchy_Object.Code, (int)RESULTS_PER_PAGE, RequestSpecificValues.Current_Mode.Page, RequestSpecificValues.Current_Mode.Sort, RequestSpecificValues.Tracer);
         }
 
-        /// <summary> Gets flag which indicates whether to always use the home text as the secondary text </summary>
-        public override bool Always_Display_Home_Text
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
         /// <value> This property always returns the <see cref="Selection_Panel_Display_Enum.Never"/> enumerational value </value>
         public override Selection_Panel_Display_Enum Selection_Panel_Display
@@ -108,6 +100,18 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             get
             {
                 return Selection_Panel_Display_Enum.Never;
+            }
+        }
+
+        /// <summary> Gets the collection of special behaviors which this aggregation viewer  requests from the main HTML subwriter. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum>
+                        {
+                            HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text
+                        };
             }
         }
 
