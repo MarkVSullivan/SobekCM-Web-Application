@@ -32,6 +32,9 @@ namespace SobekCM.Library.MainWriters
         private const int RECORDS_PER_PAGE = 100;
         private const int IDENTIFIERS_PER_PAGE = 250;
 
+        private const int WAY_FUTURE_YEAR = 2025;
+        private const int WAY_PAST_YEAR = 1900;
+
         /// <summary> Constructor for a new instance of the Oai_MainWriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Query_String"> URL Query string to parse for OAI-PMH verbs and other values </param>
@@ -255,7 +258,7 @@ namespace SobekCM.Library.MainWriters
                         if (thisKey == "resumptionToken")
                         {
                             tokenLR = queryString["resumptionToken"];
-                            if (tokenLR.Length < 26)
+                            if (tokenLR.Length < 8)
                             {
                                 Write_Error(Output, "resumptionToken=\"" + tokenLR + "\" verb=\"ListRecords\"", "badResumptionToken", "no resumeAfter in resumptionToken:" + tokenLR);
                                 return;
@@ -352,8 +355,8 @@ namespace SobekCM.Library.MainWriters
             }
 
             // Set the default dates and page first
-            DateTime from_date = new DateTime(1900, 1, 1);
-            DateTime until_date = DateTime.Now.AddDays(1);
+            DateTime from_date = new DateTime(WAY_PAST_YEAR, 1, 1);
+            DateTime until_date = new DateTime(WAY_FUTURE_YEAR, 1, 1);
             int current_page = 1;
 
             // Start to build the request XML
@@ -368,29 +371,34 @@ namespace SobekCM.Library.MainWriters
                 // Compute the state from the token
                 try
                 {
-                    string page_string = ResumptionToken.Substring(0, 10);
-                    string set_name = ResumptionToken.Substring(10 + UI_ApplicationCache_Gateway.Settings.OAI_Repository_Identifier.Length);
-                    int i = 0;
-                    foreach (char thisChar in set_name)
-                    {
-                        if (Char.IsLetter(thisChar))
-                            i++;
-                        else
-                            break;
-                    }
-                    string from_string = set_name.Substring(i, 8);
-                    string until_string = set_name.Substring(i + 8, 8);
-                    set_name = set_name.Substring(0, i);
-
-                    // Before we can parse those dates, we need to format a bit for the .NET framework
-                    from_string = from_string.Substring(4, 2) + "/" + from_string.Substring(6) + "/" + from_string.Substring(0, 4);
-                    until_string = until_string.Substring(4, 2) + "/" + until_string.Substring(6) + "/" + until_string.Substring(0, 4);
+                    string page_string = ResumptionToken.Substring(0, 6);
+                    SetCode = ResumptionToken.Substring(6 + UI_ApplicationCache_Gateway.Settings.OAI_Repository_Identifier.Length);
 
                     // Try to parse the page and dates now
-                    if ((!Int32.TryParse(page_string, out current_page)) || (!DateTime.TryParse(from_string, out from_date)) || (!DateTime.TryParse(until_string, out until_date)))
+                    if (!Int32.TryParse(page_string, out current_page))
                     {
                         Write_Error(Output, "resumptionToken=\"" + ResumptionToken + "\" verb=\"ListRecords\"", "badResumptionToken", "no resumeAfter in resumptionToken:" + ResumptionToken);
                         return;
+                    }
+
+                    // Was there a from and until date included in the token?
+                    if (SetCode.IndexOf(".") > 0)
+                    {
+                        int period_index = SetCode.IndexOf(".");
+                        string from_string = SetCode.Substring(period_index + 1, 8);
+                        string until_string = SetCode.Substring(period_index + 9, 8);
+                        SetCode = SetCode.Substring(0, period_index);
+
+                        // Before we can parse those dates, we need to format a bit for the .NET framework
+                        from_string = from_string.Substring(4, 2) + "/" + from_string.Substring(6) + "/" + from_string.Substring(0, 4);
+                        until_string = until_string.Substring(4, 2) + "/" + until_string.Substring(6) + "/" + until_string.Substring(0, 4);
+
+                        // Try to parse the dates now
+                        if ((!DateTime.TryParse(from_string, out from_date)) || (!DateTime.TryParse(until_string, out until_date)))
+                        {
+                            Write_Error(Output, "resumptionToken=\"" + ResumptionToken + "\" verb=\"ListRecords\"", "badResumptionToken", "no resumeAfter in resumptionToken:" + ResumptionToken);
+                            return;
+                        }
                     }
                 }
                 catch
@@ -506,7 +514,12 @@ namespace SobekCM.Library.MainWriters
             {
                 DateTime expDate = DateTime.Now.AddDays(1).ToUniversalTime();
                 string expirationDateString = expDate.Year + "-" + expDate.Month.ToString().PadLeft(2, '0') + "-" + expDate.Day.ToString().PadLeft(2, '0') + "T" + expDate.Hour.ToString().PadLeft(2, '0') + ":" + expDate.Minute.ToString().PadLeft(2, '0') + ":00Z";
-                Output.WriteLine("<resumptionToken expirationDate=\"" + expirationDateString + "\">" + (Current_Page + 1).ToString().PadLeft(10, '0') + UI_ApplicationCache_Gateway.Settings.OAI_Repository_Identifier + set_code +  from.Year + from.Month.ToString().PadLeft(2,'0') + from.Day.ToString().PadLeft(2,'0') + until.Year + until.Month.ToString().PadLeft(2,'0') + until.Day.ToString().PadLeft(2,'0') + "</resumptionToken>");
+                string newResumptionToken = (Current_Page + 1).ToString().PadLeft(6, '0') + UI_ApplicationCache_Gateway.Settings.OAI_Repository_Identifier + set_code;
+                if ((from.Year != WAY_PAST_YEAR) || (until.Year != WAY_FUTURE_YEAR))
+                {
+                    newResumptionToken = newResumptionToken + "." + from.Year + from.Month.ToString().PadLeft(2, '0') + from.Day.ToString().PadLeft(2, '0') + until.Year + until.Month.ToString().PadLeft(2, '0') + until.Day.ToString().PadLeft(2, '0');
+                }
+                Output.WriteLine("<resumptionToken expirationDate=\"" + expirationDateString + "\">" + newResumptionToken + "</resumptionToken>");
             }
 
             // Write the response
@@ -550,25 +563,34 @@ namespace SobekCM.Library.MainWriters
                 // Compute the state from the token
                 try
                 {
-                    string page_string = resumptionToken.Substring(0, 10);
-                    string set_name = resumptionToken.Substring(10 + UI_ApplicationCache_Gateway.Settings.OAI_Repository_Identifier.Length);
-                    int i = 0;
-                    foreach (char thisChar in set_name)
-                    {
-                        if (Char.IsLetter(thisChar))
-                            i++;
-                        else
-                            break;
-                    }
-                    string from_string = set_name.Substring(i, 8);
-                    string until_string = set_name.Substring(i + 8, 8);
-                    set_name = set_name.Substring(0, i);
+                    string page_string = resumptionToken.Substring(0, 6);
+                    set_code = resumptionToken.Substring(6 + UI_ApplicationCache_Gateway.Settings.OAI_Repository_Identifier.Length);
 
                     // Try to parse the page and dates now
-                    if ((!Int32.TryParse(page_string, out current_page)) || (!DateTime.TryParse(from_string, out from_date)) || (!DateTime.TryParse(until_string, out until_date)))
+                    if (!Int32.TryParse(page_string, out current_page))
                     {
-                        Write_Error(Output, "resumptionToken=\"" + resumptionToken + "\" verb=\"ListIdentifiers\"", "badResumptionToken", "no resumeAfter in resumptionToken:" + resumptionToken);
+                        Write_Error(Output, "resumptionToken=\"" + resumptionToken + "\" verb=\"ListRecords\"", "badResumptionToken", "no resumeAfter in resumptionToken:" + resumptionToken);
                         return;
+                    }
+
+                    // Was there a from and until date included in the token?
+                    if (set_code.IndexOf(".") > 0)
+                    {
+                        int period_index = set_code.IndexOf(".");
+                        string from_string = set_code.Substring(period_index + 1, 8);
+                        string until_string = set_code.Substring(period_index + 9, 8);
+                        set_code = set_code.Substring(0, period_index);
+
+                        // Before we can parse those dates, we need to format a bit for the .NET framework
+                        from_string = from_string.Substring(4, 2) + "/" + from_string.Substring(6) + "/" + from_string.Substring(0, 4);
+                        until_string = until_string.Substring(4, 2) + "/" + until_string.Substring(6) + "/" + until_string.Substring(0, 4);
+
+                        // Try to parse the dates now
+                        if ((!DateTime.TryParse(from_string, out from_date)) || (!DateTime.TryParse(until_string, out until_date)))
+                        {
+                            Write_Error(Output, "resumptionToken=\"" + resumptionToken + "\" verb=\"ListRecords\"", "badResumptionToken", "no resumeAfter in resumptionToken:" + resumptionToken);
+                            return;
+                        }
                     }
                 }
                 catch

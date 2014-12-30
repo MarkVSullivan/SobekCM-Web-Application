@@ -15,6 +15,9 @@ namespace SobekCM.Core.Configuration
         /// be checked) </summary>
         CheckBoxSet,
 
+        /// <summary> Special textbox field includes email regex checking for valid input </summary>
+        Email,
+
         /// <summary> Simple pararaph or line of text to explain something or inform the user filling
         /// out the 'Contact Us' form </summary>
         ExplanationText,
@@ -151,6 +154,10 @@ namespace SobekCM.Core.Configuration
                         {
                             case ContactForm_Configuration_Element_Type_Enum.CheckBoxSet:
                                 elementName = "CheckBoxSet";
+                                break;
+
+                            case ContactForm_Configuration_Element_Type_Enum.Email:
+                                elementName = "Email";
                                 break;
 
                             case ContactForm_Configuration_Element_Type_Enum.ExplanationText:

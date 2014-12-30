@@ -54,7 +54,7 @@ namespace SobekCM.URL_Rewriter
 			string raw_url = HttpContext.Current.Request.RawUrl;
 			
 			// If a USFLDC PURL, call redirection service method
-			if (appRelative.Equals("~/") && HttpContext.Current.Request.RawUrl.StartsWith("/?") && (HttpContext.Current.Request.Url.ToString().Contains("usf.edu") || HttpContext.Current.Request.Url.ToString().Contains("localhost:") || HttpContext.Current.Request.Url.ToString().Contains("usf.sobek.ufl.edu")))
+			if (appRelative.Equals("~/") && HttpContext.Current.Request.RawUrl.StartsWith("/?") && (HttpContext.Current.Request.Url.ToString().Contains("usf.edu") || HttpContext.Current.Request.Url.ToString().Contains("usf.sobek.ufl.edu")))
 			{
 				USFLDC_Redirection_Service();
 			}

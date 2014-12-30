@@ -112,6 +112,10 @@ namespace SobekCM.Engine_Library.Configuration
                             read_contactform_element(readerXml, config, ContactForm_Configuration_Element_Type_Enum.Subject);
                             break;
 
+                        case "email":
+                            read_contactform_element(readerXml, config, ContactForm_Configuration_Element_Type_Enum.Email);
+                            break;
+
                         case "radioset":
                             read_contactform_element(readerXml, config, ContactForm_Configuration_Element_Type_Enum.RadioSet);
                             break;

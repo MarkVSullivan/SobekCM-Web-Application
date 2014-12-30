@@ -2,9 +2,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net.Mail;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
@@ -26,6 +28,7 @@ namespace SobekCM.Library.HTML
         private readonly ContactForm_Configuration configuration;
         private readonly Dictionary<string, string> postBackValues;
         private string errorMsg;
+        private bool email_invalid;
 
         /// <summary> Constructor for a new instance of the Contact_HtmlSubwriter class </summary>
         /// <param name="Last_Mode"> URL for the last mode this user was in before selecting contact us</param>
@@ -41,6 +44,8 @@ namespace SobekCM.Library.HTML
 
             // Determine the configuration to use for this contact us form
             configuration = UI_ApplicationCache_Gateway.Settings.ContactForm;
+            if ((RequestSpecificValues.Hierarchy_Object != null) && (RequestSpecificValues.Hierarchy_Object.ContactForm != null))
+                configuration = RequestSpecificValues.Hierarchy_Object.ContactForm;
 
             postBackValues = new Dictionary<string, string>();
             foreach (string thisKey in HttpContext.Current.Request.Form.AllKeys)
@@ -80,6 +85,8 @@ namespace SobekCM.Library.HTML
                             control_name = thisElement.Name.Replace(" ", "_");
                         if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.Subject)
                             control_name = "subject";
+                        if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.Email)
+                            control_name = "email";
                         if (String.IsNullOrEmpty(control_name))
                             control_name = "Control" + control_count;
 
@@ -93,6 +100,16 @@ namespace SobekCM.Library.HTML
                             if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.Subject)
                             {
                                 subject = postBackValues[control_name] + " [" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Submission]";
+                            }
+                            else if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.Email)
+                            {
+                                message_from = postBackValues[control_name];
+
+                                if (!IsValidEmail(message_from))
+                                {
+                                    errorBuilder.Append(thisElement.QueryText.Get_Value(RequestSpecificValues.Current_Mode.Language).Replace(":", "") + " (INVALID) <br />");
+                                }
+
                             }
                             else if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.TextArea)
                             {
@@ -110,9 +127,7 @@ namespace SobekCM.Library.HTML
                             }
                             else
                             {
-                                if (String.Compare(control_name, "email", true) == 0)
-                                    message_from = postBackValues[control_name];
-                                emailBuilder.Append(control_name.Replace("_"," ") + ":\t\t" + postBackValues[control_name] + "\n");
+                                emailBuilder.Append(control_name.Replace("_", " ") + ":\t\t" + postBackValues[control_name] + "\n");
                             }
                         }
 
@@ -176,6 +191,56 @@ namespace SobekCM.Library.HTML
             }
         }
 
+        private bool IsValidEmail(string strIn)
+        {
+            if (String.IsNullOrEmpty(strIn))
+                return false;
+
+            email_invalid = false;
+
+            // Use IdnMapping class to convert Unicode domain names. 
+            try
+            {
+                strIn = Regex.Replace(strIn, @"(@)(.+)$", this.DomainMapper, RegexOptions.None, TimeSpan.FromMilliseconds(200));
+            }
+            catch (RegexMatchTimeoutException)
+            {
+                return false;
+            }
+
+            if (email_invalid)
+                return false;
+
+            // Return true if strIn is in valid e-mail format. 
+            try
+            {
+                return Regex.IsMatch(strIn,
+                      @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
+                      @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
+                      RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+            }
+            catch (RegexMatchTimeoutException)
+            {
+                return false;
+            }
+        }
+
+        private string DomainMapper(Match match)
+        {
+            // IdnMapping class with default property values.
+            IdnMapping idn = new IdnMapping();
+
+            string domainName = match.Groups[2].Value;
+            try
+            {
+                domainName = idn.GetAscii(domainName);
+            }
+            catch (ArgumentException)
+            {
+                email_invalid = true;
+            }
+            return match.Groups[1].Value + domainName;
+        }
 
         /// <summary> Write any additional values within the HTML Head of the
         /// final served page </summary>
@@ -264,23 +329,6 @@ namespace SobekCM.Library.HTML
                     cancel = "Cancelar";
                 }
 
-                // Determine any initial values
-                string name_value = string.Empty;
-                string email_value = string.Empty;
-                string notes_value = String.Empty;
-                string subject_value = String.Empty;
-                if ((!RequestSpecificValues.Current_Mode.isPostBack) && (HttpContext.Current.Session["user"] != null))
-                {
-                    User_Object user = (User_Object) HttpContext.Current.Session["user"];
-                    name_value = user.Full_Name;
-                    email_value = user.Email;
-                }
-                if (RequestSpecificValues.Current_Mode.Error_Message.Length > 0)
-                {
-                    subject_value = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Error";
-                    notes_value = RequestSpecificValues.Current_Mode.Error_Message;
-                }
-
                 // Start this form
                 string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
                 Output.WriteLine("<form name=\"email_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
@@ -348,6 +396,17 @@ namespace SobekCM.Library.HTML
                             inElementBlock = true;
                         }
 
+                        // Determine the name of this control
+                        string control_name = String.Empty;
+                        if (!String.IsNullOrEmpty(thisElement.Name))
+                            control_name = thisElement.Name.Replace(" ", "_");
+                        if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.Subject)
+                            control_name = "subject";
+                        if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.Email)
+                            control_name = "email";
+                        if (String.IsNullOrEmpty(control_name))
+                            control_name = "Control" + control_count;
+
                         // If this maps from a user value, get that now
                         string initialValue = String.Empty;
                         if ((thisElement.UserAttribute != User_Object_Attribute_Mapping_Enum.NONE) && (RequestSpecificValues.Current_User != null))
@@ -355,19 +414,18 @@ namespace SobekCM.Library.HTML
                             initialValue = RequestSpecificValues.Current_User.Get_Value_By_Mapping(thisElement.UserAttribute);
                         }
 
+                        // But, if this was already posted back, get that value
+                        if (postBackValues.ContainsKey(control_name))
+                        {
+                            initialValue = postBackValues[control_name];
+                        }
+
                         // Get the css
                         string cssClass = "sbkChsw_Element";
                         if (!String.IsNullOrEmpty(thisElement.CssClass))
                             cssClass = thisElement.CssClass;
 
-                        // Determine the name of this control
-                        string control_name = String.Empty;
-                        if (!String.IsNullOrEmpty(thisElement.Name))
-                            control_name = thisElement.Name.Replace(" ", "_");
-                        if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.Subject)
-                            control_name = "subject";
-                        if (String.IsNullOrEmpty(control_name))
-                            control_name = "Control" + control_count;
+
 
                         // If this is the firest element of this type, then get th ename
                         if (firstControl.Length == 0)
@@ -384,7 +442,12 @@ namespace SobekCM.Library.HTML
 
                             case ContactForm_Configuration_Element_Type_Enum.Subject:
                                 Output.WriteLine("        <label for=\"subject\">" + thisElement.QueryText.Get_Value(RequestSpecificValues.Current_Mode.Language) + "</label> ");
-                                Output.WriteLine("        <input name=\"subject\" name=\"subject\" id=\"subject\" type=\"text\" value=\"" + initialValue + "\" class=\"sbk_Focusable\" />");
+                                Output.WriteLine("        <input name=\"subject\" id=\"subject\" type=\"text\" value=\"" + initialValue + "\" class=\"sbk_Focusable\" />");
+                                break;
+
+                            case ContactForm_Configuration_Element_Type_Enum.Email:
+                                Output.WriteLine("        <label for=\"email\">" + thisElement.QueryText.Get_Value(RequestSpecificValues.Current_Mode.Language) + "</label> ");
+                                Output.WriteLine("        <input name=\"email\" id=\"email\" type=\"text\" value=\"" + initialValue + "\" class=\"sbk_Focusable\" />");
                                 break;
 
                             case ContactForm_Configuration_Element_Type_Enum.TextArea:
@@ -393,23 +456,35 @@ namespace SobekCM.Library.HTML
                                 break;
 
                             case ContactForm_Configuration_Element_Type_Enum.CheckBoxSet:
-                                Output.WriteLine("        " + thisElement.QueryText.Get_Value(RequestSpecificValues.Current_Mode.Language) + "<br />");
-                               // Output.WriteLine("        <fieldset>");
+                                Output.WriteLine("        " + thisElement.QueryText.Get_Value(RequestSpecificValues.Current_Mode.Language) + " ( " + initialValue + ")<br />");
+                                initialValue = initialValue + ",";
                                 foreach (string thisOption in thisElement.Options)
                                 {
-                                    Output.WriteLine("          <input type=\"checkbox\" name=\"" + control_name + "\" value=\"" + thisOption + "\" />" + thisOption + "<br />");
+                                    if (initialValue.IndexOf(thisOption + ",") >= 0)
+                                    {
+                                        Output.WriteLine("          <input type=\"checkbox\" name=\"" + control_name + "\" value=\"" + thisOption + "\" checked=\"checked\" />" + thisOption + "<br />");
+                                    }
+                                    else
+                                    {
+                                        Output.WriteLine("          <input type=\"checkbox\" name=\"" + control_name + "\" value=\"" + thisOption + "\" />" + thisOption + "<br />");
+                                    }
                                 }
-                               // Output.WriteLine("        </fieldset>");
                                 break;
 
                             case ContactForm_Configuration_Element_Type_Enum.RadioSet:
                                 Output.WriteLine("        " + thisElement.QueryText.Get_Value(RequestSpecificValues.Current_Mode.Language) + "<br />");
-                                // Output.WriteLine("        <fieldset>");
                                 foreach (string thisOption in thisElement.Options)
                                 {
-                                    Output.WriteLine("          <input type=\"radio\" name=\"" + control_name + "\" value=\"" + thisOption + "\" />" + thisOption + "<br />");
+                                    if (thisOption == initialValue)
+                                    {
+                                        Output.WriteLine("          <input type=\"radio\" name=\"" + control_name + "\" value=\"" + thisOption + "\" checked=\"checked\" />" + thisOption + "<br />");
+
+                                    }
+                                    else
+                                    {
+                                        Output.WriteLine("          <input type=\"radio\" name=\"" + control_name + "\" value=\"" + thisOption + "\" />" + thisOption + "<br />");
+                                    }
                                 }
-                                // Output.WriteLine("        </fieldset>");
                                 break;
 
 
@@ -417,10 +492,18 @@ namespace SobekCM.Library.HTML
                                 Output.WriteLine("        " + thisElement.QueryText.Get_Value(RequestSpecificValues.Current_Mode.Language));
                                 // Output.WriteLine("        <fieldset>");
                                 Output.WriteLine("      <select name=\"" + control_name + "\" id=\"" + control_name + "\" >");
+                                Output.WriteLine("          <option></option>");
 
                                 foreach (string thisOption in thisElement.Options)
                                 {
-                                    Output.WriteLine("          <option>" + thisOption + "</option>");
+                                    if (thisOption == initialValue)
+                                    {
+                                        Output.WriteLine("          <option selected=\"selected\">" + thisOption + "</option>");
+                                    }
+                                    else
+                                    {
+                                        Output.WriteLine("          <option>" + thisOption + "</option>");
+                                    }
                                 }
                                 Output.WriteLine("      </select>");
                                 // Output.WriteLine("        </fieldset>");
@@ -456,8 +539,8 @@ namespace SobekCM.Library.HTML
                         return_url = "?" + lastMode;
                 }
 
-                Output.WriteLine("      <button title=\"" + cancel + "\" class=\"sbkChsw_Button\" onclick=\"window.location.href='" + return_url + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + cancel + "</button> &nbsp; &nbsp; ");
-                Output.WriteLine("      <button title=\"" + submit + "\" class=\"sbkChsw_Button\" onclick=\"return send_contact_email();\">" + submit + " <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("      <button title=\"" + cancel + "\" class=\"sbkChsw_Button\" onclick=\"window.location.href='" + return_url + "'; return false;\" type=\"button\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + cancel + "</button> &nbsp; &nbsp; ");
+                Output.WriteLine("      <button title=\"" + submit + "\" class=\"sbkChsw_Button\" onclick=\"return send_contact_email();\" type=\"submit\">" + submit + " <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 
 
                 Output.WriteLine("    </div>");
@@ -483,11 +566,11 @@ namespace SobekCM.Library.HTML
             return true;
         }
 
-        /// <summary> Gets the collection of special behaviors which this subwriter
-        /// requests from the main HTML writer. </summary>
-        public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
-        {
-            get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner }; }
-        }
+        ///// <summary> Gets the collection of special behaviors which this subwriter
+        ///// requests from the main HTML writer. </summary>
+        //public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
+        //{
+        //    get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner }; }
+        //}
     }
 }

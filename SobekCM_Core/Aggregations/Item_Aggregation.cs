@@ -804,6 +804,13 @@ namespace SobekCM.Core.Aggregations
 
         #endregion
 
+        #region Additional optional configuration portions
+
+        /// <summary> Any aggregation-specific contact form configuration, otherwise NULL </summary>
+        public ContactForm_Configuration ContactForm { get; set; }
+
+        #endregion
+
         #region Internal methods used to build this object
 
         /// <summary> Method adds another aggregation as a child of this </summary>
