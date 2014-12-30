@@ -169,6 +169,9 @@
     <Compile Include="Metadata_Modules\GeoSpatial\Coordinate_Circle.cs" />
     <Compile Include="METS_Sec_ReaderWriters\ETD_MS_DC_METS_dmdSec_ReaderWriter.cs" />
     <Compile Include="METS_Sec_ReaderWriters\ETD_SobekCM_METS_dmdSec_ReaderWriter.cs" />
+    <Compile Include="OAI\Writer\abstract_OAI_PMH_Metadata_Type_Writer.cs" />
+    <Compile Include="OAI\Writer\DC_OAI_Metadata_Type_Writer.cs" />
+    <Compile Include="OAI\Writer\iOAI_PMH_Metadata_Type_Writer.cs" />
     <Compile Include="Utilities\Image_Derivative_Creation_Processor.cs" />
     <Compile Include="iMetadataDescribable.cs" />
     <Compile Include="Metadata_File_ReaderWriters\MARC\ErrorHandling\MARC_Record_Parsing_Error.cs" />
@@ -223,10 +226,10 @@
     <Compile Include="METS_Sec_ReaderWriters\SobekCM_Map_METS_dmdSec_ReaderWriter.cs" />
     <Compile Include="METS_Sec_ReaderWriters\SobekCM_METS_dmdSec_ReaderWriter.cs" />
     <Compile Include="METS_Sec_ReaderWriters\VRACore_METS_dmdSec_ReaderWriter.cs" />
-    <Compile Include="OAI\OAI_Repository_DublinCore_Record.cs" />
-    <Compile Include="OAI\OAI_Repository_Information.cs" />
-    <Compile Include="OAI\OAI_Repository_Records_List.cs" />
-    <Compile Include="OAI\OAI_Repository_Stream_Reader.cs" />
+    <Compile Include="OAI\Reader\OAI_Repository_DublinCore_Record.cs" />
+    <Compile Include="OAI\Reader\OAI_Repository_Information.cs" />
+    <Compile Include="OAI\Reader\OAI_Repository_Records_List.cs" />
+    <Compile Include="OAI\Reader\OAI_Repository_Stream_Reader.cs" />
     <Compile Include="Metadata_Modules\GeoSpatial\Coordinate_Line.cs" />
     <Compile Include="Metadata_Modules\GeoSpatial\Coordinate_Point.cs" />
     <Compile Include="Metadata_Modules\GeoSpatial\Coordinate_Polygon.cs" />

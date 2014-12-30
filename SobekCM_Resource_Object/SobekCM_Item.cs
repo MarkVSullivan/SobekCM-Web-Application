@@ -11,7 +11,7 @@ using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.MARC;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.OAI;
+using SobekCM.Resource_Object.OAI.Reader;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Tracking;
 using SobekCM.Resource_Object.Utilities;

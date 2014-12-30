@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 #endregion
 
-namespace SobekCM.Resource_Object.OAI
+namespace SobekCM.Resource_Object.OAI.Reader
 {
     /// <summary> Single record from Dublin Core metadata from an OAI-PMH repository </summary>
     public class OAI_Repository_DublinCore_Record

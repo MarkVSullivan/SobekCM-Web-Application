@@ -56,6 +56,7 @@
     <Compile Include="ApplicationState\Engine_ApplicationCache_Gateway.cs" />
     <Compile Include="ApplicationState\Item_Lookup_Object.cs" />
     <Compile Include="Configuration\ContactForm_Configuration_Reader.cs" />
+    <Compile Include="Configuration\OAI_PMH_Configuration_Reader.cs" />
     <Compile Include="Configuration\Shibboleth_Configuration_Reader.cs" />
     <Compile Include="MemoryMgmt\AppFabric_Manager.cs" />
     <Compile Include="MemoryMgmt\Cached_Data_Manager.cs" />

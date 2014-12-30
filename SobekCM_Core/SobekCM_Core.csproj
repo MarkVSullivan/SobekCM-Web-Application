@@ -66,6 +66,8 @@
     <Compile Include="Configuration\Database_Instance_Configuration.cs" />
     <Compile Include="Configuration\MapEditor_Configuration.cs" />
     <Compile Include="Configuration\MapSearch_Configuration.cs" />
+    <Compile Include="Configuration\OAI_PMH_Configuration.cs" />
+    <Compile Include="Configuration\OAI_PMH_Metadata_Format.cs" />
     <Compile Include="Configuration\QualityControl_Configuration.cs" />
     <Compile Include="Configuration\Shibboleth_Configuration.cs" />
     <Compile Include="Configuration\Web_Language_Enum.cs" />

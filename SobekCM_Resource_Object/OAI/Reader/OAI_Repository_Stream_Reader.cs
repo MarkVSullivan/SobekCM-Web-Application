@@ -9,7 +9,7 @@ using System.Xml;
 
 #endregion
 
-namespace SobekCM.Resource_Object.OAI
+namespace SobekCM.Resource_Object.OAI.Reader
 {
     /// <summary> Static class is used to query an OAI-PMH repository for information about the repository or
     /// records within that repository </summary>

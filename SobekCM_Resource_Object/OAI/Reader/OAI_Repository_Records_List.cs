@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 #endregion
 
-namespace SobekCM.Resource_Object.OAI
+namespace SobekCM.Resource_Object.OAI.Reader
 {
     /// <summary> Collection of OAI-PMH records from the OAI-PMH repository </summary>
     public class OAI_Repository_Records_List
