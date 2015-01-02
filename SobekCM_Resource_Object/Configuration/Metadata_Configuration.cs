@@ -19,22 +19,22 @@ namespace SobekCM.Resource_Object.Configuration
     {
         private static bool attemptedRead;
 
-        private static List<Metadata_File_ReaderWriter_Config> metadataFileReaderWriterConfigs;
-        private static List<METS_Section_ReaderWriter_Config> metsSectionReaderWriterConfigs;
+        private static readonly List<Metadata_File_ReaderWriter_Config> metadataFileReaderWriterConfigs;
+        private static readonly List<METS_Section_ReaderWriter_Config> metsSectionReaderWriterConfigs;
 
-        private static Dictionary<string, METS_Writing_Profile> metsWritingProfiles;
+        private static readonly Dictionary<string, METS_Writing_Profile> metsWritingProfiles;
         private static METS_Writing_Profile defaultWritingProfile;
 
-        private static List<Additional_Metadata_Module_Config> metadataModules;
+        private static readonly List<Additional_Metadata_Module_Config> metadataModules;
 
-        private static Dictionary<Tuple<string, string>, iPackage_amdSec_ReaderWriter> packageAmdSecDictionary;
-        private static Dictionary<Tuple<string, string>, iPackage_dmdSec_ReaderWriter> packageDmdSecDictionary;
-        private static Dictionary<Tuple<string, string>, iDivision_dmdSec_ReaderWriter> divisionDmdSecDictionary;
-        private static Dictionary<Tuple<string, string>, iDivision_amdSec_ReaderWriter> divisionAmdSecDictionary;
-        private static Dictionary<Tuple<string, string>, iFile_dmdSec_ReaderWriter> fileDmdSecDictionary;
-        private static Dictionary<Tuple<string, string>, iFile_amdSec_ReaderWriter> fileAmdSecDictionary;
+        private static readonly Dictionary<Tuple<string, string>, iPackage_amdSec_ReaderWriter> packageAmdSecDictionary;
+        private static readonly Dictionary<Tuple<string, string>, iPackage_dmdSec_ReaderWriter> packageDmdSecDictionary;
+        private static readonly Dictionary<Tuple<string, string>, iDivision_dmdSec_ReaderWriter> divisionDmdSecDictionary;
+        private static readonly Dictionary<Tuple<string, string>, iDivision_amdSec_ReaderWriter> divisionAmdSecDictionary;
+        private static readonly Dictionary<Tuple<string, string>, iFile_dmdSec_ReaderWriter> fileDmdSecDictionary;
+        private static readonly Dictionary<Tuple<string, string>, iFile_amdSec_ReaderWriter> fileAmdSecDictionary;
 
-        private static List<string> errorsEncountered;
+        private static readonly List<string> errorsEncountered;
 
         /// <summary> Static constructor for the Metadata_Configuration class </summary>
         static Metadata_Configuration()
@@ -55,8 +55,7 @@ namespace SobekCM.Resource_Object.Configuration
             attemptedRead = false;
             errorsEncountered = new List<string>();
 
-            // Set default reader/writer values to have a baseline in case there is
-            // no file to be read 
+            // Set default reader/writer values to have a baseline in case there is no file to be read 
             Set_Default_Values();
 
         }
@@ -204,86 +203,68 @@ namespace SobekCM.Resource_Object.Configuration
 
         /// <summary> Get a package-level amdSec METS section reader/writer by the METS file MDTYPE and OTHERMDTYPE attributes
         /// present in the METS section tag </summary>
-        /// <param name="MD_Type"> MDTYPE attribute from the METS file section being read </param>
-        /// <param name="Other_MD_Type"> OTHERMDTYPE attribute from the METS file section being read </param>
+        /// <param name="MdType"> MDTYPE attribute from the METS file section being read </param>
+        /// <param name="OtherMdType"> OTHERMDTYPE attribute from the METS file section being read </param>
         /// <returns> Reader/writer class ready to read the METS section </returns>
-        public static iPackage_amdSec_ReaderWriter Get_Package_AmdSec_ReaderWriter( string MD_Type, string Other_MD_Type )
+        public static iPackage_amdSec_ReaderWriter Get_Package_AmdSec_ReaderWriter( string MdType, string OtherMdType )
         {
-            Tuple<string, string> thisMappingKey = new Tuple<string, string>(MD_Type.ToUpper(), Other_MD_Type.ToUpper());
-            if (packageAmdSecDictionary.ContainsKey(thisMappingKey))
-                return packageAmdSecDictionary[thisMappingKey];
-            else
-                return null;
+            Tuple<string, string> thisMappingKey = new Tuple<string, string>(MdType.ToUpper(), OtherMdType.ToUpper());
+            return packageAmdSecDictionary.ContainsKey(thisMappingKey) ? packageAmdSecDictionary[thisMappingKey] : null;
         }
 
         /// <summary> Get a package-level dmdSec METS section reader/writer by the METS file MDTYPE and OTHERMDTYPE attributes
         /// present in the METS section tag </summary>
-        /// <param name="MD_Type"> MDTYPE attribute from the METS file section being read </param>
-        /// <param name="Other_MD_Type"> OTHERMDTYPE attribute from the METS file section being read </param>
+        /// <param name="MdType"> MDTYPE attribute from the METS file section being read </param>
+        /// <param name="OtherMdType"> OTHERMDTYPE attribute from the METS file section being read </param>
         /// <returns> Reader/writer class ready to read the METS section </returns>
-        public static iPackage_dmdSec_ReaderWriter Get_Package_DmdSec_ReaderWriter(string MD_Type, string Other_MD_Type)
+        public static iPackage_dmdSec_ReaderWriter Get_Package_DmdSec_ReaderWriter(string MdType, string OtherMdType)
         {
-            Tuple<string, string> thisMappingKey = new Tuple<string, string>(MD_Type.ToUpper(), Other_MD_Type.ToUpper());
-            if (packageDmdSecDictionary.ContainsKey(thisMappingKey))
-                return packageDmdSecDictionary[thisMappingKey];
-            else
-                return null;
+            Tuple<string, string> thisMappingKey = new Tuple<string, string>(MdType.ToUpper(), OtherMdType.ToUpper());
+            return packageDmdSecDictionary.ContainsKey(thisMappingKey) ? packageDmdSecDictionary[thisMappingKey] : null;
         }
 
         /// <summary> Get a division-level dmdSec METS section reader/writer by the METS file MDTYPE and OTHERMDTYPE attributes
         /// present in the METS section tag </summary>
-        /// <param name="MD_Type"> MDTYPE attribute from the METS file section being read </param>
-        /// <param name="Other_MD_Type"> OTHERMDTYPE attribute from the METS file section being read </param>
+        /// <param name="MdType"> MDTYPE attribute from the METS file section being read </param>
+        /// <param name="OtherMdType"> OTHERMDTYPE attribute from the METS file section being read </param>
         /// <returns> Reader/writer class ready to read the METS section </returns>
-        public static iDivision_dmdSec_ReaderWriter Get_Division_DmdSec_ReaderWriter(string MD_Type, string Other_MD_Type)
+        public static iDivision_dmdSec_ReaderWriter Get_Division_DmdSec_ReaderWriter(string MdType, string OtherMdType)
         {
-            Tuple<string, string> thisMappingKey = new Tuple<string, string>(MD_Type.ToUpper(), Other_MD_Type.ToUpper());
-            if (divisionDmdSecDictionary.ContainsKey(thisMappingKey))
-                return divisionDmdSecDictionary[thisMappingKey];
-            else
-                return null;
+            Tuple<string, string> thisMappingKey = new Tuple<string, string>(MdType.ToUpper(), OtherMdType.ToUpper());
+            return divisionDmdSecDictionary.ContainsKey(thisMappingKey) ? divisionDmdSecDictionary[thisMappingKey] : null;
         }
 
         /// <summary> Get a division-level amdSec METS section reader/writer by the METS file MDTYPE and OTHERMDTYPE attributes
         /// present in the METS section tag </summary>
-        /// <param name="MD_Type"> MDTYPE attribute from the METS file section being read </param>
-        /// <param name="Other_MD_Type"> OTHERMDTYPE attribute from the METS file section being read </param>
+        /// <param name="MdType"> MDTYPE attribute from the METS file section being read </param>
+        /// <param name="OtherMdType"> OTHERMDTYPE attribute from the METS file section being read </param>
         /// <returns> Reader/writer class ready to read the METS section </returns>
-        public static iDivision_amdSec_ReaderWriter Get_Division_AmdSec_ReaderWriter(string MD_Type, string Other_MD_Type)
+        public static iDivision_amdSec_ReaderWriter Get_Division_AmdSec_ReaderWriter(string MdType, string OtherMdType)
         {
-            Tuple<string, string> thisMappingKey = new Tuple<string, string>(MD_Type.ToUpper(), Other_MD_Type.ToUpper());
-            if (divisionAmdSecDictionary.ContainsKey(thisMappingKey))
-                return divisionAmdSecDictionary[thisMappingKey];
-            else
-                return null;
+            Tuple<string, string> thisMappingKey = new Tuple<string, string>(MdType.ToUpper(), OtherMdType.ToUpper());
+            return divisionAmdSecDictionary.ContainsKey(thisMappingKey) ? divisionAmdSecDictionary[thisMappingKey] : null;
         }
 
         /// <summary> Get a file-level amdSec METS section reader/writer by the METS file MDTYPE and OTHERMDTYPE attributes
         /// present in the METS section tag </summary>
-        /// <param name="MD_Type"> MDTYPE attribute from the METS file section being read </param>
-        /// <param name="Other_MD_Type"> OTHERMDTYPE attribute from the METS file section being read </param>
+        /// <param name="MdType"> MDTYPE attribute from the METS file section being read </param>
+        /// <param name="OtherMdType"> OTHERMDTYPE attribute from the METS file section being read </param>
         /// <returns> Reader/writer class ready to read the METS section </returns>
-        public static iFile_amdSec_ReaderWriter Get_File_AmdSec_ReaderWriter(string MD_Type, string Other_MD_Type)
+        public static iFile_amdSec_ReaderWriter Get_File_AmdSec_ReaderWriter(string MdType, string OtherMdType)
         {
-            Tuple<string, string> thisMappingKey = new Tuple<string, string>(MD_Type.ToUpper(), Other_MD_Type.ToUpper());
-            if (fileAmdSecDictionary.ContainsKey(thisMappingKey))
-                return fileAmdSecDictionary[thisMappingKey];
-            else
-                return null;
+            Tuple<string, string> thisMappingKey = new Tuple<string, string>(MdType.ToUpper(), OtherMdType.ToUpper());
+            return fileAmdSecDictionary.ContainsKey(thisMappingKey) ? fileAmdSecDictionary[thisMappingKey] : null;
         }
 
         /// <summary> Get a file-level dmdSec METS section reader/writer by the METS file MDTYPE and OTHERMDTYPE attributes
         /// present in the METS section tag </summary>
-        /// <param name="MD_Type"> MDTYPE attribute from the METS file section being read </param>
-        /// <param name="Other_MD_Type"> OTHERMDTYPE attribute from the METS file section being read </param>
+        /// <param name="MdType"> MDTYPE attribute from the METS file section being read </param>
+        /// <param name="OtherMdType"> OTHERMDTYPE attribute from the METS file section being read </param>
         /// <returns> Reader/writer class ready to read the METS section </returns>
-        public static iFile_dmdSec_ReaderWriter Get_File_DmdSec_ReaderWriter(string MD_Type, string Other_MD_Type)
+        public static iFile_dmdSec_ReaderWriter Get_File_DmdSec_ReaderWriter(string MdType, string OtherMdType)
         {
-            Tuple<string, string> thisMappingKey = new Tuple<string, string>(MD_Type.ToUpper(), Other_MD_Type.ToUpper());
-            if (fileDmdSecDictionary.ContainsKey(thisMappingKey))
-                return fileDmdSecDictionary[thisMappingKey];
-            else
-                return null;
+            Tuple<string, string> thisMappingKey = new Tuple<string, string>(MdType.ToUpper(), OtherMdType.ToUpper());
+            return fileDmdSecDictionary.ContainsKey(thisMappingKey) ? fileDmdSecDictionary[thisMappingKey] : null;
         }
 
         #region Code to set the default values
@@ -295,332 +276,151 @@ namespace SobekCM.Resource_Object.Configuration
             Clear();
 
             // Add the dublin core file reader/writer
-            Metadata_File_ReaderWriter_Config DC_File = new Metadata_File_ReaderWriter_Config();
-            DC_File.MD_Type = Metadata_File_Type_Enum.DC;
-            DC_File.Label = "Dublin Core File";
-            DC_File.canRead = true;
-            DC_File.canWrite = true;
-            DC_File.Code_Assembly = String.Empty;
-            DC_File.Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters";
-            DC_File.Code_Class = "DC_File_ReaderWriter";
-            DC_File.Add_Option("RDF_Style", "false");
-            Add_Metadata_File_ReaderWriter(DC_File);
+            Metadata_File_ReaderWriter_Config dcFile = new Metadata_File_ReaderWriter_Config {MD_Type = Metadata_File_Type_Enum.DC, Label = "Dublin Core File", canRead = true, canWrite = true, Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters", Code_Class = "DC_File_ReaderWriter"};
+            dcFile.Add_Option("RDF_Style", "false");
+            Add_Metadata_File_ReaderWriter(dcFile);
 
             // Add the dublin core file reader/writer
-            Metadata_File_ReaderWriter_Config DC_File2 = new Metadata_File_ReaderWriter_Config();
-            DC_File2.MD_Type = Metadata_File_Type_Enum.DC;
-            DC_File2.Label = "Dublin Core File (RDF Style)";
-            DC_File2.canRead = false;
-            DC_File2.canWrite = true;
-            DC_File2.Code_Assembly = String.Empty;
-            DC_File2.Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters";
-            DC_File2.Code_Class = "DC_File_ReaderWriter";
-            DC_File2.Add_Option("RDF_Style", "true");
-            Add_Metadata_File_ReaderWriter(DC_File2);
+            Metadata_File_ReaderWriter_Config dcFile2 = new Metadata_File_ReaderWriter_Config {MD_Type = Metadata_File_Type_Enum.DC, Label = "Dublin Core File (RDF Style)", canRead = false, canWrite = true, Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters", Code_Class = "DC_File_ReaderWriter"};
+            dcFile2.Add_Option("RDF_Style", "true");
+            Add_Metadata_File_ReaderWriter(dcFile2);
 
             // Add the EAD file reader/writer
-            Metadata_File_ReaderWriter_Config EAD_File = new Metadata_File_ReaderWriter_Config();
-            EAD_File.MD_Type = Metadata_File_Type_Enum.EAD;
-            EAD_File.Label = "Encoded Archival Descriptor (EAD)";
-            EAD_File.canRead = true;
-            EAD_File.canWrite = false;
-            EAD_File.Code_Assembly = String.Empty;
-            EAD_File.Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters";
-            EAD_File.Code_Class = "EAD_File_ReaderWriter";
-            EAD_File.Add_Option("Analyze_Description", "true");
-            Add_Metadata_File_ReaderWriter(EAD_File);
+            Metadata_File_ReaderWriter_Config eadFile = new Metadata_File_ReaderWriter_Config {MD_Type = Metadata_File_Type_Enum.EAD, Label = "Encoded Archival Descriptor (EAD)", canRead = true, canWrite = false, Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters", Code_Class = "EAD_File_ReaderWriter"};
+            eadFile.Add_Option("Analyze_Description", "true");
+            Add_Metadata_File_ReaderWriter(eadFile);
 
             // Add the MARC21 file reader/writer
-            Metadata_File_ReaderWriter_Config MARC21_File = new Metadata_File_ReaderWriter_Config();
-            MARC21_File.MD_Type = Metadata_File_Type_Enum.MARC21;
-            MARC21_File.Label = "MARC21 Single Record File";
-            MARC21_File.canRead = true;
-            MARC21_File.canWrite = true;
-            MARC21_File.Code_Assembly = String.Empty;
-            MARC21_File.Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters";
-            MARC21_File.Code_Class = "Marc21_File_ReaderWriter";
-            Add_Metadata_File_ReaderWriter(MARC21_File);
+            Metadata_File_ReaderWriter_Config marc21File = new Metadata_File_ReaderWriter_Config {MD_Type = Metadata_File_Type_Enum.MARC21, Label = "MARC21 Single Record File", canRead = true, canWrite = true, Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters", Code_Class = "Marc21_File_ReaderWriter"};
+            Add_Metadata_File_ReaderWriter(marc21File);
 
             // Add the MarcXML file reader/writer
-            Metadata_File_ReaderWriter_Config MARCXML_File = new Metadata_File_ReaderWriter_Config();
-            MARCXML_File.MD_Type = Metadata_File_Type_Enum.MARCXML;
-            MARCXML_File.Label = "MarcXML Single Record File";
-            MARCXML_File.canRead = true;
-            MARCXML_File.canWrite = true;
-            MARCXML_File.Code_Assembly = String.Empty;
-            MARCXML_File.Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters";
-            MARCXML_File.Code_Class = "MarcXML_File_ReaderWriter";
-            Add_Metadata_File_ReaderWriter(MARCXML_File);
+            Metadata_File_ReaderWriter_Config marcxmlFile = new Metadata_File_ReaderWriter_Config {MD_Type = Metadata_File_Type_Enum.MARCXML, Label = "MarcXML Single Record File", canRead = true, canWrite = true, Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters", Code_Class = "MarcXML_File_ReaderWriter"};
+            Add_Metadata_File_ReaderWriter(marcxmlFile);
 
             // Add the METS file reader/writer
-            Metadata_File_ReaderWriter_Config METS_File = new Metadata_File_ReaderWriter_Config();
-            METS_File.MD_Type = Metadata_File_Type_Enum.METS;
-            METS_File.Label = "Metadata Encoding and Transmission Standard (METS)";
-            METS_File.canRead = true;
-            METS_File.canWrite = true;
-            METS_File.Code_Assembly = String.Empty;
-            METS_File.Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters";
-            METS_File.Code_Class = "METS_File_ReaderWriter";
-            METS_File.Add_Option("Minimize_File_Info", "false");
-            METS_File.Add_Option("Support_Divisional_dmdSec_amdSec", "true");
-            Add_Metadata_File_ReaderWriter(METS_File);
+            Metadata_File_ReaderWriter_Config metsFile = new Metadata_File_ReaderWriter_Config {MD_Type = Metadata_File_Type_Enum.METS, Label = "Metadata Encoding and Transmission Standard (METS)", canRead = true, canWrite = true, Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters", Code_Class = "METS_File_ReaderWriter"};
+            metsFile.Add_Option("Minimize_File_Info", "false");
+            metsFile.Add_Option("Support_Divisional_dmdSec_amdSec", "true");
+            Add_Metadata_File_ReaderWriter(metsFile);
 
             // Add the MODS file reader/writer
-            Metadata_File_ReaderWriter_Config MODS_File = new Metadata_File_ReaderWriter_Config();
-            MODS_File.MD_Type = Metadata_File_Type_Enum.MODS;
-            MODS_File.Label = "Metadata Object Description Standard (MODS)";
-            MODS_File.canRead = true;
-            MODS_File.canWrite = true;
-            MODS_File.Code_Assembly = String.Empty;
-            MODS_File.Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters";
-            MODS_File.Code_Class = "MODS_File_ReaderWriter";
-            Add_Metadata_File_ReaderWriter(MODS_File);
+            Metadata_File_ReaderWriter_Config modsFile = new Metadata_File_ReaderWriter_Config {MD_Type = Metadata_File_Type_Enum.MODS, Label = "Metadata Object Description Standard (MODS)", canRead = true, canWrite = true, Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters", Code_Class = "MODS_File_ReaderWriter"};
+            Add_Metadata_File_ReaderWriter(modsFile);
 
             // Add the INFO file reader/writer
-            Metadata_File_ReaderWriter_Config INFO_File = new Metadata_File_ReaderWriter_Config();
-            INFO_File.MD_Type = Metadata_File_Type_Enum.OTHER;
-            INFO_File.Other_MD_Type = "INFO";
-            INFO_File.Label = "Legacy UF INFO Files";
-            INFO_File.canRead = true;
-            INFO_File.canWrite = false;
-            INFO_File.Code_Assembly = String.Empty;
-            INFO_File.Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters";
-            INFO_File.Code_Class = "INFO_File_ReaderWriter";
-            Add_Metadata_File_ReaderWriter(INFO_File);
+            Metadata_File_ReaderWriter_Config infoFile = new Metadata_File_ReaderWriter_Config {MD_Type = Metadata_File_Type_Enum.OTHER, Other_MD_Type = "INFO", Label = "Legacy UF INFO Files", canRead = true, canWrite = false, Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters", Code_Class = "INFO_File_ReaderWriter"};
+            Add_Metadata_File_ReaderWriter(infoFile);
 
             // Add the MXF file reader/writer
-            Metadata_File_ReaderWriter_Config MXF_File = new Metadata_File_ReaderWriter_Config();
-            MXF_File.MD_Type = Metadata_File_Type_Enum.OTHER;
-            MXF_File.Other_MD_Type = "MXF";
-            MXF_File.Label = "MXF File";
-            MXF_File.canRead = true;
-            MXF_File.canWrite = false;
-            MXF_File.Code_Assembly = String.Empty;
-            MXF_File.Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters";
-            MXF_File.Code_Class = "MXF_File_ReaderWriter";
-            Add_Metadata_File_ReaderWriter(MXF_File);
+            Metadata_File_ReaderWriter_Config mxfFile = new Metadata_File_ReaderWriter_Config {MD_Type = Metadata_File_Type_Enum.OTHER, Other_MD_Type = "MXF", Label = "MXF File", canRead = true, canWrite = false, Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters", Code_Class = "MXF_File_ReaderWriter"};
+            Add_Metadata_File_ReaderWriter(mxfFile);
 
             // Add the OAI-PMH file reader/writer
-            Metadata_File_ReaderWriter_Config OAI_File = new Metadata_File_ReaderWriter_Config();
-            OAI_File.MD_Type = Metadata_File_Type_Enum.OTHER;
-            OAI_File.Other_MD_Type = "OAI";
-            OAI_File.Label = "OAI-PMH File";
-            OAI_File.canRead = false;
-            OAI_File.canWrite = true;
-            OAI_File.Code_Assembly = String.Empty;
-            OAI_File.Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters";
-            OAI_File.Code_Class = "OAI_File_ReaderWriter";
-            Add_Metadata_File_ReaderWriter(OAI_File);
-
+            Metadata_File_ReaderWriter_Config oaiFile = new Metadata_File_ReaderWriter_Config {MD_Type = Metadata_File_Type_Enum.OTHER, Other_MD_Type = "OAI", Label = "OAI-PMH File", canRead = false, canWrite = true, Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters", Code_Class = "OAI_File_ReaderWriter"};
+            Add_Metadata_File_ReaderWriter(oaiFile);
 
             // Add the MODS section reader/writer
-            METS_Section_ReaderWriter_Config MODS_Section = new METS_Section_ReaderWriter_Config();
-            MODS_Section.ID = "MODS";
-            MODS_Section.Label = "MODS";
-            MODS_Section.Code_Assembly = String.Empty;
-            MODS_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            MODS_Section.Code_Class = "MODS_METS_dmdSec_ReaderWriter";
-            MODS_Section.isActive = true;
-            MODS_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
-            MODS_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("MODS", "MODS Metadata", true));
-            MODS_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("Metadata Object Description Standard", false ));
-            Add_METS_Section_ReaderWriter(MODS_Section);
+            METS_Section_ReaderWriter_Config modsSection = new METS_Section_ReaderWriter_Config {ID = "MODS", Label = "MODS", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "MODS_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            modsSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("MODS", "MODS Metadata", true));
+            modsSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("Metadata Object Description Standard", false ));
+            Add_METS_Section_ReaderWriter(modsSection);
 
             // Add the dublin core section reader/writer
-            METS_Section_ReaderWriter_Config DC_Section = new METS_Section_ReaderWriter_Config();
-            DC_Section.ID = "DC";
-            DC_Section.Label = "Dublin Core";
-            DC_Section.Code_Assembly = String.Empty;
-            DC_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            DC_Section.Code_Class = "DC_METS_dmdSec_ReaderWriter";
-            DC_Section.isActive = true;
-            DC_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
-            DC_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("DC", "Dublin Core Metadata", true));
-            DC_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("DUBLIN CORE", false));
-            Add_METS_Section_ReaderWriter(DC_Section);
+            METS_Section_ReaderWriter_Config dcSection = new METS_Section_ReaderWriter_Config {ID = "DC", Label = "Dublin Core", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "DC_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            dcSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("DC", "Dublin Core Metadata", true));
+            dcSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("DUBLIN CORE", false));
+            Add_METS_Section_ReaderWriter(dcSection);
 
             // Add the MarcXML section reader/writer
-            METS_Section_ReaderWriter_Config MarcXML_Section = new METS_Section_ReaderWriter_Config();
-            MarcXML_Section.ID = "MARCXML";
-            MarcXML_Section.Label = "MARCXML";
-            MarcXML_Section.Code_Assembly = String.Empty;
-            MarcXML_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            MarcXML_Section.Code_Class = "MarcXML_METS_dmdSec_ReaderWriter";
-            MarcXML_Section.isActive = true;
-            MarcXML_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
-            MarcXML_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("MARCXML", "MarcXML Metadata", true));
-            Add_METS_Section_ReaderWriter(MarcXML_Section);
+            METS_Section_ReaderWriter_Config marcXMLSection = new METS_Section_ReaderWriter_Config {ID = "MARCXML", Label = "MARCXML", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "MarcXML_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            marcXMLSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("MARCXML", "MarcXML Metadata", true));
+            Add_METS_Section_ReaderWriter(marcXMLSection);
 
             // Add the DarwinCore section reader/writer
-            METS_Section_ReaderWriter_Config Darwin_Section = new METS_Section_ReaderWriter_Config();
-            Darwin_Section.ID = "DARWIN";
-            Darwin_Section.Label = "DarwinCore";
-            Darwin_Section.Code_Assembly = String.Empty;
-            Darwin_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            Darwin_Section.Code_Class = "DarwinCore_METS_dmdSec_ReaderWriter";
-            Darwin_Section.isActive = true;
-            Darwin_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
-            Darwin_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "DARWINCORE", "DarwinCore Zoological Taxonomic Information", true));
-            Add_METS_Section_ReaderWriter(Darwin_Section);
+            METS_Section_ReaderWriter_Config darwinSection = new METS_Section_ReaderWriter_Config {ID = "DARWIN", Label = "DarwinCore", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "DarwinCore_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            darwinSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "DARWINCORE", "DarwinCore Zoological Taxonomic Information", true));
+            Add_METS_Section_ReaderWriter(darwinSection);
 
 			// Add the ETD section reader/writer
-			METS_Section_ReaderWriter_Config ETD_Section = new METS_Section_ReaderWriter_Config();
-			ETD_Section.ID = "ETD";
-			ETD_Section.Label = "ETD";
-			ETD_Section.Code_Assembly = String.Empty;
-			ETD_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-			ETD_Section.Code_Class = "ETD_SobekCM_METS_dmdSec_ReaderWriter";
-			ETD_Section.isActive = true;
-			ETD_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
-			ETD_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEK_ETD", "SobekCM ETD Extension", true));
-			Add_METS_Section_ReaderWriter(ETD_Section);
+			METS_Section_ReaderWriter_Config etdSection = new METS_Section_ReaderWriter_Config {ID = "ETD", Label = "ETD", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "ETD_SobekCM_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            etdSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEK_ETD", "SobekCM ETD Extension", true));
+			Add_METS_Section_ReaderWriter(etdSection);
 
             // Add the ETD section reader/writer
-            METS_Section_ReaderWriter_Config ETD2_Section = new METS_Section_ReaderWriter_Config();
-            ETD2_Section.ID = "ETD2";
-            ETD2_Section.Label = "ETD2";
-            ETD2_Section.Code_Assembly = String.Empty;
-            ETD2_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            ETD2_Section.Code_Class = "ETD_PALMM_METS_dmdSec_ReaderWriter";
-            ETD2_Section.isActive = true;
-            ETD2_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
-            ETD2_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "PALMM", "PALMM ETD Extension", true));
-            ETD2_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "PALMM Extensions", "PALMM ETD Extension", false));
-            Add_METS_Section_ReaderWriter(ETD2_Section);
+            METS_Section_ReaderWriter_Config etd2Section = new METS_Section_ReaderWriter_Config {ID = "ETD2", Label = "ETD2", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "ETD_PALMM_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            etd2Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "PALMM", "PALMM ETD Extension", true));
+            etd2Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "PALMM Extensions", "PALMM ETD Extension", false));
+            Add_METS_Section_ReaderWriter(etd2Section);
 
             // Add the SobekCM section reader/writer
-            METS_Section_ReaderWriter_Config SobekCM_Section = new METS_Section_ReaderWriter_Config();
-            SobekCM_Section.ID = "SOBEK1";
-            SobekCM_Section.Label = "SobekCM";
-            SobekCM_Section.Code_Assembly = String.Empty;
-            SobekCM_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            SobekCM_Section.Code_Class = "SobekCM_METS_dmdSec_ReaderWriter";
-            SobekCM_Section.isActive = true;
-            SobekCM_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
-            SobekCM_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEKCM", "SobekCM Custom Metadata", true));
-            SobekCM_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "UFDC", "SobekCM Custom Metadata", false));
-            SobekCM_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "DLOC", "SobekCM Custom Metadata", false));
-            Add_METS_Section_ReaderWriter(SobekCM_Section);
+            METS_Section_ReaderWriter_Config sobekCMSection = new METS_Section_ReaderWriter_Config {ID = "SOBEK1", Label = "SobekCM", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "SobekCM_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            sobekCMSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEKCM", "SobekCM Custom Metadata", true));
+            sobekCMSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "UFDC", "SobekCM Custom Metadata", false));
+            sobekCMSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "DLOC", "SobekCM Custom Metadata", false));
+            Add_METS_Section_ReaderWriter(sobekCMSection);
 
             // Add the SobekCM Map section reader/writer
-            METS_Section_ReaderWriter_Config SobekCM_Map_Section = new METS_Section_ReaderWriter_Config();
-            SobekCM_Map_Section.ID = "SOBEK2";
-            SobekCM_Map_Section.Label = "SobekCM Map";
-            SobekCM_Map_Section.Code_Assembly = String.Empty;
-            SobekCM_Map_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            SobekCM_Map_Section.Code_Class = "SobekCM_Map_METS_dmdSec_ReaderWriter";
-            SobekCM_Map_Section.isActive = true;
-            SobekCM_Map_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
-            SobekCM_Map_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEK_MAP", "SobekCM Custom Map Authority Metadata", true));
-            SobekCM_Map_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "UFDC_MAP", "SobekCM Custom Map Authority Metadata", false));
-            Add_METS_Section_ReaderWriter(SobekCM_Map_Section);
+            METS_Section_ReaderWriter_Config sobekCMMapSection = new METS_Section_ReaderWriter_Config {ID = "SOBEK2", Label = "SobekCM Map", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "SobekCM_Map_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            sobekCMMapSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEK_MAP", "SobekCM Custom Map Authority Metadata", true));
+            sobekCMMapSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "UFDC_MAP", "SobekCM Custom Map Authority Metadata", false));
+            Add_METS_Section_ReaderWriter(sobekCMMapSection);
 
             // Add the DAITSS section reader/writer
-            METS_Section_ReaderWriter_Config DAITSS_Section = new METS_Section_ReaderWriter_Config();
-            DAITSS_Section.ID = "DAITSS";
-            DAITSS_Section.Label = "DAITSS";
-            DAITSS_Section.Code_Assembly = String.Empty;
-            DAITSS_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            DAITSS_Section.Code_Class = "DAITSS_METS_amdSec_ReaderWriter";
-            DAITSS_Section.isActive = true;
-            DAITSS_Section.METS_Section = METS_Section_Type_Enum.amdSec;
-            DAITSS_Section.amdSecType = METS_amdSec_Type_Enum.digiProvMD;
-            DAITSS_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "DAITSS", "DAITSS Archiving Information", true));
-            Add_METS_Section_ReaderWriter(DAITSS_Section);
+            METS_Section_ReaderWriter_Config daitssSection = new METS_Section_ReaderWriter_Config {ID = "DAITSS", Label = "DAITSS", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "DAITSS_METS_amdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.amdSec, amdSecType = METS_amdSec_Type_Enum.digiProvMD};
+            daitssSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "DAITSS", "DAITSS Archiving Information", true));
+            Add_METS_Section_ReaderWriter(daitssSection);
 
             // Add the RightsMD section reader/writer
-            METS_Section_ReaderWriter_Config Rights_Section = new METS_Section_ReaderWriter_Config();
-            Rights_Section.ID = "RIGHTS";
-            Rights_Section.Label = "RightsMD";
-            Rights_Section.Code_Assembly = String.Empty;
-            Rights_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            Rights_Section.Code_Class = "RightsMD_METS_amdSec_ReaderWriter";
-            Rights_Section.isActive = true;
-            Rights_Section.METS_Section = METS_Section_Type_Enum.amdSec;
-            Rights_Section.amdSecType = METS_amdSec_Type_Enum.rightsMD;
-            Rights_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "RIGHTSMD", "Rights Information", true));
-            Add_METS_Section_ReaderWriter(Rights_Section);
+            METS_Section_ReaderWriter_Config rightsSection = new METS_Section_ReaderWriter_Config {ID = "RIGHTS", Label = "RightsMD", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "RightsMD_METS_amdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.amdSec, amdSecType = METS_amdSec_Type_Enum.rightsMD};
+            rightsSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "RIGHTSMD", "Rights Information", true));
+            Add_METS_Section_ReaderWriter(rightsSection);
 
             // Add the SobekCM fileinfo section reader/writer
-            METS_Section_ReaderWriter_Config SobekCM_File_Section = new METS_Section_ReaderWriter_Config();
-            SobekCM_File_Section.ID = "SOBEK3";
-            SobekCM_File_Section.Label = "SobekCM FileInfo";
-            SobekCM_File_Section.Code_Assembly = String.Empty;
-            SobekCM_File_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            SobekCM_File_Section.Code_Class = "SobekCM_FileInfo_METS_amdSec_ReaderWriter";
-            SobekCM_File_Section.isActive = true;
-            SobekCM_File_Section.METS_Section = METS_Section_Type_Enum.amdSec;
-            SobekCM_File_Section.amdSecType = METS_amdSec_Type_Enum.techMD;
-            SobekCM_File_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEKCM", "SobekCM File Technical Details", true));
-            Add_METS_Section_ReaderWriter(SobekCM_File_Section);
+            METS_Section_ReaderWriter_Config sobekCMFileSection = new METS_Section_ReaderWriter_Config {ID = "SOBEK3", Label = "SobekCM FileInfo", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "SobekCM_FileInfo_METS_amdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.amdSec, amdSecType = METS_amdSec_Type_Enum.techMD};
+            sobekCMFileSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEKCM", "SobekCM File Technical Details", true));
+            Add_METS_Section_ReaderWriter(sobekCMFileSection);
 
             // Add the GML section reader/writer
-            METS_Section_ReaderWriter_Config GML_Section = new METS_Section_ReaderWriter_Config();
-            GML_Section.ID = "GML";
-            GML_Section.Label = "GML Coordinate";
-            GML_Section.Code_Assembly = String.Empty;
-            GML_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            GML_Section.Code_Class = "GML_METS_dmdSec_ReaderWriter";
-            GML_Section.isActive = true;
-            GML_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
-            GML_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "GML", "Geographic Markup Language", true));
-            Add_METS_Section_ReaderWriter(GML_Section);
+            METS_Section_ReaderWriter_Config gmlSection = new METS_Section_ReaderWriter_Config {ID = "GML", Label = "GML Coordinate", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "GML_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            gmlSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "GML", "Geographic Markup Language", true));
+            Add_METS_Section_ReaderWriter(gmlSection);
 
             // Add the IEEE-LOM section reader/writer
-            METS_Section_ReaderWriter_Config LOM_Section = new METS_Section_ReaderWriter_Config();
-            LOM_Section.ID = "IEEE-LOM";
-            LOM_Section.Label = "IEEE-LOM: Learning Object Metadata";
-            LOM_Section.Code_Assembly = String.Empty;
-            LOM_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            LOM_Section.Code_Class = "LOM_IEEE_METS_dmdSec_ReaderWriter";
-            LOM_Section.isActive = true;
-            LOM_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
-            LOM_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "IEEE-LOM", "Learning Object Metadata", true));
-            Add_METS_Section_ReaderWriter(LOM_Section);
+            METS_Section_ReaderWriter_Config lomSection = new METS_Section_ReaderWriter_Config {ID = "IEEE-LOM", Label = "IEEE-LOM: Learning Object Metadata", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "LOM_IEEE_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            lomSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "IEEE-LOM", "Learning Object Metadata", true));
+            Add_METS_Section_ReaderWriter(lomSection);
 
             // Add the VRACore section reader/writer
-            METS_Section_ReaderWriter_Config VRA_Section = new METS_Section_ReaderWriter_Config();
-            VRA_Section.ID = "VRACORE";
-            VRA_Section.Label = "VRACore Visual Resource Metadata";
-            VRA_Section.Code_Assembly = String.Empty;
-            VRA_Section.Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters";
-            VRA_Section.Code_Class = "VRACore_METS_dmdSec_ReaderWriter";
-            VRA_Section.isActive = true;
-            VRA_Section.METS_Section = METS_Section_Type_Enum.dmdSec;
-            VRA_Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "VRACore", "VRACore Visual Resource Metadata", true));
-            Add_METS_Section_ReaderWriter(VRA_Section);
+            METS_Section_ReaderWriter_Config vraSection = new METS_Section_ReaderWriter_Config {ID = "VRACORE", Label = "VRACore Visual Resource Metadata", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "VRACore_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            vraSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "VRACore", "VRACore Visual Resource Metadata", true));
+            Add_METS_Section_ReaderWriter(vraSection);
 
             // Add the default METS writig profile
-            METS_Writing_Profile defaultProfile = new METS_Writing_Profile();
-            defaultProfile.Default_Profile = true;
-            defaultProfile.Profile_Name = "Complete MODS Writer";
-            defaultProfile.Profile_Description = "This profile includes almost all of the possible sub-writers but the main bibliographic data is stored in MODS";
-            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(MODS_Section);
-            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(SobekCM_Section);
-            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(SobekCM_Map_Section);
-            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(Darwin_Section);
-            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(ETD_Section);
-            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(GML_Section);
-            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(LOM_Section);
-            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(VRA_Section);
-            defaultProfile.Add_Package_Level_AmdSec_Writer_Config(DAITSS_Section);
-            defaultProfile.Add_Package_Level_AmdSec_Writer_Config(Rights_Section);
-            defaultProfile.Add_Package_Level_AmdSec_Writer_Config(SobekCM_File_Section);
+            METS_Writing_Profile defaultProfile = new METS_Writing_Profile {Default_Profile = true, Profile_Name = "Complete MODS Writer", Profile_Description = "This profile includes almost all of the possible sub-writers but the main bibliographic data is stored in MODS"};
+            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(modsSection);
+            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(sobekCMSection);
+            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(sobekCMMapSection);
+            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(darwinSection);
+            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(etdSection);
+            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(gmlSection);
+            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(lomSection);
+            defaultProfile.Add_Package_Level_DmdSec_Writer_Config(vraSection);
+            defaultProfile.Add_Package_Level_AmdSec_Writer_Config(daitssSection);
+            defaultProfile.Add_Package_Level_AmdSec_Writer_Config(rightsSection);
+            defaultProfile.Add_Package_Level_AmdSec_Writer_Config(sobekCMFileSection);
          //   defaultProfile.Add_Division_Level_DmdSec_Writer_Config(MODS_Section);
-            defaultProfile.Add_Division_Level_DmdSec_Writer_Config(GML_Section);
+            defaultProfile.Add_Division_Level_DmdSec_Writer_Config(gmlSection);
             Add_METS_Writing_Profile(defaultProfile);
 
             // Add the default METS writig profile
-            METS_Writing_Profile dcProfile = new METS_Writing_Profile();
-            dcProfile.Default_Profile = false;
-            dcProfile.Profile_Name = "Simple Dublin Core Writer";
-            dcProfile.Profile_Description = "This is a simplified profile which uses Dublin Core to describe all levels of the METS";
-            dcProfile.Add_Package_Level_DmdSec_Writer_Config(DC_Section);
-            dcProfile.Add_Package_Level_AmdSec_Writer_Config(DAITSS_Section);
-            dcProfile.Add_Package_Level_AmdSec_Writer_Config(Rights_Section);
-            dcProfile.Add_Package_Level_AmdSec_Writer_Config(SobekCM_File_Section);
-            dcProfile.Add_Division_Level_DmdSec_Writer_Config(DC_Section);
-            dcProfile.Add_File_Level_DmdSec_Writer_Config(DC_Section);
+            METS_Writing_Profile dcProfile = new METS_Writing_Profile {Default_Profile = false, Profile_Name = "Simple Dublin Core Writer", Profile_Description = "This is a simplified profile which uses Dublin Core to describe all levels of the METS"};
+            dcProfile.Add_Package_Level_DmdSec_Writer_Config(dcSection);
+            dcProfile.Add_Package_Level_AmdSec_Writer_Config(daitssSection);
+            dcProfile.Add_Package_Level_AmdSec_Writer_Config(rightsSection);
+            dcProfile.Add_Package_Level_AmdSec_Writer_Config(sobekCMFileSection);
+            dcProfile.Add_Division_Level_DmdSec_Writer_Config(dcSection);
+            dcProfile.Add_File_Level_DmdSec_Writer_Config(dcSection);
             Add_METS_Writing_Profile(dcProfile);
 
 
@@ -914,14 +714,14 @@ namespace SobekCM.Resource_Object.Configuration
         }
 
         /// <summary> Converts a basic string into an XML-safe string </summary>
-        /// <param name="element"> Element data to convert </param>
+        /// <param name="Element"> Element data to convert </param>
         /// <returns> Data converted into an XML-safe string</returns>
-        private static string Convert_String_To_XML_Safe(string element)
+        private static string Convert_String_To_XML_Safe(string Element)
         {
-            if (element == null)
+            if (Element == null)
                 return string.Empty;
 
-            string xml_safe = element;
+            string xml_safe = Element;
             int i = xml_safe.IndexOf("&");
             while (i >= 0)
             {
@@ -985,13 +785,13 @@ namespace SobekCM.Resource_Object.Configuration
                                 break;
 
                             case "additional_metadata_modules":
-                                read_metadata_modules_config(readerXml.ReadSubtree(), readerWriters);
+                                read_metadata_modules_config(readerXml.ReadSubtree());
                                 break;
                         }
                     }
                 }
             }
-            catch (Exception ee)
+            catch 
             {
                 returnValue = false;
             }
@@ -1017,26 +817,26 @@ namespace SobekCM.Resource_Object.Configuration
             return returnValue;
         }
 
-        private static void read_metadata_file_readerwriter_configs(XmlReader readerXml)
+        private static void read_metadata_file_readerwriter_configs(XmlReader ReaderXml)
         {
-            while (readerXml.Read())
+            while (ReaderXml.Read())
             {
-                if ((readerXml.NodeType == XmlNodeType.Element) && (readerXml.Name.ToLower() == "readerwriter"))
+                if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "readerwriter"))
                 {
-                    read_metadata_file_readerwriter_config(readerXml.ReadSubtree());
+                    read_metadata_file_readerwriter_config(ReaderXml.ReadSubtree());
                 }
             }
         }
 
-        private static void read_metadata_file_readerwriter_config(XmlReader readerXml)
+        private static void read_metadata_file_readerwriter_config(XmlReader ReaderXml)
         {
             Metadata_File_ReaderWriter_Config returnValue = new Metadata_File_ReaderWriter_Config();
-            readerXml.Read();
+            ReaderXml.Read();
 
             // Move to and save the basic attributes
-            if (readerXml.MoveToAttribute("mdtype"))
+            if (ReaderXml.MoveToAttribute("mdtype"))
             {
-                switch (readerXml.Value.ToUpper())
+                switch (ReaderXml.Value.ToUpper())
                 {
                     case "EAD":
                         returnValue.MD_Type = Metadata_File_Type_Enum.EAD;
@@ -1064,90 +864,90 @@ namespace SobekCM.Resource_Object.Configuration
 
                     case "OTHER":
                         returnValue.MD_Type = Metadata_File_Type_Enum.OTHER;
-                        if (readerXml.MoveToAttribute("othermdtype"))
-                            returnValue.Other_MD_Type = readerXml.Value;
+                        if (ReaderXml.MoveToAttribute("othermdtype"))
+                            returnValue.Other_MD_Type = ReaderXml.Value;
                         break;
                 }
             }
 
-            if (readerXml.MoveToAttribute("label"))
-                returnValue.Label = readerXml.Value;
-            if (readerXml.MoveToAttribute("namespace"))
-                returnValue.Code_Namespace = readerXml.Value;
-            if (readerXml.MoveToAttribute("class"))
-                returnValue.Code_Class = readerXml.Value;
-            if (readerXml.MoveToAttribute("assembly"))
-                returnValue.Code_Assembly = readerXml.Value;
-            if ((readerXml.MoveToAttribute("canRead")) && (readerXml.Value.ToLower() == "false"))
+            if (ReaderXml.MoveToAttribute("label"))
+                returnValue.Label = ReaderXml.Value;
+            if (ReaderXml.MoveToAttribute("namespace"))
+                returnValue.Code_Namespace = ReaderXml.Value;
+            if (ReaderXml.MoveToAttribute("class"))
+                returnValue.Code_Class = ReaderXml.Value;
+            if (ReaderXml.MoveToAttribute("assembly"))
+                returnValue.Code_Assembly = ReaderXml.Value;
+            if ((ReaderXml.MoveToAttribute("canRead")) && (ReaderXml.Value.ToLower() == "false"))
             {
                 returnValue.canRead = false;
             }
-            if ((readerXml.MoveToAttribute("canWrite")) && (readerXml.Value.ToLower() == "false"))
+            if ((ReaderXml.MoveToAttribute("canWrite")) && (ReaderXml.Value.ToLower() == "false"))
             {
                 returnValue.canWrite = false;
             }
 
-            while (readerXml.Read())
+            while (ReaderXml.Read())
             {
-                if ((readerXml.NodeType == XmlNodeType.Element) && (readerXml.Name.ToLower() == "option"))
+                if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "option"))
                 {
                     string key = String.Empty;
                     string value = String.Empty;
-                    if (readerXml.MoveToAttribute("key"))
-                        key = readerXml.Value;
-                    if (readerXml.MoveToAttribute("value"))
-                        value = readerXml.Value;
+                    if (ReaderXml.MoveToAttribute("key"))
+                        key = ReaderXml.Value;
+                    if (ReaderXml.MoveToAttribute("value"))
+                        value = ReaderXml.Value;
                     if ((key.Length > 0) && (value.Length > 0))
                         returnValue.Add_Option(key, value);
                 }
             }
 
-            Metadata_Configuration.Add_Metadata_File_ReaderWriter(returnValue);
+            Add_Metadata_File_ReaderWriter(returnValue);
         }
 
-        private static void read_mets_readerwriter_configs(XmlReader readerXml, Dictionary<string, METS_Section_ReaderWriter_Config> readerWriters)
+        private static void read_mets_readerwriter_configs(XmlReader ReaderXml, Dictionary<string, METS_Section_ReaderWriter_Config> ReaderWriters)
         {
-            while (readerXml.Read())
+            while (ReaderXml.Read())
             {
-                if ((readerXml.NodeType == XmlNodeType.Element) && (readerXml.Name.ToLower() == "readerwriter"))
+                if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "readerwriter"))
                 {
-                    METS_Section_ReaderWriter_Config singleReaderWriter = read_mets_section_readerwriter_config(readerXml.ReadSubtree());
-                    readerWriters.Add(singleReaderWriter.ID.ToUpper(), singleReaderWriter);
-                    Metadata_Configuration.Add_METS_Section_ReaderWriter(singleReaderWriter);
+                    METS_Section_ReaderWriter_Config singleReaderWriter = read_mets_section_readerwriter_config(ReaderXml.ReadSubtree());
+                    ReaderWriters.Add(singleReaderWriter.ID.ToUpper(), singleReaderWriter);
+                    Add_METS_Section_ReaderWriter(singleReaderWriter);
                 }
             }
         }
 
-        private static METS_Section_ReaderWriter_Config read_mets_section_readerwriter_config(XmlReader readerXml)
+        private static METS_Section_ReaderWriter_Config read_mets_section_readerwriter_config(XmlReader ReaderXml)
         {
             METS_Section_ReaderWriter_Config returnValue = new METS_Section_ReaderWriter_Config();
 
-            readerXml.Read();
+            ReaderXml.Read();
 
             // Move to and save the basic attributes
-            if (readerXml.MoveToAttribute("ID"))
-                returnValue.ID = readerXml.Value;
-            if (readerXml.MoveToAttribute("label"))
-                returnValue.Label = readerXml.Value;
-            if (readerXml.MoveToAttribute("namespace"))
-                returnValue.Code_Namespace = readerXml.Value;
-            if (readerXml.MoveToAttribute("class"))
-                returnValue.Code_Class = readerXml.Value;
-            if (readerXml.MoveToAttribute("assembly"))
-                returnValue.Code_Assembly = readerXml.Value;
-            if ((readerXml.MoveToAttribute("isActive")) && (readerXml.Value.ToLower() == "false"))
+            if (ReaderXml.MoveToAttribute("ID"))
+                returnValue.ID = ReaderXml.Value;
+            if (ReaderXml.MoveToAttribute("label"))
+                returnValue.Label = ReaderXml.Value;
+            if (ReaderXml.MoveToAttribute("namespace"))
+                returnValue.Code_Namespace = ReaderXml.Value;
+            if (ReaderXml.MoveToAttribute("class"))
+                returnValue.Code_Class = ReaderXml.Value;
+            if (ReaderXml.MoveToAttribute("assembly"))
+                returnValue.Code_Assembly = ReaderXml.Value;
+            if ((ReaderXml.MoveToAttribute("isActive")) && (ReaderXml.Value.ToLower() == "false"))
             {
                 returnValue.isActive = false;
             }
-            if (readerXml.MoveToAttribute("section"))
+            if (ReaderXml.MoveToAttribute("section"))
             {
-                switch (readerXml.Value.ToLower())
+                switch (ReaderXml.Value.ToLower())
                 {
                     case "amdsec":
                         returnValue.METS_Section = METS_Section_Type_Enum.amdSec;
-                        if (readerXml.MoveToAttribute("amdSecType"))
+                        if (ReaderXml.MoveToAttribute("amdSecType"))
                         {
-                            switch( readerXml.Value.ToLower())
+                            switch( ReaderXml.Value.ToLower())
                             {
                                 case "techmd":
                                     returnValue.amdSecType = METS_amdSec_Type_Enum.techMD;
@@ -1175,21 +975,21 @@ namespace SobekCM.Resource_Object.Configuration
                 }
             }
 
-            while (readerXml.Read())
+            while (ReaderXml.Read())
             {
-                if (readerXml.NodeType == XmlNodeType.Element)
+                if (ReaderXml.NodeType == XmlNodeType.Element)
                 {
-                    switch (readerXml.Name.ToLower())
+                    switch (ReaderXml.Name.ToLower())
                     {
                         case "mapping":
                             METS_Section_ReaderWriter_Mapping newMapping = new METS_Section_ReaderWriter_Mapping();
-                            if (readerXml.MoveToAttribute("mdtype"))
-                                newMapping.MD_Type = readerXml.Value;
-                            if (readerXml.MoveToAttribute("othermdtype"))
-                                newMapping.Other_MD_Type = readerXml.Value;
-                            if (readerXml.MoveToAttribute("label"))
-                                newMapping.Label = readerXml.Value;
-                            if ((readerXml.MoveToAttribute("isDefault")) && (readerXml.Value.ToLower() == "true"))
+                            if (ReaderXml.MoveToAttribute("mdtype"))
+                                newMapping.MD_Type = ReaderXml.Value;
+                            if (ReaderXml.MoveToAttribute("othermdtype"))
+                                newMapping.Other_MD_Type = ReaderXml.Value;
+                            if (ReaderXml.MoveToAttribute("label"))
+                                newMapping.Label = ReaderXml.Value;
+                            if ((ReaderXml.MoveToAttribute("isDefault")) && (ReaderXml.Value.ToLower() == "true"))
                                 newMapping.isDefault = true;
                             returnValue.Add_Mapping(newMapping);
                             break;
@@ -1197,10 +997,10 @@ namespace SobekCM.Resource_Object.Configuration
                         case "option":
                             string key = String.Empty;
                             string value = String.Empty;
-                            if (readerXml.MoveToAttribute("key"))
-                                key = readerXml.Value;
-                            if (readerXml.MoveToAttribute("value"))
-                                value = readerXml.Value;
+                            if (ReaderXml.MoveToAttribute("key"))
+                                key = ReaderXml.Value;
+                            if (ReaderXml.MoveToAttribute("value"))
+                                value = ReaderXml.Value;
                             if ((key.Length > 0) && (value.Length > 0))
                                 returnValue.Add_Option(key, value);
                             break;
@@ -1211,29 +1011,22 @@ namespace SobekCM.Resource_Object.Configuration
             return returnValue;
         }
 
-        private static void read_metadata_modules_config(XmlReader readerXml, Dictionary<string, METS_Section_ReaderWriter_Config> readerWriters)
+        private static void read_metadata_modules_config(XmlReader ReaderXml)
         {
-            bool inPackage = false;
-            bool inDivision = false;
-            bool inFile = false;
-            bool inDmdSec = true;
-            METS_Writing_Profile profile = null;
-            int unnamed_profile_counter = 1;
-
-            while (readerXml.Read())
+            while (ReaderXml.Read())
             {
-                if (( readerXml.NodeType == XmlNodeType.Element) && ( readerXml.Name.ToLower() == "metadatamodule"))
+                if (( ReaderXml.NodeType == XmlNodeType.Element) && ( ReaderXml.Name.ToLower() == "metadatamodule"))
                 {
                     // read all the values
                     Additional_Metadata_Module_Config module = new Additional_Metadata_Module_Config();
-                    if (readerXml.MoveToAttribute("key"))
-                        module.Key = readerXml.Value.Trim();
-                    if (readerXml.MoveToAttribute("assembly"))
-                        module.Code_Assembly = readerXml.Value;
-                    if (readerXml.MoveToAttribute("namespace"))
-                        module.Code_Namespace = readerXml.Value;
-                    if (readerXml.MoveToAttribute("class"))
-                        module.Code_Class = readerXml.Value;
+                    if (ReaderXml.MoveToAttribute("key"))
+                        module.Key = ReaderXml.Value.Trim();
+                    if (ReaderXml.MoveToAttribute("assembly"))
+                        module.Code_Assembly = ReaderXml.Value;
+                    if (ReaderXml.MoveToAttribute("namespace"))
+                        module.Code_Namespace = ReaderXml.Value;
+                    if (ReaderXml.MoveToAttribute("class"))
+                        module.Code_Class = ReaderXml.Value;
                     
                     // Only add if valid
                     if ((module.Key.Length > 0) && (module.Code_Class.Length > 0) && (module.Code_Namespace.Length > 0))
@@ -1244,7 +1037,7 @@ namespace SobekCM.Resource_Object.Configuration
             }
         }
         
-        private static void read_mets_writing_config(XmlReader readerXml, Dictionary<string, METS_Section_ReaderWriter_Config> readerWriters)
+        private static void read_mets_writing_config(XmlReader ReaderXml, Dictionary<string, METS_Section_ReaderWriter_Config> ReaderWriters)
         {
             bool inPackage = false;
             bool inDivision = false;
@@ -1253,22 +1046,22 @@ namespace SobekCM.Resource_Object.Configuration
             METS_Writing_Profile profile = null;
             int unnamed_profile_counter = 1;
 
-            while (readerXml.Read())
+            while (ReaderXml.Read())
             {
-                if (readerXml.NodeType == XmlNodeType.Element)
+                if (ReaderXml.NodeType == XmlNodeType.Element)
                 {
-                    switch (readerXml.Name.ToLower())
+                    switch (ReaderXml.Name.ToLower())
                     {
                         case "profile":
                             profile = new METS_Writing_Profile();
-                            if (readerXml.MoveToAttribute("name"))
-                                profile.Profile_Name = readerXml.Value.Trim();
-                            if (readerXml.MoveToAttribute("description"))
-                                profile.Profile_Description = readerXml.Value;
-                            if (readerXml.MoveToAttribute("isDefault"))
+                            if (ReaderXml.MoveToAttribute("name"))
+                                profile.Profile_Name = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("description"))
+                                profile.Profile_Description = ReaderXml.Value;
+                            if (ReaderXml.MoveToAttribute("isDefault"))
                             {
                                 bool tempValue;
-                                if (bool.TryParse(readerXml.Value, out tempValue))
+                                if (bool.TryParse(ReaderXml.Value, out tempValue))
                                 {
                                     profile.Default_Profile = tempValue;
                                 }
@@ -1309,12 +1102,12 @@ namespace SobekCM.Resource_Object.Configuration
                             break;
 
                         case "readerwriterref":
-                            if (readerXml.MoveToAttribute("ID"))
+                            if (ReaderXml.MoveToAttribute("ID"))
                             {
-                                string id = readerXml.Value.ToUpper();
-                                if (( readerWriters.ContainsKey(id)) && ( profile != null ))
+                                string id = ReaderXml.Value.ToUpper();
+                                if (( ReaderWriters.ContainsKey(id)) && ( profile != null ))
                                 {
-                                    METS_Section_ReaderWriter_Config readerWriter = readerWriters[id];
+                                    METS_Section_ReaderWriter_Config readerWriter = ReaderWriters[id];
                                     if (inPackage)
                                     {
                                         if (inDmdSec)

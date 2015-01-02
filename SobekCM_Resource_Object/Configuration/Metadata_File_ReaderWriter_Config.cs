@@ -35,7 +35,7 @@ namespace SobekCM.Resource_Object.Configuration
     /// <summary> Configuration information about a reader/writer class used to read stand-along metadata files </summary>
     public class Metadata_File_ReaderWriter_Config
     {
-        private Dictionary<string, string> options;
+        private readonly Dictionary<string, string> options;
 
         /// <summary> Constructor for a new Metadata_File_ReaderWriter_Config object </summary>
         public Metadata_File_ReaderWriter_Config()
@@ -90,11 +90,11 @@ namespace SobekCM.Resource_Object.Configuration
         }
 
         /// <summary> Add a new option to the dictionary of associated standard options </summary>
-        /// <param name="key"> Key of this option </param>
-        /// <param name="value"> Value of this option </param>
-        public void Add_Option(string key, string value)
+        /// <param name="Key"> Key of this option </param>
+        /// <param name="Value"> Value of this option </param>
+        public void Add_Option(string Key, string Value)
         {
-            options[key] = value;
+            options[Key] = Value;
         }
     }
 }

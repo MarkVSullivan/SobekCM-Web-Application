@@ -13,6 +13,7 @@ using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
+using SobekCM.Resource_Object.OAI.Writer;
 
 namespace SobekCM.Resource_Object.Database
 {
@@ -1327,24 +1328,6 @@ namespace SobekCM.Resource_Object.Database
             ThisPackage.Web.GroupID = saveArgs.GroupID;
 			ThisPackage.BibID = saveArgs.New_BibID;
 
-			// If this was a new bib id, or only a single item belongs to this item group, 
-			// try to update the OAI-PMH data stored for this item
-            if ((saveArgs.Is_New) || ((ThisPackage.Web.Siblings.HasValue) && (ThisPackage.Web.Siblings < 1)))
-			{
-				// Get the OAI-PMH dublin core information
-				StringBuilder oaiDataBuilder = new StringBuilder(1000);
-				StringWriter writer = new StringWriter(oaiDataBuilder);
-                METS_Sec_ReaderWriters.DC_METS_dmdSec_ReaderWriter.Write_Simple_Dublin_Core(writer, ThisPackage.Bib_Info);
-
-                // Also add the URL as identifier
-                if (ThisPackage.Web.Service_URL.Length > 0)
-                    oaiDataBuilder.AppendLine("<dc:identifier>" + ThisPackage.Web.Service_URL.Replace("/" + ThisPackage.VID, "") + "</dc:identifier>");
-				Save_Item_Group_OAI(saveArgs.GroupID, oaiDataBuilder.ToString(), "oai_dc", false);
-
-				writer.Flush();
-				writer.Close();
-			}
-
 			// If there were web skins, save that as well
             Save_Item_Group_Web_Skins(ThisPackage.Web.GroupID, ThisPackage);
 
@@ -1427,189 +1410,200 @@ namespace SobekCM.Resource_Object.Database
 				exception_caught("SobekCM_Add_External_Record_Number", ee);
 			}
 		}
-          
-		/// <summary> Saves information about single item </summary>
-		/// <param name="ThisPackage"></param>
-		/// <param name="GroupID"></param>
-		/// <param name="CreateDate"> Day this item was created </param>
-		/// <returns>TRUE if successful, otherwise FALSE </returns>
-		private static bool Save_Item_Information( SobekCM_Item ThisPackage, int GroupID, DateTime CreateDate )
-		{
-			// Get the pub date and year
-			string pubdate = ThisPackage.Bib_Info.Origin_Info.Date_Check_All_Fields;
-			int year = -1;
-			if (pubdate.Length > 0)
-			{
-				// Try to get the year
-				if (pubdate.Length == 4)
-				{
-					Int32.TryParse(pubdate, out year);
-				}
 
-				if (year == -1)
-				{
-					DateTime date;
-					if (DateTime.TryParse(pubdate, out date))
-					{
-						year = date.Year;
-					}
-				}
-			}
+	    /// <summary> Saves information about single item </summary>
+	    /// <param name="ThisPackage"></param>
+	    /// <param name="GroupID"></param>
+	    /// <param name="CreateDate"> Day this item was created </param>
+	    /// <returns>TRUE if successful, otherwise FALSE </returns>
+	    private static bool Save_Item_Information(SobekCM_Item ThisPackage, int GroupID, DateTime CreateDate)
+	    {
+	        // Get the pub date and year
+	        string pubdate = ThisPackage.Bib_Info.Origin_Info.Date_Check_All_Fields;
+	        int year = -1;
+	        if (pubdate.Length > 0)
+	        {
+	            // Try to get the year
+	            if (pubdate.Length == 4)
+	            {
+	                Int32.TryParse(pubdate, out year);
+	            }
 
-			// Get the spatial display and subjects information
-			StringBuilder spatialDisplayBuilder = new StringBuilder();
-			StringBuilder subjectsDisplayBuilder = new StringBuilder();
-			foreach (Bib_Info.Subject_Info subject in ThisPackage.Bib_Info.Subjects)
-			{
-				if (subject.Class_Type == Bib_Info.Subject_Info_Type.Standard)
-				{
-					Bib_Info.Subject_Info_Standard standardSubject = (Bib_Info.Subject_Info_Standard)subject;
-					string subjectText = standardSubject.ToString(false);
-					if (subjectsDisplayBuilder.Length > 0)
-						subjectsDisplayBuilder.Append("|");
-					subjectsDisplayBuilder.Append(subjectText);
-				}
-			}
+	            if (year == -1)
+	            {
+	                DateTime date;
+	                if (DateTime.TryParse(pubdate, out date))
+	                {
+	                    year = date.Year;
+	                }
+	            }
+	        }
 
-			// Get the publishers
-			StringBuilder publisher_builder = new StringBuilder();
-			foreach (Bib_Info.Publisher_Info thisPublisher in ThisPackage.Bib_Info.Publishers)
-			{
-				if (publisher_builder.Length > 0)
-				{
-					publisher_builder.Append("|" + thisPublisher.ToString());
-				}
-				else
-				{
-					publisher_builder.Append(thisPublisher.ToString());
-				}
-			}
+	        // Get the spatial display and subjects information
+	        StringBuilder spatialDisplayBuilder = new StringBuilder();
+	        StringBuilder subjectsDisplayBuilder = new StringBuilder();
+	        foreach (Bib_Info.Subject_Info subject in ThisPackage.Bib_Info.Subjects)
+	        {
+	            if (subject.Class_Type == Bib_Info.Subject_Info_Type.Standard)
+	            {
+	                Bib_Info.Subject_Info_Standard standardSubject = (Bib_Info.Subject_Info_Standard) subject;
+	                string subjectText = standardSubject.ToString(false);
+	                if (subjectsDisplayBuilder.Length > 0)
+	                    subjectsDisplayBuilder.Append("|");
+	                subjectsDisplayBuilder.Append(subjectText);
+	            }
+	        }
 
-			// Get the authors
-			StringBuilder author_builder = new StringBuilder();
-			string mainAuthor = String.Empty;
-			if ( ThisPackage.Bib_Info.hasMainEntityName)
-				mainAuthor = ThisPackage.Bib_Info.Main_Entity_Name.ToString();
-			if ((mainAuthor.Length > 0) && ( mainAuthor.IndexOf("unknown") < 0 ))
-			{
-				author_builder.Append(mainAuthor);
-			}
-			if (ThisPackage.Bib_Info.Names_Count > 0)
-			{
-				foreach (Bib_Info.Name_Info thisAuthor in ThisPackage.Bib_Info.Names)
-				{
-					string thisAuthorString = thisAuthor.ToString();
-					if ((thisAuthorString.Length > 0) && (thisAuthorString.IndexOf("unknown") < 0))
-					{
-						if (author_builder.Length > 0)
-						{
-							author_builder.Append("|" + thisAuthorString);
-						}
-						else
-						{
-							author_builder.Append(thisAuthorString);
-						}
-					}
-				}
-			}
+	        // Get the publishers
+	        StringBuilder publisher_builder = new StringBuilder();
+	        foreach (Bib_Info.Publisher_Info thisPublisher in ThisPackage.Bib_Info.Publishers)
+	        {
+	            if (publisher_builder.Length > 0)
+	            {
+	                publisher_builder.Append("|" + thisPublisher.ToString());
+	            }
+	            else
+	            {
+	                publisher_builder.Append(thisPublisher.ToString());
+	            }
+	        }
 
-			// Get the donor
-			string donor = String.Empty;
-			if (ThisPackage.Bib_Info.Donor != null )
-			{
-				string donor_temp = ThisPackage.Bib_Info.Donor.ToString();
-				if ((donor_temp.Length > 0) && (donor_temp.IndexOf("unknown") < 0))
-					donor = donor_temp;
-			}
+	        // Get the authors
+	        StringBuilder author_builder = new StringBuilder();
+	        string mainAuthor = String.Empty;
+	        if (ThisPackage.Bib_Info.hasMainEntityName)
+	            mainAuthor = ThisPackage.Bib_Info.Main_Entity_Name.ToString();
+	        if ((mainAuthor.Length > 0) && (mainAuthor.IndexOf("unknown") < 0))
+	        {
+	            author_builder.Append(mainAuthor);
+	        }
+	        if (ThisPackage.Bib_Info.Names_Count > 0)
+	        {
+	            foreach (Bib_Info.Name_Info thisAuthor in ThisPackage.Bib_Info.Names)
+	            {
+	                string thisAuthorString = thisAuthor.ToString();
+	                if ((thisAuthorString.Length > 0) && (thisAuthorString.IndexOf("unknown") < 0))
+	                {
+	                    if (author_builder.Length > 0)
+	                    {
+	                        author_builder.Append("|" + thisAuthorString);
+	                    }
+	                    else
+	                    {
+	                        author_builder.Append(thisAuthorString);
+	                    }
+	                }
+	            }
+	        }
 
-			// Get the material display information
-			StringBuilder materialDisplayBuilder = new StringBuilder();
-			string measurements = String.Empty;
-			StringBuilder stylePeriodDisplayBuilder = new StringBuilder();
-			StringBuilder techniqueDisplayBuilder = new StringBuilder();
+	        // Get the donor
+	        string donor = String.Empty;
+	        if (ThisPackage.Bib_Info.Donor != null)
+	        {
+	            string donor_temp = ThisPackage.Bib_Info.Donor.ToString();
+	            if ((donor_temp.Length > 0) && (donor_temp.IndexOf("unknown") < 0))
+	                donor = donor_temp;
+	        }
 
-			// Get the source and holding codes and the institution display information
-			StringBuilder institutionDisplayBuilder = new StringBuilder();
-			string source_code = ThisPackage.Bib_Info.Source.Code;
-			string holding_code = String.Empty;
-			if ((source_code.Length > 0) && (source_code[0] != 'i') && (source_code[0] != 'I'))
-			{
-				source_code = "i" + source_code;
-			}
-			if ((source_code.Length > 2) && (source_code.ToUpper().IndexOf("II") == 0))
-				source_code = source_code.Substring(1);
-			if ((source_code.ToUpper().IndexOf("UF") != 0) && (source_code.ToUpper().IndexOf("IUF") != 0))
-			{
-				if (ThisPackage.Bib_Info.Source.Statement.Length > 0)
-					institutionDisplayBuilder.Append(ThisPackage.Bib_Info.Source.Statement);
-			}
+	        // Get the material display information
+	        StringBuilder materialDisplayBuilder = new StringBuilder();
+	        string measurements = String.Empty;
+	        StringBuilder stylePeriodDisplayBuilder = new StringBuilder();
+	        StringBuilder techniqueDisplayBuilder = new StringBuilder();
 
-			string purl = String.Empty;
-			if (ThisPackage.Bib_Info.hasLocationInformation)
-			{
-				purl = ThisPackage.Bib_Info.Location.PURL;
-				holding_code = ThisPackage.Bib_Info.Location.Holding_Code;
-				if ((holding_code.ToUpper().IndexOf("UF") != 0) && (holding_code.ToUpper().IndexOf("IUF") != 0))
-				{
-					if ( institutionDisplayBuilder.Length == 0 )
-					{
-						institutionDisplayBuilder.Append(ThisPackage.Bib_Info.Location.Holding_Name);
-					}
-					//else
-					//{
-					//    if (thisPackage.Bib_Info.Location.Holding_Name.IndexOf(thisPackage.Bib_Info.Source.Statement) < 0)
-					//    {
-					//        institutionDisplayBuilder.Append("|" + thisPackage.Bib_Info.Location.Holding_Name);
-					//    }
-					//}
-				}
-			}
-			if ((holding_code.Length > 0) && (holding_code[0] != 'i') && (holding_code[0] != 'I'))
-			{
-				holding_code = "i" + holding_code;
-			}
-			if ((holding_code.Length > 2) && (holding_code.ToUpper().IndexOf("II") == 0))
-				holding_code = holding_code.Substring(1);
+	        // Get the source and holding codes and the institution display information
+	        StringBuilder institutionDisplayBuilder = new StringBuilder();
+	        string source_code = ThisPackage.Bib_Info.Source.Code;
+	        string holding_code = String.Empty;
+	        if ((source_code.Length > 0) && (source_code[0] != 'i') && (source_code[0] != 'I'))
+	        {
+	            source_code = "i" + source_code;
+	        }
+	        if ((source_code.Length > 2) && (source_code.ToUpper().IndexOf("II") == 0))
+	            source_code = source_code.Substring(1);
+	        if ((source_code.ToUpper().IndexOf("UF") != 0) && (source_code.ToUpper().IndexOf("IUF") != 0))
+	        {
+	            if (ThisPackage.Bib_Info.Source.Statement.Length > 0)
+	                institutionDisplayBuilder.Append(ThisPackage.Bib_Info.Source.Statement);
+	        }
 
-			// Pull out the spatial strings (for testing)
-			string spatial_kml = String.Empty;
-			const double SPATIAL_DISTANCE = -1;
-            //if (thisPackage.Bib_Info.hasCoordinateInformation)
-            //{
-            //    spatial_kml = thisPackage.Bib_Info.Coordinates.SobekCM_Main_Spatial_String;
-            //    spatial_distance = thisPackage.Bib_Info.Coordinates.SobekCM_Main_Spatial_Distance;
-            //}
+	        string purl = String.Empty;
+	        if (ThisPackage.Bib_Info.hasLocationInformation)
+	        {
+	            purl = ThisPackage.Bib_Info.Location.PURL;
+	            holding_code = ThisPackage.Bib_Info.Location.Holding_Code;
+	            if ((holding_code.ToUpper().IndexOf("UF") != 0) && (holding_code.ToUpper().IndexOf("IUF") != 0))
+	            {
+	                if (institutionDisplayBuilder.Length == 0)
+	                {
+	                    institutionDisplayBuilder.Append(ThisPackage.Bib_Info.Location.Holding_Name);
+	                }
+	                //else
+	                //{
+	                //    if (thisPackage.Bib_Info.Location.Holding_Name.IndexOf(thisPackage.Bib_Info.Source.Statement) < 0)
+	                //    {
+	                //        institutionDisplayBuilder.Append("|" + thisPackage.Bib_Info.Location.Holding_Name);
+	                //    }
+	                //}
+	            }
+	        }
+	        if ((holding_code.Length > 0) && (holding_code[0] != 'i') && (holding_code[0] != 'I'))
+	        {
+	            holding_code = "i" + holding_code;
+	        }
+	        if ((holding_code.Length > 2) && (holding_code.ToUpper().IndexOf("II") == 0))
+	            holding_code = holding_code.Substring(1);
 
-			// Determine the link
-			string link = String.Empty;
-			if (( !ThisPackage.Divisions.Physical_Tree.Has_Files ) && ( !ThisPackage.Divisions.Download_Tree.Has_Files ) && ( ThisPackage.Bib_Info.Location.Other_URL.Length > 0 ))
-			{
-				link = ThisPackage.Bib_Info.Location.Other_URL;
-			}
+	        // Pull out the spatial strings (for testing)
+	        string spatial_kml = String.Empty;
+	        const double SPATIAL_DISTANCE = -1;
+	        //if (thisPackage.Bib_Info.hasCoordinateInformation)
+	        //{
+	        //    spatial_kml = thisPackage.Bib_Info.Coordinates.SobekCM_Main_Spatial_String;
+	        //    spatial_distance = thisPackage.Bib_Info.Coordinates.SobekCM_Main_Spatial_Distance;
+	        //}
 
-			// Save the main information, and return the item id
-			Save_Item_Args returnVal = Save_Item( GroupID, ThisPackage.VID, ThisPackage.Divisions.Page_Count, ThisPackage.Divisions.Files.Count,
-				ThisPackage.Bib_Info.Main_Title.NonSort + ThisPackage.Bib_Info.Main_Title.Title, ThisPackage.Bib_Info.SortSafeTitle(ThisPackage.Bib_Info.Main_Title.Title, false),
-				link, CreateDate, pubdate, ThisPackage.Bib_Info.SortSafeDate(pubdate), holding_code, 
-				source_code, author_builder.ToString(), spatial_kml, SPATIAL_DISTANCE, ThisPackage.DiskSize_KB, donor, publisher_builder.ToString(),
-				spatialDisplayBuilder.ToString(),institutionDisplayBuilder.ToString(), ThisPackage.Bib_Info.Origin_Info.Edition, materialDisplayBuilder.ToString(),
-				measurements, stylePeriodDisplayBuilder.ToString(), techniqueDisplayBuilder.ToString(), subjectsDisplayBuilder.ToString());
+	        // Determine the link
+	        string link = String.Empty;
+	        if ((!ThisPackage.Divisions.Physical_Tree.Has_Files) && (!ThisPackage.Divisions.Download_Tree.Has_Files) && (ThisPackage.Bib_Info.Location.Other_URL.Length > 0))
+	        {
+	            link = ThisPackage.Bib_Info.Location.Other_URL;
+	        }
 
-			// If this was existing, clear the old data
-			if (returnVal.Existing)
-			{
-				Clear_Old_Item_Info(returnVal.ItemID);
-			}
+	        // Save the main information, and return the item id
+	        Save_Item_Args returnVal = Save_Item(GroupID, ThisPackage.VID, ThisPackage.Divisions.Page_Count, ThisPackage.Divisions.Files.Count,
+	            ThisPackage.Bib_Info.Main_Title.NonSort + ThisPackage.Bib_Info.Main_Title.Title, ThisPackage.Bib_Info.SortSafeTitle(ThisPackage.Bib_Info.Main_Title.Title, false),
+	            link, CreateDate, pubdate, ThisPackage.Bib_Info.SortSafeDate(pubdate), holding_code,
+	            source_code, author_builder.ToString(), spatial_kml, SPATIAL_DISTANCE, ThisPackage.DiskSize_KB, donor, publisher_builder.ToString(),
+	            spatialDisplayBuilder.ToString(), institutionDisplayBuilder.ToString(), ThisPackage.Bib_Info.Origin_Info.Edition, materialDisplayBuilder.ToString(),
+	            measurements, stylePeriodDisplayBuilder.ToString(), techniqueDisplayBuilder.ToString(), subjectsDisplayBuilder.ToString());
 
-			// Save the item id and VID into the package
-            ThisPackage.Web.ItemID = returnVal.ItemID;
-			ThisPackage.VID = returnVal.New_VID;
+	        // If this was existing, clear the old data
+	        if (returnVal.Existing)
+	        {
+	            Clear_Old_Item_Info(returnVal.ItemID);
+	        }
 
-			//// Save all the behavior information as well
-			//Save_Behaviors(thisPackage, textFlag);	
+	        // Save the item id and VID into the package
+	        ThisPackage.Web.ItemID = returnVal.ItemID;
+	        ThisPackage.VID = returnVal.New_VID;
+
+	        // Get the OAI-PMH dublin core information
+            Save_OAI_Information(ThisPackage);
+   
 
 			return true;
 		}
+
+        private static void Save_OAI_Information(SobekCM_Item ThisPackage)
+        {
+            List<Tuple<string, string>> oai_records = OAI_PMH_Metadata_Writers.Get_OAI_PMH_Metadata_Records(ThisPackage);
+
+            foreach (Tuple<string, string> thisRecord in oai_records)
+            {
+                Save_Item_OAI(ThisPackage.Web.ItemID, thisRecord.Item2, thisRecord.Item1);
+            }
+	    }
 
 		/// <summary> Save all the item behaviors associated with a SobekCM Digital Resource  </summary>
 		/// <param name="ThisPackage"> Digital resource which needs to have its behaviors saved to the SobekCM database </param>
@@ -2155,24 +2149,22 @@ namespace SobekCM.Resource_Object.Database
 			}
 		}
 
-		/// <summary> Saves the OAI-PMH data associated with an item group </summary>
-		/// <param name="GroupID"> Primary key for this item group within the database </param>
-		/// <param name="Data_Code"> Code for this metadata type being saved for this item group ( i.e. 'oai_dc' )</param>
+		/// <summary> Saves the OAI-PMH data associated with an item </summary>
+		/// <param name="ItemID"> Primary key for this item within the database </param>
+		/// <param name="Data_Code"> Code for this metadata type being saved for this item ( i.e. 'oai_dc' )</param>
 		/// <param name="OAI_Data"> Data to be stored for this item </param>
-		/// <param name="Always_Overlay"> Flag indicates if this should overlay the OAI, even if it already exists </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks>This method calls the stored procedure 'SobekCM_Add_OAI_PMH_Data'. <br /><br />
-		/// If the OAI-PMH data is locked via the database flag on this data, this does not change the OAI stored for the item group.</remarks>
-		public static bool Save_Item_Group_OAI(int GroupID, string OAI_Data, string Data_Code, bool Always_Overlay)
+		/// If the OAI-PMH data is locked via the database flag on this data, this does not change the OAI stored for the item.</remarks>
+		public static bool Save_Item_OAI(int ItemID, string OAI_Data, string Data_Code)
 		{
 			try
 			{
 				// Build the parameter list
 				SqlParameter[] param_list = new SqlParameter[4];
-				param_list[0] = new SqlParameter("@groupid", GroupID);
+                param_list[0] = new SqlParameter("@itemid", ItemID);
 				param_list[1] = new SqlParameter("@data_code", Data_Code);
 				param_list[2] = new SqlParameter("@oai_data", OAI_Data);
-				param_list[3] = new SqlParameter("@overlay_existing", Always_Overlay);
 
 				// Execute this non-query stored procedure
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Add_OAI_PMH_Data", param_list);

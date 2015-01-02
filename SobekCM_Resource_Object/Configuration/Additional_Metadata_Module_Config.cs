@@ -9,21 +9,21 @@ namespace SobekCM.Resource_Object.Configuration
     public class Additional_Metadata_Module_Config
     {
         /// <summary> Key used for this metadata module when adding to a new package </summary>
-        public string Key { get; set; }
+        public string Key { get; internal set; }
 
         /// <summary> Namespace within which this metadata extension module appears </summary>
         /// <remarks> For all standard reader/writers, this returns 'SobekCM.Resource_Object.Metadata_Modules'.<br /><br />
         /// This is used for instantiating the metadata extension module. </remarks>
-        public string Code_Namespace { get; set; }
+        public string Code_Namespace { get; internal  set; }
 
         /// <summary> Class name for the metadata extension module </summary>
         /// <remarks> This is used for instantiating the metadata extension module. </remarks>
-        public string Code_Class { get; set; }
+        public string Code_Class { get; internal set; }
 
         /// <summary> Assembly name of the DLL which holds this metadata extension module </summary>
         /// <remarks> For all standard metadata extension modules, this is an empty string, since they are in this DLL. <br /><br />
         ///  This is used for instantiating the metadata extension module. </remarks>
-        public string Code_Assembly { get; set; }
+        public string Code_Assembly { get; internal set; }
 
         /// <summary> Constructor for a new instance of the Additional_Metadata_Module_Config class </summary>
         public Additional_Metadata_Module_Config()
@@ -59,11 +59,10 @@ namespace SobekCM.Resource_Object.Configuration
                 //  Assembly dllAssembly = Assembly..LoadFrom( Code_Assembly );
                 Type readerWriterType = dllAssembly.GetType(Code_Namespace + "." + Code_Class);
                 object possibleModule = Activator.CreateInstance(readerWriterType);
-                if (possibleModule is iMetadata_Module)
-                    return (iMetadata_Module) possibleModule;
-                return null;
+                iMetadata_Module module = possibleModule as iMetadata_Module;
+                return module;
             }
-            catch (Exception ee)
+            catch 
             {
                  return null;
             }
