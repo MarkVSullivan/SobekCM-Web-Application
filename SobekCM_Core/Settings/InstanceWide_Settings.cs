@@ -635,6 +635,9 @@ namespace SobekCM.Core.Settings
         /// <summary> Configuration for the default contact form for this instance </summary>
         public ContactForm_Configuration ContactForm { get; set; }
 
+        /// <summary> Configuration for instance-wide OAI-PMH settings for this instance </summary>
+        public OAI_PMH_Configuration OAI_PMH { get; set; }
+
         #endregion
         
 

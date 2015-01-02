@@ -5,9 +5,10 @@ using System.Text;
 
 namespace SobekCM.Resource_Object.OAI.Writer
 {
+    /// <summary> Returns the OAI-PMH formatted dublin core record for a single digital resource / item </summary>
     public class DC_OAI_Metadata_Type_Writer : abstract_OAI_PMH_Metadata_Type_Writer
     {
-        /// <summary> Returns the OAI-PMH metadatain dublin core (OAI-flavored) for this item </summary>
+        /// <summary> Returns the OAI-PMH metadata in dublin core (OAI-flavored) for this item </summary>
         /// <param name="Item_To_Save"> Package with all the metadata to save </param>
         /// <param name="Options"> Dictionary of any options which this metadata reader/writer may utilize </param>
         /// <param name="Error_Message">[OUTPUT] Explanation of the error, if an error occurs during write </param>

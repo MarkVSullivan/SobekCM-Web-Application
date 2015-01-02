@@ -1369,28 +1369,26 @@ namespace SobekCM.Resource_Object
         }
 
         /// <summary> Writes all the data about this item in MARC-ish HTML for display online</summary>
-        /// <param name="Collections"> List of the names of the collections linked to this item </param>
         /// <param name="Include_Endeca_Tags"> Flag indicates whether to include tags specific to Florida's implementation of Endeca </param>
         /// <param name="System_Name"> Name of the host system, which is added into the MARC record </param>
         /// <param name="System_Abbreviation"> Abbreviation for the host system, which is added into the MARC record </param>
         /// <returns> Complete HTML as a string, ready for display </returns>
-        public string Get_MARC_HTML(List<string> Collections, bool Include_Endeca_Tags, string System_Name, string System_Abbreviation)
+        public string Get_MARC_HTML( bool Include_Endeca_Tags, string System_Name, string System_Abbreviation)
         {
             MARC_HTML_Writer marcHtmlWriter = new MARC_HTML_Writer();
-            return marcHtmlWriter.MARC_HTML(this, MARC_Sobek_Standard_Tags(Collections, Include_Endeca_Tags, System_Name, System_Abbreviation));
+            return marcHtmlWriter.MARC_HTML(this, MARC_Sobek_Standard_Tags( Include_Endeca_Tags, System_Name, System_Abbreviation));
         }
 
         /// <summary> Writes all the data about this item in MARC-ish HTML for display online</summary>
-        /// <param name="Collections"> List of the names of the collections linked to this item </param>
         /// <param name="Include_Endeca_Tags"> Flag indicates whether to include tags specific to Florida's implementation of Endeca </param>
         /// <param name="Width"> Width value for use within the rendered tables </param>
         /// <param name="System_Name"> Name of the host system, which is added into the MARC record </param>
         /// <param name="System_Abbreviation"> Abbreviation for the host system, which is added into the MARC record </param>
         /// <returns> Complete HTML as a string, ready for display </returns>
-        public string Get_MARC_HTML(List<string> Collections, bool Include_Endeca_Tags, string Width, string System_Name, string System_Abbreviation)
+        public string Get_MARC_HTML( bool Include_Endeca_Tags, string Width, string System_Name, string System_Abbreviation)
         {
             MARC_HTML_Writer marcHtmlWriter = new MARC_HTML_Writer();
-            return marcHtmlWriter.MARC_HTML(this, Width, MARC_Sobek_Standard_Tags(Collections, Include_Endeca_Tags, System_Name, System_Abbreviation));
+            return marcHtmlWriter.MARC_HTML(this, Width, MARC_Sobek_Standard_Tags( Include_Endeca_Tags, System_Name, System_Abbreviation));
         }
 
         #endregion
@@ -2955,6 +2953,33 @@ namespace SobekCM.Resource_Object
             fixedField008.Control_Field_Value = builder008.ToString();
             tags.Add_Field(fixedField008);
 
+            // Add the collection name as well ( Was getting duplicates here sometimes )
+            if (Behaviors.Aggregations != null)
+            {
+                List<string> added_already = new List<string>();
+                foreach (Aggregation_Info thisAggr in Behaviors.Aggregations)
+                {
+                    string collection = thisAggr.Name;
+                    if (String.IsNullOrEmpty(collection)) collection = thisAggr.Code;
+
+                    if (!added_already.Contains(collection.ToUpper().Trim()))
+                    {
+                        if (collection.Trim().Length > 0)
+                        {
+                            added_already.Add(collection.ToUpper().Trim());
+                            tags.Add_Field(new MARC_Field(830, " 0", "|a " + collection + "."));
+                        }
+                    }
+                }
+            }
+
+            // Add the thumbnail link (992)
+            if ((Behaviors.Main_Thumbnail.Length > 0) && (!Behaviors.Dark_Flag))
+            {
+                string thumbnail_link = web.Source_URL + "/" + Behaviors.Main_Thumbnail;
+                tags.Add_Field(new MARC_Field(992, "04", "|a " + thumbnail_link.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://")));
+            }
+
             // Now, set the leader
             tags.Leader = MARC_Leader();
 
@@ -3032,21 +3057,6 @@ namespace SobekCM.Resource_Object
             //return total_length_string + "n" + type_string + "  22" + total_directory_string + "3a 4500";
         }
 
-        /// <summary> Gets the SobekCM-specific tags to be written for this digital resource </summary>
-        /// <param name="Collection_Name"> Item aggregation name this digital resource is associated with </param>
-        /// <param name="IncludeEndecaTags"> Flag indicates whether Endeca-specific tags should also be written </param>
-        /// <param name="SystemName"> Name of the host system, which is added into the MARC record </param>
-        /// <param name="SystemAbbrev"> Abbreviation for the host system, which is added into the MARC record </param>
-        /// <returns> Collection of MARC tags to be written for this digital resource </returns>
-        public List<MARC_Field> MARC_Sobek_Standard_Tags(string Collection_Name, bool IncludeEndecaTags, string SystemName, string SystemAbbrev)
-        {
-            List<string> collections = new List<string>();
-            if (Collection_Name.Trim().Length > 0)
-            {
-                collections.Add(Collection_Name);
-            }
-            return MARC_Sobek_Standard_Tags(collections, IncludeEndecaTags, SystemName, SystemAbbrev);
-        }
 
         /// <summary> Gets the SobekCM-specific tags to be written for this digital resource </summary>
         /// <param name="Collection_Names"> Collection of all the item aggregation names this digital resource is associated with </param>
@@ -3054,7 +3064,7 @@ namespace SobekCM.Resource_Object
         /// <param name="SystemName"> Name of the host system, which is added into the MARC record </param>
         /// <param name="SystemAbbrev"> Abbreviation for the host system, which is added into the MARC record </param>
         /// <returns> Collection of MARC tags to be written for this digital resource </returns>
-        public List<MARC_Field> MARC_Sobek_Standard_Tags(List<string> Collection_Names, bool IncludeEndecaTags, string SystemName, string SystemAbbrev)
+        public List<MARC_Field> MARC_Sobek_Standard_Tags( bool IncludeEndecaTags, string SystemName, string SystemAbbrev)
         {
             // Start to build the list of additional tags
             List<MARC_Field> tag_list = new List<MARC_Field>();
@@ -3090,46 +3100,23 @@ namespace SobekCM.Resource_Object
                 {
                     builder533.Append("|f (" + SystemName + ")");
                 }
-                foreach (string collection in Collection_Names)
-                {
-                    if (collection.Trim().Length > 0)
-                    {
-                        builder533.Append(" |f (" + collection + ")");
-                    }
-                }
+                //foreach (string collection in Collection_Names)
+                //{
+                //    if (collection.Trim().Length > 0)
+                //    {
+                //        builder533.Append(" |f (" + collection + ")");
+                //    }
+                //}
                 builder533.Append("|n Mode of access: World Wide Web.  |n System requirements: Internet connectivity; Web browser software.");
                 tag533.Control_Field_Value = builder533.ToString();
                 tag_list.Add(tag533);
             }
 
-            // Add the collection name as well ( Was getting duplicates here sometimes )
-            List<string> added_already = new List<string>();
-            foreach (string collection in Collection_Names)
-            {
-                if (!added_already.Contains(collection.ToUpper().Trim()))
-                {
-                    if (collection.Trim().Length > 0)
-                    {
-                        added_already.Add(collection.ToUpper().Trim());
-                        tag_list.Add(new MARC_Field(830, " 0", "|a " + collection + "."));
-                    }
-                }
-            }
-
-            // REMOVED PER JIMMIE ( January 2010 )
-            //tag_list.Add_Tag("530", "  ", "|a Also available in print.");
 
 
             // Add the endeca only tags
             if (IncludeEndecaTags)
             {
-                // Add the thumbnail link (992)
-                if ((Behaviors.Main_Thumbnail.Length > 0) && (!Behaviors.Dark_Flag))
-                {
-                    string thumbnail_link = web.Source_URL + "/" + Behaviors.Main_Thumbnail;
-                    tag_list.Add(new MARC_Field(992, "04", "|a " + thumbnail_link.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://")));
-                }
-
                 // Add the 852
                 MARC_Field tag852 = new MARC_Field {Tag = 852, Indicators = "  "};
                 StringBuilder builder852 = new StringBuilder(100);
@@ -3142,10 +3129,10 @@ namespace SobekCM.Resource_Object
                 tag_list.Add(tag852);
 
                 // Add the collection name in the Endeca spot (997)
-                if (Collection_Names.Count > 0)
-                {
-                    tag_list.Add(new MARC_Field(997, "  ", "|a " + Collection_Names[0]));
-                }
+                //if (Collection_Names.Count > 0)
+                //{
+                //    tag_list.Add(new MARC_Field(997, "  ", "|a " + Collection_Names[0]));
+                //}
             }
 
             return tag_list;

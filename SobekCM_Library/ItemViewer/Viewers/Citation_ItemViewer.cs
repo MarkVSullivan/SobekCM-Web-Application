@@ -703,13 +703,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Tracer.Add_Trace("Citation_ItemViewer.MARC_String", "Configuring METS data into MARC format");
 			}
 
-
-			List<string> collections = new List<string>();
-			if (CurrentItem.Behaviors.Aggregation_Count > 0)
-			{
-			    collections.AddRange(from aggregation in CurrentItem.Behaviors.Aggregations select Code_Manager[aggregation.Code] into aggr where aggr != null where aggr.Type.ToUpper() == "COLLECTION" select aggr.ShortName);
-			}
-		  
 			//// Build the value
 			StringBuilder builder = new StringBuilder();
 
@@ -727,7 +720,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 builder.AppendLine("<br />");
 			}
 
-            builder.AppendLine(CurrentItem.Get_MARC_HTML(collections, CurrentMode.Internal_User, Width, UI_ApplicationCache_Gateway.Settings.System_Name, UI_ApplicationCache_Gateway.Settings.System_Abbreviation));
+            builder.AppendLine(CurrentItem.Get_MARC_HTML( CurrentMode.Internal_User, Width, UI_ApplicationCache_Gateway.Settings.System_Name, UI_ApplicationCache_Gateway.Settings.System_Abbreviation));
 
             builder.AppendLine("<br />");
             builder.AppendLine("<br />");
