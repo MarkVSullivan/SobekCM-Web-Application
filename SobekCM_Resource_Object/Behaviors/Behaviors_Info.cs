@@ -482,6 +482,26 @@ namespace SobekCM.Resource_Object.Behaviors
 			}
 		}
 
+		/// <summary> Adds an aggregation, if it doesn't exist </summary>
+		/// <param name="Code">Aggregation code to add</param>
+		/// <param name="Name">Aggregation name to add</param>
+		/// <remarks>This parses the aggregation string for spaces, commas, and semicolons.</remarks>
+		public void Add_Aggregation(string Code, string Name, string Type)
+		{
+			if (Code.Length > 0)
+			{
+				if (aggregations == null)
+					aggregations = new List<Aggregation_Info>();
+
+				// Create this aggregation object
+				Aggregation_Info newAggregation = new Aggregation_Info(Code.Trim().ToUpper(), Name) {Type = Type};
+
+				// If this doesn't exist, add it
+				if (!aggregations.Contains(newAggregation))
+					aggregations.Add(newAggregation);
+			}
+		}
+
 		/// <summary> Clear all of the aggregations associated with this item </summary>
 		public void Clear_Aggregations()
 		{

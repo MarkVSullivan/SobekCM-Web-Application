@@ -651,18 +651,20 @@ namespace SobekCM.Resource_Object.Database
 		
 		/// <summary> Saves this bibliographic package to the SobekCM database </summary>
 		/// <param name="ThisPackage"> Bibliographic package to save to the SobekCM database </param>
+        /// <param name="Options"> Options used possibly during the saving process </param>
 		/// <returns> Item ID for this... (may need it for something in the future?) </returns>
-		public static int Save_Digital_Resource( SobekCM_Item ThisPackage )
+        public static int Save_Digital_Resource(SobekCM_Item ThisPackage, Dictionary<string, object> Options)
 		{
-			return Save_Digital_Resource(ThisPackage, DateTime.Now, false);
+			return Save_Digital_Resource(ThisPackage, Options, DateTime.Now, false);
 		}
 
 		/// <summary> Saves this bibliographic package to the SobekCM database </summary>
 		/// <param name="ThisPackage"> Bibliographic package to save to the SobekCM database </param>
+		/// <param name="Options"> Options used possibly during the saving process </param>
 		/// <param name="CreateDate"> Date this item was originally created </param>
 		/// <param name="Existed"> Flag indicates if this item pre-existed </param>
 		/// <returns> Item ID for this... (may need it for something in the future?) </returns>
-		public static int Save_Digital_Resource(SobekCM_Item ThisPackage, DateTime CreateDate, bool Existed)
+		public static int Save_Digital_Resource(SobekCM_Item ThisPackage, Dictionary<string, object> Options, DateTime CreateDate, bool Existed)
 		{
 			// Save the group information ( group, interfaces, links to collections ) for this item
             ThisPackage.Web.GroupID = Save_Item_Group_Information(ThisPackage, CreateDate);

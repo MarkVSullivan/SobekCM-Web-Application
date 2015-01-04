@@ -161,8 +161,33 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             // Set default error outpt message
             Error_Message = String.Empty;
 
+            // Try to pull some values from the options
+            string cataloging_source_code = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Cataloging Source Code")) && (Options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] != null))
+                cataloging_source_code = Options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"].ToString();
+
+            string location_code = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Location Code")) && (Options["MarcXML_File_ReaderWriter:MARC Location Code"] != null))
+                location_code = Options["MarcXML_File_ReaderWriter:MARC Location Code"].ToString();
+
+            string reproduction_agency = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Reproduction Agency")) && (Options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] != null))
+                reproduction_agency = Options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"].ToString();
+
+            string reproduction_place = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Reproduction Place")) && (Options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] != null))
+                reproduction_place = Options["MarcXML_File_ReaderWriter:MARC Reproduction Place"].ToString();
+
+            string system_name = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:System Name")) && (Options["MarcXML_File_ReaderWriter:System Name"] != null))
+                system_name = Options["MarcXML_File_ReaderWriter:System Name"].ToString();
+
+            string system_abbreviation = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:System Abbreviation")) && (Options["MarcXML_File_ReaderWriter:System Abbreviation"] != null))
+                system_abbreviation = Options["MarcXML_File_ReaderWriter:System Abbreviation"].ToString();
+            
             // Get all the standard tags
-            MARC_Record tags = Item_To_Save.To_MARC_Record();
+            MARC_Record tags = Item_To_Save.To_MARC_Record(cataloging_source_code, location_code, reproduction_agency, reproduction_place, system_name, system_abbreviation);
 
             // Look for extra tags to add in the OPTIONS
             if (Options.ContainsKey("MarcXML_File_ReaderWriter:Additional_Tags"))

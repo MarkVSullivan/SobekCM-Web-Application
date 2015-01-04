@@ -222,7 +222,7 @@ namespace SobekCM.Library.MySobekViewer
                 Item_To_Complete.Divisions.Download_Tree.Clear();
 
                 // Add the download files next
-                foreach(string thisFileKey in download_files.Keys )
+                foreach (string thisFileKey in download_files.Keys)
                 {
                     // Get the list of files
                     List<string> theseFiles = download_files[thisFileKey];
@@ -233,7 +233,7 @@ namespace SobekCM.Library.MySobekViewer
                         // Create the new file object and compute a label
                         FileInfo fileInfo = new FileInfo(thisFile);
                         SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
-                        string label = fileInfo.Name.Replace( fileInfo.Extension, "");
+                        string label = fileInfo.Name.Replace(fileInfo.Extension, "");
                         if (HttpContext.Current.Session["file_" + RequestSpecificValues.Current_Item.Web.ItemID + "_" + thisFileKey] != null)
                         {
                             string possible_label = HttpContext.Current.Session["file_" + RequestSpecificValues.Current_Item.Web.ItemID + "_" + thisFileKey].ToString();
@@ -251,10 +251,24 @@ namespace SobekCM.Library.MySobekViewer
                 double size = all_files_final.Aggregate<string, double>(0, (Current, ThisFile) => Current + (((new FileInfo(ThisFile)).Length)/1024));
                 Item_To_Complete.DiskSize_KB = size;
 
+                // Create the options dictionary used when saving information to the database, or writing MarcXML
+                Dictionary<string, object> options = new Dictionary<string, object>();
+                if (UI_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+                {
+                    options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Location Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
+                    options["MarcXML_File_ReaderWriter:MARC XSLT File"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
+                }
+                options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System_Abbreviation;
+
+
                 // Save to the database
                 try
                 {
-                    SobekCM_Database.Save_Digital_Resource( Item_To_Complete );
+                    SobekCM_Database.Save_Digital_Resource( Item_To_Complete, options  );
                     SobekCM_Database.Save_Behaviors(Item_To_Complete, Item_To_Complete.Behaviors.Text_Searchable, false);
                 }
                 catch (Exception ee)
@@ -275,34 +289,34 @@ namespace SobekCM.Library.MySobekViewer
                 Item_To_Complete.Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
                 Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
 
-                // Create the static html pages
-                string base_url = RequestSpecificValues.Current_Mode.Base_URL;
-                try
-                {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Data_Directory, RequestSpecificValues.HTML_Skin.Skin_Code);
-                    if (!Directory.Exists(digitalResourceDirectory + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name))
-                        Directory.CreateDirectory(digitalResourceDirectory + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name);
-                    string filename = digitalResourceDirectory + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
-                    staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
+                //// Create the static html pages
+                //string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+                //try
+                //{
+                //    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Data_Directory, RequestSpecificValues.HTML_Skin.Skin_Code);
+                //    if (!Directory.Exists(digitalResourceDirectory + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name))
+                //        Directory.CreateDirectory(digitalResourceDirectory + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name);
+                //    string filename = digitalResourceDirectory + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
+                //    staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
 
-					// Copy the static HTML file to the web server
-					try
-					{
-						if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8)))
-							Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8));
-						if (File.Exists(filename))
-							File.Copy(filename, UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8) + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html", true);
-					}
-					catch (Exception)
-					{
-						// This is not critical
-					}
-                }
-                catch (Exception)
-                {
-                }
+                //    // Copy the static HTML file to the web server
+                //    try
+                //    {
+                //        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8)))
+                //            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8));
+                //        if (File.Exists(filename))
+                //            File.Copy(filename, UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8) + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html", true);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        // This is not critical
+                //    }
+                //}
+                //catch (Exception)
+                //{
+                //}
 
-                RequestSpecificValues.Current_Mode.Base_URL = base_url;
+                //RequestSpecificValues.Current_Mode.Base_URL = base_url;
 
                 // Save the rest of the metadata
                 Item_To_Complete.Save_SobekCM_METS();

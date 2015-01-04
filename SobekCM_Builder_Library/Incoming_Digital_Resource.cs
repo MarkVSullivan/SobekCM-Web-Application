@@ -291,11 +291,22 @@ namespace SobekCM.Builder_Library
                     collectionnames.AddRange(from aggregation in Metadata.Behaviors.Aggregations select aggregation.Code into altCollection select Collection_Codes.Select("collectioncode = '" + altCollection + "'") into altCode where altCode.Length > 0 select altCode[0]["ShortName"].ToString());
                 }
 
+                // Create the options dictionary used when saving information to the database, or writing MarcXML
+                Dictionary<string, object> options = new Dictionary<string, object>();
+                if (Engine_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+                {
+                    options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Location Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
+                    options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
+                }
+                options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System_Abbreviation;
+
                 // Save the marc xml file
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
-                Dictionary<string, object> options = new Dictionary<string, object>();
-                options["MarcXML_File_ReaderWriter:Additional_Tags"] = Metadata.MARC_Sobek_Standard_Tags(collectionnames, true, Engine_ApplicationCache_Gateway.Settings.System_Name, Engine_ApplicationCache_Gateway.Settings.System_Abbreviation);
                 return marcWriter.Write_Metadata(Metadata.Source_Directory + "\\marc.xml", Metadata, options, out errorMessage);
 
             }
@@ -320,9 +331,22 @@ namespace SobekCM.Builder_Library
                 bool existed = !New_Item;
                 DateTime createTime = packageTime;
 
+                // Create the options dictionary used when saving information to the database, or writing MarcXML
+                Dictionary<string, object> options = new Dictionary<string, object>();
+                if (Engine_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+                {
+                    options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Location Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
+                    options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
+                }
+                options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System_Abbreviation;
+
                 // Set the file root again
                 Metadata.Web.File_Root = fileRoot;
-                SobekCM_Database.Save_Digital_Resource(Metadata, createTime, existed);
+                SobekCM_Database.Save_Digital_Resource(Metadata, options, createTime, existed);
 
                 // Save the behaviors if this is a new item
                 if (!existed)

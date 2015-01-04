@@ -308,49 +308,49 @@ namespace SobekCM.Builder
             if (!String.IsNullOrEmpty(possible_imagemagick))
                 Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable = possible_imagemagick;
 
-            // If this is to refresh the OAI, don't use the worker controller
-            if (( refresh_oai ) &&  (Engine_ApplicationCache_Gateway.Settings.Database_Connections.Count == 1))
-            {
-                // Set the item for the current mode
-                int successes = 0;
+            //// If this is to refresh the OAI, don't use the worker controller
+            //if (( refresh_oai ) &&  (Engine_ApplicationCache_Gateway.Settings.Database_Connections.Count == 1))
+            //{
+            //    // Set the item for the current mode
+            //    int successes = 0;
 
-                DataTable item_list_table = SobekCM_Database.Get_All_Groups_First_VID( );
-                foreach (DataRow thisRow in item_list_table.Rows)
-                {
-                    string bibid = thisRow["BibID"].ToString();
-                    string vid = thisRow["VID"].ToString();
-                    int groupid = Convert.ToInt32(thisRow["groupid"]);
+            //    DataTable item_list_table = SobekCM_Database.Get_All_Groups_First_VID( );
+            //    foreach (DataRow thisRow in item_list_table.Rows)
+            //    {
+            //        string bibid = thisRow["BibID"].ToString();
+            //        string vid = thisRow["VID"].ToString();
+            //        int groupid = Convert.ToInt32(thisRow["groupid"]);
 
-                    string directory = Engine_ApplicationCache_Gateway.Settings.Image_Server_Network + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
-                    string mets = directory + "\\" + bibid + "_" + vid + ".mets.xml";
+            //        string directory = Engine_ApplicationCache_Gateway.Settings.Image_Server_Network + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + vid;
+            //        string mets = directory + "\\" + bibid + "_" + vid + ".mets.xml";
 
-                    try
-                    {
-                        SobekCM_Item thisItem = SobekCM_Item.Read_METS(mets);
-                        if (thisItem != null)
-                        {
-                            // Get the OAI-PMH dublin core information
-                            StringBuilder oaiDataBuilder = new StringBuilder(1000);
-                            StringWriter writer = new StringWriter(oaiDataBuilder);
-                            DC_METS_dmdSec_ReaderWriter.Write_Simple_Dublin_Core(writer, thisItem.Bib_Info);
-                            // Also add the URL as identifier
-                            oaiDataBuilder.AppendLine("<dc:identifier>" + Engine_ApplicationCache_Gateway.Settings.System_Base_URL + bibid + "</dc:identifier>");
-                            Resource_Object.Database.SobekCM_Database.Save_Item_Group_OAI(groupid, oaiDataBuilder.ToString(), "oai_dc", true);
-                            writer.Flush();
-                            writer.Close();
+            //        try
+            //        {
+            //            SobekCM_Item thisItem = SobekCM_Item.Read_METS(mets);
+            //            if (thisItem != null)
+            //            {
+            //                // Get the OAI-PMH dublin core information
+            //                StringBuilder oaiDataBuilder = new StringBuilder(1000);
+            //                StringWriter writer = new StringWriter(oaiDataBuilder);
+            //                DC_METS_dmdSec_ReaderWriter.Write_Simple_Dublin_Core(writer, thisItem.Bib_Info);
+            //                // Also add the URL as identifier
+            //                oaiDataBuilder.AppendLine("<dc:identifier>" + Engine_ApplicationCache_Gateway.Settings.System_Base_URL + bibid + "</dc:identifier>");
+            //                Resource_Object.Database.SobekCM_Database.Save_Item_Group_OAI(groupid, oaiDataBuilder.ToString(), "oai_dc", true);
+            //                writer.Flush();
+            //                writer.Close();
 
-                            successes++;
-                            if (successes%1000 == 0)
-                                Console.WriteLine(@"{0} complete", successes);
-                        }
-                    }
-                    catch
-                    {
+            //                successes++;
+            //                if (successes%1000 == 0)
+            //                    Console.WriteLine(@"{0} complete", successes);
+            //            }
+            //        }
+            //        catch
+            //        {
 
-                    }
-                }
-                return;
-            }
+            //        }
+            //    }
+            //    return;
+            //}
 
             // Two ways to run this... constantly in background or once
             Worker_Controller controller = new Worker_Controller(verbose);

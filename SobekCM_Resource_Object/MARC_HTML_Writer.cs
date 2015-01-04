@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 using SobekCM.Resource_Object.MARC;
@@ -19,30 +20,67 @@ namespace SobekCM.Resource_Object
 
 
         /// <summary> Writes a digital resource in MARC format, with additional considerations for displaying within a HTML page </summary>
-        /// <param name="package"> Digital resource to write in MARC format </param>
-        /// <param name="add_tags"> Any additional MARC tags which should be included besides the standard MARC tags </param>
+        /// <param name="Package"> Digital resource to write in MARC format </param>
+        /// <param name="Options"> Dictionary of any options which this metadata reader/writer may utilize </param>
         /// <returns> MARC record formatted for HTML, returned as a string </returns>
-        public string MARC_HTML(SobekCM_Item package, List<MARC_Field> add_tags)
+        public string MARC_HTML(SobekCM_Item Package, Dictionary<string, object> Options)
         {
-            return MARC_HTML(package, "95%", add_tags);
+            return MARC_HTML(Package, "95%", Options);
         }
 
         /// <summary> Writes a digital resource in MARC format, with additional considerations for displaying within a HTML page </summary>
-        /// <param name="package"> Digital resource to write in MARC format </param>
+        /// <param name="Package"> Digital resource to write in MARC format </param>
         /// <param name="Width"> Width of the resulting HTML-formatted MARC record </param>
-        /// <param name="add_tags"> Any additional MARC tags which should be included besides the standard MARC tags </param>
+        /// <param name="Options"> Dictionary of any options which this metadata reader/writer may utilize </param>
         /// <returns> MARC record formatted for HTML, returned as a string </returns>
-        public string MARC_HTML(SobekCM_Item package, string Width, List<MARC_Field> add_tags)
+        public string MARC_HTML(SobekCM_Item Package, string Width, Dictionary<string, object> Options)
         {
-            // Get all the standard tags
-            MARC_Record tags = package.To_MARC_Record();
+            // Try to pull some values from the options
+            string cataloging_source_code = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Cataloging Source Code")) && (Options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] != null ))
+                cataloging_source_code = Options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"].ToString();
 
-            // Add any additional tags included here
-            if (add_tags != null)
+            string location_code = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Location Code")) && (Options["MarcXML_File_ReaderWriter:MARC Location Code"] != null))
+                location_code = Options["MarcXML_File_ReaderWriter:MARC Location Code"].ToString();
+
+            string reproduction_agency = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Reproduction Agency")) && (Options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] != null))
+                reproduction_agency = Options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"].ToString();
+
+            string reproduction_place = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Reproduction Place")) && (Options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] != null))
+                reproduction_place = Options["MarcXML_File_ReaderWriter:MARC Reproduction Place"].ToString();
+
+            string system_name = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:System Name")) && (Options["MarcXML_File_ReaderWriter:System Name"] != null))
+                system_name = Options["MarcXML_File_ReaderWriter:System Name"].ToString();
+
+            string system_abbreviation = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:System Abbreviation")) && (Options["MarcXML_File_ReaderWriter:System Abbreviation"] != null))
+                system_abbreviation = Options["MarcXML_File_ReaderWriter:System Abbreviation"].ToString();
+            
+            // Get all the standard tags
+            MARC_Record tags = Package.To_MARC_Record(cataloging_source_code, location_code, reproduction_agency, reproduction_place, system_name, system_abbreviation);
+
+            // Look for extra tags to add in the OPTIONS
+            if (Options.ContainsKey("MarcXML_File_ReaderWriter:Additional_Tags"))
             {
-                foreach (MARC_Field thisTag in add_tags)
+                object add_tags_obj = Options["MarcXML_File_ReaderWriter:Additional_Tags"];
+                if (add_tags_obj != null)
                 {
-                    tags.Add_Field(thisTag);
+                    try
+                    {
+                        List<MARC_Field> add_tags = (List<MARC_Field>)add_tags_obj;
+                        foreach (MARC_Field thisTag in add_tags)
+                        {
+                            tags.Add_Field(thisTag);
+                        }
+                    }
+                    catch
+                    {
+                        // Do nothing in this case
+                    }
                 }
             }
 
@@ -102,20 +140,20 @@ namespace SobekCM.Resource_Object
         }
 
         /// <summary> Writes a digital resource in MARC format, with additional considerations for displaying within a HTML page </summary>
-        /// <param name="package"> Digital resource to write in MARC format </param>
+        /// <param name="Package"> Digital resource to write in MARC format </param>
         /// <returns> MARC record formatted for HTML, returned as a string </returns>
-        public string MARC_HTML(SobekCM_Item package)
+        public string MARC_HTML(SobekCM_Item Package)
         {
-            return MARC_HTML(package, "95%", null);
+            return MARC_HTML(Package, "95%", null);
         }
 
         /// <summary> Writes a digital resource in MARC format, with additional considerations for displaying within a HTML page </summary>
-        /// <param name="package"> Digital resource to write in MARC format </param>
+        /// <param name="Package"> Digital resource to write in MARC format </param>
         /// <param name="Width"> Width of the resulting HTML-formatted MARC record </param>
         /// <returns> MARC record formatted for HTML, returned as a string </returns>
-        public string MARC_HTML(SobekCM_Item package, string Width)
+        public string MARC_HTML(SobekCM_Item Package, string Width)
         {
-            return MARC_HTML(package, Width, null);
+            return MARC_HTML(Package, Width, null);
         }
     }
 }

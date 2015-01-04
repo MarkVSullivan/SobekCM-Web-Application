@@ -154,7 +154,8 @@ namespace SobekCM.Engine_Library.Items
 			if (itemDetails.Tables.Count == 6)
 			{
 				Item_Group_Object.Behaviors.Clear_Aggregations();
-				foreach (DataRow thisRow in itemDetails.Tables[4].Rows)
+                DataTable aggrTable = itemDetails.Tables[4];
+                foreach (DataRow thisRow in aggrTable.Rows)
 				{
 					Item_Group_Object.Behaviors.Add_Aggregation(thisRow[0].ToString());
 				}
@@ -606,7 +607,11 @@ namespace SobekCM.Engine_Library.Items
 			{
 				if (!Convert.ToBoolean(thisRow["impliedLink"]))
 				{
-					Package_To_Finalize.Behaviors.Add_Aggregation(thisRow["Code"].ToString());
+				    string code = thisRow["Code"].ToString();
+				    if (String.Compare(code, "all", true) != 0)
+				    {
+				        Package_To_Finalize.Behaviors.Add_Aggregation(code, thisRow["Name"].ToString(), thisRow["Type"].ToString());
+				    }
 				}
 			}
 
@@ -615,8 +620,11 @@ namespace SobekCM.Engine_Library.Items
 			{
 				foreach (DataRow thisRow in DatabaseInfo.Tables[1].Rows)
 				{
-					if (thisRow["Type"].ToString().ToUpper() == "COLLECTION")
-						Package_To_Finalize.Behaviors.Add_Aggregation(thisRow["Code"].ToString());
+                    string code = thisRow["Code"].ToString();
+                    if (String.Compare(code, "all", true) != 0)
+                    {
+                        Package_To_Finalize.Behaviors.Add_Aggregation(code, thisRow["Name"].ToString(), thisRow["Type"].ToString());
+                    }
 				}
 			}
 

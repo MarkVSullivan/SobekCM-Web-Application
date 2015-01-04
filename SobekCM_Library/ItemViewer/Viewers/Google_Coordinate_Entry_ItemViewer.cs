@@ -37,6 +37,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		List<Coordinate_Point> allPoints;
 		List<Coordinate_Line> allLines;
 		List<Coordinate_Circle> allCircles;
+
+	    private static Dictionary<string, object> options;
 		
 		/// <summary> init viewer instance </summary>
 		public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
@@ -83,6 +85,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				//Custom_Tracer.Add_Trace("MapEdit Start Failure");
 				throw new ApplicationException("MapEdit Start Failure");
 			}
+
+            // Create the options dictionary used when saving information to the database, or writing MarcXML
+            options = new Dictionary<string, object>();
+            if (UI_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+            {
+                options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
+                options["MarcXML_File_ReaderWriter:MARC Location Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
+                options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
+                options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
+                options["MarcXML_File_ReaderWriter:MARC XSLT File"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
+            }
+            options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System_Name;
+            options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System_Abbreviation;
+
 		}
 
 		/// <summary> parse and save incoming message  </summary>
@@ -164,7 +180,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							//add the new point 
 							resourceGeoInfo.Add_Point(newPoint);
 							//save to db
-							SobekCM_Database.Save_Digital_Resource(CurrentItem);
+                            SobekCM_Database.Save_Digital_Resource(CurrentItem, options);
 							break;
 						#endregion
 						#region overlay
@@ -262,7 +278,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							//add the pagegeo obj
 							pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
 							//save to db
-							SobekCM_Database.Save_Digital_Resource(CurrentItem);
+                            SobekCM_Database.Save_Digital_Resource(CurrentItem, options);
 							break;
 						#endregion
 					}
@@ -278,7 +294,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 								//clear nonpoipoints
 								resourceGeoInfo.Clear_NonPOIPoints();
 								//save to db
-								SobekCM_Database.Save_Digital_Resource(CurrentItem);
+                                SobekCM_Database.Save_Digital_Resource(CurrentItem, options);
 								break;
 							#endregion
 							#region overlay
@@ -312,7 +328,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 									pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
 
 									//save to db
-									SobekCM_Database.Save_Digital_Resource(CurrentItem);
+                                    SobekCM_Database.Save_Digital_Resource(CurrentItem, options);
 								}
 								catch (Exception)
 								{

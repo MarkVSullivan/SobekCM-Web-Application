@@ -63,6 +63,8 @@ namespace SobekCM.Core.Settings
                 Can_Remove_Single_Term = true;
                 isHosted = false;
 
+                MarcGeneration = new Marc21_Settings();
+
                 // Define new empty collections
                 dispositionLookup = new Dictionary<int, Disposition_Option>();
                 Metadata_Search_Fields = new List<Metadata_Search_Field>();
@@ -244,19 +246,6 @@ namespace SobekCM.Core.Settings
         [DataMember]
         public bool Statistics_Caching_Enabled { get; set; }
 
-        /// <summary> Returns the base string for the resource identifiers within OAI.</summary>
-        /// <remarks> This indicates the repository from which the material is pulled usually</remarks>
-        [DataMember]
-        public string OAI_Resource_Identifier_Base { get; set; }
-
-        /// <summary> Returns the OAI repository identifier, which is usually the system abbreviation </summary>
-        [DataMember]
-        public string OAI_Repository_Identifier { get; set; }
-
-        /// <summary> Returns the OAI repository name </summary>
-        [DataMember]
-        public string OAI_Repository_Name { get; set; }
-
         /// <summary> Gets the regular expression for matching files names to delete BEFORE archiving
         /// incoming digital resource files </summary>
         [DataMember]
@@ -326,10 +315,6 @@ namespace SobekCM.Core.Settings
         [DataMember]
         public string Application_Server_URL { get; set; }
 
-        /// <summary> Location where the MarcXML feeds should be placed </summary>
-        [DataMember]
-        public string MarcXML_Feed_Location { get; set; }
-
         /// <summary> Dropbox to check for any <a href="http://fclaweb.fcla.edu/FDA_landing_page">Florida Digital Archive</a> ingest reports </summary>
         [DataMember]
         public string FDA_Report_DropBox { get; set; }
@@ -345,10 +330,6 @@ namespace SobekCM.Core.Settings
         /// <summary> URL for the Solr/Lucene index for the page text </summary>
         [DataMember]
         public string Page_Solr_Index_URL { get; set; }
-
-        /// <summary> Flag indicates if the MARC feed should be built by default by the bulk loader </summary>
-        [DataMember]
-        public bool Build_MARC_Feed_By_Default { get; set; }
 
         /// <summary> Email address for system errors </summary>
         [DataMember]
@@ -627,7 +608,7 @@ namespace SobekCM.Core.Settings
 
         #endregion
 
-        #region Links to larger configuration objects
+        #region Links to larger configuration and settings objects
 
         /// <summary> Configuration for shibboleth authentication for this instance </summary>
         public Shibboleth_Configuration Shibboleth { get; set; }
@@ -637,6 +618,9 @@ namespace SobekCM.Core.Settings
 
         /// <summary> Configuration for instance-wide OAI-PMH settings for this instance </summary>
         public OAI_PMH_Configuration OAI_PMH { get; set; }
+
+        /// <summary> Setting information about the generation of Marc files, some constants, and information about the MARC feed </summary>
+        public Marc21_Settings MarcGeneration { get; set;  }
 
         #endregion
         

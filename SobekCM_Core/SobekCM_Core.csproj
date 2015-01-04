@@ -99,6 +99,7 @@
     <Compile Include="Settings\Builder_Source_Folder.cs" />
     <Compile Include="Settings\Disposition_Option.cs" />
     <Compile Include="Settings\InstanceWide_Settings.cs" />
+    <Compile Include="Settings\Marc21_Settings.cs" />
     <Compile Include="Settings\Mime_Type_Info.cs" />
     <Compile Include="Settings\Workflow_Type.cs" />
     <Compile Include="SiteMap\SobekCM_SiteMap.cs" />

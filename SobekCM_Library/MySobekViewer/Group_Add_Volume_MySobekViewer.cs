@@ -380,12 +380,22 @@ namespace SobekCM.Library.MySobekViewer
             // If there was no match, try to save to the tracking database
             Database.SobekCM_Database.Tracking_Online_Submit_Complete(Item_To_Complete.Web.ItemID, RequestSpecificValues.Current_User.Full_Name, String.Empty);
 
+            // Create the options dictionary used when saving information to the database, or writing MarcXML
+            Dictionary<string, object> options = new Dictionary<string, object>();
+            if (UI_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+            {
+                options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
+                options["MarcXML_File_ReaderWriter:MARC Location Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
+                options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
+                options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
+                options["MarcXML_File_ReaderWriter:MARC XSLT File"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
+            }
+            options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System_Name;
+            options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System_Abbreviation;
 
 			// Save the MARC file
             MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
             string errorMessage;
-            Dictionary<string, object> options = new Dictionary<string, object>();
-            options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item_To_Complete.MARC_Sobek_Standard_Tags( true, UI_ApplicationCache_Gateway.Settings.System_Name, UI_ApplicationCache_Gateway.Settings.System_Abbreviation);
             marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);          
 
             // Copy all the files over to the server 

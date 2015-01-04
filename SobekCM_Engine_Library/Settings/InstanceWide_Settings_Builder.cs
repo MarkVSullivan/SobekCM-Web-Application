@@ -219,7 +219,6 @@ namespace SobekCM.Core.Settings
                 Get_Boolean_Value(settingsDictionary, "Can Remove Single Search Term", SettingsObject, X => X.Can_Remove_Single_Term, ref error, true);
                 Get_Boolean_Value(settingsDictionary, "Can Submit Edit Online", SettingsObject, X => X.Online_Edit_Submit_Enabled, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Convert Office Files to PDF", SettingsObject, X => X.Convert_Office_Files_To_PDF, ref error, false);
-                Get_Boolean_Value(settingsDictionary, "Create MARC Feed By Default", SettingsObject, X => X.Build_MARC_Feed_By_Default, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Detailed User Permissions", SettingsObject, X => X.Detailed_User_Aggregation_Permissions, ref error, false);
                 Get_String_Value(settingsDictionary, "Document Solr Index URL", SettingsObject, X => X.Document_Solr_Index_URL, ref error);
                 Get_Boolean_Value(settingsDictionary, "Facets Collapsible", SettingsObject, X => X.Facets_Collapsible, ref error, false);
@@ -241,10 +240,6 @@ namespace SobekCM.Core.Settings
                 Get_String_Value(settingsDictionary, "Main Builder Input Folder", SettingsObject, X => X.Main_Builder_Input_Folder, String.Empty);
                 Get_String_Value(settingsDictionary, "Mango Union Search Base URL", SettingsObject, X => X.Mango_Union_Search_Base_URL, ref error);
                 Get_String_Value(settingsDictionary, "Mango Union Search Text", SettingsObject, X => X.Mango_Union_Search_Text, ref error);
-                Get_String_Value(settingsDictionary, "MarcXML Feed Location", SettingsObject, X => X.MarcXML_Feed_Location, ref error);
-                Get_String_Value(settingsDictionary, "OAI Resource Identifier Base", SettingsObject, X => X.OAI_Resource_Identifier_Base, ref error);
-                Get_String_Value(settingsDictionary, "OAI Repository Identifier", SettingsObject, X => X.OAI_Repository_Identifier, ref error);
-                Get_String_Value(settingsDictionary, "OAI Repository Name", SettingsObject, X => X.OAI_Repository_Name, ref error);
                 Get_String_Value(settingsDictionary, "OCR Engine Command", SettingsObject, X => X.OCR_Command_Prompt, String.Empty);
                 Get_String_Value(settingsDictionary, "Package Archival Folder", SettingsObject, X => X.Package_Archival_Folder, String.Empty);
                 Get_String_Value(settingsDictionary, "Page Solr Index URL", SettingsObject, X => X.Page_Solr_Index_URL, String.Empty);
@@ -267,6 +262,17 @@ namespace SobekCM.Core.Settings
                 Get_String_Value(settingsDictionary, "Upload Image Types", SettingsObject, X => X.Upload_Image_Types, ".txt,.tif,.jpg,.jp2,.pro");
                 Get_String_Value(settingsDictionary, "Web In Process Submission Location", SettingsObject, X => X.In_Process_Submission_Location, String.Empty);
                 Get_Integer_Value(settingsDictionary, "Web Output Caching Minutes", SettingsObject, X => X.Web_Output_Caching_Minutes, ref error, 0);
+
+                // Load the subsetting object for MarcXML 
+                Marc21_Settings marcSettings = new Marc21_Settings();
+                Get_String_Value(settingsDictionary, "MarcXML Feed Location", marcSettings, X => X.MarcXML_Feed_Location, String.Empty);
+                Get_Boolean_Value(settingsDictionary, "Create MARC Feed By Default", marcSettings, X => X.Build_MARC_Feed_By_Default, ref error, false);
+                Get_String_Value(settingsDictionary, "MARC Cataloging Source Code", marcSettings, X => X.Cataloging_Source_Code, String.Empty);
+                Get_String_Value(settingsDictionary, "MARC Location Code", marcSettings, X => X.Location_Code, String.Empty);
+                Get_String_Value(settingsDictionary, "MARC Reproduction Agency", marcSettings, X => X.Reproduction_Agency, SettingsObject.System_Name);
+                Get_String_Value(settingsDictionary, "MARC Reproduction Place", marcSettings, X => X.Reproduction_Place, String.Empty);
+                Get_String_Value(settingsDictionary, "MARC XSLT File", marcSettings, X => X.XSLT_File, String.Empty);
+                SettingsObject.MarcGeneration = marcSettings;
 
 
                 // Pull the language last, since it must be converted into a Language_Enum

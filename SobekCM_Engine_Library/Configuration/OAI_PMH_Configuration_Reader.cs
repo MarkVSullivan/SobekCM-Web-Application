@@ -75,7 +75,7 @@ namespace SobekCM.Engine_Library.Configuration
 
                         case "repository":
                             if (readerXml.MoveToAttribute("IdentifierBase"))
-                                config.Repository_Identifier_Base = readerXml.Value.Trim();
+                                config.Identifier_Base = readerXml.Value.Trim();
                             break;
 
                         case "identify":

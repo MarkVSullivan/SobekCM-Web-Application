@@ -2996,6 +2996,7 @@ namespace SobekCM.Engine_Library.Database
                     Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
                     Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
+                
                 throw ee;
             }
         }
@@ -3422,6 +3423,34 @@ namespace SobekCM.Engine_Library.Database
             parameters[0] = new SqlParameter("@collection_code", Aggregation_Code);
             DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Simple_Item_List", parameters);
             return tempSet;
+        }
+
+        /// <summary> Marks an item as been editing online through the web interface </summary>
+        /// <param name="ItemID"> Primary key for the item having a progress/worklog entry added </param>
+        /// <param name="User">User name who did the edit</param>
+        /// <param name="UserNotes">Any user notes about this edit</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'Tracking_Online_Edit_Complete' stored procedure. </remarks>
+        public static bool Tracking_Online_Edit_Complete(int ItemID, string User, string UserNotes)
+        {
+            try
+            {
+                // Build the parameter list
+                SqlParameter[] paramList = new SqlParameter[3];
+                paramList[0] = new SqlParameter("@itemid", ItemID);
+                paramList[1] = new SqlParameter("@user", User);
+                paramList[2] = new SqlParameter("@usernotes", UserNotes);
+
+                // Execute this non-query stored procedure
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "Tracking_Online_Edit_Complete", paramList);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                return false;
+            }
         }
     }
 }
