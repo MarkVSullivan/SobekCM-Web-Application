@@ -51,9 +51,7 @@ namespace SobekCM.URL_Rewriter
 				return;
 			}
 
-			string raw_url = HttpContext.Current.Request.RawUrl;
-			
-			// If a USFLDC PURL, call redirection service method
+		    // If a USFLDC PURL, call redirection service method
 			if (appRelative.Equals("~/") && HttpContext.Current.Request.RawUrl.StartsWith("/?") && (HttpContext.Current.Request.Url.ToString().Contains("usf.edu") || HttpContext.Current.Request.Url.ToString().Contains("usf.sobek.ufl.edu")))
 			{
 				USFLDC_Redirection_Service();
@@ -64,7 +62,7 @@ namespace SobekCM.URL_Rewriter
 				return;
 
 			// If this is a direct request for a valid file, skip out immediately
-			if ((appRelative.IndexOf(".jpg") > 0) || (appRelative.IndexOf(".gif") > 0) || (appRelative.IndexOf(".css") > 0) || (appRelative.IndexOf(".js") > 0) || (appRelative.IndexOf(".png") > 0) || (appRelative.IndexOf(".html") > 0) || (appRelative.IndexOf(".htm") > 0) || (appRelative.IndexOf(".ashx") > 0))
+			if ((appRelative.IndexOf(".jpg") > 0) || (appRelative.IndexOf(".gif") > 0) || (appRelative.IndexOf(".css") > 0) || (appRelative.IndexOf(".js") > 0) || (appRelative.IndexOf(".png") > 0) || (appRelative.IndexOf(".html") > 0) || (appRelative.IndexOf(".htm") > 0) || (appRelative.IndexOf(".ashx") > 0) || (appRelative.IndexOf(".svc") > 0))
 				return;
 
 			// Special code for the favicon.ico
@@ -208,7 +206,38 @@ namespace SobekCM.URL_Rewriter
 								HttpContext.Current.RewritePath("~/data/" + appRelative, true);
 							}
 						}
-						else
+                        else if (appRelative.IndexOf("engine") == 0)
+                        {
+                            if (appRelative.Length > 6)
+                            {
+                                appRelative = appRelative.Substring(6);
+
+                                // Standard rewrite to the sobek engine service
+                                if (current_querystring.Length > 0)
+                                {
+                                    HttpContext.Current.RewritePath("~/sobekcm.svc?urlrelative=" + appRelative + "&" + current_querystring + "&portal=" + url_authority, true);
+                                }
+                                else
+                                {
+                                    HttpContext.Current.RewritePath("~/sobekcm.svc?urlrelative=" + appRelative + "&portal=" + url_authority, true);
+                                }
+                            }
+                            else
+                            {
+                                // Standard rewrite to the sobek engine service
+                                if (current_querystring.Length > 0)
+                                {
+                                    HttpContext.Current.RewritePath("~/sobekcm.svc?" + current_querystring + "&portal=" + url_authority, true);
+                                }
+                                else
+                                {
+                                    HttpContext.Current.RewritePath("~/sobekcm.svc?portal=" + url_authority, true);
+                                }
+                            }
+
+                            return;
+                        }
+                        else
 						{
 							// Special code to redirect to static pages
 							if ((appRelative.Length == 16) && ( appRelative[10] == '/' ))
@@ -243,7 +272,6 @@ namespace SobekCM.URL_Rewriter
 							}
 						}
 					}
-
 				}
 				else
 				{

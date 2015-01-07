@@ -8,6 +8,47 @@ namespace SobekCM.Engine_Library.Microservices
     /// <summary> Overall configuration for the microservices exposed by this data layer </summary>
     public class Microservices_Configuration
     {
+        /// <summary> Get the endpoint configuration, based on the requested path </summary>
+        /// <param name="Paths"> Requested URL paths </param>
+        /// <returns> Matched enpoint configuration, otherwise NULL </returns>
+        public Microservice_Endpoint Get_Endpoint(List<string> Paths)
+        {
+            if (RootPaths.ContainsKey(Paths[0]))
+            {
+                Microservice_Path path = RootPaths[Paths[0]];
+                Paths.RemoveAt(0);
+
+                do
+                {
+                    // Did we find an endpoint?
+                    if (path.IsEndpoint)
+                    {
+                        return (Microservice_Endpoint) path;
+                    }
+
+                    // Look to the next part of the path
+                    if (Paths.Count > 0)
+                    {
+                        if (!path.Children.ContainsKey(Paths[0]))
+                        {
+                            return null;
+                        }
+                        
+                        path = path.Children[Paths[0]];
+                        Paths.RemoveAt(0);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+
+                } while ( true );
+            }
+  
+            return null;
+        }
+
+
         /// <summary> Constructor for a new instance of the Microservices_Config class </summary>
         public Microservices_Configuration()
         {
@@ -148,6 +189,11 @@ namespace SobekCM.Engine_Library.Microservices
                 if ((endpoint.Component != null) && (!String.IsNullOrEmpty(endpoint.Segment)) && (!String.IsNullOrEmpty(endpoint.Method)))
                 {
                     writer.Write(indent + "<Endpoint Segment=\"" + endpoint.Segment + "\" ComponentID=\"" + endpoint.Component.ID + "\" Method=\"" + endpoint.Method + "\" Enabled=\"" + endpoint.Enabled.ToString().ToLower() + "\"");
+                    if ( endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.JSON )
+                        writer.Write(" Protocol=\"JSON\"");
+                    else
+                        writer.Write(" Protocol=\"PROTOBUF\"");
+
                     if ((endpoint.RestrictionRanges != null) && (endpoint.RestrictionRanges.Count > 0))
                     {
                         writer.Write(" RestrictionRangeID=\"");

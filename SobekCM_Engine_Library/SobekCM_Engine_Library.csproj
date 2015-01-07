@@ -30,11 +30,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Jil">
+      <HintPath>..\DLLs\JIL\Jil.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.ApplicationBlocks.Data">
       <HintPath>..\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="SolrNet">
       <HintPath>..\DLLs\SolrNet\SolrNet.dll</HintPath>
@@ -58,6 +64,7 @@
     <Compile Include="Configuration\ContactForm_Configuration_Reader.cs" />
     <Compile Include="Configuration\OAI_PMH_Configuration_Reader.cs" />
     <Compile Include="Configuration\Shibboleth_Configuration_Reader.cs" />
+    <Compile Include="Endpoints\AggregationServices.cs" />
     <Compile Include="Items\SobekCM_Item_Updater.cs" />
     <Compile Include="MemoryMgmt\AppFabric_Manager.cs" />
     <Compile Include="MemoryMgmt\Cached_Data_Manager.cs" />
@@ -74,6 +81,8 @@
     <Compile Include="Items\SobekCM_Item_Factory.cs" />
     <Compile Include="Items\SobekCM_METS_Based_ItemBuilder.cs" />
     <Compile Include="MemoryMgmt\Expiring_Item_Typed_List.cs" />
+    <Compile Include="MicroserviceHandler.cs" />
+    <Compile Include="MicroserviceRewriter.cs" />
     <Compile Include="Microservices\Microservices_Configuration.cs" />
     <Compile Include="Microservices\Microservices_Config_Reader.cs" />
     <Compile Include="Microservices\Microservice_Component.cs" />

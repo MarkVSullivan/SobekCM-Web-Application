@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
+using ProtoBuf;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
@@ -22,6 +24,8 @@ namespace SobekCM.Core.Aggregations
     ///   these levels.
     /// </summary>
     [Serializable]
+    [DataContract]
+    [ProtoContract]
     public class Item_Aggregation
     {
 
@@ -144,42 +148,30 @@ namespace SobekCM.Core.Aggregations
 
         #region Public readonly variables
 
-        /// <summary>
-        ///   ID for this item aggregation object
-        /// </summary>
-        /// <remarks>
-        ///   The AggregationID for the ALL aggregation is set to -1 by the stored procedure
-        /// </remarks>
-        public readonly int Aggregation_ID;
+        /// <summary> ID for this item aggregation object </summary>
+        /// <remarks> The AggregationID for the ALL aggregation is set to -1 by the stored procedure </remarks>
+        [DataMember]
+        [ProtoMember(1)]
+        public int Aggregation_ID { get; private set; }
 
-        /// <summary>
-        ///   Type of item aggregation object
-        /// </summary>
-        public readonly string Aggregation_Type;
+        /// <summary> Type of item aggregation object </summary>
+        [DataMember]
+        [ProtoMember(2)]
+        public string Aggregation_Type { get; private set; }
 
-        /// <summary>
-        ///   Code for this item aggregation object
-        /// </summary>
-        public readonly string Code;
+        /// <summary> Code for this item aggregation object </summary>
+        [DataMember]
+        [ProtoMember(3)]
+        public string Code { get; private set; }
 
-        /// <summary>
-        ///   Date the last item was added to this collection
-        /// </summary>
-        /// <remarks>
-        ///   If there is no record of this, the date of 1/1/2000 is returned
-        /// </remarks>
-        public readonly DateTime Last_Item_Added;
+        /// <summary> Date the last item was added to this collection </summary>
+        /// <remarks> If there is no record of this, the date of 1/1/2000 is returned </remarks>
+        [IgnoreDataMember]
+        [ProtoMember(4)]
+        public DateTime Last_Item_Added { get; set; }
 
-        /// <summary>
-        ///   Flag indicates if this aggregation can potentially include the ALL ITEMS and NEW ITEMS tabs
-        /// </summary>
-        public bool Can_Browse_Items
-        {
-            get
-            {
-                return (Display_Options.IndexOf("I") >= 0);
-            }
-        }
+        /// <summary> Flag indicates if this aggregation can potentially include the ALL ITEMS and NEW ITEMS tabs </summary>
+        public bool Can_Browse_Items { get { return (Display_Options.IndexOf("I") >= 0); } }
 
         #endregion
 

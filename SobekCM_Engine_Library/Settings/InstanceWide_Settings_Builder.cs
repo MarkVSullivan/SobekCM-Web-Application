@@ -182,7 +182,7 @@ namespace SobekCM.Core.Settings
                     "dataset", "dataprovider", "xml", "textonly", "shibboleth", "internal",
                     "contact", "folder", "admin", "preferences", "stats", "statistics", "adminhelp",
                     "partners", "tree", "brief", "personalized", "all", "new", "map", "advanced",
-                    "text", "results", "contains", "exact", "resultslike", "browseby", "info", "sobekcm", "inprocess"  };
+                    "text", "results", "contains", "exact", "resultslike", "browseby", "info", "sobekcm", "inprocess", "engine"  };
 
             SettingsObject.Page_Image_Extensions = new List<string> { "JPG", "JP2", "JPX", "GIF", "PNG", "BMP", "JPEG" };
             SettingsObject.Backup_Files_Folder_Name = BACKUP_FILES_FOLDER_NAME;

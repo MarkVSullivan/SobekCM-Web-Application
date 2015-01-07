@@ -168,6 +168,13 @@ namespace SobekCM.Engine_Library.Microservices
                             }
                             if (readerXml.MoveToAttribute("RestrictionRangeID"))
                                 restrictionid = readerXml.Value.Trim();
+                            if (readerXml.MoveToAttribute("Protocol"))
+                            {
+                                if (String.Compare(readerXml.Value.Trim(), "PROTOBUF", true) == 0)
+                                    endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.PROTOBUF;
+                                else
+                                    endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.JSON;
+                            }
 
                             readerXml.MoveToElement();
                             read_microservices_details_endpoint(readerXml.ReadSubtree(), endpoint);
