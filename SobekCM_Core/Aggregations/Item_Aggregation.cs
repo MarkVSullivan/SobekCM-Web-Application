@@ -166,11 +166,12 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Date the last item was added to this collection </summary>
         /// <remarks> If there is no record of this, the date of 1/1/2000 is returned </remarks>
-        [IgnoreDataMember]
+        [DataMember]
         [ProtoMember(4)]
         public DateTime Last_Item_Added { get; set; }
 
         /// <summary> Flag indicates if this aggregation can potentially include the ALL ITEMS and NEW ITEMS tabs </summary>
+        [IgnoreDataMember]
         public bool Can_Browse_Items { get { return (Display_Options.IndexOf("I") >= 0); } }
 
         #endregion
@@ -191,7 +192,6 @@ namespace SobekCM.Core.Aggregations
             Metadata_Code = Code;
             Name = String.Empty;
             ShortName = String.Empty;
-            Description = String.Empty;
             Is_Active = true;
             Hidden = false;
             Map_Search = 0;
@@ -199,12 +199,8 @@ namespace SobekCM.Core.Aggregations
             Map_Display = 0;
             Map_Display_Beta = 0;
             OAI_Flag = false;
-            OAI_Metadata = String.Empty;
-            Contact_Email = String.Empty;
             Has_New_Items = false;
-            Default_Skin = String.Empty;
             Show_New_Item_Browse = false;
-            Load_Email = String.Empty;
             childPagesHash = new Dictionary<string, Item_Aggregation_Child_Page>();
             Highlights = new List<Item_Aggregation_Highlights>();
             Rotating_Highlights = false;
@@ -221,9 +217,6 @@ namespace SobekCM.Core.Aggregations
             Browseable_Fields = new List<short>();
             Facets = new List<short> {3, 5, 7, 10, 8};
             Thematic_Heading_ID = -1;
-	        CSS_File = String.Empty;
-	        Custom_Home_Page_Source_File = String.Empty;
-	        Child_Types = "SubCollections";
 
             // Add the default result views
             Result_Views = new List<Result_Display_Type_Enum>
@@ -261,7 +254,6 @@ namespace SobekCM.Core.Aggregations
             Metadata_Code = Code;
             Name = String.Empty;
             ShortName = String.Empty;
-            Description = String.Empty;
             Is_Active = true;
             Hidden = false;
             Map_Search = 0;
@@ -269,12 +261,8 @@ namespace SobekCM.Core.Aggregations
             Map_Display = 0;
             Map_Display_Beta = 0;
             OAI_Flag = false;
-            OAI_Metadata = String.Empty;
-            Contact_Email = String.Empty;
             Has_New_Items = false;
-            Default_Skin = String.Empty;
             Show_New_Item_Browse = false;
-            Load_Email = String.Empty;
             childPagesHash = new Dictionary<string, Item_Aggregation_Child_Page>();
             Highlights = new List<Item_Aggregation_Highlights>();
             Rotating_Highlights = false;
@@ -291,9 +279,6 @@ namespace SobekCM.Core.Aggregations
             Browseable_Fields = new List<short>();
             Facets = new List<short> {3, 5, 7, 10, 8};
             Thematic_Heading_ID = -1;
-			CSS_File = String.Empty;
-	        Custom_Home_Page_Source_File = String.Empty;
-			Child_Types = "SubCollections";
 
             // Add the searches and views
             viewsAndSearches = new List<CollectionViewsAndSearchesEnum>();
@@ -406,9 +391,13 @@ namespace SobekCM.Core.Aggregations
         #region Public Properties
 
         /// <summary> Returns the list of the primary identifiers for all metadata fields which have data and thus should appear in the advanced search drop downs  </summary>
+        [DataMember]
+        [ProtoMember(5)]
         public List<short> Advanced_Search_Fields { get; private set; }
 
         /// <summary> Returns the list of the primary identifiers for all metadata fields which have data and thus could appear in the metadata browse </summary>
+        [DataMember]
+        [ProtoMember(6)]
         public List<short> Browseable_Fields { get; private set; }
 
         /// <summary> Returns the list of all facets to display during searches and browses within this aggregation </summary>
@@ -460,6 +449,7 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Directory where all design information for this object is found </summary>
         /// <remarks> This always returns the string 'aggregationPermissions/[Code]/' with the code for this item aggregation </remarks>
+        [IgnoreDataMember]
         public string ObjDirectory
         {
             get { return "aggregations/" + Code + "/"; }
@@ -515,9 +505,13 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Default interface to be used for this item aggregation </summary>
         /// <remarks> This is primarily used for institutional aggregationPermissions, but can be utilized anywhere </remarks>
+        [DataMember]
+        [ProtoMember(7)]
         public string Default_Skin { get; set; }
 
 		/// <summary> Aggregation-level CSS file, if one exists </summary>
+        [DataMember]
+        [ProtoMember(8)]
 		public string CSS_File { get; set; }
 
 		/// <summary> Custom home page source file, if one exists </summary>
@@ -535,12 +529,14 @@ namespace SobekCM.Core.Aggregations
 		public string Child_Types { get; set; }
 
         /// <summary> Gets the number of browses and info pages attached to this item aggregation </summary>
+        [IgnoreDataMember]
         public int Browse_Info_Count
         {
             get { return childPagesHash.Count; }
         }
 
         /// <summary> Flag indicates if this item aggregation has at least one BROWSE BY page to display </summary>
+        [IgnoreDataMember]
         public bool Has_Browse_By_Pages
         {
             get
@@ -551,6 +547,7 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Read-only list of all the info objects attached to this item aggregation </summary>
         /// <remarks> These are returned in alphabetical order of the SUBMODE CODE portion of each info </remarks>
+        [IgnoreDataMember]
         public ReadOnlyCollection<Item_Aggregation_Child_Page> Info_Pages
         {
             get
@@ -572,6 +569,7 @@ namespace SobekCM.Core.Aggregations
         }
 
         /// <summary> Read-only list of searches types for this item aggregation </summary>
+        [IgnoreDataMember]
         public ReadOnlyCollection<Search_Type_Enum> Search_Types
         {
             get
@@ -615,6 +613,7 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Gets the number of child item aggregationPermissions present </summary>
         /// <remarks> This should be used rather than the Count property of the <see cref = "Children" /> property.  Even if 
         ///   there are no children, the Children property creates a readonly collection to pass back out. </remarks>
+        [IgnoreDataMember]
         public int Children_Count
         {
             get
@@ -654,6 +653,7 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Gets the number of parent item aggregationPermissions present </summary>
         /// <remarks> This should be used rather than the Count property of the <see cref = "Parents" /> property.  Even if 
         ///   there are no parents, the Parent property creates a readonly collection to pass back out. </remarks>
+        [IgnoreDataMember]
         public int Parent_Count
         {
             get
@@ -674,6 +674,7 @@ namespace SobekCM.Core.Aggregations
         }
 
         /// <summary> Returns the list of all parent codes to this aggregation, seperate by a semi-colon  </summary>
+        [IgnoreDataMember]
         public string Parent_Codes
         {
             get
@@ -714,7 +715,7 @@ namespace SobekCM.Core.Aggregations
         public void Add_Web_Skin(string Web_Skin)
         {
             Web_Skins.Add(Web_Skin);
-            if ( Default_Skin.Length == 0 )
+            if ( String.IsNullOrEmpty(Default_Skin))
                 Default_Skin = Web_Skin;
         }
 
@@ -1222,7 +1223,7 @@ namespace SobekCM.Core.Aggregations
                 writer.WriteLine();
 
 				// Add the aggregation-level CSS file
-				if (CSS_File.Length > 0 )
+				if ( !String.IsNullOrEmpty(CSS_File))
 				{
 					writer.WriteLine("    <!-- Aggregation-level CSS file  -->");
 					writer.WriteLine("    <hi:css>" + CSS_File + "</hi:css>");

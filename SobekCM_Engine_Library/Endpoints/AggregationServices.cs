@@ -28,7 +28,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
                 {
-                    JSON.Serialize(returnValue, Response.Output);
+                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
                 }
                 else
                 {

@@ -3087,16 +3087,22 @@ namespace SobekCM.Engine_Library.Database
                 Is_Active = Convert.ToBoolean(thisRow[5]),
                 Hidden = Convert.ToBoolean(thisRow[6]),
                 Has_New_Items = Convert.ToBoolean(thisRow[7]),
-                Contact_Email = thisRow[8].ToString(),
-                Default_Skin = thisRow[9].ToString(),
-                Description = thisRow[10].ToString(),
                 Map_Display = Convert.ToUInt16(thisRow[11]),
                 Map_Search = Convert.ToUInt16(thisRow[12]),
                 OAI_Flag = Convert.ToBoolean(thisRow[13]),
-                OAI_Metadata = thisRow[14].ToString(),
                 Items_Can_Be_Described = Convert.ToInt16(thisRow[18]),
-                External_Link = thisRow[19].ToString()
             };
+
+            if ((thisRow[8] != DBNull.Value) && (thisRow[8].ToString().Length > 0))
+                aggrInfo.Contact_Email = thisRow[8].ToString();
+            if ((thisRow[9] != DBNull.Value) && (thisRow[9].ToString().Length > 0))
+                aggrInfo.Default_Skin = thisRow[9].ToString();
+            if ((thisRow[10] != DBNull.Value) && (thisRow[10].ToString().Length > 0))
+                aggrInfo.Description = thisRow[10].ToString();
+            if ((thisRow[14] != DBNull.Value) && (thisRow[14].ToString().Length > 0))
+                aggrInfo.OAI_Metadata = thisRow[14].ToString();
+            if ((thisRow[19] != DBNull.Value) && (thisRow[19].ToString().Length > 0))
+                aggrInfo.External_Link = thisRow[19].ToString();
 
             if (BasicInfo.Columns.Contains("ThematicHeadingID"))
                 aggrInfo.Thematic_Heading_ID = Convert.ToInt32(thisRow["ThematicHeadingID"]);
@@ -3110,6 +3116,9 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="ChildInfo">Datatable from database calls with child item aggregation information ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
         private static void add_children(Item_Aggregation AggrInfo, DataTable ChildInfo)
         {
+            if (ChildInfo.Rows.Count == 0)
+                return;
+
             string childTypes = String.Empty;
 
             // Build a dictionary of nodes while building this tree

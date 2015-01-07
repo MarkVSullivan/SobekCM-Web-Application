@@ -1552,7 +1552,7 @@ namespace SobekCM.Library.AdminViewer
                         break;
 
                     case "disable_css":
-                        itemAggregation.CSS_File = String.Empty;
+                        itemAggregation.CSS_File = null;
                         break;
 
 					case "add_home":
@@ -1664,7 +1664,7 @@ namespace SobekCM.Library.AdminViewer
 
 			// Set the web skin
 			itemAggregation.Web_Skins.Clear();
-			itemAggregation.Default_Skin = String.Empty;
+			itemAggregation.Default_Skin = null;
 			if (( Form["admin_aggr_skin_1"] != null ) && ( Form["admin_aggr_skin_1"].Length > 0 ))
 			{
 				itemAggregation.Web_Skins.Add( Form["admin_aggr_skin_1"] );
@@ -1737,7 +1737,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
 			Output.WriteLine("        <tr>");
 
-			if (itemAggregation.CSS_File.Length == 0)
+			if ( !String.IsNullOrEmpty(itemAggregation.CSS_File))
 			{
 				Output.WriteLine("          <td><span style=\"font-style:italic; padding-right:20px;\">No custom aggregation-level stylesheet</span></td>");
 				Output.WriteLine("          <td><button title=\"Enable an aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_enable_css();\">ENABLE</button></td>");

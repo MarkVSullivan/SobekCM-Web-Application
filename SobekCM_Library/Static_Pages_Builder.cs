@@ -710,7 +710,7 @@ namespace SobekCM.Library
 			{
 				writer.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}
-			if (Aggregation.CSS_File.Length > 0)
+			if ( !String.IsNullOrEmpty(Aggregation.CSS_File))
 			{
 				writer.WriteLine("  <link href=\"" + currentMode.Base_Design_URL + "aggregations/" + skinObject.Skin_Code + "/" + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}

@@ -1714,7 +1714,7 @@ namespace SobekCM.Library
                 // Return if this was valid
                 if (Aggregation_Object != null)
                 {
-                    if ((Current_Mode.Skin_In_URL != true) && ( Aggregation_Object.Default_Skin.Length > 0 ))
+                    if ((Current_Mode.Skin_In_URL != true) && ( !String.IsNullOrEmpty(Aggregation_Object.Default_Skin )))
                     {
                         Current_Mode.Skin = Aggregation_Object.Default_Skin.ToLower();
                     }
