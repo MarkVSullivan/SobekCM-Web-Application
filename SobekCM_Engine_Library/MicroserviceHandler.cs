@@ -41,6 +41,7 @@ namespace SobekCM.Engine_Library
                 Microservice_Endpoint endpoint = microserviceConfig.Get_Endpoint(paths);
                 if (endpoint == null)
                 {
+                    context.Response.StatusCode = 501;
                     context.Response.Write("No endpoint found");
                 }
                 else
@@ -50,11 +51,12 @@ namespace SobekCM.Engine_Library
                     if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.PROTOBUF)
                         context.Response.ContentType = "application/octet-stream";
 
-                    endpoint.Invoke(context.Response, paths );
+                    endpoint.Invoke(context.Response, paths, context.Request.Form);
                 }
             }
             else
             {
+                context.Response.StatusCode = 400;
                 context.Response.Write("Invalid URI - No endpoint requested");
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Reflection;
 using System.Web;
 
@@ -31,10 +32,7 @@ namespace SobekCM.Engine_Library.Microservices
         private MethodInfo methodInfo;
         private object restApiObject;
 
-        /// <summary> Invoke this endpoint's method to perform the necessary work of this microservice endpoint </summary>
-        /// <param name="Response"> Response to which to write any response stream </param>
-        /// <param name="UrlSegments"> Remaining portions of the URL path </param>
-        public void Invoke(HttpResponse Response, List<string> UrlSegments )
+        public void Invoke(HttpResponse Response, List<string> UrlSegments, NameValueCollection RequestForm )
         {
             if ((methodInfo == null) || (restApiObject == null))
             {
@@ -45,8 +43,11 @@ namespace SobekCM.Engine_Library.Microservices
                 methodInfo = restApiClassType.GetMethod(Method);
             }
 
-
-            object result = methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, Protocol });
+            // Invokation is different, dependingon whether this is a PUT or POST
+            if ( RequestType == Microservice_Endpoint_RequestType_Enum.GET )
+                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, Protocol });
+            else
+                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, Protocol, RequestForm });
         }
 
 

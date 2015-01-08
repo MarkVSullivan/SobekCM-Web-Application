@@ -194,6 +194,11 @@ namespace SobekCM.Engine_Library.Microservices
                     else
                         writer.Write(" Protocol=\"PROTOBUF\"");
 
+                    if (endpoint.RequestType == Microservice_Endpoint_RequestType_Enum.GET)
+                        writer.Write(" RequestType=\"GET\"");
+                    else
+                        writer.Write(" RequestType=\"POST\"");
+
                     if ((endpoint.RestrictionRanges != null) && (endpoint.RestrictionRanges.Count > 0))
                     {
                         writer.Write(" RestrictionRangeID=\"");
@@ -220,10 +225,6 @@ namespace SobekCM.Engine_Library.Microservices
                         writer.WriteLine(">");
                         if (!String.IsNullOrEmpty(endpoint.Description))
                             writer.WriteLine(indent + "\t<Description>" + Convert_String_To_XML_Safe(endpoint.Description) + "</Description>");
-                        if ( endpoint.RequestType == Microservice_Endpoint_RequestType_Enum.GET )
-                            writer.WriteLine(indent + "\t<RequestType>GET</RequestType>");
-                        else
-                            writer.WriteLine(indent + "\t<RequestType>POST</RequestType>");
                         if (!String.IsNullOrEmpty(endpoint.Arguments))
                             writer.WriteLine(indent + "\t<Arguments>" + Convert_String_To_XML_Safe(endpoint.Arguments) + "</Arguments>");
                         if (!String.IsNullOrEmpty(endpoint.Returns))

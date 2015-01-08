@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+  <MicroservicesClient>
+    <Add Key="GetCityStateByZip" URL="http://localhost:57384/json/utility/citystate/zip/{0}" Protocol="JSON" />
+    
+    <Add Key="GetDmsListingByAccount" URL="http://localhost:57384/json/dms/search/acct/{0}" Protocol="JSON" />
+    
+    <Add Key="GetAllHeadingsAndMappings" URL="http://localhost:57384/json/utility/headings/all" Protocol="JSON" />
+    <Add Key="GetMappingsOnly" URL="http://localhost:57384/json/utility/headings/mapping" Protocol="JSON" />
+    <Add Key="GetAllBookHeadings" URL="http://localhost:57384/json/utility/headings/book" Protocol="JSON" />
+    <Add Key="GetWebHeadings" URL="http://localhost:57384/json/utility/headings/web" Protocol="JSON" />
+    <Add Key="UpdateBookToWebMapping" URL="http://localhost:57384/json/utility/headings/update/mapping/book" Protocol="JSON" />
+    <Add Key="UpdateWebToBookMapping" URL="http://localhost:57384/json/utility/headings/update/mapping/web" Protocol="JSON" />
+    
+    <Add Key="CacheDump" URL="http://localhost:57384/json/cache/dump" Protocol="JSON" />
+    <Add Key="CacheReset" URL="http://localhost:57384/json/cache/reset" Protocol="JSON" />
+    
+    <Add Key="TypesAmenities" URL="http://localhost:57384/json/types/amenities" Protocol="JSON" />
+    <Add Key="TypesPayment" URL="http://localhost:57384/json/types/payment" Protocol="JSON" />
+    <Add Key="TypesLanguages" URL="http://localhost:57384/json/types/languages" Protocol="JSON" />
+    <Add Key="TypesParking" URL="http://localhost:57384/json/types/parking" Protocol="JSON" />
+    <Add Key="TypesShipping" URL="http://localhost:57384/json/types/shipping" Protocol="JSON" />
+
+    <Add Key="GetWebListingByWebId" URL="http://localhost:57384/json/web/search/webid/{0}" Protocol="JSON" />
+
+    <Add Key="RemoveUnsponsoredListing" URL="http://localhost:57384/json/web/unsponsored/remove" Protocol="JSON" />
+    <Add Key="UpdateUnsponsoredListing" URL="http://localhost:57384/json/web/unsponsored/update" Protocol="JSON" />
+    <Add Key="RemoveUnsponsoredListingNote" URL="http://localhost:57384/json/web/unsponsored/remove-note" Protocol="JSON" />
+    <Add Key="UpdateUnsponsoredListingNote" URL="http://localhost:57384/json/web/unsponsored/update-note" Protocol="JSON" />
+    
+  </MicroservicesClient>
+</Config>
