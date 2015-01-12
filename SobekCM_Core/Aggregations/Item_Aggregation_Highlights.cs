@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using ProtoBuf;
 using SobekCM.Core.Configuration;
 
 #endregion
@@ -13,7 +14,7 @@ using SobekCM.Core.Configuration;
 namespace SobekCM.Core.Aggregations
 {
     /// <summary> Holds all the information about an item aggregation highlight, including text, image, tooltip, and link </summary>
-    [DataContract]
+    [Serializable, DataContract, ProtoContract]
     public class Item_Aggregation_Highlights
     {
         private readonly Dictionary<Web_Language_Enum, string> text;
@@ -29,25 +30,25 @@ namespace SobekCM.Core.Aggregations
         }
 
         /// <summary> Gets the dictionary of languages to text </summary>
-        [DataMember]
+        [DataMember(Name = "text"), ProtoMember(3)]
         public Dictionary<Web_Language_Enum, string> Text_Dictionary
         {
             get { return text; }
         }
 
         /// <summary> Gets the dictionary of languages to tooltips </summary>
-        [DataMember]
+        [DataMember(Name = "tooltips"), ProtoMember(4)]
         public Dictionary<Web_Language_Enum, string> Tooltip_Dictionary
         {
             get { return tooltips; }
         }
 
         /// <summary> Gets and set the link that the user goes to when they click on this image </summary>
-        [DataMember]
+        [DataMember(Name = "link"), ProtoMember(2)]
         public string Link { get; set; }
 
         /// <summary> Gets and sets the image to display as the highlight </summary>
-        [DataMember]
+        [DataMember(Name = "image"), ProtoMember(1)]
         public string Image { get; set; }
 
         internal void Write_In_Configuration_XML_File( StreamWriter Writer )

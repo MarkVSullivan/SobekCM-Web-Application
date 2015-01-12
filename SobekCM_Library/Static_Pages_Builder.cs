@@ -683,7 +683,7 @@ namespace SobekCM.Library
 				UI_ApplicationCache_Gateway.Settings.Base_Directory = staticSobekcmLocation;
 
             // Pull the item aggregation object
-	        if (Aggregation.Web_Skins.Count > 0)
+	        if (( Aggregation.Web_Skins != null ) && ( Aggregation.Web_Skins.Count > 0))
 		        currentMode.Skin = Aggregation.Web_Skins[0];
 
 			// Get the skin object

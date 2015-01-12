@@ -172,7 +172,7 @@ namespace SobekCM.Core.WebContent
         public string Apply_Settings_To_Static_Text(string Display_Text, Item_Aggregation Aggregation, string Web_Skin_Code, string Base_Skin_Code, string Base_URL, string URL_Options, Custom_Tracer Tracer)
         {
             // Replace any item aggregation specific custom directives
-            if (Aggregation != null)
+            if ((Aggregation != null) && ( Aggregation.Custom_Directives != null ))
             {
                 foreach (string thisKey in Aggregation.Custom_Directives.Keys)
                 {

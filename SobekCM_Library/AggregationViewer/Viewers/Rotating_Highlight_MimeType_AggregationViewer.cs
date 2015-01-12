@@ -144,7 +144,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 search_collection = "Recherche dans la collection";
             }
 
-            if (RequestSpecificValues.Hierarchy_Object.Highlights.Count > 1)
+            if ((RequestSpecificValues.Hierarchy_Object.Highlights != null) && ( RequestSpecificValues.Hierarchy_Object.Highlights.Count > 1))
             {
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/contentslider.js\" > </script>");
                 Output.WriteLine("<!-- *****************************************");
@@ -160,9 +160,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 
 
-            if (frontBannerInfo.Banner_Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT)
+            if (frontBannerInfo.Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT)
             {
-                string banner_image = RequestSpecificValues.Current_Mode.Base_URL + "design/" + RequestSpecificValues.Hierarchy_Object.ObjDirectory + frontBannerInfo.Image_File.Replace("\\", "/");
+                string banner_image = RequestSpecificValues.Current_Mode.Base_URL + "design/" + RequestSpecificValues.Hierarchy_Object.ObjDirectory + frontBannerInfo.File.Replace("\\", "/");
                 Output.Write("      <td class=\"sbkRhav_RotatingBannerLeft\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
                 Output.WriteLine(Sharing_Buttons_HTML.Replace("span", "div"));
                 Output.WriteLine("");
@@ -195,7 +195,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 base_design_location = RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/all/";
 
             // Either draw all the highlights to flip through, or just the one highlight
-            if (RequestSpecificValues.Hierarchy_Object.Highlights.Count > 1)
+            if ((RequestSpecificValues.Hierarchy_Object.Highlights != null) && ( RequestSpecificValues.Hierarchy_Object.Highlights.Count > 1))
             {
                 int width = 754 - frontBannerInfo.Width;
 
@@ -256,7 +256,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
             else
             {
-                if (RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0)
+                if ((RequestSpecificValues.Hierarchy_Object.Highlights != null) && ( RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0))
                 {
                     Output.WriteLine("            <a href=\"" + RequestSpecificValues.Hierarchy_Object.Highlights[0].Link + "\" title=\"" + HttpUtility.HtmlEncode(RequestSpecificValues.Hierarchy_Object.Highlights[0].Get_Text(RequestSpecificValues.Current_Mode.Language)) + "\" >");
                     if (RequestSpecificValues.Hierarchy_Object.Highlights[0].Image.IndexOf("http:") >= 0)
@@ -271,9 +271,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("      </td>");
 
 
-            if (frontBannerInfo.Banner_Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT)
+            if (frontBannerInfo.Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT)
             {
-                string banner_image = RequestSpecificValues.Current_Mode.Base_URL + "design/" + RequestSpecificValues.Hierarchy_Object.ObjDirectory + frontBannerInfo.Image_File.Replace("\\", "/");
+                string banner_image = RequestSpecificValues.Current_Mode.Base_URL + "design/" + RequestSpecificValues.Hierarchy_Object.ObjDirectory + frontBannerInfo.File.Replace("\\", "/");
                 Output.WriteLine("      <td class=\"sbkRhav_RotatingBannerRight\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
                 Output.WriteLine(Sharing_Buttons_HTML.Replace("span", "div"));
                 Output.WriteLine("");

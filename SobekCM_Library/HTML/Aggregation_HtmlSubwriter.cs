@@ -70,14 +70,14 @@ namespace SobekCM.Library.HTML
 
                 if ((action == "add_aggregation") && ( RequestSpecificValues.Current_User != null ))
                 {
-                    SobekCM_Database.User_Set_Aggregation_Home_Page_Flag(RequestSpecificValues.Current_User.UserID, base.RequestSpecificValues.Hierarchy_Object.Aggregation_ID, true, RequestSpecificValues.Tracer);
+                    SobekCM_Database.User_Set_Aggregation_Home_Page_Flag(RequestSpecificValues.Current_User.UserID, base.RequestSpecificValues.Hierarchy_Object.ID, true, RequestSpecificValues.Tracer);
                     RequestSpecificValues.Current_User.Set_Aggregation_Home_Page_Flag(base.RequestSpecificValues.Hierarchy_Object.Code, base.RequestSpecificValues.Hierarchy_Object.Name, true);
                     HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Added aggregation to your home page");
                 }
 
                 if (( action == "remove_aggregation") && ( RequestSpecificValues.Current_User != null ))
                 {
-                    int removeAggregationID = base.RequestSpecificValues.Hierarchy_Object.Aggregation_ID;
+                    int removeAggregationID = base.RequestSpecificValues.Hierarchy_Object.ID;
                     string remove_code = base.RequestSpecificValues.Hierarchy_Object.Code;
                     string remove_name = base.RequestSpecificValues.Hierarchy_Object.Name;
 
@@ -1077,7 +1077,7 @@ namespace SobekCM.Library.HTML
 					Output.Write("<a href=\"\" onmouseover=\"document." + FormName + ".send_button.src='" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/send_rect_button_h.gif'\" onmouseout=\"document." + FormName + ".send_button.src='" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/send_rect_button.gif'\" onclick=\"return email_form_open2();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" name=\"send_button\" id=\"send_button\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/send_rect_button.gif\" title=\"Send this to someone\" alt=\"SEND\" /></a>");
 
                 }
-                if ((RequestSpecificValues.Hierarchy_Object.Aggregation_ID > 0) && ( String.Compare(RequestSpecificValues.Hierarchy_Object.Code,"all", true) != 0 ))
+                if ((RequestSpecificValues.Hierarchy_Object.ID > 0) && ( String.Compare(RequestSpecificValues.Hierarchy_Object.Code,"all", true) != 0 ))
                 {
                     if (RequestSpecificValues.Current_User.Is_On_Home_Page(RequestSpecificValues.Current_Mode.Aggregation))
                     {
@@ -1194,7 +1194,7 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("<div class=\"SobekText\">");
 
             // If this is a normal aggregation type ( i.e., not the library home ) just display the home text normally
-            if ((RequestSpecificValues.Current_Mode.Aggregation.Length != 0) && (RequestSpecificValues.Hierarchy_Object.Aggregation_ID > 0))
+            if ((RequestSpecificValues.Current_Mode.Aggregation.Length != 0) && (RequestSpecificValues.Hierarchy_Object.ID > 0))
             {
                 string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
                 string urlOptions1 = String.Empty;
@@ -1233,7 +1233,7 @@ namespace SobekCM.Library.HTML
 	            {
 
 		            // Add the highlights
-		            if ((RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0) && (collectionViewer.Type != Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search))
+		            if (( RequestSpecificValues.Hierarchy_Object.Highlights != null ) && (RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0) && (collectionViewer.Type != Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_Search))
 		            {
 			            Output.WriteLine(RequestSpecificValues.Hierarchy_Object.Highlights[0].ToHTML(RequestSpecificValues.Current_Mode.Language, RequestSpecificValues.Current_Mode.Base_Design_URL + RequestSpecificValues.Hierarchy_Object.ObjDirectory).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
 		            }
@@ -1241,17 +1241,20 @@ namespace SobekCM.Library.HTML
 		            // Determine the different counts as strings and replace if they exist
 		            if ((home_html.Contains("<%PAGES%>")) || (home_html.Contains("<%TITLES%>")) || (home_html.Contains("<%ITEMS%>")))
 		            {
-			            if ((RequestSpecificValues.Hierarchy_Object.Page_Count < 0) && (RequestSpecificValues.Hierarchy_Object.Item_Count < 0) && (RequestSpecificValues.Hierarchy_Object.Title_Count < 0))
+			            if ((!RequestSpecificValues.Hierarchy_Object.Page_Count.HasValue) || (!RequestSpecificValues.Hierarchy_Object.Item_Count.HasValue) || (!RequestSpecificValues.Hierarchy_Object.Title_Count.HasValue))
 			            {
 				            if ((!RequestSpecificValues.Current_Mode.Is_Robot) && (Engine_Database.Get_Item_Aggregation_Counts(RequestSpecificValues.Hierarchy_Object, Tracer)))
 				            {
 					            Cached_Data_Manager.Store_Item_Aggregation(RequestSpecificValues.Hierarchy_Object.Code, RequestSpecificValues.Current_Mode.Language_Code, RequestSpecificValues.Hierarchy_Object, Tracer);
 
-					            string page_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Page_Count);
-					            string item_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Item_Count);
-					            string title_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Title_Count);
+				                if ((RequestSpecificValues.Hierarchy_Object.Page_Count.HasValue) && (RequestSpecificValues.Hierarchy_Object.Item_Count.HasValue) && (RequestSpecificValues.Hierarchy_Object.Title_Count.HasValue))
+				                {
+				                    string page_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Page_Count.Value);
+				                    string item_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Item_Count.Value);
+				                    string title_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Title_Count.Value);
 
-					            home_html = home_html.Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
+				                    home_html = home_html.Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
+				                }
 				            }
 				            else
 				            {
@@ -1260,9 +1263,9 @@ namespace SobekCM.Library.HTML
 			            }
 			            else
 			            {
-				            string page_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Page_Count);
-				            string item_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Item_Count);
-				            string title_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Title_Count);
+				            string page_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Page_Count.Value);
+				            string item_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Item_Count.Value);
+				            string title_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Title_Count.Value);
 
 				            home_html = home_html.Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
 			            }
@@ -1270,7 +1273,8 @@ namespace SobekCM.Library.HTML
 
 		            // Replace any item aggregation specific custom directives
 		            string original_home = home_html;
-		            home_html = RequestSpecificValues.Hierarchy_Object.Custom_Directives.Keys.Where(original_home.Contains).Aggregate(home_html, (Current, ThisKey) => Current.Replace(ThisKey, RequestSpecificValues.Hierarchy_Object.Custom_Directives[ThisKey].Replacement_HTML));
+                    if ((RequestSpecificValues.Hierarchy_Object.Custom_Directives != null) && (RequestSpecificValues.Hierarchy_Object.Custom_Directives.Count > 0 ))
+    		            home_html = RequestSpecificValues.Hierarchy_Object.Custom_Directives.Keys.Where(original_home.Contains).Aggregate(home_html, (Current, ThisKey) => Current.Replace(ThisKey, RequestSpecificValues.Hierarchy_Object.Custom_Directives[ThisKey].Replacement_HTML));
 
 		            // Replace any standard directives last
 		            home_html = home_html.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2);
@@ -1458,11 +1462,17 @@ namespace SobekCM.Library.HTML
 		                int index = sobekcm_home_page_text.IndexOf("<%END%>");
 
 		                // Determine the different counts as strings
-		                string page_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Page_Count);
-		                string item_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Item_Count);
-		                string title_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Title_Count);
+                        string page_count = "0";
+                        string item_count = "0";
+	                    string title_count = "0";
+	                    if ((RequestSpecificValues.Hierarchy_Object.Page_Count.HasValue) && (RequestSpecificValues.Hierarchy_Object.Item_Count.HasValue) && (RequestSpecificValues.Hierarchy_Object.Title_Count.HasValue))
+	                    {
+	                        page_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Page_Count.Value);
+                            item_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Item_Count.Value);
+                            title_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Title_Count.Value);
+	                    }
 
-		                string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
+	                    string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
 		                string urlOptions1 = String.Empty;
 		                string urlOptions2 = String.Empty;
 		                if (url_options.Length > 0)
@@ -1514,7 +1524,7 @@ namespace SobekCM.Library.HTML
                     bool aggrsLinkedToThemes = false;
                     if ((!UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home) && ( UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0 ))
                     {
-                        if (UI_ApplicationCache_Gateway.Thematic_Headings.Any(ThisTheme => UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_ThemeID(ThisTheme.ThematicHeadingID).Count > 0))
+                        if (UI_ApplicationCache_Gateway.Thematic_Headings.Any(ThisTheme => UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_ThemeID(ThisTheme.ID).Count > 0))
                         {
                             aggrsLinkedToThemes = true;
                         } 
@@ -1681,38 +1691,41 @@ namespace SobekCM.Library.HTML
 
             // Step through each node under this
             SortedList<string, TreeNode> sorted_node_list = new SortedList<string, TreeNode>();
-            foreach (Item_Aggregation_Related_Aggregations childAggr in RequestSpecificValues.Hierarchy_Object.Children)
+            if (RequestSpecificValues.Hierarchy_Object.Children_Count > 0)
             {
-                if ((!childAggr.Hidden) && ( childAggr.Active ))
+                foreach (Item_Aggregation_Related_Aggregations childAggr in RequestSpecificValues.Hierarchy_Object.Children)
                 {
-                    // Set the aggregation value, for the redirect URL
-                    RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
-
-                    // Set some default interfaces
-                    if (RequestSpecificValues.Current_Mode.Aggregation == "dloc1")
-                        RequestSpecificValues.Current_Mode.Skin = "dloc";
-                    if (RequestSpecificValues.Current_Mode.Aggregation == "edlg")
-                        RequestSpecificValues.Current_Mode.Skin = "edl";
-
-                    // Create this tree node
-                    TreeNode childNode = new TreeNode("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
-                    if (RequestSpecificValues.Current_Mode.Internal_User)
+                    if ((!childAggr.Hidden) && (childAggr.Active))
                     {
-                        childNode.Text = string.Format("<a href=\"{0}\"><abbr title=\"{1}\">{2} ( {3} )</abbr></a>", UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), childAggr.Description, childAggr.Name, childAggr.Code);
+                        // Set the aggregation value, for the redirect URL
+                        RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
+
+                        // Set some default interfaces
+                        if (RequestSpecificValues.Current_Mode.Aggregation == "dloc1")
+                            RequestSpecificValues.Current_Mode.Skin = "dloc";
+                        if (RequestSpecificValues.Current_Mode.Aggregation == "edlg")
+                            RequestSpecificValues.Current_Mode.Skin = "edl";
+
+                        // Create this tree node
+                        TreeNode childNode = new TreeNode("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
+                        if (RequestSpecificValues.Current_Mode.Internal_User)
+                        {
+                            childNode.Text = string.Format("<a href=\"{0}\"><abbr title=\"{1}\">{2} ( {3} )</abbr></a>", UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), childAggr.Description, childAggr.Name, childAggr.Code);
+                        }
+                        childNode.SelectAction = TreeNodeSelectAction.None;
+                        childNode.NavigateUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                        // Add to the sorted list
+                        if ((childAggr.Name.Length > 4) && (childAggr.Name.IndexOf("The ") == 0))
+                            sorted_node_list.Add(childAggr.Name.Substring(4).ToUpper(), childNode);
+                        else
+                            sorted_node_list.Add(childAggr.Name.ToUpper(), childNode);
+
+                        // Check the children nodes recursively
+                        add_children_to_tree(childAggr, childNode);
+
+                        RequestSpecificValues.Current_Mode.Skin = String.Empty;
                     }
-                    childNode.SelectAction = TreeNodeSelectAction.None;
-                    childNode.NavigateUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
-                    // Add to the sorted list
-                    if ((childAggr.Name.Length > 4) && (childAggr.Name.IndexOf("The ") == 0 ))
-                        sorted_node_list.Add(childAggr.Name.Substring(4).ToUpper(), childNode);
-                    else
-                        sorted_node_list.Add(childAggr.Name.ToUpper(), childNode);
-
-                    // Check the children nodes recursively
-                    add_children_to_tree(childAggr, childNode);
-
-                    RequestSpecificValues.Current_Mode.Skin = String.Empty;
                 }
             }
 
@@ -1790,7 +1803,7 @@ namespace SobekCM.Library.HTML
             {
                 // Build the list of html to display, first adding collections and subcollections
                 SortedList<string, string> html_list = new SortedList<string, string>();
-                ReadOnlyCollection<Item_Aggregation_Related_Aggregations> thisThemesAggrs = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_ThemeID(thisTheme.ThematicHeadingID);
+                ReadOnlyCollection<Item_Aggregation_Related_Aggregations> thisThemesAggrs = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_ThemeID(thisTheme.ID);
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in thisThemesAggrs)
                 {
                     string image_url = RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/" + thisAggr.Code + "/images/buttons/coll.gif";
@@ -1832,11 +1845,11 @@ namespace SobekCM.Library.HTML
                     // Write this theme
 					if (first)
 					{
-						Output.WriteLine("<h2 style=\"margin-top:0;margin-bottom:0;\">" + thisTheme.ThemeName + "</h2>");
+						Output.WriteLine("<h2 style=\"margin-top:0;margin-bottom:0;\">" + thisTheme.Text + "</h2>");
 						first = false;
 					}
 					else
-						Output.WriteLine("<h2 style=\"margin-bottom:0;\">" + thisTheme.ThemeName + "</h2>");
+						Output.WriteLine("<h2 style=\"margin-bottom:0;\">" + thisTheme.Text + "</h2>");
 
 					Output.WriteLine("<table id=\"sbkAghsw_CollectionDescriptionTbl\">");
                     int column_spot = 0;
@@ -1895,7 +1908,7 @@ namespace SobekCM.Library.HTML
             {
                 // Build the list of html to display
                 SortedList<string, string> html_list = new SortedList<string, string>();
-                ReadOnlyCollection<Item_Aggregation_Related_Aggregations> thisThemesAggrs = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_ThemeID(thisTheme.ThematicHeadingID);
+                ReadOnlyCollection<Item_Aggregation_Related_Aggregations> thisThemesAggrs = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_ThemeID(thisTheme.ID);
                 int aggreCount = -1;
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in thisThemesAggrs)
                 {
@@ -1944,11 +1957,11 @@ namespace SobekCM.Library.HTML
                     // Write this theme
 					if (first)
 					{
-						Output.WriteLine("<h2 style=\"margin-top:0;\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(thisTheme.ThemeName, RequestSpecificValues.Current_Mode.Language) + "</h2>");
+						Output.WriteLine("<h2 style=\"margin-top:0;\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(thisTheme.Text, RequestSpecificValues.Current_Mode.Language) + "</h2>");
 						first = false;
 					}
 	                else
-						Output.WriteLine("<h2>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(thisTheme.ThemeName, RequestSpecificValues.Current_Mode.Language) + "</h2>");
+						Output.WriteLine("<h2>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(thisTheme.Text, RequestSpecificValues.Current_Mode.Language) + "</h2>");
 
 					Output.WriteLine("<table id=\"sbkAghsw_CollectionButtonTbl\">");
                     int column_spot = 0;

@@ -23,9 +23,7 @@ namespace SobekCM.Core.Aggregations
     ///   and information.  It also contains all the information for rendering the home pages of each of
     ///   these levels.
     /// </summary>
-    [Serializable]
-    [DataContract]
-    [ProtoContract]
+    [Serializable, DataContract, ProtoContract]
     public class Item_Aggregation
     {
 
@@ -130,17 +128,9 @@ namespace SobekCM.Core.Aggregations
 
         #region Private variables
 
-        private readonly Dictionary<Web_Language_Enum, string> bannerImagesByLanguage;
-        private List<Item_Aggregation_Related_Aggregations> children;
         private string defaultBrowseBy;
-		private readonly Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner> frontBannerImageByLanguage;
-        private readonly Dictionary<Web_Language_Enum, string> homeFilesByLanguage;
-        private List<Item_Aggregation_Related_Aggregations> parents;
         private readonly List<CollectionViewsAndSearchesEnum> viewsAndSearches;
-
 		private readonly Dictionary<string, Item_Aggregation_Child_Page> childPagesHash;
-	    private readonly List<Item_Aggregation_Child_Page> childPages;
-
         private readonly Web_Language_Enum defaultUiLanguage;
         private readonly string baseDesignLocation;
 
@@ -150,24 +140,20 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> ID for this item aggregation object </summary>
         /// <remarks> The AggregationID for the ALL aggregation is set to -1 by the stored procedure </remarks>
-        [DataMember]
-        [ProtoMember(1)]
-        public int Aggregation_ID { get; private set; }
+        [DataMember(Name = "id"), ProtoMember(1)]
+        public int ID { get; private set; }
 
         /// <summary> Type of item aggregation object </summary>
-        [DataMember]
-        [ProtoMember(2)]
-        public string Aggregation_Type { get; private set; }
+        [DataMember(Name = "type"), ProtoMember(2)]
+        public string Type { get; private set; }
 
         /// <summary> Code for this item aggregation object </summary>
-        [DataMember]
-        [ProtoMember(3)]
+        [DataMember(Name = "code"), ProtoMember(3)]
         public string Code { get; private set; }
 
         /// <summary> Date the last item was added to this collection </summary>
         /// <remarks> If there is no record of this, the date of 1/1/2000 is returned </remarks>
-        [DataMember]
-        [ProtoMember(4)]
+        [DataMember(Name = "lastItemAdded"), ProtoMember(4)]
         public DateTime Last_Item_Added { get; set; }
 
         /// <summary> Flag indicates if this aggregation can potentially include the ALL ITEMS and NEW ITEMS tabs </summary>
@@ -189,34 +175,20 @@ namespace SobekCM.Core.Aggregations
             baseDesignLocation = Base_Design_Location;
 
             // Set some defaults
-            Metadata_Code = Code;
             Name = String.Empty;
             ShortName = String.Empty;
-            Is_Active = true;
+            Active = true;
             Hidden = false;
             Map_Search = 0;
             Map_Search_Beta = 0;
             Map_Display = 0;
             Map_Display_Beta = 0;
-            OAI_Flag = false;
+            OAI_Enabled = false;
             Has_New_Items = false;
-            Show_New_Item_Browse = false;
             childPagesHash = new Dictionary<string, Item_Aggregation_Child_Page>();
-            Highlights = new List<Item_Aggregation_Highlights>();
-            Rotating_Highlights = false;
-            homeFilesByLanguage = new Dictionary<Web_Language_Enum, string>();
-            bannerImagesByLanguage = new Dictionary<Web_Language_Enum, string>();
-			frontBannerImageByLanguage = new Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner>();
-			childPages = new List<Item_Aggregation_Child_Page>();
-            Custom_Directives = new Dictionary<string, Item_Aggregation_Custom_Directive>();
-            Title_Count = -1;
-            Page_Count = -1;
-            Item_Count = -1;
-            Web_Skins = new List<string>();
             Advanced_Search_Fields = new List<short>();
             Browseable_Fields = new List<short>();
             Facets = new List<short> {3, 5, 7, 10, 8};
-            Thematic_Heading_ID = -1;
 
             // Add the default result views
             Result_Views = new List<Result_Display_Type_Enum>
@@ -235,50 +207,36 @@ namespace SobekCM.Core.Aggregations
         /// <param name="Default_UI_Language"> Default user interface language for this interface </param>
         /// <param name="Base_Design_Location"> Base design location for this instance </param>
         /// <param name = "Code"> Unique code for this item aggregation object </param>
-        /// <param name = "Aggregation_Type"> Type of aggregation object (i.e., collection, institution, exhibit, etc..)</param>
-        /// <param name = "Aggregation_ID"> ID for this aggregation object from the database </param>
+        /// <param name = "Type"> Type of aggregation object (i.e., collection, institution, exhibit, etc..)</param>
+        /// <param name = "ID"> ID for this aggregation object from the database </param>
         /// <param name = "Display_Options"> Display options used to determine the views and searches for this item</param>
         /// <param name = "Last_Item_Added"> Date the last item was added ( or 1/1/2000 by default )</param>
-        public Item_Aggregation(Web_Language_Enum Default_UI_Language, string Base_Design_Location, string Code, string Aggregation_Type, int Aggregation_ID, string Display_Options, DateTime Last_Item_Added)
+        public Item_Aggregation(Web_Language_Enum Default_UI_Language, string Base_Design_Location, string Code, string Type, int ID, string Display_Options, DateTime Last_Item_Added)
         {
             // Save these parameters
             this.Code = Code;
-            this.Aggregation_Type = Aggregation_Type;
-            this.Aggregation_ID = Aggregation_ID;
+            this.Type = Type;
+            this.ID = ID;
             this.Last_Item_Added = Last_Item_Added;
             this.Display_Options = Display_Options;
             defaultUiLanguage = Default_UI_Language;
             baseDesignLocation = Base_Design_Location;
 
             // Set some defaults
-            Metadata_Code = Code;
             Name = String.Empty;
             ShortName = String.Empty;
-            Is_Active = true;
+            Active = true;
             Hidden = false;
             Map_Search = 0;
             Map_Search_Beta = 0;
             Map_Display = 0;
             Map_Display_Beta = 0;
-            OAI_Flag = false;
+            OAI_Enabled = false;
             Has_New_Items = false;
-            Show_New_Item_Browse = false;
             childPagesHash = new Dictionary<string, Item_Aggregation_Child_Page>();
-            Highlights = new List<Item_Aggregation_Highlights>();
-            Rotating_Highlights = false;
-            homeFilesByLanguage = new Dictionary<Web_Language_Enum, string>();
-            bannerImagesByLanguage = new Dictionary<Web_Language_Enum, string>();
-			frontBannerImageByLanguage = new Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner>();
-			childPages = new List<Item_Aggregation_Child_Page>();
-            Custom_Directives = new Dictionary<string, Item_Aggregation_Custom_Directive>();
-            Title_Count = -1;
-            Page_Count = -1;
-            Item_Count = -1;
-            Web_Skins = new List<string>();
             Advanced_Search_Fields = new List<short>();
             Browseable_Fields = new List<short>();
             Facets = new List<short> {3, 5, 7, 10, 8};
-            Thematic_Heading_ID = -1;
 
             // Add the searches and views
             viewsAndSearches = new List<CollectionViewsAndSearchesEnum>();
@@ -377,13 +335,6 @@ namespace SobekCM.Core.Aggregations
                                   Result_Display_Type_Enum.Full_Citation
                               };
             Default_Result_View = Result_Display_Type_Enum.Brief;
-
-            // See if the last item added date was within the last two weeks
-            TimeSpan sinceLastItem = DateTime.Now.Subtract(Last_Item_Added);
-            if (sinceLastItem.TotalDays <= 14)
-            {
-                Show_New_Item_Browse = true;
-            }
         }
 
         #endregion
@@ -391,60 +342,86 @@ namespace SobekCM.Core.Aggregations
         #region Public Properties
 
         /// <summary> Returns the list of the primary identifiers for all metadata fields which have data and thus should appear in the advanced search drop downs  </summary>
-        [DataMember]
+        [DataMember(Name = "advancedSearchFields")]
         [ProtoMember(5)]
         public List<short> Advanced_Search_Fields { get; private set; }
 
         /// <summary> Returns the list of the primary identifiers for all metadata fields which have data and thus could appear in the metadata browse </summary>
-        [DataMember]
+        [DataMember(Name = "browseableFields")]
         [ProtoMember(6)]
         public List<short> Browseable_Fields { get; private set; }
 
         /// <summary> Returns the list of all facets to display during searches and browses within this aggregation </summary>
         /// <remarks> This can hold up to eight facets, by primary key for the metadata type.  By default this holds 3,5,7,10, and 8. </remarks>
+        [DataMember(Name = "facets")]
+        [ProtoMember(7)]
         public List<short> Facets { get; private set; }
 
         /// <summary> Gets the list of web skins this aggregation can appear under </summary>
         /// <remarks> If no web skins are indicated, this is not restricted to any set of web skins, and can appear under any skin </remarks>
-        public List<string> Web_Skins { get; private set; }
+        [DataMember(EmitDefaultValue = false,Name="webSkins")]
+        [ProtoMember(8)]
+        public List<string> Web_Skins { get; set; }
 
         /// <summary> Gets the list of custom directives (which function like Server-Side Includes) 
         ///   for this item aggregation </summary>
-        public Dictionary<string, Item_Aggregation_Custom_Directive> Custom_Directives { get; private set; }
+        [DataMember(EmitDefaultValue = false, Name = "customDirectives")]
+        [ProtoMember(8)]
+        public Dictionary<string, Item_Aggregation_Custom_Directive> Custom_Directives { get; set; }
 
         /// <summary> Default browse by code, if no code is provided in the request </summary>
+        [DataMember(EmitDefaultValue = false, Name = "defaultBrowseBy")]
+        [ProtoMember(9)]
         public string Default_BrowseBy
         {
-            get { return defaultBrowseBy ?? String.Empty; }
+            get { return defaultBrowseBy; }
             set { defaultBrowseBy = value; }
         }
 
         /// <summary> Gets the default results view mode for this item aggregation </summary>
+        [DataMember(Name = "defaultResultView")]
+        [ProtoMember(10)]
         public Result_Display_Type_Enum Default_Result_View { get; set; }
 
         /// <summary> Gets the list of all result views present in this item aggregation </summary>
+        [DataMember(Name = "resultsViews")]
+        [ProtoMember(11)]
         public List<Result_Display_Type_Enum> Result_Views { get; private set; }
 
         /// <summary> Number of pages for all the items within this item aggregation </summary>
-        public int Page_Count { get; set; }
+        [DataMember(EmitDefaultValue = false, Name = "pageCount")]
+        [ProtoMember(12)]
+        public int? Page_Count { get; set; }
 
         /// <summary> Number of titles within this item aggregation </summary>
-        public int Title_Count { get; set; }
+        [DataMember(EmitDefaultValue = false, Name = "titleCount")]
+        [ProtoMember(13)]
+        public int? Title_Count { get; set; }
 
         /// <summary> Number of items within this item aggregation </summary>
-        public int Item_Count { get; set; }
+        [DataMember(EmitDefaultValue = false, Name = "itemCount")]
+        [ProtoMember(14)]
+        public int? Item_Count { get; set; }
 
         /// <summary> Gets the list of highlights associated with this item </summary>
-        public List<Item_Aggregation_Highlights> Highlights { get; private set; }
+        [DataMember(EmitDefaultValue = false, Name = "highlights")]
+        [ProtoMember(15)]
+        public List<Item_Aggregation_Highlights> Highlights { get; set; }
 
         /// <summary> Value indicates if the highlights should be rotating through a number of 
         ///   highlights, or be fixed on a single highlight </summary>
-        public bool Rotating_Highlights { get; set; }
+        [DataMember(EmitDefaultValue = false, Name = "rotatingHighlights")]
+        [ProtoMember(16)]
+        public bool? Rotating_Highlights { get; set; }
 
         /// <summary> Key to the thematic heading under which this aggregation should appear on the main home page </summary>
-        public int Thematic_Heading_ID { get; set; }
+        [DataMember(EmitDefaultValue = false, Name = "thematicHeadingId")]
+        [ProtoMember(17)]
+        public int? Thematic_Heading_ID { get; set; }
 
         /// <summary> Email address to receive notifications when items load under this aggregation </summary>
+        [DataMember(EmitDefaultValue = false, Name = "loadEmail")]
+        [ProtoMember(18)]
         public string Load_Email { get; set; }
 
         /// <summary> Directory where all design information for this object is found </summary>
@@ -455,77 +432,105 @@ namespace SobekCM.Core.Aggregations
             get { return "aggregations/" + Code + "/"; }
         }
 
-        /// <summary> Metadata aggregation code used to search in the corresponding greenstone collection(s) </summary>
-        /// <remarks> If this item aggregation corresponds directly to a greenstone collect, this field will be unnecessary, and therefore blank </remarks>
-        public string Metadata_Code { get; set; }
-
         /// <summary> Full name of this item aggregation </summary>
+        [DataMember(Name = "name")]
+        [ProtoMember(19)]
         public string Name { get; set; }
 
         /// <summary> Short name of this item aggregation </summary>
         /// <remarks> This is an alternate name used for breadcrumbs, etc.. </remarks>
+        [DataMember(Name = "shortName")]
+        [ProtoMember(20)]
         public string ShortName { get; set; }
 
         /// <summary> Description of this item aggregation (in the default language ) </summary>
         /// <remarks> This field is displayed on the main home pages if this is part of a thematic collection </remarks>
+        [DataMember(Name = "description")]
+        [ProtoMember(21)]
         public string Description { get; set; }
 
         /// <summary> Flag indicating this item aggregation is active </summary>
-        public bool Is_Active { get; set; }
+        [DataMember(Name = "isActive")]
+        [ProtoMember(22)]
+        public bool Active { get; set; }
 
         /// <summary> Flag indicating this item aggregation is hidden from most displays </summary>
         /// <remarks> If this item aggregation is active, public users can still be directed to this item aggreagtion, but it will
         ///   not appear in the lists of subaggregations anywhere. </remarks>
+        [DataMember(Name = "isHidden")]
+        [ProtoMember(23)]
         public bool Hidden { get; set; }
 
         /// <summary> Display options string for this item aggregation </summary>
         /// <remarks> This defines which views and browses are available for this item aggregation </remarks>
+        [DataMember(Name = "displayOptions")]
+        [ProtoMember(24)]
         public string Display_Options { get; set; }
 
         /// <summary> Flag that tells what type of map searching to allow for this item aggregation </summary>
+        [DataMember(Name = "mapSearch")]
+        [ProtoMember(25)]
         public ushort Map_Search { get; set; }
 
         /// <summary> Flag that tells what type of map searching to allow for this item aggregation </summary>
+        [IgnoreDataMember]
         public ushort Map_Search_Beta { get; set; }
 
         /// <summary> Flag that tells what type of map display to show for this item aggregation </summary>
+        [DataMember(Name = "mapDisplay")]
+        [ProtoMember(26)]
         public ushort Map_Display { get; set; }
 
         /// <summary> Flag that tells what type of map display to show for this item aggregation </summary>
+        [IgnoreDataMember]
         public ushort Map_Display_Beta { get; set; }
 
         /// <summary> Flag indicates whether this item aggregation should be made available via OAI-PMH </summary>
-        public bool OAI_Flag { get; set; }
+        [DataMember(Name = "oaiEnabled")]
+        [ProtoMember(27)]
+        public bool OAI_Enabled { get; set; }
 
         /// <summary> Additional metadata for this item aggregation to be included when providing the list of OAI-PMH sets </summary>
+        [DataMember(EmitDefaultValue = false, Name = "oaiMetadata")]
+        [ProtoMember(28)]
         public string OAI_Metadata { get; set; }
 
         /// <summary> Contact email for any correspondance regarding this item aggregation </summary>
+        [DataMember(EmitDefaultValue = false, Name = "contactEmail")]
+        [ProtoMember(29)]
         public string Contact_Email { get; set; }
 
         /// <summary> Default interface to be used for this item aggregation </summary>
-        /// <remarks> This is primarily used for institutional aggregationPermissions, but can be utilized anywhere </remarks>
-        [DataMember]
-        [ProtoMember(7)]
+        /// <remarks> This is primarily used for institutional aggregations, but can be utilized anywhere </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "defaultSkin")]
+        [ProtoMember(30)]
         public string Default_Skin { get; set; }
 
 		/// <summary> Aggregation-level CSS file, if one exists </summary>
-        [DataMember]
-        [ProtoMember(8)]
+        [DataMember(EmitDefaultValue = false, Name = "cssFile")]
+        [ProtoMember(31)]
 		public string CSS_File { get; set; }
 
 		/// <summary> Custom home page source file, if one exists </summary>
 		/// <remarks> This overrides many of the other parts of the item aggregation if in affect </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "customHomeFile")]
+        [ProtoMember(32)]
 		public string Custom_Home_Page_Source_File { get; set; }
 
         /// <summary> External link associated with this item aggregation  </summary>
         /// <remarks> This shows up in the citation view when an item is linked to this item aggregation </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "externalLink")]
+        [ProtoMember(33)]
         public string External_Link { get; set;  }
 
         /// <summary> Flag indicates whether items linked to this item can be described by logged in users  </summary>
+        [DataMember(EmitDefaultValue = false, Name = "canItemsBeDescribed")]
+        [ProtoMember(34)]
         public short Items_Can_Be_Described { get; set; }
 
 		/// <summary> The common type of all child collections, or the default </summary>
+        [DataMember(EmitDefaultValue = false, Name = "childTypes")]
+        [ProtoMember(35)]
 		public string Child_Types { get; set; }
 
         /// <summary> Gets the number of browses and info pages attached to this item aggregation </summary>
@@ -563,6 +568,8 @@ namespace SobekCM.Core.Aggregations
         }
 
         /// <summary> Read-only list of collection views and searches for this item aggregation </summary>
+        [DataMember(EmitDefaultValue = false, Name = "viewsAndSearches")]
+        [ProtoMember(36)]
         public ReadOnlyCollection<CollectionViewsAndSearchesEnum> Views_And_Searches
         {
             get { return new ReadOnlyCollection<CollectionViewsAndSearchesEnum>(viewsAndSearches); }
@@ -604,10 +611,20 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Flag indicates if this aggregation has had any changes over the last two weeks </summary>
         /// <remarks> This, in part, controls whether the NEW ITEMS tab will appear for this item aggregation </remarks>
-        public bool Show_New_Item_Browse { get; set; }
+        [IgnoreDataMember]
+        public bool Show_New_Item_Browse
+        {
+            get
+            {
+                // See if the last item added date was within the last two weeks
+                TimeSpan sinceLastItem = DateTime.Now.Subtract(Last_Item_Added);
+                return (sinceLastItem.TotalDays <= 14);
+            }
+        }
 
         /// <summary> Flag indicates if new items have recently been added to this collection which requires additional collection-level work </summary>
         /// <remarks> This flag is used by the builder to determine if the static collection level pages should be recreated and if the search index for this aggregation should be rebuilt. </remarks>
+        [IgnoreDataMember]
         public bool Has_New_Items { get; set; }
 
         /// <summary> Gets the number of child item aggregationPermissions present </summary>
@@ -618,35 +635,56 @@ namespace SobekCM.Core.Aggregations
         {
             get
             {
-                if (children == null) return -1;
-                return children.Count(ThisChild => (ThisChild.Active) && (!ThisChild.Hidden));
+                if (Children == null) return -1;
+                return Children.Count(ThisChild => (ThisChild.Active) && (!ThisChild.Hidden));
             }
         }
 
         /// <summary> Gets the read-only collection of children item aggregation objects </summary>
         /// <remarks> You should check the count of children first using the <see cref = "Children_Count" /> before using this property.
         ///   Even if there are no children, this property creates a readonly collection to pass back out. </remarks>
-        public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> Children
-        {
-            get
-            {
-				return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>(children ?? new List<Item_Aggregation_Related_Aggregations>());
-            }
-        }
+        [DataMember(EmitDefaultValue = false, Name = "children"), ProtoMember(37)]
+        public List<Item_Aggregation_Related_Aggregations> Children { get; set; }
 
-		/// <summary> Removes a child from this collection, by aggregation code </summary>
+        /// <summary> Gets the read-only collection of parent item aggregation objects </summary>
+        /// <remarks> You should check the count of parents first using the <see cref = "Parent_Count" /> before using this property.
+        ///   Even if there are no parents, this property creates a readonly collection to pass back out. </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "parents"), ProtoMember(38)]
+        public List<Item_Aggregation_Related_Aggregations> Parents { get; set; }
+
+        /// <summary> Collection of all child pages </summary>
+        [DataMember(EmitDefaultValue = false, Name = "childPages"), ProtoMember(39)]
+        public List<Item_Aggregation_Child_Page> Child_Pages { get; set; }
+
+        /// <summary> Any aggregation-specific contact form configuration, otherwise NULL </summary>
+        [DataMember(EmitDefaultValue = false, Name = "contactForm"), ProtoMember(40)]
+        public ContactForm_Configuration ContactForm { get; set; }
+
+        /// <summary> Gets the raw home page source file </summary>
+        [DataMember(EmitDefaultValue = false, Name = "homePageFiles"), ProtoMember(41)]
+        public Dictionary<Web_Language_Enum, string> Home_Page_File_Dictionary { get; private set; }
+
+        /// <summary> Get the standard banner dictionary, by language </summary>
+        [DataMember(EmitDefaultValue = false, Name = "banners"), ProtoMember(42)]
+        public Dictionary<Web_Language_Enum, string> Banner_Dictionary { get; private set; }
+
+        /// <summary> Get the front banner dictionary, by language </summary>
+        [DataMember(EmitDefaultValue = false, Name = "frontBanners"), ProtoMember(43)]
+        public Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner> Front_Banner_Dictionary { get; private set; }
+
+        /// <summary> Removes a child from this collection, by aggregation code </summary>
 		/// <param name="AggregationCode"> Code of the child to remove </param>
 		public void Remove_Child(string AggregationCode)
 		{
-			if (children == null) return;
+			if (Children == null) return;
 
 			// Get list of matches
-			List<Item_Aggregation_Related_Aggregations> removes = children.Where(ThisChild => ThisChild.Code == AggregationCode).ToList();
+			List<Item_Aggregation_Related_Aggregations> removes = Children.Where(ThisChild => ThisChild.Code == AggregationCode).ToList();
 
 			// Remove all matches
 			foreach (Item_Aggregation_Related_Aggregations toRemove in removes)
 			{
-				children.Remove(toRemove);
+				Children.Remove(toRemove);
 			}
 		}
 
@@ -658,20 +696,10 @@ namespace SobekCM.Core.Aggregations
         {
             get
             {
-	            return parents == null ? 0 : parents.Count;
+	            return Parents == null ? 0 : Parents.Count;
             }
         }
 
-        /// <summary> Gets the read-only collection of parent item aggregation objects </summary>
-        /// <remarks> You should check the count of parents first using the <see cref = "Parent_Count" /> before using this property.
-        ///   Even if there are no parents, this property creates a readonly collection to pass back out. </remarks>
-        public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> Parents
-        {
-            get
-            {
-				return new ReadOnlyCollection<Item_Aggregation_Related_Aggregations>( parents ?? new List<Item_Aggregation_Related_Aggregations>());
-            }
-        }
 
         /// <summary> Returns the list of all parent codes to this aggregation, seperate by a semi-colon  </summary>
         [IgnoreDataMember]
@@ -679,14 +707,14 @@ namespace SobekCM.Core.Aggregations
         {
             get
             {
-                if ((parents == null) || (parents.Count == 0))
+                if ((Parents == null) || (Parents.Count == 0))
                     return String.Empty;
 
-                if (parents.Count == 1)
-                    return parents[0].Code;
+                if (Parents.Count == 1)
+                    return Parents[0].Code;
 
                 StringBuilder builder = new StringBuilder();
-                foreach (Item_Aggregation_Related_Aggregations thisParent in parents)
+                foreach (Item_Aggregation_Related_Aggregations thisParent in Parents)
                 {
                     if (builder.Length == 0)
                         builder.Append(thisParent.Code);
@@ -714,21 +742,14 @@ namespace SobekCM.Core.Aggregations
         /// <param name = "Web_Skin"> Web skin this can appear under </param>
         public void Add_Web_Skin(string Web_Skin)
         {
+            if (Web_Skins == null) Web_Skins = new List<string>();
+
             Web_Skins.Add(Web_Skin);
             if ( String.IsNullOrEmpty(Default_Skin))
                 Default_Skin = Web_Skin;
         }
 
-		/// <summary> Collection of all child pages </summary>
-	    public ReadOnlyCollection<Item_Aggregation_Child_Page> Child_Pages
-	    {
-		    get
-		    {
-			    return new ReadOnlyCollection<Item_Aggregation_Child_Page>(childPages);
-		    }
-	    }
-
-		/// <summary> Get a child page by code </summary>
+        /// <summary> Get a child page by code </summary>
 		/// <param name="ChildCode"> Code for this child page </param>
 		/// <returns> Either the matching page, or NULL </returns>
 		public Item_Aggregation_Child_Page Child_Page_By_Code(string ChildCode)
@@ -740,14 +761,17 @@ namespace SobekCM.Core.Aggregations
 		/// <param name="ChildPage"> New child page to add </param>
 		public void Add_Child_Page(Item_Aggregation_Child_Page ChildPage)
 	    {
+            if (Child_Pages == null)
+                Child_Pages = new List<Item_Aggregation_Child_Page>();
+
 		    string upper_code = ChildPage.Code.ToUpper();
 			if (childPagesHash.ContainsKey(upper_code))
 			{
 				childPagesHash.Remove(upper_code);
-				childPages.RemoveAll(CurrentPage => CurrentPage.Code.ToUpper() == upper_code);
+				Child_Pages.RemoveAll(CurrentPage => CurrentPage.Code.ToUpper() == upper_code);
 			}
 
-			childPages.Add(ChildPage);
+			Child_Pages.Add(ChildPage);
 			childPagesHash[upper_code] = ChildPage;
 		}
 
@@ -762,8 +786,11 @@ namespace SobekCM.Core.Aggregations
 			// Create the new Browse_Info object
 			Item_Aggregation_Child_Page childPage = new Item_Aggregation_Child_Page(Browse_Type, Item_Aggregation_Child_Page.Source_Type.Database, Browse_Code, StaticHtmlSource, Text);
 
+		    if (Child_Pages == null)
+		        Child_Pages = new List<Item_Aggregation_Child_Page>();
+
 			// Add this to the Hash table
-			childPages.Add(childPage);
+			Child_Pages.Add(childPage);
 			childPagesHash[Browse_Code.ToUpper()] = childPage;
 
 			return childPage;
@@ -797,12 +824,6 @@ namespace SobekCM.Core.Aggregations
 
         #endregion
 
-        #region Additional optional configuration portions
-
-        /// <summary> Any aggregation-specific contact form configuration, otherwise NULL </summary>
-        public ContactForm_Configuration ContactForm { get; set; }
-
-        #endregion
 
         #region Internal methods used to build this object
 
@@ -811,16 +832,16 @@ namespace SobekCM.Core.Aggregations
         public void Add_Child_Aggregation(Item_Aggregation_Related_Aggregations Child_Aggregation)
         {
             // If the list is currently null, create it
-            if (children == null)
+            if (Children == null)
             {
-                children = new List<Item_Aggregation_Related_Aggregations> {Child_Aggregation};
+                Children = new List<Item_Aggregation_Related_Aggregations> {Child_Aggregation};
             }
             else
             {
                 // If this does not exist, add it
-                if (!children.Contains(Child_Aggregation))
+                if (!Children.Contains(Child_Aggregation))
                 {
-                    children.Add(Child_Aggregation);
+                    Children.Add(Child_Aggregation);
                 }
             }
         }
@@ -830,16 +851,16 @@ namespace SobekCM.Core.Aggregations
         public void Add_Parent_Aggregation(Item_Aggregation_Related_Aggregations Parent_Aggregation)
         {
             // If the list is currently null, create it
-            if (parents == null)
+            if (Parents == null)
             {
-                parents = new List<Item_Aggregation_Related_Aggregations> {Parent_Aggregation};
+                Parents = new List<Item_Aggregation_Related_Aggregations> {Parent_Aggregation};
             }
             else
             {
                 // If this does not exist, add it
-                if (!parents.Contains(Parent_Aggregation))
+                if (!Parents.Contains(Parent_Aggregation))
                 {
-                    parents.Add(Parent_Aggregation);
+                    Parents.Add(Parent_Aggregation);
                 }
             }
         }
@@ -849,15 +870,18 @@ namespace SobekCM.Core.Aggregations
         /// <param name = "Language"> Language code </param>
         public void Add_Home_Page_File(string Home_Page_File, Web_Language_Enum Language)
         {
+            if (Home_Page_File_Dictionary == null)
+                Home_Page_File_Dictionary = new Dictionary<Web_Language_Enum, string>();
+
             // If no language code, then always use this as the default
             if (Language == Web_Language_Enum.DEFAULT)
             {
-                homeFilesByLanguage[defaultUiLanguage] = Home_Page_File;
+                Home_Page_File_Dictionary[defaultUiLanguage] = Home_Page_File;
             }
             else
             {
                 // Save this under the normalized language code
-                homeFilesByLanguage[Language] = Home_Page_File;
+                Home_Page_File_Dictionary[Language] = Home_Page_File;
             }
         }
 
@@ -866,15 +890,18 @@ namespace SobekCM.Core.Aggregations
         /// <param name = "Language"> Language code </param>
         public void Add_Banner_Image(string Banner_Image, Web_Language_Enum Language)
         {
+            if (Banner_Dictionary == null)
+                Banner_Dictionary = new Dictionary<Web_Language_Enum, string>();
+
             // If no language code, then always use this as the default
             if (Language == Web_Language_Enum.DEFAULT)
             {
-                bannerImagesByLanguage[defaultUiLanguage] = Banner_Image;
+                Banner_Dictionary[defaultUiLanguage] = Banner_Image;
             }
             else
             {
                 // Save this under the normalized language code
-                bannerImagesByLanguage[Language] = Banner_Image;
+                Banner_Dictionary[Language] = Banner_Image;
             }
         }
 
@@ -888,17 +915,44 @@ namespace SobekCM.Core.Aggregations
         {
 			Item_Aggregation_Front_Banner banner = new Item_Aggregation_Front_Banner(Banner_Image);
 
+            if (Front_Banner_Dictionary == null)
+                Front_Banner_Dictionary = new Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner>();
+
             // If no language code, then always use this as the default
             if (Language == Web_Language_Enum.DEFAULT)
             {
-                frontBannerImageByLanguage[defaultUiLanguage] = banner;
+                Front_Banner_Dictionary[defaultUiLanguage] = banner;
             }
             else
             {
                 // Save this under the normalized language code
-				frontBannerImageByLanguage[Language] = banner;
+				Front_Banner_Dictionary[Language] = banner;
             }
 	        return banner;
+        }
+
+        /// <summary>
+        ///   Add the special front banner image that displays on the home page only for this aggregation, by language
+        /// </summary>
+        /// <param name = "Banner"> special front banner image source file for this aggregation </param>
+        /// <param name = "Language"> Language code </param>
+        /// <returns> Build front banner image information object </returns>
+        public Item_Aggregation_Front_Banner Add_Front_Banner_Image(Item_Aggregation_Front_Banner Banner, Web_Language_Enum Language)
+        {
+            if (Front_Banner_Dictionary == null)
+                Front_Banner_Dictionary = new Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner>();
+
+            // If no language code, then always use this as the default
+            if (Language == Web_Language_Enum.DEFAULT)
+            {
+                Front_Banner_Dictionary[defaultUiLanguage] = Banner;
+            }
+            else
+            {
+                // Save this under the normalized language code
+                Front_Banner_Dictionary[Language] = Banner;
+            }
+            return Banner;
         }
 
         #endregion
@@ -908,19 +962,8 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Clear the list of banners, by language </summary>
         public void Clear_Banners()
         {
-            frontBannerImageByLanguage.Clear();
-            bannerImagesByLanguage.Clear();
-        }
-
-
-
-        /// <summary> Get the standard banner dictionary, by language </summary>
-        public Dictionary<Web_Language_Enum, string> Banner_Dictionary
-        {
-            get
-            {
-                return bannerImagesByLanguage;
-            }
+            Front_Banner_Dictionary = null;
+            Banner_Dictionary = null;
         }
 
         /// <summary>
@@ -937,35 +980,32 @@ namespace SobekCM.Core.Aggregations
         {
             // Does the web skin exist and override the banner?  For non-institutional agggregations
             // use the web skin banner HTML instead of the aggregation's banner
-            if ((ThisWebSkin != null) && (ThisWebSkin.Override_Banner) && (Aggregation_Type.ToLower().IndexOf("institution") < 0))
+            if ((ThisWebSkin != null) && (ThisWebSkin.Override_Banner) && (Type.ToLower().IndexOf("institution") < 0))
             {
                 return ThisWebSkin.Banner_HTML;
             }
 
+            if (Banner_Dictionary == null)
+                return String.Empty;
+
+
             // Does this language exist in the banner image lookup dictionary?
-            if (bannerImagesByLanguage.ContainsKey(Language))
+            if (Banner_Dictionary.ContainsKey(Language))
             {
-                return "design/" + ObjDirectory + bannerImagesByLanguage[Language];
+                return "design/" + ObjDirectory + Banner_Dictionary[Language];
             }
 
             // Default to the system language then
-            if (bannerImagesByLanguage.ContainsKey(defaultUiLanguage))
+            if (Banner_Dictionary.ContainsKey(defaultUiLanguage))
             {
-                return "design/" + ObjDirectory + bannerImagesByLanguage[defaultUiLanguage];
+                return "design/" + ObjDirectory + Banner_Dictionary[defaultUiLanguage];
             }
 
             // Just return the first, assuming one exists
-            return bannerImagesByLanguage.Count > 0 ? bannerImagesByLanguage.ElementAt(0).Value : String.Empty;
+            return Banner_Dictionary.Count > 0 ? Banner_Dictionary.ElementAt(0).Value : String.Empty;
         }
 
-        /// <summary> Get the front banner dictionary, by language </summary>
-		public Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner> Front_Banner_Dictionary
-        {
-            get
-            {
-                return frontBannerImageByLanguage;
-            }
-        }
+
 
         /// <summary> Gets the special front banner image for this aggregation's home page, by language </summary>
         /// <param name = "Language"> Language code </param>
@@ -977,40 +1017,35 @@ namespace SobekCM.Core.Aggregations
         /// </remarks>
 		public Item_Aggregation_Front_Banner Front_Banner_Image(Web_Language_Enum Language)
         {
+            if (Front_Banner_Dictionary == null)
+                return null;
+
             // Does this language exist in the banner image lookup dictionary?
-            if (frontBannerImageByLanguage.ContainsKey(Language))
+            if (Front_Banner_Dictionary.ContainsKey(Language))
             {
-                return frontBannerImageByLanguage[Language];
+                return Front_Banner_Dictionary[Language];
             }
 
             // Default to the system language then
-            if (frontBannerImageByLanguage.ContainsKey(defaultUiLanguage))
+            if (Front_Banner_Dictionary.ContainsKey(defaultUiLanguage))
             {
-                return frontBannerImageByLanguage[defaultUiLanguage];
+                return Front_Banner_Dictionary[defaultUiLanguage];
             }
 
             // Just return the first, assuming one exists
-            return frontBannerImageByLanguage.Count > 0 ? frontBannerImageByLanguage.ElementAt(0).Value : null;
+            return Front_Banner_Dictionary.Count > 0 ? Front_Banner_Dictionary.ElementAt(0).Value : null;
         }
 
         #endregion
 
         #region Method to return appropriate home page source file, or the home page HTML
 
-        /// <summary> Gets the raw home page source file </summary>
-        public Dictionary<Web_Language_Enum, string> Home_Page_File_Dictionary
-        {
-            get
-            {
-                return homeFilesByLanguage;
-            }
-        }
-
-		/// <summary> Removes a single home page from the collection of home pages </summary>
+        /// <summary> Removes a single home page from the collection of home pages </summary>
 		/// <param name="Language"> Language of the home page to remove </param>
 		public void Delete_Home_Page(Web_Language_Enum Language)
 		{
-			homeFilesByLanguage.Remove(Language);
+            if ( Home_Page_File_Dictionary != null )
+    			Home_Page_File_Dictionary.Remove(Language);
 		}
 
         /// <summary>
@@ -1023,20 +1058,23 @@ namespace SobekCM.Core.Aggregations
         /// </remarks>
         public string Home_Page_File(Web_Language_Enum Language)
         {
+            if (Home_Page_File_Dictionary == null)
+                return String.Empty;
+
             // Does this language exist in the home page file lookup dictionary?
-            if (homeFilesByLanguage.ContainsKey(Language))
+            if (Home_Page_File_Dictionary.ContainsKey(Language))
             {
-                return homeFilesByLanguage[Language];
+                return Home_Page_File_Dictionary[Language];
             }
 
             // Default to the system language then
-            if (homeFilesByLanguage.ContainsKey(defaultUiLanguage))
+            if (Home_Page_File_Dictionary.ContainsKey(defaultUiLanguage))
             {
-                return homeFilesByLanguage[defaultUiLanguage];
+                return Home_Page_File_Dictionary[defaultUiLanguage];
             }
 
             // Just return the first, assuming one exists
-            return homeFilesByLanguage.Count > 0 ? homeFilesByLanguage.ElementAt(0).Value : String.Empty;
+            return Home_Page_File_Dictionary.Count > 0 ? Home_Page_File_Dictionary.ElementAt(0).Value : String.Empty;
         }
 
         /// <summary>
@@ -1084,7 +1122,7 @@ namespace SobekCM.Core.Aggregations
                 if (tempHomeHtml.IndexOf("<%HIGHLIGHT%>") >= 0)
                 {
                     string highlightHtml = String.Empty;
-                    if (Highlights.Count > 0)
+                    if (( Highlights != null ) && (Highlights.Count > 0))
                     {
                         if (Highlights.Count == 1)
                             highlightHtml = Highlights[0].ToHTML(Language, "<%BASEURL%>" + ObjDirectory);
@@ -1120,7 +1158,7 @@ namespace SobekCM.Core.Aggregations
 	        {
 		        childPagesHash.Remove(Browse_Page.Code.ToUpper());
 	        }
-	        childPages.Remove(Browse_Page);
+	        Child_Pages.Remove(Browse_Page);
         }
 
 		/// <summary> Remove an existing browse or info object from this item aggregation </summary>
@@ -1133,7 +1171,7 @@ namespace SobekCM.Core.Aggregations
 
 				childPagesHash.Remove(Browse_Page_Code.ToUpper());
 
-				childPages.Remove(childPage);
+				Child_Pages.Remove(childPage);
 			}
 		}
 
@@ -1204,7 +1242,7 @@ namespace SobekCM.Core.Aggregations
                 writer.WriteLine("    <!-- Webskins here LIMIT the skins that this aggregation can appear under    -->");
                 writer.WriteLine("    <!-- and if none appear here, then the aggregation can appear under any      -->");
                 writer.WriteLine("    <!-- web skin.  Multiple web skins should appear with a comma between them.  -->");
-                if (Web_Skins.Count > 0)
+                if (( Web_Skins != null ) && ( Web_Skins.Count > 0))
                 {
                     if (Web_Skins.Count == 1)
                         writer.WriteLine("    <hi:webskins>" + Web_Skins[0] + "</hi:webskins>");
@@ -1266,9 +1304,12 @@ namespace SobekCM.Core.Aggregations
                 // Add the home page information
                 writer.WriteLine("<!-- Source files for the home page, by language -->");
                 writer.WriteLine("<hi:home>");
-                foreach (KeyValuePair<Web_Language_Enum, string> homePair in homeFilesByLanguage)
+                if (Home_Page_File_Dictionary != null)
                 {
-                    writer.WriteLine("    <hi:body lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\">" +homePair.Value + "</hi:body>");
+                    foreach (KeyValuePair<Web_Language_Enum, string> homePair in Home_Page_File_Dictionary)
+                    {
+                        writer.WriteLine("    <hi:body lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\">" + homePair.Value + "</hi:body>");
+                    }
                 }
                 writer.WriteLine("</hi:home>");
                 writer.WriteLine();
@@ -1280,30 +1321,36 @@ namespace SobekCM.Core.Aggregations
                 writer.WriteLine("<!-- If a highlight banner is indicated, the width, height, and side for the       -->");
                 writer.WriteLine("<!-- highlights must be included in the hi:highlights section.                     -->");
                 writer.WriteLine("<hi:banner>");
-                foreach (KeyValuePair<Web_Language_Enum, string> homePair in bannerImagesByLanguage)
+                if (Banner_Dictionary != null)
                 {
-                    writer.WriteLine("    <hi:source lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\">" +homePair.Value + "</hi:source>");
+                    foreach (KeyValuePair<Web_Language_Enum, string> homePair in Banner_Dictionary)
+                    {
+                        writer.WriteLine("    <hi:source lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\">" + homePair.Value + "</hi:source>");
+                    }
                 }
-				foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> homePair in frontBannerImageByLanguage)
-				{
-					writer.Write("    <hi:source type=\"HIGHLIGHT\" lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\"");
-					writer.Write(" height=\"" + homePair.Value.Height + "\" width=\"" + homePair.Value.Width + "\"");
-					switch (homePair.Value.Banner_Type)
-					{
-						case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.FULL:
-							writer.Write(" side=\"FULL\"");
-							break;
+                if (Front_Banner_Dictionary != null)
+                {
+                    foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> homePair in Front_Banner_Dictionary)
+                    {
+                        writer.Write("    <hi:source type=\"HIGHLIGHT\" lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\"");
+                        writer.Write(" height=\"" + homePair.Value.Height + "\" width=\"" + homePair.Value.Width + "\"");
+                        switch (homePair.Value.Type)
+                        {
+                            case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.FULL:
+                                writer.Write(" side=\"FULL\"");
+                                break;
 
-						case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT:
-							writer.Write(" side=\"LEFT\"");
-							break;
+                            case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT:
+                                writer.Write(" side=\"LEFT\"");
+                                break;
 
-						case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT:
-							writer.Write(" side=\"RIGHT\"");
-							break;
-					}
+                            case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT:
+                                writer.Write(" side=\"RIGHT\"");
+                                break;
+                        }
 
-					writer.WriteLine(">" +homePair.Value.Image_File + "</hi:source>");
+                        writer.WriteLine(">" + homePair.Value.File + "</hi:source>");
+                    }
                 }
                 writer.WriteLine("</hi:banner>");
                 writer.WriteLine();
@@ -1399,7 +1446,7 @@ namespace SobekCM.Core.Aggregations
                 writer.WriteLine();
 
                 // Add the custom derivative information here, if there are some
-                if (Custom_Directives.Count > 0)
+                if (( Custom_Directives != null ) && ( Custom_Directives.Count > 0))
                 {
                     writer.WriteLine(
                         "  <!-- Custom directive allows the user to specify that a certain code, embedded -->");
@@ -1420,7 +1467,7 @@ namespace SobekCM.Core.Aggregations
                 }
 
                 // Add the highlights, if there are some
-                if (Highlights.Count > 0)
+                if (( Highlights != null ) && ( Highlights.Count > 0))
                 {
                     writer.WriteLine("  <!-- Highlighted items.  Inclusion of more than one will cause the daily -->");
                     writer.WriteLine("  <!-- displayed highlighted item to slowly change through the items.      -->");
@@ -1428,10 +1475,13 @@ namespace SobekCM.Core.Aggregations
                     writer.WriteLine("  <!-- to rotate on the home page or in the special highlight banner.      -->");
 
                     // Is there a special front banner with highlighted item within it?
-                    if (frontBannerImageByLanguage.Count > 0)
+                    if (( Front_Banner_Dictionary != null ) && ( Front_Banner_Dictionary.Count > 0))
                     {
                         writer.Write("  <hi:highlights ");
-                        writer.WriteLine(Rotating_Highlights ? "type=\"ROTATING\">" : "type=\"STANDARD\">");
+                        if (( Rotating_Highlights.HasValue ) && ( Rotating_Highlights.Value ))
+                            writer.WriteLine( "type=\"ROTATING\">");
+                        else
+                            writer.WriteLine( "type=\"STANDARD\">");
                     }
                     else
                     {
@@ -1450,7 +1500,7 @@ namespace SobekCM.Core.Aggregations
                 // Add all the child pages
 	            if (childPagesHash.Count > 0)
 	            {
-		            foreach (Item_Aggregation_Child_Page browseObject in childPages)
+		            foreach (Item_Aggregation_Child_Page browseObject in Child_Pages)
 		            {
 						// Don't add ALL or NEW here
 						if ((String.Compare(browseObject.Code, "all", StringComparison.InvariantCultureIgnoreCase) != 0) && (String.Compare(browseObject.Code, "new", StringComparison.InvariantCultureIgnoreCase) != 0))

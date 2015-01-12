@@ -40,7 +40,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Metadata_Browse_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            string defaultBrowseBy = RequestSpecificValues.Hierarchy_Object.Default_BrowseBy;
+            string defaultBrowseBy = RequestSpecificValues.Hierarchy_Object.Default_BrowseBy ?? String.Empty;
 
             // If there is not info browse mode listed, use the default
             if (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 0)

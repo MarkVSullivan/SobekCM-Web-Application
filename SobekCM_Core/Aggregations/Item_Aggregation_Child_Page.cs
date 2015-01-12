@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using ProtoBuf;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.WebContent;
 using SobekCM.Tools;
@@ -14,7 +15,7 @@ using SobekCM.Tools;
 namespace SobekCM.Core.Aggregations
 {
 	/// <summary> Basic information about a single child page for an item aggregation </summary>
-	[Serializable]
+    [Serializable, DataContract, ProtoContract]
 	public class Item_Aggregation_Child_Page 
 	{
 		#region Visibility_Type enum
@@ -104,10 +105,6 @@ namespace SobekCM.Core.Aggregations
 		/// <summary> Constructor for a new instance of the Item_Aggregation_Child_Page class </summary>
 		public Item_Aggregation_Child_Page() 
 		{
-			// Create the collections for the labels and static html source
-			Label_Dictionary = new Dictionary<Web_Language_Enum, string>();
-			Source_Dictionary = new Dictionary<Web_Language_Enum, string>();
-
 			// Set code to empty initially
 			Code = String.Empty;
 		}
@@ -121,6 +118,8 @@ namespace SobekCM.Core.Aggregations
 		/// <param name="Language"> Language code </param>
         public void Add_Label(string Label, Web_Language_Enum Language)
 		{
+		    if (Label_Dictionary == null) Label_Dictionary = new Dictionary<Web_Language_Enum, string>();
+
 			// Save this under the normalized language 
 			Label_Dictionary[Language] = Label;
 		}
@@ -130,6 +129,8 @@ namespace SobekCM.Core.Aggregations
 		/// <param name="Language"> Language code </param>
         public void Add_Static_HTML_Source(string HTML_Source, Web_Language_Enum Language)
 		{
+		    if (Source_Dictionary == null) Source_Dictionary = new Dictionary<Web_Language_Enum, string>();
+
 			// Save this under the normalized language 
 			Source_Dictionary[Language] = HTML_Source;
 		}
@@ -138,29 +139,29 @@ namespace SobekCM.Core.Aggregations
 
 		/// <summary> Code for this info or browse page </summary>
 		/// <remarks> This is the code that is used in the URL to specify this info or browse page </remarks>
-        [DataMember]
+        [DataMember(Name = "code"), ProtoMember(1)]
 		public string Code { get; set; }
 
 		/// <summary> Source of this browse or info page </summary>
-        [DataMember]
+        [DataMember(Name = "source"), ProtoMember(2)]
 		public Source_Type Source { get; set; }
 
 		/// <summary> Data type of this browse or info page </summary>
-        [DataMember]
+        [DataMember(Name = "dataType"), ProtoMember(3)]
 		public Result_Data_Type Data_Type { get; set; }
 
 		/// <summary> Flag indicates where this child page should appear </summary>
-        [DataMember]
+        [DataMember(Name = "browseType"), ProtoMember(4)]
 		public Visibility_Type Browse_Type { get; set; }
 
 		/// <summary> If this is to appear on the main menu, this allows the browses
 		/// to be established hierarchically, with this child page either being at the
 		/// top, or sitting under another child page </summary>
-        [DataMember]
+        [DataMember(Name = "parentCode", EmitDefaultValue=false), ProtoMember(5)]
 		public string Parent_Code { get; set; }
 
 		/// <summary> Gets the complete dictionary of labels and languages </summary>
-        [DataMember]
+        [DataMember(Name = "labels", EmitDefaultValue = false), ProtoMember(6)]
 		public Dictionary<Web_Language_Enum, string> Label_Dictionary { get; private set; }
 
 		/// <summary> Gets the language-specific label, if one exists </summary>
@@ -168,6 +169,9 @@ namespace SobekCM.Core.Aggregations
 		/// <returns> Language-specific label </returns>
 		public string Get_Label(Web_Language_Enum Language)
 		{
+            if (Label_Dictionary == null)
+                return String.Empty;
+
 			if ( Label_Dictionary.ContainsKey(Language))
 				return Label_Dictionary[Language];
 
@@ -184,7 +188,7 @@ namespace SobekCM.Core.Aggregations
 		}
 
 		/// <summary> Gets the complete dictionary of static HTML sources and languages </summary>
-		[DataMember]
+        [DataMember(Name = "staticSources", EmitDefaultValue = false), ProtoMember(7)]
 		public Dictionary<Web_Language_Enum, string> Source_Dictionary { get; private set; }
 
 		/// <summary> Gets the language-specific static HTML source file, if one exists </summary>
@@ -192,6 +196,9 @@ namespace SobekCM.Core.Aggregations
 		/// <returns> Language-specific static HTML source file </returns>
 		public string Get_Static_HTML_Source( Web_Language_Enum Language)
 		{
+            if (Source_Dictionary == null)
+                return String.Empty;
+
 			if (Source_Dictionary.ContainsKey(Language))
 				return Source_Dictionary[Language];
 
@@ -212,8 +219,8 @@ namespace SobekCM.Core.Aggregations
 		/// <param name="Language_To_Remove"></param>
 		public void Remove_Language(Web_Language_Enum Language_To_Remove)
 		{
-			Source_Dictionary.Remove(Language_To_Remove);
-			Label_Dictionary.Remove(Language_To_Remove);
+            if ( Source_Dictionary != null ) Source_Dictionary.Remove(Language_To_Remove);
+            if ( Label_Dictionary != null ) Label_Dictionary.Remove(Language_To_Remove);
 		}
 
 		internal void Write_In_Configuration_XML_File( StreamWriter Writer, string Default_BrowseBy )
@@ -221,7 +228,7 @@ namespace SobekCM.Core.Aggregations
 			switch (Browse_Type)
 			{
 				case Visibility_Type.METADATA_BROWSE_BY:
-					Writer.WriteLine(String.Compare(Default_BrowseBy, Code, StringComparison.OrdinalIgnoreCase) == 0 ? "  <hi:browse visibility=\"BROWSEBY\" default=\"DEFAULT\">" : "  <hi:browse visibility=\"BROWSEBY\">");
+					Writer.WriteLine(String.Compare(Default_BrowseBy ?? String.Empty, Code, StringComparison.OrdinalIgnoreCase) == 0 ? "  <hi:browse visibility=\"BROWSEBY\" default=\"DEFAULT\">" : "  <hi:browse visibility=\"BROWSEBY\">");
 					break;
 
 				case Visibility_Type.NONE:
@@ -245,7 +252,7 @@ namespace SobekCM.Core.Aggregations
 
 				// Include the titles, or just use the code as the title if no titles given
 				Writer.WriteLine("    <hi:titles>");
-				if (Label_Dictionary.Count > 0)
+				if (( Label_Dictionary != null ) && ( Label_Dictionary.Count > 0))
 				{
 					foreach (KeyValuePair<Web_Language_Enum, string> thisLabel in Label_Dictionary)
 					{
@@ -262,15 +269,18 @@ namespace SobekCM.Core.Aggregations
 				Writer.WriteLine("    </hi:titles>");
 
 				// Include the sources as well
-				Writer.WriteLine("    <hi:content>");
-				foreach (KeyValuePair<Web_Language_Enum, string> thisSource in Source_Dictionary )
-				{
-					if (thisSource.Key == Web_Language_Enum.DEFAULT)
-						Writer.WriteLine("    <hi:body>" + thisSource.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:body>");
-					else
-						Writer.WriteLine("    <hi:body lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(thisSource.Key) + "\">" + thisSource.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:body>");
-				}
-				Writer.WriteLine("    </hi:content>");
+			    if ((Source_Dictionary != null) && (Source_Dictionary.Count > 0))
+			    {
+			        Writer.WriteLine("    <hi:content>");
+			        foreach (KeyValuePair<Web_Language_Enum, string> thisSource in Source_Dictionary)
+			        {
+			            if (thisSource.Key == Web_Language_Enum.DEFAULT)
+			                Writer.WriteLine("    <hi:body>" + thisSource.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:body>");
+			            else
+			                Writer.WriteLine("    <hi:body lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(thisSource.Key) + "\">" + thisSource.Value.Replace("&", "&amp;").Replace("\"", "&quot;") + "</hi:body>");
+			        }
+			        Writer.WriteLine("    </hi:content>");
+			    }
 			}
 
 
@@ -287,7 +297,7 @@ namespace SobekCM.Core.Aggregations
 		/// <remarks> This actually reads the HTML file each time this is requested </remarks>
 		public HTML_Based_Content Get_Static_Content( Web_Language_Enum Language, string Base_URL, string Base_Network, Custom_Tracer Tracer)
 		{
-			if ((Data_Type != Result_Data_Type.Text) || (Source != Source_Type.Static_HTML) || (Source_Dictionary.Count == 0))
+			if ((Data_Type != Result_Data_Type.Text) || (Source != Source_Type.Static_HTML) || ( Source_Dictionary == null ) || (Source_Dictionary.Count == 0))
 				return null;
 
 			// Get the source file name

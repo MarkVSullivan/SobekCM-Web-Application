@@ -316,7 +316,7 @@ namespace SobekCM.Engine_Library.Database
                     Thematic_Heading_List.Clear();
 
                     // Add them back
-                    Thematic_Heading_List.AddRange(from DataRow thisRow in tempSet.Tables[0].Rows select new Thematic_Heading(Convert.ToInt16(thisRow["ThematicHeadingID"]), thisRow["ThemeName"].ToString()));
+                    Thematic_Heading_List.AddRange(from DataRow thisRow in tempSet.Tables[0].Rows select new Thematic_Heading(Convert.ToInt16(thisRow["ThematicHeadingID"]), thisRow["Text"].ToString()));
                 }
 
                 // Return the built collection as readonly
@@ -3084,12 +3084,12 @@ namespace SobekCM.Engine_Library.Database
             {
                 Name = thisRow[2].ToString(),
                 ShortName = thisRow[3].ToString(),
-                Is_Active = Convert.ToBoolean(thisRow[5]),
+                Active = Convert.ToBoolean(thisRow[5]),
                 Hidden = Convert.ToBoolean(thisRow[6]),
                 Has_New_Items = Convert.ToBoolean(thisRow[7]),
                 Map_Display = Convert.ToUInt16(thisRow[11]),
                 Map_Search = Convert.ToUInt16(thisRow[12]),
-                OAI_Flag = Convert.ToBoolean(thisRow[13]),
+                OAI_Enabled = Convert.ToBoolean(thisRow[13]),
                 Items_Can_Be_Described = Convert.ToInt16(thisRow[18]),
             };
 
@@ -3105,7 +3105,14 @@ namespace SobekCM.Engine_Library.Database
                 aggrInfo.External_Link = thisRow[19].ToString();
 
             if (BasicInfo.Columns.Contains("ThematicHeadingID"))
-                aggrInfo.Thematic_Heading_ID = Convert.ToInt32(thisRow["ThematicHeadingID"]);
+            {
+                if (thisRow["ThematicHeadingID"] != DBNull.Value)
+                {
+                    int thematicHeadingId = Convert.ToInt32(thisRow["ThematicHeadingID"]);
+                    if ( thematicHeadingId > 0 )
+                        aggrInfo.Thematic_Heading_ID = thematicHeadingId;
+                }
+            }
 
             // return the built object
             return aggrInfo;
@@ -3334,7 +3341,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-        public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Search_Beta, int Map_Display, int Map_Display_Beta, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, Custom_Tracer Tracer)
+        public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, int? ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Search_Beta, int Map_Display, int Map_Display_Beta, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -3350,7 +3357,10 @@ namespace SobekCM.Engine_Library.Database
                 paramList[2] = new SqlParameter("@name", Name);
                 paramList[3] = new SqlParameter("@shortname", ShortName);
                 paramList[4] = new SqlParameter("@description", Description);
-                paramList[5] = new SqlParameter("@thematicHeadingId", ThematicHeadingID);
+                if (ThematicHeadingID.HasValue)
+                    paramList[5] = new SqlParameter("@thematicHeadingId", ThematicHeadingID.Value);
+                else
+                    paramList[5] = new SqlParameter("@thematicHeadingId", DBNull.Value);
                 paramList[6] = new SqlParameter("@type", Type);
                 paramList[7] = new SqlParameter("@isActive", IsActive);
                 paramList[8] = new SqlParameter("@hidden", IsHidden);

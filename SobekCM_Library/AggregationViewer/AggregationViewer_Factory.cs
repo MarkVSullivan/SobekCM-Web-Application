@@ -33,7 +33,7 @@ namespace SobekCM.Library.AggregationViewer
 
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search:
                     Item_Aggregation_Front_Banner frontBannerImage = RequestSpecificValues.Hierarchy_Object.Front_Banner_Image(RequestSpecificValues.Current_Mode.Language);
-                    if ((frontBannerImage != null) && (RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0))
+                    if ((frontBannerImage != null) && (RequestSpecificValues.Hierarchy_Object.Highlights != null ) && (RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0))
                     {
                         return new Rotating_Highlight_Search_AggregationViewer(RequestSpecificValues);
                     }
@@ -44,7 +44,7 @@ namespace SobekCM.Library.AggregationViewer
 
                 case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_MimeType:
                     Item_Aggregation_Front_Banner frontBannerImage2 = RequestSpecificValues.Hierarchy_Object.Front_Banner_Image(RequestSpecificValues.Current_Mode.Language);
-                    if ((frontBannerImage2 != null) && (RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0))
+                    if ((frontBannerImage2 != null) && (RequestSpecificValues.Hierarchy_Object.Highlights != null) && (RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0))
                     {
                         return new Rotating_Highlight_MimeType_AggregationViewer(RequestSpecificValues);
                     }
@@ -90,7 +90,7 @@ namespace SobekCM.Library.AggregationViewer
 
                 case Search_Type_Enum.Basic:
                     Item_Aggregation_Front_Banner frontBannerImage = RequestSpecificValues.Hierarchy_Object.Front_Banner_Image(RequestSpecificValues.Current_Mode.Language);
-                    if ((frontBannerImage != null) && (RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0))
+                    if ((frontBannerImage != null) && (RequestSpecificValues.Hierarchy_Object.Highlights != null) && (RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0))
                     {
                         return new Rotating_Highlight_Search_AggregationViewer(RequestSpecificValues);
                     }
