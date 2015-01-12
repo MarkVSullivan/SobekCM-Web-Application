@@ -24,8 +24,11 @@ namespace SobekCM.Engine_Library
             if (!String.IsNullOrEmpty(queryString))
             {
 
-                if ( microserviceConfig == null )
-                    microserviceConfig = Microservices_Config_Reader.Read_Config(@"C:\GitRepository\SobekCM-Web-Application\SobekCM\config\default\sobekcm_microservices.config");
+                if (microserviceConfig == null)
+                {
+                    string path = context.Server.MapPath("config/default/sobekcm_microservices.config");
+                    microserviceConfig = Microservices_Config_Reader.Read_Config(path);
+                }
 
                 // Collect the requested paths
                 string[] splitter;

@@ -316,7 +316,7 @@ namespace SobekCM.Engine_Library.Database
                     Thematic_Heading_List.Clear();
 
                     // Add them back
-                    Thematic_Heading_List.AddRange(from DataRow thisRow in tempSet.Tables[0].Rows select new Thematic_Heading(Convert.ToInt16(thisRow["ThematicHeadingID"]), thisRow["Text"].ToString()));
+                    Thematic_Heading_List.AddRange(from DataRow thisRow in tempSet.Tables[0].Rows select new Thematic_Heading(Convert.ToInt16(thisRow["ThematicHeadingID"]), thisRow["ThemeName"].ToString()));
                 }
 
                 // Return the built collection as readonly
