@@ -2586,9 +2586,9 @@ GnuBook.prototype.jumpIndexForRightEdgePageX = function(pageX) {
 GnuBook.prototype.initToolbar = function(mode) {
 
     $("#GnuBook").append("<div id='GBheader'>"
-        + "<span class='ufgas_bookturner_logo'><a class='GBicon logo' href='http://www.uflib.ufl.edu'>&nbsp;</a></span>"
+        + "<span class='bookturner_logo_top_left'><a class='GBicon top_left_logo' href='" + this.bookUrl + "'>&nbsp;</a></span>"
         + "<span class='GBtitle'>" + this.shortTitle(200) + "</span>"
-        + "<span class='ufdc_bookturner_logo'><a class='GBicon ufdc' href='http://ufdc.ufl.edu'>&nbsp;</a></span>"
+        + "<span class='bookturner_logo_top_right'><a class='GBicon top_right_logo' href='" + this.bookUrl + "'>&nbsp;</a></span>"
         + "</div>"
         + "<div id='GBtoolbar'>"
         + "<div id='GBtoolbarLink'>"

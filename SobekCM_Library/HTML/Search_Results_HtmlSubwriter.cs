@@ -77,7 +77,6 @@ namespace SobekCM.Library.HTML
             {
 				// Add the main aggrgeation menu here
 				MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, false);
-
             }
            
             if ( RequestSpecificValues.Results_Statistics != null )

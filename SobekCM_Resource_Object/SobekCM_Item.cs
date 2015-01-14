@@ -3081,7 +3081,7 @@ namespace SobekCM.Resource_Object
                 }
 
                 builder533.Append("|d " + METS_Header.Create_Date.Year + ". ");
-                if (SystemName.Length > 0)
+                if (!String.IsNullOrEmpty(SystemName))
                 {
                     builder533.Append("|f (" + SystemName + ") ");
                 }

@@ -672,7 +672,7 @@ namespace SobekCM.Library.HTML
 				else
 				{
 					// Add the main aggrgeation menu here
-                    if (RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation)
+                    if (!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation)
                         MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, false);
 
 					// Start the (optional) page container
