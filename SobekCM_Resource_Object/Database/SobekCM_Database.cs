@@ -2047,7 +2047,7 @@ namespace SobekCM.Resource_Object.Database
 				current_index += 10;
 			}
 
-			//add by Keven for dPanther - upload by Meng
+			//add by Keven for dPanther 
             if ((metadataTerms.Count - current_index) > 0)
             {
                 List<KeyValuePair<string, string>> temp = metadataTerms;
