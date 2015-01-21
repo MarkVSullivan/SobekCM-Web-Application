@@ -30,6 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Jil">
+      <HintPath>..\DLLs\JIL\Jil.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -78,6 +84,10 @@
     <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetFastSerializerSurrogate.cs" />
     <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetHelper.cs" />
     <Compile Include="MemoryMgmt\AdoNetHelper\FastSerializer.cs" />
+    <Compile Include="MicroservicesClient\MicroservicesClient_Configuration.cs" />
+    <Compile Include="MicroservicesClient\MicroservicesClient_Config_Reader.cs" />
+    <Compile Include="MicroservicesClient\MicroservicesClient_Endpoint.cs" />
+    <Compile Include="MicroservicesClient\MicroservicesClientBase.cs" />
     <Compile Include="Navigation\NavigationStateEnums.cs" />
     <Compile Include="Navigation\SobekCM_Navigation_Object.cs" />
     <Compile Include="OAI\OAI_Record.cs" />
@@ -99,6 +109,7 @@
     <Compile Include="Settings\Builder_Source_Folder.cs" />
     <Compile Include="Settings\Disposition_Option.cs" />
     <Compile Include="Settings\InstanceWide_Settings.cs" />
+    <Compile Include="Settings\Marc21_Settings.cs" />
     <Compile Include="Settings\Mime_Type_Info.cs" />
     <Compile Include="Settings\Workflow_Type.cs" />
     <Compile Include="SiteMap\SobekCM_SiteMap.cs" />
@@ -121,6 +132,7 @@
       <Name>SobekCM_Tools</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using ProtoBuf;
 using SobekCM.Core.ApplicationState;
 
 #endregion
@@ -12,23 +13,23 @@ namespace SobekCM.Core.Aggregations
     /// <summary> Class contains very basic information about item aggregationPermissions which are related
     /// (either as parent or child) to the main item aggregation </summary>
     /// <remarks> This class is a helper class to the Item_Aggregation class and used by the <see cref="Aggregation_Code_Manager"/>. </remarks>
-    [DataContract]
+    [Serializable, DataContract, ProtoContract]
     public class Item_Aggregation_Related_Aggregations : IEquatable<Item_Aggregation_Related_Aggregations>
     {
         /// <summary> Aggregation code for this related aggregation </summary>
-        [DataMember]
+        [DataMember(Name = "code"), ProtoMember(1)]
         public readonly string Code;
 
         /// <summary> Description for this aggregation </summary>
-        [DataMember]
+        [DataMember(Name = "description", EmitDefaultValue=false), ProtoMember(2)]
         public readonly string Description;
 
         /// <summary> Aggregation id for this related aggregation </summary>
-        [DataMember]
+        [DataMember(Name = "id", EmitDefaultValue = false), ProtoMember(3)]
         public readonly ushort ID;
 
         /// <summary> Type of this related aggregation </summary>
-        [DataMember]
+        [DataMember(Name = "type", EmitDefaultValue=false), ProtoMember(4)]
         public readonly string Type;
 
         /// <summary> Constructor for a new instance of the Item_Aggregation_Related_Aggregations class </summary>
@@ -47,7 +48,6 @@ namespace SobekCM.Core.Aggregations
             this.Hidden = Hidden;
             this.Active = Active;
             ID = 0;
-            External_Link = String.Empty;
         }
 
         /// <summary> Constructor for a new instance of the Item_Aggregation_Related_Aggregations class </summary>
@@ -70,38 +70,38 @@ namespace SobekCM.Core.Aggregations
             this.Active = Active;
             this.Description = Description;
             this.ID = ID;
-            External_Link = String.Empty;
         }
 
         /// <summary> Name for this related aggregation </summary>
-        [DataMember]
+        [DataMember(Name = "name", EmitDefaultValue = false), ProtoMember(5)]
         public string Name { get; set; }
 
         /// <summary> Shortened name for this related aggregation </summary>
-        [DataMember]
+        [DataMember(Name = "shortName", EmitDefaultValue = false), ProtoMember(6)]
         public string ShortName { get; set; }
 
         /// <summary> Flag indicates if this aggregation is hidden </summary>
-        [DataMember]
+        [DataMember(Name = "isHidden"), ProtoMember(7)]
         public bool Hidden { get; set; }
 
         /// <summary> Flag indicates if this aggregation is active </summary>
-        [DataMember]
+        [DataMember(Name = "isActive"), ProtoMember(8)]
         public bool Active { get; set; }
 
         /// <summary> External link for this institution </summary>
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember(Name = "link", EmitDefaultValue = false), ProtoMember(9)]
         public string External_Link { get; set; }
 
         /// <summary> Gets the read-only collection of children item aggregation objects </summary>
         /// <remarks> You should check the count of children first using the <see cref="Children_Count"/> before using this property.
         /// Even if there are no children, this property creates a readonly collection to pass back out.</remarks>
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember(Name = "children", EmitDefaultValue = false), ProtoMember(10)]
         public List<Item_Aggregation_Related_Aggregations> Children { get; private set; }
 
         /// <summary> Gets the number of child item aggregationPermissions present </summary>
         /// <remarks>This should be used rather than the Count property of the <see cref="Children"/> property.  Even if 
         /// there are no children, the Children property creates a readonly collection to pass back out.</remarks>
+        [IgnoreDataMember]
         public int Children_Count
         {
             get

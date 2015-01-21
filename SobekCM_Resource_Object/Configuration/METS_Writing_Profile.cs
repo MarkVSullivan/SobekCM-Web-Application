@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 
 namespace SobekCM.Resource_Object.Configuration
@@ -12,12 +9,12 @@ namespace SobekCM.Resource_Object.Configuration
     /// a METS file. </summary>
     public class METS_Writing_Profile
     {
-        private List<METS_Section_ReaderWriter_Config> packageLevelAmdSecWriterConfigs;
-        private List<METS_Section_ReaderWriter_Config> packageLevelDmdSecWriterConfigs;
-        private List<METS_Section_ReaderWriter_Config> divisionLevelAmdSecWriterConfigs;
-        private List<METS_Section_ReaderWriter_Config> divisionLevelDmdSecWriterConfigs;
-        private List<METS_Section_ReaderWriter_Config> fileLevelAmdSecWriterConfigs;
-        private List<METS_Section_ReaderWriter_Config> fileLevelDmdSecWriterConfigs;
+        private readonly List<METS_Section_ReaderWriter_Config> packageLevelAmdSecWriterConfigs;
+        private readonly List<METS_Section_ReaderWriter_Config> packageLevelDmdSecWriterConfigs;
+        private readonly List<METS_Section_ReaderWriter_Config> divisionLevelAmdSecWriterConfigs;
+        private readonly List<METS_Section_ReaderWriter_Config> divisionLevelDmdSecWriterConfigs;
+        private readonly List<METS_Section_ReaderWriter_Config> fileLevelAmdSecWriterConfigs;
+        private readonly List<METS_Section_ReaderWriter_Config> fileLevelDmdSecWriterConfigs;
 
         /// <summary> Name associated with this profile </summary>
         public string Profile_Name { get; set; }

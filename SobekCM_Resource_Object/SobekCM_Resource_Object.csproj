@@ -172,6 +172,8 @@
     <Compile Include="OAI\Writer\abstract_OAI_PMH_Metadata_Type_Writer.cs" />
     <Compile Include="OAI\Writer\DC_OAI_Metadata_Type_Writer.cs" />
     <Compile Include="OAI\Writer\iOAI_PMH_Metadata_Type_Writer.cs" />
+    <Compile Include="OAI\Writer\MarcXML_OAI_PMH_Metadata_Type_Writer.cs" />
+    <Compile Include="OAI\Writer\OAI_PMH_Metadata_Writers.cs" />
     <Compile Include="Utilities\Image_Derivative_Creation_Processor.cs" />
     <Compile Include="iMetadataDescribable.cs" />
     <Compile Include="Metadata_File_ReaderWriters\MARC\ErrorHandling\MARC_Record_Parsing_Error.cs" />

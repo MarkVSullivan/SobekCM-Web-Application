@@ -1,6 +1,8 @@
 ﻿#region Using directives
 
+using System;
 using System.Runtime.Serialization;
+using ProtoBuf;
 
 #endregion
 
@@ -9,19 +11,19 @@ namespace SobekCM.Core.Aggregations
     /// <summary> Custom derivative information which allows a custom derivative
     /// to be replaced with HTML read from a source file, in the home page, info
     /// pages, and browse pages </summary>
-    [DataContract]
+    [Serializable, DataContract, ProtoContract]
     public class Item_Aggregation_Custom_Directive
     {
         /// <summary> Custom derivative code to be replaced with the replacement HTML </summary>
-        [DataMember]
+        [DataMember(Name = "code"), ProtoMember(1)]
         public readonly string Code;
 
         /// <summary> Replacement HTML from the source file </summary>
-        [DataMember]
+        [DataMember(Name = "replacement"), ProtoMember(2)]
         public readonly string Replacement_HTML;
 
         /// <summary> Source file for the replacement HTML </summary>
-        [DataMember]
+        [DataMember(Name = "file"), ProtoMember(3)]
         public readonly string Source_File;
 
         /// <summary> Constructor for a new instance of the Item_Aggregation_Custom_Derivative class </summary>

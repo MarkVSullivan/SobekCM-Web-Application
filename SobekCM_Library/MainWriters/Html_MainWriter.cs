@@ -600,7 +600,7 @@ namespace SobekCM.Library.MainWriters
             }
 
 			// Finally add the aggregation-level CSS if it exists
-            if (((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Search) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results)) && (RequestSpecificValues.Hierarchy_Object != null) && (RequestSpecificValues.Hierarchy_Object.CSS_File.Length > 0))
+            if (((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Search) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results)) && (RequestSpecificValues.Hierarchy_Object != null) && ( !String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.CSS_File)))
 			{
                 Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/" + RequestSpecificValues.Hierarchy_Object.CSS_File + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}

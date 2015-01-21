@@ -145,10 +145,10 @@ namespace SobekCM.Library.HTML
                 string email_body = emailBuilder + "\n\n" + UserHistoryRequestInfo;
 
                 // Determine the sendee
-                string sendTo = RequestSpecificValues.Hierarchy_Object.Contact_Email.Replace(";", ",");
-                if (sendTo.Trim().Length == 0)
+                string sendTo = UI_ApplicationCache_Gateway.Settings.System_Email;
+                if (( RequestSpecificValues.Hierarchy_Object != null ) && ( !String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.Contact_Email)))
                 {
-                    sendTo = UI_ApplicationCache_Gateway.Settings.System_Email;
+                    sendTo = RequestSpecificValues.Hierarchy_Object.Contact_Email.Replace(";", ",");
                 }
 
                 try

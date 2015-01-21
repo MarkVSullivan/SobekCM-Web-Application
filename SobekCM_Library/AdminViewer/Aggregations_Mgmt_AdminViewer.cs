@@ -538,7 +538,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("            <option value=\"-1\" selected=\"selected\" ></option>");
 				foreach (Thematic_Heading thisHeading in UI_ApplicationCache_Gateway.Thematic_Headings)
 				{
-					Output.Write("            <option value=\"" + thisHeading.ThematicHeadingID + "\">" + HttpUtility.HtmlEncode(thisHeading.ThemeName) + "</option>");
+					Output.Write("            <option value=\"" + thisHeading.ID + "\">" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
 				}
 	            Output.WriteLine("          </select>");
 	            Output.WriteLine("        </td>");

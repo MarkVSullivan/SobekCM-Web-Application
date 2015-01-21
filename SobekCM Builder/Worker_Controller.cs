@@ -651,14 +651,14 @@ namespace SobekCM.Builder
                 if (reportSuccess)
                 {
                     Library.Database.SobekCM_Database.Builder_Clear_Item_Error_Log(feed_name.ToUpper(), "", "UFDC Builder");
-                    File.Copy(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + file_name, Engine_ApplicationCache_Gateway.Settings.MarcXML_Feed_Location + file_name, true);
+                    File.Copy(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + file_name, Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + file_name, true);
                 }
                 else
                 {
                     string errors = createEndeca.Errors;
                     if (errors.Length > 0)
                     {
-                        StreamWriter writer = new StreamWriter(Engine_ApplicationCache_Gateway.Settings.MarcXML_Feed_Location + error_file_name, false);
+                        StreamWriter writer = new StreamWriter(Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + error_file_name, false);
                         writer.WriteLine("<html><head><title>" + feed_name + " Errors</title></head><body><h1>" + feed_name + " Errors</h1>");
                         writer.Write(errors.Replace("\r\n","<br />").Replace("\n","<br />").Replace("<br />", "<br />\r\n"));
                         writer.Write("</body></html>");
@@ -667,7 +667,7 @@ namespace SobekCM.Builder
 
                         Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, feed_name.ToUpper(), "Error", "Resulting file failed validation", "");
 
-                        File.Copy(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + file_name, Engine_ApplicationCache_Gateway.Settings.MarcXML_Feed_Location + file_name.Replace(".xml", "_error.xml"), true);
+                        File.Copy(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + file_name, Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + file_name.Replace(".xml", "_error.xml"), true);
                     }
                 }
             }

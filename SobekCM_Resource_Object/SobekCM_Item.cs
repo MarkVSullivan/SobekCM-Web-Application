@@ -1369,28 +1369,22 @@ namespace SobekCM.Resource_Object
         }
 
         /// <summary> Writes all the data about this item in MARC-ish HTML for display online</summary>
-        /// <param name="Collections"> List of the names of the collections linked to this item </param>
-        /// <param name="Include_Endeca_Tags"> Flag indicates whether to include tags specific to Florida's implementation of Endeca </param>
-        /// <param name="System_Name"> Name of the host system, which is added into the MARC record </param>
-        /// <param name="System_Abbreviation"> Abbreviation for the host system, which is added into the MARC record </param>
+        /// <param name="Options"> Dictionary of any options which this metadata reader/writer may utilize </param>
         /// <returns> Complete HTML as a string, ready for display </returns>
-        public string Get_MARC_HTML(List<string> Collections, bool Include_Endeca_Tags, string System_Name, string System_Abbreviation)
+        public string Get_MARC_HTML(Dictionary<string, object> Options)
         {
             MARC_HTML_Writer marcHtmlWriter = new MARC_HTML_Writer();
-            return marcHtmlWriter.MARC_HTML(this, MARC_Sobek_Standard_Tags(Collections, Include_Endeca_Tags, System_Name, System_Abbreviation));
+            return marcHtmlWriter.MARC_HTML(this, Options);
         }
 
         /// <summary> Writes all the data about this item in MARC-ish HTML for display online</summary>
-        /// <param name="Collections"> List of the names of the collections linked to this item </param>
-        /// <param name="Include_Endeca_Tags"> Flag indicates whether to include tags specific to Florida's implementation of Endeca </param>
+        /// <param name="Options"> Dictionary of any options which this metadata reader/writer may utilize </param>
         /// <param name="Width"> Width value for use within the rendered tables </param>
-        /// <param name="System_Name"> Name of the host system, which is added into the MARC record </param>
-        /// <param name="System_Abbreviation"> Abbreviation for the host system, which is added into the MARC record </param>
         /// <returns> Complete HTML as a string, ready for display </returns>
-        public string Get_MARC_HTML(List<string> Collections, bool Include_Endeca_Tags, string Width, string System_Name, string System_Abbreviation)
+        public string Get_MARC_HTML(Dictionary<string, object> Options, string Width )
         {
             MARC_HTML_Writer marcHtmlWriter = new MARC_HTML_Writer();
-            return marcHtmlWriter.MARC_HTML(this, Width, MARC_Sobek_Standard_Tags(Collections, Include_Endeca_Tags, System_Name, System_Abbreviation));
+            return marcHtmlWriter.MARC_HTML(this, Width, Options);
         }
 
         #endregion
@@ -1398,9 +1392,36 @@ namespace SobekCM.Resource_Object
         #region Method to retrieve this item as a MARC record 
 
         /// <summary> Gets the collection of MARC tags to be written for this digital resource </summary>
-        /// <value> Collection of MARC tags to be written for this digital resource </value>
+        /// <returns> Collection of MARC tags to be written for this digital resource </returns>
         public MARC_Record To_MARC_Record()
         {
+            return To_MARC_Record(null, null, null, null, null, null);
+        }
+
+        /// <summary> Gets the collection of MARC tags to be written for this digital resource </summary>
+        /// <param name="CatalogingSourceCode"> Cataloging source code for the 040 field, ( for example FUG for University of Florida ) </param>
+        /// <param name="LocationCode"> Location code for the 852 |a - if none is given the system abbreviation will be used. Otherwise, the system abbreviation will be put in the 852 |b field. </param>
+        /// <param name="ReproductionAgency"> Agency responsible for reproduction, or primary agency associated with the SobekCM instance ( for the added 533 |c field ) </param>
+        /// <param name="ReproductionPlace"> Place of reproduction, or primary location associated with the SobekCM instance ( for the added 533 |b field ) </param>
+        /// <param name="SystemName"> Name used for this SobekCM (or otherwise) digital repository system </param>
+        /// <param name="SystemAbbreviation"> Abbrevation used for this SobekCM (or otherwise) digital repository system </param>
+        /// <returns> Collection of MARC tags to be written for this digital resource </returns>
+        public MARC_Record To_MARC_Record(string CatalogingSourceCode, string LocationCode, string ReproductionAgency, string ReproductionPlace, string SystemName, string SystemAbbreviation)
+        {
+            // Find the first aggregation name
+            string first_aggr_name = String.Empty;
+            if (Behaviors.Aggregation_Count > 0)
+            {
+                foreach (Aggregation_Info thisAggr in Behaviors.Aggregations)
+                {
+                    if (thisAggr.Type.IndexOf("INSTITUT", StringComparison.InvariantCultureIgnoreCase) < 0)
+                    {
+                        first_aggr_name = thisAggr.Name;
+                        break;
+                    }
+                }
+            }
+
             // Create the sorted list
             MARC_Record tags = new MARC_Record();
 
@@ -1912,10 +1933,13 @@ namespace SobekCM.Resource_Object
             //}
 
             // Add the NEW cataloging source information
-            MARC_Field catSource = new MARC_Field {Tag = 40, Indicators = "  ", Control_Field_Value = "|a FUG |c FUG"};
-            if (bibInfo.Record.Description_Standard.Length > 0)
-                catSource.Control_Field_Value = catSource.Control_Field_Value + " |e " + bibInfo.Record.Description_Standard.ToLower();
-            tags.Add_Field(catSource);
+            if (!String.IsNullOrEmpty(CatalogingSourceCode))
+            {
+                MARC_Field catSource = new MARC_Field { Tag = 40, Indicators = "  ", Control_Field_Value = "|a " + CatalogingSourceCode.Trim() + " |c " + CatalogingSourceCode.Trim() };
+                if (bibInfo.Record.Description_Standard.Length > 0)
+                    catSource.Control_Field_Value = catSource.Control_Field_Value + " |e " + bibInfo.Record.Description_Standard.ToLower();
+                tags.Add_Field(catSource);
+            }
 
 
             // ADD THE ABSTRACTS
@@ -2955,6 +2979,156 @@ namespace SobekCM.Resource_Object
             fixedField008.Control_Field_Value = builder008.ToString();
             tags.Add_Field(fixedField008);
 
+            // Add the system name also as a 830 (before the collections)
+            if (!String.IsNullOrEmpty(SystemName))
+            {
+                tags.Add_Field(new MARC_Field(830, " 0", "|a " + SystemName + "."));
+            }
+
+            // Add the collection name as well ( Was getting duplicates here sometimes )
+            if (Behaviors.Aggregations != null)
+            {
+                List<string> added_already = new List<string>();
+                foreach (Aggregation_Info thisAggr in Behaviors.Aggregations)
+                {
+                    if (thisAggr.Type.IndexOf("INSTITUT", StringComparison.InvariantCultureIgnoreCase) < 0)
+                    {
+                        string collection = thisAggr.Name;
+                        if (String.IsNullOrEmpty(collection)) collection = thisAggr.Code;
+
+                        if (!added_already.Contains(collection.ToUpper().Trim()))
+                        {
+                            if (collection.Trim().Length > 0)
+                            {
+                                added_already.Add(collection.ToUpper().Trim());
+                                tags.Add_Field(new MARC_Field(830, " 0", "|a " + collection + "."));
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Add the thumbnail link (992)
+            if ((Behaviors.Main_Thumbnail.Length > 0) && (!Behaviors.Dark_Flag))
+            {
+                string thumbnail_link = web.Source_URL + "/" + Behaviors.Main_Thumbnail;
+                tags.Add_Field(new MARC_Field(992, "04", "|a " + thumbnail_link.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://")));
+            }
+
+            // Was this born digital?  in which case this is NOT an electronic reproduction, so
+            // leave out the 533 field
+            bool borndigital = Bib_Info.Genres.Any(ThisGenre => (ThisGenre.Authority == "sobekcm") && (ThisGenre.Genre_Term == "born-digital"));
+            if (!borndigital)
+            {
+                MARC_Field tag533 = new MARC_Field { Tag = 533, Indicators = "  " };
+                StringBuilder builder533 = new StringBuilder(100);
+                builder533.Append("|a Electronic reproduction. ");
+
+                if ( !String.IsNullOrEmpty(ReproductionPlace))
+                    builder533.Append("|b " + ReproductionPlace + " : ");
+
+                List<string> agencies = new List<string>();
+                if (!String.IsNullOrEmpty(ReproductionAgency))
+                {
+                    builder533.Append("|c " + ReproductionAgency + ", ");
+                    agencies.Add(ReproductionAgency);
+                }
+
+                // Add the source statement as another agency possibly
+                if (!String.IsNullOrEmpty(Bib_Info.Source.Statement))
+                {
+                    string source_statement = Bib_Info.Source.Statement;
+
+                    // determine if this is a subset of any existing agency, or vice versa
+                    bool found = false;
+                    foreach (string thisAgency in agencies)
+                    {
+                        if ((source_statement.IndexOf(thisAgency, StringComparison.InvariantCultureIgnoreCase) >= 0) || (thisAgency.IndexOf(source_statement, StringComparison.InvariantCultureIgnoreCase) >= 0))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        builder533.Append("|c " + source_statement + ", ");
+                        agencies.Add(source_statement);
+                    }
+                }
+
+                // Add the source statement as another agency possibly
+                if ((Bib_Info.hasLocationInformation) && (Bib_Info.Location.Holding_Code != Bib_Info.Source.Code) && (!String.IsNullOrEmpty(Bib_Info.Location.Holding_Name)))
+                {
+                    string holding_statement = Bib_Info.Location.Holding_Name;
+
+                    // determine if this is a subset of any existing agency, or vice versa
+                    bool found = false;
+                    foreach (string thisAgency in agencies)
+                    {
+                        if ((holding_statement.IndexOf(thisAgency, StringComparison.InvariantCultureIgnoreCase) >= 0) || (thisAgency.IndexOf(holding_statement, StringComparison.InvariantCultureIgnoreCase) >= 0))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        builder533.Append("|c " + holding_statement + ", ");
+                        agencies.Add(holding_statement);
+                    }
+                }
+
+                builder533.Append("|d " + METS_Header.Create_Date.Year + ". ");
+                if (!String.IsNullOrEmpty(SystemName))
+                {
+                    builder533.Append("|f (" + SystemName + ") ");
+                }
+                //foreach (string collection in Collection_Names)
+                //{
+                //    if (collection.Trim().Length > 0)
+                //    {
+                //        builder533.Append(" |f (" + collection + ")");
+                //    }
+                //}
+                builder533.Append("|n Mode of access: World Wide Web.  |n System requirements: Internet connectivity; Web browser software.");
+                tag533.Control_Field_Value = builder533.ToString();
+                tags.Add_Field(tag533);
+            }
+
+
+
+            // Add the endeca only tags
+            if (( !String.IsNullOrEmpty(SystemAbbreviation)) || ( !String.IsNullOrEmpty(LocationCode)))
+            {
+                // Add the 852
+                MARC_Field tag852 = new MARC_Field { Tag = 852, Indicators = "  " };
+                StringBuilder builder852 = new StringBuilder(100);
+
+                if (!String.IsNullOrEmpty(LocationCode))
+                {
+                    builder852.Append("|a " + LocationCode + " ");
+                    if (!String.IsNullOrEmpty(SystemAbbreviation))
+                        builder852.Append("|b " + SystemAbbreviation);
+                }
+                else
+                {
+                    builder852.Append("|a " + SystemAbbreviation);
+                }
+
+                if ( !String.IsNullOrEmpty(first_aggr_name))
+                    builder852.Append(" |c " + first_aggr_name);
+                tag852.Control_Field_Value = builder852.ToString();
+                tags.Add_Field(tag852);
+            }
+
+            // Add the collection name in the Endeca spot (997)
+            if (!String.IsNullOrEmpty(first_aggr_name))
+            {
+                tags.Add_Field(new MARC_Field(997, "  ", "|a " + first_aggr_name));
+            }
+
             // Now, set the leader
             tags.Leader = MARC_Leader();
 
@@ -3030,125 +3204,6 @@ namespace SobekCM.Resource_Object
             }
 
             //return total_length_string + "n" + type_string + "  22" + total_directory_string + "3a 4500";
-        }
-
-        /// <summary> Gets the SobekCM-specific tags to be written for this digital resource </summary>
-        /// <param name="Collection_Name"> Item aggregation name this digital resource is associated with </param>
-        /// <param name="IncludeEndecaTags"> Flag indicates whether Endeca-specific tags should also be written </param>
-        /// <param name="SystemName"> Name of the host system, which is added into the MARC record </param>
-        /// <param name="SystemAbbrev"> Abbreviation for the host system, which is added into the MARC record </param>
-        /// <returns> Collection of MARC tags to be written for this digital resource </returns>
-        public List<MARC_Field> MARC_Sobek_Standard_Tags(string Collection_Name, bool IncludeEndecaTags, string SystemName, string SystemAbbrev)
-        {
-            List<string> collections = new List<string>();
-            if (Collection_Name.Trim().Length > 0)
-            {
-                collections.Add(Collection_Name);
-            }
-            return MARC_Sobek_Standard_Tags(collections, IncludeEndecaTags, SystemName, SystemAbbrev);
-        }
-
-        /// <summary> Gets the SobekCM-specific tags to be written for this digital resource </summary>
-        /// <param name="Collection_Names"> Collection of all the item aggregation names this digital resource is associated with </param>
-        /// <param name="IncludeEndecaTags"> Flag indicates whether Endeca-specific tags should also be written </param>
-        /// <param name="SystemName"> Name of the host system, which is added into the MARC record </param>
-        /// <param name="SystemAbbrev"> Abbreviation for the host system, which is added into the MARC record </param>
-        /// <returns> Collection of MARC tags to be written for this digital resource </returns>
-        public List<MARC_Field> MARC_Sobek_Standard_Tags(List<string> Collection_Names, bool IncludeEndecaTags, string SystemName, string SystemAbbrev)
-        {
-            // Start to build the list of additional tags
-            List<MARC_Field> tag_list = new List<MARC_Field>();
-
-            if (SystemName.Length > 0)
-            {
-                tag_list.Add(new MARC_Field(830, " 0", "|a " + SystemName + "."));
-            }
-
-            // Was this born digital?  in which case this is NOT an electronic reproduction, so
-            // leave out the 533 field
-            bool borndigital = Bib_Info.Genres.Any(ThisGenre => (ThisGenre.Authority == "sobekcm") && (ThisGenre.Genre_Term == "born-digital"));
-            if (!borndigital)
-            {
-                MARC_Field tag533 = new MARC_Field {Tag = 533, Indicators = "  "};
-                StringBuilder builder533 = new StringBuilder(100);
-                builder533.Append("|a Electronic reproduction. ");
-                if (Bib_Info.BibID.IndexOf("UF") == 0)
-                    builder533.Append("|b Gainesville, Fla. : |c University of Florida, George A. Smathers Libraries, ");
-
-                if (Bib_Info.Source.Code.IndexOf("UF") < 0)
-                {
-                    builder533.Append("|c " + Bib_Info.Source.Statement + ", ");
-                }
-
-                if ((Bib_Info.hasLocationInformation) && (Bib_Info.Location.Holding_Code.IndexOf("UF") < 0) && (Bib_Info.Location.Holding_Code != Bib_Info.Source.Code))
-                {
-                    builder533.Append("|c " + Bib_Info.Location.Holding_Name + ", ");
-                }
-
-                builder533.Append("|d " + METS_Header.Create_Date.Year + ". ");
-                if (SystemName.Length > 0)
-                {
-                    builder533.Append("|f (" + SystemName + ")");
-                }
-                foreach (string collection in Collection_Names)
-                {
-                    if (collection.Trim().Length > 0)
-                    {
-                        builder533.Append(" |f (" + collection + ")");
-                    }
-                }
-                builder533.Append("|n Mode of access: World Wide Web.  |n System requirements: Internet connectivity; Web browser software.");
-                tag533.Control_Field_Value = builder533.ToString();
-                tag_list.Add(tag533);
-            }
-
-            // Add the collection name as well ( Was getting duplicates here sometimes )
-            List<string> added_already = new List<string>();
-            foreach (string collection in Collection_Names)
-            {
-                if (!added_already.Contains(collection.ToUpper().Trim()))
-                {
-                    if (collection.Trim().Length > 0)
-                    {
-                        added_already.Add(collection.ToUpper().Trim());
-                        tag_list.Add(new MARC_Field(830, " 0", "|a " + collection + "."));
-                    }
-                }
-            }
-
-            // REMOVED PER JIMMIE ( January 2010 )
-            //tag_list.Add_Tag("530", "  ", "|a Also available in print.");
-
-
-            // Add the endeca only tags
-            if (IncludeEndecaTags)
-            {
-                // Add the thumbnail link (992)
-                if ((Behaviors.Main_Thumbnail.Length > 0) && (!Behaviors.Dark_Flag))
-                {
-                    string thumbnail_link = web.Source_URL + "/" + Behaviors.Main_Thumbnail;
-                    tag_list.Add(new MARC_Field(992, "04", "|a " + thumbnail_link.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://")));
-                }
-
-                // Add the 852
-                MARC_Field tag852 = new MARC_Field {Tag = 852, Indicators = "  "};
-                StringBuilder builder852 = new StringBuilder(100);
-                builder852.Append("|a SUS01:;:;: ");
-                if (SystemAbbrev.Length > 0)
-                    builder852.Append("|b " + SystemAbbrev);
-                if (Behaviors.Aggregation_Count > 0)
-                    builder852.Append(" |c " + Behaviors.Aggregations[0].Name);
-                tag852.Control_Field_Value = builder852.ToString();
-                tag_list.Add(tag852);
-
-                // Add the collection name in the Endeca spot (997)
-                if (Collection_Names.Count > 0)
-                {
-                    tag_list.Add(new MARC_Field(997, "  ", "|a " + Collection_Names[0]));
-                }
-            }
-
-            return tag_list;
         }
 
         #endregion

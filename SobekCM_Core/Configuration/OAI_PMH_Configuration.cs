@@ -17,7 +17,7 @@ namespace SobekCM.Core.Configuration
         }
 
         /// <summary> Base for the identifiers associated with items within this repository </summary>
-        public string Repository_Identifier_Base { get; set; }
+        public string Identifier_Base { get; set; }
 
         /// <summary> Flag indicates if OAI-PMH is allowed to be enabled for collections at all </summary>
         /// <remarks> The default value is TRUE, but can be overidden in the XML  </remarks>
@@ -80,7 +80,7 @@ namespace SobekCM.Core.Configuration
 
                 writer.WriteLine(Enabled ? "\t<OAI-PMH Enabled=\"true\">" : "\t<OAI-PMH Enabled=\"false\">");
 
-                writer.WriteLine("\t\t<Repository IdentifierBase=\"" + Repository_Identifier_Base + "\" />");
+                writer.WriteLine("\t\t<Repository IdentifierBase=\"" + Identifier_Base + "\" />");
 
                 // Add the basic identify information
                 writer.WriteLine("\t\t<Identify>");

@@ -168,6 +168,20 @@ namespace SobekCM.Engine_Library.Microservices
                             }
                             if (readerXml.MoveToAttribute("RestrictionRangeID"))
                                 restrictionid = readerXml.Value.Trim();
+                            if (readerXml.MoveToAttribute("Protocol"))
+                            {
+                                if (String.Compare(readerXml.Value.Trim(), "PROTOBUF", true) == 0)
+                                    endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.PROTOBUF;
+                                else
+                                    endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.JSON;
+                            }
+                            if (readerXml.MoveToAttribute("RequestType"))
+                            {
+                                if (String.Compare(readerXml.Value.Trim(), "POST", true) == 0)
+                                    endpoint.RequestType = Microservice_Endpoint_RequestType_Enum.POST;
+                                else
+                                    endpoint.RequestType = Microservice_Endpoint_RequestType_Enum.GET;
+                            }
 
                             readerXml.MoveToElement();
                             read_microservices_details_endpoint(readerXml.ReadSubtree(), endpoint);
@@ -201,21 +215,6 @@ namespace SobekCM.Engine_Library.Microservices
                         case "description":
                             readerXml.Read();
                             endpoint.Description = readerXml.Value.Trim();
-                            break;
-
-                        case "requesttype":
-                            readerXml.Read();
-                            string requesttype = readerXml.Value.Trim();
-                            switch (requesttype.ToLower())
-                            {
-                                case "get":
-                                    endpoint.RequestType = Microservice_Endpoint_RequestType_Enum.GET;
-                                    break;
-
-                                case "post":
-                                    endpoint.RequestType = Microservice_Endpoint_RequestType_Enum.POST;
-                                    break;
-                            }
                             break;
 
                         case "arguments":

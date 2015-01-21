@@ -703,13 +703,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Tracer.Add_Trace("Citation_ItemViewer.MARC_String", "Configuring METS data into MARC format");
 			}
 
-
-			List<string> collections = new List<string>();
-			if (CurrentItem.Behaviors.Aggregation_Count > 0)
-			{
-			    collections.AddRange(from aggregation in CurrentItem.Behaviors.Aggregations select Code_Manager[aggregation.Code] into aggr where aggr != null where aggr.Type.ToUpper() == "COLLECTION" select aggr.ShortName);
-			}
-		  
 			//// Build the value
 			StringBuilder builder = new StringBuilder();
 
@@ -727,7 +720,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 builder.AppendLine("<br />");
 			}
 
-            builder.AppendLine(CurrentItem.Get_MARC_HTML(collections, CurrentMode.Internal_User, Width, UI_ApplicationCache_Gateway.Settings.System_Name, UI_ApplicationCache_Gateway.Settings.System_Abbreviation));
+            // Create the options dictionary used when saving information to the database, or writing MarcXML
+            Dictionary<string, object> options = new Dictionary<string, object>();
+            if (UI_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+            {
+                options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
+                options["MarcXML_File_ReaderWriter:MARC Location Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
+                options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
+                options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
+                options["MarcXML_File_ReaderWriter:MARC XSLT File"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
+            }
+            options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System_Name;
+            options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System_Abbreviation;
+
+
+            builder.AppendLine(CurrentItem.Get_MARC_HTML( options, Width ));
 
             builder.AppendLine("<br />");
             builder.AppendLine("<br />");
@@ -2036,13 +2043,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						Item_Aggregation_Related_Aggregations sourceAggr = Code_Manager["i" + CurrentItem.Bib_Info.Source.Code];
 						if (sourceAggr.Active)
 						{
-						    result.Append(sourceAggr.External_Link.Length > 0
+						    result.Append( !String.IsNullOrEmpty(sourceAggr.External_Link)
 											  ? Single_Citation_HTML_Row("Source Institution", "<span itemprop=\"sourceOrganization\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Source.Statement) + "</span>" + codeString + " ( <a href=\"" + CurrentMode.Base_URL + "i" + CurrentItem.Bib_Info.Source.Code + url_options + "\">" + CurrentMode.SobekCM_Instance_Abbreviation + " page</a> | <a href=\"" + sourceAggr.External_Link + "\">external link</a> )", INDENT)
 											  : Single_Citation_HTML_Row("Source Institution", "<a href=\"" + CurrentMode.Base_URL + "i" + CurrentItem.Bib_Info.Source.Code + url_options + "\"><span itemprop=\"sourceOrganization\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Source.Statement) + "</span></a> " + codeString, INDENT));
 						}
 						else
 						{
-						    result.Append(sourceAggr.External_Link.Length > 0
+                            result.Append(!String.IsNullOrEmpty(sourceAggr.External_Link)
 											  ? Single_Citation_HTML_Row("Source Institution", "<a href=\"" + sourceAggr.External_Link + "\"><span itemprop=\"sourceOrganization\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Source.Statement) + "</span></a> " + codeString, INDENT)
 											  : Single_Citation_HTML_Row("Source Institution", "<span itemprop=\"sourceOrganization\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Source.Statement) + "</span>" + codeString, INDENT));
 						}
@@ -2073,13 +2080,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						Item_Aggregation_Related_Aggregations holdingAggr = Code_Manager["i" + CurrentItem.Bib_Info.Location.Holding_Code];
 						if (holdingAggr.Active)
 						{
-						    result.Append(holdingAggr.External_Link.Length > 0
+						    result.Append(!String.IsNullOrEmpty(holdingAggr.External_Link)
 											  ? Single_Citation_HTML_Row("Holding Location", "<span itemprop=\"contentLocation\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Location.Holding_Name) + "</span>" + codeString + " ( <a href=\"" + CurrentMode.Base_URL + "i" + CurrentItem.Bib_Info.Location.Holding_Code + url_options + "\">" + CurrentMode.SobekCM_Instance_Abbreviation + " page</a> | <a href=\"" + holdingAggr.External_Link + "\">external link</a> )", INDENT)
 											  : Single_Citation_HTML_Row("Holding Location", "<a href=\"" + CurrentMode.Base_URL + "i" + CurrentItem.Bib_Info.Location.Holding_Code.ToLower() + url_options + "\"><span itemprop=\"contentLocation\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Location.Holding_Name) + "</span></a> " + codeString, INDENT));
 						}
 						else
 						{
-						    result.Append(holdingAggr.External_Link.Length > 0
+                            result.Append(!String.IsNullOrEmpty(holdingAggr.External_Link)
 											  ? Single_Citation_HTML_Row("Holding Location", "<a href=\"" + holdingAggr.External_Link + "\"><span itemprop=\"contentLocation\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Location.Holding_Name) + "</span></a> " + codeString, INDENT)
 											  : Single_Citation_HTML_Row("Holding Location", "<span itemprop=\"contentLocation\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Location.Holding_Name) + "</span>" + codeString, INDENT));
 						}

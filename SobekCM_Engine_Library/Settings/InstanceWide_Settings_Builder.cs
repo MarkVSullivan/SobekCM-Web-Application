@@ -12,6 +12,7 @@ using SobekCM.Core.Database;
 using SobekCM.Core.Search;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Resource_Object.OAI.Writer;
 
 #endregion
 
@@ -80,6 +81,31 @@ namespace SobekCM.Core.Settings
                 returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_contactform.config");
             }
 
+            // Try to read the OAI-PMH configuration file
+            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config"))
+            {
+                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config");
+            }
+            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config"))
+            {
+                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config");
+            }
+
+            // Load the OAI-PMH configuration file info into the OAI writer class ( in the resource object library )
+            if (returnValue.OAI_PMH == null)
+                OAI_PMH_Metadata_Writers.Set_Default_Values();
+            else
+            {
+                OAI_PMH_Metadata_Writers.Clear();
+                foreach (OAI_PMH_Metadata_Format thisWriter in returnValue.OAI_PMH.Metadata_Prefixes)
+                {
+                    if (thisWriter.Enabled)
+                    {
+                        OAI_PMH_Metadata_Writers.Add_Writer(thisWriter.Prefix, thisWriter.Assembly, thisWriter.Namespace, thisWriter.Class);
+                    }
+                }
+            }
+
             return returnValue;
         }
 
@@ -98,6 +124,51 @@ namespace SobekCM.Core.Settings
 
             Refresh(returnValue, sobekCMSettings);
 
+            // Try to read the SHIBBOLETH configuration file
+            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config"))
+            {
+                returnValue.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config");
+            }
+            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config"))
+            {
+                returnValue.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config");
+            }
+
+            // Try to read the CONTACT FORM configuration file
+            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_contactform.config"))
+            {
+                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_contactform.config");
+            }
+            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_contactform.config"))
+            {
+                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_contactform.config");
+            }
+
+            // Try to read the OAI-PMH configuration file
+            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config"))
+            {
+                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config");
+            }
+            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config"))
+            {
+                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config");
+            }
+
+            // Load the OAI-PMH configuration file info into the OAI writer class ( in the resource object library )
+            if (returnValue.OAI_PMH == null)
+                OAI_PMH_Metadata_Writers.Set_Default_Values();
+            else
+            {
+                OAI_PMH_Metadata_Writers.Clear();
+                foreach (OAI_PMH_Metadata_Format thisWriter in returnValue.OAI_PMH.Metadata_Prefixes)
+                {
+                    if (thisWriter.Enabled)
+                    {
+                        OAI_PMH_Metadata_Writers.Add_Writer(thisWriter.Prefix, thisWriter.Assembly, thisWriter.Namespace, thisWriter.Class);
+                    }
+                }
+            }
+
             return returnValue;
         }
 
@@ -111,7 +182,7 @@ namespace SobekCM.Core.Settings
                     "dataset", "dataprovider", "xml", "textonly", "shibboleth", "internal",
                     "contact", "folder", "admin", "preferences", "stats", "statistics", "adminhelp",
                     "partners", "tree", "brief", "personalized", "all", "new", "map", "advanced",
-                    "text", "results", "contains", "exact", "resultslike", "browseby", "info", "sobekcm", "inprocess"  };
+                    "text", "results", "contains", "exact", "resultslike", "browseby", "info", "sobekcm", "inprocess", "engine"  };
 
             SettingsObject.Page_Image_Extensions = new List<string> { "JPG", "JP2", "JPX", "GIF", "PNG", "BMP", "JPEG" };
             SettingsObject.Backup_Files_Folder_Name = BACKUP_FILES_FOLDER_NAME;
@@ -148,7 +219,6 @@ namespace SobekCM.Core.Settings
                 Get_Boolean_Value(settingsDictionary, "Can Remove Single Search Term", SettingsObject, X => X.Can_Remove_Single_Term, ref error, true);
                 Get_Boolean_Value(settingsDictionary, "Can Submit Edit Online", SettingsObject, X => X.Online_Edit_Submit_Enabled, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Convert Office Files to PDF", SettingsObject, X => X.Convert_Office_Files_To_PDF, ref error, false);
-                Get_Boolean_Value(settingsDictionary, "Create MARC Feed By Default", SettingsObject, X => X.Build_MARC_Feed_By_Default, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Detailed User Permissions", SettingsObject, X => X.Detailed_User_Aggregation_Permissions, ref error, false);
                 Get_String_Value(settingsDictionary, "Document Solr Index URL", SettingsObject, X => X.Document_Solr_Index_URL, ref error);
                 Get_Boolean_Value(settingsDictionary, "Facets Collapsible", SettingsObject, X => X.Facets_Collapsible, ref error, false);
@@ -170,10 +240,6 @@ namespace SobekCM.Core.Settings
                 Get_String_Value(settingsDictionary, "Main Builder Input Folder", SettingsObject, X => X.Main_Builder_Input_Folder, String.Empty);
                 Get_String_Value(settingsDictionary, "Mango Union Search Base URL", SettingsObject, X => X.Mango_Union_Search_Base_URL, ref error);
                 Get_String_Value(settingsDictionary, "Mango Union Search Text", SettingsObject, X => X.Mango_Union_Search_Text, ref error);
-                Get_String_Value(settingsDictionary, "MarcXML Feed Location", SettingsObject, X => X.MarcXML_Feed_Location, ref error);
-                Get_String_Value(settingsDictionary, "OAI Resource Identifier Base", SettingsObject, X => X.OAI_Resource_Identifier_Base, ref error);
-                Get_String_Value(settingsDictionary, "OAI Repository Identifier", SettingsObject, X => X.OAI_Repository_Identifier, ref error);
-                Get_String_Value(settingsDictionary, "OAI Repository Name", SettingsObject, X => X.OAI_Repository_Name, ref error);
                 Get_String_Value(settingsDictionary, "OCR Engine Command", SettingsObject, X => X.OCR_Command_Prompt, String.Empty);
                 Get_String_Value(settingsDictionary, "Package Archival Folder", SettingsObject, X => X.Package_Archival_Folder, String.Empty);
                 Get_String_Value(settingsDictionary, "Page Solr Index URL", SettingsObject, X => X.Page_Solr_Index_URL, String.Empty);
@@ -196,6 +262,17 @@ namespace SobekCM.Core.Settings
                 Get_String_Value(settingsDictionary, "Upload Image Types", SettingsObject, X => X.Upload_Image_Types, ".txt,.tif,.jpg,.jp2,.pro");
                 Get_String_Value(settingsDictionary, "Web In Process Submission Location", SettingsObject, X => X.In_Process_Submission_Location, String.Empty);
                 Get_Integer_Value(settingsDictionary, "Web Output Caching Minutes", SettingsObject, X => X.Web_Output_Caching_Minutes, ref error, 0);
+
+                // Load the subsetting object for MarcXML 
+                Marc21_Settings marcSettings = new Marc21_Settings();
+                Get_String_Value(settingsDictionary, "MarcXML Feed Location", marcSettings, X => X.MarcXML_Feed_Location, String.Empty);
+                Get_Boolean_Value(settingsDictionary, "Create MARC Feed By Default", marcSettings, X => X.Build_MARC_Feed_By_Default, ref error, false);
+                Get_String_Value(settingsDictionary, "MARC Cataloging Source Code", marcSettings, X => X.Cataloging_Source_Code, String.Empty);
+                Get_String_Value(settingsDictionary, "MARC Location Code", marcSettings, X => X.Location_Code, String.Empty);
+                Get_String_Value(settingsDictionary, "MARC Reproduction Agency", marcSettings, X => X.Reproduction_Agency, SettingsObject.System_Name);
+                Get_String_Value(settingsDictionary, "MARC Reproduction Place", marcSettings, X => X.Reproduction_Place, String.Empty);
+                Get_String_Value(settingsDictionary, "MARC XSLT File", marcSettings, X => X.XSLT_File, String.Empty);
+                SettingsObject.MarcGeneration = marcSettings;
 
 
                 // Pull the language last, since it must be converted into a Language_Enum

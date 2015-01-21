@@ -87,6 +87,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             writeResult.Write_HTML(Output, Tracer);
+
         }
 
         /// <summary> Add controls to the placeholder below the search box </summary>

@@ -683,7 +683,7 @@ namespace SobekCM.Library
 				UI_ApplicationCache_Gateway.Settings.Base_Directory = staticSobekcmLocation;
 
             // Pull the item aggregation object
-	        if (Aggregation.Web_Skins.Count > 0)
+	        if (( Aggregation.Web_Skins != null ) && ( Aggregation.Web_Skins.Count > 0))
 		        currentMode.Skin = Aggregation.Web_Skins[0];
 
 			// Get the skin object
@@ -710,7 +710,7 @@ namespace SobekCM.Library
 			{
 				writer.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}
-			if (Aggregation.CSS_File.Length > 0)
+			if ( !String.IsNullOrEmpty(Aggregation.CSS_File))
 			{
 				writer.WriteLine("  <link href=\"" + currentMode.Base_Design_URL + "aggregations/" + skinObject.Skin_Code + "/" + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}
@@ -871,10 +871,22 @@ namespace SobekCM.Library
 
                 string marcFile = DestinationDirectory + currentItem.Web.File_Root + "\\" + currentItem.VID + "\\marc.xml";
 
+                // Create the options dictionary used when saving information to the database, or writing MarcXML
+                Dictionary<string, object> options = new Dictionary<string, object>();
+                if (UI_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+                {
+                    options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Location Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
+                    options["MarcXML_File_ReaderWriter:MARC XSLT File"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
+                }
+                options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System_Abbreviation;
+
+
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
-                Dictionary<string, object> options = new Dictionary<string, object>();
-                options["MarcXML_File_ReaderWriter:Additional_Tags"] = currentItem.MARC_Sobek_Standard_Tags(UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(currentMode.Aggregation), true, UI_ApplicationCache_Gateway.Settings.System_Name, UI_ApplicationCache_Gateway.Settings.System_Abbreviation);
                 return marcWriter.Write_Metadata(marcFile, currentItem, options, out errorMessage);
             }
             catch

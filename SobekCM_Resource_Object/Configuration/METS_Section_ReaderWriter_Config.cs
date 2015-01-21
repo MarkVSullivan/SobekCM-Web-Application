@@ -46,8 +46,8 @@ namespace SobekCM.Resource_Object.Configuration
     public class METS_Section_ReaderWriter_Config
     {
         private METS_Section_ReaderWriter_Mapping defaultMapping;
-        private List<METS_Section_ReaderWriter_Mapping> mappings;
-        private Dictionary<string, string> options;
+        private readonly List<METS_Section_ReaderWriter_Mapping> mappings;
+        private readonly Dictionary<string, string> options;
 
         /// <summary> Constructor for a new METS_Section_ReaderWriter_Config object </summary>
         public METS_Section_ReaderWriter_Config()
@@ -113,7 +113,7 @@ namespace SobekCM.Resource_Object.Configuration
                 Assembly dllAssembly = Assembly.GetExecutingAssembly();
                 if (Code_Assembly.Length > 0)
                 {
-                    dllAssembly = System.Reflection.Assembly.LoadFrom(Code_Assembly);
+                    dllAssembly = Assembly.LoadFrom(Code_Assembly);
                 }
                 
               //  Assembly dllAssembly = Assembly..LoadFrom( Code_Assembly );
@@ -174,11 +174,11 @@ namespace SobekCM.Resource_Object.Configuration
         }
 
         /// <summary> Add a new option to the dictionary of associated standard options </summary>
-        /// <param name="key"> Key of this option </param>
-        /// <param name="value"> Value of this option </param>
-        public void Add_Option(string key, string value)
+        /// <param name="Key"> Key of this option </param>
+        /// <param name="Value"> Value of this option </param>
+        public void Add_Option(string Key, string Value)
         {
-            options[key] = value;
+            options[Key] = Value;
         }
     }
 

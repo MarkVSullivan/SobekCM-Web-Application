@@ -378,7 +378,7 @@ namespace SobekCM.Engine_Library.Aggregations
                                 Item_Aggregation_Front_Banner bannerObj = HierarchyObject.Add_Front_Banner_Image(NodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum( lang));
 	                            bannerObj.Width = width;
 	                            bannerObj.Height = height;
-	                            bannerObj.Banner_Type = type;
+	                            bannerObj.Type = type;
                             }
                             else
                             {
@@ -453,6 +453,9 @@ namespace SobekCM.Engine_Library.Aggregations
 
                             // Create the custom derivative object
                             Item_Aggregation_Custom_Directive newDirective = new Item_Aggregation_Custom_Directive(directiveCode, directiveFile, contents);
+                            if ( HierarchyObject.Custom_Directives == null )
+                                HierarchyObject.Custom_Directives = new Dictionary<string, Item_Aggregation_Custom_Directive>()
+                            ;
                             HierarchyObject.Custom_Directives["<%" + directiveCode.ToUpper() + "%>"] = newDirective;
 
                         }
@@ -483,31 +486,34 @@ namespace SobekCM.Engine_Library.Aggregations
                         HierarchyObject.Rotating_Highlights = true;
                 }
 
-				// The following three values are for reading legacy XML files.  These 
-				// data fields have been moved to be attached to the actual banner
-                if (NodeReader.MoveToAttribute("bannerSide"))
+                if (HierarchyObject.Front_Banner_Dictionary != null)
                 {
+                    // The following three values are for reading legacy XML files.  These 
+                    // data fields have been moved to be attached to the actual banner
+                    if (NodeReader.MoveToAttribute("bannerSide"))
+                    {
 
-					if (NodeReader.Value.Trim().ToUpper() == "RIGHT")
-					{
-						foreach( KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary )
-							banners.Value.Banner_Type = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT;
-					}
-					else
-					{
-						foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
-							banners.Value.Banner_Type = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT;
-					}
-                }
-                if (NodeReader.MoveToAttribute("bannerHeight"))
-                {
-					foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
-						banners.Value.Height = Convert.ToUInt16(NodeReader.Value);
-                }
-                if (NodeReader.MoveToAttribute("bannerWidth"))
-                {
-					foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
-						banners.Value.Width = Convert.ToUInt16(NodeReader.Value);
+                        if (NodeReader.Value.Trim().ToUpper() == "RIGHT")
+                        {
+                            foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
+                                banners.Value.Type = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT;
+                        }
+                        else
+                        {
+                            foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
+                                banners.Value.Type = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT;
+                        }
+                    }
+                    if (NodeReader.MoveToAttribute("bannerHeight"))
+                    {
+                        foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
+                            banners.Value.Height = Convert.ToUInt16(NodeReader.Value);
+                    }
+                    if (NodeReader.MoveToAttribute("bannerWidth"))
+                    {
+                        foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
+                            banners.Value.Width = Convert.ToUInt16(NodeReader.Value);
+                    }
                 }
             }
 
@@ -555,6 +561,8 @@ namespace SobekCM.Engine_Library.Aggregations
                 {
                     if (NodeReader.Name.Trim().ToUpper() == "HI:HIGHLIGHT" )
                     {
+                        if (HierarchyObject.Highlights == null)
+                            HierarchyObject.Highlights = new List<Item_Aggregation_Highlights>();
                         HierarchyObject.Highlights.Add(highlight);
                         highlight = new Item_Aggregation_Highlights();
                     }

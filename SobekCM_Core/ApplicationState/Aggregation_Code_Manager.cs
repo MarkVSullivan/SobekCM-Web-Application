@@ -205,10 +205,23 @@ namespace SobekCM.Core.ApplicationState
 		/// <summary> Set an aggregation to be a part of an existing thematic heading id </summary>
 		/// <param name="Code"></param>
 		/// <param name="ThematicHeadingID"></param>
-	    public void Set_Aggregation_Thematic_Heading(string Code, int ThematicHeadingID)
+	    public void Set_Aggregation_Thematic_Heading(string Code, int? ThematicHeadingID)
 		{
+            Item_Aggregation_Related_Aggregations thisAggr = aggregationsByCode[Code.ToUpper()];
+
+            // If this is NULL, just return
+		    if (!ThematicHeadingID.HasValue)
+		    {
+                foreach (KeyValuePair<int, List<Item_Aggregation_Related_Aggregations>> theme in Aggregations_By_Thematic_Heading)
+                {
+                    if (theme.Value.Contains(thisAggr))
+                        theme.Value.Remove(thisAggr);
+                }
+                return;
+		    }
+
 			// If the thematic heading ID does not exit, just return
-			if (!Aggregations_By_Thematic_Heading.ContainsKey(ThematicHeadingID))
+			if (!Aggregations_By_Thematic_Heading.ContainsKey(ThematicHeadingID.Value))
 				return;
 
 			// If this aggregation does not exist, just return
@@ -216,8 +229,7 @@ namespace SobekCM.Core.ApplicationState
 				return;
 
 			// Get this aggregation and list for this thematic heading
-			Item_Aggregation_Related_Aggregations thisAggr = aggregationsByCode[Code.ToUpper()];
-			List<Item_Aggregation_Related_Aggregations> thematicHeadingList = Aggregations_By_Thematic_Heading[ThematicHeadingID];
+            List<Item_Aggregation_Related_Aggregations> thematicHeadingList = Aggregations_By_Thematic_Heading[ThematicHeadingID.Value];
 
 			// If this is already a part of the thematic heading, just return
 			if (thematicHeadingList.Contains(thisAggr))

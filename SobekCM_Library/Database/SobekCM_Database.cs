@@ -3446,72 +3446,6 @@ namespace SobekCM.Library.Database
 
 		#endregion
 
-		#region Methods related to the URL Portals into this library
-
-		///// <summary> Saves a new thematic heading or updates an existing thematic heading </summary>
-		///// <param name="ThematicHeadingID"> Primary key for the existing thematic heading, or -1 for a new heading </param>
-		///// <param name="ThemeOrder"> Order of this thematic heading, within the rest of the headings </param>
-		///// <param name="ThemeName"> Display name for this thematic heading</param>
-		///// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		///// <returns> Thematic heading id, or -1 if there was an error </returns>
-		///// <remarks> This calls the 'SobekCM_Edit_Thematic_Heading' stored procedure </remarks> 
-		//public static int Edit_Thematic_Heading(int ThematicHeadingID, string ThemeOrder, string ThemeName, Custom_Tracer tracer)
-		//{
-		//    if (tracer != null)
-		//    {
-		//        tracer.Add_Trace("SobekCM_Database.Edit_Thematic_Heading", String.Empty);
-		//    }
-
-		//    try
-		//    {
-		//        // Execute this non-query stored procedure
-		//        SqlParameter[] param_list = new SqlParameter[4];
-		//        param_list[0] = new SqlParameter("@thematicheadingid", ThematicHeadingID);
-		//        param_list[1] = new SqlParameter("@themeorder", ThemeOrder);
-		//        param_list[2] = new SqlParameter("@themename", ThemeName);
-		//        param_list[3] = new SqlParameter("@newid", -1);
-		//        param_list[3].Direction = ParameterDirection.Output;
-
-		//        SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Edit_Thematic_Heading", param_list);
-
-		//        return Convert.ToInt32(param_list[3].Value);
-		//    }
-		//    catch (Exception ee)
-		//    {
-		//        last_exception = ee;
-		//        return -1;
-		//    }
-		//}
-
-		///// <summary> Deletes a thematic heading from the database  </summary>
-		///// <param name="ThematicHeadingID"> Primary key for the thematic heading to delete </param>
-		///// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		///// <returns> TRUE if successful, otherwise FALSE</returns>
-		///// <remarks> This calls the 'SobekCM_Delete_Thematic_Heading' stored procedure </remarks> 
-		//public static bool Delete_Thematic_Heading(int ThematicHeadingID, Custom_Tracer tracer)
-		//{
-		//    if (tracer != null)
-		//    {
-		//        tracer.Add_Trace("SobekCM_Database.Delete_Thematic_Heading", String.Empty);
-		//    }
-
-		//    try
-		//    {
-		//        // Execute this non-query stored procedure
-		//        SqlParameter[] param_list = new SqlParameter[1];
-		//        param_list[0] = new SqlParameter("@thematicheadingid", ThematicHeadingID);
-
-		//        SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Thematic_Heading", param_list);
-		//        return true;
-		//    }
-		//    catch (Exception ee)
-		//    {
-		//        last_exception = ee;
-		//        return false;
-		//    }
-		//}
-
-		#endregion
 
 		/// <summary> Saves a item aggregation alias for future use </summary>
 		/// <param name="Alias"> Alias string which will forward to a item aggregation </param>
@@ -5981,33 +5915,7 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Marks an item as been editing online through the web interface </summary>
-		/// <param name="ItemID"> Primary key for the item having a progress/worklog entry added </param>
-		/// <param name="User">User name who did the edit</param>
-		/// <param name="UserNotes">Any user notes about this edit</param>
-		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'Tracking_Online_Edit_Complete' stored procedure. </remarks>
-		public static bool Tracking_Online_Edit_Complete(int ItemID, string User, string UserNotes)
-		{
-			try
-			{
-				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[3];
-				paramList[0] = new SqlParameter("@itemid", ItemID);
-				paramList[1] = new SqlParameter("@user", User);
-				paramList[2] = new SqlParameter("@usernotes", UserNotes);
 
-				// Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Online_Edit_Complete", paramList);
-
-				return true;
-			}
-			catch (Exception ee)
-			{
-				lastException = ee;
-				return false;
-			}
-		}
 
 		/// <summary> Marks an item as having been submitted online </summary>
 		/// <param name="ItemID"> Primary key for the item having a progress/worklog entry added </param>

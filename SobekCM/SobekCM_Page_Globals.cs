@@ -939,7 +939,7 @@ namespace SobekCM
 				}
 
 				// Check if a differente skin should be used if this is a collection display
-				if ((hierarchyObject != null) && (hierarchyObject.Web_Skins.Count > 0))
+				if ((hierarchyObject != null) && ( hierarchyObject.Web_Skins != null ) && (hierarchyObject.Web_Skins.Count > 0))
 				{
 					if (!hierarchyObject.Web_Skins.Contains(current_skin_code.ToLower()))
 					{

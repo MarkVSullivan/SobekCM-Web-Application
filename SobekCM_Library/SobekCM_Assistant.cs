@@ -427,7 +427,7 @@ namespace SobekCM.Library
 
 
             // First, make sure the browse submode is valid
-            if ((Aggregation_Object.Aggregation_ID == -1) && (Current_Mode.Mode == Display_Mode_Enum.Simple_HTML_CMS))
+            if ((Aggregation_Object.ID == -1) && (Current_Mode.Mode == Display_Mode_Enum.Simple_HTML_CMS))
             {
                 string source = Base_Directory + "design\\info";
                 string[] matching_file = Directory.GetFiles(source, Current_Mode.Info_Browse_Mode + ".*");
@@ -1714,7 +1714,7 @@ namespace SobekCM.Library
                 // Return if this was valid
                 if (Aggregation_Object != null)
                 {
-                    if ((Current_Mode.Skin_In_URL != true) && ( Aggregation_Object.Default_Skin.Length > 0 ))
+                    if ((Current_Mode.Skin_In_URL != true) && ( !String.IsNullOrEmpty(Aggregation_Object.Default_Skin )))
                     {
                         Current_Mode.Skin = Aggregation_Object.Default_Skin.ToLower();
                     }

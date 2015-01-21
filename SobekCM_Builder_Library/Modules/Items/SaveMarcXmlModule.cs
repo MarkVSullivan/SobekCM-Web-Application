@@ -2,7 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -21,11 +23,22 @@ namespace SobekCM.Builder_Library.Modules.Items
 
                 List<string> collectionnames = new List<string>();
 
+                // Create the options dictionary used when saving information to the database, or writing MarcXML
+                Dictionary<string, object> options = new Dictionary<string, object>();
+                if (Engine_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+                {
+                    options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Location Code"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
+                    options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
+                }
+                options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System_Abbreviation;
+
                 // Save the marc xml file
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
-                Dictionary<string, object> options = new Dictionary<string, object>();
-                options["MarcXML_File_ReaderWriter:Additional_Tags"] = Resource.Metadata.MARC_Sobek_Standard_Tags(collectionnames, true, Settings.System_Name, Settings.System_Abbreviation);
                 if (!marcWriter.Write_Metadata(Resource.Metadata.Source_Directory + "\\marc.xml", Resource.Metadata, options, out errorMessage))
                 {
                     OnError("Error while saving the MarcXML : " + errorMessage, Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);

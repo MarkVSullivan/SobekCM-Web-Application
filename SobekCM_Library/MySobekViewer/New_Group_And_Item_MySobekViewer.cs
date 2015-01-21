@@ -861,20 +861,22 @@ namespace SobekCM.Library.MySobekViewer
                 // Add this to the cache
                 UI_ApplicationCache_Gateway.Items.Add_SobekCM_Item(Item_To_Complete);
 
-                //// Link this item and RequestSpecificValues.Current_User
-                //Database.SobekCM_Database.Add_User_Item_Link(RequestSpecificValues.Current_User.UserID, item.Web.ItemID, 1, true);
-                //Database.SobekCM_Database.Add_User_BibID_Link(RequestSpecificValues.Current_User.UserID, item.Behaviors.GroupID);
-                //Database.SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, "Submitted Items", item.BibID, item.VID, 0, String.Empty, Tracer);
-
-
-                
+                // Create the options dictionary used when saving information to the database, or writing MarcXML
+                Dictionary<string, object> options = new Dictionary<string, object>();
+                if (UI_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+                {
+                    options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Location Code"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
+                    options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
+                    options["MarcXML_File_ReaderWriter:MARC XSLT File"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
+                }
+                options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System_Abbreviation;
 
                 // Save the marc xml file
-				List<string> collectionnames = new List<string>();
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
                 string errorMessage;
-                Dictionary<string, object> options = new Dictionary<string, object>();
-                options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item_To_Complete.MARC_Sobek_Standard_Tags(collectionnames, true, UI_ApplicationCache_Gateway.Settings.System_Name, UI_ApplicationCache_Gateway.Settings.System_Abbreviation);
                 marcWriter.Write_Metadata(Item_To_Complete.Source_Directory + "\\marc.xml", Item_To_Complete, options, out errorMessage);
 
                 // Delete the TEMP mets file

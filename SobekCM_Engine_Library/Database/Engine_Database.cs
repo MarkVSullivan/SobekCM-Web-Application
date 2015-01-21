@@ -2996,6 +2996,7 @@ namespace SobekCM.Engine_Library.Database
                     Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
                     Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
+                
                 throw ee;
             }
         }
@@ -3083,22 +3084,35 @@ namespace SobekCM.Engine_Library.Database
             {
                 Name = thisRow[2].ToString(),
                 ShortName = thisRow[3].ToString(),
-                Is_Active = Convert.ToBoolean(thisRow[5]),
+                Active = Convert.ToBoolean(thisRow[5]),
                 Hidden = Convert.ToBoolean(thisRow[6]),
                 Has_New_Items = Convert.ToBoolean(thisRow[7]),
-                Contact_Email = thisRow[8].ToString(),
-                Default_Skin = thisRow[9].ToString(),
-                Description = thisRow[10].ToString(),
                 Map_Display = Convert.ToUInt16(thisRow[11]),
                 Map_Search = Convert.ToUInt16(thisRow[12]),
-                OAI_Flag = Convert.ToBoolean(thisRow[13]),
-                OAI_Metadata = thisRow[14].ToString(),
+                OAI_Enabled = Convert.ToBoolean(thisRow[13]),
                 Items_Can_Be_Described = Convert.ToInt16(thisRow[18]),
-                External_Link = thisRow[19].ToString()
             };
 
+            if ((thisRow[8] != DBNull.Value) && (thisRow[8].ToString().Length > 0))
+                aggrInfo.Contact_Email = thisRow[8].ToString();
+            if ((thisRow[9] != DBNull.Value) && (thisRow[9].ToString().Length > 0))
+                aggrInfo.Default_Skin = thisRow[9].ToString();
+            if ((thisRow[10] != DBNull.Value) && (thisRow[10].ToString().Length > 0))
+                aggrInfo.Description = thisRow[10].ToString();
+            if ((thisRow[14] != DBNull.Value) && (thisRow[14].ToString().Length > 0))
+                aggrInfo.OAI_Metadata = thisRow[14].ToString();
+            if ((thisRow[19] != DBNull.Value) && (thisRow[19].ToString().Length > 0))
+                aggrInfo.External_Link = thisRow[19].ToString();
+
             if (BasicInfo.Columns.Contains("ThematicHeadingID"))
-                aggrInfo.Thematic_Heading_ID = Convert.ToInt32(thisRow["ThematicHeadingID"]);
+            {
+                if (thisRow["ThematicHeadingID"] != DBNull.Value)
+                {
+                    int thematicHeadingId = Convert.ToInt32(thisRow["ThematicHeadingID"]);
+                    if ( thematicHeadingId > 0 )
+                        aggrInfo.Thematic_Heading_ID = thematicHeadingId;
+                }
+            }
 
             // return the built object
             return aggrInfo;
@@ -3109,6 +3123,9 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="ChildInfo">Datatable from database calls with child item aggregation information ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
         private static void add_children(Item_Aggregation AggrInfo, DataTable ChildInfo)
         {
+            if (ChildInfo.Rows.Count == 0)
+                return;
+
             string childTypes = String.Empty;
 
             // Build a dictionary of nodes while building this tree
@@ -3324,7 +3341,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-        public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Search_Beta, int Map_Display, int Map_Display_Beta, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, Custom_Tracer Tracer)
+        public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, int? ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Search_Beta, int Map_Display, int Map_Display_Beta, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -3340,7 +3357,10 @@ namespace SobekCM.Engine_Library.Database
                 paramList[2] = new SqlParameter("@name", Name);
                 paramList[3] = new SqlParameter("@shortname", ShortName);
                 paramList[4] = new SqlParameter("@description", Description);
-                paramList[5] = new SqlParameter("@thematicHeadingId", ThematicHeadingID);
+                if (ThematicHeadingID.HasValue)
+                    paramList[5] = new SqlParameter("@thematicHeadingId", ThematicHeadingID.Value);
+                else
+                    paramList[5] = new SqlParameter("@thematicHeadingId", DBNull.Value);
                 paramList[6] = new SqlParameter("@type", Type);
                 paramList[7] = new SqlParameter("@isActive", IsActive);
                 paramList[8] = new SqlParameter("@hidden", IsHidden);
@@ -3422,6 +3442,34 @@ namespace SobekCM.Engine_Library.Database
             parameters[0] = new SqlParameter("@collection_code", Aggregation_Code);
             DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Simple_Item_List", parameters);
             return tempSet;
+        }
+
+        /// <summary> Marks an item as been editing online through the web interface </summary>
+        /// <param name="ItemID"> Primary key for the item having a progress/worklog entry added </param>
+        /// <param name="User">User name who did the edit</param>
+        /// <param name="UserNotes">Any user notes about this edit</param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'Tracking_Online_Edit_Complete' stored procedure. </remarks>
+        public static bool Tracking_Online_Edit_Complete(int ItemID, string User, string UserNotes)
+        {
+            try
+            {
+                // Build the parameter list
+                SqlParameter[] paramList = new SqlParameter[3];
+                paramList[0] = new SqlParameter("@itemid", ItemID);
+                paramList[1] = new SqlParameter("@user", User);
+                paramList[2] = new SqlParameter("@usernotes", UserNotes);
+
+                // Execute this non-query stored procedure
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "Tracking_Online_Edit_Complete", paramList);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                return false;
+            }
         }
     }
 }

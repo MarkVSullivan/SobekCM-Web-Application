@@ -319,7 +319,7 @@ namespace SobekCM.Library.AdminViewer
 
 			Output.WriteLine("  <div class=\"sbkSaav_HomeText\">");
 			Output.WriteLine("    <br />");
-			Output.WriteLine("    <h1>" + itemAggregation.Aggregation_Type + " Administration : " + itemAggregation.Code.ToUpper() + "</h1>");
+			Output.WriteLine("    <h1>" + itemAggregation.Type + " Administration : " + itemAggregation.Code.ToUpper() + "</h1>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine();
 
@@ -531,12 +531,14 @@ namespace SobekCM.Library.AdminViewer
 			if (Form["admin_aggr_link"] != null) itemAggregation.External_Link = Form["admin_aggr_link"];
 			if ( Form["admin_aggr_desc"] != null ) itemAggregation.Description = Form["admin_aggr_desc"];
 			if (Form["admin_aggr_email"] != null) itemAggregation.Contact_Email = Form["admin_aggr_email"];
-			itemAggregation.Is_Active = Form["admin_aggr_isactive"] != null;
+			itemAggregation.Active = Form["admin_aggr_isactive"] != null;
 			itemAggregation.Hidden = Form["admin_aggr_ishidden"] == null;
 			if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
 			{
-				if (Form["admin_aggr_heading"] != null)
-					itemAggregation.Thematic_Heading_ID = Convert.ToInt32(Form["admin_aggr_heading"]);
+                if ((Form["admin_aggr_heading"] != null) && (Form["admin_aggr_heading"] != "-1"))
+                    itemAggregation.Thematic_Heading_ID = Convert.ToInt32(Form["admin_aggr_heading"]);
+                else
+                    itemAggregation.Thematic_Heading_ID = null;
 			}
 
 		}
@@ -607,7 +609,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  </tr>");
 
 			// Add the link line
-			if (itemAggregation.Aggregation_Type.IndexOf("Institution", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (itemAggregation.Type.IndexOf("Institution", StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
 				Output.WriteLine("    <td>&nbsp;</td>");
@@ -629,7 +631,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\">Behavior:</label></td>");
 			Output.WriteLine("    <td>");
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-			Output.WriteLine(itemAggregation.Is_Active
+			Output.WriteLine(itemAggregation.Active
 			   ? "          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" checked=\"checked\" /> <label for=\"admin_aggr_isactive\">Active?</label> "
 			   : "          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" /> <label for=\"admin_aggr_isactive\">Active?</label> ");
 			Output.WriteLine("        </td>");
@@ -689,16 +691,16 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("    <td>");
 				Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
 				Output.WriteLine("          <select class=\"sbkSaav_select_large\" name=\"admin_aggr_heading\" id=\"admin_aggr_heading\">");
-				Output.WriteLine(itemAggregation.Thematic_Heading_ID < 0 ? "            <option value=\"-1\" selected=\"selected\" ></option>" : "            <option value=\"-1\"></option>");
+				Output.WriteLine(!itemAggregation.Thematic_Heading_ID.HasValue ? "            <option value=\"-1\" selected=\"selected\" ></option>" : "            <option value=\"-1\"></option>");
 				foreach (Thematic_Heading thisHeading in UI_ApplicationCache_Gateway.Thematic_Headings)
 				{
-					if (itemAggregation.Thematic_Heading_ID == thisHeading.ThematicHeadingID)
+					if (( itemAggregation.Thematic_Heading_ID.HasValue ) && ( itemAggregation.Thematic_Heading_ID == thisHeading.ID))
 					{
-						Output.WriteLine("            <option value=\"" + thisHeading.ThematicHeadingID + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(thisHeading.ThemeName) + "</option>");
+						Output.WriteLine("            <option value=\"" + thisHeading.ID + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
 					}
 					else
 					{
-						Output.WriteLine("            <option value=\"" + thisHeading.ThematicHeadingID + "\">" + HttpUtility.HtmlEncode(thisHeading.ThemeName) + "</option>");
+						Output.WriteLine("            <option value=\"" + thisHeading.ID + "\">" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
 					}
 				}
 				Output.WriteLine("          </select>");
@@ -1258,7 +1260,7 @@ namespace SobekCM.Library.AdminViewer
 
 			// Look for the default browse by
 			short default_browseby_id = 0;
-			itemAggregation.Default_BrowseBy = String.Empty;
+			itemAggregation.Default_BrowseBy = null;
 			if (Form["admin_aggr_default_browseby"] != null)
 			{
 				string default_browseby = Form["admin_aggr_default_browseby"];
@@ -1299,7 +1301,7 @@ namespace SobekCM.Library.AdminViewer
 				}
 			}
 
-			itemAggregation.OAI_Flag = Form["admin_aggr_oai_flag"] != null;
+			itemAggregation.OAI_Enabled = Form["admin_aggr_oai_flag"] != null;
 
 			if (Form["admin_aggr_oai_metadata"] != null)
 				itemAggregation.OAI_Metadata = Form["admin_aggr_oai_metadata"];
@@ -1309,7 +1311,7 @@ namespace SobekCM.Library.AdminViewer
 		{
 			// Get the metadata browses
 			List<string> metadata_browse_bys = new List<string>();
-			string default_browse_by = itemAggregation.Default_BrowseBy;
+			string default_browse_by = itemAggregation.Default_BrowseBy ?? String.Empty;
 			List<string> otherBrowseBys = new List<string>();
 			foreach (Item_Aggregation_Child_Page thisBrowse in itemAggregation.Browse_By_Pages(UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
 			{
@@ -1403,7 +1405,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td>");
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
 			Output.Write("           <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_oai_flag\" id=\"admin_aggr_oai_flag\"");
-			if (itemAggregation.OAI_Flag)
+			if (itemAggregation.OAI_Enabled)
 				Output.Write(" checked=\"checked\"");
 			Output.WriteLine(" />");
 			Output.WriteLine("           <label for=\"admin_aggr_oai_flag\">Include in OAI-PMH as a set?</label>");
@@ -1552,7 +1554,7 @@ namespace SobekCM.Library.AdminViewer
                         break;
 
                     case "disable_css":
-                        itemAggregation.CSS_File = String.Empty;
+                        itemAggregation.CSS_File = null;
                         break;
 
 					case "add_home":
@@ -1583,7 +1585,7 @@ namespace SobekCM.Library.AdminViewer
 								writer.Close();
 							}
 
-							itemAggregation.Home_Page_File_Dictionary[enumVal] = "html\\home\\" + new_file_name;
+						    itemAggregation.Add_Home_Page_File("html\\home\\" + new_file_name, enumVal);
 
 							// Add this to the list of JUST ADDED home pages, which can't be edited or viewed until saved
 							List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
@@ -1601,7 +1603,7 @@ namespace SobekCM.Library.AdminViewer
 							Web_Language_Enum enumVal = Web_Language_Enum_Converter.Code_To_Enum(blanguage);
 							if (btype == "standard")
 							{
-								itemAggregation.Banner_Dictionary[enumVal] = "images\\banners\\" + bfile;
+							    itemAggregation.Add_Banner_Image("images\\banners\\" + bfile, enumVal);
 							}
 							else
 							{
@@ -1610,7 +1612,7 @@ namespace SobekCM.Library.AdminViewer
 									btypeEnum = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT;
 								if ( btype == "right" )
 									btypeEnum = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT;
-								Item_Aggregation_Front_Banner newFront = new Item_Aggregation_Front_Banner("images\\banners\\" + bfile) {Banner_Type = btypeEnum};
+								Item_Aggregation_Front_Banner newFront = new Item_Aggregation_Front_Banner("images\\banners\\" + bfile) {Type = btypeEnum};
 
 								try
 								{
@@ -1631,7 +1633,7 @@ namespace SobekCM.Library.AdminViewer
 								}
 
 
-								itemAggregation.Front_Banner_Dictionary[enumVal] = newFront;
+								itemAggregation.Add_Front_Banner_Image(newFront, enumVal); 
 							}
 						}
 
@@ -1649,13 +1651,15 @@ namespace SobekCM.Library.AdminViewer
 						{
 							string code_to_delete = action.Replace("delete_standard_", "");
 							Web_Language_Enum enum_to_delete = Web_Language_Enum_Converter.Code_To_Enum(code_to_delete);
-							itemAggregation.Banner_Dictionary.Remove(enum_to_delete);
+                            if ( itemAggregation.Banner_Dictionary != null )
+    							itemAggregation.Banner_Dictionary.Remove(enum_to_delete);
 						}
 						if (action.IndexOf("delete_front_") == 0)
 						{
 							string code_to_delete = action.Replace("delete_front_", "");
 							Web_Language_Enum enum_to_delete = Web_Language_Enum_Converter.Code_To_Enum(code_to_delete);
-							itemAggregation.Front_Banner_Dictionary.Remove(enum_to_delete);
+                            if ( itemAggregation.Front_Banner_Dictionary != null )
+    							itemAggregation.Front_Banner_Dictionary.Remove(enum_to_delete);
 						}
 						break;
 
@@ -1663,12 +1667,12 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 			// Set the web skin
-			itemAggregation.Web_Skins.Clear();
-			itemAggregation.Default_Skin = String.Empty;
+            itemAggregation.Web_Skins = null;
+			itemAggregation.Default_Skin = null;
 			if (( Form["admin_aggr_skin_1"] != null ) && ( Form["admin_aggr_skin_1"].Length > 0 ))
 			{
-				itemAggregation.Web_Skins.Add( Form["admin_aggr_skin_1"] );
-				itemAggregation.Default_Skin = Form["admin_aggr_skin_1"];
+			    itemAggregation.Web_Skins = new List<string> {Form["admin_aggr_skin_1"]};
+			    itemAggregation.Default_Skin = Form["admin_aggr_skin_1"];
 			}
 
 			// Set the custom home source file
@@ -1712,12 +1716,13 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
 			Output.WriteLine("      <tr>");
 			Output.WriteLine("        <td>");
+
 			// Get the ordered list of all skin codes
             ReadOnlyCollection<string> skinCodes = UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes;
 			for (int i = 0; i < 1; i++) // itemAggregation.Web_Skins.Count + 5; i++)
 			{
 				string skin = String.Empty;
-				if (i < itemAggregation.Web_Skins.Count)
+				if (( itemAggregation.Web_Skins != null ) && ( i < itemAggregation.Web_Skins.Count))
 					skin = itemAggregation.Web_Skins[i];
 				Skin_Writer_Helper(Output, "admin_aggr_skin_" + (i + 1).ToString(), skin, skinCodes);
 				if ((i + 1) % 3 == 0)
@@ -1737,7 +1742,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
 			Output.WriteLine("        <tr>");
 
-			if (itemAggregation.CSS_File.Length == 0)
+			if ( !String.IsNullOrEmpty(itemAggregation.CSS_File))
 			{
 				Output.WriteLine("          <td><span style=\"font-style:italic; padding-right:20px;\">No custom aggregation-level stylesheet</span></td>");
 				Output.WriteLine("          <td><button title=\"Enable an aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_enable_css();\">ENABLE</button></td>");
@@ -1838,63 +1843,66 @@ namespace SobekCM.Library.AdminViewer
 			Web_Language_Enum currLanguage = RequestSpecificValues.Current_Mode.Language;
 			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 			List<string> existing_languages = new List<string>();
-			foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
-			{
-				Output.WriteLine("        <tr>");
-				bool canDelete = true;
-				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED ) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
-				{
-					canDelete = false;
-					existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language));
-					Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
-				}
-				else
-				{
-					existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key));
-					Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "</td>");
-				}
+		    if (itemAggregation.Home_Page_File_Dictionary != null)
+		    {
+		        foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
+		        {
+		            Output.WriteLine("        <tr>");
+		            bool canDelete = true;
+		            if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
+		            {
+		                canDelete = false;
+		                existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language));
+		                Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
+		            }
+		            else
+		            {
+		                existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key));
+		                Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "</td>");
+		            }
 
-				string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisHomeSource.Value.Replace("\\","/");
+		            string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisHomeSource.Value.Replace("\\", "/");
 
-				Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View source file\">" + thisHomeSource.Value.Replace("html\\home\\", "") + "</a></td>");
-				Output.Write("          <td class=\"sbkAdm_ActionLink\" >( ");
+		            Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View source file\">" + thisHomeSource.Value.Replace("html\\home\\", "") + "</a></td>");
+		            Output.Write("          <td class=\"sbkAdm_ActionLink\" >( ");
 
-				if (!newLanguages.Contains(thisHomeSource.Key))
-				{
-					if (canDelete)
-					{
-						RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
-						RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-						Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)  + "\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+		            if (!newLanguages.Contains(thisHomeSource.Key))
+		            {
+		                if (canDelete)
+		                {
+		                    RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
+		                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+		                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
 
-						RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-						Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)  + "\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
-					}
-					else
-					{
-						RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
-						RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-						Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+		                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
+		                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+		                }
+		                else
+		                {
+		                    RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
+		                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+		                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
 
-						RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-						Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
-					}
-				}
-				else
-				{
-					Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added home pages.');return false\">view</a> | ");
-					Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added home pages.');return false\">edit</a> ");
-				}
+		                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
+		                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+		                }
+		            }
+		            else
+		            {
+		                Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added home pages.');return false\">view</a> | ");
+		                Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added home pages.');return false\">edit</a> ");
+		            }
 
-				if (canDelete)
-				{
-					Output.Write("| <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_home('" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + " home page\" >delete</a> ");
-				}
+		            if (canDelete)
+		            {
+		                Output.Write("| <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_home('" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + " home page\" >delete</a> ");
+		            }
 
-				Output.WriteLine(" )</td>");
-				Output.WriteLine("        </tr>");
-			}
-			Output.WriteLine("      </table>");
+		            Output.WriteLine(" )</td>");
+		            Output.WriteLine("        </tr>");
+		        }
+		    }
+		    Output.WriteLine("      </table>");
 			Output.WriteLine("    </td>");
 			Output.WriteLine("  </tr>");
 			RequestSpecificValues.Current_Mode.Language = currLanguage;
@@ -1923,19 +1931,22 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        <td>");
 			Output.Write("          <select id=\"admin_aggr_new_home_copy\" name=\"admin_aggr_new_home_copy\">");
 			Output.Write("<option value=\"\" selected=\"selected\"></option>");
-			foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
-			{
-				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
-				{
-					Output.Write("<option value=\"" + thisHomeSource.Value  + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language)) + "</option>");
-				}
-				else
-				{
-					Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
-				}
-			}
+		    if (itemAggregation.Home_Page_File_Dictionary != null)
+		    {
+		        foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
+		        {
+		            if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
+		            {
+		                Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language)) + "</option>");
+		            }
+		            else
+		            {
+		                Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
+		            }
+		        }
+		    }
 
-			Output.WriteLine("</select>");
+		    Output.WriteLine("</select>");
 			Output.WriteLine("        </td>");
 			Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Add new home page\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_add_home();\">ADD</button></td>");
 			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_HOME_PAGE_HELP + "');\"  title=\"" + NEW_HOME_PAGE_HELP + "\" /></td></tr></table>");
@@ -1963,80 +1974,85 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("          <th class=\"sbkSaav_BannerTableHeader3\">ACTION</th>");
 			Output.WriteLine("          <th class=\"sbkSaav_BannerTableHeader4\">IMAGE</th>");
 			Output.WriteLine("        </tr>");
+		    if (itemAggregation.Front_Banner_Dictionary != null)
+		    {
+		        foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> thisBannerInfo in itemAggregation.Front_Banner_Dictionary)
+		        {
+		            Output.WriteLine("        <tr>");
+		            if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
+		            {
+		                Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
+		            }
+		            else
+		            {
+		                Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisBannerInfo.Key) + "</td>");
+		            }
 
-			foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> thisBannerInfo in itemAggregation.Front_Banner_Dictionary)
-			{
-				Output.WriteLine("        <tr>");
-				if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
-				{
-					Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
-				}
-				else
-				{
-					Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisBannerInfo.Key) + "</td>");
-				}
+		            // Show the TYPE
+		            switch (thisBannerInfo.Value.Type)
+		            {
+		                case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.FULL:
+		                    Output.WriteLine("          <td>Home Page</td>");
+		                    break;
 
-				// Show the TYPE
-				switch (thisBannerInfo.Value.Banner_Type)
-				{
-					case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.FULL:
-						Output.WriteLine("          <td>Home Page</td>");
-						break;
+		                case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT:
+		                    Output.WriteLine("          <td>Home Page - Left</td>");
+		                    break;
 
-					case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT:
-						Output.WriteLine("          <td>Home Page - Left</td>");
-						break;
+		                case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT:
+		                    Output.WriteLine("          <td>Home Page - Right</td>");
+		                    break;
 
-					case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT:
-						Output.WriteLine("          <td>Home Page - Right</td>");
-						break;
+		            }
 
-				}
-				
 
-				string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisBannerInfo.Value.Image_File.Replace("\\", "/");
+		            string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisBannerInfo.Value.File.Replace("\\", "/");
 
-				Output.Write("          <td class=\"sbkAdm_ActionLink\" > ( <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_banner('" + Web_Language_Enum_Converter.Enum_To_Code(thisBannerInfo.Key) + "', 'front');\" title=\"Delete this banner\" >delete</a> )</td>");
+		            Output.Write("          <td class=\"sbkAdm_ActionLink\" > ( <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_banner('" + Web_Language_Enum_Converter.Enum_To_Code(thisBannerInfo.Key) + "', 'front');\" title=\"Delete this banner\" >delete</a> )</td>");
 
-				
-				Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View banner image file\" target=\"" + itemAggregation.Code + "_" + thisBannerInfo.Value.Image_File.Replace("\\", "_").Replace("/", "_") + "\"><img src=\"" + file + "\" alt=\"THIS BANNER IMAGE IS MISSING\" class=\"sbkSaav_BannerImage\" /></a></td>");
-				Output.WriteLine("        </tr>");
-			}
 
-			foreach (KeyValuePair<Web_Language_Enum, string> thisBannerInfo in itemAggregation.Banner_Dictionary)
-			{
-				Output.WriteLine("        <tr>");
-				bool canDelete = true;
-				if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
-				{
-					canDelete = false;
-					Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
-				}
-				else
-				{
-					Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisBannerInfo.Key) + "</td>");
-				}
+		            Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View banner image file\" target=\"" + itemAggregation.Code + "_" + thisBannerInfo.Value.File.Replace("\\", "_").Replace("/", "_") + "\"><img src=\"" + file + "\" alt=\"THIS BANNER IMAGE IS MISSING\" class=\"sbkSaav_BannerImage\" /></a></td>");
+		            Output.WriteLine("        </tr>");
+		        }
+		    }
 
-				// Show the TYPE
-				Output.WriteLine("          <td>Standard</td>");
+		    if (itemAggregation.Banner_Dictionary != null)
+		    {
+		        foreach (KeyValuePair<Web_Language_Enum, string> thisBannerInfo in itemAggregation.Banner_Dictionary)
+		        {
+		            Output.WriteLine("        <tr>");
+		            bool canDelete = true;
+		            if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
+		            {
+		                canDelete = false;
+		                Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
+		            }
+		            else
+		            {
+		                Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisBannerInfo.Key) + "</td>");
+		            }
 
-				string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisBannerInfo.Value.Replace("\\", "/");
+		            // Show the TYPE
+		            Output.WriteLine("          <td>Standard</td>");
 
-				if (canDelete)
-				{
-					Output.Write("          <td class=\"sbkAdm_ActionLink\" > ( <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_banner('" + Web_Language_Enum_Converter.Enum_To_Code(thisBannerInfo.Key) + "', 'standard');\" title=\"Delete this banner\" >delete</a> )</td>");
-				}
-				else
-				{
-					Output.WriteLine("          <td></td>");
-				}
+		            string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisBannerInfo.Value.Replace("\\", "/");
 
-				
-				Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View banner image file\" target=\"" + itemAggregation.Code + "_" + thisBannerInfo.Value.Replace("\\", "_").Replace("/", "_") + "\"><img src=\"" + file + "\" alt=\"THIS BANNER IMAGE IS MISSING\" class=\"sbkSaav_BannerImage\" /></a></td>");
-				Output.WriteLine("        </tr>");
-			}
+		            if (canDelete)
+		            {
+		                Output.Write("          <td class=\"sbkAdm_ActionLink\" > ( <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_banner('" + Web_Language_Enum_Converter.Enum_To_Code(thisBannerInfo.Key) + "', 'standard');\" title=\"Delete this banner\" >delete</a> )</td>");
+		            }
+		            else
+		            {
+		                Output.WriteLine("          <td></td>");
+		            }
 
-			Output.WriteLine("      </table>");
+
+		            Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View banner image file\" target=\"" + itemAggregation.Code + "_" + thisBannerInfo.Value.Replace("\\", "_").Replace("/", "_") + "\"><img src=\"" + file + "\" alt=\"THIS BANNER IMAGE IS MISSING\" class=\"sbkSaav_BannerImage\" /></a></td>");
+		            Output.WriteLine("        </tr>");
+		        }
+		    }
+
+		    Output.WriteLine("      </table>");
 			Output.WriteLine("    </td>");
 			Output.WriteLine("  </tr>");
 
@@ -2190,42 +2206,48 @@ namespace SobekCM.Library.AdminViewer
 
 			// Add the highlight type
 			Output.Write("<tr><td width=\"120px\">Highlights Type:</td><td><input type=\"radio\" name=\"admin_aggr_highlight_type\" id=\"rotating\" value=\"rotating\"");
-			if (itemAggregation.Rotating_Highlights)
+			if ((itemAggregation.Rotating_Highlights.HasValue ) && ( itemAggregation.Rotating_Highlights.Value ))
 				Output.Write(" checked=\"checked\"");
 			Output.Write("/><label for=\"rotating\">Rotating</label> &nbsp; <input type=\"radio\" name=\"admin_aggr_highlight_type\" id=\"static\" value=\"static\"");
-			if (!itemAggregation.Rotating_Highlights)
+			if ((!itemAggregation.Rotating_Highlights.HasValue ) || (!itemAggregation.Rotating_Highlights.Value))
 				Output.Write(" checked=\"checked\"");
 			Output.WriteLine("/><label for=\"static\">Static</label></td></tr>");
 
 			// Determine the maximum number of languages used in tooltips and text
 			int max_tooltips = 0;
 			int max_text = 0;
-			foreach (Item_Aggregation_Highlights thisHighlight in itemAggregation.Highlights)
-			{
-				max_tooltips = Math.Max(max_tooltips, thisHighlight.Tooltip_Dictionary.Count);
-				max_text = Math.Max(max_text, thisHighlight.Text_Dictionary.Count);
-			}
-			max_tooltips += 1;
+		    if (itemAggregation.Highlights != null)
+		    {
+		        foreach (Item_Aggregation_Highlights thisHighlight in itemAggregation.Highlights)
+		        {
+		            max_tooltips = Math.Max(max_tooltips, thisHighlight.Tooltip_Dictionary.Count);
+		            max_text = Math.Max(max_text, thisHighlight.Text_Dictionary.Count);
+		        }
+		    }
+		    max_tooltips += 1;
 			max_text += 1;
 
 			// Add each highlight
-			for (int i = 0; i < itemAggregation.Highlights.Count + 5; i++)
-			{
-				// Add some space and a line
-				Output.WriteLine("<tr><td colspan=\"2\">&nbsp;</td></tr>");
-				Output.WriteLine("<tr style=\"background:#333333\"><td colspan=\"2\"></td></tr>");
-				Output.WriteLine("<tr><td colspan=\"2\">&nbsp;</td></tr>");
+		    if (itemAggregation.Highlights != null)
+		    {
+		        for (int i = 0; i < itemAggregation.Highlights.Count + 5; i++)
+		        {
+		            // Add some space and a line
+		            Output.WriteLine("<tr><td colspan=\"2\">&nbsp;</td></tr>");
+		            Output.WriteLine("<tr style=\"background:#333333\"><td colspan=\"2\"></td></tr>");
+		            Output.WriteLine("<tr><td colspan=\"2\">&nbsp;</td></tr>");
 
-				// Either get the highlight, or just make one
-				Item_Aggregation_Highlights emptyHighlight = new Item_Aggregation_Highlights();
-				if (i < itemAggregation.Highlights.Count)
-					emptyHighlight = itemAggregation.Highlights[i];
+		            // Either get the highlight, or just make one
+		            Item_Aggregation_Highlights emptyHighlight = new Item_Aggregation_Highlights();
+		            if (i < itemAggregation.Highlights.Count)
+		                emptyHighlight = itemAggregation.Highlights[i];
 
-				// Now, add it to the form
-				Highlight_Writer_Helper(Output, i + 1, emptyHighlight, max_text, max_tooltips);
-			}
+		            // Now, add it to the form
+		            Highlight_Writer_Helper(Output, i + 1, emptyHighlight, max_text, max_tooltips);
+		        }
+		    }
 
-			Output.WriteLine("</table>");
+		    Output.WriteLine("</table>");
 			Output.WriteLine("<br />");
 		}
 
@@ -2438,16 +2460,19 @@ namespace SobekCM.Library.AdminViewer
 
 			// Put in alphabetical order
 			SortedList<string, Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Item_Aggregation_Child_Page>();
-			foreach (Item_Aggregation_Child_Page childPage in itemAggregation.Child_Pages)
-			{
-				if (childPage.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
-				{
-					sortedChildren.Add(childPage.Code, childPage);
-				}
-			}
+		    if (itemAggregation.Child_Pages != null)
+		    {
+		        foreach (Item_Aggregation_Child_Page childPage in itemAggregation.Child_Pages)
+		        {
+		            if (childPage.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
+		            {
+		                sortedChildren.Add(childPage.Code, childPage);
+		            }
+		        }
+		    }
 
 
-			// Collect all the static-html based browse and info pages 
+		    // Collect all the static-html based browse and info pages 
 			if (sortedChildren.Count == 0)
 			{
 				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
@@ -2512,26 +2537,29 @@ namespace SobekCM.Library.AdminViewer
 
 					Output.Write("          <td>");
 					int language_count = 0;
-					int total_language_count = childPage.Source_Dictionary.Count;
-					foreach (Web_Language_Enum thisLanguage in childPage.Source_Dictionary.Keys)
-					{
-						string languageName = Web_Language_Enum_Converter.Enum_To_Name(thisLanguage);
-						if ((thisLanguage == Web_Language_Enum.DEFAULT) || (thisLanguage == Web_Language_Enum.UNDEFINED) || (thisLanguage == RequestSpecificValues.Current_Mode.Default_Language))
-							languageName = "<span style=\"font-style:italic\">default</span>";
-						if ( language_count == 0 )
-							Output.Write(languageName);
-						else
-							Output.Write(", " + languageName);
+				    if (childPage.Source_Dictionary != null)
+				    {
+				        int total_language_count = childPage.Source_Dictionary.Count;
+				        foreach (Web_Language_Enum thisLanguage in childPage.Source_Dictionary.Keys)
+				        {
+				            string languageName = Web_Language_Enum_Converter.Enum_To_Name(thisLanguage);
+				            if ((thisLanguage == Web_Language_Enum.DEFAULT) || (thisLanguage == Web_Language_Enum.UNDEFINED) || (thisLanguage == RequestSpecificValues.Current_Mode.Default_Language))
+				                languageName = "<span style=\"font-style:italic\">default</span>";
+				            if (language_count == 0)
+				                Output.Write(languageName);
+				            else
+				                Output.Write(", " + languageName);
 
-						language_count++;
-						if ((language_count > 4) && (language_count < total_language_count - 1))
-						{
-							Output.Write("... (" + ( total_language_count - language_count ) + "more)");
-							break;
-						}
-					}
+				            language_count++;
+				            if ((language_count > 4) && (language_count < total_language_count - 1))
+				            {
+				                Output.Write("... (" + (total_language_count - language_count) + "more)");
+				                break;
+				            }
+				        }
+				    }
 
-					Output.WriteLine("</td>");
+				    Output.WriteLine("</td>");
 
 					Output.WriteLine("        </tr>");
 				}
@@ -2805,7 +2833,7 @@ namespace SobekCM.Library.AdminViewer
 
 
 				// Try to save the new item aggregation
-				if (Engine_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, -1, correct_type, is_active, is_hidden, String.Empty, itemAggregation.Aggregation_ID, RequestSpecificValues.Current_User.Full_Name, null))
+				if (Engine_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, -1, correct_type, is_active, is_hidden, String.Empty, itemAggregation.ID, RequestSpecificValues.Current_User.Full_Name, null))
 				{
 					// Ensure a folder exists for this, otherwise create one
 					try
@@ -2906,10 +2934,13 @@ namespace SobekCM.Library.AdminViewer
 
 				// Put in alphabetical order
 				SortedDictionary<string, Item_Aggregation_Related_Aggregations> sortedChildren = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
-				foreach (Item_Aggregation_Related_Aggregations childAggrs in itemAggregation.Children)
-					sortedChildren[childAggrs.Code] = childAggrs;
+			    if (itemAggregation.Children_Count > 0)
+			    {
+			        foreach (Item_Aggregation_Related_Aggregations childAggrs in itemAggregation.Children)
+			            sortedChildren[childAggrs.Code] = childAggrs;
+			    }
 
-				foreach (KeyValuePair<string, Item_Aggregation_Related_Aggregations> childAggrs in sortedChildren)
+			    foreach (KeyValuePair<string, Item_Aggregation_Related_Aggregations> childAggrs in sortedChildren)
 				{
 					string code = childAggrs.Key;
                     Item_Aggregation_Related_Aggregations relatedAggr = UI_ApplicationCache_Gateway.Aggregations[code];
@@ -2947,7 +2978,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  </tr>");
 			}
 
-			if (itemAggregation.Aggregation_Type.ToUpper() != "EXHIBIT")
+			if (itemAggregation.Type.ToUpper() != "EXHIBIT")
 			{
 				// Add ability to add NEW subcollections
 				Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
@@ -2965,7 +2996,7 @@ namespace SobekCM.Library.AdminViewer
 				if (enteredType == String.Empty)
 					Output.WriteLine("            <option value=\"\" selected=\"selected\" ></option>");
 
-				if ((itemAggregation.Aggregation_Type.IndexOf("Institution") < 0) && (itemAggregation.Aggregation_Type.IndexOf("Group") > 0))
+				if ((itemAggregation.Type.IndexOf("Institution") < 0) && (itemAggregation.Type.IndexOf("Group") > 0))
 				{
 					Output.WriteLine(enteredType == "coll"
 						                 ? "            <option value=\"coll\" selected=\"selected\" >Collection</option>"
@@ -2976,14 +3007,14 @@ namespace SobekCM.Library.AdminViewer
 					                 ? "            <option value=\"exhibit\" selected=\"selected\" >Exhibit</option>"
 					                 : "            <option value=\"exhibit\">Exhibit</option>");
 
-				if (itemAggregation.Aggregation_Type.IndexOf("Institution") == 0)
+				if (itemAggregation.Type.IndexOf("Institution") == 0)
 				{
 					Output.WriteLine(enteredType == "subinst"
 						                 ? "            <option value=\"subinst\" selected=\"selected\" >Institutional Division</option>"
 						                 : "            <option value=\"subinst\">Institutional Division</option>");
 				}
 
-				if (itemAggregation.Aggregation_Type.IndexOf("Institution") < 0)
+				if (itemAggregation.Type.IndexOf("Institution") < 0)
 				{
 					Output.WriteLine(enteredType == "subcoll"
 						                 ? "            <option value=\"subcoll\" selected=\"selected\" >SubCollection</option>"
@@ -3212,15 +3243,18 @@ namespace SobekCM.Library.AdminViewer
 
 			// Put OTHER children in alphabetical order
 			SortedList<string, Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Item_Aggregation_Child_Page>();
-			foreach (Item_Aggregation_Child_Page childPage2 in itemAggregation.Child_Pages)
-			{
-				if (childPage2.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
-				{
-					sortedChildren.Add(childPage2.Code, childPage2);
-				}
-			}
+		    if (itemAggregation.Child_Pages != null)
+		    {
+		        foreach (Item_Aggregation_Child_Page childPage2 in itemAggregation.Child_Pages)
+		        {
+		            if (childPage2.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
+		            {
+		                sortedChildren.Add(childPage2.Code, childPage2);
+		            }
+		        }
+		    }
 
-			// Add line for parent code
+		    // Add line for parent code
 			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
 			{
 				Output.WriteLine("  <tr id=\"admin_aggr_parent_row\" class=\"sbkSaav_SingleRow\" style=\"display:table-row;\">");
@@ -3287,64 +3321,67 @@ namespace SobekCM.Library.AdminViewer
 			RequestSpecificValues.Current_Mode.Info_Browse_Mode = childPage.Code;
 
 			List<string> existing_languages = new List<string>();
-			foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in childPage.Source_Dictionary)
-			{
-				RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
+		    if (childPage.Source_Dictionary != null)
+		    {
+		        foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in childPage.Source_Dictionary)
+		        {
+		            RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
 
-				Output.WriteLine("        <tr>");
-				bool canDelete = true;
-				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
-				{
-					canDelete = false;
-					existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language));
-					Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
-				}
-				else
-				{
-					existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key));
-					Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "</td>");
-				}
+		            Output.WriteLine("        <tr>");
+		            bool canDelete = true;
+		            if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
+		            {
+		                canDelete = false;
+		                existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language));
+		                Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
+		            }
+		            else
+		            {
+		                existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key));
+		                Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "</td>");
+		            }
 
-				string label = childPage.Get_Label(thisHomeSource.Key);
-				Output.WriteLine("          <td>" + label + "</td>");
+		            string label = childPage.Get_Label(thisHomeSource.Key);
+		            Output.WriteLine("          <td>" + label + "</td>");
 
-				string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisHomeSource.Value.Replace("\\", "/");
-				string[] file_splitter = file.Split("\\/".ToCharArray());
-				string filename = file_splitter[file_splitter.Length - 1];
-				Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View source file\">" + filename + "</a></td>");
+		            string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisHomeSource.Value.Replace("\\", "/");
+		            string[] file_splitter = file.Split("\\/".ToCharArray());
+		            string filename = file_splitter[file_splitter.Length - 1];
+		            Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View source file\">" + filename + "</a></td>");
 
-				Output.Write("          <td class=\"sbkAdm_ActionLink\" >( ");
+		            Output.Write("          <td class=\"sbkAdm_ActionLink\" >( ");
 
-				if (!newLanguages.Contains(thisHomeSource.Key))
-				{
-					RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
+		            if (!newLanguages.Contains(thisHomeSource.Key))
+		            {
+		                RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
 
-					if (canDelete)
-					{
-						Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this child page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
-						Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this child page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
-					}
-					else
-					{
-						Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this child page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
-						Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this child page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
-					}
-				}
-				else
-				{
-					Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added child page versions.');return false\">view</a> | ");
-					Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added child page versions.');return false\">edit</a> ");
-				}
+		                if (canDelete)
+		                {
+		                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this child page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+		                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this child page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+		                }
+		                else
+		                {
+		                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this child page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+		                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this child page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+		                }
+		            }
+		            else
+		            {
+		                Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added child page versions.');return false\">view</a> | ");
+		                Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added child page versions.');return false\">edit</a> ");
+		            }
 
-				if (canDelete)
-				{
-					Output.Write("| <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_child_version('" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "', '" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + " version\" >delete</a> ");
-				}
+		            if (canDelete)
+		            {
+		                Output.Write("| <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_child_version('" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "', '" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + " version\" >delete</a> ");
+		            }
 
-				Output.WriteLine(" )</td>");
-				Output.WriteLine("        </tr>");
-			}
-			Output.WriteLine("      </table>");
+		            Output.WriteLine(" )</td>");
+		            Output.WriteLine("        </tr>");
+		        }
+		    }
+		    Output.WriteLine("      </table>");
 			Output.WriteLine("    </td>");
 			Output.WriteLine("  </tr>");
 			RequestSpecificValues.Current_Mode.Language = currLanguage;
@@ -3387,19 +3424,22 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("          <td>");
 			Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_version_copy\" name=\"admin_aggr_new_version_copy\">");
 			Output.Write("<option value=\"\" selected=\"selected\"></option>");
-			foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in childPage.Source_Dictionary)
-			{
-				if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
-				{
-					Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language)) + "</option>");
-				}
-				else
-				{
-					Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
-				}
-			}
+		    if (childPage.Source_Dictionary != null)
+		    {
+		        foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in childPage.Source_Dictionary)
+		        {
+		            if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
+		            {
+		                Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language)) + "</option>");
+		            }
+		            else
+		            {
+		                Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
+		            }
+		        }
+		    }
 
-			Output.WriteLine("</select>");
+		    Output.WriteLine("</select>");
 			Output.WriteLine("          </td>");
 			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_VERSION_COPY_HELP + "');\"  title=\"" + NEW_VERSION_COPY_HELP + "\" /></td>");
 			Output.WriteLine("        </tr>");

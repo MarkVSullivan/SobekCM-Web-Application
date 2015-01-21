@@ -272,7 +272,7 @@ namespace SobekCM.Engine_Library.Aggregations
             if ((ChildPageObject.Code == "all") || (ChildPageObject.Code == "new"))
             {
                 // Get this browse from the database
-                if ((ItemAggr.Aggregation_ID < 0) || (ItemAggr.Code.ToUpper() == "ALL"))
+                if ((ItemAggr.ID < 0) || (ItemAggr.Code.ToUpper() == "ALL"))
                 {
                     if (ChildPageObject.Code == "new")
                         return Engine_Database.Get_All_Browse_Paged(true, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
@@ -298,10 +298,10 @@ namespace SobekCM.Engine_Library.Aggregations
         /// <returns>TRUE if successful, otherwise FALSE </returns>
         public static bool Save_To_Database(Item_Aggregation ItemAggr, string Username, Custom_Tracer Tracer)
         {
-            return Engine_Database.Save_Item_Aggregation(ItemAggr.Aggregation_ID, ItemAggr.Code, ItemAggr.Name, ItemAggr.ShortName,
-                ItemAggr.Description, ItemAggr.Thematic_Heading_ID, ItemAggr.Aggregation_Type, ItemAggr.Is_Active, ItemAggr.Hidden,
+            return Engine_Database.Save_Item_Aggregation(ItemAggr.ID, ItemAggr.Code, ItemAggr.Name, ItemAggr.ShortName,
+                ItemAggr.Description, ItemAggr.Thematic_Heading_ID, ItemAggr.Type, ItemAggr.Active, ItemAggr.Hidden,
                 ItemAggr.Display_Options, ItemAggr.Map_Search, ItemAggr.Map_Search_Beta, ItemAggr.Map_Display, ItemAggr.Map_Display_Beta,
-                ItemAggr.OAI_Flag, ItemAggr.OAI_Metadata, ItemAggr.Contact_Email, String.Empty, ItemAggr.External_Link, -1, Username, Tracer);
+                ItemAggr.OAI_Enabled, ItemAggr.OAI_Metadata, ItemAggr.Contact_Email, String.Empty, ItemAggr.External_Link, -1, Username, Tracer);
         }
 
         #endregion

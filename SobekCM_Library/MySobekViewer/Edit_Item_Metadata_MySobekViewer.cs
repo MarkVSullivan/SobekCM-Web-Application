@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
@@ -46,7 +47,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly CompleteTemplate completeTemplate;
 	    private readonly string delayed_popup;
 
-        private SobekCM_Item item;
+        private readonly SobekCM_Item item;
 
         #region Constructor
 
@@ -522,169 +523,8 @@ namespace SobekCM.Library.MySobekViewer
             }
             else
             {
-                // Determine the in process directory for this
-                string user_bib_vid_process_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location, RequestSpecificValues.Current_User.ShibbID + "\\metadata_updates\\" + item.BibID + "_" + item.VID);
-                if (RequestSpecificValues.Current_User.ShibbID.Trim().Length == 0)
-                    user_bib_vid_process_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location, RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\metadata_updates\\" + item.BibID + "_" + item.VID);
-
-                // Ensure the folder exists and is empty to start with
-                if (!Directory.Exists(user_bib_vid_process_directory))
-                    Directory.CreateDirectory(user_bib_vid_process_directory);
-                else
-                {
-                    // Anything older than a day should be deleted
-                    string[] files = Directory.GetFiles(user_bib_vid_process_directory);
-                    foreach (string thisFile in files)
-                    {
-                        try
-                        {
-                            File.Delete(thisFile);
-                        }
-                        catch (Exception)
-                        {
-                            // Not much to do here
-                        }
-                    }
-                }
-
-                // Update the METS file with METS note and name
-                item.METS_Header.Creator_Individual = RequestSpecificValues.Current_User.UserName;
-                item.METS_Header.Modify_Date = DateTime.Now;
-                item.METS_Header.RecordStatus_Enum = METS_Record_Status.METADATA_UPDATE;
-
-                // Save the METS file and related items
-                bool successful_save = true;
-                try
-                {
-                    SobekCM_Database.Save_Digital_Resource(item, DateTime.Now, true);
-                }
-                catch
-                {
-                    successful_save = false;
-                }
-
-                // Create the static html pages
-                string base_url = RequestSpecificValues.Current_Mode.Base_URL;
-                try
-                {
-                    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Data_Directory, RequestSpecificValues.HTML_Skin.Skin_Code);
-                    string filename = user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html";
-                    staticBuilder.Create_Item_Citation_HTML(item, filename, UI_ApplicationCache_Gateway.Settings.Image_Server_Network + item.Web.AssocFilePath);
-
-					// Copy the static HTML file to the web server
-					try
-					{
-						if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8)))
-							Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8));
-						if (File.Exists(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
-							File.Copy(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", UI_ApplicationCache_Gateway.Settings.Static_Pages_Location + item.BibID.Substring(0, 2) + "\\" + item.BibID.Substring(2, 2) + "\\" + item.BibID.Substring(4, 2) + "\\" + item.BibID.Substring(6, 2) + "\\" + item.BibID.Substring(8) + "\\" + item.BibID + "_" + item.VID + ".html", true);
-					}
-					catch
-					{
-						// This is not critical
-					}
-                }
-                catch
-                {
-                    // Failing to make the static page is not the worst thing in the world...
-                }
-
-                RequestSpecificValues.Current_Mode.Base_URL = base_url;
-
-                item.Source_Directory = user_bib_vid_process_directory;
-                item.Save_SobekCM_METS();
-
-
-                // If this was not able to be saved in the database, try it again
-                if (!successful_save)
-                {
-                    SobekCM_Database.Save_Digital_Resource(item, DateTime.Now, false);
-                }
-
-                // Make sure the progress has been added to this item's work log
-                try
-                {
-                    Database.SobekCM_Database.Tracking_Online_Edit_Complete(item.Web.ItemID, RequestSpecificValues.Current_User.Full_Name, String.Empty);
-                }
-                catch(Exception)
-                {
-                    // This is not critical
-                }
-
-
-				// Save the MARC file
-                List<string> collectionnames = new List<string>();
-                MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
-                string errorMessage;
-                Dictionary<string, object> options = new Dictionary<string, object>();
-                options["MarcXML_File_ReaderWriter:Additional_Tags"] = item.MARC_Sobek_Standard_Tags(collectionnames, true, UI_ApplicationCache_Gateway.Settings.System_Name, UI_ApplicationCache_Gateway.Settings.System_Abbreviation);
-                marcWriter.Write_Metadata(item.Source_Directory + "\\marc.xml", item, options, out errorMessage);
-
-				// Determine the server folder
-                string serverNetworkFolder = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + item.Web.AssocFilePath;
-
-                // Create the folder
-	            if (!Directory.Exists(serverNetworkFolder))
-	            {
-		            Directory.CreateDirectory(serverNetworkFolder);
-                    if (!Directory.Exists(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name))
-                        Directory.CreateDirectory(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name);
-	            }
-	            else
-	            {
-                    if (!Directory.Exists(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name))
-                        Directory.CreateDirectory(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name);
-
-		            // Rename any existing standard mets to keep a backup
-		            if (File.Exists(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml"))
-		            {
-			            FileInfo currentMetsFileInfo = new FileInfo(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml");
-			            DateTime lastModDate = currentMetsFileInfo.LastWriteTime;
-                        File.Copy(serverNetworkFolder + "\\" + item.BibID + "_" + item.VID + ".mets.xml", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name + "\\" + item.BibID + "_" + item.VID + "_" + lastModDate.Year + "_" + lastModDate.Month + "_" + lastModDate.Day + ".mets.bak", true);
-		            }
-	            }
-
-				// Copy the static HTML page over first
-	            if (File.Exists(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html"))
-	            {
-                    File.Copy(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name + "\\" + item.BibID + "_" + item.VID + ".html", true);
-					File.Delete(user_bib_vid_process_directory + "\\" + item.BibID + "_" + item.VID + ".html");
-	            }
-
-	            // Copy all the files 
-				string[] allFiles = Directory.GetFiles(user_bib_vid_process_directory);
-	            foreach (string thisFile in allFiles)
-                {
-                    string destination_file = serverNetworkFolder + "\\" + (new FileInfo(thisFile)).Name;
-                    File.Copy(thisFile, destination_file, true);
-                }
-
-                // Add this to the cache
-                UI_ApplicationCache_Gateway.Items.Add_SobekCM_Item(item, false);
-
-                // Now, delete all the files here
-                string[] all_files = Directory.GetFiles(user_bib_vid_process_directory);
-                foreach (string thisFile in all_files)
-                {
-	                try
-	                {
-		                File.Delete(thisFile);
-	                }
-	                catch 
-	                {
-		                
-	                }
-                }
-
-                // Clear the RequestSpecificValues.Current_User-specific and global cache of this item 
-                Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, item.BibID, item.VID, null);
-                Cached_Data_Manager.Remove_Digital_Resource_Object(item.BibID, item.VID, null);
-                Cached_Data_Manager.Remove_Items_In_Title(item.BibID, null);
-
-                // Also clear any searches or browses ( in the future could refine this to only remove those
-                // that are impacted by this save... but this is good enough for now )
-                Cached_Data_Manager.Clear_Search_Results_Browses();
-
+                string error_message;
+                SobekCM_Item_Updater.Update_Item(item, RequestSpecificValues.Current_User, out error_message);
 
                 // Forward to the display item again
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;

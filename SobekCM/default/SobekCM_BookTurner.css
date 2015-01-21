@@ -26,6 +26,8 @@ body
  font-family: helvetica, verdana, sans-serif;
  font-size: 10px;
  color: #adadad;
+ background-color: #121212;
+    padding: 0;margin: 0;
 }
 
 a {
@@ -37,6 +39,7 @@ a {
     width: 100%;
 	vertical-align:middle;
 	text-align: center;
+    background-color: #121212;
 }
 
 .GBtitle 
@@ -175,8 +178,8 @@ vertical-align:middle;
     border: none;
 }
 
-.GBicon.logo { float: left; width: 206px; height: 27px; background: url(images/bookturner/ufgas.png) no-repeat; margin-right:15px; }
-.GBicon.ufdc { float: right; width: 239px; height: 27px; background: url(images/bookturner/ufdc.png) no-repeat; margin-right:10px; }
+.GBicon.top_left_logo { float: left; width: 206px; height: 27px; background: url(images/bookturner/top_left.jpg) no-repeat; margin-right:15px; }
+.GBicon.top_right_logo { float: right; width: 239px; height: 27px; background: url(images/bookturner/top_right.jpg) no-repeat; margin-right:10px; }
 
 .GBicon.zoom_out { width: 23px; background: url(images/bookturner/zoomout.png) no-repeat; margin-left:5px; }
 .GBicon.zoom_in { width: 23px; background: url(images/bookturner/zoomin.png) no-repeat; margin-left:1px; margin-right:7px; }

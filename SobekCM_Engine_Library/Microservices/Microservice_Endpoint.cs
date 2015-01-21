@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Reflection;
+using System.Web;
 
 namespace SobekCM.Engine_Library.Microservices
 {
@@ -12,15 +16,51 @@ namespace SobekCM.Engine_Library.Microservices
         POST
     }
 
+    /// <summary> Enumeration indicates the type of protocol utilized by this endpoint</summary>
+    public enum Microservice_Endpoint_Protocol_Enum : byte
+    {
+        /// <summary> Output of this endpoint is JSON </summary>
+        JSON = 1,
+
+        /// <summary> Output of this endpoint is Protocol Buffer octet-stream </summary>
+        PROTOBUF = 2
+    }
+
     /// <summary> Class defines an microservice endpoint within a collection of path or URI segments </summary>
     public class Microservice_Endpoint : Microservice_Path
     {
+        private MethodInfo methodInfo;
+        private object restApiObject;
+
+        public void Invoke(HttpResponse Response, List<string> UrlSegments, NameValueCollection RequestForm )
+        {
+            if ((methodInfo == null) || (restApiObject == null))
+            {
+                Assembly dllAssembly = Assembly.GetExecutingAssembly();
+                Type restApiClassType = dllAssembly.GetType(Component.Namespace + "." + Component.Class);
+                restApiObject = Activator.CreateInstance(restApiClassType);
+
+                methodInfo = restApiClassType.GetMethod(Method);
+            }
+
+            // Invokation is different, dependingon whether this is a PUT or POST
+            if ( RequestType == Microservice_Endpoint_RequestType_Enum.GET )
+                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, Protocol });
+            else
+                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, Protocol, RequestForm });
+        }
+
+
         /// <summary> Constructor for a new instance of the Microservice_Endpoint class </summary>
         public Microservice_Endpoint()
         {
             Enabled = true;
             RequestType = Microservice_Endpoint_RequestType_Enum.GET;
+            Protocol = Microservice_Endpoint_Protocol_Enum.JSON;
         }
+
+        /// <summary> Protocol which this endpoint utilizes ( JSON or Protocol Buffer ) </summary>
+        public Microservice_Endpoint_Protocol_Enum Protocol { get; internal set; }
 
         /// <summary> Component defines the class which is used to fulfil the request </summary>
         public Microservice_Component Component { get; internal set; }
