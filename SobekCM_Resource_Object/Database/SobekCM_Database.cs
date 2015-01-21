@@ -2047,6 +2047,29 @@ namespace SobekCM.Resource_Object.Database
 				current_index += 10;
 			}
 
+			//add by Keven for dPanther
+            if ((metadataTerms.Count - current_index) > 0)
+            {
+                List<KeyValuePair<string, string>> temp = metadataTerms;
+                while ((temp.Count - current_index) < 10)
+                {
+                    temp.Add(new KeyValuePair<string, string>("",""));
+                }
+                // Save the next ten values
+                SobekCM_Database.Save_Item_Metadata(ThisPackage.Web.ItemID,
+                    temp[current_index].Key, temp[current_index].Value,
+                    temp[current_index + 1].Key, temp[current_index + 1].Value,
+                    temp[current_index + 2].Key, temp[current_index + 2].Value,
+                    temp[current_index + 3].Key, temp[current_index + 3].Value,
+                    temp[current_index + 4].Key, temp[current_index + 4].Value,
+                    temp[current_index + 5].Key, temp[current_index + 5].Value,
+                    temp[current_index + 6].Key, temp[current_index + 6].Value,
+                    temp[current_index + 7].Key, temp[current_index + 7].Value,
+                    temp[current_index + 8].Key, temp[current_index + 8].Value,
+                    temp[current_index + 9].Key, temp[current_index + 9].Value);
+
+               
+            }
 			// Finally, have the database build the full citation based on each metadata element
             Create_Full_Citation_Value(ThisPackage.Web.ItemID);
 
