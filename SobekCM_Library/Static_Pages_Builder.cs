@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Items;
 using SobekCM.Core.Navigation;
@@ -18,7 +19,6 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Library.Skins;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
@@ -421,7 +421,8 @@ namespace SobekCM.Library
 		                items = Engine_Database.Simple_Item_List(code, tracer);
 
 		                // Get the item aggregation object
-		                Item_Aggregation aggregation = Item_Aggregation_Utilities.Get_Item_Aggregation(code.ToLower(), "en", null, true, false, null);
+                        Item_Aggregation aggregation = SobekEngineClient.Aggregations.Get_Aggregation(code.ToLower(), UI_ApplicationCache_Gateway.Settings.Default_UI_Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, false, null);
+
 
 		                // Build the static browse pages
 		                if (Build_All_Browse(aggregation, items))
@@ -460,7 +461,7 @@ namespace SobekCM.Library
             Console.WriteLine(InstanceName + @"Building static links page for ALL ITEMS");
 			SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building static links page for ALL ITEMS", String.Empty);
 
-			Item_Aggregation allAggregation = Item_Aggregation_Utilities.Get_Item_Aggregation("all", "en", null, true, false, null);
+            Item_Aggregation allAggregation = SobekEngineClient.Aggregations.Get_Aggregation("all", UI_ApplicationCache_Gateway.Settings.Default_UI_Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, false, null);
 
             Build_All_Browse(allAggregation, items);
 

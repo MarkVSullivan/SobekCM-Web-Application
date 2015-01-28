@@ -18,9 +18,9 @@ using System.Text.RegularExpressions;
 
 namespace SobekCM.Builder_Library.Modules.Folders
 {
-    public class Update_Non_Bib_Folders : abstractFolderModule
+    public class UpdateNonBibFolders : abstractFolderModule
     {
-        public Update_Non_Bib_Folders()
+        public UpdateNonBibFolders()
         {
             // TEMPORARILY
             Arguments.Add("MB");

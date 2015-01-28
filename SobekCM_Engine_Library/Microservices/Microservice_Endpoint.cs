@@ -19,11 +19,21 @@ namespace SobekCM.Engine_Library.Microservices
     /// <summary> Enumeration indicates the type of protocol utilized by this endpoint</summary>
     public enum Microservice_Endpoint_Protocol_Enum : byte
     {
-        /// <summary> Output of this endpoint is JSON </summary>
-        JSON = 1,
+        /// <summary> Output of this endpoint is a binary stream </summary>
+        BINARY,
+
+        /// <summary> Nothing is output ( serialized, deserialized ) but the engine places the object
+        /// within the (shared) cache </summary>
+        CACHE,
+
+        /// <summary> Output of this endpoint is standard JSON </summary>
+        JSON,
+
+        /// <summary> Output of this endpoint is JSON-P </summary>
+        JSON_P,
 
         /// <summary> Output of this endpoint is Protocol Buffer octet-stream </summary>
-        PROTOBUF = 2
+        PROTOBUF,
     }
 
     /// <summary> Class defines an microservice endpoint within a collection of path or URI segments </summary>

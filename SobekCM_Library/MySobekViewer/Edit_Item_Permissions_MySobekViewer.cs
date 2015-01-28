@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Tools;
@@ -154,11 +154,11 @@ namespace SobekCM.Library.MySobekViewer
                             Resource_Web_Config_Writer.Update_Web_Config(RequestSpecificValues.Current_Item.Source_Directory, RequestSpecificValues.Current_Item.Behaviors.Dark_Flag, (short)ipRestrictionMask, RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail);
 
                             // Remove the cached item
-                            Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
+                            CachedDataManager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
 
                             // Also clear any searches or browses ( in the future could refine this to only remove those
                             // that are impacted by this save... but this is good enough for now )
-                            Cached_Data_Manager.Clear_Search_Results_Browses();
+                            CachedDataManager.Clear_Search_Results_Browses();
                         }
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);

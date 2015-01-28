@@ -7,11 +7,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Web;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -217,7 +217,7 @@ namespace SobekCM.Library.MySobekViewer
 				UI_ApplicationCache_Gateway.Items.Remove_Item(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID);
 
 				// Also remove from the cache
-                Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Tracer);
+                CachedDataManager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Tracer);
 			}
 		}
 

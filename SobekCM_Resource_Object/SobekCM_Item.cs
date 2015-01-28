@@ -1395,7 +1395,7 @@ namespace SobekCM.Resource_Object
         /// <returns> Collection of MARC tags to be written for this digital resource </returns>
         public MARC_Record To_MARC_Record()
         {
-            return To_MARC_Record(null, null, null, null, null, null);
+            return To_MARC_Record(null, null, null, null, null, null, null);
         }
 
         /// <summary> Gets the collection of MARC tags to be written for this digital resource </summary>
@@ -1405,8 +1405,9 @@ namespace SobekCM.Resource_Object
         /// <param name="ReproductionPlace"> Place of reproduction, or primary location associated with the SobekCM instance ( for the added 533 |b field ) </param>
         /// <param name="SystemName"> Name used for this SobekCM (or otherwise) digital repository system </param>
         /// <param name="SystemAbbreviation"> Abbrevation used for this SobekCM (or otherwise) digital repository system </param>
+        /// <param name="ThumbnailBase"> Base URL for the thumbnail to be included</param>
         /// <returns> Collection of MARC tags to be written for this digital resource </returns>
-        public MARC_Record To_MARC_Record(string CatalogingSourceCode, string LocationCode, string ReproductionAgency, string ReproductionPlace, string SystemName, string SystemAbbreviation)
+        public MARC_Record To_MARC_Record(string CatalogingSourceCode, string LocationCode, string ReproductionAgency, string ReproductionPlace, string SystemName, string SystemAbbreviation, string ThumbnailBase )
         {
             // Find the first aggregation name
             string first_aggr_name = String.Empty;
@@ -1414,7 +1415,7 @@ namespace SobekCM.Resource_Object
             {
                 foreach (Aggregation_Info thisAggr in Behaviors.Aggregations)
                 {
-                    if (thisAggr.Type.IndexOf("INSTITUT", StringComparison.InvariantCultureIgnoreCase) < 0)
+                    if (( String.Compare(thisAggr.Code, "ALL", true) != 0 ) && (( String.IsNullOrEmpty(thisAggr.Type)) || (thisAggr.Type.IndexOf("INSTITUT", StringComparison.InvariantCultureIgnoreCase) < 0)))
                     {
                         first_aggr_name = thisAggr.Name;
                         break;
@@ -2991,7 +2992,7 @@ namespace SobekCM.Resource_Object
                 List<string> added_already = new List<string>();
                 foreach (Aggregation_Info thisAggr in Behaviors.Aggregations)
                 {
-                    if (thisAggr.Type.IndexOf("INSTITUT", StringComparison.InvariantCultureIgnoreCase) < 0)
+                    if (( String.Compare(thisAggr.Code,"ALL", true ) != 0 ) && (( String.IsNullOrEmpty(thisAggr.Type)) || (thisAggr.Type.IndexOf("INSTITUT", StringComparison.InvariantCultureIgnoreCase) < 0)))
                     {
                         string collection = thisAggr.Name;
                         if (String.IsNullOrEmpty(collection)) collection = thisAggr.Code;
@@ -3011,7 +3012,15 @@ namespace SobekCM.Resource_Object
             // Add the thumbnail link (992)
             if ((Behaviors.Main_Thumbnail.Length > 0) && (!Behaviors.Dark_Flag))
             {
-                string thumbnail_link = web.Source_URL + "/" + Behaviors.Main_Thumbnail;
+
+                string thumbnail_link = Path.Combine(web.Source_URL, Behaviors.Main_Thumbnail);
+
+                if (!String.IsNullOrEmpty(ThumbnailBase))
+                {
+                    thumbnail_link = Path.Combine(ThumbnailBase, thumbnail_link);
+                }
+
+
                 tags.Add_Field(new MARC_Field(992, "04", "|a " + thumbnail_link.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://")));
             }
 

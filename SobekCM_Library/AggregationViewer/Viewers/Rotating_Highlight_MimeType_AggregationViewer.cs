@@ -85,17 +85,17 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             RequestSpecificValues.Current_Mode.Search_String = search_string;
 
             // Get the front banner
-            frontBannerInfo = RequestSpecificValues.Hierarchy_Object.Front_Banner_Image(RequestSpecificValues.Current_Mode.Language);
+            frontBannerInfo = RequestSpecificValues.Hierarchy_Object.FrontBannerObj;
         }
 
         /// <summary> Sets the sharing buttons HTML to display over the banner </summary>
         public string Sharing_Buttons_HTML { private get; set; }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
-        /// <value> This returns the <see cref="Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_MimeType_Search"/> enumerational value </value>
-        public override Item_Aggregation.CollectionViewsAndSearchesEnum Type
+        /// <value> This returns the <see cref="Item_Aggregation_Views_Searches_Enum.Rotating_Highlight_MimeType_Search"/> enumerational value </value>
+        public override Item_Aggregation_Views_Searches_Enum Type
         {
-            get { return Item_Aggregation.CollectionViewsAndSearchesEnum.Rotating_Highlight_MimeType_Search; }
+            get { return Item_Aggregation_Views_Searches_Enum.Rotating_Highlight_MimeType_Search; }
         }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
@@ -160,7 +160,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 
 
-            if (frontBannerInfo.Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT)
+            if (frontBannerInfo.Type == Item_Aggregation_Front_Banner_Type_Enum.Left )
             {
                 string banner_image = RequestSpecificValues.Current_Mode.Base_URL + "design/" + RequestSpecificValues.Hierarchy_Object.ObjDirectory + frontBannerInfo.File.Replace("\\", "/");
                 Output.Write("      <td class=\"sbkRhav_RotatingBannerLeft\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");
@@ -201,24 +201,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                 Output.WriteLine("        <div id=\"slider1\" class=\"sliderwrapper\" style=\"width:" + width + "px\">");
 
-                // Copy over just the eight highlights we should use 
-                List<Item_Aggregation_Highlights> highlights_to_use = new List<Item_Aggregation_Highlights>();
-                int day_integer = DateTime.Now.DayOfYear + 1;
-                int highlight_to_use = day_integer % RequestSpecificValues.Hierarchy_Object.Highlights.Count;
-                int number = Math.Min(8, RequestSpecificValues.Hierarchy_Object.Highlights.Count);
-                for (int i = 0; i < number; i++)
-                {
-                    highlights_to_use.Add(RequestSpecificValues.Hierarchy_Object.Highlights[highlight_to_use]);
-                    highlight_to_use++;
-                    if (highlight_to_use >= RequestSpecificValues.Hierarchy_Object.Highlights.Count)
-                        highlight_to_use = 0;
-                }
-
-                foreach (Item_Aggregation_Highlights highlight in highlights_to_use)
+                foreach (Item_Aggregation_Highlights highlight in RequestSpecificValues.Hierarchy_Object.Highlights)
                 {
                     Output.WriteLine("          <div class=\"contentdiv\" style=\"width:" + width + "px\">");
-                    string highlight_text = HttpUtility.HtmlEncode(highlight.Get_Tooltip(RequestSpecificValues.Current_Mode.Language));
-                    if (highlight.Link.Length > 0)
+                    string highlight_text = String.Empty;
+                    if ( !String.IsNullOrEmpty(highlight.Text))
+                        highlight_text = HttpUtility.HtmlEncode(highlight.Text);
+                    else if ( !String.IsNullOrEmpty(highlight.Tooltip))
+                        highlight_text = HttpUtility.HtmlEncode(highlight.Tooltip);
+                    if ( !String.IsNullOrEmpty(highlight.Link))
                     {
                         Output.WriteLine("            <a href=\"" + highlight.Link + "\" title=\"" + highlight_text + "\" >");
                     }
@@ -226,7 +217,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                         Output.WriteLine("              <img src=\"" + highlight.Image + "\" border=\"0px\" title=\"" + highlight_text + "\" alt=\"" + highlight_text + "\" />");
                     else
                         Output.WriteLine("              <img src=\"" + base_design_location + highlight.Image + "\" border=\"0px\" title=\"" + highlight_text + "\" alt=\"" + highlight_text + "\" />");
-                    if (highlight.Link.Length > 0)
+                    if ( !String.IsNullOrEmpty(highlight.Link) )
                     {
                         Output.WriteLine("            </a>");
                     }
@@ -258,7 +249,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 if ((RequestSpecificValues.Hierarchy_Object.Highlights != null) && ( RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0))
                 {
-                    Output.WriteLine("            <a href=\"" + RequestSpecificValues.Hierarchy_Object.Highlights[0].Link + "\" title=\"" + HttpUtility.HtmlEncode(RequestSpecificValues.Hierarchy_Object.Highlights[0].Get_Text(RequestSpecificValues.Current_Mode.Language)) + "\" >");
+                    Output.WriteLine("            <a href=\"" + RequestSpecificValues.Hierarchy_Object.Highlights[0].Link + "\" title=\"" + HttpUtility.HtmlEncode(RequestSpecificValues.Hierarchy_Object.Highlights[0].Text) + "\" >");
                     if (RequestSpecificValues.Hierarchy_Object.Highlights[0].Image.IndexOf("http:") >= 0)
                         Output.WriteLine("              <img src=\"" + RequestSpecificValues.Hierarchy_Object.Highlights[0].Image + "\" />");
                     else
@@ -271,7 +262,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("      </td>");
 
 
-            if (frontBannerInfo.Type == Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT)
+            if (frontBannerInfo.Type == Item_Aggregation_Front_Banner_Type_Enum.Right )
             {
                 string banner_image = RequestSpecificValues.Current_Mode.Base_URL + "design/" + RequestSpecificValues.Hierarchy_Object.ObjDirectory + frontBannerInfo.File.Replace("\\", "/");
                 Output.WriteLine("      <td class=\"sbkRhav_RotatingBannerRight\" style=\"background-image: url( " + banner_image + "); width: " + frontBannerInfo.Width + "px; height: " + frontBannerInfo.Height + "px;\">");

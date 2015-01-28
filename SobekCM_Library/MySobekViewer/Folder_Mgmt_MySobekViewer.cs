@@ -11,6 +11,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Items;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Navigation;
@@ -18,7 +19,6 @@ using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
@@ -107,7 +107,7 @@ namespace SobekCM.Library.MySobekViewer
                     if (item_action == "REFRESH_FOLDER")
                     {
                          refresh_user_folders(RequestSpecificValues.Current_User, RequestSpecificValues.Tracer);
-                         Cached_Data_Manager.Remove_All_User_Folder_Browses(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
+                         CachedDataManager.Remove_All_User_Folder_Browses(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
                     }
 
                     if (item_action == "DELETE_FOLDER")
@@ -115,7 +115,7 @@ namespace SobekCM.Library.MySobekViewer
                         int folder_id = Convert.ToInt32(bookshelf_items);
 
                         SobekCM_Database.Delete_User_Folder(RequestSpecificValues.Current_User.UserID, folder_id, RequestSpecificValues.Tracer);
-                        Cached_Data_Manager.Clear_Public_Folder_Info(folder_id, RequestSpecificValues.Tracer);
+                        CachedDataManager.Clear_Public_Folder_Info(folder_id, RequestSpecificValues.Tracer);
                         refresh_user_folders(RequestSpecificValues.Current_User, RequestSpecificValues.Tracer);
                     }
 
@@ -139,7 +139,7 @@ namespace SobekCM.Library.MySobekViewer
                             if (SobekCM_Database.Edit_User_Folder(thisFolder.Folder_ID, RequestSpecificValues.Current_User.UserID, -1, thisFolder.Folder_Name, false, String.Empty, RequestSpecificValues.Tracer) >= 0)
                                 thisFolder.IsPublic = false;
 
-                            Cached_Data_Manager.Clear_Public_Folder_Info(thisFolder.Folder_ID, RequestSpecificValues.Tracer);
+                            CachedDataManager.Clear_Public_Folder_Info(thisFolder.Folder_ID, RequestSpecificValues.Tracer);
                         }
 
                         if (bookshelf_params.ToUpper() == "PUBLIC")
@@ -164,15 +164,15 @@ namespace SobekCM.Library.MySobekViewer
                             }
 
                             // Ensure this RequestSpecificValues.Current_User folder is not sitting in the cache
-                            Cached_Data_Manager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, properFolderName, RequestSpecificValues.Tracer);
-                            Cached_Data_Manager.Clear_Public_Folder_Info(current_folder_id, RequestSpecificValues.Tracer);
+                            CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, properFolderName, RequestSpecificValues.Tracer);
+                            CachedDataManager.Clear_Public_Folder_Info(current_folder_id, RequestSpecificValues.Tracer);
                             if (item_action == "MOVE")
                             {
-                                Cached_Data_Manager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, add_bookshelf, RequestSpecificValues.Tracer);
+                                CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, add_bookshelf, RequestSpecificValues.Tracer);
                                 User_Folder moved_to_folder = RequestSpecificValues.Current_User.Get_Folder(add_bookshelf);
                                 if (moved_to_folder != null)
                                 {
-                                    Cached_Data_Manager.Clear_Public_Folder_Info(moved_to_folder.Folder_ID, RequestSpecificValues.Tracer);
+                                    CachedDataManager.Clear_Public_Folder_Info(moved_to_folder.Folder_ID, RequestSpecificValues.Tracer);
                                 }
                             }
                         }
@@ -189,15 +189,15 @@ namespace SobekCM.Library.MySobekViewer
                                 }
 
                             // Ensure this RequestSpecificValues.Current_User folder is not sitting in the cache
-                            Cached_Data_Manager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, properFolderName, RequestSpecificValues.Tracer);
-                            Cached_Data_Manager.Clear_Public_Folder_Info(current_folder_id, RequestSpecificValues.Tracer);
+                            CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, properFolderName, RequestSpecificValues.Tracer);
+                            CachedDataManager.Clear_Public_Folder_Info(current_folder_id, RequestSpecificValues.Tracer);
                             if (item_action == "MOVE")
                             {
-                                Cached_Data_Manager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, add_bookshelf, RequestSpecificValues.Tracer);
+                                CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, add_bookshelf, RequestSpecificValues.Tracer);
                                 User_Folder moved_to_folder = RequestSpecificValues.Current_User.Get_Folder(add_bookshelf);
                                 if (moved_to_folder != null)
                                 {
-                                    Cached_Data_Manager.Clear_Public_Folder_Info(moved_to_folder.Folder_ID, RequestSpecificValues.Tracer);
+                                    CachedDataManager.Clear_Public_Folder_Info(moved_to_folder.Folder_ID, RequestSpecificValues.Tracer);
                                 }
                             }
                         }
@@ -235,7 +235,7 @@ namespace SobekCM.Library.MySobekViewer
                             if (split.Length == 2)
                             {
                                 SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, add_bookshelf, split[0], split[1], 1, notes, RequestSpecificValues.Tracer);
-                                Cached_Data_Manager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, add_bookshelf, RequestSpecificValues.Tracer);
+                                CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, add_bookshelf, RequestSpecificValues.Tracer);
                             }
 
                     }

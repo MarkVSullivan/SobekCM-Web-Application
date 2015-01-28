@@ -259,13 +259,13 @@ namespace SobekCM.Core.WebContent
                     int end_body = Display_Text.IndexOf("</body>");
                     if ((start_body > 0) && (end_body > start_body))
                     {
-                        returnValue.Static_Text = Display_Text.Substring(start_body, end_body - start_body) + " ";
+                        returnValue.Content = Display_Text.Substring(start_body, end_body - start_body) + " ";
 
-                        if (( Source.Length > 0 ) && ( returnValue.Static_Text.IndexOf("<%LASTMODIFIED%>") > 0))
+                        if (( Source.Length > 0 ) && ( returnValue.Content.IndexOf("<%LASTMODIFIED%>") > 0))
                         {
                             FileInfo fileInfo = new FileInfo(Source);
                             DateTime lastWritten = fileInfo.LastWriteTime;
-                            returnValue.Static_Text = returnValue.Static_Text.Replace("<%LASTMODIFIED%>", lastWritten.ToLongDateString());
+                            returnValue.Content = returnValue.Content.Replace("<%LASTMODIFIED%>", lastWritten.ToLongDateString());
                         }
                     }
                 }

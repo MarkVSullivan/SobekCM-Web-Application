@@ -68,7 +68,8 @@ namespace SobekCM.Core.Aggregations
             this.Type = Type;
             this.Hidden = Hidden;
             this.Active = Active;
-            this.Description = Description;
+            if ( !String.IsNullOrEmpty(Description))
+                this.Description = Description;
             this.ID = ID;
         }
 
@@ -97,6 +98,10 @@ namespace SobekCM.Core.Aggregations
         /// Even if there are no children, this property creates a readonly collection to pass back out.</remarks>
         [DataMember(Name = "children", EmitDefaultValue = false), ProtoMember(10)]
         public List<Item_Aggregation_Related_Aggregations> Children { get; private set; }
+
+        /// <summary> Thematic heading, used for placing items on the home page of the entire collection </summary>
+        [DataMember(Name = "thematicHeading", EmitDefaultValue = false), ProtoMember(11)]
+        public Thematic_Heading Thematic_Heading { get; set; }
 
         /// <summary> Gets the number of child item aggregationPermissions present </summary>
         /// <remarks>This should be used rather than the Count property of the <see cref="Children"/> property.  Even if 

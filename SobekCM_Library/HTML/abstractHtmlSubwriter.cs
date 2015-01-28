@@ -53,13 +53,13 @@ namespace SobekCM.Library.HTML
 
 				if ((Hierarchy_Object != null) && (Hierarchy_Object.Code != "all"))
 				{
-					Output.WriteLine("<div id=\"sbkAhs_BannerDiv\"><a alt=\"" + Hierarchy_Object.ShortName + "\" href=\"" + CurrentMode.Base_URL + Hierarchy_Object.Code + url_options + "\"><img id=\"mainBanner\" src=\"" + CurrentMode.Base_URL + Hierarchy_Object.Banner_Image(CurrentMode.Language, HTML_Skin) + "\" alt=\"\" /></a></div>");
+                    Output.WriteLine("<div id=\"sbkAhs_BannerDiv\"><a alt=\"" + Hierarchy_Object.ShortName + "\" href=\"" + CurrentMode.Base_URL + Hierarchy_Object.Code + url_options + "\"><img id=\"mainBanner\" src=\"" + CurrentMode.Base_URL + Hierarchy_Object.Get_Banner_Image(HTML_Skin) + "\" alt=\"\" /></a></div>");
 				}
 				else
 				{
-					if ((Hierarchy_Object != null) && (Hierarchy_Object.Banner_Image(CurrentMode.Language, HTML_Skin).Length > 0))
+                    if ((Hierarchy_Object != null) && (Hierarchy_Object.Get_Banner_Image(HTML_Skin).Length > 0))
 					{
-						Output.WriteLine("<div id=\"sbkAhs_BannerDiv\"><a href=\"" + CurrentMode.Base_URL + url_options + "\"><img id=\"mainBanner\" src=\"" + CurrentMode.Base_URL + Hierarchy_Object.Banner_Image(CurrentMode.Language, HTML_Skin) + "\" alt=\"\" /></a></div>");
+						Output.WriteLine("<div id=\"sbkAhs_BannerDiv\"><a href=\"" + CurrentMode.Base_URL + url_options + "\"><img id=\"mainBanner\" src=\"" + CurrentMode.Base_URL + Hierarchy_Object.Get_Banner_Image( HTML_Skin) + "\" alt=\"\" /></a></div>");
 					}
 					else
 					{

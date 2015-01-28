@@ -10,18 +10,17 @@ using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Items;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.SiteMap;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
-using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library;
 using SobekCM.Library.Database;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
@@ -1103,7 +1102,7 @@ namespace SobekCM
 			}
 
 			// If the web skin is indicated in the browse file, set that
-			if (staticWebContent.Web_Skin.Length > 0)
+			if ( !String.IsNullOrEmpty(staticWebContent.Web_Skin))
 			{
 				currentMode.Default_Skin = staticWebContent.Web_Skin;
 				currentMode.Skin = staticWebContent.Web_Skin;
@@ -1285,7 +1284,7 @@ namespace SobekCM
 			tracer.Add_Trace("SobekCM_Page_Globals.Reset_Memory", "Clearing cache and application of data");
 
 			// Clear the cache
-			Cached_Data_Manager.Clear_Cache();
+			CachedDataManager.Clear_Cache();
 
 			// Clear the application portions as well
 			HttpContext.Current.Application.RemoveAll();

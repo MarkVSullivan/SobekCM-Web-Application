@@ -12,6 +12,9 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Client;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.Database;
@@ -19,7 +22,6 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -131,7 +133,7 @@ namespace SobekCM.Library.AdminViewer
                     // If there is a reset request here, purge the aggregation from the cache
                     if (reset_aggregation_code.Length > 0)
                     {
-                        Cached_Data_Manager.Remove_Item_Aggregation(reset_aggregation_code, RequestSpecificValues.Tracer);
+                        CachedDataManager.Aggregations.Remove_Item_Aggregation(reset_aggregation_code, RequestSpecificValues.Tracer);
                     }
 
                     // If there was a save value continue to pull the rest of the data
@@ -294,8 +296,10 @@ namespace SobekCM.Library.AdminViewer
 								if (form["admin_aggr_heading"] != null)
 									thematicHeadingId = Convert.ToInt32(form["admin_aggr_heading"]);
 
+                                string language = Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.Default_UI_Language);
+
                                 // Try to save the new item aggregation
-                                if (Engine_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, thematicHeadingId, correct_type, is_active, is_hidden, new_link, parentid, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Tracer))
+                                if (Engine_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, thematicHeadingId, correct_type, is_active, is_hidden, new_link, parentid, RequestSpecificValues.Current_User.Full_Name, language, RequestSpecificValues.Tracer))
                                 {
                                     // Ensure a folder exists for this, otherwise create one
                                     try
@@ -367,7 +371,7 @@ namespace SobekCM.Library.AdminViewer
                                             }
 
 		                                    // Now, try to create the item aggregation and write the configuration file
-                                            Item_Aggregation itemAggregation = Item_Aggregation_Utilities.Get_Item_Aggregation(new_aggregation_code, String.Empty, null, false, false, RequestSpecificValues.Tracer);
+                                            Complete_Item_Aggregation itemAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(new_aggregation_code, false, RequestSpecificValues.Tracer);
 		                                    itemAggregation.Write_Configuration_File(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory);
 	                                    }
                                     }

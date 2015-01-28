@@ -9,13 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Divisions;
@@ -1350,7 +1350,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             HttpContext.Current.Session["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] = null;
 
 	        // Clear the cache for this item completely, so the system will recreate the object from the new METS
-            Cached_Data_Manager.Remove_Digital_Resource_Object(qc_item.BibID, qc_item.VID, null);
+            CachedDataManager.Remove_Digital_Resource_Object(qc_item.BibID, qc_item.VID, null);
 	    }
 
         #endregion

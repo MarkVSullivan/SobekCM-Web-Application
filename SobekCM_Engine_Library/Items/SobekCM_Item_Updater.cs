@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Users;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object;
@@ -184,13 +184,13 @@ namespace SobekCM.Engine_Library.Items
             }
 
             // Clear the User-specific and global cache of this Item 
-            Cached_Data_Manager.Remove_Digital_Resource_Object(User.UserID, Item.BibID, Item.VID, null);
-            Cached_Data_Manager.Remove_Digital_Resource_Object(Item.BibID, Item.VID, null);
-            Cached_Data_Manager.Remove_Items_In_Title(Item.BibID, null);
+            CachedDataManager.Remove_Digital_Resource_Object(User.UserID, Item.BibID, Item.VID, null);
+            CachedDataManager.Remove_Digital_Resource_Object(Item.BibID, Item.VID, null);
+            CachedDataManager.Remove_Items_In_Title(Item.BibID, null);
 
             // Also clear any searches or browses ( in the future could refine this to only remove those
             // that are impacted by this save... but this is good enough for now )
-            Cached_Data_Manager.Clear_Search_Results_Browses();
+            CachedDataManager.Clear_Search_Results_Browses();
 
             return true;
         }

@@ -808,8 +808,6 @@ namespace SobekCM.Library.Database
 
 		#endregion
 
-
-
         #region Method to return DATATABLE of all items from an aggregation
 
 		/// <summary> Gets the list of unique coordinate points and associated bibid and group title for a single 
@@ -1243,8 +1241,6 @@ namespace SobekCM.Library.Database
 		}
 
 		#endregion
-
-
 
 		#region Methods to get the URL portals, edit and save new URL portals, and delete URL portals
 

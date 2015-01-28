@@ -16,6 +16,7 @@ using SobekCM.Builder_Library.Modules.PostProcess;
 using SobekCM.Builder_Library.Modules.PreProcess;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Settings;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Database;
 using SobekCM.Tools.Logs;
@@ -587,9 +588,6 @@ namespace SobekCM.Builder
             ResourcePackage.NewPackage = !(itemTable.Select("BibID='" + ResourcePackage.BibID + "' and VID='" + ResourcePackage.VID + "'").Length > 0);
             ResourcePackage.Package_Time = DateTime.Now;
 
-            // Rename the received METS files
-            Rename_Any_Received_METS_File(ResourcePackage);
-
             try
             {
                 // Do all the item processing per instance config
@@ -598,6 +596,22 @@ namespace SobekCM.Builder
                     if (!thisModule.DoWork(ResourcePackage))
                     {
                         Add_Error_To_Log("Unable to complete new/replacement for " + ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, ResourcePackage.BuilderLogId);
+
+                        // Try to move the whole package to the failures folder
+                        string final_failures_folder = Path.Combine(ResourcePackage.Source_Folder.Failures_Folder, ResourcePackage.BibID + "_" + ResourcePackage.VID);
+                        if (Directory.Exists(final_failures_folder))
+                        {
+                            final_failures_folder = final_failures_folder + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Hour.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Minute.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Second.ToString().PadLeft(2, '0');
+                        }
+
+                        try
+                        {
+                            Directory.Move(ResourcePackage.Resource_Folder, final_failures_folder);
+                        }
+                        catch
+                        {
+                            
+                        }
                         return;
                     }
                 }
@@ -630,43 +644,6 @@ namespace SobekCM.Builder
         {
             return Add_NonError_To_Log(LogStatement, DbLogType, BibID_VID, MetsType, RelatedLogID);
         }
-
-        private void Rename_Any_Received_METS_File(Incoming_Digital_Resource ResourcePackage)
-        {
-            string recd_filename = "recd_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + ".mets.bak";
-
-            // If a renamed file already exists for this year, delete the incoming with that name (shouldn't exist)
-            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + recd_filename))
-				File.Delete(ResourcePackage.Resource_Folder + "\\" + recd_filename);
-
-            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets"))
-            {
-				File.Move(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets", ResourcePackage.Resource_Folder + "\\" + recd_filename);
-                ResourcePackage.METS_File = recd_filename;
-                return;
-            }
-            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets.xml"))
-            {
-				File.Move(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets.xml", ResourcePackage.Resource_Folder + "\\" + recd_filename);
-                ResourcePackage.METS_File = recd_filename;
-                return;
-            }
-            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + ".mets"))
-            {
-				File.Move(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + ".mets", ResourcePackage.Resource_Folder + "\\" + recd_filename);
-                ResourcePackage.METS_File = recd_filename;
-                return;
-            }
-            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + ".mets.xml"))
-            {
-				File.Move(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + ".mets.xml", ResourcePackage.Resource_Folder + "\\" + recd_filename);
-                ResourcePackage.METS_File = recd_filename;
-            }
-        }
-
-
-
-
 
         #endregion
 

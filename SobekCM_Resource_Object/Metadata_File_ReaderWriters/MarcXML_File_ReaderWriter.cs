@@ -185,9 +185,13 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             string system_abbreviation = String.Empty;
             if ((Options.ContainsKey("MarcXML_File_ReaderWriter:System Abbreviation")) && (Options["MarcXML_File_ReaderWriter:System Abbreviation"] != null))
                 system_abbreviation = Options["MarcXML_File_ReaderWriter:System Abbreviation"].ToString();
+
+            string thumbnail_base = String.Empty;
+            if ((Options.ContainsKey("MarcXML_File_ReaderWriter:Image_Base")) && (Options["MarcXML_File_ReaderWriter:Image_Base"] != null))
+                thumbnail_base = Options["MarcXML_File_ReaderWriter:Image_Base"].ToString();
             
             // Get all the standard tags
-            MARC_Record tags = Item_To_Save.To_MARC_Record(cataloging_source_code, location_code, reproduction_agency, reproduction_place, system_name, system_abbreviation);
+            MARC_Record tags = Item_To_Save.To_MARC_Record(cataloging_source_code, location_code, reproduction_agency, reproduction_place, system_name, system_abbreviation, thumbnail_base);
 
             // Look for extra tags to add in the OPTIONS
             if (Options.ContainsKey("MarcXML_File_ReaderWriter:Additional_Tags"))

@@ -9,10 +9,10 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Library.UploadiFive;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
@@ -128,7 +128,7 @@ namespace SobekCM.Library.MySobekViewer
                                 }
 
                                 // Also clear the RequestSpecificValues.Current_Item from the cache
-                                Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, null);
+                                CachedDataManager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, null);
 
                                 // Redirect to the RequestSpecificValues.Current_Item
                                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;

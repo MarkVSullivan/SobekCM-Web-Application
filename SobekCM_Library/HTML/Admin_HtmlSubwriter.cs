@@ -6,13 +6,13 @@ using System.IO;
 using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Database;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Library.MySobekViewer;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
@@ -129,7 +129,7 @@ namespace SobekCM.Library.HTML
                         RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Checking cache for valid project file");
                         if (RequestSpecificValues.Current_User != null)
                         {
-                            SobekCM_Item projectObject = Cached_Data_Manager.Retrieve_Project(RequestSpecificValues.Current_User.UserID, project_code, RequestSpecificValues.Tracer);
+                            SobekCM_Item projectObject = CachedDataManager.Retrieve_Project(RequestSpecificValues.Current_User.UserID, project_code, RequestSpecificValues.Tracer);
                             if (projectObject != null)
                             {
                                 RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Valid default metadata set found in cache");
@@ -150,7 +150,7 @@ namespace SobekCM.Library.HTML
 
                                     RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Adding project file to cache");
 
-                                    Cached_Data_Manager.Store_Project(RequestSpecificValues.Current_User.UserID, project_code, pmets_item, RequestSpecificValues.Tracer);
+                                    CachedDataManager.Store_Project(RequestSpecificValues.Current_User.UserID, project_code, pmets_item, RequestSpecificValues.Tracer);
 
                                     adminViewer = new Edit_Item_Metadata_MySobekViewer(pmets_item, RequestSpecificValues);
                                 }

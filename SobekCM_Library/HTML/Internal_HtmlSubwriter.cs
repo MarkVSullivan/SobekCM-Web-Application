@@ -10,11 +10,11 @@ using System.Web.SessionState;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -691,7 +691,7 @@ namespace SobekCM.Library.HTML
                 try
                 {
                     // Now, get the information from the cache
-                    ReadOnlyCollection<Cached_Object_Info> locally_cached_objects = Cached_Data_Manager.Locally_Cached_Objects;
+                    ReadOnlyCollection<Cached_Object_Info> locally_cached_objects = CachedDataManager.Locally_Cached_Objects;
                     if (locally_cached_objects.Count == 0)
                     {
                         Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
@@ -739,7 +739,7 @@ namespace SobekCM.Library.HTML
                 try
                 {
                     // Now, get the information from the cache
-                    ReadOnlyCollection<Cached_Object_Info> network_cached_objects = Cached_Data_Manager.Remotely_Cached_Objects;
+                    ReadOnlyCollection<Cached_Object_Info> network_cached_objects = CachedDataManager.Remotely_Cached_Objects;
                     if (network_cached_objects.Count == 0)
                     {
                         Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");

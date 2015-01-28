@@ -12,27 +12,13 @@ namespace SobekCM.Core.Aggregations
     [Serializable, DataContract, ProtoContract]
 	public class Item_Aggregation_Front_Banner
 	{
-		/// <summary> Type of front banner -- either FULL, LEFT, or RIGHT </summary>
-		public enum Item_Aggregation_Front_Banner_Type : byte
-		{	
-			/// <summary> This is a full-width banner, and does not include
-			/// the rotating highlights feature </summary>
-			FULL,
 
-			/// <summary> The banner sits to the left and the higlights sit 
-			/// to the right </summary>
-			LEFT,
-
-			/// <summary> The banner sits to the right and the highlights sit
-			/// to the left </summary>
-			RIGHT
-		}
 		/// <summary> Constructor for a new instance of the Item_Aggregation_Front_Banner class </summary>
 		/// <param name="File"> Name of the image file used in this front banner</param>
 		public Item_Aggregation_Front_Banner( string File )
 		{
 			this.File = File;
-			Type = Item_Aggregation_Front_Banner_Type.LEFT;
+		    Type = Item_Aggregation_Front_Banner_Type_Enum.Left;
 			Width = 550;
 			Height = 230;
 		}
@@ -53,6 +39,6 @@ namespace SobekCM.Core.Aggregations
 
 		/// <summary>  Flag indicates type of front banner -- either FULL, LEFT, or RIGHT </summary>
         [DataMember(Name = "type"), ProtoMember(4)]
-		public Item_Aggregation_Front_Banner_Type Type { get; set; }
+        public Item_Aggregation_Front_Banner_Type_Enum Type { get; set; }
 	}
 }

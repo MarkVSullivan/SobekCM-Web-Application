@@ -13,12 +13,15 @@ namespace SobekCM.Core.Aggregations
     public class Thematic_Heading
     {
         /// <summary> Primary key for this thematic heading in the database </summary>
-        [DataMember(Name = "id"), ProtoMember(3)]
-        public readonly int ID;
+        [DataMember(Name = "id"), ProtoMember(1)]
+        public int ID { get; set; }
 
         /// <summary> Display name for this thematic heading </summary>
-        [DataMember(Name = "name"), ProtoMember(3)]
-        public readonly string Text;
+        [DataMember(Name = "name"), ProtoMember(2)]
+        public string Text { get; set; }
+
+        /// <summary> Constructor for a new instance of the Thematic_Heading class </summary>
+        public Thematic_Heading() { }
 
         /// <summary> Constructor for a new instance of the Thematic_Heading class </summary>
         /// <param name="ID"> Primary key for this thematic heading in the database</param>

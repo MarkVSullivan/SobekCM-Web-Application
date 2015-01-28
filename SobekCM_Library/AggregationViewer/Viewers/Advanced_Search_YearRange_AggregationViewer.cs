@@ -67,10 +67,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
-        /// <value> This returns the <see cref="Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search"/> enumerational value </value>
-        public override Item_Aggregation.CollectionViewsAndSearchesEnum Type
+        /// <value> This returns the <see cref="Item_Aggregation_Views_Searches_Enum.Advanced_Search"/> enumerational value </value>
+        public override Item_Aggregation_Views_Searches_Enum Type
         {
-            get { return Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange; }
+            get { return Item_Aggregation_Views_Searches_Enum.Advanced_Search_YearRange; }
         }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
@@ -416,17 +416,17 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Add_Simple_Search_Tips(Output, Tracer);
         }
 
-        private void add_drop_down_options(TextWriter Output, string DropValue )
+        private void add_drop_down_options(TextWriter Output, string DropValue)
         {
-            foreach (Metadata_Search_Field searchField in RequestSpecificValues.Hierarchy_Object.Advanced_Search_Fields.Select(UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID).Where(SearchField => SearchField != null))
+            foreach (Item_Aggregation_Metadata_Type searchField in RequestSpecificValues.Hierarchy_Object.Search_Fields)
             {
-                if (searchField.Web_Code == DropValue)
+                if (searchField.SobekCode == DropValue)
                 {
-                    Output.WriteLine("          <option value=\"" + searchField.Web_Code + "\" selected=\"selected\" >" + UI_ApplicationCache_Gateway.Translation.Get_Translation(searchField.Display_Term, RequestSpecificValues.Current_Mode.Language) + "</option>");
+                    Output.WriteLine("          <option value=\"" + searchField.SobekCode + "\" selected=\"selected\" >" + UI_ApplicationCache_Gateway.Translation.Get_Translation(searchField.DisplayTerm, RequestSpecificValues.Current_Mode.Language) + "</option>");
                 }
                 else
                 {
-                    Output.WriteLine("          <option value=\"" + searchField.Web_Code + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(searchField.Display_Term, RequestSpecificValues.Current_Mode.Language) + "</option>");
+                    Output.WriteLine("          <option value=\"" + searchField.SobekCode + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(searchField.DisplayTerm, RequestSpecificValues.Current_Mode.Language) + "</option>");
                 }
             }
         }

@@ -511,7 +511,7 @@ namespace SobekCM.Engine_Library.Database
             // Create the connection
             using (SqlConnection connect = new SqlConnection(Connection_String))
             {
-                SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Codes", connect);
+                SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Item_Aggregation_AllCodes", connect);
 
                 // Create the data reader
                 connect.Open();
@@ -531,13 +531,14 @@ namespace SobekCM.Engine_Library.Database
                     const int DESC_COL = 7;
                     const int THEME_COL = 8;
                     const int LINK_COL = 9;
+                    const int THEME_NAME_COL = 12;
 
                     while (reader.Read())
                     {
                         // Get the list key values out 
                         string code = reader.GetString(CODE_COL).ToUpper();
                         string type = reader.GetString(TYPE_COL);
-                        int theme = reader.GetInt32(THEME_COL);
+                        
 
                         // Only do anything else if this is not somehow a repeat
                         if (!Codes.isValidCode(code))
@@ -549,10 +550,23 @@ namespace SobekCM.Engine_Library.Database
                                                                           reader.GetBoolean(IS_ACTIVE_COL),
                                                                           reader.GetBoolean(HIDDEN_COL),
                                                                           reader.GetString(DESC_COL),
-                                                                          (ushort)reader.GetInt32(ID_COL)) { External_Link = reader.GetString(LINK_COL) };
+                                                                          (ushort)reader.GetInt32(ID_COL));
+
+                            if (!reader.IsDBNull(LINK_COL))
+                                thisAggr.External_Link = reader.GetString(LINK_COL);
+
+                            if (!reader.IsDBNull(THEME_NAME_COL))
+                            {
+                                string theme_name = reader.GetString(THEME_NAME_COL);
+                                int theme = reader.GetInt32(THEME_COL);
+                                if (theme > 0)
+                                {
+                                    thisAggr.Thematic_Heading = new Thematic_Heading(theme, theme_name);
+                                }
+                            }
 
                             // Add this to the codes manager
-                            Codes.Add_Collection(thisAggr, theme);
+                            Codes.Add_Collection(thisAggr);
                         }
                     }
                     reader.Close();
@@ -2889,7 +2903,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This method calls the stored procedure 'SobekCM_Get_Item_Aggregation2'. </remarks>
-        public static bool Get_Item_Aggregation_Counts(Item_Aggregation Aggregation, Custom_Tracer Tracer)
+        public static bool Get_Item_Aggregation_Counts(Complete_Item_Aggregation Aggregation, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -2937,7 +2951,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Is_Robot"> Flag indicates if this is a request from an indexing robot, which leaves out a good bit of the work </param>
         /// <returns> Arguments which include the <see cref="Item_Aggregation"/> object and a DataTable of the search field information</returns>
         /// <remarks> This method calls the stored procedure 'SobekCM_Get_Item_Aggregation2'. </remarks>
-        public static Item_Aggregation Get_Item_Aggregation(string Code, bool Include_Counts, bool Is_Robot, Custom_Tracer Tracer)
+        public static Complete_Item_Aggregation Get_Item_Aggregation(string Code, bool Include_Counts, bool Is_Robot, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -2947,13 +2961,11 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[3];
+                SqlParameter[] paramList = new SqlParameter[1];
                 paramList[0] = new SqlParameter("@code", Code);
-                paramList[1] = new SqlParameter("@include_counts", Include_Counts);
-                paramList[2] = new SqlParameter("@is_robot", Is_Robot);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Aggregation2", paramList);
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Aggregation", paramList);
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -2962,28 +2974,16 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Build the collection group object
-                Item_Aggregation aggrInfo = create_basic_aggregation_from_datatable(tempSet.Tables[0]);
+                Complete_Item_Aggregation aggrInfo = create_basic_aggregation_from_datatable(tempSet.Tables[0]);
 
                 // Add the child objects from that table
                 add_children(aggrInfo, tempSet.Tables[1]);
 
                 // Add the advanced search values
-                if (!Is_Robot)
-                {
-                    add_advanced_terms(aggrInfo, tempSet.Tables[2]);
-                }
+                add_advanced_terms(aggrInfo, tempSet.Tables[2]);
 
-                // Add the counts for this item aggregation
-                if (Include_Counts)
-                {
-                    add_counts(aggrInfo, tempSet.Tables[tempSet.Tables.Count - 2]);
-                }
-
-                // If this is not a robot, add the parents
-                if (!Is_Robot)
-                {
-                    add_parents(aggrInfo, tempSet.Tables[tempSet.Tables.Count - 1]);
-                }
+                // Add the parents
+                add_parents(aggrInfo, tempSet.Tables[tempSet.Tables.Count - 1]);
 
                 // Return the built argument set
                 return aggrInfo;
@@ -3005,7 +3005,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Arguments which include the <see cref="Item_Aggregation"/> object and a DataTable of the search field information</returns>
         /// <remarks> This method calls the stored procedure 'SobekCM_Get_All_Groups'. </remarks>
-        public static Item_Aggregation Get_Main_Aggregation(Custom_Tracer Tracer)
+        public static Complete_Item_Aggregation Get_Main_Aggregation(Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -3028,7 +3028,7 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Build the collection group object
-                Item_Aggregation aggrInfo = create_basic_aggregation_from_datatable(tempSet.Tables[0]);
+                Complete_Item_Aggregation aggrInfo = create_basic_aggregation_from_datatable(tempSet.Tables[0]);
 
                 // Add the advanced search values
                 add_advanced_terms(aggrInfo, tempSet.Tables[1]);
@@ -3054,7 +3054,7 @@ namespace SobekCM.Engine_Library.Database
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This is postponed until it is needed for the TREE VIEW on the home page, to allow the system to start
         /// faster, even with a great number of item aggregationPermissions in the hierarchy </remarks>
-        public static bool Add_Children_To_Main_Agg(Item_Aggregation AllInfoObject, Custom_Tracer Tracer)
+        public static bool Add_Children_To_Main_Agg(Complete_Item_Aggregation AllInfoObject, Custom_Tracer Tracer)
         {
             DataTable childInfo = Get_Aggregation_Hierarchies(Tracer);
             if (childInfo == null)
@@ -3068,7 +3068,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="BasicInfo">Datatable from database calls ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
         /// <returns>Minimally built aggregation object</returns>
         /// <remarks>The child and parent information is not yet added to the returned object </remarks>
-        private static Item_Aggregation create_basic_aggregation_from_datatable(DataTable BasicInfo)
+        private static Complete_Item_Aggregation create_basic_aggregation_from_datatable(DataTable BasicInfo)
         {
             // Pull out this row
             DataRow thisRow = BasicInfo.Rows[0];
@@ -3079,7 +3079,7 @@ namespace SobekCM.Engine_Library.Database
                 lastAdded = Convert.ToDateTime(thisRow[16]);
 
             // Build the collection group object
-            Item_Aggregation aggrInfo = new Item_Aggregation( Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, Engine_ApplicationCache_Gateway.Settings.Base_Design_Location,
+            Complete_Item_Aggregation aggrInfo = new Complete_Item_Aggregation(Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, Engine_ApplicationCache_Gateway.Settings.Base_Design_Location,
                 thisRow[1].ToString().ToLower(), thisRow[4].ToString(), Convert.ToInt32(thisRow[0]), displayOptions, lastAdded)
             {
                 Name = thisRow[2].ToString(),
@@ -3109,8 +3109,12 @@ namespace SobekCM.Engine_Library.Database
                 if (thisRow["ThematicHeadingID"] != DBNull.Value)
                 {
                     int thematicHeadingId = Convert.ToInt32(thisRow["ThematicHeadingID"]);
-                    if ( thematicHeadingId > 0 )
-                        aggrInfo.Thematic_Heading_ID = thematicHeadingId;
+
+                    if (thematicHeadingId > 0)
+                    {
+                        string thematicHeading = thisRow["ThemeName"].ToString();
+                        aggrInfo.Thematic_Heading = new Thematic_Heading(thematicHeadingId, thematicHeading);
+                    } 
                 }
             }
 
@@ -3121,7 +3125,7 @@ namespace SobekCM.Engine_Library.Database
         /// <summary> Adds the child information to the item aggregation object from the datatable extracted from the database </summary>
         /// <param name="AggrInfo">Partially built item aggregation object</param>
         /// <param name="ChildInfo">Datatable from database calls with child item aggregation information ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
-        private static void add_children(Item_Aggregation AggrInfo, DataTable ChildInfo)
+        private static void add_children(Complete_Item_Aggregation AggrInfo, DataTable ChildInfo)
         {
             if (ChildInfo.Rows.Count == 0)
                 return;
@@ -3182,7 +3186,7 @@ namespace SobekCM.Engine_Library.Database
         /// <summary> Adds the child information to the item aggregation object from the datatable extracted from the database </summary>
         /// <param name="AggrInfo">Partially built item aggregation object</param>
         /// <param name="ParentInfo">Datatable from database calls with parent item aggregation information ( from  SobekCM_Get_Item_Aggregation only )</param>
-        private static void add_parents(Item_Aggregation AggrInfo, DataTable ParentInfo)
+        private static void add_parents(Complete_Item_Aggregation AggrInfo, DataTable ParentInfo)
         {
             foreach (DataRow parentRow in ParentInfo.Rows)
             {
@@ -3195,46 +3199,32 @@ namespace SobekCM.Engine_Library.Database
         /// and also the list of browseable fields for this collection </summary>
         /// <param name="AggrInfo">Partially built item aggregation object</param>
         /// <param name="SearchTermsTable"> Table of all advanced search values </param>
-        private static void add_advanced_terms(Item_Aggregation AggrInfo, DataTable SearchTermsTable)
+        private static void add_advanced_terms(Complete_Item_Aggregation AggrInfo, DataTable SearchTermsTable)
         {
             // Add ANYWHERE first
-            AggrInfo.Advanced_Search_Fields.Add(-1);
+            AggrInfo.Search_Fields.Add(new Complete_Item_Aggregation_Metadata_Type(-1, "Anywhere", "ZZ"));
 
             // Add values either default values or from the table
-            if ((SearchTermsTable == null) || (SearchTermsTable.Rows.Count == 0))
+            if ((SearchTermsTable != null) && (SearchTermsTable.Rows.Count > 0))
             {
-                AggrInfo.Advanced_Search_Fields.Add(4);
-                AggrInfo.Advanced_Search_Fields.Add(3);
-                AggrInfo.Advanced_Search_Fields.Add(6);
-                AggrInfo.Advanced_Search_Fields.Add(5);
-                AggrInfo.Advanced_Search_Fields.Add(7);
-                AggrInfo.Advanced_Search_Fields.Add(1);
-                AggrInfo.Advanced_Search_Fields.Add(2);
-
-                AggrInfo.Browseable_Fields.Add(4);
-                AggrInfo.Browseable_Fields.Add(3);
-                AggrInfo.Browseable_Fields.Add(6);
-                AggrInfo.Browseable_Fields.Add(5);
-                AggrInfo.Browseable_Fields.Add(7);
-                AggrInfo.Browseable_Fields.Add(1);
-                AggrInfo.Browseable_Fields.Add(2);
-
-            }
-            else
-            {
-                short lastTypeId = -1;
                 foreach (DataRow thisRow in SearchTermsTable.Rows)
                 {
                     short thisTypeId = Convert.ToInt16(thisRow[0]);
-                    if ((thisTypeId != lastTypeId) && (!AggrInfo.Advanced_Search_Fields.Contains(thisTypeId)))
-                    {
-                        AggrInfo.Advanced_Search_Fields.Add(thisTypeId);
-                        lastTypeId = thisTypeId;
-                    }
                     bool canBrowse = Convert.ToBoolean(thisRow[1]);
-                    if ((canBrowse) && (!AggrInfo.Browseable_Fields.Contains(thisTypeId)))
+                    string displayTerm = thisRow[2].ToString();
+                    string sobekCode = thisRow[3].ToString();
+                    string solrCode = thisRow[4].ToString();
+
+                    Complete_Item_Aggregation_Metadata_Type metadataType = new Complete_Item_Aggregation_Metadata_Type(thisTypeId, displayTerm, sobekCode) {SolrCode = solrCode};
+
+                    if (!AggrInfo.Search_Fields.Contains(metadataType))
                     {
-                        AggrInfo.Browseable_Fields.Add(thisTypeId);
+                        AggrInfo.Search_Fields.Add(metadataType);
+                    }
+                    
+                    if ((canBrowse) && (!AggrInfo.Browseable_Fields.Contains(metadataType)))
+                    {
+                        AggrInfo.Browseable_Fields.Add(metadataType);
                     }
                 }
             }
@@ -3243,13 +3233,15 @@ namespace SobekCM.Engine_Library.Database
         /// <summary> Adds the page count, item count, and title count to the item aggregation object from the datatable extracted from the database </summary>
         /// <param name="AggrInfo">Partially built item aggregation object</param>
         /// <param name="CountInfo">Datatable from database calls with page count, item count, and title count ( from either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
-        private static void add_counts(Item_Aggregation AggrInfo, DataTable CountInfo)
+        private static void add_counts(Complete_Item_Aggregation AggrInfo, DataTable CountInfo)
         {
             if (CountInfo.Rows.Count > 0)
             {
-                AggrInfo.Page_Count = Convert.ToInt32(CountInfo.Rows[0]["Page_Count"]);
-                AggrInfo.Item_Count = Convert.ToInt32(CountInfo.Rows[0]["Item_Count"]);
-                AggrInfo.Title_Count = Convert.ToInt32(CountInfo.Rows[0]["Title_Count"]);
+                AggrInfo.Statistics = new Item_Aggregation_Statistics();
+
+                AggrInfo.Statistics.Page_Count = Convert.ToInt32(CountInfo.Rows[0]["Page_Count"]);
+                AggrInfo.Statistics.Item_Count = Convert.ToInt32(CountInfo.Rows[0]["Item_Count"]);
+                AggrInfo.Statistics.Title_Count = Convert.ToInt32(CountInfo.Rows[0]["Title_Count"]);
             }
         }
 
@@ -3308,12 +3300,13 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="ParentID"> ID for the item aggregation parent</param>
         /// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregationPermissions to provide a link back to the institution's actual home page)</param>
         /// <param name="Username"> Username saving this new item aggregation, for the item aggregation milestones </param>
+        /// <param name="LanguageVariants"> Details which language variants exist for this item aggregation </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-        public static bool Save_Item_Aggregation(string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string ExternalLink, int ParentID, string Username, Custom_Tracer Tracer)
+        public static bool Save_Item_Aggregation(string Code, string Name, string ShortName, string Description, int ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string ExternalLink, int ParentID, string Username, string LanguageVariants, Custom_Tracer Tracer)
         {
-            return Save_Item_Aggregation(-1, Code, Name, ShortName, Description, ThematicHeadingID, Type, IsActive, IsHidden, String.Empty, 0, 0, 0, 0, false, String.Empty, String.Empty, String.Empty, ExternalLink, ParentID, Username, Tracer);
+            return Save_Item_Aggregation(-1, Code, Name, ShortName, Description, new Thematic_Heading(ThematicHeadingID, String.Empty), Type, IsActive, IsHidden, String.Empty, 0, 0, 0, 0, false, String.Empty, String.Empty, String.Empty, ExternalLink, ParentID, Username, LanguageVariants, Tracer);
         }
 
         /// <summary> Save a new item aggregation or edit an existing item aggregation in the database </summary>
@@ -3322,7 +3315,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Name"> Name for this item aggregation </param>
         /// <param name="ShortName"> Short version of this item aggregation </param>
         /// <param name="Description"> Description of this item aggregation </param>
-        /// <param name="ThematicHeadingID"> Thematic heading id for this item aggregation (or -1)</param>
+        /// <param name="ThematicHeading"> Thematic heading for this item aggregation (or null)</param>
         /// <param name="Type"> Type of item aggregation (i.e., Collection Group, Institution, Exhibit, etc..)</param>
         /// <param name="IsActive"> Flag indicates if this item aggregation is active</param>
         /// <param name="IsHidden"> Flag indicates if this item is hidden</param>
@@ -3338,10 +3331,11 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregationPermissions to provide a link back to the institution's actual home page)</param>
         /// <param name="ParentID"> ID for the item aggregation parent</param>
         /// <param name="Username"> Username saving this new item aggregation, for the item aggregation milestones </param>
+        /// <param name="LanguageVariants"> Details which language variants exist for this item aggregation </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-        public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, int? ThematicHeadingID, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Search_Beta, int Map_Display, int Map_Display_Beta, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, Custom_Tracer Tracer)
+        public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, Thematic_Heading ThematicHeading, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Search_Beta, int Map_Display, int Map_Display_Beta, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, string LanguageVariants, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -3351,16 +3345,16 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[20];
+                SqlParameter[] paramList = new SqlParameter[21];
                 paramList[0] = new SqlParameter("@aggregationid", AggregationID);
                 paramList[1] = new SqlParameter("@code", Code);
                 paramList[2] = new SqlParameter("@name", Name);
                 paramList[3] = new SqlParameter("@shortname", ShortName);
                 paramList[4] = new SqlParameter("@description", Description);
-                if (ThematicHeadingID.HasValue)
-                    paramList[5] = new SqlParameter("@thematicHeadingId", ThematicHeadingID.Value);
+                if (ThematicHeading != null )
+                    paramList[5] = new SqlParameter("@thematicHeadingId", ThematicHeading.ID);
                 else
-                    paramList[5] = new SqlParameter("@thematicHeadingId", DBNull.Value);
+                    paramList[5] = new SqlParameter("@thematicHeadingId", -1);
                 paramList[6] = new SqlParameter("@type", Type);
                 paramList[7] = new SqlParameter("@isActive", IsActive);
                 paramList[8] = new SqlParameter("@hidden", IsHidden);
@@ -3374,7 +3368,8 @@ namespace SobekCM.Engine_Library.Database
                 paramList[16] = new SqlParameter("@externallink", ExternalLink);
                 paramList[17] = new SqlParameter("@parentid", ParentID);
                 paramList[18] = new SqlParameter("@username", Username);
-                paramList[19] = new SqlParameter("@newaggregationid", 0) { Direction = ParameterDirection.InputOutput };
+                paramList[19] = new SqlParameter("@languageVariants", LanguageVariants);
+                paramList[20] = new SqlParameter("@newaggregationid", 0) { Direction = ParameterDirection.InputOutput };
 
                 //BETA
                 //paramList[20] = new SqlParameter("@map_search_beta", Map_Search_Beta);

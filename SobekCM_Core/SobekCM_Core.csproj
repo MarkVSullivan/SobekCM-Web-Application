@@ -31,10 +31,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Jil">
-      <HintPath>..\DLLs\JIL\Jil.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\JIL\Jil.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,12 +47,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aggregations\Complete_Item_Aggregation.cs" />
+    <Compile Include="Aggregations\Complete_Item_Aggregation_Child_Page.cs" />
+    <Compile Include="Aggregations\Complete_Item_Aggregation_Metadata_Type.cs" />
     <Compile Include="Aggregations\Item_Aggregation.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Child_Page.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Custom_Directive.cs" />
+    <Compile Include="Aggregations\Item_Aggregation_Enums.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Front_Banner.cs" />
+    <Compile Include="Aggregations\Complete_Item_Aggregation_Highlights.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Highlights.cs" />
+    <Compile Include="Aggregations\Item_Aggregation_Metadata_Type.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Related_Aggregations.cs" />
+    <Compile Include="Aggregations\Item_Aggregation_Statistics.cs" />
     <Compile Include="Aggregations\Thematic_Heading.cs" />
     <Compile Include="ApplicationState\Aggregation_Code_Manager.cs" />
     <Compile Include="ApplicationState\Default_Metadata.cs" />
@@ -84,6 +91,12 @@
     <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetFastSerializerSurrogate.cs" />
     <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetHelper.cs" />
     <Compile Include="MemoryMgmt\AdoNetHelper\FastSerializer.cs" />
+    <Compile Include="MemoryMgmt\AppFabric_Manager.cs" />
+    <Compile Include="MemoryMgmt\CachedDataManager.cs" />
+    <Compile Include="MemoryMgmt\CachedDataManager_AggregationServices.cs" />
+    <Compile Include="MemoryMgmt\CachedDataManager_Settings.cs" />
+    <Compile Include="MemoryMgmt\Cached_Object_Info.cs" />
+    <Compile Include="MemoryMgmt\Expiring_Item_Typed_List.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Configuration.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Config_Reader.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Endpoint.cs" />
@@ -127,6 +140,10 @@
     <Compile Include="WebContent\HTML_Based_Content_Reader.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
+      <Project>{395c2621-ce19-41e0-aa1a-abdb37f6e815}</Project>
+      <Name>SobekCM_Resource_Object</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj">
       <Project>{a511ce4c-7bd6-4446-bca8-ab71f7aa8078}</Project>
       <Name>SobekCM_Tools</Name>

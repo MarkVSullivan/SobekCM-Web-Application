@@ -1398,7 +1398,7 @@ namespace SobekCM.Library.HTML
 								}
 								else
 								{
-									if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation.CollectionViewsAndSearchesEnum.All_New_Items))
+									if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.All_New_Items))
 									{
 										RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 										RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;

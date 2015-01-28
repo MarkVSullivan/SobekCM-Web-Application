@@ -31,19 +31,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Jil">
-      <HintPath>..\DLLs\JIL\Jil.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\JIL\Jil.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ApplicationBlocks.Data">
-      <HintPath>..\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="SolrNet">
-      <HintPath>..\DLLs\SolrNet\SolrNet.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\SolrNet\SolrNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -61,14 +61,16 @@
     <Compile Include="ApplicationState\Checked_Out_Items_List.cs" />
     <Compile Include="ApplicationState\Engine_ApplicationCache_Gateway.cs" />
     <Compile Include="ApplicationState\Item_Lookup_Object.cs" />
+    <Compile Include="Client\SobekEngineClient.cs" />
+    <Compile Include="Client\SobekEngineClient_AggregationEndpoints.cs" />
+    <Compile Include="Client\SobekEngineClient_ItemEndpoints.cs" />
+    <Compile Include="Client\SobekEngineClient_SearchEndpoints.cs" />
+    <Compile Include="Client\SobekEngineClient_WebSkinEndpoints.cs" />
     <Compile Include="Configuration\ContactForm_Configuration_Reader.cs" />
     <Compile Include="Configuration\OAI_PMH_Configuration_Reader.cs" />
     <Compile Include="Configuration\Shibboleth_Configuration_Reader.cs" />
     <Compile Include="Endpoints\AggregationServices.cs" />
     <Compile Include="Items\SobekCM_Item_Updater.cs" />
-    <Compile Include="MemoryMgmt\AppFabric_Manager.cs" />
-    <Compile Include="MemoryMgmt\Cached_Data_Manager.cs" />
-    <Compile Include="MemoryMgmt\Cached_Object_Info.cs" />
     <Compile Include="Database\Database_Item_Result.cs" />
     <Compile Include="Database\Database_Title_Result.cs" />
     <Compile Include="Database\Engine_Database.cs" />
@@ -80,7 +82,6 @@
     </Compile>
     <Compile Include="Items\SobekCM_Item_Factory.cs" />
     <Compile Include="Items\SobekCM_METS_Based_ItemBuilder.cs" />
-    <Compile Include="MemoryMgmt\Expiring_Item_Typed_List.cs" />
     <Compile Include="MicroserviceHandler.cs" />
     <Compile Include="MicroserviceRewriter.cs" />
     <Compile Include="Microservices\Microservices_Configuration.cs" />

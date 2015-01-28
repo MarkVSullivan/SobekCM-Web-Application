@@ -11,6 +11,7 @@ namespace SobekCM.Engine_Library
             context.Response.ContentType = "application/json";
 
             string appRelative = HttpContext.Current.Request.AppRelativeCurrentExecutionFilePath.ToLower();
+            string url_authority = HttpContext.Current.Request.Url.Authority;
 
             // Favicon.ico is a common request.. abort right here
             if (appRelative.IndexOf("favicon.ico", StringComparison.InvariantCultureIgnoreCase) >= 0)
@@ -35,16 +36,35 @@ namespace SobekCM.Engine_Library
             // Get the current query string
             string current_querystring = HttpContext.Current.Request.QueryString.ToString();
 
-            // Rewrite the URL
-            if (current_querystring.Length > 0)
+            if (appRelative.IndexOf("engine") == 0)
             {
-                HttpContext.Current.RewritePath("~/midtier.csvc?urlrelative=" + appRelative + "&" + current_querystring, true);
-            }
-            else
-            {
-                HttpContext.Current.RewritePath("~/midtier.csvc?urlrelative=" + appRelative, true);
-            }
+                if (appRelative.Length > 6)
+                {
+                    appRelative = appRelative.Substring(6);
 
+                    // Standard rewrite to the sobek engine service
+                    if (current_querystring.Length > 0)
+                    {
+                        HttpContext.Current.RewritePath("~/sobekcm.svc?urlrelative=" + appRelative + "&" + current_querystring + "&portal=" + url_authority, true);
+                    }
+                    else
+                    {
+                        HttpContext.Current.RewritePath("~/sobekcm.svc?urlrelative=" + appRelative + "&portal=" + url_authority, true);
+                    }
+                }
+                else
+                {
+                    // Standard rewrite to the sobek engine service
+                    if (current_querystring.Length > 0)
+                    {
+                        HttpContext.Current.RewritePath("~/sobekcm.svc?" + current_querystring + "&portal=" + url_authority, true);
+                    }
+                    else
+                    {
+                        HttpContext.Current.RewritePath("~/sobekcm.svc?portal=" + url_authority, true);
+                    }
+                }
+            }
         }
 
         public void Init(HttpApplication context)

@@ -15,8 +15,6 @@ using SobekCM.Core.Results;
 using SobekCM.Core.SiteMap;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
-using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Engine_Library.Solr;
 //using SobekCM.Library.Citation.Template;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
@@ -24,26 +22,24 @@ using SobekCM.Tools;
 
 #endregion
 
-namespace SobekCM.Engine.MemoryMgmt
+namespace SobekCM.Core.MemoryMgmt
 {
 	/// <summary> Static class manages the local and distributed caches and handles all requests for object retrieval and object storing </summary>
-	public class Cached_Data_Manager
+	public static class CachedDataManager
 	{
-		private static readonly bool caching_serving_enabled;
-		private const int LOCALLY_CACHED_AGGREGATION_LIMIT = 1000;
-		private const int LOCALLY_CACHED_ITEM_LIMIT = 1;
-		private const int LOCALLY_CACHED_SKINS_LIMIT = 5;
+	    public static CachedDataManager_Settings Settings { get; private set;}
+
+        public static CachedDataManager_AggregationServices Aggregations { get; private set;}
+
 
 		/// <summary> Static constructor initializes several variables </summary>
-		static Cached_Data_Manager()
+		static CachedDataManager()
 		{
-			caching_serving_enabled = Engine_ApplicationCache_Gateway.Settings.Caching_Server.Length > 0;
-			Disabled = false;
+		    Settings = new CachedDataManager_Settings();
+		    Aggregations = new CachedDataManager_AggregationServices(Settings);
+            Settings.CachingServerEnabled = false;
+            Settings.Disabled = false;
 		}
-
-		/// <summary> Flag indicates if the cache is entirely disabled </summary>
-		/// <remarks> This flag is utilized, in particular, by the builder which has no access to the web's local or distributed cache </remarks>
-        public static bool Disabled { get; private set; }
 
 		/// <summary> Read-only list of basic information about all the objects stored in the local cache </summary>
 		public static ReadOnlyCollection<Cached_Object_Info> Locally_Cached_Objects
@@ -119,12 +115,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static List<iSearch_Title_Result> Retrieve_User_Folder_Browse(int User_ID, string Folder_Name, int ResultsPage, int Results_Per_Page, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_User_Folder_Browse", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_User_Folder_Browse", "");
 			}
 
 			object returnValue = HttpContext.Current.Cache.Get("USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower() + "_" + ResultsPage  + "_" + Results_Per_Page);
@@ -141,14 +137,14 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_User_Folder_Browse(int User_ID, string Folder_Name, int ResultsPage, int Results_Per_Page, List<iSearch_Title_Result> StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			string key = "USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower() + "_" + ResultsPage + "_" + Results_Per_Page;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Store_User_Folder_Browse", "Adding object '" + key + "' to the cache with expiration of 1 minute");
+				Tracer.Add_Trace("CachedDataManager.Store_User_Folder_Browse", "Adding object '" + key + "' to the cache with expiration of 1 minute");
 			}
 
 			if (HttpContext.Current.Cache[key] == null)
@@ -165,12 +161,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static Search_Results_Statistics Retrieve_User_Folder_Browse_Statistics(int User_ID, string Folder_Name, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_User_Folder_Browse_Statistics", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_User_Folder_Browse_Statistics", "");
 			}
 
 			object returnValue = HttpContext.Current.Cache.Get("USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower() + "_STATISTICS");
@@ -185,14 +181,14 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_User_Folder_Browse_Statistics(int User_ID, string Folder_Name, Search_Results_Statistics StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			string key = "USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower() + "_STATISTICS";
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Store_User_Folder_Browse_Statistics", "Adding object '" + key + "' to the cache with expiration of 1 minute");
+				Tracer.Add_Trace("CachedDataManager.Store_User_Folder_Browse_Statistics", "Adding object '" + key + "' to the cache with expiration of 1 minute");
 			}
 
 			if (HttpContext.Current.Cache[key] == null)
@@ -208,14 +204,14 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Remove_User_Folder_Browse(int User_ID, string Folder_Name, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			string key_start = "USER_FOLDER_" + User_ID + "_" + Folder_Name.ToLower()+ "_";
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Remove_User_Folder_Browse", "Removing objects '" + key_start + "_*' from the cache");
+				Tracer.Add_Trace("CachedDataManager.Remove_User_Folder_Browse", "Removing objects '" + key_start + "_*' from the cache");
 			}
 
 			// Get collection of keys in the Cache
@@ -234,12 +230,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Remove_All_User_Folder_Browses(int User_ID, Custom_Tracer Tracer )
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Remove_All_User_Folder_Browses");
+				Tracer.Add_Trace("CachedDataManager.Remove_All_User_Folder_Browses");
 			}
 
 			string key_start = "USER_FOLDER_" + User_ID + "_";
@@ -265,12 +261,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static Public_User_Folder Retrieve_Public_Folder_Info(int UserFolderID, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Public_Folder_Info", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Public_Folder_Info", "");
 			}
 
 			object returnValue = HttpContext.Current.Cache.Get("FOLDER_INFO_" + UserFolderID);
@@ -285,12 +281,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static List<iSearch_Title_Result> Retrieve_Public_Folder_Browse(int UserFolderID, int ResultsPage, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Public_Folder_Browse", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Public_Folder_Browse", "");
 			}
 
 			object returnValue = HttpContext.Current.Cache.Get("FOLDER_BROWSE_" + UserFolderID + "_" + ResultsPage);
@@ -304,12 +300,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static Search_Results_Statistics Retrieve_Public_Folder_Statistics(int UserFolderID, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Public_Folder_Browse", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Public_Folder_Browse", "");
 			}
 
 			object returnValue = HttpContext.Current.Cache.Get("FOLDER_BROWSE_" + UserFolderID + "_STATISTICS");
@@ -322,14 +318,14 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Public_Folder_Info( Public_User_Folder StoreObject, Custom_Tracer Tracer )
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			string key = "FOLDER_INFO_" + StoreObject.UserFolderID;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Store_Public_Folder_Info", "Adding object '" + key + "' to the cache with expiration of 2 minutes");
+				Tracer.Add_Trace("CachedDataManager.Store_Public_Folder_Info", "Adding object '" + key + "' to the cache with expiration of 2 minutes");
 			}
 
 			if ( HttpContext.Current.Cache[key] == null)
@@ -346,14 +342,14 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Public_Folder_Browse(int UserFolderID, int ResultsPage, List<iSearch_Title_Result> StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			string key = "FOLDER_BROWSE_" + UserFolderID + "_" + ResultsPage;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Store_Public_Folder_Browse", "Adding object '" + key + "' to the cache with expiration of 2 minutes");
+				Tracer.Add_Trace("CachedDataManager.Store_Public_Folder_Browse", "Adding object '" + key + "' to the cache with expiration of 2 minutes");
 			}
 
 			if (HttpContext.Current.Cache[key] == null)
@@ -369,14 +365,14 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Public_Folder_Statistics(int UserFolderID, Search_Results_Statistics StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			string key = "FOLDER_BROWSE_" + UserFolderID + "_STATISTICS";
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Store_Public_Folder_Browse", "Adding object '" + key + "' to the cache with expiration of 2 minutes");
+				Tracer.Add_Trace("CachedDataManager.Store_Public_Folder_Browse", "Adding object '" + key + "' to the cache with expiration of 2 minutes");
 			}
 
 			if (HttpContext.Current.Cache[key] == null)
@@ -391,12 +387,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Clear_Public_Folder_Info(int UserFolderID, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Clear_Public_Folder_Info", "");
+				Tracer.Add_Trace("CachedDataManager.Clear_Public_Folder_Info", "");
 			}
 
 			HttpContext.Current.Cache.Remove( "FOLDER_INFO_" + UserFolderID);
@@ -425,26 +421,26 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static Search_Results_Statistics Retrieve_Browse_Result_Statistics(string Aggregation_Code, string Browse_Name, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Browse_Result_Statistics", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Browse_Result_Statistics", "");
 			}
 
 			// Determine the key
 			string key = "TOTALBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
 			// Try to get this from the caching server if enabled
-			if (caching_serving_enabled)
+			if ( Settings.CachingServerEnabled )
 			{
 				object from_appfabric = AppFabric_Manager.Get(key, Tracer);
 				if (from_appfabric != null)
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Browse_Result_Statistics", "Results pulled from caching server");
+						Tracer.Add_Trace("CachedDataManager.Retrieve_Browse_Result_Statistics", "Results pulled from caching server");
 					}
 
 					return (Search_Results_Statistics)from_appfabric;
@@ -457,7 +453,7 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Browse_Result_Statistics", "Results pulled from local cache");
+					Tracer.Add_Trace("CachedDataManager.Retrieve_Browse_Result_Statistics", "Results pulled from local cache");
 				}
 
 				return (Search_Results_Statistics)returnValue;
@@ -474,18 +470,18 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Browse_Result_Statistics(string Aggregation_Code, string Browse_Name, Search_Results_Statistics StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			// Determine the key
 			string key = "TOTALBROWSE_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
 			// try to store in the caching server, if enabled
-			if (caching_serving_enabled)
+			if ( Settings.CachingServerEnabled )
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Browse_Result_Statistics", "Adding object '" + key + "' to the caching server");
+					Tracer.Add_Trace("CachedDataManager.Store_Browse_Result_Statistics", "Adding object '" + key + "' to the caching server");
 				}
 
 				if (AppFabric_Manager.Add(key, StoreObject, Tracer))
@@ -497,7 +493,7 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Browse_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
+					Tracer.Add_Trace("CachedDataManager.Store_Browse_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
 				}
 
 				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
@@ -518,12 +514,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static List<iSearch_Title_Result> Retrieve_Browse_Results( string Aggregation_Code, string Browse_Name, int Page, int Sort, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Aggregation_Browse", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Browse", "");
 			}
 
 			// Determine the key
@@ -535,21 +531,21 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Aggregation_Browse", "Results pulled from local cache");
+					Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Browse", "Results pulled from local cache");
 				}
 
 				return (List<iSearch_Title_Result>)returnValue;
 			}
 
 			// If the caching server is enabled get the data from there
-			if (caching_serving_enabled)
+			if ( Settings.CachingServerEnabled )
 			{
 				object serialize_data = AppFabric_Manager.Get(key, Tracer);
 				if (serialize_data != null)
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Aggregation_Browse", "Results pulled from caching server");
+						Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Browse", "Results pulled from caching server");
 					}
 
 					return (List<iSearch_Title_Result>)serialize_data;
@@ -570,7 +566,7 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Browse_Results( string Aggregation_Code, string Browse_Name, int Page, int Sort, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			// Save the requested page of results and any additionally returned pages
@@ -582,11 +578,11 @@ namespace SobekCM.Engine.MemoryMgmt
 
 				// try to store in the caching server, if enabled
 				bool remotely_cached = false;
-				if (caching_serving_enabled)
+				if ( Settings.CachingServerEnabled )
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Store_Info_Browse", "Adding object '" + key + "' to the caching server");
+						Tracer.Add_Trace("CachedDataManager.Store_Info_Browse", "Adding object '" + key + "' to the caching server");
 					}
 
 					if (AppFabric_Manager.Add(key, pageOfResults, Tracer))
@@ -598,7 +594,7 @@ namespace SobekCM.Engine.MemoryMgmt
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Store_Info_Browse", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
+						Tracer.Add_Trace("CachedDataManager.Store_Info_Browse", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
 					}
 
 					HttpContext.Current.Cache.Insert(key, pageOfResults, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
@@ -622,26 +618,26 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static List<string> Retrieve_Aggregation_Metadata_Browse(string Aggregation_Code, string Browse_Name, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Aggregation_Metadata_Browse", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Metadata_Browse", "");
 			}
 
 			// Determine the key
 			string key = "BROWSEBY_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
 			// If the caching server is enabled get the data from there
-			if (caching_serving_enabled)
+			if ( Settings.CachingServerEnabled )
 			{
 				object serialize_data = AppFabric_Manager.Get(key, Tracer);
 				if (serialize_data != null)
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Aggregation_Metadata_Browse", "Metadata browse pulled from caching server");
+						Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Metadata_Browse", "Metadata browse pulled from caching server");
 					}
 
 					return (List<string>)serialize_data;
@@ -654,7 +650,7 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Aggregation_Metadata_Browse", "Metadata browse pulled from local cache");
+					Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Metadata_Browse", "Metadata browse pulled from local cache");
 				}
 
 				return (List<string>)returnValue;
@@ -671,18 +667,18 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Aggregation_Metadata_Browse(string Aggregation_Code, string Browse_Name, List<string> StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			// Determine the key 
 			string key = "BROWSEBY_" + Aggregation_Code.ToUpper() + "_" + Browse_Name.ToUpper();
 
 			// try to store in the caching server, if enabled
-			if (caching_serving_enabled)
+			if ( Settings.CachingServerEnabled )
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Aggregation_Metadata_Browse", "Adding object '" + key + "' to the caching server");
+					Tracer.Add_Trace("CachedDataManager.Store_Aggregation_Metadata_Browse", "Adding object '" + key + "' to the caching server");
 				}
 
 				if (AppFabric_Manager.Add(key, StoreObject, Tracer))
@@ -694,7 +690,7 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Aggregation_Metadata_Browse", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+					Tracer.Add_Trace("CachedDataManager.Store_Aggregation_Metadata_Browse", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 				}
 
 				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
@@ -712,12 +708,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Remove_Digital_Resource_Objects(string BibID, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Remove_Digital_Resource_Objects", "");
+				Tracer.Add_Trace("CachedDataManager.Remove_Digital_Resource_Objects", "");
 			}
 
 			string key_start = "ITEM_" + BibID + "_";
@@ -762,12 +758,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Remove_Digital_Resource_Object(int UserID, string BibID, string VID, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Remove_Digital_Resource_Object", "");
+				Tracer.Add_Trace("CachedDataManager.Remove_Digital_Resource_Object", "");
 			}
 
 			// Determine the key
@@ -794,7 +790,7 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static SobekCM_Item Retrieve_Digital_Resource_Object( int UserID, string BibID, string VID, Custom_Tracer Tracer )
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			// Determine the key
@@ -810,34 +806,34 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Digital_Resource_Object", "Found item on local cache");
+					Tracer.Add_Trace("CachedDataManager.Retrieve_Digital_Resource_Object", "Found item on local cache");
 				}
 
 				return (SobekCM_Item)returnValue;
 			}
 
 			// Try to get this from the caching server, if enabled
-			if ((caching_serving_enabled) && ( AppFabric_Manager.Contains( key )))
+			if ((Settings.CachingServerEnabled) && ( AppFabric_Manager.Contains( key )))
 			{
 				object from_app_fabric = AppFabric_Manager.Get(key, Tracer);
 				if (from_app_fabric != null)
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Digital_Resource_Object", "Found item on caching server");
+						Tracer.Add_Trace("CachedDataManager.Retrieve_Digital_Resource_Object", "Found item on caching server");
 					}
 
 					// Check the number of items currently locally cached 
-					if (LOCALLY_CACHED_ITEM_LIMIT > 0)
+					if (Settings.LOCALLY_CACHED_ITEM_LIMIT > 0)
 					{
 						int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(thisItem => (thisItem.Key.ToString().IndexOf("ITEM_") == 0) || (thisItem.Key.ToString().IndexOf("USERITEM") == 0));
 
 						// Locally cache if this doesn't exceed the limit
-						if (items_cached < LOCALLY_CACHED_ITEM_LIMIT)
+						if (items_cached < Settings.LOCALLY_CACHED_ITEM_LIMIT)
 						{
 							if (Tracer != null)
 							{
-								Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+								Tracer.Add_Trace("CachedDataManager.Retrieve_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 							}
 
 							HttpContext.Current.Cache.Insert(key, from_app_fabric, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
@@ -850,7 +846,7 @@ namespace SobekCM.Engine.MemoryMgmt
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Digital_Resource_Object", "Item not found in either the local cache or caching server");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Digital_Resource_Object", "Item not found in either the local cache or caching server");
 			}
 
 			// Since everything failed, just return null
@@ -877,7 +873,7 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Digital_Resource_Object(int UserID, string BibID, string VID, SobekCM_Item StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			// Determine the key
@@ -888,12 +884,12 @@ namespace SobekCM.Engine.MemoryMgmt
 			}
 
 			// Check the number of items currently locally cached
-			if ((LOCALLY_CACHED_ITEM_LIMIT > 0) || ( !caching_serving_enabled) || (UserID > 0 ))
+			if ((Settings.LOCALLY_CACHED_ITEM_LIMIT > 0) || ( !Settings.CachingServerEnabled) || (UserID > 0 ))
 			{
 				int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => (ThisItem.Key.ToString().IndexOf("ITEM_") == 0) || (ThisItem.Key.ToString().IndexOf("USERITEM") == 0));
 
 				// Locally cache if this doesn't exceed the limit
-				if ((items_cached < LOCALLY_CACHED_ITEM_LIMIT) || (!caching_serving_enabled) || (UserID > 0))
+				if ((items_cached < Settings.LOCALLY_CACHED_ITEM_LIMIT) || (!Settings.CachingServerEnabled) || (UserID > 0))
 				{
 					int length_of_time = 1;
 					if (UserID > 0)
@@ -901,7 +897,7 @@ namespace SobekCM.Engine.MemoryMgmt
 
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Store_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of " + length_of_time + " minute");
+						Tracer.Add_Trace("CachedDataManager.Store_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of " + length_of_time + " minute");
 					}
 
 					HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(length_of_time));
@@ -910,11 +906,11 @@ namespace SobekCM.Engine.MemoryMgmt
 
 
 			// try to store in the caching server, if enabled
-			if (caching_serving_enabled)
+			if ( Settings.CachingServerEnabled )
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Digital_Resource_Object", "Adding object '" + key + "' to the caching server");
+					Tracer.Add_Trace("CachedDataManager.Store_Digital_Resource_Object", "Adding object '" + key + "' to the caching server");
 				}
 
 				AppFabric_Manager.Add(key, StoreObject, Tracer);
@@ -938,7 +934,7 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static SobekCM_Item Retrieve_Digital_Resource_Object( string BibID, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			// Determine the key
@@ -950,33 +946,33 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Digital_Resource_Object", "Found item on local cache");
+					Tracer.Add_Trace("CachedDataManager.Retrieve_Digital_Resource_Object", "Found item on local cache");
 				}
 
 				return (SobekCM_Item)returnValue;
 			}
 
 			// Try to get this from the caching server, if enabled
-			if ((caching_serving_enabled) && (AppFabric_Manager.Contains(key)))
+			if ((Settings.CachingServerEnabled) && (AppFabric_Manager.Contains(key)))
 			{
 				object from_app_fabric = AppFabric_Manager.Get(key, Tracer);
 				if (from_app_fabric != null)
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Digital_Resource_Object", "Found item on caching server");
+						Tracer.Add_Trace("CachedDataManager.Retrieve_Digital_Resource_Object", "Found item on caching server");
 					}
 
 					// Check the number of items currently locally cached
-					if (LOCALLY_CACHED_ITEM_LIMIT > 0)
+					if (Settings.LOCALLY_CACHED_ITEM_LIMIT > 0)
 					{
 						int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => (ThisItem.Key.ToString().IndexOf("ITEM_") == 0) || (ThisItem.Key.ToString().IndexOf("USERITEM") == 0));
 						// Locally cache if this doesn't exceed the limit
-						if (items_cached < LOCALLY_CACHED_ITEM_LIMIT)
+						if (items_cached < Settings.LOCALLY_CACHED_ITEM_LIMIT)
 						{
 							if (Tracer != null)
 							{
-								Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+								Tracer.Add_Trace("CachedDataManager.Retrieve_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 							}
 
 							HttpContext.Current.Cache.Insert(key, from_app_fabric, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
@@ -989,7 +985,7 @@ namespace SobekCM.Engine.MemoryMgmt
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Digital_Resource_Object", "Item not found in either the local cache or caching server");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Digital_Resource_Object", "Item not found in either the local cache or caching server");
 			}
 
 			// Since everything failed, just return null
@@ -1004,23 +1000,23 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Digital_Resource_Object( string BibID, SobekCM_Item StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			// Determine the key
 			string key = "ITEM_GROUP_" + BibID;
 
 			// Check the number of items currently cached
-			if ((LOCALLY_CACHED_ITEM_LIMIT > 0) || ( !caching_serving_enabled ))
+			if ((Settings.LOCALLY_CACHED_ITEM_LIMIT > 0) || ( !Settings.CachingServerEnabled ))
 			{
 				int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => (ThisItem.Key.ToString().IndexOf("ITEM_") == 0) || (ThisItem.Key.ToString().IndexOf("USERITEM") == 0));
 
 				// Locally cache if this doesn't exceed the limit
-				if ( (items_cached < LOCALLY_CACHED_ITEM_LIMIT) || ( !caching_serving_enabled ))
+				if ( (items_cached < Settings.LOCALLY_CACHED_ITEM_LIMIT) || ( !Settings.CachingServerEnabled ))
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Store_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+						Tracer.Add_Trace("CachedDataManager.Store_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 					}
 
 					HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
@@ -1028,11 +1024,11 @@ namespace SobekCM.Engine.MemoryMgmt
 			}
 
 			// try to store in the caching server, if enabled
-			if (caching_serving_enabled)
+			if ( Settings.CachingServerEnabled )
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Digital_Resource_Object", "Adding object '" + key + "' to the caching server");
+					Tracer.Add_Trace("CachedDataManager.Store_Digital_Resource_Object", "Adding object '" + key + "' to the caching server");
 				}
 
 				AppFabric_Manager.Add(key, StoreObject, Tracer);
@@ -1050,12 +1046,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static SobekCM_Items_In_Title Retrieve_Items_In_Title( string BibID, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Items_In_Title", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Items_In_Title", "");
 			}
 
 			// Try to get this from the local cache next
@@ -1064,7 +1060,7 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Items_In_Title", "List of items in title pulled from local cache");
+					Tracer.Add_Trace("CachedDataManager.Retrieve_Items_In_Title", "List of items in title pulled from local cache");
 				}
 
 				return (SobekCM_Items_In_Title)returnValue;
@@ -1080,12 +1076,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Items_In_Title( string BibID , SobekCM_Items_In_Title StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Store_Items_In_Title", "");
+				Tracer.Add_Trace("CachedDataManager.Store_Items_In_Title", "");
 			}
 
 			// Store this on the local cache, if not there and storing on the cache server failed
@@ -1094,7 +1090,7 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Items_In_Title", "Adding object '" + key + "' to the local cache with expiration of 1 minutes");
+					Tracer.Add_Trace("CachedDataManager.Store_Items_In_Title", "Adding object '" + key + "' to the local cache with expiration of 1 minutes");
 				}
 
 				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
@@ -1107,12 +1103,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Remove_Items_In_Title(string BibID, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Remove_Items_In_Title", "");
+				Tracer.Add_Trace("CachedDataManager.Remove_Items_In_Title", "");
 			}
 
 			// Store this on the local cache, if not there and storing on the cache server failed
@@ -1141,12 +1137,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static Search_Results_Statistics Retrieve_Search_Result_Statistics( SobekCM_Navigation_Object Current_Mode, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Search_Result_Statistics", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Search_Result_Statistics", "");
 			}
 
 			// Determine the key
@@ -1211,21 +1207,21 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Search_Result_Statistics", "Results pulled from local cache");
+					Tracer.Add_Trace("CachedDataManager.Retrieve_Search_Result_Statistics", "Results pulled from local cache");
 				}
 
 				return (Search_Results_Statistics)returnValue;
 			}
 
 			// Try to get this from the caching server if enabled
-			if (caching_serving_enabled)
+			if ( Settings.CachingServerEnabled )
 			{
 				object from_appfabric = AppFabric_Manager.Get( key, Tracer);
 				if (from_appfabric != null)
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Search_Result_Statistics", "Results pulled from caching server");
+						Tracer.Add_Trace("CachedDataManager.Retrieve_Search_Result_Statistics", "Results pulled from caching server");
 					}
 
 					return (Search_Results_Statistics)from_appfabric;
@@ -1247,7 +1243,7 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Search_Result_Statistics(SobekCM_Navigation_Object Current_Mode, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, Search_Results_Statistics StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 			// Determine the key
 			// If there is no aggregation listed, use 'all'
@@ -1306,11 +1302,11 @@ namespace SobekCM.Engine.MemoryMgmt
 			}
 
 			// try to store in the caching server, if enabled
-			if (caching_serving_enabled)
+			if ( Settings.CachingServerEnabled )
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the caching server");
+					Tracer.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the caching server");
 				}
 
 				if (AppFabric_Manager.Add(key, StoreObject, Tracer))
@@ -1322,7 +1318,7 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
+					Tracer.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
 				}
 
 				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
@@ -1346,12 +1342,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static List<iSearch_Title_Result> Retrieve_Search_Results(SobekCM_Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Search_Results", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Search_Results", "");
 			}
 
 			// Determine the key
@@ -1412,14 +1408,14 @@ namespace SobekCM.Engine.MemoryMgmt
 			}
 
 			// Try to get this from the caching server if enabled
-			if (caching_serving_enabled)
+			if ( Settings.CachingServerEnabled )
 			{
 				object object_from_cache = AppFabric_Manager.Get(key, Tracer);
 				if (object_from_cache != null)
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Search_Results", "Results pulled from caching server");
+						Tracer.Add_Trace("CachedDataManager.Retrieve_Search_Results", "Results pulled from caching server");
 					}
 
 					return (List<iSearch_Title_Result>)object_from_cache;
@@ -1432,7 +1428,7 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Search_Results", "Results pulled from local cache");
+					Tracer.Add_Trace("CachedDataManager.Retrieve_Search_Results", "Results pulled from local cache");
 				}
 
 				return (List<iSearch_Title_Result>)returnValue;
@@ -1454,7 +1450,7 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Search_Results(SobekCM_Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, List<iSearch_Title_Result> StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			// Determine the key
@@ -1515,11 +1511,11 @@ namespace SobekCM.Engine.MemoryMgmt
 			}
 
 			// try to store in the caching server, if enabled
-			if (caching_serving_enabled)
+			if ( Settings.CachingServerEnabled )
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Search_Results", "Adding object '" + key + "' to the caching server");
+					Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the caching server");
 				}
 
 				if (AppFabric_Manager.Add(key, StoreObject, Tracer))
@@ -1531,7 +1527,7 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
+					Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
 				}
 
 				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
@@ -1551,7 +1547,7 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Search_Results(SobekCM_Navigation_Object Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			// Determine the key
@@ -1618,11 +1614,11 @@ namespace SobekCM.Engine.MemoryMgmt
 
 				// try to store in the caching server, if enabled
 				bool remotely_cached = false;
-				if (caching_serving_enabled)
+				if ( Settings.CachingServerEnabled )
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Store_Search_Results", "Adding object '" + key + "' to the caching server");
+						Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the caching server");
 					}
 
 					if (AppFabric_Manager.Add(key, pageOfResults, Tracer))
@@ -1634,7 +1630,7 @@ namespace SobekCM.Engine.MemoryMgmt
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minutes");
+						Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minutes");
 					}
 
 					HttpContext.Current.Cache.Insert(key, pageOfResults, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
@@ -1648,237 +1644,66 @@ namespace SobekCM.Engine.MemoryMgmt
 
 		#region Static methods relating to storing and retrieving item-level search results
 
-		/// <summary> Retrieves the item-level search results string </summary>
-		/// <param name="BibID"> Bibliographic Identifier for the digital resource against which the search was conducted </param>
-		/// <param name="VID"> Volume Identifier for the digital resourceagainst which the search was conducted </param>
-		/// <param name="Search_Terms"> Search term used in the search (either full text search or map search)</param>
-		/// <param name="Page_Number"> Page number within the results set which are included within this object </param>
-		/// <param name="Sort_By_Score"> Flag indicates if this is sorted by score, rather than sorted by page order </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Either NULL or the item-level search result string </returns>
-		public static Solr_Page_Results Retrieve_Item_Search_Results( string BibID, string VID, string Search_Terms, int Page_Number, bool Sort_By_Score, Custom_Tracer Tracer)
-		{
-			// If the cache is disabled, just return before even tracing
-			if (Disabled)
-				return null;
+        ///// <summary> Retrieves the item-level search results string </summary>
+        ///// <param name="BibID"> Bibliographic Identifier for the digital resource against which the search was conducted </param>
+        ///// <param name="VID"> Volume Identifier for the digital resourceagainst which the search was conducted </param>
+        ///// <param name="Search_Terms"> Search term used in the search (either full text search or map search)</param>
+        ///// <param name="Page_Number"> Page number within the results set which are included within this object </param>
+        ///// <param name="Sort_By_Score"> Flag indicates if this is sorted by score, rather than sorted by page order </param>
+        ///// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        ///// <returns> Either NULL or the item-level search result string </returns>
+        //public static Solr_Page_Results Retrieve_Item_Search_Results( string BibID, string VID, string Search_Terms, int Page_Number, bool Sort_By_Score, Custom_Tracer Tracer)
+        //{
+        //    // If the cache is disabled, just return before even tracing
+        //    if ( Settings.Disabled )
+        //        return null;
 
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Item_Search_Results", "");
-			}
+        //    if (Tracer != null)
+        //    {
+        //        Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Search_Results", "");
+        //    }
 
-			// Determine the key
-			string key = "ITEMSEARCH_" + BibID + "_" + VID + "_" + Search_Terms.ToLower() + "_" + Page_Number;
-			if (Sort_By_Score)
-				key = key + "_SCORE";
+        //    // Determine the key
+        //    string key = "ITEMSEARCH_" + BibID + "_" + VID + "_" + Search_Terms.ToLower() + "_" + Page_Number;
+        //    if (Sort_By_Score)
+        //        key = key + "_SCORE";
 
-			// Try to get this object
-			object returnValue = HttpContext.Current.Cache.Get(key);
-			return (returnValue != null) ? (Solr_Page_Results) returnValue : null;
-		}
+        //    // Try to get this object
+        //    object returnValue = HttpContext.Current.Cache.Get(key);
+        //    return (returnValue != null) ? (Solr_Page_Results) returnValue : null;
+        //}
 
-		/// <summary> Stores the item-level search results string </summary>
-		/// <param name="BibID"> Bibliographic Identifier for the digital resource against which the search was conducted </param>
-		/// <param name="VID"> Volume Identifier for the digital resourceagainst which the search was conducted </param>
-		/// <param name="StoreObject"> Item-level search results strings </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Store_Item_Search_Results(string BibID, string VID, Solr_Page_Results StoreObject, Custom_Tracer Tracer)
-		{
-			// If the cache is disabled, just return before even tracing
-			if (Disabled)
-				return;
+        ///// <summary> Stores the item-level search results string </summary>
+        ///// <param name="BibID"> Bibliographic Identifier for the digital resource against which the search was conducted </param>
+        ///// <param name="VID"> Volume Identifier for the digital resourceagainst which the search was conducted </param>
+        ///// <param name="StoreObject"> Item-level search results strings </param>
+        ///// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        //public static void Store_Item_Search_Results(string BibID, string VID, Solr_Page_Results StoreObject, Custom_Tracer Tracer)
+        //{
+        //    // If the cache is disabled, just return before even tracing
+        //    if ( Settings.Disabled )
+        //        return;
 
-			// Determine the key
-			string key = "ITEMSEARCH_" + BibID + "_" + VID + "_" + StoreObject.Query.ToLower() + "_" + StoreObject.Page_Number;
-			if (StoreObject.Sort_By_Score)
-				key = key + "_SCORE";
+        //    // Determine the key
+        //    string key = "ITEMSEARCH_" + BibID + "_" + VID + "_" + StoreObject.Query.ToLower() + "_" + StoreObject.Page_Number;
+        //    if (StoreObject.Sort_By_Score)
+        //        key = key + "_SCORE";
 
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Cached_Data_Manager.Store_Item_Search_Results", "Adding object '" + key + "' to the cache with expiration of 5 minutes");
-			}
+        //    if (Tracer != null)
+        //    {
+        //        Tracer.Add_Trace("CachedDataManager.Store_Item_Search_Results", "Adding object '" + key + "' to the cache with expiration of 5 minutes");
+        //    }
 
-			// Store this on the cache
-			if (HttpContext.Current.Cache[key] == null)
-			{
-				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
-			}
-		}
-
-		#endregion
-
-		#region Static methods relating to storing and retrieving item aggregation objects
-
-		/// <summary> Retrieves the item aggregation obejct from the cache or caching server </summary>
-		/// <param name="Aggregation_Code"> Code for the item aggregation to retrieve </param>
-		/// <param name="Language_Code"> Current language code (item aggregation instances are currently language-specific)</param>
-		/// <param name="Possibly_Cache_Locally"> Flag indicates whether to potentially copy to the local cache if it was present on the distant cache </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Either NULL or the item aggregation object </returns>
-		public static Item_Aggregation Retrieve_Item_Aggregation(string Aggregation_Code, string Language_Code, bool Possibly_Cache_Locally, Custom_Tracer Tracer)
-		{
-			// If the cache is disabled, just return before even tracing
-			if (Disabled)
-				return null;
-
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Item_Aggregation", "");
-			}
-
-			// Determine the key
-			string key = "AGGR_" + Aggregation_Code.ToUpper();
-			if ((Language_Code.Length > 0) && (Language_Code != "en"))
-                key = key + "_" + Language_Code.ToUpper();
-
-			// See if this is in the local cache first
-			Item_Aggregation returnValue = HttpContext.Current.Cache.Get(key) as Item_Aggregation;
-			if (returnValue != null)
-			{
-				if (Tracer != null)
-				{
-					Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Item_Aggregation", "Found item aggregation on local cache");
-				}
-
-				return returnValue;
-			}
-
-			// Try to get this from the caching server, if enabled
-			if ((caching_serving_enabled) && (AppFabric_Manager.Contains(key)))
-			{
-				object from_app_fabric = AppFabric_Manager.Get(key, Tracer);
-				if (from_app_fabric != null)
-				{
-					if (Tracer != null)
-					{
-						Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Item_Aggregation", "Found item aggregation on caching server");
-					}
-
-					// Check the number of item aggregationPermissions currently locally cached
-					if (( Possibly_Cache_Locally ) && (LOCALLY_CACHED_AGGREGATION_LIMIT > 0))
-					{
-						int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("AGGR_") == 0);
-
-						// Locally cache if this doesn't exceed the limit
-						if (items_cached < LOCALLY_CACHED_AGGREGATION_LIMIT) 
-						{
-							if (Tracer != null)
-							{
-								Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
-							}
-
-							HttpContext.Current.Cache.Insert(key, from_app_fabric, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
-						}
-					}
-
-					return (Item_Aggregation)from_app_fabric;
-				}
-			}
-
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Item_Aggregation", "Aggregation not found in either the local cache or caching server");
-			}
-
-			// Since everything failed, just return null
-			return null;
-		}
-
-		/// <summary> Stores the item aggregation object to the cache or caching server </summary>
-		/// <param name="Aggregation_Code"> Code for the item aggregation to store </param>
-		/// <param name="Language_Code"> Current language code (item aggregation instances are currently language-specific)</param>
-		/// <param name="StoreObject"> Item aggregation object to store for later retrieval </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Store_Item_Aggregation(string Aggregation_Code, string Language_Code, Item_Aggregation StoreObject, Custom_Tracer Tracer)
-		{
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Cached_Data_Manager.Store_Item_Aggregation", "Entering Store_Item_Aggregation method");
-            }
-
-			// If the cache is disabled, just return before even tracing
-		    if (Disabled)
-		    {
-                Tracer.Add_Trace("Cached_Data_Manager.Store_Item_Aggregation", "Caching is disabled");
-		        return;
-		    }
-
-		    // Determine the key
-            string key = "AGGR_" + Aggregation_Code.ToUpper();
-			if ((Language_Code.Length > 0) && (Language_Code != "en"))
-                key = key + "_" + Language_Code.ToUpper();
-
-			// Check the number of item aggregationPermissions currently locally cached
-            //int items_cached = 0;
-            int local_expiration = 15;
-            //if (Aggregation_Code != "all")
-            //{
-            //    local_expiration = 1;
-            //    if ((LOCALLY_CACHED_AGGREGATION_LIMIT > 0) && ( caching_serving_enabled ))
-            //    {
-            //        items_cached += HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("AGGR_") == 0);
-            //    }
-            //}
-
-			// Locally cache if this doesn't exceed the limit
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Cached_Data_Manager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + local_expiration + " minute(s)");
-			}
-
-				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(local_expiration));
-
-			// try to store in the caching server, if enabled
-			if ((caching_serving_enabled) && ( Aggregation_Code != "all" ))
-			{
-				if (Tracer != null)
-				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Item_Aggregation", "Adding object '" + key + "' to the caching server");
-				}
-
-				AppFabric_Manager.Add(key, StoreObject, Tracer);
-			}
-		}
-
-		/// <summary> Removes all references to a particular item aggregation from the cache or caching server </summary>
-		/// <param name="Aggregation_Code"> Code for the item aggregation to remove </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Remove_Item_Aggregation(string Aggregation_Code, Custom_Tracer Tracer)
-		{
-			// If the cache is disabled, just return before even tracing
-			if (Disabled)
-				return;
-
-			// Determine the key
-			string key_nolanguage = "AGGR_" + Aggregation_Code;
-			string key_start = "AGGR_" + Aggregation_Code + "_";
-
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Cached_Data_Manager.Remove_Item_Aggregation", "Removing item aggregation '" + Aggregation_Code + "' from the cache");
-			}
-
-			// Get collection of keys in the Cache
-			List<string> keys = (from DictionaryEntry thisItem in HttpContext.Current.Cache where (thisItem.Key.ToString() == key_nolanguage) || (thisItem.Key.ToString().IndexOf(key_start) == 0) select thisItem.Key.ToString()).ToList();
-
-			// Delete all items from the Cache
-			foreach (string key in keys)
-			{
-				HttpContext.Current.Cache.Remove(key);
-			}
-
-			// Do the same thing for the remote cache
-			keys.Clear();
-			keys.AddRange(from cachedObject in AppFabric_Manager.Cached_Items where (cachedObject.Object_Key == key_nolanguage) || (cachedObject.Object_Key.IndexOf(key_start) == 0) select cachedObject.Object_Key);
-
-			// Delete all items from the Cache
-			foreach (string key in keys)
-			{
-				AppFabric_Manager.Expire_Item(key);
-			}
-		}
+        //    // Store this on the cache
+        //    if (HttpContext.Current.Cache[key] == null)
+        //    {
+        //        HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
+        //    }
+        //}
 
 		#endregion
+
+
 
         #region Static methods relating to storing and retrieving templates (for online submission and editing)
 
@@ -1889,12 +1714,12 @@ namespace SobekCM.Engine.MemoryMgmt
         //public static CompleteTemplate Retrieve_Template(string Template_Code, Custom_Tracer Tracer)
         //{
         //    // If the cache is disabled, just return before even tracing
-        //    if (Disabled)
+        //    if ( Settings.Disabled )
         //        return null;
 
         //    if (Tracer != null)
         //    {
-        //        Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Template", "");
+        //        Tracer.Add_Trace("CachedDataManager.Retrieve_Template", "");
         //    }
 
         //    // Determine the key
@@ -1912,7 +1737,7 @@ namespace SobekCM.Engine.MemoryMgmt
         //public static void Store_Template(string Template_Code, CompleteTemplate StoreObject, Custom_Tracer Tracer)
         //{
         //    // If the cache is disabled, just return before even tracing
-        //    if (Disabled)
+        //    if ( Settings.Disabled )
         //        return;
 
         //    // Determine the key
@@ -1920,7 +1745,7 @@ namespace SobekCM.Engine.MemoryMgmt
 
         //    if (Tracer != null)
         //    {
-        //        Tracer.Add_Trace("Cached_Data_Manager.Store_Template", "Adding object '" + key + "' to the cache with expiration of thirty minutes");
+        //        Tracer.Add_Trace("CachedDataManager.Store_Template", "Adding object '" + key + "' to the cache with expiration of thirty minutes");
         //    }
 
         //    // Store this on the cache
@@ -1949,12 +1774,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Remove_Project( int UserID, string Project_Code, Custom_Tracer Tracer )
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Remove_Project", "");
+				Tracer.Add_Trace("CachedDataManager.Remove_Project", "");
 			}
 
 
@@ -1986,12 +1811,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static SobekCM_Item Retrieve_Project(int UserID, string Project_Code, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Project", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Project", "");
 			}
 
 			// Determine the key
@@ -2023,7 +1848,7 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Project(int UserID, string Project_Code, SobekCM_Item StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			// Determine the key
@@ -2035,7 +1860,7 @@ namespace SobekCM.Engine.MemoryMgmt
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Store_Project", "Adding object '" + key + "' to the cache with expiration of 15 minutes");
+				Tracer.Add_Trace("CachedDataManager.Store_Project", "Adding object '" + key + "' to the cache with expiration of 15 minutes");
 			}
 
 			// Store this on the cache
@@ -2058,12 +1883,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static int Remove_Skin(string Skin_Code, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return 0;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Remove_Skin");
+				Tracer.Add_Trace("CachedDataManager.Remove_Skin");
 			}
 
 			int values_cleared = 0;
@@ -2097,7 +1922,7 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static SobekCM_Skin_Object Retrieve_Skin( string Skin_Code, string Language_Code, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			// Determine the key
@@ -2111,34 +1936,34 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Skin", "Found html skin on local cache");
+					Tracer.Add_Trace("CachedDataManager.Retrieve_Skin", "Found html skin on local cache");
 				}
 
 				return (SobekCM_Skin_Object)returnValue;
 			}
 
 			// Try to get this from the caching server, if enabled
-			if ((caching_serving_enabled) && (AppFabric_Manager.Contains(key)))
+			if ((Settings.CachingServerEnabled) && (AppFabric_Manager.Contains(key)))
 			{
 				object from_app_fabric = AppFabric_Manager.Get(key, Tracer);
 				if (from_app_fabric != null)
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Skin", "Found html skin on caching server");
+						Tracer.Add_Trace("CachedDataManager.Retrieve_Skin", "Found html skin on caching server");
 					}
 
 					// Check the number of item aggregationPermissions currently locally cached
-					if (LOCALLY_CACHED_SKINS_LIMIT > 0)
+					if (Settings.LOCALLY_CACHED_SKINS_LIMIT > 0)
 					{
 						int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("SKIN_") == 0);
 
 						// Locally cache if this doesn't exceed the limit
-						if (items_cached < LOCALLY_CACHED_SKINS_LIMIT)
+						if (items_cached < Settings.LOCALLY_CACHED_SKINS_LIMIT)
 						{
 							if (Tracer != null)
 							{
-								Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Skin", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+								Tracer.Add_Trace("CachedDataManager.Retrieve_Skin", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 							}
 
 							HttpContext.Current.Cache.Insert(key, from_app_fabric, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
@@ -2151,7 +1976,7 @@ namespace SobekCM.Engine.MemoryMgmt
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Skin", "Skin not found in either the local cache or caching server");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Skin", "Skin not found in either the local cache or caching server");
 			}
 
 			// Since everything failed, just return null
@@ -2166,7 +1991,7 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Skin( string Skin_Code, string Language_Code, SobekCM_Skin_Object StoreObject, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if ((Disabled) || ( StoreObject == null ))
+			if ((Settings.Disabled) || ( StoreObject == null ))
 				return;
 
 			// Determine the key
@@ -2176,16 +2001,16 @@ namespace SobekCM.Engine.MemoryMgmt
 
 
 			// Check the number of item aggregationPermissions currently locally cached
-			if ((LOCALLY_CACHED_SKINS_LIMIT > 0) || ( !caching_serving_enabled ))
+			if ((Settings.LOCALLY_CACHED_SKINS_LIMIT > 0) || ( !Settings.CachingServerEnabled ))
 			{
 				int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("SKIN_") == 0);
 
 				// Locally cache if this doesn't exceed the limit
-				if ((items_cached < LOCALLY_CACHED_SKINS_LIMIT) || ( !caching_serving_enabled ))
+				if ((items_cached < Settings.LOCALLY_CACHED_SKINS_LIMIT) || ( !Settings.CachingServerEnabled ))
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("Cached_Data_Manager.Store_Skin", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+						Tracer.Add_Trace("CachedDataManager.Store_Skin", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
 					}
 
 					HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
@@ -2193,11 +2018,11 @@ namespace SobekCM.Engine.MemoryMgmt
 			}
 
 			// try to store in the caching server, if enabled
-			if (caching_serving_enabled)
+			if ( Settings.CachingServerEnabled )
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Skin", "Adding object '" + key + "' to the caching server");
+					Tracer.Add_Trace("CachedDataManager.Store_Skin", "Adding object '" + key + "' to the caching server");
 				}
 
 				AppFabric_Manager.Add(key, StoreObject, Tracer);
@@ -2215,12 +2040,12 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static SobekCM_SiteMap Retrieve_Site_Map(string SiteMap_File, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return null;
 
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Site_Map", "");
+				Tracer.Add_Trace("CachedDataManager.Retrieve_Site_Map", "");
 			}
 
 			// Determine the key
@@ -2232,7 +2057,7 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Retrieve_Site_Map", "Site map pulled from local cache");
+					Tracer.Add_Trace("CachedDataManager.Retrieve_Site_Map", "Site map pulled from local cache");
 				}
 
 				return (SobekCM_SiteMap)returnValue;
@@ -2249,7 +2074,7 @@ namespace SobekCM.Engine.MemoryMgmt
 		public static void Store_Site_Map( SobekCM_SiteMap StoreObject, string SiteMap_File, Custom_Tracer Tracer)
 		{
 			// If the cache is disabled, just return before even tracing
-			if (Disabled)
+			if ( Settings.Disabled )
 				return;
 
 			// Determine the key
@@ -2260,7 +2085,7 @@ namespace SobekCM.Engine.MemoryMgmt
 			{
 				if (Tracer != null)
 				{
-					Tracer.Add_Trace("Cached_Data_Manager.Store_Site_Map", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
+					Tracer.Add_Trace("CachedDataManager.Store_Site_Map", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
 				}
 
 				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));

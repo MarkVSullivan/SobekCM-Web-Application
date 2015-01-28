@@ -17,6 +17,32 @@ namespace SobekCM.Resource_Object.OAI.Writer
         /// <returns> Metadata for a OAI-PMH record of a particular metadata format/type </returns>
         public override string Create_OAI_PMH_Metadata(SobekCM_Item Item_To_Save, Dictionary<string, object> Options, out string Error_Message)
         {
+            // Look for options
+            string CatalogingSourceCode = null;
+            string LocationCode = null;
+            string ReproductionAgency = null;
+            string ReproductionPlace = null;
+            string SystemName = null;
+            string SystemAbbreviation = null;
+            string ThumbnailBase = null;
+            string XlstFile = null;
+
+
+            if (Options != null)
+            {
+                if (Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Cataloging Source Code")) CatalogingSourceCode = Options["MarcXML_File_ReaderWriter:MARC Cataloging Source Code"].ToString();
+                if (Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Location Code")) LocationCode = Options["MarcXML_File_ReaderWriter:MARC Location Code"].ToString();
+                if (Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Reproduction Agency")) ReproductionAgency = Options["MarcXML_File_ReaderWriter:MARC Reproduction Agency"].ToString();
+                if (Options.ContainsKey("MarcXML_File_ReaderWriter:MARC Reproduction Place")) ReproductionPlace = Options["MarcXML_File_ReaderWriter:MARC Reproduction Place"].ToString();
+                if (Options.ContainsKey("MarcXML_File_ReaderWriter:MARC XSLT File")) XlstFile = Options["MarcXML_File_ReaderWriter:MARC XSLT File"].ToString();
+                if (Options.ContainsKey("MarcXML_File_ReaderWriter:System Name")) SystemName = Options["MarcXML_File_ReaderWriter:System Name"].ToString();
+                if (Options.ContainsKey("MarcXML_File_ReaderWriter:System Abbreviation")) SystemAbbreviation = Options["MarcXML_File_ReaderWriter:System Abbreviation"].ToString();
+                if (Options.ContainsKey("MarcXML_File_ReaderWriter:Image_Base")) ThumbnailBase = Options["MarcXML_File_ReaderWriter:Image_Base"].ToString();
+            }
+
+
+
+
             // Set default error outpt message
             Error_Message = String.Empty;
 
@@ -25,7 +51,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
             results.AppendLine("<marc:record xmlns:marc=\"http://www.loc.gov/MARC21/slim\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd\" type=\"Bibliographic\">");
 
             // Get all the standard tags
-            MARC_Record tags = Item_To_Save.To_MARC_Record();
+            MARC_Record tags = Item_To_Save.To_MARC_Record(CatalogingSourceCode, LocationCode, ReproductionAgency, ReproductionPlace, SystemName, SystemAbbreviation, ThumbnailBase);
 
             // St
 

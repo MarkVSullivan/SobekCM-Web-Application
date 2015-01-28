@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Tools;
@@ -105,7 +105,7 @@ namespace SobekCM.Library.MySobekViewer
                 SobekCM_Database.Save_Behaviors(item, false, true );
 
                 // Store on the caches (to replace the other)
-                Cached_Data_Manager.Remove_Digital_Resource_Objects(item.BibID, RequestSpecificValues.Tracer);
+                CachedDataManager.Remove_Digital_Resource_Objects(item.BibID, RequestSpecificValues.Tracer);
 
                 // Forward
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;

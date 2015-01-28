@@ -7,7 +7,7 @@ using System.Linq;
 
 #endregion
 
-namespace SobekCM.Engine.MemoryMgmt
+namespace SobekCM.Core.MemoryMgmt
 {
 	/// <summary> Generic collection keeps a list of objects which expire after a given timespan and are
 	/// then removed from the list and also retains the type of object </summary>

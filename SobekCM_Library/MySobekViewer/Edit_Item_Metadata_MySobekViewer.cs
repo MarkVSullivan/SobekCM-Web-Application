@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Navigation;
@@ -14,7 +15,6 @@ using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database;
@@ -138,7 +138,7 @@ namespace SobekCM.Library.MySobekViewer
 		        {
 			        if (isProject)
 			        {
-				        Cached_Data_Manager.Remove_Project(RequestSpecificValues.Current_User.UserID, item.BibID, null);
+				        CachedDataManager.Remove_Project(RequestSpecificValues.Current_User.UserID, item.BibID, null);
 
 				        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
 				        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
@@ -147,7 +147,7 @@ namespace SobekCM.Library.MySobekViewer
 			        }
 			        else
 			        {
-				        Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, item.BibID, item.VID, null);
+				        CachedDataManager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, item.BibID, item.VID, null);
 
 				        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
 				        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -513,7 +513,7 @@ namespace SobekCM.Library.MySobekViewer
                 item.Save_METS();
 
                 // Clear the cache of this item
-                Cached_Data_Manager.Remove_Project(RequestSpecificValues.Current_User.UserID, item.BibID, null);
+                CachedDataManager.Remove_Project(RequestSpecificValues.Current_User.UserID, item.BibID, null);
 
                 // Redirect
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;

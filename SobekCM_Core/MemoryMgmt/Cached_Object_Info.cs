@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace SobekCM.Engine.MemoryMgmt
+namespace SobekCM.Core.MemoryMgmt
 {
     /// <summary> Stored basic information about a cached object </summary>
     public struct Cached_Object_Info

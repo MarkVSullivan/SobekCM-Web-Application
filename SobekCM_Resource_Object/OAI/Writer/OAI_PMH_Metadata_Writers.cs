@@ -70,17 +70,23 @@ namespace SobekCM.Resource_Object.OAI.Writer
 
         /// <summary> Get the list of metadata records associated with a single ite </summary>
         /// <param name="ThisItem"> Item to create the metadata records for </param>
+        /// <param name="Options"> Options used possibly during the saving process </param>
         /// <returns> List of the OAI metadata prefixes and the associated metadata records </returns>
-        public static List<Tuple<string, string>> Get_OAI_PMH_Metadata_Records(SobekCM_Item ThisItem)
+        public static List<Tuple<string, string>> Get_OAI_PMH_Metadata_Records(SobekCM_Item ThisItem, Dictionary<string, object> Options)
         {
             List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
 
             foreach (Tuple<string, iOAI_PMH_Metadata_Type_Writer> thisWriter in writers)
             {
-                string error_message;
-                string record = thisWriter.Item2.Create_OAI_PMH_Metadata(ThisItem, null, out error_message);
-                returnValue.Add(new Tuple<string, string>(thisWriter.Item1, record));
+                try
+                {
+                    string error_message;
+                    string record = thisWriter.Item2.Create_OAI_PMH_Metadata(ThisItem, Options, out error_message);
+                    returnValue.Add(new Tuple<string, string>(thisWriter.Item1, record));
+                }
+                catch {  }
             }
+
 
             return returnValue;
         }

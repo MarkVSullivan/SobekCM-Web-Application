@@ -10,13 +10,14 @@ using System.Xml;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Database;
 using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object.OAI.Writer;
 
 #endregion
 
-namespace SobekCM.Core.Settings
+namespace SobekCM.Engine_Library.Settings
 {
     public static  class InstanceWide_Settings_Builder
     {

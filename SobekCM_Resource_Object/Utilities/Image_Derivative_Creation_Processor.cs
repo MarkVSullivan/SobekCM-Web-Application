@@ -335,7 +335,7 @@ namespace SobekCM.Resource_Object.Utilities
 					convert.StartInfo.FileName = image_magick_path;
 				else
 					convert.StartInfo.FileName = image_magick_path + "\\convert.exe";
-				convert.StartInfo.Arguments = "-geometry " + Width + "x" + Height + " \"" + Sourcefile + "\" \"" + Finalfile + "\"";
+				convert.StartInfo.Arguments = "-geometry " + Width + "x" + Height + " \"" + Sourcefile + "\"[0] \"" + Finalfile + "\"";
 
 				// Start
 				convert.Start();

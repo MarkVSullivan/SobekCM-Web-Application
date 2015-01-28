@@ -35,6 +35,94 @@ namespace SobekCM.Resource_Object.Database
 			// Do nothing
 		}
 
+        /// <summary> Pulls the item id, main thumbnail, and aggregation codes and adds them to the resource object </summary>
+        /// <param name="Resource"> Digital resource object </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Builder_Get_Minimum_Item_Information' stored procedure </remarks> 
+        public static bool Add_Minimum_Builder_Information(SobekCM_Item Resource)
+        {
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[2];
+                parameters[0] = new SqlParameter("@bibid", Resource.BibID);
+                parameters[1] = new SqlParameter("@vid", Resource.VID);
+
+                // Define a temporary dataset
+                DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Get_Minimum_Item_Information", parameters);
+
+                // If there was no data for this collection and entry point, return null (an ERROR occurred)
+                if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+                {
+                    return false;
+                }
+
+                // Get the item id and the thumbnail from the first table
+                Resource.Web.ItemID = Convert.ToInt32(tempSet.Tables[0].Rows[0][0]);
+                Resource.Behaviors.Main_Thumbnail = tempSet.Tables[0].Rows[0][1].ToString();
+                Resource.Behaviors.IP_Restriction_Membership = Convert.ToInt16(tempSet.Tables[0].Rows[0][2]);
+                Resource.Tracking.Born_Digital = Convert.ToBoolean(tempSet.Tables[0].Rows[0][3]);
+                Resource.Web.Siblings = Convert.ToInt32(tempSet.Tables[0].Rows[0][4]) - 1;
+                Resource.Behaviors.Dark_Flag = Convert.ToBoolean(tempSet.Tables[0].Rows[0]["Dark"]);
+
+                // Add the aggregation codes
+                Resource.Behaviors.Clear_Aggregations();
+                foreach (DataRow thisRow in tempSet.Tables[1].Rows)
+                {
+                    string code = thisRow[0].ToString();
+                    string name = thisRow[1].ToString();
+                    string type = thisRow[2].ToString();
+                    
+                    Resource.Behaviors.Add_Aggregation(code, name, type);
+                }
+
+                // Add the icons
+                Resource.Behaviors.Clear_Wordmarks();
+                foreach (DataRow iconRow in tempSet.Tables[2].Rows)
+                {
+                    string image = iconRow[0].ToString();
+                    string link = iconRow[1].ToString().Replace("&", "&amp;").Replace("\"", "&quot;");
+                    string code = iconRow[2].ToString();
+                    string name = iconRow[3].ToString();
+                    if (name.Length == 0)
+                        name = code.Replace("&", "&amp;").Replace("\"", "&quot;");
+
+                    string html;
+                    if (link.Length == 0)
+                    {
+                        html = "<img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" title=\"" + name + "\" alt=\"" + name + "\" />";
+                    }
+                    else
+                    {
+                        if (link[0] == '?')
+                        {
+                            html = "<a href=\"" + link + "\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" title=\"" + name + "\" alt=\"" + name + "\" /></a>";
+                        }
+                        else
+                        {
+                            html = "<a href=\"" + link + "\" target=\"_blank\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" title=\"" + name + "\" alt=\"" + name + "\" /></a>";
+                        }
+                    }
+
+                    Wordmark_Info newIcon = new Wordmark_Info { HTML = html, Link = link, Title = name, Code = code };
+                    Resource.Behaviors.Add_Wordmark(newIcon);
+                }
+
+                // Add the web skins
+                Resource.Behaviors.Clear_Web_Skins();
+                foreach (DataRow skinRow in tempSet.Tables[3].Rows)
+                {
+                    Resource.Behaviors.Add_Web_Skin(skinRow[0].ToString().ToUpper());
+                }
+
+                // Return the first table from the returned dataset
+                return true;
+            }
+            catch (Exception ee)
+            {
+                               return false;
+            }
+        }
+
 		#region Methods to save a single digital resource to SobekCM
 
 		/// <summary> Save a brand new bibliographic item to the SobekCM database </summary>
@@ -670,7 +758,7 @@ namespace SobekCM.Resource_Object.Database
             ThisPackage.Web.GroupID = Save_Item_Group_Information(ThisPackage, CreateDate);
 
 			// Save the actual item information ( item, downloads, icons, link to group ) for this item
-            Save_Item_Information(ThisPackage, ThisPackage.Web.GroupID, CreateDate);
+            Save_Item_Information(ThisPackage, ThisPackage.Web.GroupID, CreateDate, Options);
 
 			// Save the serial hierarchy information, if there was one
 			if (( ThisPackage.Behaviors.hasSerialInformation ) && (  ThisPackage.Behaviors.Serial_Info.Count > 0 ))
@@ -1418,7 +1506,7 @@ namespace SobekCM.Resource_Object.Database
 	    /// <param name="GroupID"></param>
 	    /// <param name="CreateDate"> Day this item was created </param>
 	    /// <returns>TRUE if successful, otherwise FALSE </returns>
-	    private static bool Save_Item_Information(SobekCM_Item ThisPackage, int GroupID, DateTime CreateDate)
+        private static bool Save_Item_Information(SobekCM_Item ThisPackage, int GroupID, DateTime CreateDate, Dictionary<string, object> Options)
 	    {
 	        // Get the pub date and year
 	        string pubdate = ThisPackage.Bib_Info.Origin_Info.Date_Check_All_Fields;
@@ -1591,15 +1679,15 @@ namespace SobekCM.Resource_Object.Database
 	        ThisPackage.VID = returnVal.New_VID;
 
 	        // Get the OAI-PMH dublin core information
-            Save_OAI_Information(ThisPackage);
+            Save_OAI_Information(ThisPackage, Options);
    
 
 			return true;
 		}
 
-        private static void Save_OAI_Information(SobekCM_Item ThisPackage)
+        public static void Save_OAI_Information(SobekCM_Item ThisPackage, Dictionary<string, object> Options)
         {
-            List<Tuple<string, string>> oai_records = OAI_PMH_Metadata_Writers.Get_OAI_PMH_Metadata_Records(ThisPackage);
+            List<Tuple<string, string>> oai_records = OAI_PMH_Metadata_Writers.Get_OAI_PMH_Metadata_Records(ThisPackage, Options);
 
             foreach (Tuple<string, string> thisRecord in oai_records)
             {

@@ -329,7 +329,7 @@ namespace SobekCM.Library.HTML
             // Save the current mode and browse
             Display_Mode_Enum thisMode = RequestSpecificValues.Current_Mode.Mode;
 
-            if ((RequestSpecificValues.Static_Web_Content.Banner.Length > 0) && (RequestSpecificValues.Static_Web_Content.Banner.ToUpper().Trim() != "NONE"))
+            if ((!String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.Banner)) && (RequestSpecificValues.Static_Web_Content.Banner.ToUpper().Trim() != "NONE"))
             {
                 if (RequestSpecificValues.Static_Web_Content.Banner.ToUpper().Trim() == "DEFAULT")
                 {
@@ -341,7 +341,7 @@ namespace SobekCM.Library.HTML
                     {
                         if (RequestSpecificValues.Hierarchy_Object != null)
                         {
-                            Output.WriteLine("<img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Hierarchy_Object.Banner_Image(RequestSpecificValues.Current_Mode.Language, RequestSpecificValues.HTML_Skin) + "\" alt=\"MISSING BANNER\" /><br />");
+                            Output.WriteLine("<img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Hierarchy_Object.Get_Banner_Image( RequestSpecificValues.HTML_Skin) + "\" alt=\"MISSING BANNER\" /><br />");
                         }
                     }
                 }
@@ -359,7 +359,7 @@ namespace SobekCM.Library.HTML
 
             // Add the secondary HTML ot the home page
             Output.WriteLine("<div class=\"SobekResultsPanel\">");
-            Output.WriteLine(RequestSpecificValues.Static_Web_Content.Static_Text);
+            Output.WriteLine(RequestSpecificValues.Static_Web_Content.Content);
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
             Output.WriteLine();
@@ -392,17 +392,21 @@ namespace SobekCM.Library.HTML
             // Add any other meta tags here as well
             if (RequestSpecificValues.Static_Web_Content != null)
             {
-                if (RequestSpecificValues.Static_Web_Content.Description.Length > 0)
+                if (!String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.Description))
                 {
-                    Output.WriteLine("  <meta name=\"description\" content=\"" + RequestSpecificValues.Static_Web_Content.Description + "\" />");
+                    Output.WriteLine("  <meta name=\"description\" content=\"" + RequestSpecificValues.Static_Web_Content.Description.Replace("\"", "'") + "\" />");
                 }
-                if (RequestSpecificValues.Static_Web_Content.Keywords.Length > 0)
+                if (!String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.Keywords))
                 {
-                    Output.WriteLine("  <meta name=\"keywords\" content=\"" + RequestSpecificValues.Static_Web_Content.Keywords + "\" />");
+                    Output.WriteLine("  <meta name=\"keywords\" content=\"" + RequestSpecificValues.Static_Web_Content.Keywords.Replace("\"", "'") + "\" />");
                 }
-                if (RequestSpecificValues.Static_Web_Content.Author.Length > 0)
+                if (!String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.Author))
                 {
-                    Output.WriteLine("  <meta name=\"author\" content=\"" + RequestSpecificValues.Static_Web_Content.Author + "\" />");
+                    Output.WriteLine("  <meta name=\"author\" content=\"" + RequestSpecificValues.Static_Web_Content.Author.Replace("\"", "'") + "\" />");
+                }
+                if (!String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.Date))
+                {
+                    Output.WriteLine("  <meta name=\"date\" content=\"" + RequestSpecificValues.Static_Web_Content.Date.Replace("\"", "'") + "\" />");
                 }
             }
 
@@ -416,7 +420,7 @@ namespace SobekCM.Library.HTML
 
             // If this is the static html web content view, add any special text which came from the original
             // static html file which was already read, which can include style sheets, etc..
-            if ((RequestSpecificValues.Static_Web_Content != null) && (RequestSpecificValues.Static_Web_Content.Extra_Head_Info.Length > 0))
+            if ((RequestSpecificValues.Static_Web_Content != null) && ( !String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.Extra_Head_Info)))
             {
                 Output.WriteLine("  " + RequestSpecificValues.Static_Web_Content.Extra_Head_Info.Trim());
             }

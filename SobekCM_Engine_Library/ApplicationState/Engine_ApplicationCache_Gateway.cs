@@ -11,6 +11,7 @@ using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.EngineLibrary.ApplicationState;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Settings;
 using SobekCM.Resource_Object.Database;
 
 #endregion
@@ -319,9 +320,9 @@ namespace SobekCM.Engine_Library.ApplicationState
 
                 return true;
             }
-            catch
+            catch ( Exception ee )
             {
-                return false;
+                return ee.Message.Length > 0 ;
             }
         }
 

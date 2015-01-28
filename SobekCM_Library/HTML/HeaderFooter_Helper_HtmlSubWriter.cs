@@ -296,7 +296,7 @@ namespace SobekCM.Library.HTML
                 {
                     if (RequestSpecificValues.Hierarchy_Object != null)
                     {
-                        string banner_image = RequestSpecificValues.Hierarchy_Object.Banner_Image(RequestSpecificValues.Current_Mode.Language, RequestSpecificValues.HTML_Skin);
+                        string banner_image = RequestSpecificValues.Hierarchy_Object.Get_Banner_Image( RequestSpecificValues.HTML_Skin);
                         if (RequestSpecificValues.Hierarchy_Object.Code != "all")
                         {
                             if (banner_image.Length > 0)

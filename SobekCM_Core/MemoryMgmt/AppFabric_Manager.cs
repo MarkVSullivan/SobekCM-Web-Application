@@ -5,15 +5,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 //using Microsoft.ApplicationServer.Caching;
-using SobekCM.Core.Aggregations;
-using SobekCM.Core.Skins;
-using SobekCM.Resource_Object;
 using SobekCM.Tools;
 //using SobekCM.UI_Library;
 
 #endregion
 
-namespace SobekCM.Engine.MemoryMgmt
+namespace SobekCM.Core.MemoryMgmt
 {
     /// <summary> Class manages all interactions with the AppFabric Caching server and keeps track
     /// of the keys for all the items on the remote cache which have not been expired </summary>
