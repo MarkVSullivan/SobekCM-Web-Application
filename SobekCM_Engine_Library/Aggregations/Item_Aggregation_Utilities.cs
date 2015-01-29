@@ -348,6 +348,7 @@ namespace SobekCM.Engine_Library.Aggregations
             {
                 Active = CompAggr.Active,
                 BannerImage = CompAggr.Banner_Image(RequestedLanguage, null ),
+                Child_Types = CompAggr.Child_Types,
                 Contact_Email = CompAggr.Contact_Email,
                 ContactForm = CompAggr.ContactForm,
                 Default_BrowseBy = CompAggr.Default_BrowseBy,
