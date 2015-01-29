@@ -31,7 +31,7 @@ namespace SobekCM.Core.MemoryMgmt
         public Complete_Item_Aggregation Retrieve_Complete_Item_Aggregation(string Aggregation_Code, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
-            if (settings.Disabled)
+            if ((settings.Disabled) || ( HttpContext.Current == null ))
                 return null;
 
             if (Tracer != null)
@@ -110,7 +110,7 @@ namespace SobekCM.Core.MemoryMgmt
             // If the cache is disabled, just return before even tracing
             if (settings.Disabled)
             {
-                Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Caching is disabled");
+                if ( Tracer != null ) Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Caching is disabled");
                 return;
             }
 
@@ -162,7 +162,7 @@ namespace SobekCM.Core.MemoryMgmt
         public Item_Aggregation Retrieve_Item_Aggregation(string AggregationCode, Web_Language_Enum Language, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
-            if (settings.Disabled)
+            if ((settings.Disabled) || ( HttpContext.Current == null ))
                 return null;
 
             if (Tracer != null)
@@ -224,7 +224,7 @@ namespace SobekCM.Core.MemoryMgmt
             // If the cache is disabled, just return before even tracing
             if (settings.Disabled)
             {
-                Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Caching is disabled");
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Caching is disabled");
                 return;
             }
 
@@ -342,7 +342,7 @@ namespace SobekCM.Core.MemoryMgmt
             // If the cache is disabled, just return before even tracing
             if (settings.Disabled)
             {
-                Tracer.Add_Trace("CachedDataManager_AggregationServices.Store_Aggregation_HTML_Based_Content", "Caching is disabled");
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager_AggregationServices.Store_Aggregation_HTML_Based_Content", "Caching is disabled");
                 return;
             }
 

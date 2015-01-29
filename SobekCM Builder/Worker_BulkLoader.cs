@@ -7,7 +7,9 @@ using System.IO;
 using System.Windows.Forms;
 using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Settings;
 using SobekCM.Builder_Library.Modules;
 using SobekCM.Builder_Library.Modules.Folders;
@@ -15,6 +17,7 @@ using SobekCM.Builder_Library.Modules.Items;
 using SobekCM.Builder_Library.Modules.PostProcess;
 using SobekCM.Builder_Library.Modules.PreProcess;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Settings;
 using SobekCM.Engine_Library.Solr;
@@ -415,12 +418,26 @@ namespace SobekCM.Builder
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
         public bool Refresh_Settings_And_Item_List()
         {
+            // Disable the cache
+            CachedDataManager.Settings.Disabled = true;
+
             Engine_Database.Connection_String = dbInstance.Connection_String;
             Resource_Object.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
             Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
 
             // Reload all the other data
             Engine_ApplicationCache_Gateway.RefreshAll(dbInstance);
+
+            // Also, pull the engine configuration
+            // Try to read the OAI-PMH configuration file
+            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\user\\sobekcm_microservices.config"))
+            {
+                SobekEngineClient.Read_Config_File(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\user\\sobekcm_microservices.config");
+            }
+            else if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\default\\sobekcm_microservices.config"))
+            {
+                SobekEngineClient.Read_Config_File(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\default\\sobekcm_microservices.config");
+            }
 
 		    if (settings == null)
 		    {
@@ -432,6 +449,10 @@ namespace SobekCM.Builder
 
             // Save the item table
 		    itemTable = SobekCM_Database.Get_Item_List(true, null).Tables[0];
+
+
+
+           
 
             return true;
         }

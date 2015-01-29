@@ -12,7 +12,7 @@ namespace SobekCM.Core.MemoryMgmt
 
         /// <summary> Flag indicates if the cache is entirely disabled </summary>
         /// <remarks> This flag is utilized, in particular, by the builder which has no access to the web's local or distributed cache </remarks>
-        public bool Disabled { get; internal set; }
+        public bool Disabled { get; set; }
 
         public bool CachingServerEnabled { get; internal set; }
 
