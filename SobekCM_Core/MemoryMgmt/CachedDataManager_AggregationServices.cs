@@ -266,8 +266,8 @@ namespace SobekCM.Core.MemoryMgmt
                 return;
 
             // Determine the key
-            string key_nolanguage = "AGGR|" + Aggregation_Code;
-            string key_start = "AGGR|" + Aggregation_Code + "|";
+            string key_nolanguage = "AGGR|" + Aggregation_Code.ToUpper();
+            string key_start = "AGGR|" + Aggregation_Code.ToUpper() + "|";
 
             if (Tracer != null)
             {

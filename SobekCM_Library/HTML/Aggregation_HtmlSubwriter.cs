@@ -153,9 +153,7 @@ namespace SobekCM.Library.HTML
 			    if (!Directory.Exists(aggregation_folder))
 			        Directory.CreateDirectory(aggregation_folder);
 
-                string file = String.Empty; // aggregation_folder + RequestSpecificValues.Hierarchy_Object.Home_Page_File(RequestSpecificValues.Current_Mode.Language);
-
-			    throw new NotImplementedException("Correct this!");
+                string file = RequestSpecificValues.Hierarchy_Object.HomePageHtml.TEMP_Source;
 
 				// Make a backup from today, if none made yet
 				if (File.Exists(file))
@@ -1044,7 +1042,7 @@ namespace SobekCM.Library.HTML
 
             // Add the secondary HTML ot the home page
             bool finish_page = true;
-            if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home ) && ( !behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text)))
+            if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home) || (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit)) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text)))
             {
                 finish_page = add_home_html(Output, Tracer);
             }
