@@ -70,6 +70,9 @@
     <Compile Include="Configuration\OAI_PMH_Configuration_Reader.cs" />
     <Compile Include="Configuration\Shibboleth_Configuration_Reader.cs" />
     <Compile Include="Endpoints\AggregationServices.cs" />
+    <Compile Include="IpRangeUtilities\ComparableIpAddress.cs" />
+    <Compile Include="IpRangeUtilities\IpRangeSetV4.cs" />
+    <Compile Include="IpRangeUtilities\SingleIpRangeV4.cs" />
     <Compile Include="Items\SobekCM_Item_Updater.cs" />
     <Compile Include="Database\Database_Item_Result.cs" />
     <Compile Include="Database\Database_Title_Result.cs" />

@@ -510,7 +510,7 @@ namespace SobekCM.Engine_Library.Aggregations
             }
             else
             {
-                string homeHtml = Get_Home_HTML(CompAggr, RequestedLanguage, null);
+                HTML_Based_Content homeHtml = Get_Home_HTML(CompAggr, RequestedLanguage, null);
 
 
                 returnValue.HomePageHtml = homeHtml;
@@ -525,7 +525,7 @@ namespace SobekCM.Engine_Library.Aggregations
         /// <param name = "Language"> Current language of the user interface </param>
         /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns>Home page HTML</returns>
-        private static string Get_Home_HTML(Complete_Item_Aggregation CompAggr, Web_Language_Enum Language, Custom_Tracer Tracer)
+        private static HTML_Based_Content Get_Home_HTML(Complete_Item_Aggregation CompAggr, Web_Language_Enum Language, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -538,7 +538,7 @@ namespace SobekCM.Engine_Library.Aggregations
             // If no home file source even found, return a message to that affect
             if (homeFileSource.Length == 0)
             {
-                return "<div class=\"error_div\">NO HOME PAGE SOURCE FILE FOUND</div>";
+                return new HTML_Based_Content("<div class=\"error_div\">NO HOME PAGE SOURCE FILE FOUND</div>", null, homeFileSource);
             }
 
             // Do the rest in a try/catch
@@ -547,44 +547,17 @@ namespace SobekCM.Engine_Library.Aggregations
                 // Does the file exist?
                 if (!File.Exists(homeFileSource))
                 {
-                    return "<div class=\"error_div\">HOME PAGE SOURCE FILE '" + homeFileSource +
-                           "' DOES NOT EXIST.</div>";
+                    return new HTML_Based_Content("<div class=\"error_div\">HOME PAGE SOURCE FILE '" + homeFileSource + "' DOES NOT EXIST.</div>", null, homeFileSource);
                 }
 
-                // Get the text by language
-                StreamReader reader = new StreamReader(homeFileSource);
-                string tempHomeHtml = reader.ReadToEnd();
-                reader.Close();
+                HTML_Based_Content content = HTML_Based_Content_Reader.Read_HTML_File(homeFileSource, true, Tracer);
+                content.TEMP_Source = homeFileSource;
 
-                // Ensure that any HTML header and end body tags are removed
-                if (tempHomeHtml.IndexOf("<body>") > 0)
-                    tempHomeHtml = tempHomeHtml.Substring(tempHomeHtml.IndexOf("<body>") + 6).Replace("</body>", "").Replace("</html>", "");
-
-                //// Does the home page have a place for te highlights?
-                //if (tempHomeHtml.IndexOf("<%HIGHLIGHT%>") >= 0)
-                //{
-                //    string highlightHtml = String.Empty;
-                //    if (( Highlights != null ) && (Highlights.Count > 0))
-                //    {
-                //        if (Highlights.Count == 1)
-                //            highlightHtml = Highlights[0].ToHTML(Language, "<%BASEURL%>" + ObjDirectory);
-                //        else
-                //        {
-                //            int dayInteger = DateTime.Now.DayOfYear + 1;
-                //            int highlightToUse = dayInteger%Highlights.Count;
-                //            highlightHtml = Highlights[highlightToUse].ToHTML(Language, "<%BASEURL%>" + ObjDirectory);
-                //        }
-                //    }
-
-                //    // Return the home page for this
-                //    return tempHomeHtml.Replace("<%HIGHLIGHT%>", highlightHtml);
-                //}
-
-                return tempHomeHtml;
+                return content;
             }
             catch (Exception ee)
             {
-                return "<div class=\"error_div\">EXCEPTION CAUGHT WHILE TRYING TO READ THE HOME PAGE SOURCE FILE '" + homeFileSource + "'.<br /><br />ERROR: " + ee.Message + "</div>";
+                return new HTML_Based_Content("<div class=\"error_div\">EXCEPTION CAUGHT WHILE TRYING TO READ THE HOME PAGE SOURCE FILE '" + homeFileSource + "'.<br /><br />ERROR: " + ee.Message + "</div>", null, homeFileSource);
             }
         }
 

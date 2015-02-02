@@ -20,6 +20,9 @@ namespace SobekCM.Core.WebContent
     {
         private string code;
 
+        [DataMember(EmitDefaultValue = false, Name = "source"), ProtoMember(100)]
+        public string TEMP_Source { get; set; }
+
         #region Constructors
 
         /// <summary> Constructor for a new instance of the base_HTML_Content_Object class  </summary>
@@ -51,9 +54,24 @@ namespace SobekCM.Core.WebContent
             this.Title = Title;
         }
 
+        /// <summary> Constructor for a new instance of the base_HTML_Content_Object class  </summary>
+        /// <param name="Text"> Static text to use for this item </param>
+        /// <param name="Title"> Title to display with this item </param>
+        /// <remarks> This constructor is mostly used with passing back errors to be displayed. </remarks>
+        public HTML_Based_Content(string Text, string Title, string TEMP_Source )
+        {
+            // Set the necessary values to empty initially
+            code = String.Empty;
+
+            // Save the parameters
+            Content = Text;
+            this.Title = Title;
+            this.TEMP_Source = TEMP_Source;
+        }
+
         #endregion
 
-        #region Public methods
+        #region Public properties and methods
 
         /// <summary> Code for this info or browse page </summary>
         /// <remarks> This is the code that is used in the URL to specify this info or browse page </remarks>

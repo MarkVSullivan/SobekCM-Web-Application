@@ -8,6 +8,7 @@ using ProtoBuf;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
+using SobekCM.Core.WebContent;
 using SobekCM.Tools;
 
 namespace SobekCM.Core.Aggregations
@@ -20,9 +21,6 @@ namespace SobekCM.Core.Aggregations
         public string Custom_Home_Page_Source_File;
         //public string Home_Page_File(Web_Language_Enum Language ) { return "UNIMPLIMENTED"; }
         //public string Get_Home_HTML(Web_Language_Enum Language, Custom_Tracer Tracer) { return "UNIMPLIMENTED"; }
-
-
-
 
         #region Private variables
 
@@ -257,7 +255,7 @@ namespace SobekCM.Core.Aggregations
         public string BannerImage { get; set; }
 
         [DataMember(EmitDefaultValue = false, Name = "homeText"), ProtoMember(36)]
-        public string HomePageHtml { get; set; }
+        public HTML_Based_Content HomePageHtml { get; set; }
 
         [IgnoreDataMember]
         public string HomePageSource { get; set; }

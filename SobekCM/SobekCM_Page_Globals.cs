@@ -71,6 +71,13 @@ namespace SobekCM
 				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", String.Empty);
 			    SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
 
+                // Ensure the settings base directory is set correctly (TEMPORARY FOR UF)
+			    if (UI_ApplicationCache_Gateway.Settings.System_Abbreviation.IndexOf("UFDC") == 0)
+			    {
+                    string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
+                    UI_ApplicationCache_Gateway.Settings.Base_Directory = baseDir;
+			    }
+
 
 				// Check that something is saved for the original requested URL (may not exist if not forwarded)
 				if (!HttpContext.Current.Items.Contains("Original_URL"))
@@ -155,14 +162,6 @@ namespace SobekCM
 
 			try
 			{
-				if (currentMode.Aggregation.ToUpper() == "EPCSANB")
-				{
-					HttpContext.Current.Response.Redirect(@"http://www.uflib.ufl.edu/epc/", false);
-					HttpContext.Current.ApplicationInstance.CompleteRequest();
-					currentMode.Request_Completed = true;
-					return;
-				}
-
 				// If this was an error, redirect now
 				if (currentMode.Mode == Display_Mode_Enum.Error)
 				{

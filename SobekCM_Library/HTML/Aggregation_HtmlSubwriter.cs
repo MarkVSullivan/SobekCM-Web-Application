@@ -1208,7 +1208,7 @@ namespace SobekCM.Library.HTML
                 }
 
 				// Get the raw home hteml text
-                string home_html = RequestSpecificValues.Hierarchy_Object.HomePageHtml;
+                string home_html = RequestSpecificValues.Hierarchy_Object.HomePageHtml.Content;
 
 	            bool isAdmin = (RequestSpecificValues.Current_User != null ) && ( RequestSpecificValues.Current_User.Is_Aggregation_Admin(RequestSpecificValues.Hierarchy_Object.Code));
 
@@ -1414,7 +1414,7 @@ namespace SobekCM.Library.HTML
                             Tracer.Add_Trace("Aggregation_HtmlSubwriter.add_home_html", "Reading main library home text source file");
                         }
 
-                        sobekcm_home_page_text = RequestSpecificValues.Hierarchy_Object.HomePageHtml; //.Get_Home_HTML(RequestSpecificValues.Current_Mode.Language, Tracer);
+                        sobekcm_home_page_text = RequestSpecificValues.Hierarchy_Object.HomePageHtml.Content; //.Get_Home_HTML(RequestSpecificValues.Current_Mode.Language, Tracer);
 
                         HttpContext.Current.Application["SobekCM_Home"] = sobekcm_home_page_text;
                     }
