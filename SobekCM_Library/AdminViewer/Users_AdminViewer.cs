@@ -851,7 +851,12 @@ namespace SobekCM.Library.AdminViewer
 
                 // Get the list of collections lists in the RequestSpecificValues.Current_User object
                 List<User_Permissioned_Aggregation> aggregations_in_editable_user = editUser.PermissionedAggregations;
-                Dictionary<string, User_Permissioned_Aggregation> lookup_aggs = aggregations_in_editable_user.ToDictionary(ThisAggr => ThisAggr.Code.ToLower());
+                Dictionary<string, User_Permissioned_Aggregation> lookup_aggs = new Dictionary<string, User_Permissioned_Aggregation>();
+                foreach (User_Permissioned_Aggregation thisAggr in aggregations_in_editable_user)
+                {
+                    if (lookup_aggs.ContainsKey(thisAggr.Code.ToLower()))
+                        lookup_aggs[thisAggr.Code] = thisAggr;
+                }
 
                 // Step through each aggregation type
                 foreach (string aggregationType in UI_ApplicationCache_Gateway.Aggregations.All_Types)
