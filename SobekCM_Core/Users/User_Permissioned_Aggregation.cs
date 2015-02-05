@@ -19,8 +19,6 @@ namespace SobekCM.Core.Users
         [DataMember]
         public readonly string Name;
 
-	    private bool can_edit_items;
-
         /// <summary> Constructor for a new instance of the User_Permissioned_Aggregation class </summary>
         /// <param name="Code"> Code for this user editable item aggregation</param>
         /// <param name="Name"> Name for this user editable item aggregation </param>
@@ -86,13 +84,15 @@ namespace SobekCM.Core.Users
 		public bool GroupDefined { get; set;  }
 
 		/// <summary> Flag indicates if this user can edit any items in this item aggregation</summary>
-        [DataMember]
+        [IgnoreDataMember]
 		public bool CanEditItems 
 		{
-			get { return can_edit_items; }
+		    get
+		    {
+		        return CanEditMetadata && CanEditBehaviors && CanPerformQc && CanUploadFiles && CanChangeVisibility && CanDelete;
+		    }
 			set
 			{
-				can_edit_items = value;
 				CanEditMetadata = value;
 				CanEditBehaviors = value;
 				CanPerformQc = value;

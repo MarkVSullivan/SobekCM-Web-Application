@@ -191,6 +191,15 @@ namespace SobekCM.Core.Users
             aggregations.Add(Code, Aggregation_Name, CanSelect, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete, IsCurator, false, IsAdmin, true );
         }
 
+        /// <summary> Add a new item aggregation to this user group's collection of item aggregationPermissions </summary>
+        /// <param name="PermissionedAggregation">Fully permissioned aggregation </param>
+        public void Add_Aggregation(User_Permissioned_Aggregation PermissionedAggregation )
+        {
+            if (aggregations == null) aggregations = new User_Aggregation_Permissions();
+
+            aggregations.Add(PermissionedAggregation);
+        }
+
         /// <summary> Adds a template to the list of templates this user group can select </summary>
         /// <param name="Template">Code for this template</param>
         /// <remarks>This must match the name of one of the template XML files in the mySobek\templates folder</remarks>

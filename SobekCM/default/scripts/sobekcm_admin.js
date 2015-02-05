@@ -718,6 +718,14 @@ function save_user_edits() {
     return false;
 }
 
+// Save the user updates
+function cancel_user_edits() {
+    var hiddenfield = document.getElementById('admin_user_save');
+    hiddenfield.value = 'cancel';
+    document.itemNavForm.submit();
+    return false;
+}
+
 function new_user_edit_page(page) {
     var hiddenfield = document.getElementById('admin_user_save');
     hiddenfield.value = page;
@@ -733,10 +741,32 @@ function save_user_group_edits() {
     return false;
 }
 
+// Save the user updates
+function cancel_user_group_edits() {
+    var hiddenfield = document.getElementById('admin_user_group_save');
+    hiddenfield.value = 'cancel';
+    document.itemNavForm.submit();
+    return false;
+}
+
 function new_user_group_edit_page(page) {
     var hiddenfield = document.getElementById('admin_user_group_save');
     hiddenfield.value = page;
     document.itemNavForm.submit();
+    return false;
+}
+
+// Delete a user group entirely
+function delete_user_group(name, id) {
+    var input_box = confirm("Do you really want to delete user group '" + name + "'?");
+    if (input_box == true) {
+        // Set the hidden value this data
+        var hiddenfield = document.getElementById('admin_user_group_delete');
+        hiddenfield.value = id;
+
+        document.itemNavForm.submit();
+    }
+
     return false;
 }
 

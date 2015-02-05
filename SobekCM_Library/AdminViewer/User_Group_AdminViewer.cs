@@ -132,12 +132,24 @@ namespace SobekCM.Library.AdminViewer
                     // Get the curret action
                     string action = form["admin_user_group_save"];
 
+                    // If this is CANCEL, get rid of the currrent edit object in the session
+                    if (action == "cancel")
+                    {
+                        // Clear the RequestSpecificValues.Current_User from the sessions
+                        HttpContext.Current.Session["Edit_UserGroup_" + editGroup.UserGroupID] = null;
+
+                        // Redirect the RequestSpecificValues.Current_User
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        return;
+                    }
+
                     bool successful_save = true;
                     switch (page)
                     {
                         case 1:
-                            editGroup.Templates.Clear();
-                            editGroup.Default_Metadata_Sets.Clear();
+                            if ( editGroup.Templates_Count > 0 ) editGroup.Templates.Clear();
+                            if ( editGroup.Default_Metadata_Sets_Count > 0 ) editGroup.Default_Metadata_Sets.Clear();
 
                             // First, set some flags to FALSE
                             editGroup.CanSubmit = false;
@@ -345,6 +357,11 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                 }
                             }
+
+                            // Copy to the object now
+                            if ( editGroup.Aggregations != null ) editGroup.Aggregations.Clear();
+                            foreach (User_Permissioned_Aggregation thisPermissionsAggregation in aggregations.Values)
+                                editGroup.Add_Aggregation(thisPermissionsAggregation);
                             break;
                     }
 
@@ -797,15 +814,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    	<div class=\"sbkUgav_TabPage\" id=\"tabpage_1\">");
 
             // Add the buttons
-            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
 			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
-			Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_group_edits();return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_group_edits();return false;\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine();
-            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
-            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Groups;
 
             Output.WriteLine("  <br /><br />");
             Output.WriteLine();
@@ -1000,57 +1013,59 @@ namespace SobekCM.Library.AdminViewer
                             }
                             else
                             {
-                                if (lookup_aggs[thisAggr.Code.ToLower()].CanSelect)
+                                User_Permissioned_Aggregation foundAggre = lookup_aggs[thisAggr.Code.ToLower()];
+
+                                if (foundAggre.CanSelect)
                                     Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
                                 else
                                     Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" /></td>");
 
                                 if (UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions)
                                 {
-                                    if (lookup_aggs[thisAggr.Code.ToLower()].CanEditMetadata)
+                                    if (foundAggre.CanEditMetadata)
                                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_metadata_" + thisAggr.Code + "\" id=\"admin_project_edit_metadata_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
                                     else
                                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_metadata_" + thisAggr.Code + "\" id=\"admin_project_edit_metadata_" + thisAggr.Code + "\" /></td>");
 
-                                    if (lookup_aggs[thisAggr.Code.ToLower()].CanEditBehaviors)
+                                    if (foundAggre.CanEditBehaviors)
                                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_behavior_" + thisAggr.Code + "\" id=\"admin_project_edit_behavior_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
                                     else
                                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_behavior_" + thisAggr.Code + "\" id=\"admin_project_edit_behavior_" + thisAggr.Code + "\" /></td>");
 
-                                    if (lookup_aggs[thisAggr.Code.ToLower()].CanPerformQc)
+                                    if (foundAggre.CanPerformQc)
                                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_perform_qc_" + thisAggr.Code + "\" id=\"admin_project_perform_qc_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
                                     else
                                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_perform_qc_" + thisAggr.Code + "\" id=\"admin_project_perform_qc_" + thisAggr.Code + "\" /></td>");
 
-                                    if (lookup_aggs[thisAggr.Code.ToLower()].CanUploadFiles)
+                                    if (foundAggre.CanUploadFiles)
                                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_upload_files_" + thisAggr.Code + "\" id=\"admin_project_upload_files_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
                                     else
                                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_upload_files_" + thisAggr.Code + "\" id=\"admin_project_upload_files_" + thisAggr.Code + "\" /></td>");
 
-                                    if (lookup_aggs[thisAggr.Code.ToLower()].CanChangeVisibility)
+                                    if (foundAggre.CanChangeVisibility)
                                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_change_visibility_" + thisAggr.Code + "\" id=\"admin_project_change_visibility_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
                                     else
                                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_change_visibility_" + thisAggr.Code + "\" id=\"admin_project_change_visibility_" + thisAggr.Code + "\" /></td>");
 
-                                    if (lookup_aggs[thisAggr.Code.ToLower()].CanDelete)
+                                    if (foundAggre.CanDelete)
                                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_can_delete_" + thisAggr.Code + "\" id=\"admin_project_can_delete_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
                                     else
                                         Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_can_delete_" + thisAggr.Code + "\" id=\"admin_project_can_delete_" + thisAggr.Code + "\" /></td>");
                                 }
                                 else
                                 {
-                                    if (lookup_aggs[thisAggr.Code.ToLower()].CanEditItems)
-                                        Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_" + thisAggr.Code + "\" id=\"admin_project_edit_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
+                                    if (foundAggre.CanEditItems)
+                                        Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_editall_" + thisAggr.Code + "\" id=\"admin_project_editall_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
                                     else
-                                        Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_" + thisAggr.Code + "\" id=\"admin_project_edit_" + thisAggr.Code + "\" /></td>");
+                                        Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_editall_" + thisAggr.Code + "\" id=\"admin_project_editall_" + thisAggr.Code + "\" /></td>");
                                 }
 
-                                if (lookup_aggs[thisAggr.Code.ToLower()].IsCurator)
+                                if (foundAggre.IsCurator)
                                     Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_curator_" + thisAggr.Code + "\" id=\"admin_project_curator_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
                                 else
                                     Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_curator_" + thisAggr.Code + "\" id=\"admin_project_curator_" + thisAggr.Code + "\" /></td>");
 
-                                if (lookup_aggs[thisAggr.Code.ToLower()].IsAdmin)
+                                if (foundAggre.IsAdmin)
                                     Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_admin_" + thisAggr.Code + "\" id=\"admin_project_admin_" + thisAggr.Code + "\" checked=\"checked\" /></td>");
                                 else
                                     Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_admin_" + thisAggr.Code + "\" id=\"admin_project_admin_" + thisAggr.Code + "\" /></td>");
@@ -1071,16 +1086,11 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Add the buttons
-			last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
-			RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
 			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
-			Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"onclick=\"return cancel_user_group_edits();return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_group_edits();return false;\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine();
-			RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
-			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Groups;
 
             Output.WriteLine("</div>");
             Output.WriteLine("</div>");

@@ -168,6 +168,33 @@ namespace SobekCM.Library.AdminViewer
 								}
 							}
 						}
+
+						string delete_value = HttpContext.Current.Request.Form["admin_user_group_delete"];
+					    if (delete_value.Length > 0)
+					    {
+					        int deleteId = Convert.ToInt32(delete_value);
+					        int result = SobekCM_Database.Delete_User_Group(deleteId, null);
+					        switch (result)
+					        {
+                                case 1: 
+                                    actionMessage = "Succesfully deleted user group";
+                                    break;
+
+                                case -1:
+                                    actionMessage = "ERROR while deleting user group - Cannot delete a user group which is still linked to users";
+                                    break;
+
+                                case -2:
+                                    actionMessage = "ERROR - You cannot delete a special user group";
+                                    break;
+
+                                case -3:
+                                    actionMessage = "ERROR while deleting user group - unknown exception caught";
+                                    break;
+
+					        }
+                            return;
+					    }
 					}
 					catch
 					{
@@ -190,6 +217,18 @@ namespace SobekCM.Library.AdminViewer
 
 					// Get the curret action
 					string action = form["admin_user_save"];
+
+                    // If this is CANCEL, get rid of the currrent edit object in the session
+				    if (action == "cancel")
+				    {
+                        // Clear the RequestSpecificValues.Current_User from the sessions
+                        HttpContext.Current.Session["Edit_User_" + editUser.UserID] = null;
+
+                        // Redirect the RequestSpecificValues.Current_User
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        return;
+				    }
 
 					bool successful_save = true;
 					switch (page)
@@ -704,6 +743,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_user_reset\" name=\"admin_user_reset\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_user_save\" name=\"admin_user_save\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_user_group_delete\" name=\"admin_user_group_delete\" value=\"\" />");
             Output.WriteLine();
 
             Tracer.Add_Trace("Users_AdminViewer.Write_ItemNavForm_Closing", "Add the rest of the form");
@@ -785,9 +825,14 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr valign=\"top\"><td><b>Edit Templates:</b></td><td>" + editUser.Edit_Template_Code_Complex + "<br />" + editUser.Edit_Template_Code_Simple + "</td></tr>");
 
             // Build the templates list
+            List<string> addedtemplates = new List<string>();
             foreach (string thisTemplate in editUser.Templates)
             {
-                text_builder.Append(thisTemplate + "<br />");
+                if (!addedtemplates.Contains(thisTemplate))
+                {
+                    text_builder.Append(thisTemplate + "<br />");
+                    addedtemplates.Add(thisTemplate);
+                }
             }
             if (text_builder.Length == 0)
             {
@@ -800,8 +845,15 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Build the projects list
+            List<string> addedprojects = new List<string>();
             foreach (string thisProject in editUser.Default_Metadata_Sets)
-                text_builder.Append(thisProject + "<br />");
+            {
+                if (!addedprojects.Contains(thisProject))
+                {
+                    text_builder.Append(thisProject + "<br />");
+                    addedprojects.Add(thisProject);
+                }
+            }
             if (text_builder.Length == 0)
             {
                 Output.WriteLine("  <tr valign=\"top\"><td><b>Default Metadata:</b></td><td><i>none</i></td></tr>");
@@ -1062,13 +1114,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    	<div class=\"sbkUgav_TabPage\" id=\"tabpage_1\">");
 
             // Add the buttons
-			RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
-			Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_edits();return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
 			Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine();
-			RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
 
 			Output.WriteLine("  <br /><br />");
 			Output.WriteLine();
@@ -1640,7 +1690,7 @@ namespace SobekCM.Library.AdminViewer
 			// Add the buttons
 			RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
-			Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_edits();return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
 			Output.WriteLine("    <button title=\"Save changes to this user\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("  </div>");
 
@@ -1657,6 +1707,7 @@ namespace SobekCM.Library.AdminViewer
 
         private void Write_User_User_Groups_List(TextWriter Output, Custom_Tracer Tracer)
         {
+
             Output.WriteLine("<div class=\"SobekHomeText\">");
 
             // Display the action message if there is one
@@ -1710,7 +1761,12 @@ namespace SobekCM.Library.AdminViewer
                     Output.Write("    <td class=\"SobekAdminActionLink\" >( ");
 
                     Output.Write("<a title=\"Click to edit\" href=\"" + redirect.Replace("XXXXXXX", thisRow.UserGroupID.ToString()) + "\">edit</a> | ");
-                    Output.Write("<a title=\"Click to view\" href=\"" + redirect.Replace("XXXXXXX", thisRow.UserGroupID.ToString()) + "v\">view</a> ) </td>");
+                    Output.Write("<a title=\"Click to view\" href=\"" + redirect.Replace("XXXXXXX", thisRow.UserGroupID.ToString()) + "v\">view</a>");
+                    if (!thisRow.IsSpecialGroup)
+                        Output.Write(" | <a title=\"Click to delete this user group entirely\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_user_group('" + thisRow.Name + "'," + thisRow.UserGroupID + ");\">delete</a> ) </td>");
+                    else
+                        Output.Write(" ) </td>");
+
 
                     Output.WriteLine("    <td>" + thisRow.Name + "</td>");
                     Output.WriteLine("    <td>" + thisRow.Description + "</td>");

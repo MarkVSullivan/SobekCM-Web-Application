@@ -4836,6 +4836,43 @@ namespace SobekCM.Library.Database
 			}
 		}
 
+        /// <summary> Deletes a user group, if there are no users attached and if it is not a special group </summary>
+        /// <param name="UserGroupID"> Primary key for this user group from the database</param>
+        /// <returns> Message value ( -1=users attached, -2=special group, -3=exception, 1 = success) </returns>
+        /// <remarks> This calls the 'mySobek_Delete_User_Group' stored procedure</remarks> 
+        public static int Delete_User_Group(int UserGroupID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Delete_User_Group", String.Empty);
+            }
+
+            try
+            {
+                // Build the parameter list
+                SqlParameter[] paramList = new SqlParameter[2];
+                paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
+                paramList[1] = new SqlParameter("@message", 1) { Direction = ParameterDirection.InputOutput };
+
+                // Execute this query stored procedure
+                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Delete_User_Group", paramList);
+
+                // Succesful, so return new id, if there was one
+                return Convert.ToInt32(paramList[1].Value);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Delete_User_Group", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Delete_User_Group", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Delete_User_Group", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return -3;
+            }
+        }
+
 	    /// <summary> Saves a new default metadata set, or edits an existing default metadata name </summary>
 	    /// <param name="Code"> Code for the new default metadata set, or set to edit </param>
 	    /// <param name="Name"> Name for this default metadata set </param>
