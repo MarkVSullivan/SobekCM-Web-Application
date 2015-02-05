@@ -408,6 +408,12 @@ namespace SobekCM.Library.HTML
 
 					case Admin_Type_Enum.Aggregation_Single:
 						return "sbkSaav_ContainerInner";
+
+                    case Admin_Type_Enum.User_Groups:
+                    case Admin_Type_Enum.Users:
+                        if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
+                            return "sbkUgav_ContainerInnerWide";
+                        break;
 				}
 				return base.Container_CssClass;
 			}

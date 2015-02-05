@@ -725,6 +725,21 @@ function new_user_edit_page(page) {
     return false;
 }
 
+// Save the user updates
+function save_user_group_edits() {
+    var hiddenfield = document.getElementById('admin_user_group_save');
+    hiddenfield.value = 'save';
+    document.itemNavForm.submit();
+    return false;
+}
+
+function new_user_group_edit_page(page) {
+    var hiddenfield = document.getElementById('admin_user_group_save');
+    hiddenfield.value = page;
+    document.itemNavForm.submit();
+    return false;
+}
+
 
 function link_focused2( divname )
 {

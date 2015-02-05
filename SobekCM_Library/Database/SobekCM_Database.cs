@@ -4462,7 +4462,7 @@ namespace SobekCM.Library.Database
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Group", paramList);
 
 				// Succesful, so return new id, if there was one
-				return Convert.ToInt32(paramList[14].Value);
+				return Convert.ToInt32(paramList[16].Value);
 			}
 			catch (Exception ee)
 			{

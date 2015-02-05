@@ -306,6 +306,11 @@ input.sbkThav_input  {  width: 360px; margin-right: 10px; }
 .sbkThav_TableHeader2 { width: 120px; }
 .sbkThav_TableHeader3 { width: 350px; }
 
+/** User_Group_AdminViewer **/
+#sbkUgav_ContainerInnerWide { margin: 0 auto; padding:0; width: 1200px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
+.sbkUgav_EditPanel { position: relative; margin-left: auto; margin-right: auto; BORDER: #ccc 2px solid; padding: 10px 5px 5px 5px; FONT-SIZE: small; WIDTH: 1050px;  white-space:nowrap; text-align:left;background-color: #eeeeee; }
+.sbkUgav_TabPage { text-align: left; margin-left: 8px;padding-bottom: 30px;}
+
 /** Wordmarks_AdminViewer **/
 .sbkWav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;text-align: center; } 
 .sbkWav_PopupDiv { position:fixed; background-color:#eeeeee; width:675px; height:215px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
