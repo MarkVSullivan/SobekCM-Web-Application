@@ -44,7 +44,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (form["sbkSbia_ChildTextEdit"] != null) && ( RequestSpecificValues.Current_User != null ))
 			{
 				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\";
-				string file = aggregation_folder + RequestSpecificValues.Browse_Object.Get_Static_HTML_Source(RequestSpecificValues.Current_Mode.Language);
+
+                /// TODO: Fix this
+			    string file = aggregation_folder; // + RequestSpecificValues.Browse_Object.Get_Static_HTML_Source(RequestSpecificValues.Current_Mode.Language);
 
 				// Get the header information as well
 				if ( !String.IsNullOrEmpty(form["admin_childpage_title"]))
@@ -75,7 +77,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 
 				// Assign the new text
-                RequestSpecificValues.Static_Web_Content.Static_Text = form["sbkSbia_ChildTextEdit"];
+                RequestSpecificValues.Static_Web_Content.Content = form["sbkSbia_ChildTextEdit"];
                 RequestSpecificValues.Static_Web_Content.Date = DateTime.Now.ToLongDateString();
                 RequestSpecificValues.Static_Web_Content.Save_To_File(file);
 
@@ -84,7 +86,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 				// Forward along
 				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
-                if (RequestSpecificValues.Browse_Object.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY)
+                if (RequestSpecificValues.Browse_Object.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By)
 					RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
 				
 				string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
@@ -99,10 +101,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
-        /// <value> This returns the <see cref="Item_Aggregation.CollectionViewsAndSearchesEnum.Static_Browse_Info"/> enumerational value </value>
-        public override Item_Aggregation.CollectionViewsAndSearchesEnum Type
+        /// <value> This returns the <see cref="Item_Aggregation_Views_Searches_Enum.Static_Browse_Info"/> enumerational value </value>
+        public override Item_Aggregation_Views_Searches_Enum Type
         {
-            get { return Item_Aggregation.CollectionViewsAndSearchesEnum.Static_Browse_Info; }
+            get { return Item_Aggregation_Views_Searches_Enum.Static_Browse_Info; }
         }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
@@ -138,7 +140,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Static_Browse_Info_AggregationViewer.Add_Search_Box_HTML", "Adding HTML");
             }
 
-            Output.WriteLine("  <h1>" + RequestSpecificValues.Browse_Object.Get_Label(RequestSpecificValues.Current_Mode.Language) + "</h1>");
+            Output.WriteLine("  <h1>" + RequestSpecificValues.Browse_Object.Label + "</h1>");
         }
 
         /// <summary> Add the HTML to be displayed below the search box </summary>
@@ -153,7 +155,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
 			// Get the adjusted text for this user's session
-            string static_browse_info_text = RequestSpecificValues.Static_Web_Content.Apply_Settings_To_Static_Text(RequestSpecificValues.Static_Web_Content.Static_Text, RequestSpecificValues.Hierarchy_Object, RequestSpecificValues.HTML_Skin.Skin_Code, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode.Base_URL, UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode), Tracer);
+            string static_browse_info_text = RequestSpecificValues.Static_Web_Content.Apply_Settings_To_Static_Text(RequestSpecificValues.Static_Web_Content.Content, RequestSpecificValues.Hierarchy_Object, RequestSpecificValues.HTML_Skin.Skin_Code, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode.Base_URL, UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode), Tracer);
 			bool isAdmin = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Aggregation_Admin(RequestSpecificValues.Hierarchy_Object.Code));
 
 
@@ -208,7 +210,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				Output.WriteLine("      <tr style=\"vertical-align:top;\">");
 				Output.WriteLine("        <td>&nbsp;</td>");
 				Output.WriteLine("        <td class=\"sbkSbia_HeaderTableLabel\" style=\"padding-top:5px\"><label for=\"admin_childpage_extrahead\">HTML Head Info:</label></td>");
-				Output.WriteLine("        <td><textarea rows=\"3\" class=\"sbkSbia_HeaderTextArea sbk_Focusable\" name=\"admin_childpage_extrahead\" id=\"admin_childpage_extrahead\" type=\"text\">" + HttpUtility.HtmlEncode(RequestSpecificValues.Static_Web_Content.Extra_Head_Info) + "</textarea></td>");
+                string extra_head_info = RequestSpecificValues.Static_Web_Content.Extra_Head_Info ?? String.Empty;
+                Output.WriteLine("        <td><textarea rows=\"3\" class=\"sbkSbia_HeaderTextArea sbk_Focusable\" name=\"admin_childpage_extrahead\" id=\"admin_childpage_extrahead\" type=\"text\">" + HttpUtility.HtmlEncode(extra_head_info) + "</textarea></td>");
 				Output.WriteLine("        <td><img class=\"sbkSbia_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + EXTRA_HEAD_HELP + "');\"  title=\"" + EXTRA_HEAD_HELP + "\" /></td>");
 				Output.WriteLine("      </tr>");
 				Output.WriteLine("    </table>");
@@ -224,7 +227,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 				Output.WriteLine("  <div id=\"sbkSbia_TextEditButtons\">");
 				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
-				if ( RequestSpecificValues.Browse_Object.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY )
+				if ( RequestSpecificValues.Browse_Object.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By )
 					RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
 				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
 				Output.WriteLine("    <button title=\"Save changes to this child page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");

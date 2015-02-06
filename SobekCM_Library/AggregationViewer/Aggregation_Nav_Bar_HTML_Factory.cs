@@ -19,41 +19,41 @@ namespace SobekCM.Library.AggregationViewer
         /// <param name="SearchType1"> Search type from the list of collection views and searches </param>
         /// <param name="SearchType2"> Search type from the current http request </param>
         /// <returns> TRUE if they are analagous, otherwise FALSE </returns>
-        public static bool Do_Search_Types_Match(Item_Aggregation.CollectionViewsAndSearchesEnum SearchType1, Search_Type_Enum SearchType2)
+        public static bool Do_Search_Types_Match(Item_Aggregation_Views_Searches_Enum SearchType1, Search_Type_Enum SearchType2)
         {
             switch (SearchType1)
             {
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search:
+                case Item_Aggregation_Views_Searches_Enum.Advanced_Search:
                     return SearchType2 == Search_Type_Enum.Advanced;
 
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange:
+				case Item_Aggregation_Views_Searches_Enum.Advanced_Search_YearRange:
 					return SearchType2 == Search_Type_Enum.Advanced;
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_MimeType:
+                case Item_Aggregation_Views_Searches_Enum.Advanced_Search_MimeType:
                     return SearchType2 == Search_Type_Enum.Advanced;
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search:
+                case Item_Aggregation_Views_Searches_Enum.Basic_Search:
                     return SearchType2 == Search_Type_Enum.Basic;
 
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_YearRange:
+				case Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange:
 					return SearchType2 == Search_Type_Enum.Basic;
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_MimeType:
+                case Item_Aggregation_Views_Searches_Enum.Basic_Search_MimeType:
                     return SearchType2 == Search_Type_Enum.Basic;
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.FullText_Search:
+                case Item_Aggregation_Views_Searches_Enum.FullText_Search:
                     return SearchType2 == Search_Type_Enum.Full_Text;
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search:
+                case Item_Aggregation_Views_Searches_Enum.Map_Search:
                     return SearchType2 == Search_Type_Enum.Map;
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search_Beta:
+                case Item_Aggregation_Views_Searches_Enum.Map_Search_Beta:
                     return SearchType2 == Search_Type_Enum.Map_Beta;
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Newspaper_Search:
+                case Item_Aggregation_Views_Searches_Enum.Newspaper_Search:
                     return SearchType2 == Search_Type_Enum.Newspaper;
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.DLOC_FullText_Search:
+                case Item_Aggregation_Views_Searches_Enum.DLOC_FullText_Search:
                     return SearchType2 == Search_Type_Enum.dLOC_Full_Text;
 
                 default:
@@ -68,38 +68,38 @@ namespace SobekCM.Library.AggregationViewer
 		/// <param name="Current_Mode"> Mode / navigation information for the current request, to see if the tab is currently selected or not and determine current skin language </param>
 		/// <param name="Translations"> Language support object for writing the name of the view in the appropriate interface language </param>
 		/// <returns> HTML to display the tab, including the link if it is not currently selected </returns>
-		public static string Menu_Get_Nav_Bar_HTML(Item_Aggregation.CollectionViewsAndSearchesEnum ThisView, SobekCM_Navigation_Object Current_Mode, Language_Support_Info Translations )
+		public static string Menu_Get_Nav_Bar_HTML(Item_Aggregation_Views_Searches_Enum ThisView, SobekCM_Navigation_Object Current_Mode, Language_Support_Info Translations )
 		{
 			string skinCode = Current_Mode.Base_Skin;
 
 			switch (ThisView)
 			{
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search:
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange:
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_MimeType:
+				case Item_Aggregation_Views_Searches_Enum.Advanced_Search:
+				case Item_Aggregation_Views_Searches_Enum.Advanced_Search_YearRange:
+                case Item_Aggregation_Views_Searches_Enum.Advanced_Search_MimeType:
 					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Advanced, Translations.Get_Translation("Advanced Search", Current_Mode.Language), Current_Mode);
 
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search:
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_YearRange:
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_MimeType:
+				case Item_Aggregation_Views_Searches_Enum.Basic_Search:
+				case Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange:
+                case Item_Aggregation_Views_Searches_Enum.Basic_Search_MimeType:
 					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Basic, Translations.Get_Translation("Basic Search", Current_Mode.Language), Current_Mode);
 
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search:
+				case Item_Aggregation_Views_Searches_Enum.Map_Search:
 					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Map, Translations.Get_Translation("Map Search", Current_Mode.Language), Current_Mode);
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search_Beta:
+                case Item_Aggregation_Views_Searches_Enum.Map_Search_Beta:
                     return Menu_HTML_Helper(skinCode, Search_Type_Enum.Map_Beta, Translations.Get_Translation("Map Search", Current_Mode.Language), Current_Mode);
 
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.Newspaper_Search:
+				case Item_Aggregation_Views_Searches_Enum.Newspaper_Search:
 					return Menu_HTML_Helper(skinCode, Search_Type_Enum.Newspaper, Translations.Get_Translation("Newspaper Search", Current_Mode.Language), Current_Mode);
 
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.Admin_View:
+				case Item_Aggregation_Views_Searches_Enum.Admin_View:
 					return String.Empty; // HTML_Helper(Skin_Code, SobekCM.Library.Navigation.Search_Type_Enum.Admin_View, Translations.Get_Translation("ADMIN", Current_Mode.Language), Current_Mode, Downward_Tabs);
 
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.DLOC_FullText_Search:
+				case Item_Aggregation_Views_Searches_Enum.DLOC_FullText_Search:
 					return Menu_HTML_Helper(skinCode, Search_Type_Enum.dLOC_Full_Text, Translations.Get_Translation("Text Search", Current_Mode.Language), Current_Mode);
 
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.FullText_Search:
+				case Item_Aggregation_Views_Searches_Enum.FullText_Search:
                     return Menu_HTML_Helper(skinCode, Search_Type_Enum.Full_Text, Translations.Get_Translation("Text Search", Current_Mode.Language), Current_Mode);
 			}
 
@@ -147,40 +147,40 @@ namespace SobekCM.Library.AggregationViewer
         /// <param name="Translations"> Language support object for writing the name of the view in the appropriate interface language </param>
         /// <param name="Downward_Tabs"> Flag indicates if this tab faces downward, rather than the default upward </param>
         /// <returns> HTML to display the tab, including the link if it is not currently selected </returns>
-        public static string Tabs2_Get_Nav_Bar_HTML( Item_Aggregation.CollectionViewsAndSearchesEnum ThisView, SobekCM_Navigation_Object Current_Mode, Language_Support_Info Translations, bool Downward_Tabs )
+        public static string Tabs2_Get_Nav_Bar_HTML( Item_Aggregation_Views_Searches_Enum ThisView, SobekCM_Navigation_Object Current_Mode, Language_Support_Info Translations, bool Downward_Tabs )
         {
             string skinCode = Current_Mode.Base_Skin;
 
             switch (ThisView)
             {
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search:
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.Advanced_Search_YearRange:
+                case Item_Aggregation_Views_Searches_Enum.Advanced_Search:
+				case Item_Aggregation_Views_Searches_Enum.Advanced_Search_YearRange:
                     if (Current_Mode.Is_Robot)
                     {
                         return "<img src=\"" + Current_Mode.Base_URL + "design/skins/" + skinCode + "/tabs/cL.gif\" border=\"0\" class=\"tab_image\" alt=\"\" /><span class=\"tab\"> ADVANCED SEARCH </span><img src=\"" + Current_Mode.Base_URL + "design/skins/" + skinCode + "/tabs/cR.gif\" border=\"0\" class=\"tab_image\" alt=\"\" />" + Environment.NewLine ;
                     }
                     return Tabs_HTML_Helper(skinCode, Search_Type_Enum.Advanced, Translations.Get_Translation("ADVANCED SEARCH", Current_Mode.Language), Current_Mode, Downward_Tabs);
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search:
-				case Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search_YearRange:
+                case Item_Aggregation_Views_Searches_Enum.Basic_Search:
+				case Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange:
                     return Tabs_HTML_Helper(skinCode, Search_Type_Enum.Basic, Translations.Get_Translation("BASIC SEARCH", Current_Mode.Language), Current_Mode, Downward_Tabs);
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search:
+                case Item_Aggregation_Views_Searches_Enum.Map_Search:
                     return Tabs_HTML_Helper(skinCode, Search_Type_Enum.Map, Translations.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode, Downward_Tabs);
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Search_Beta:
+                case Item_Aggregation_Views_Searches_Enum.Map_Search_Beta:
                     return Tabs_HTML_Helper(skinCode, Search_Type_Enum.Map_Beta, Translations.Get_Translation("MAP SEARCH", Current_Mode.Language), Current_Mode, Downward_Tabs);
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Newspaper_Search:
+                case Item_Aggregation_Views_Searches_Enum.Newspaper_Search:
                     return Tabs_HTML_Helper(skinCode, Search_Type_Enum.Newspaper, Translations.Get_Translation("NEWSPAPER SEARCH", Current_Mode.Language), Current_Mode, Downward_Tabs);
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.Admin_View:
+                case Item_Aggregation_Views_Searches_Enum.Admin_View:
                     return String.Empty; // HTML_Helper(Skin_Code, SobekCM.Library.Navigation.Search_Type_Enum.Admin_View, Translations.Get_Translation("ADMIN", Current_Mode.Language), Current_Mode, Downward_Tabs);
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.DLOC_FullText_Search:
+                case Item_Aggregation_Views_Searches_Enum.DLOC_FullText_Search:
                     return Tabs_HTML_Helper(skinCode, Search_Type_Enum.dLOC_Full_Text, Translations.Get_Translation("TEXT SEARCH", Current_Mode.Language), Current_Mode, Downward_Tabs);
 
-                case Item_Aggregation.CollectionViewsAndSearchesEnum.FullText_Search:
+                case Item_Aggregation_Views_Searches_Enum.FullText_Search:
                     return Tabs_HTML_Helper(skinCode, Search_Type_Enum.Full_Text, Translations.Get_Translation("TEXT SEARCH", Current_Mode.Language), Current_Mode, Downward_Tabs);
             }
 

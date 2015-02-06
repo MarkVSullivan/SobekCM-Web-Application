@@ -36,6 +36,10 @@ namespace SobekCM.Core.Users
             CanSubmit = false;
             IsInternalUser = false;
             IsSystemAdmin = false;
+            IsPortalAdmin = false;
+            IsShibbolethDefault = false;
+            IsSobekDefault = false;
+            IsLdapDefault = false;
         }
 
         #endregion
@@ -70,6 +74,21 @@ namespace SobekCM.Core.Users
         /// <summary> Flag indicates if this is a special user group (reserved by the system), such as 'Everyone' </summary>
         [DataMember]
         public bool IsSpecialGroup { get; set;  }
+
+        [DataMember]
+        public bool IsSobekDefault { get; set; }
+
+        [DataMember]
+        public bool IsShibbolethDefault { get; set; }
+
+        [DataMember]
+        public bool IsLdapDefault { get; set; }
+
+        [DataMember]
+        public bool IsPortalAdmin { get; set; }
+
+        /// <summary> Flag is used when editing a users rights to indicate this user should be able to edit ALL items in the library </summary>
+        public bool Should_Be_Able_To_Edit_All_Items { get; set; }
 
         /// <summary> Ordered list of submittal templates this user group has access to </summary>
         [DataMember(EmitDefaultValue = false)]
@@ -170,6 +189,15 @@ namespace SobekCM.Core.Users
             if (aggregations == null) aggregations = new User_Aggregation_Permissions();
 
             aggregations.Add(Code, Aggregation_Name, CanSelect, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete, IsCurator, false, IsAdmin, true );
+        }
+
+        /// <summary> Add a new item aggregation to this user group's collection of item aggregationPermissions </summary>
+        /// <param name="PermissionedAggregation">Fully permissioned aggregation </param>
+        public void Add_Aggregation(User_Permissioned_Aggregation PermissionedAggregation )
+        {
+            if (aggregations == null) aggregations = new User_Aggregation_Permissions();
+
+            aggregations.Add(PermissionedAggregation);
         }
 
         /// <summary> Adds a template to the list of templates this user group can select </summary>

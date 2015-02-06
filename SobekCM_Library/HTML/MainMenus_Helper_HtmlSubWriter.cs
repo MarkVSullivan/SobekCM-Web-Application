@@ -87,7 +87,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Get the home search type (just to do a matching in case it was explicitly requested)
-            Item_Aggregation.CollectionViewsAndSearchesEnum homeView = Item_Aggregation.CollectionViewsAndSearchesEnum.Basic_Search;
+            Item_Aggregation_Views_Searches_Enum homeView = Item_Aggregation_Views_Searches_Enum.Basic_Search;
             if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Count > 0)
             {
                 homeView = RequestSpecificValues.Hierarchy_Object.Views_And_Searches[0];
@@ -261,7 +261,7 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
 
                 // Get sorted collection of (public) browse bys linked to this aggregation
-                ReadOnlyCollection<Item_Aggregation_Child_Page> public_browses = RequestSpecificValues.Hierarchy_Object.Browse_By_Pages(RequestSpecificValues.Current_Mode.Language);
+                ReadOnlyCollection<Item_Aggregation_Child_Page> public_browses = RequestSpecificValues.Hierarchy_Object.Browse_By_Pages;
                 if (public_browses.Count > 0)
                 {
                     if (((thisMode == Display_Mode_Enum.Aggregation) && (thisAggrType == Aggregation_Type_Enum.Browse_By)) || (RequestSpecificValues.Current_Mode.Is_Robot))
@@ -276,10 +276,10 @@ namespace SobekCM.Library.HTML
                     foreach (Item_Aggregation_Child_Page thisBrowse in public_browses)
                     {
                         // Static HTML or metadata browse by?
-                        if (thisBrowse.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
+                        if (thisBrowse.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML)
                         {
                             RequestSpecificValues.Current_Mode.Info_Browse_Mode = thisBrowse.Code;
-                            Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + thisBrowse.Get_Label(RequestSpecificValues.Current_Mode.Language) + "</a></li>");
+                            Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + thisBrowse.Label + "</a></li>");
                         }
                         else
                         {
@@ -297,7 +297,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Check for the existence of any MAP BROWSE pages
-            if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation.CollectionViewsAndSearchesEnum.Map_Browse))
+            if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Map_Browse))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Map;
@@ -324,7 +324,7 @@ namespace SobekCM.Library.HTML
 
             // Only show ALL and NEW if they are in the collection list of searches and views
             int included_browses = 0;
-            if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation.CollectionViewsAndSearchesEnum.All_New_Items))
+            if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.All_New_Items))
             {
                 // First, look for 'ALL'
                 if (RequestSpecificValues.Hierarchy_Object.Contains_Browse_Info("all"))
@@ -366,7 +366,7 @@ namespace SobekCM.Library.HTML
             redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
             // Are there any additional browses to include?
-            ReadOnlyCollection<Item_Aggregation_Child_Page> otherBrowses = RequestSpecificValues.Hierarchy_Object.Browse_Home_Pages(RequestSpecificValues.Current_Mode.Language);
+            ReadOnlyCollection<Item_Aggregation_Child_Page> otherBrowses = RequestSpecificValues.Hierarchy_Object.Browse_Home_Pages;
             if (otherBrowses.Count > included_browses)
             {
                 // Now, step through the sorted list
@@ -375,11 +375,11 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Info_Browse_Mode = thisBrowseObj.Code;
                     if (browse_code == thisBrowseObj.Code)
                     {
-                        Output.WriteLine("    <li id=\"sbkAgm_NewBrowse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", thisBrowseObj.Code) + "\">" + thisBrowseObj.Get_Label(RequestSpecificValues.Current_Mode.Language) + "</a></li>");
+                        Output.WriteLine("    <li id=\"sbkAgm_NewBrowse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", thisBrowseObj.Code) + "\">" + thisBrowseObj.Label + "</a></li>");
                     }
                     else
                     {
-                        Output.WriteLine("    <li id=\"sbkAgm_NewBrowse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", thisBrowseObj.Code) + "\">" + thisBrowseObj.Get_Label(RequestSpecificValues.Current_Mode.Language) + "</a></li>");
+                        Output.WriteLine("    <li id=\"sbkAgm_NewBrowse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", thisBrowseObj.Code) + "\">" + thisBrowseObj.Label + "</a></li>");
                     }
                 }
             }
@@ -453,7 +453,7 @@ namespace SobekCM.Library.HTML
                         RequestSpecificValues.Current_Mode.Mode = thisMode;
                         RequestSpecificValues.Current_Mode.Home_Type = thisHomeType;
 
-                        Output.Write(Aggregation_Nav_Bar_HTML_Factory.Menu_Get_Nav_Bar_HTML(Item_Aggregation.CollectionViewsAndSearchesEnum.Admin_View, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Translation));
+                        Output.Write(Aggregation_Nav_Bar_HTML_Factory.Menu_Get_Nav_Bar_HTML(Item_Aggregation_Views_Searches_Enum.Admin_View, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Translation));
                     }
                 }
             }

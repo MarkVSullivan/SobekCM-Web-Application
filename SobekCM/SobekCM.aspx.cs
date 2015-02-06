@@ -3,6 +3,7 @@
 using System;
 using System.Web;
 using System.Web.UI;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.MainWriters;
@@ -271,6 +272,14 @@ namespace SobekCM
 
 		protected override void OnInit(EventArgs E)
 		{
+            // Ensure the microservices client has read the configuration file
+		    if (!SobekEngineClient.Config_Read_Attempted)
+		    {
+                string path = Server.MapPath("config/default/sobekcm_microservices.config");
+                SobekEngineClient.Read_Config_File(path);
+		    }
+
+
 			pageGlobals = new SobekCM_Page_Globals(IsPostBack, "SOBEKCM");
 
 			base.OnInit(E);

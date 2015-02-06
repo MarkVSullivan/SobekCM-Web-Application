@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Settings;
+using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library;
@@ -44,7 +45,8 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
                         display_code = 'i' + display_code.Substring(1);
 
                     // Get this item aggregations
-                    Item_Aggregation aggregationObj = Engine_Database.Get_Item_Aggregation(thisAggrCode, false, false, null);
+                    Complete_Item_Aggregation aggregationCompleteObj = Engine_Database.Get_Item_Aggregation(thisAggrCode, false, false, null);
+                    Item_Aggregation aggregationObj = Item_Aggregation_Utilities.Get_Item_Aggregation( aggregationCompleteObj, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, null);
 
                     // Get the list of items for this aggregation
                     DataSet aggregation_items = Engine_Database.Simple_Item_List(thisAggrCode, null);

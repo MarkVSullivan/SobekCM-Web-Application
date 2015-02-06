@@ -59,10 +59,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
-        /// <value> This returns the <see cref="Item_Aggregation.CollectionViewsAndSearchesEnum.Usage_Statistics"/> enumerational value </value>
-        public override Item_Aggregation.CollectionViewsAndSearchesEnum Type
+        /// <value> This returns the <see cref="Item_Aggregation_Views_Searches_Enum.Usage_Statistics"/> enumerational value </value>
+        public override Item_Aggregation_Views_Searches_Enum Type
         {
-            get { return Item_Aggregation.CollectionViewsAndSearchesEnum.Usage_Statistics; }
+            get { return Item_Aggregation_Views_Searches_Enum.Usage_Statistics; }
         }
 
         /// <summary> Add the HTML to be displayed in the search box </summary>

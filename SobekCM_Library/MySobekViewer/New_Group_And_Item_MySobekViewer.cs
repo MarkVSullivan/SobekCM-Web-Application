@@ -12,6 +12,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Citation;
@@ -19,7 +20,6 @@ using SobekCM.Library.Citation.Template;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Library.UploadiFive;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
@@ -977,7 +977,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Also clear any searches or browses ( in the future could refine this to only remove those
                 // that are impacted by this save... but this is good enough for now )
-                Cached_Data_Manager.Clear_Search_Results_Browses();
+                CachedDataManager.Clear_Search_Results_Browses();
             }
 
             return criticalErrorEncountered;

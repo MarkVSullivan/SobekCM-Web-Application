@@ -40,7 +40,6 @@ namespace SobekCM.Core.Settings
                 JP2ServerUrl = String.Empty;
                 JP2ServerType = String.Empty;
                 Base_URL = String.Empty;
-                Base_Directory = String.Empty;
                 Image_URL = String.Empty;
                 SobekCM_ImageServer = String.Empty;
                 Online_Edit_Submit_Enabled = false;
@@ -410,7 +409,7 @@ namespace SobekCM.Core.Settings
 
         /// <summary> Base directory where the ASP.net application is running on the application server </summary>
         [DataMember]
-        public string Base_Directory { get; set; }
+        public string Base_Directory { get { return Application_Server_Network; } set { Application_Server_Network = value; } }
 
         /// <summary> Gets the base URL for this instance, without the application name </summary>
         [DataMember]

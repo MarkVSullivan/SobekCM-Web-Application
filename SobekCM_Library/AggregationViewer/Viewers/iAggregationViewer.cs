@@ -39,7 +39,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     public interface iAggregationViewer
     {
         /// <summary> Gets the type of collection view or search </summary>
-        Item_Aggregation.CollectionViewsAndSearchesEnum Type { get; }
+        Item_Aggregation_Views_Searches_Enum Type { get; }
 
         /// <summary> Gets the reference to the javascript file to be included in the HTML </summary>
         string Search_Script_Reference { get; }

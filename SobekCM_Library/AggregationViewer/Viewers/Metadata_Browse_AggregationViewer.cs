@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
 using SobekCM.Core.WebContent;
@@ -12,7 +13,6 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -45,14 +45,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // If there is not info browse mode listed, use the default
             if (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 0)
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = defaultBrowseBy;
+
             if ((RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 0) && (RequestSpecificValues.Hierarchy_Object.Has_Browse_By_Pages))
-                RequestSpecificValues.Current_Mode.Info_Browse_Mode = RequestSpecificValues.Hierarchy_Object.Browse_By_Pages(RequestSpecificValues.Current_Mode.Language)[0].Code;
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = RequestSpecificValues.Hierarchy_Object.Child_Page_By_Code(RequestSpecificValues.Current_Mode.Info_Browse_Mode).Code;
 
             // Get this browse
-            browseObject = RequestSpecificValues.Hierarchy_Object.Get_Browse_Info_Object(RequestSpecificValues.Current_Mode.Info_Browse_Mode);
+            browseObject = RequestSpecificValues.Hierarchy_Object.Child_Page_By_Code(RequestSpecificValues.Current_Mode.Info_Browse_Mode);
 
             // Was this a metadata browseby, or just a static html?
-            if (( browseObject == null ) || ( browseObject.Source != Item_Aggregation_Child_Page.Source_Type.Static_HTML))
+            if (( browseObject == null ) || ( browseObject.Source_Data_Type != Item_Aggregation_Child_Source_Data_Enum.Static_HTML))
             {
                 // Determine the correct metadata code
                 string metadata_code = RequestSpecificValues.Current_Mode.Info_Browse_Mode.Trim().Replace("_", " ");
@@ -62,7 +63,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (metadata_code.Length > 0)
                 {
                     // Check the cache for this value
-                    List<string> cacheInstance = Cached_Data_Manager.Retrieve_Aggregation_Metadata_Browse(RequestSpecificValues.Current_Mode.Aggregation, RequestSpecificValues.Current_Mode.Info_Browse_Mode, RequestSpecificValues.Tracer);
+                    List<string> cacheInstance = CachedDataManager.Retrieve_Aggregation_Metadata_Browse(RequestSpecificValues.Current_Mode.Aggregation, RequestSpecificValues.Current_Mode.Info_Browse_Mode, RequestSpecificValues.Tracer);
 
                     if (cacheInstance != null)
                     {
@@ -71,17 +72,17 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     else
                     {
                         results = Engine_Database.Get_Item_Aggregation_Metadata_Browse(RequestSpecificValues.Current_Mode.Aggregation, RequestSpecificValues.Current_Mode.Info_Browse_Mode, RequestSpecificValues.Tracer);
-                        Cached_Data_Manager.Store_Aggregation_Metadata_Browse(RequestSpecificValues.Current_Mode.Aggregation, RequestSpecificValues.Current_Mode.Info_Browse_Mode, results, RequestSpecificValues.Tracer);
+                        CachedDataManager.Store_Aggregation_Metadata_Browse(RequestSpecificValues.Current_Mode.Aggregation, RequestSpecificValues.Current_Mode.Info_Browse_Mode, results, RequestSpecificValues.Tracer);
                     }
                 }
             }
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
-        /// <value> This returns the <see cref="Item_Aggregation.CollectionViewsAndSearchesEnum.Metadata_Browse"/> enumerational value </value>
-        public override Item_Aggregation.CollectionViewsAndSearchesEnum Type
+        /// <value> This returns the <see cref="Item_Aggregation_Views_Searches_Enum.Metadata_Browse"/> enumerational value </value>
+        public override Item_Aggregation_Views_Searches_Enum Type
         {
-            get { return Item_Aggregation.CollectionViewsAndSearchesEnum.Metadata_Browse; }
+            get { return Item_Aggregation_Views_Searches_Enum.Metadata_Browse; }
         }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
@@ -117,9 +118,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Metadata_Browse_AggregationViewer.Add_Search_Box_HTML", "Adding HTML");
             }
 
-            if (( browseObject != null ) && ( browseObject.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML))
+            if (( browseObject != null ) && ( browseObject.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML))
             {
-                Output.WriteLine("  <h1>" + browseObject.Get_Label(RequestSpecificValues.Current_Mode.Language) + "</h1>");
+                Output.WriteLine("  <h1>" + browseObject.Label + "</h1>");
 
             }
             else
@@ -147,17 +148,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             // Get collection of (public) browse bys linked to this aggregation
-            ReadOnlyCollection<Item_Aggregation_Child_Page> public_browses = RequestSpecificValues.Hierarchy_Object.Browse_By_Pages(RequestSpecificValues.Current_Mode.Language);
+            ReadOnlyCollection<Item_Aggregation_Child_Page> public_browses = RequestSpecificValues.Hierarchy_Object.Browse_By_Pages;
 
             // Determine if this is an internal user and create list of internal user browses
             List<string> internal_browses = new List<string>();
             if ((RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Current_Mode.Aggregation))))
             {
                 // Just add every metadata field here
-                foreach (Metadata_Search_Field field in UI_ApplicationCache_Gateway.Settings.Metadata_Search_Fields)
+                foreach (Item_Aggregation_Metadata_Type field in RequestSpecificValues.Hierarchy_Object.Browseable_Fields  )
                 {
-                    if (( field.Web_Code.Length > 0 ) && ( RequestSpecificValues.Hierarchy_Object.Browseable_Fields.Contains(field.ID)))
-                        internal_browses.Add(field.Display_Term);
+                    internal_browses.Add(field.DisplayTerm);
                 }
             }
 
@@ -187,7 +187,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     SortedList<string, Item_Aggregation_Child_Page> sortedBrowses = new SortedList<string, Item_Aggregation_Child_Page>();
                     foreach (Item_Aggregation_Child_Page thisBrowse in public_browses)
                     {
-                        if (thisBrowse.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
+                        if (thisBrowse.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML)
                         {
                             sortedBrowses[thisBrowse.Code.ToLower()] = thisBrowse;
                         }
@@ -212,16 +212,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     foreach (Item_Aggregation_Child_Page thisBrowse in sortedBrowses.Values)
                     {
                         // Static HTML or metadata browse by?
-                        if (thisBrowse.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
+                        if (thisBrowse.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML)
                         {
                             if (original_browse_mode != thisBrowse.Code)
                             {
                                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = thisBrowse.Code;
-                                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + thisBrowse.Get_Label( RequestSpecificValues.Current_Mode.Language ) + "</a><br />");
+                                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp") + "\">" + thisBrowse.Label + "</a><br />");
                             }
                             else
                             {
-                                Output.WriteLine(thisBrowse.Get_Label(RequestSpecificValues.Current_Mode.Language) + "<br />");
+                                Output.WriteLine(thisBrowse.Label + "<br />");
                             }
                         }
                         else
@@ -282,16 +282,17 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = original_browse_mode;
 
             // Was this static or metadata browse by?
-            if (( browseObject != null ) && ( browseObject.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML))
+            if ((browseObject != null) && (browseObject.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML))
             {
                 // Read the content file for this browse
-                HTML_Based_Content staticBrowseContent = browseObject.Get_Static_Content(RequestSpecificValues.Current_Mode.Language, RequestSpecificValues.Current_Mode.Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Design_Location + RequestSpecificValues.Hierarchy_Object.ObjDirectory, Tracer);
+                /// TODO: Fix this
+       //         HTML_Based_Content staticBrowseContent = browseObject.Get_Static_Content(RequestSpecificValues.Current_Mode.Language, RequestSpecificValues.Current_Mode.Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Design_Location + RequestSpecificValues.Hierarchy_Object.ObjDirectory, Tracer);
            
                 // Apply current user settings for this
-                string browseInfoDisplayText = staticBrowseContent.Apply_Settings_To_Static_Text(staticBrowseContent.Static_Text, RequestSpecificValues.Hierarchy_Object, RequestSpecificValues.HTML_Skin.Skin_Code, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode.Base_URL, UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode), Tracer);
+        //        string browseInfoDisplayText = staticBrowseContent.Apply_Settings_To_Static_Text(staticBrowseContent.Content, RequestSpecificValues.Hierarchy_Object, RequestSpecificValues.HTML_Skin.Skin_Code, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode.Base_URL, UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode), Tracer);
 
                 // Add this to the output stream
-                Output.WriteLine(browseInfoDisplayText);
+         //       Output.WriteLine(browseInfoDisplayText);
             }
             else
             {

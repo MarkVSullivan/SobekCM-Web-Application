@@ -58,6 +58,7 @@
     <Compile Include="Modules\Folders\iFolderModule.cs" />
     <Compile Include="Modules\Folders\MoveAgedPackagesToProcessModule.cs" />
     <Compile Include="Modules\Folders\ValidateAndClassifyModule.cs" />
+    <Compile Include="Modules\Folders\WolfsonianProcessorModule.cs" />
     <Compile Include="Modules\Items\abstractSubmissionPackageModule.cs" />
     <Compile Include="Modules\Items\AddNewImagesAndViewsModule.cs" />
     <Compile Include="Modules\Items\AddTrackingWorkflowModule.cs" />
@@ -100,7 +101,7 @@
     <Compile Include="Modules\Schedulable\SendNewItemEmailsModule.cs" />
     <Compile Include="Modules\Schedulable\SolrLuceneIndexOptimizationModule.cs" />
     <Compile Include="Modules\Schedulable\UpdatedCachedAggregationMetadataModule.cs" />
-    <Compile Include="Modules\Folders\Update_Non_Bib_Folders.cs" />
+    <Compile Include="Modules\Folders\UpdateNonBibFolders.cs" />
     <Compile Include="PDF_Tools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\Builder_Settings.cs" />

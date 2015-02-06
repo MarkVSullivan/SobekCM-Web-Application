@@ -23,10 +23,10 @@ namespace SobekCM.Engine_Library
             string queryString = context.Request.QueryString["urlrelative"];
             if (!String.IsNullOrEmpty(queryString))
             {
-
+                // Make sure the microservices configuration has been read
                 if (microserviceConfig == null)
                 {
-                    string path = context.Server.MapPath("config/default/sobekcm_microservices.config");
+                    string path = context.Server.MapPath("config/default/sobekcm_engine.config");
                     microserviceConfig = Microservices_Config_Reader.Read_Config(path);
                 }
 
@@ -54,7 +54,16 @@ namespace SobekCM.Engine_Library
                     if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.PROTOBUF)
                         context.Response.ContentType = "application/octet-stream";
 
-                    endpoint.Invoke(context.Response, paths, context.Request.Form);
+                    try
+                    {
+                        endpoint.Invoke(context.Response, paths, context.Request.Form);
+                    }
+                    catch (Exception ee)
+                    {
+                        context.Response.ContentType = "text/plain";
+                        context.Response.Output.WriteLine("Error invoking the exception method: " + ee.Message);
+                        context.Response.StatusCode = 500;
+                    }
                 }
             }
             else

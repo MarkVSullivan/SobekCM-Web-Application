@@ -10,8 +10,10 @@ using System.Web;
 using System.Web.Caching;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Items;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
@@ -27,7 +29,6 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Engine_Library.SiteMap;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Database;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Library.Skins;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -70,18 +71,18 @@ namespace SobekCM.Library
                 return false;
             }
 
-            if ( Simple_Web_Content.Static_Text.Length == 0 )
+            if ( Simple_Web_Content.Content.Length == 0 )
             {
                 Current_Mode.Error_Message = "Unable to read the file for display";
                 return false;
             }
 
             // Now, check for any "server-side include" directorives in the source text
-            int include_index = Simple_Web_Content.Static_Text.IndexOf("<%INCLUDE");
-            while(( include_index > 0 ) && ( Simple_Web_Content.Static_Text.IndexOf("%>", include_index, StringComparison.Ordinal) > 0 ))
+            int include_index = Simple_Web_Content.Content.IndexOf("<%INCLUDE");
+            while(( include_index > 0 ) && ( Simple_Web_Content.Content.IndexOf("%>", include_index, StringComparison.Ordinal) > 0 ))
             {
-                int include_finish_index = Simple_Web_Content.Static_Text.IndexOf("%>", include_index, StringComparison.Ordinal) + 2;
-                string include_statement = Simple_Web_Content.Static_Text.Substring(include_index, include_finish_index - include_index);
+                int include_finish_index = Simple_Web_Content.Content.IndexOf("%>", include_index, StringComparison.Ordinal) + 2;
+                string include_statement = Simple_Web_Content.Content.Substring(include_index, include_finish_index - include_index);
                 string include_statement_upper = include_statement.ToUpper();
                 int file_index = include_statement_upper.IndexOf("FILE");
                 string filename_to_include = String.Empty;
@@ -163,22 +164,22 @@ namespace SobekCM.Library
                     }
 
                     // Replace the text with the include file
-                    Simple_Web_Content.Static_Text = Simple_Web_Content.Static_Text.Replace(include_statement, include_text);
-                    include_index = Simple_Web_Content.Static_Text.IndexOf("<%INCLUDE", include_index + include_text.Length - 1, StringComparison.Ordinal);
+                    Simple_Web_Content.Content = Simple_Web_Content.Content.Replace(include_statement, include_text);
+                    include_index = Simple_Web_Content.Content.IndexOf("<%INCLUDE", include_index + include_text.Length - 1, StringComparison.Ordinal);
                 }
                 else
                 {
                     // No suitable name was found, or it doesn't exist so just remove the INCLUDE completely
-                    Simple_Web_Content.Static_Text = Simple_Web_Content.Static_Text.Replace(include_statement, "");
-                    include_index = Simple_Web_Content.Static_Text.IndexOf("<%INCLUDE", include_index, StringComparison.Ordinal);
+                    Simple_Web_Content.Content = Simple_Web_Content.Content.Replace(include_statement, "");
+                    include_index = Simple_Web_Content.Content.IndexOf("<%INCLUDE", include_index, StringComparison.Ordinal);
                 }
             }
 
             // Look for a site map
-            if (Simple_Web_Content.SiteMap.Length > 0)
+            if ( !String.IsNullOrEmpty(Simple_Web_Content.SiteMap))
             {
                 // Look in the cache first
-                Site_Map = Cached_Data_Manager.Retrieve_Site_Map(Simple_Web_Content.SiteMap, Tracer);
+                Site_Map = CachedDataManager.Retrieve_Site_Map(Simple_Web_Content.SiteMap, Tracer);
 
                 // If this was NULL, pull it
                 if (Site_Map == null)
@@ -197,14 +198,14 @@ namespace SobekCM.Library
                         // If the sitemap file was succesfully read, cache it
                         if (Site_Map != null)
                         {
-                            Cached_Data_Manager.Store_Site_Map(Site_Map, Simple_Web_Content.SiteMap, Tracer);
+                            CachedDataManager.Store_Site_Map(Site_Map, Simple_Web_Content.SiteMap, Tracer);
                         }
                     }
                 }
             }
 
             // Since this is not cached, we can apply the individual user settings to the static text which was read right here
-            Simple_Web_Content.Static_Text = Simple_Web_Content.Apply_Settings_To_Static_Text(Simple_Web_Content.Static_Text, null, Current_Mode.Skin, Current_Mode.Base_Skin, Current_Mode.Base_URL, UrlWriterHelper.URL_Options(Current_Mode), Tracer);
+            Simple_Web_Content.Content = Simple_Web_Content.Apply_Settings_To_Static_Text(Simple_Web_Content.Content, null, Current_Mode.Skin, Current_Mode.Base_Skin, Current_Mode.Base_URL, UrlWriterHelper.URL_Options(Current_Mode), Tracer);
 
 
             return true;
@@ -224,7 +225,7 @@ namespace SobekCM.Library
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
-        /// database and hands off to the <see cref="Cached_Data_Manager" /> to store in the cache </remarks>
+        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
         public bool Get_User_Folder( string Folder_Name, int User_ID, int Results_Per_Page, int ResultsPage, Custom_Tracer Tracer, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results )
         {
             if (Tracer != null)
@@ -234,13 +235,13 @@ namespace SobekCM.Library
 
             // Look to see if the browse statistics are available on any cache for this browse
             bool need_browse_statistics = true;
-            Complete_Result_Set_Info = Cached_Data_Manager.Retrieve_User_Folder_Browse_Statistics(User_ID, Folder_Name, Tracer);
+            Complete_Result_Set_Info = CachedDataManager.Retrieve_User_Folder_Browse_Statistics(User_ID, Folder_Name, Tracer);
             if (Complete_Result_Set_Info != null)
                 need_browse_statistics = false;
 
             // Look to see if the paged results are available on any cache..
             bool need_paged_results = true;
-            Paged_Results = Cached_Data_Manager.Retrieve_User_Folder_Browse(User_ID, Folder_Name, ResultsPage, Results_Per_Page, Tracer);
+            Paged_Results = CachedDataManager.Retrieve_User_Folder_Browse(User_ID, Folder_Name, ResultsPage, Results_Per_Page, Tracer);
             if (Paged_Results != null)
                 need_paged_results = false;
 
@@ -270,13 +271,13 @@ namespace SobekCM.Library
                 // Save the overall result set statistics to the cache if something was pulled
                 if ((need_browse_statistics) && (Complete_Result_Set_Info != null))
                 {
-                    Cached_Data_Manager.Store_User_Folder_Browse_Statistics(User_ID, Folder_Name, Complete_Result_Set_Info, Tracer);
+                    CachedDataManager.Store_User_Folder_Browse_Statistics(User_ID, Folder_Name, Complete_Result_Set_Info, Tracer);
                 }
 
                 // Save the overall result set statistics to the cache if something was pulled
                 if ((need_paged_results) && (Paged_Results != null))
                 {
-                    Cached_Data_Manager.Store_User_Folder_Browse(User_ID, Folder_Name, ResultsPage, Results_Per_Page, Paged_Results, Tracer);
+                    CachedDataManager.Store_User_Folder_Browse(User_ID, Folder_Name, ResultsPage, Results_Per_Page, Paged_Results, Tracer);
                 }
             }
 
@@ -296,7 +297,7 @@ namespace SobekCM.Library
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
-        /// database and hands off to the <see cref="Cached_Data_Manager" /> to store in the cache </remarks>
+        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
         public bool Get_Public_User_Folder(int UserFolderID, int ResultsPage, Custom_Tracer Tracer, out Public_User_Folder Folder_Info, out Search_Results_Statistics Complete_Result_Set_Info, out List<iSearch_Title_Result> Paged_Results)
         {
             if (Tracer != null)
@@ -309,13 +310,13 @@ namespace SobekCM.Library
             Complete_Result_Set_Info = null;
 
             // Try to get this from the cache first, otherwise get from database and store in cache
-            Folder_Info = Cached_Data_Manager.Retrieve_Public_Folder_Info(UserFolderID, Tracer);
+            Folder_Info = CachedDataManager.Retrieve_Public_Folder_Info(UserFolderID, Tracer);
             if (Folder_Info == null)
             {
                 Folder_Info = SobekCM_Database.Get_Public_User_Folder(UserFolderID, Tracer);
                 if ((Folder_Info != null) && (Folder_Info.IsPublic))
                 {
-                    Cached_Data_Manager.Store_Public_Folder_Info(Folder_Info, Tracer);
+                    CachedDataManager.Store_Public_Folder_Info(Folder_Info, Tracer);
                 }
             }
 
@@ -327,13 +328,13 @@ namespace SobekCM.Library
 
             // Look to see if the browse statistics are available on any cache for this browse
             bool need_browse_statistics = true;
-            Complete_Result_Set_Info = Cached_Data_Manager.Retrieve_Public_Folder_Statistics(UserFolderID, Tracer);
+            Complete_Result_Set_Info = CachedDataManager.Retrieve_Public_Folder_Statistics(UserFolderID, Tracer);
             if (Complete_Result_Set_Info != null)
                 need_browse_statistics = false;
 
             // Look to see if the paged results are available on any cache..
             bool need_paged_results = true;
-            Paged_Results = Cached_Data_Manager.Retrieve_Public_Folder_Browse(UserFolderID, ResultsPage, Tracer);
+            Paged_Results = CachedDataManager.Retrieve_Public_Folder_Browse(UserFolderID, ResultsPage, Tracer);
             if (Paged_Results != null)
                 need_paged_results = false;
 
@@ -362,13 +363,13 @@ namespace SobekCM.Library
                 // Save the overall result set statistics to the cache if something was pulled
                 if ((need_browse_statistics) && (Complete_Result_Set_Info != null))
                 {
-                    Cached_Data_Manager.Store_Public_Folder_Statistics(UserFolderID, Complete_Result_Set_Info, Tracer);
+                    CachedDataManager.Store_Public_Folder_Statistics(UserFolderID, Complete_Result_Set_Info, Tracer);
                 }
 
                 // Save the overall result set statistics to the cache if something was pulled
                 if ((need_paged_results) && (Paged_Results != null))
                 {
-                    Cached_Data_Manager.Store_Public_Folder_Browse(UserFolderID, ResultsPage, Paged_Results, Tracer);
+                    CachedDataManager.Store_Public_Folder_Browse(UserFolderID, ResultsPage, Paged_Results, Tracer);
                 }
             }
 
@@ -404,7 +405,7 @@ namespace SobekCM.Library
         /// <param name="Browse_Info_Display_Text"> [OUT] Static HTML-based content to be displayed if this is browing a staticly created html source file </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
-        /// database and hands off to the <see cref="Cached_Data_Manager" /> to store in the cache </remarks>
+        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
         public bool Get_Browse_Info(SobekCM_Navigation_Object Current_Mode,
                                     Item_Aggregation Aggregation_Object,
                                     string Base_Directory,
@@ -433,12 +434,12 @@ namespace SobekCM.Library
                 string[] matching_file = Directory.GetFiles(source, Current_Mode.Info_Browse_Mode + ".*");
                 if (matching_file.Length > 0)
                 {
-                    Browse_Object = new Item_Aggregation_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.NONE, Item_Aggregation_Child_Page.Source_Type.Static_HTML, Current_Mode.Info_Browse_Mode, matching_file[0], Current_Mode.Info_Browse_Mode);
+                    Browse_Object = new Item_Aggregation_Child_Page( Item_Aggregation_Child_Visibility_Enum.None, Item_Aggregation_Child_Source_Data_Enum.Static_HTML, Current_Mode.Info_Browse_Mode, matching_file[0], Current_Mode.Info_Browse_Mode);
                 }
             }
             else
             {
-                Browse_Object = Aggregation_Object.Get_Browse_Info_Object(Current_Mode.Info_Browse_Mode);
+                Browse_Object = Aggregation_Object.Child_Page_By_Code(Current_Mode.Info_Browse_Mode);
             }
             if (Browse_Object == null)
             {
@@ -447,9 +448,9 @@ namespace SobekCM.Library
             }
 
             // Is this a table result, or a string?
-            switch (Browse_Object.Data_Type)
+            switch (Browse_Object.Source_Data_Type)
             {
-                case Item_Aggregation_Child_Page.Result_Data_Type.Table:
+                case Item_Aggregation_Child_Source_Data_Enum.Database_Table:
 
                     // Set the current sort to ZERO, if currently set to ONE and this is an ALL BROWSE.
                     // Those two sorts are the same in this case
@@ -483,12 +484,12 @@ namespace SobekCM.Library
                     if (!special_search_type)
                     {
                         // Look to see if the browse statistics are available on any cache for this browse
-                        Complete_Result_Set_Info = Cached_Data_Manager.Retrieve_Browse_Result_Statistics(Aggregation_Object.Code, browse_code, Tracer);
+                        Complete_Result_Set_Info = CachedDataManager.Retrieve_Browse_Result_Statistics(Aggregation_Object.Code, browse_code, Tracer);
                         if (Complete_Result_Set_Info != null)
                             need_browse_statistics = false;
 
                         // Look to see if the paged results are available on any cache..
-                        Paged_Results = Cached_Data_Manager.Retrieve_Browse_Results(Aggregation_Object.Code, browse_code, Current_Mode.Page, sort, Tracer);
+                        Paged_Results = CachedDataManager.Retrieve_Browse_Results(Aggregation_Object.Code, browse_code, Current_Mode.Page, sort, Tracer);
                         if (Paged_Results != null)
                             need_paged_results = false;
                     }
@@ -540,20 +541,20 @@ namespace SobekCM.Library
                         {
                             if ((need_browse_statistics) && (Complete_Result_Set_Info != null))
                             {
-                                Cached_Data_Manager.Store_Browse_Result_Statistics(Aggregation_Object.Code, browse_code, Complete_Result_Set_Info, Tracer);
+                                CachedDataManager.Store_Browse_Result_Statistics(Aggregation_Object.Code, browse_code, Complete_Result_Set_Info, Tracer);
                             }
 
                             // Save the overall result set statistics to the cache if something was pulled
                             if ((need_paged_results) && (Paged_Results != null))
                             {
-                                Cached_Data_Manager.Store_Browse_Results(Aggregation_Object.Code, browse_code, Current_Mode.Page, sort, pagesOfResults, Tracer);
+                                CachedDataManager.Store_Browse_Results(Aggregation_Object.Code, browse_code, Current_Mode.Page, sort, pagesOfResults, Tracer);
                             }
                         }
                     }
                     break;
 
-                case Item_Aggregation_Child_Page.Result_Data_Type.Text:
-                    Browse_Info_Display_Text = Browse_Object.Get_Static_Content(Current_Mode.Language, Current_Mode.Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Design_Location + Aggregation_Object.ObjDirectory, Tracer);
+                case Item_Aggregation_Child_Source_Data_Enum.Static_HTML:
+                    Browse_Info_Display_Text = SobekEngineClient.Aggregations.Get_Aggregation_HTML_Child_Page(Aggregation_Object.Code, Aggregation_Object.Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, false, Browse_Object.Code, Tracer);
                     break;
             }
             return true;
@@ -634,7 +635,7 @@ namespace SobekCM.Library
         /// <param name="Items_In_Title"> [OUT] List of all the items in this title </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
-        /// database and hands off to the <see cref="Cached_Data_Manager" /> to store in the cache.  If the item must be 
+        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache.  If the item must be 
         /// built from scratch, the <see cref="Items.SobekCM_Item_Factory"/> class is utilized. </remarks>
         public bool Get_Item(SobekCM_Navigation_Object Current_Mode,
                              Item_Lookup_Object All_Items_Lookup,
@@ -663,7 +664,7 @@ namespace SobekCM.Library
         /// <param name="Items_In_Title"> [OUT] List of all the items in this title </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
-        /// database and hands off to the <see cref="Cached_Data_Manager" /> to store in the cache.  If the item must be 
+        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache.  If the item must be 
         /// built from scratch, the <see cref="Items.SobekCM_Item_Factory"/> class is utilized. </remarks>
         public bool Get_Item(string Collection_Code, 
                              SobekCM_Navigation_Object Current_Mode, 
@@ -764,9 +765,9 @@ namespace SobekCM.Library
 
                 // Try to get this from the cache
                 if ((Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata ) && (Current_User != null))
-                    Current_Item = Cached_Data_Manager.Retrieve_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Tracer);
+                    Current_Item = CachedDataManager.Retrieve_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Tracer);
                 else
-                    Current_Item = Cached_Data_Manager.Retrieve_Digital_Resource_Object( Current_Mode.BibID, Current_Mode.VID, Tracer);
+                    Current_Item = CachedDataManager.Retrieve_Digital_Resource_Object( Current_Mode.BibID, Current_Mode.VID, Tracer);
 
                 // If not pulled from the cache, then we will have to build the item
                 if (Current_Item == null)
@@ -783,10 +784,10 @@ namespace SobekCM.Library
                         {
                             string note_to_add = "Online edit by " + Current_User.Full_Name + " ( " + DateTime.Now.ToShortDateString() + " )";
                             Current_Item.METS_Header.Add_Creator_Individual_Notes( note_to_add );
-                            Cached_Data_Manager.Store_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
+                            CachedDataManager.Store_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
                         }
                         else
-                            Cached_Data_Manager.Store_Digital_Resource_Object(Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
+                            CachedDataManager.Store_Digital_Resource_Object(Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
                     }
                 }
                 else
@@ -822,7 +823,7 @@ namespace SobekCM.Library
             else
             {
 	            // Try to get this from the cache
-	            Current_Item = Cached_Data_Manager.Retrieve_Digital_Resource_Object(Current_Mode.BibID, Tracer);
+	            Current_Item = CachedDataManager.Retrieve_Digital_Resource_Object(Current_Mode.BibID, Tracer);
 
 	            // Have to build this item group information then
 	            if (Current_Item == null)
@@ -848,8 +849,8 @@ namespace SobekCM.Library
 
 		            // Put this back on the cache
 		            Current_Item.METS_Header.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
-		            Cached_Data_Manager.Store_Digital_Resource_Object(bibID, Current_Item, Tracer);
-		            Cached_Data_Manager.Store_Items_In_Title(bibID, Items_In_Title, Tracer);
+		            CachedDataManager.Store_Digital_Resource_Object(bibID, Current_Item, Tracer);
+		            CachedDataManager.Store_Items_In_Title(bibID, Items_In_Title, Tracer);
 	            }
             }
 
@@ -1056,12 +1057,12 @@ namespace SobekCM.Library
                 if (!special_search_type)
                 {
                     // Look to see if the search statistics are available on any cache..
-                    Complete_Result_Set_Info = Cached_Data_Manager.Retrieve_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date1, date2, Tracer);
+                    Complete_Result_Set_Info = CachedDataManager.Retrieve_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date1, date2, Tracer);
                     if (Complete_Result_Set_Info != null)
                         need_search_statistics = false;
 
                     // Look to see if the paged results are available on any cache..
-                    Paged_Results = Cached_Data_Manager.Retrieve_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, Tracer);
+                    Paged_Results = CachedDataManager.Retrieve_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, Tracer);
                     if (Paged_Results != null)
                         need_paged_results = false;
                 }
@@ -1093,13 +1094,13 @@ namespace SobekCM.Library
                             // Cache the search statistics, if it was needed
                             if ((need_search_statistics) && (Complete_Result_Set_Info != null))
                             {
-                                Cached_Data_Manager.Store_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date1, date2, Complete_Result_Set_Info, Tracer);
+                                CachedDataManager.Store_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date1, date2, Complete_Result_Set_Info, Tracer);
                             }
 
                             // Cache the search results
                             if ((need_paged_results) && (Paged_Results != null))
                             {
-                                Cached_Data_Manager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, Paged_Results, Tracer);
+                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, Paged_Results, Tracer);
                             }
                         }
                     }
@@ -1138,13 +1139,13 @@ namespace SobekCM.Library
                             // Cache the search statistics, if it was needed
                             if ((need_search_statistics) && (Complete_Result_Set_Info != null))
                             {
-                                Cached_Data_Manager.Store_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date1, date2, Complete_Result_Set_Info, Tracer);
+                                CachedDataManager.Store_Search_Result_Statistics(Current_Mode, actualCount, web_fields, terms, date1, date2, Complete_Result_Set_Info, Tracer);
                             }
 
                             // Cache the search results
                             if ((need_paged_results) && (pagesOfResults != null))
                             {
-                                Cached_Data_Manager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, pagesOfResults, Tracer);
+                                CachedDataManager.Store_Search_Results(Current_Mode, sort, actualCount, web_fields, terms, date1, date2, pagesOfResults, Tracer);
                             }
                         }
                     }
@@ -1691,7 +1692,7 @@ namespace SobekCM.Library
         /// <param name="Aggregation_Object"> [OUT] Fully-built object for the current aggregation object </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
-        /// database and hands off to the <see cref="Cached_Data_Manager" /> to store in the cache. </remarks>
+        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache. </remarks>
         public bool Get_Entire_Collection_Hierarchy(SobekCM_Navigation_Object Current_Mode, Aggregation_Code_Manager Code_Manager, Custom_Tracer Tracer, out Item_Aggregation Aggregation_Object)
         {
             if (Tracer != null)
@@ -1744,21 +1745,17 @@ namespace SobekCM.Library
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully-built object for the provided aggregation code</returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
-        /// database and hands off to the <see cref="Cached_Data_Manager" /> to store in the cache. </remarks>
+        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache. </remarks>
         public Item_Aggregation Get_Item_Aggregation(string Aggregation_Code, string Language_Code, bool IsRobot, Custom_Tracer Tracer)
         {
             // Try to pull this from the cache
-            Item_Aggregation cacheInstance = Cached_Data_Manager.Retrieve_Item_Aggregation(Aggregation_Code, Language_Code, !IsRobot, Tracer);
+            Item_Aggregation cacheInstance = CachedDataManager.Aggregations.Retrieve_Item_Aggregation(Aggregation_Code, Web_Language_Enum_Converter.Code_To_Enum(Language_Code), Tracer);
+            if (cacheInstance != null)
+                return cacheInstance;
 
-            // Put into the builder regardless of whether his came from the cache.. need to confirm search fields as well
-            Item_Aggregation returned = Item_Aggregation_Utilities.Get_Item_Aggregation(Aggregation_Code, Language_Code, cacheInstance, IsRobot, true, Tracer);
-
-            // If the collection is null, then this subcollection code was invalid.
-            if (returned == null) 
-            {
-                return null;
-            }
-
+            // Get the item aggregation from the Sobek Engine Client
+            Item_Aggregation returned = SobekEngineClient.Aggregations.Get_Aggregation(Aggregation_Code, Web_Language_Enum_Converter.Code_To_Enum(Language_Code), UI_ApplicationCache_Gateway.Settings.Default_UI_Language, IsRobot, Tracer );
+                
             // Return the object
             return returned;
         }
@@ -1769,22 +1766,18 @@ namespace SobekCM.Library
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully-built object representing all collections within this digital library </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
-        /// database and hands off to the <see cref="Cached_Data_Manager" /> to store in the cache. </remarks>
+        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache. </remarks>
         public Item_Aggregation Get_All_Collections(string Language_Code, bool IsRobot, Custom_Tracer Tracer)
         {
             try
             {
                 // Try to pull this from the cache
-                Item_Aggregation cacheInstance = Cached_Data_Manager.Retrieve_Item_Aggregation("all", Language_Code, !IsRobot, Tracer);
+                Item_Aggregation cacheInstance = CachedDataManager.Aggregations.Retrieve_Item_Aggregation("all", Web_Language_Enum_Converter.Code_To_Enum(Language_Code), Tracer);
+                if (cacheInstance != null)
+                    return cacheInstance;
 
-                // Put into the builder regardless of whether his came from the cache.. need to confirm search fields as well
-                Item_Aggregation returned = Item_Aggregation_Utilities.Get_Item_Aggregation("all", Language_Code, cacheInstance, IsRobot, true, Tracer);
-
-                // If the object is null, then this group code was invalid.
-                if (returned == null) 
-                {
-                    return null;
-                }
+                // Get the item aggregation from the Sobek Engine Client
+                Item_Aggregation returned = SobekEngineClient.Aggregations.Get_Aggregation("all", Web_Language_Enum_Converter.Code_To_Enum(Language_Code), UI_ApplicationCache_Gateway.Settings.Default_UI_Language, IsRobot, Tracer);
 
                 // Return the object
                 return returned;
@@ -1838,7 +1831,7 @@ namespace SobekCM.Library
             // If no interface yet, look in the cache
             if (( Web_Skin_Code != "new") && ( Cache_On_Build ))
             {
-                htmlSkin = Cached_Data_Manager.Retrieve_Skin(Web_Skin_Code, Current_Mode.Language_Code, Tracer);
+                htmlSkin = CachedDataManager.Retrieve_Skin(Web_Skin_Code, Current_Mode.Language_Code, Tracer);
                 if (htmlSkin != null)
                 {
 	                if (Tracer != null)
@@ -1872,7 +1865,7 @@ namespace SobekCM.Library
                     else if ( Cache_On_Build )
                     {
                         // Momentarily cache this web skin object
-                        Cached_Data_Manager.Store_Skin(Web_Skin_Code, Current_Mode.Language_Code, new_skin, Tracer);
+                        CachedDataManager.Store_Skin(Web_Skin_Code, Current_Mode.Language_Code, new_skin, Tracer);
                     }
 
                     htmlSkin = new_skin;

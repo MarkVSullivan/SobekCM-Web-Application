@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Items;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
@@ -19,7 +20,6 @@ using SobekCM.Library.Email;
 using SobekCM.Library.ItemViewer;
 using SobekCM.Library.ItemViewer.Fragments;
 using SobekCM.Library.ItemViewer.Viewers;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
@@ -192,7 +192,7 @@ namespace SobekCM.Library.HTML
                                 RequestSpecificValues.Current_User.Add_Bookshelf_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID);
 
                                 // Ensure this user folder is not sitting in the cache
-                                Cached_Data_Manager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, foldername, RequestSpecificValues.Tracer);
+                                CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, foldername, RequestSpecificValues.Tracer);
 
                                 HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Item was saved to your bookshelf.");
 
@@ -217,7 +217,7 @@ namespace SobekCM.Library.HTML
                             if (SobekCM_Database.Delete_Item_From_User_Folders(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer))
                             {
                                 RequestSpecificValues.Current_User.Remove_From_Bookshelves(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID);
-                                Cached_Data_Manager.Remove_All_User_Folder_Browses(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
+                                CachedDataManager.Remove_All_User_Folder_Browses(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
                                 HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Item was removed from your bookshelves.");
                             }
                             else
@@ -310,8 +310,8 @@ namespace SobekCM.Library.HTML
                             if (Resource_Object.Database.SobekCM_Database.Set_IP_Restriction_Mask(RequestSpecificValues.Current_Item.Web.ItemID, RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership, RequestSpecificValues.Current_User.UserName, String.Empty))
                             {
 								// Update the cached item
-                                Cached_Data_Manager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
-                                Cached_Data_Manager.Store_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Current_Item, RequestSpecificValues.Tracer);
+                                CachedDataManager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
+                                CachedDataManager.Store_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Current_Item, RequestSpecificValues.Tracer);
 
 								// Update the web.config
 	                            Resource_Web_Config_Writer.Update_Web_Config(RequestSpecificValues.Current_Item.Source_Directory, RequestSpecificValues.Current_Item.Behaviors.Dark_Flag, (short) current_mask, RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail);
@@ -390,7 +390,7 @@ namespace SobekCM.Library.HTML
                     if (RequestSpecificValues.Items_In_Title == null)
                     {
                         // Look in the cache first
-                        RequestSpecificValues.Items_In_Title = Cached_Data_Manager.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+                        RequestSpecificValues.Items_In_Title = CachedDataManager.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
 
                         // If still null, try to pull from the database
                         if (RequestSpecificValues.Items_In_Title == null)
@@ -415,7 +415,7 @@ namespace SobekCM.Library.HTML
                             // Store in cache if retrieved
                             if (RequestSpecificValues.Items_In_Title != null)
                             {
-                                Cached_Data_Manager.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Items_In_Title, RequestSpecificValues.Tracer);
+                                CachedDataManager.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Items_In_Title, RequestSpecificValues.Tracer);
                             }
                         }
                     }

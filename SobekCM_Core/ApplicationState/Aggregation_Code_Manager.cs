@@ -100,9 +100,7 @@ namespace SobekCM.Core.ApplicationState
             }
         }
 
-        /// <summary>
-        ///   Clears the internal data for this code manager
-        /// </summary>
+        /// <summary> Clears the internal data for this code manager </summary>
         public void Clear()
         {
             Aggregations_By_Thematic_Heading.Clear();
@@ -112,7 +110,7 @@ namespace SobekCM.Core.ApplicationState
             All_Aggregations.Clear();
         }
 
-        public void Add_Collection(Item_Aggregation_Related_Aggregations New_Aggregation, int Theme)
+        public void Add_Collection(Item_Aggregation_Related_Aggregations New_Aggregation)
         {
 			// Insert this into the proper spot in the item aggregation list
 	        int index = 0;
@@ -136,15 +134,15 @@ namespace SobekCM.Core.ApplicationState
             {
                 aggregationsByType[New_Aggregation.Type] = new List<Item_Aggregation_Related_Aggregations> {New_Aggregation};
             }
-            if (Theme > 0)
+            if (( New_Aggregation.Thematic_Heading != null ) && ( New_Aggregation.Thematic_Heading.ID > 0 ))
             {
-                if (Aggregations_By_Thematic_Heading.ContainsKey(Theme))
+                if (Aggregations_By_Thematic_Heading.ContainsKey(New_Aggregation.Thematic_Heading.ID))
                 {
-                    Aggregations_By_Thematic_Heading[Theme].Add(New_Aggregation);
+                    Aggregations_By_Thematic_Heading[New_Aggregation.Thematic_Heading.ID].Add(New_Aggregation);
                 }
                 else
                 {
-                    Aggregations_By_Thematic_Heading[Theme] = new List<Item_Aggregation_Related_Aggregations> {New_Aggregation};
+                    Aggregations_By_Thematic_Heading[New_Aggregation.Thematic_Heading.ID] = new List<Item_Aggregation_Related_Aggregations> { New_Aggregation };
                 }
             }
         }

@@ -21,7 +21,7 @@ namespace SobekCM.Engine_Library.Aggregations
         /// item aggregation object </summary>
         /// <param name="HierarchyObject"> Item aggregation object to populate</param>
         /// <param name="FileLocation"> Full name of the item aggregation configuration XML file </param>
-        public void Add_Info_From_XML_File(Item_Aggregation HierarchyObject, string FileLocation )
+        public void Add_Info_From_XML_File(Complete_Item_Aggregation HierarchyObject, string FileLocation )
         {
             // Get the directory from the file location
             string directory = (new FileInfo(FileLocation)).DirectoryName;
@@ -81,7 +81,7 @@ namespace SobekCM.Engine_Library.Aggregations
             }
         }
 
-        private static void read_results_specs(XmlNodeReader NodeReader, Item_Aggregation HierarchyObject)
+        private static void read_results_specs(XmlNodeReader NodeReader, Complete_Item_Aggregation HierarchyObject)
         {
             bool inViews = false;
             while (NodeReader.Read())
@@ -216,7 +216,7 @@ namespace SobekCM.Engine_Library.Aggregations
             }
         }
 
-        private static void read_settings(XmlNodeReader NodeReader, Item_Aggregation HierarchyObject)
+        private static void read_settings(XmlNodeReader NodeReader, Complete_Item_Aggregation HierarchyObject)
         {
             while (NodeReader.Read())
             {
@@ -273,7 +273,7 @@ namespace SobekCM.Engine_Library.Aggregations
             }
         }
 
-        private static void read_home(XmlNodeReader NodeReader, Item_Aggregation HierarchyObject)
+        private static void read_home(XmlNodeReader NodeReader, Complete_Item_Aggregation HierarchyObject)
         {
             while (NodeReader.Read())
             {
@@ -310,7 +310,7 @@ namespace SobekCM.Engine_Library.Aggregations
             }
         }
 
-        private static void read_banners(XmlNodeReader NodeReader, Item_Aggregation HierarchyObject )
+        private static void read_banners(XmlNodeReader NodeReader, Complete_Item_Aggregation HierarchyObject)
         {
             while (NodeReader.Read())
             {
@@ -327,7 +327,7 @@ namespace SobekCM.Engine_Library.Aggregations
                             // Check for any attributes to this banner node
                             string lang = String.Empty;
                             bool special = false;
-							Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type type = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT;
+                            Item_Aggregation_Front_Banner_Type_Enum type = Item_Aggregation_Front_Banner_Type_Enum.Left;
 		                    ushort width = 550;
 		                    ushort height = 230;
 
@@ -348,15 +348,15 @@ namespace SobekCM.Engine_Library.Aggregations
 									switch (NodeReader.Value.Trim().ToUpper())
 									{
 										case "RIGHT":
-											type = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT;
+                                            type = Item_Aggregation_Front_Banner_Type_Enum.Right;
 											break;
 
 										case "LEFT":
-											type = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT;
+                                            type = Item_Aggregation_Front_Banner_Type_Enum.Left;
 											break;
 
 										case "FULL":
-											type = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.FULL;
+                                            type = Item_Aggregation_Front_Banner_Type_Enum.Full;
 											break;
 									}
 								}
@@ -397,7 +397,7 @@ namespace SobekCM.Engine_Library.Aggregations
             }
         }
 
-        private static void read_directives( XmlNodeReader NodeReader, Item_Aggregation HierarchyObject, string Directory )
+        private static void read_directives(XmlNodeReader NodeReader, Complete_Item_Aggregation HierarchyObject, string Directory)
         {
             string directiveCode = String.Empty;
             string directiveFile = String.Empty;
@@ -471,10 +471,10 @@ namespace SobekCM.Engine_Library.Aggregations
                 }
             }
         }
-    
-        private static void read_highlights( XmlNodeReader NodeReader, Item_Aggregation HierarchyObject )
+
+        private static void read_highlights(XmlNodeReader NodeReader, Complete_Item_Aggregation HierarchyObject)
         {
-            Item_Aggregation_Highlights highlight = new Item_Aggregation_Highlights();
+            Complete_Item_Aggregation_Highlights highlight = new Complete_Item_Aggregation_Highlights();
 
 
             // Determine if this is a rotating type of highlight or not
@@ -496,12 +496,12 @@ namespace SobekCM.Engine_Library.Aggregations
                         if (NodeReader.Value.Trim().ToUpper() == "RIGHT")
                         {
                             foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
-                                banners.Value.Type = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT;
+                                banners.Value.Type = Item_Aggregation_Front_Banner_Type_Enum.Right;
                         }
                         else
                         {
                             foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> banners in HierarchyObject.Front_Banner_Dictionary)
-                                banners.Value.Type = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT;
+                                banners.Value.Type = Item_Aggregation_Front_Banner_Type_Enum.Left;
                         }
                     }
                     if (NodeReader.MoveToAttribute("bannerHeight"))
@@ -562,9 +562,9 @@ namespace SobekCM.Engine_Library.Aggregations
                     if (NodeReader.Name.Trim().ToUpper() == "HI:HIGHLIGHT" )
                     {
                         if (HierarchyObject.Highlights == null)
-                            HierarchyObject.Highlights = new List<Item_Aggregation_Highlights>();
+                            HierarchyObject.Highlights = new List<Complete_Item_Aggregation_Highlights>();
                         HierarchyObject.Highlights.Add(highlight);
-                        highlight = new Item_Aggregation_Highlights();
+                        highlight = new Complete_Item_Aggregation_Highlights();
                     }
 
                     if (NodeReader.Name.Trim().ToUpper() == "HI:HIGHLIGHTS")
@@ -576,14 +576,13 @@ namespace SobekCM.Engine_Library.Aggregations
             }
         }
 
-        private static void read_browse(bool Browse, XmlNodeReader NodeReader, Item_Aggregation HierarchyObject )
+        private static void read_browse(bool Browse, XmlNodeReader NodeReader, Complete_Item_Aggregation HierarchyObject)
         {
             // Create a new browse/info object
-            Item_Aggregation_Child_Page newBrowse = new Item_Aggregation_Child_Page
+            Complete_Item_Aggregation_Child_Page newBrowse = new Complete_Item_Aggregation_Child_Page
                                 {
-                                    Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU,
-                                    Source = Item_Aggregation_Child_Page.Source_Type.Static_HTML,
-                                    Data_Type = Item_Aggregation_Child_Page.Result_Data_Type.Text
+                                    Browse_Type = Item_Aggregation_Child_Visibility_Enum.Main_Menu,
+                                    Source_Data_Type = Item_Aggregation_Child_Source_Data_Enum.Static_HTML
                                 };
 
             bool isDefault = false;
@@ -593,7 +592,7 @@ namespace SobekCM.Engine_Library.Aggregations
             if (!Browse)
             {
                 lastName = "HI:INFO";
-                newBrowse.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.NONE;
+                newBrowse.Browse_Type = Item_Aggregation_Child_Visibility_Enum.None;
             }
 
             // Check for the attributes
@@ -602,7 +601,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 if (NodeReader.MoveToAttribute("location"))
                 {
                     if (NodeReader.Value == "BROWSEBY")
-                        newBrowse.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY;
+                        newBrowse.Browse_Type = Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By;
                 }
                 if (NodeReader.MoveToAttribute("default"))
                 {
@@ -614,15 +613,15 @@ namespace SobekCM.Engine_Library.Aggregations
 					switch (NodeReader.Value)
 					{
 						case "NONE":
-							newBrowse.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.NONE;
+                            newBrowse.Browse_Type = Item_Aggregation_Child_Visibility_Enum.None;
 							break;
 
 						case "MAIN_MENU":
-							newBrowse.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU;
+                            newBrowse.Browse_Type = Item_Aggregation_Child_Visibility_Enum.Main_Menu;
 							break;
 
 						case "BROWSEBY":
-							newBrowse.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY;
+                            newBrowse.Browse_Type = Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By;
 							break;
 					}
 				}
@@ -647,8 +646,7 @@ namespace SobekCM.Engine_Library.Aggregations
                         case "HI:METADATA":
                             NodeReader.Read();
                             newBrowse.Code = NodeReader.Value.ToLower();
-                            newBrowse.Source = Item_Aggregation_Child_Page.Source_Type.Database;
-                            newBrowse.Data_Type = Item_Aggregation_Child_Page.Result_Data_Type.Table;
+                            newBrowse.Source_Data_Type = Item_Aggregation_Child_Source_Data_Enum.Database_Table;
                             break;
 
                         case "HI:CODE":
@@ -696,7 +694,7 @@ namespace SobekCM.Engine_Library.Aggregations
 		                    //HierarchyObject.Add
 
 		                    // If this set the default browse by save that information
-		                    if ((newBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY) && (isDefault))
+                            if ((newBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By) && (isDefault))
 		                    {
 			                    HierarchyObject.Default_BrowseBy = newBrowse.Code;
 		                    }

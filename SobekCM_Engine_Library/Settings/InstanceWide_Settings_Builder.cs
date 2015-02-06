@@ -10,13 +10,14 @@ using System.Xml;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Database;
 using SobekCM.Core.Search;
+using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object.OAI.Writer;
 
 #endregion
 
-namespace SobekCM.Core.Settings
+namespace SobekCM.Engine_Library.Settings
 {
     public static  class InstanceWide_Settings_Builder
     {
@@ -26,10 +27,10 @@ namespace SobekCM.Core.Settings
         private const string BACKUP_FILES_FOLDER_NAME = "sobek_files";
 
         /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
-        private const string CURRENT_WEB_VERSION = "4.05";
+        private const string CURRENT_WEB_VERSION = "4.7.1";
 
         /// <summary> Current version number associated with this SobekCM builder application </summary>
-        private const string CURRENT_BUILDER_VERSION = "4.05";
+        private const string CURRENT_BUILDER_VERSION = "4.7.1";
 
         /// <summary> Number of ticks that a complete package must age before being processed </summary>
         /// <value> This is currently set to 15 minutes (in ticks) </value>

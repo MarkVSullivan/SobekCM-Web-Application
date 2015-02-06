@@ -11,7 +11,9 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
 using SobekCM.Core.WebContent;
@@ -21,7 +23,6 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Library.UploadiFive;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
@@ -47,7 +48,7 @@ namespace SobekCM.Library.AdminViewer
 	{
 		private string actionMessage;
 		private readonly string aggregationDirectory;
-        private Item_Aggregation itemAggregation;
+        private readonly Complete_Item_Aggregation itemAggregation;
 
 		private readonly int page;
 
@@ -88,12 +89,16 @@ namespace SobekCM.Library.AdminViewer
 			// Load the item aggregation, either currenlty from the session (if already editing this aggregation )
 			// or by reading all the appropriate XML and reading data from the database
 			object possibleEditAggregation = HttpContext.Current.Session["Edit_Aggregation_" + code];
-			Item_Aggregation cachedInstance = null;
-			if (possibleEditAggregation != null)
-				cachedInstance = (Item_Aggregation)possibleEditAggregation;
+            Complete_Item_Aggregation cachedInstance = possibleEditAggregation as Complete_Item_Aggregation;
+		    if (cachedInstance != null)
+		    {
+		        itemAggregation = cachedInstance;
+		    }
+		    else
+		    {
+		        itemAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(code, false, RequestSpecificValues.Tracer);
+		    }
 
-            itemAggregation = Item_Aggregation_Utilities.Get_Item_Aggregation(code, String.Empty, cachedInstance, false, false, RequestSpecificValues.Tracer);
-			
 			// If unable to retrieve this aggregation, send to home
 			if (itemAggregation == null)
 			{
@@ -213,11 +218,14 @@ namespace SobekCM.Library.AdminViewer
 							successful_save = false;
 
 						// Save the link between this item and the thematic heading
-						UI_ApplicationCache_Gateway.Aggregations.Set_Aggregation_Thematic_Heading(itemAggregation.Code, itemAggregation.Thematic_Heading_ID);
+					    int thematicHeadingId = -1;
+                        if (itemAggregation.Thematic_Heading != null)
+                            thematicHeadingId = itemAggregation.Thematic_Heading.ID;
+                        UI_ApplicationCache_Gateway.Aggregations.Set_Aggregation_Thematic_Heading(itemAggregation.Code, thematicHeadingId);
 
 
 						// Clear the aggregation from the cache
-						Cached_Data_Manager.Remove_Item_Aggregation(itemAggregation.Code, null);
+						CachedDataManager.Aggregations.Remove_Item_Aggregation(itemAggregation.Code, null);
 
 						// Forward back to the aggregation home page, if this was successful
 						if (successful_save)
@@ -535,10 +543,12 @@ namespace SobekCM.Library.AdminViewer
 			itemAggregation.Hidden = Form["admin_aggr_ishidden"] == null;
 			if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
 			{
-                if ((Form["admin_aggr_heading"] != null) && (Form["admin_aggr_heading"] != "-1"))
-                    itemAggregation.Thematic_Heading_ID = Convert.ToInt32(Form["admin_aggr_heading"]);
-                else
-                    itemAggregation.Thematic_Heading_ID = null;
+			    if ((Form["admin_aggr_heading"] != null) && (Form["admin_aggr_heading"] != "-1"))
+			    {
+			        itemAggregation.Thematic_Heading = new Thematic_Heading(Convert.ToInt32(Form["admin_aggr_heading"]), String.Empty);
+			    }
+			    else
+			        itemAggregation.Thematic_Heading = null;
 			}
 
 		}
@@ -691,10 +701,13 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("    <td>");
 				Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
 				Output.WriteLine("          <select class=\"sbkSaav_select_large\" name=\"admin_aggr_heading\" id=\"admin_aggr_heading\">");
-				Output.WriteLine(!itemAggregation.Thematic_Heading_ID.HasValue ? "            <option value=\"-1\" selected=\"selected\" ></option>" : "            <option value=\"-1\"></option>");
+			    int thematic_heading_id = -1;
+                if (itemAggregation.Thematic_Heading != null)
+                    thematic_heading_id = itemAggregation.Thematic_Heading.ID;
+                Output.WriteLine(thematic_heading_id == -1 ? "            <option value=\"-1\" selected=\"selected\" ></option>" : "            <option value=\"-1\"></option>");
 				foreach (Thematic_Heading thisHeading in UI_ApplicationCache_Gateway.Thematic_Headings)
 				{
-					if (( itemAggregation.Thematic_Heading_ID.HasValue ) && ( itemAggregation.Thematic_Heading_ID == thisHeading.ID))
+					if (thematic_heading_id == thisHeading.ID)
 					{
 						Output.WriteLine("            <option value=\"" + thisHeading.ID + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
 					}
@@ -1250,10 +1263,10 @@ namespace SobekCM.Library.AdminViewer
 		private void Save_Page_4_Postback(NameValueCollection Form)
 		{
 			// Get the metadata browses
-			List<Item_Aggregation_Child_Page> metadata_browse_bys = itemAggregation.Browse_By_Pages(UI_ApplicationCache_Gateway.Settings.Default_UI_Language).Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY).Where(ThisBrowse => ThisBrowse.Source == Item_Aggregation_Child_Page.Source_Type.Database).ToList();
+			List<Complete_Item_Aggregation_Child_Page> metadata_browse_bys = itemAggregation.Browse_By_Pages(UI_ApplicationCache_Gateway.Settings.Default_UI_Language).Where(ThisBrowse => ThisBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By).Where(ThisBrowse => ThisBrowse.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Database_Table).ToList();
 
 			// Remove all these browse by's
-			foreach (Item_Aggregation_Child_Page browseBy in metadata_browse_bys)
+            foreach (Complete_Item_Aggregation_Child_Page browseBy in metadata_browse_bys)
 			{
 				itemAggregation.Remove_Child_Page(browseBy);
 			}
@@ -1271,7 +1284,7 @@ namespace SobekCM.Library.AdminViewer
 						Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(default_browseby_id);
 						if (field != null)
 						{
-							Item_Aggregation_Child_Page newBrowse = new Item_Aggregation_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY, Item_Aggregation_Child_Page.Source_Type.Database, field.Display_Term, String.Empty, field.Display_Term);
+							Complete_Item_Aggregation_Child_Page newBrowse = new Complete_Item_Aggregation_Child_Page(Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By, Item_Aggregation_Child_Source_Data_Enum.Database_Table, field.Display_Term, String.Empty, field.Display_Term);
 							itemAggregation.Add_Child_Page(newBrowse);
 							itemAggregation.Default_BrowseBy = field.Display_Term;
 						}
@@ -1294,7 +1307,7 @@ namespace SobekCM.Library.AdminViewer
 						Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(browseby_id);
 						if (field != null)
 						{
-							Item_Aggregation_Child_Page newBrowse = new Item_Aggregation_Child_Page(Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY, Item_Aggregation_Child_Page.Source_Type.Database, field.Display_Term, String.Empty, field.Display_Term);
+                            Complete_Item_Aggregation_Child_Page newBrowse = new Complete_Item_Aggregation_Child_Page(Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By, Item_Aggregation_Child_Source_Data_Enum.Database_Table, field.Display_Term, String.Empty, field.Display_Term);
 							itemAggregation.Add_Child_Page(newBrowse);
 						}
 					}
@@ -1313,11 +1326,11 @@ namespace SobekCM.Library.AdminViewer
 			List<string> metadata_browse_bys = new List<string>();
 			string default_browse_by = itemAggregation.Default_BrowseBy ?? String.Empty;
 			List<string> otherBrowseBys = new List<string>();
-			foreach (Item_Aggregation_Child_Page thisBrowse in itemAggregation.Browse_By_Pages(UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
+            foreach (Complete_Item_Aggregation_Child_Page thisBrowse in itemAggregation.Browse_By_Pages(UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
 			{
-				if (thisBrowse.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY)
+				if (thisBrowse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By)
 				{
-					if (thisBrowse.Source == Item_Aggregation_Child_Page.Source_Type.Database)
+					if (thisBrowse.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Database_Table)
 					{
 						metadata_browse_bys.Add(thisBrowse.Code);
 					}
@@ -1607,11 +1620,11 @@ namespace SobekCM.Library.AdminViewer
 							}
 							else
 							{
-								Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type btypeEnum = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.FULL;
+                                Item_Aggregation_Front_Banner_Type_Enum btypeEnum = Item_Aggregation_Front_Banner_Type_Enum.Full;
 								if ( btype == "left" )
-									btypeEnum = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT;
+                                    btypeEnum = Item_Aggregation_Front_Banner_Type_Enum.Left;
 								if ( btype == "right" )
-									btypeEnum = Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT;
+                                    btypeEnum = Item_Aggregation_Front_Banner_Type_Enum.Right;
 								Item_Aggregation_Front_Banner newFront = new Item_Aggregation_Front_Banner("images\\banners\\" + bfile) {Type = btypeEnum};
 
 								try
@@ -1991,15 +2004,15 @@ namespace SobekCM.Library.AdminViewer
 		            // Show the TYPE
 		            switch (thisBannerInfo.Value.Type)
 		            {
-		                case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.FULL:
+                        case Item_Aggregation_Front_Banner_Type_Enum.Full:
 		                    Output.WriteLine("          <td>Home Page</td>");
 		                    break;
 
-		                case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.LEFT:
+                        case Item_Aggregation_Front_Banner_Type_Enum.Left:
 		                    Output.WriteLine("          <td>Home Page - Left</td>");
 		                    break;
 
-		                case Item_Aggregation_Front_Banner.Item_Aggregation_Front_Banner_Type.RIGHT:
+                        case Item_Aggregation_Front_Banner_Type_Enum.Right:
 		                    Output.WriteLine("          <td>Home Page - Right</td>");
 		                    break;
 
@@ -2218,7 +2231,7 @@ namespace SobekCM.Library.AdminViewer
 			int max_text = 0;
 		    if (itemAggregation.Highlights != null)
 		    {
-		        foreach (Item_Aggregation_Highlights thisHighlight in itemAggregation.Highlights)
+		        foreach (Complete_Item_Aggregation_Highlights thisHighlight in itemAggregation.Highlights)
 		        {
 		            max_tooltips = Math.Max(max_tooltips, thisHighlight.Tooltip_Dictionary.Count);
 		            max_text = Math.Max(max_text, thisHighlight.Text_Dictionary.Count);
@@ -2238,7 +2251,7 @@ namespace SobekCM.Library.AdminViewer
 		            Output.WriteLine("<tr><td colspan=\"2\">&nbsp;</td></tr>");
 
 		            // Either get the highlight, or just make one
-		            Item_Aggregation_Highlights emptyHighlight = new Item_Aggregation_Highlights();
+                    Complete_Item_Aggregation_Highlights emptyHighlight = new Complete_Item_Aggregation_Highlights();
 		            if (i < itemAggregation.Highlights.Count)
 		                emptyHighlight = itemAggregation.Highlights[i];
 
@@ -2251,7 +2264,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<br />");
 		}
 
-		private void Highlight_Writer_Helper(TextWriter Output, int HighlightCounter, Item_Aggregation_Highlights Highlight, int Max_Text, int Max_Tooltips)
+		private void Highlight_Writer_Helper(TextWriter Output, int HighlightCounter, Complete_Item_Aggregation_Highlights Highlight, int Max_Text, int Max_Tooltips)
 		{
 			// Add the image line
 			Output.WriteLine("<tr><td> &nbsp; &nbsp; <label for=\"admin_aggr_image_" + HighlightCounter + "\">Image:</label></td><td colspan=\"2\"><input class=\"admin_aggr_large_input\" name=\"admin_aggr_image_" + HighlightCounter + "\" id=\"admin_aggr_image_" + HighlightCounter + "\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(Highlight.Image) + "\" onfocus=\"javascript:textbox_enter('admin_aggr_image_" + HighlightCounter + "', 'admin_aggr_large_input_focused')\" onblur=\"javascript:textbox_leave('admin_aggr_image_" + HighlightCounter + "', 'admin_aggr_large_input')\" /></td></tr>");
@@ -2398,20 +2411,20 @@ namespace SobekCM.Library.AdminViewer
 					}
 					else
 					{
-						Item_Aggregation_Child_Page newPage = new Item_Aggregation_Child_Page {Code = childPageCode, Parent_Code = childPageParent, Source = Item_Aggregation_Child_Page.Source_Type.Static_HTML };
+                        Complete_Item_Aggregation_Child_Page newPage = new Complete_Item_Aggregation_Child_Page { Code = childPageCode, Parent_Code = childPageParent, Source_Data_Type = Item_Aggregation_Child_Source_Data_Enum.Static_HTML };
 						newPage.Add_Label(childPageLabel, UI_ApplicationCache_Gateway.Settings.Default_UI_Language);
 						switch (childPageVisibility)
 						{
 							case "none":
-								newPage.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.NONE;
+                                newPage.Browse_Type = Item_Aggregation_Child_Visibility_Enum.None;
 								break;
 
 							case "browse":
-								newPage.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU;
+								newPage.Browse_Type = Item_Aggregation_Child_Visibility_Enum.Main_Menu;
 								break;
 
 							case "browseby":
-								newPage.Browse_Type = Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY;
+								newPage.Browse_Type = Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By;
 								break;
 						}
 						string html_source_dir = aggregationDirectory + "\\html\\browse";
@@ -2421,7 +2434,7 @@ namespace SobekCM.Library.AdminViewer
 						if (!File.Exists(html_source_file))
 						{
 							HTML_Based_Content htmlContent = new HTML_Based_Content();
-							htmlContent.Static_Text = "<br /><br />This is a new browse page.<br /><br />" + childPageLabel + "<br /><br />The code for this browse is: " + childPageCode;
+							htmlContent.Content = "<br /><br />This is a new browse page.<br /><br />" + childPageLabel + "<br /><br />The code for this browse is: " + childPageCode;
 							htmlContent.Author = RequestSpecificValues.Current_User.Full_Name;
 							htmlContent.Date = DateTime.Now.ToLongDateString();
 							htmlContent.Title = childPageLabel;
@@ -2459,12 +2472,12 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Child pages are pages related to the aggregation and allow additional information to be presented within the same aggregational branding.  These can appear in the aggregation main menu, with any metadata browses pulled from the database, or you can set them to for no automatic visibility, in which case they are only accessible by links in the home page or other child pages.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 			// Put in alphabetical order
-			SortedList<string, Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Item_Aggregation_Child_Page>();
+            SortedList<string, Complete_Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Complete_Item_Aggregation_Child_Page>();
 		    if (itemAggregation.Child_Pages != null)
 		    {
-		        foreach (Item_Aggregation_Child_Page childPage in itemAggregation.Child_Pages)
+                foreach (Complete_Item_Aggregation_Child_Page childPage in itemAggregation.Child_Pages)
 		        {
-		            if (childPage.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
+		            if (childPage.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML)
 		            {
 		                sortedChildren.Add(childPage.Code, childPage);
 		            }
@@ -2501,12 +2514,12 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader6\">LANGUAGE(S)</th>");
 				Output.WriteLine("        </tr>");
 
-				foreach (Item_Aggregation_Child_Page childPage in sortedChildren.Values)
+				foreach (Complete_Item_Aggregation_Child_Page childPage in sortedChildren.Values)
 				{
 					Output.WriteLine("        <tr>");
 					Output.Write("          <td class=\"sbkAdm_ActionLink\" style=\"padding-left: 5px;\" >( ");
 					RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-					RequestSpecificValues.Current_Mode.Aggregation_Type = childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY ? Aggregation_Type_Enum.Browse_By : Aggregation_Type_Enum.Browse_Info;
+					RequestSpecificValues.Current_Mode.Aggregation_Type = childPage.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By ? Aggregation_Type_Enum.Browse_By : Aggregation_Type_Enum.Browse_Info;
 					RequestSpecificValues.Current_Mode.Info_Browse_Mode = childPage.Code;
 
 					Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this child page\" target=\"VIEW_" + childPage.Code + "\">view</a> | ");
@@ -2521,15 +2534,15 @@ namespace SobekCM.Library.AdminViewer
 
 					switch (childPage.Browse_Type)
 					{
-						case Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU:
+						case Item_Aggregation_Child_Visibility_Enum.Main_Menu:
 							Output.WriteLine("          <td>Main Menu</td>");
 							break;
 
-						case Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY:
+						case Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By:
 							Output.WriteLine("          <td>Browse By</td>");
 							break;
 
-						case Item_Aggregation_Child_Page.Visibility_Type.NONE:
+						case Item_Aggregation_Child_Visibility_Enum.None:
 							Output.WriteLine("          <td>None</td>");
 							break;
 					}
@@ -2625,10 +2638,10 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("          <td><label for=\"admin_aggr_parent\">Parent:</label></td>");
 			Output.Write("          <td><select class=\"sbkSaav_SubTypeSelect\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\">");
 			Output.Write("<option value=\"\">(none - top level)</option>");
-			foreach (Item_Aggregation_Child_Page childPage in sortedChildren.Values)
+			foreach (Complete_Item_Aggregation_Child_Page childPage in sortedChildren.Values)
 			{
 				// Only show main menu stuff
-				if (childPage.Browse_Type != Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
+				if (childPage.Browse_Type != Item_Aggregation_Child_Visibility_Enum.Main_Menu)
 					continue;
 
 				if ( childPageParent == childPage.Code )
@@ -2831,9 +2844,10 @@ namespace SobekCM.Library.AdminViewer
 						new_aggregation_code = "i" + new_aggregation_code;
 				}
 
+                string language = Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.Default_UI_Language);
 
 				// Try to save the new item aggregation
-				if (Engine_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, -1, correct_type, is_active, is_hidden, String.Empty, itemAggregation.ID, RequestSpecificValues.Current_User.Full_Name, null))
+                if (Engine_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, -1, correct_type, is_active, is_hidden, String.Empty, itemAggregation.ID, RequestSpecificValues.Current_User.Full_Name, language, null))
 				{
 					// Ensure a folder exists for this, otherwise create one
 					try
@@ -2864,7 +2878,7 @@ namespace SobekCM.Library.AdminViewer
 								File.Copy(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
 
 							// Now, try to create the item aggregation and write the configuration file
-                            Item_Aggregation childAggregation = Item_Aggregation_Utilities.Get_Item_Aggregation(new_aggregation_code, String.Empty, null, false, false, null);
+                            Complete_Item_Aggregation childAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(new_aggregation_code, false, RequestSpecificValues.Tracer);
 							childAggregation.Write_Configuration_File(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + childAggregation.ObjDirectory);
 						}
 					}
@@ -3142,7 +3156,7 @@ namespace SobekCM.Library.AdminViewer
 		private void Save_Child_Page_Postback(NameValueCollection Form)
 		{
 			string code = RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(2);
-			Item_Aggregation_Child_Page childPage = itemAggregation.Child_Page_By_Code(code);
+			Complete_Item_Aggregation_Child_Page childPage = itemAggregation.Child_Page_By_Code(code);
 
 			// Check for action flag
 			string action = Form["admin_aggr_action"];
@@ -3167,7 +3181,7 @@ namespace SobekCM.Library.AdminViewer
 					else if ( !File.Exists(fileDir))
 					{
 						HTML_Based_Content htmlContent = new HTML_Based_Content();
-						htmlContent.Static_Text = "<br /><br />This is a new " + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + " browse page.<br /><br />" + title + "<br /><br />The code for this browse is: " + childPage.Code;
+						htmlContent.Content = "<br /><br />This is a new " + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + " browse page.<br /><br />" + title + "<br /><br />The code for this browse is: " + childPage.Code;
 						htmlContent.Author = RequestSpecificValues.Current_User.Full_Name;
 						htmlContent.Date = DateTime.Now.ToLongDateString();
 						htmlContent.Title = title;
@@ -3202,7 +3216,7 @@ namespace SobekCM.Library.AdminViewer
 			const string NEW_VERSION_COPY_HELP = "New version copy help place holder";
 
 			string code = RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(2);
-			Item_Aggregation_Child_Page childPage = itemAggregation.Child_Page_By_Code(code);
+			Complete_Item_Aggregation_Child_Page childPage = itemAggregation.Child_Page_By_Code(code);
 
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
@@ -3218,17 +3232,17 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
 			Output.Write("          <select class=\"sbkSaav_SelectSingle\" name=\"admin_aggr_visibility\" id=\"admin_aggr_visibility\" onchange=\"admin_aggr_child_page_visibility_change();\">");
 
-			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
+			if (childPage.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Main_Menu)
 				Output.Write("<option value=\"browse\" selected=\"selected\">Main Menu</option>");
 			else
 				Output.Write("<option value=\"browse\">Main Menu</option>");
 
-			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY)
+			if (childPage.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By)
 				Output.Write("<option value=\"browseby\" selected=\"selected\">Browse By</option>");
 			else
 				Output.Write("<option value=\"browseby\">Browse By</option>");
 
-			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.NONE)
+            if (childPage.Browse_Type == Item_Aggregation_Child_Visibility_Enum.None)
 				Output.Write("<option value=\"none\" selected=\"selected\">None</option>");
 			else
 				Output.Write("<option value=\"none\">None</option>");
@@ -3242,12 +3256,12 @@ namespace SobekCM.Library.AdminViewer
 
 
 			// Put OTHER children in alphabetical order
-			SortedList<string, Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Item_Aggregation_Child_Page>();
+            SortedList<string, Complete_Item_Aggregation_Child_Page> sortedChildren = new SortedList<string, Complete_Item_Aggregation_Child_Page>();
 		    if (itemAggregation.Child_Pages != null)
 		    {
-		        foreach (Item_Aggregation_Child_Page childPage2 in itemAggregation.Child_Pages)
+		        foreach (Complete_Item_Aggregation_Child_Page childPage2 in itemAggregation.Child_Pages)
 		        {
-		            if (childPage2.Source == Item_Aggregation_Child_Page.Source_Type.Static_HTML)
+		            if (childPage2.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML)
 		            {
 		                sortedChildren.Add(childPage2.Code, childPage2);
 		            }
@@ -3255,7 +3269,7 @@ namespace SobekCM.Library.AdminViewer
 		    }
 
 		    // Add line for parent code
-			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
+			if (childPage.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Main_Menu)
 			{
 				Output.WriteLine("  <tr id=\"admin_aggr_parent_row\" class=\"sbkSaav_SingleRow\" style=\"display:table-row;\">");
 			}
@@ -3269,14 +3283,14 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
 			Output.Write("          <select class=\"sbkSaav_SelectSingle\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\">");
 			Output.Write("<option value=\"\">(none - top level)</option>");
-			foreach (Item_Aggregation_Child_Page childPage2 in sortedChildren.Values)
+			foreach (Complete_Item_Aggregation_Child_Page childPage2 in sortedChildren.Values)
 			{
 				// Don't show itself in the possible parent list
 				if (String.Compare(childPage.Code, childPage2.Code, StringComparison.OrdinalIgnoreCase) == 0)
 					continue;
 
 				// Only show main menu stuff
-				if (childPage2.Browse_Type != Item_Aggregation_Child_Page.Visibility_Type.MAIN_MENU)
+				if (childPage2.Browse_Type != Item_Aggregation_Child_Visibility_Enum.Main_Menu)
 					continue;
 
 				if (String.Compare(childPage.Parent_Code, childPage2.Code, StringComparison.OrdinalIgnoreCase) == 0)
@@ -3316,7 +3330,7 @@ namespace SobekCM.Library.AdminViewer
 			Web_Language_Enum currLanguage = RequestSpecificValues.Current_Mode.Language;
 			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 			RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
-			if (childPage.Browse_Type == Item_Aggregation_Child_Page.Visibility_Type.METADATA_BROWSE_BY)
+			if (childPage.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By)
 				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
 			RequestSpecificValues.Current_Mode.Info_Browse_Mode = childPage.Code;
 

@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
+using SobekCM.Resource_Object.Database;
 
 #endregion
 
@@ -27,7 +28,7 @@ namespace SobekCM.Core.Skins
         /// <summary> Constructor for a new instance of the SobekCM_Skin_Collection class  </summary>
         /// <param name="Interface_Table"> Datatable with the interface details for all valid HTML skins from the database </param>
         /// <remarks> This datatable is retrieved from the database by calling 
-        /// the <see cref="Database.SobekCM_Database.Get_All_Web_Skins"/> method</remarks>
+        /// the <see cref="SobekCM_Database.Get_All_Web_Skins"/> method</remarks>
         public SobekCM_Skin_Collection(DataTable Interface_Table)
         {
             DefaultSkins = new Dictionary<string, SobekCM_Skin_Object>();
@@ -36,7 +37,7 @@ namespace SobekCM.Core.Skins
 
 	    /// <summary> Datatable which has the information about every valid HTML skin from the database </summary>
 	    /// <remarks> This is passed in during construction of this object.  This datatable was retrieved by calling 
-	    /// the <see cref="Database.SobekCM_Database.Get_All_Web_Skins"/> method during 
+	    /// the <see cref="SobekCM_Database.Get_All_Web_Skins"/> method during 
 	    /// application startup when the <see cref="SobekCM_Skin_Collection_Builder.Populate_Default_Skins"/> method is called. </remarks>
 	    [DataMember]
 	    public  DataTable Skin_Table { get; set; }
@@ -69,7 +70,7 @@ namespace SobekCM.Core.Skins
         {
             get
             {
-                List<string> allSkinCodes = (from DataRow thisRow in Skin_Table.Rows select thisRow[0].ToString()).ToList();
+                List<string> allSkinCodes = (from DataRow thisRow in Skin_Table.Rows select thisRow[0].ToString().ToLower()).ToList();
 	            return new ReadOnlyCollection<string>(allSkinCodes);
             }
         }

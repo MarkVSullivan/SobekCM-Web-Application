@@ -118,13 +118,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.ApplicationBlocks.Data">
-      <HintPath>..\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="SolrNet">
-      <HintPath>..\DLLs\SolrNet\SolrNet.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\SolrNet\SolrNet.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>
@@ -144,10 +144,10 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Zoom.Net">
-      <HintPath>..\DLLs\Zoom.net\Zoom.Net.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\Zoom.net\Zoom.Net.dll</HintPath>
     </Reference>
     <Reference Include="Zoom.Net.YazSharp">
-      <HintPath>..\DLLs\Zoom.net\Zoom.Net.YazSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\Zoom.net\Zoom.Net.YazSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

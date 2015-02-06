@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Web;
 using SobekCM.Core.Items;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Navigation;
@@ -13,7 +14,6 @@ using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database;
@@ -174,11 +174,11 @@ namespace SobekCM.Library.MySobekViewer
                         complete_item_submission(saveItem, RequestSpecificValues.Tracer);
 
                         // Clear the volume list
-                        Cached_Data_Manager.Remove_Items_In_Title(saveItem.BibID, RequestSpecificValues.Tracer);
+                        CachedDataManager.Remove_Items_In_Title(saveItem.BibID, RequestSpecificValues.Tracer);
 
                         // Also clear any searches or browses ( in the future could refine this to only remove those
                         // that are impacted by this save... but this is good enough for now )
-                        Cached_Data_Manager.Clear_Search_Results_Browses();
+                        CachedDataManager.Clear_Search_Results_Browses();
 
                         // Forward differently depending on request
                         switch (hidden_request)

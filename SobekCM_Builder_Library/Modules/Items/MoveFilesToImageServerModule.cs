@@ -12,6 +12,8 @@ namespace SobekCM.Builder_Library.Modules.Items
     {
         public override bool DoWork(Incoming_Digital_Resource Resource)
         {
+            Rename_Any_Received_METS_File(Resource);
+
             // Determine if this is actually already IN the final image server spot first
             // Determine the file root for this
             Resource.File_Root = Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8, 2);
@@ -34,6 +36,39 @@ namespace SobekCM.Builder_Library.Modules.Items
             }
 
             return true;
+        }
+
+        private void Rename_Any_Received_METS_File(Incoming_Digital_Resource ResourcePackage)
+        {
+            string recd_filename = "recd_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + ".mets.bak";
+
+            // If a renamed file already exists for this year, delete the incoming with that name (shouldn't exist)
+            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + recd_filename))
+                File.Delete(ResourcePackage.Resource_Folder + "\\" + recd_filename);
+
+            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets"))
+            {
+                File.Move(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets", ResourcePackage.Resource_Folder + "\\" + recd_filename);
+                ResourcePackage.METS_File = recd_filename;
+                return;
+            }
+            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets.xml"))
+            {
+                File.Move(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + "_" + ResourcePackage.VID + ".mets.xml", ResourcePackage.Resource_Folder + "\\" + recd_filename);
+                ResourcePackage.METS_File = recd_filename;
+                return;
+            }
+            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + ".mets"))
+            {
+                File.Move(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + ".mets", ResourcePackage.Resource_Folder + "\\" + recd_filename);
+                ResourcePackage.METS_File = recd_filename;
+                return;
+            }
+            if (File.Exists(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + ".mets.xml"))
+            {
+                File.Move(ResourcePackage.Resource_Folder + "\\" + ResourcePackage.BibID + ".mets.xml", ResourcePackage.Resource_Folder + "\\" + recd_filename);
+                ResourcePackage.METS_File = recd_filename;
+            }
         }
 
         public static string NormalizePath(string path)

@@ -9,14 +9,23 @@ using ProtoBuf;
 
 namespace SobekCM.Core.MicroservicesClient
 {
-    public class MicroservicesClientBase
+    public abstract class MicroservicesClientBase
     {
 
-        public MicroservicesClient_Configuration config;
+        protected static MicroservicesClient_Configuration Config;
 
-        public MicroservicesClientBase()
+        /// <summary> Constructor for a new instance of the MicroservicesClientBase class </summary>
+        /// <param name="ConfigFile"> Location for the configuration file to read </param>
+        protected MicroservicesClientBase(string ConfigFile)
         {
-            config = MicroservicesClient_Config_Reader.Read_Config(@"configuration.xml");
+            Config = MicroservicesClient_Config_Reader.Read_Config(ConfigFile);
+        }
+
+        /// <summary> Constructor for a new instance of the MicroservicesClientBase class </summary>
+        /// <param name="ConfigObj"> Fully constructed microservices client configuration </param>
+        protected MicroservicesClientBase(MicroservicesClient_Configuration ConfigObj)
+        {
+            Config = ConfigObj;
         }
 
         #region Helper methods
@@ -28,7 +37,7 @@ namespace SobekCM.Core.MicroservicesClient
         /// 'No microservice endpoint defined in the client application for key'. </exception>
         protected MicroservicesClient_Endpoint GetEndpointConfig(string Key)
         {
-            MicroservicesClient_Endpoint endpoint = config[Key];
+            MicroservicesClient_Endpoint endpoint = Config[Key];
             if (endpoint == null) throw new ApplicationException("No microservice endpoint defined in the client application for key '" + Key + "'");
 
             return endpoint;
@@ -115,10 +124,15 @@ namespace SobekCM.Core.MicroservicesClient
                                 case HttpStatusCode.BadRequest:
                                     // Deserialize the resulting web fault object
                                     Stream responseStream = response.GetResponseStream();
-                                    TextReader reader = new StreamReader(responseStream);
-                                    string responsemsg = reader.ReadToEnd();
+                                    if (responseStream != null)
+                                    {
+                                        TextReader reader = new StreamReader(responseStream);
+                                        string responsemsg = reader.ReadToEnd();
 
-                                    throw new ApplicationException("Bad request sent to microservice URL ( '" + MicroserviceUri + "' ): " + responsemsg, ee);
+                                        throw new ApplicationException("Bad request sent to microservice URL ( '" + MicroserviceUri + "' ): " + responsemsg, ee);
+                                    }
+                                    throw new ApplicationException("Bad request sent to microservice URL ( '" + MicroserviceUri + "' )", ee);
+
 
 
                                 default:
@@ -133,13 +147,13 @@ namespace SobekCM.Core.MicroservicesClient
                         throw new ApplicationException("Unexpected web exception connecting to microservice URL ( '" + MicroserviceUri + "' ): " + ee.Message, ee);
                 }
             }
-            catch (Jil.DeserializationException ee)
+            catch (DeserializationException ee)
             {
-                throw new ApplicationException("Error deserializing the JSON response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T).ToString() + ".  (" + ee.Message + ")", ee);
+                throw new ApplicationException("Error deserializing the JSON response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T) + ".  (" + ee.Message + ")", ee);
             }
-            catch (ProtoBuf.ProtoException ee)
+            catch (ProtoException ee)
             {
-                throw new ApplicationException("Error deserializing the Protocol Buffer response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T).ToString() + ".  (" + ee.Message + ")", ee);
+                throw new ApplicationException("Error deserializing the Protocol Buffer response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T) + ".  (" + ee.Message + ")", ee);
             }
             catch (Exception ee)
             {
@@ -251,10 +265,14 @@ namespace SobekCM.Core.MicroservicesClient
                                 case HttpStatusCode.BadRequest:
                                     // Deserialize the resulting web fault object
                                     Stream responseStream = response.GetResponseStream();
-                                    TextReader reader = new StreamReader(responseStream);
-                                    string responsemsg = reader.ReadToEnd();
+                                    if (responseStream != null)
+                                    {
+                                        TextReader reader = new StreamReader(responseStream);
+                                        string responsemsg = reader.ReadToEnd();
 
-                                    throw new ApplicationException("Bad request sent to microservice URL ( '" + MicroserviceUri + "' ): " + responsemsg, ee);
+                                        throw new ApplicationException("Bad request sent to microservice URL ( '" + MicroserviceUri + "' ): " + responsemsg, ee);
+                                    }
+                                    throw new ApplicationException("Bad request sent to microservice URL ( '" + MicroserviceUri + "' )", ee);
 
 
                                 default:
@@ -269,13 +287,13 @@ namespace SobekCM.Core.MicroservicesClient
                         throw new ApplicationException("Unexpected web exception connecting to microservice URL ( '" + MicroserviceUri + "' ): " + ee.Message, ee);
                 }
             }
-            catch (Jil.DeserializationException ee)
+            catch (DeserializationException ee)
             {
-                throw new ApplicationException("Error deserializing the JSON response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T).ToString() + ".  (" + ee.Message + ")", ee);
+                throw new ApplicationException("Error deserializing the JSON response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T) + ".  (" + ee.Message + ")", ee);
             }
-            catch (ProtoBuf.ProtoException ee)
+            catch (ProtoException ee)
             {
-                throw new ApplicationException("Error deserializing the Protocol Buffer response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T).ToString() + ".  (" + ee.Message + ")", ee);
+                throw new ApplicationException("Error deserializing the Protocol Buffer response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T) + ".  (" + ee.Message + ")", ee);
             }
             catch (Exception ee)
             {
@@ -285,7 +303,7 @@ namespace SobekCM.Core.MicroservicesClient
 
         #endregion
 
-        public object ExampleGetMethod(int PrimaryKey)
+        private object ExampleGetMethod(int PrimaryKey)
         {
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("ConfigUrl1");
@@ -294,7 +312,7 @@ namespace SobekCM.Core.MicroservicesClient
             return Deserialize<object>(String.Format(endpoint.URL, PrimaryKey), endpoint.Protocol);
         }
 
-        public string ExamplePostMethod(string UserId, object RemoveObject)
+        private string ExamplePostMethod(string UserId, object RemoveObject)
         {
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("ConfigUrl1");

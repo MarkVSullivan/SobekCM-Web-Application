@@ -10,18 +10,17 @@ using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Items;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.SiteMap;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
-using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library;
 using SobekCM.Library.Database;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
@@ -71,6 +70,13 @@ namespace SobekCM
 				tracer = new Custom_Tracer();
 				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", String.Empty);
 			    SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
+
+                // Ensure the settings base directory is set correctly (TEMPORARY FOR UF)
+			    if (UI_ApplicationCache_Gateway.Settings.System_Abbreviation.IndexOf("UFDC") == 0)
+			    {
+                    string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
+                    UI_ApplicationCache_Gateway.Settings.Base_Directory = baseDir;
+			    }
 
 
 				// Check that something is saved for the original requested URL (may not exist if not forwarded)
@@ -156,14 +162,6 @@ namespace SobekCM
 
 			try
 			{
-				if (currentMode.Aggregation.ToUpper() == "EPCSANB")
-				{
-					HttpContext.Current.Response.Redirect(@"http://www.uflib.ufl.edu/epc/", false);
-					HttpContext.Current.ApplicationInstance.CompleteRequest();
-					currentMode.Request_Completed = true;
-					return;
-				}
-
 				// If this was an error, redirect now
 				if (currentMode.Mode == Display_Mode_Enum.Error)
 				{
@@ -1103,7 +1101,7 @@ namespace SobekCM
 			}
 
 			// If the web skin is indicated in the browse file, set that
-			if (staticWebContent.Web_Skin.Length > 0)
+			if ( !String.IsNullOrEmpty(staticWebContent.Web_Skin))
 			{
 				currentMode.Default_Skin = staticWebContent.Web_Skin;
 				currentMode.Skin = staticWebContent.Web_Skin;
@@ -1285,7 +1283,7 @@ namespace SobekCM
 			tracer.Add_Trace("SobekCM_Page_Globals.Reset_Memory", "Clearing cache and application of data");
 
 			// Clear the cache
-			Cached_Data_Manager.Clear_Cache();
+			CachedDataManager.Clear_Cache();
 
 			// Clear the application portions as well
 			HttpContext.Current.Application.RemoveAll();

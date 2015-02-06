@@ -6,11 +6,11 @@ using System.IO;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Items;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine.MemoryMgmt;
 using SobekCM.Library.MySobekViewer;
 using SobekCM.Tools;
 
@@ -130,7 +130,7 @@ namespace SobekCM.Library.HTML
 
                 case My_Sobek_Type_Enum.Group_Add_Volume:
                     // Pull the list of items tied to this group
-                    SobekCM_Items_In_Title itemsInTitle = Cached_Data_Manager.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+                    SobekCM_Items_In_Title itemsInTitle = CachedDataManager.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
                     if (itemsInTitle == null)
                     {
                         // Get list of information about this item group and save the item list
@@ -138,7 +138,7 @@ namespace SobekCM.Library.HTML
                         itemsInTitle = new SobekCM_Items_In_Title(itemDetails.Tables[1]);
 
                         // Store in cache if retrieved
-                        Cached_Data_Manager.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, itemsInTitle, RequestSpecificValues.Tracer);
+                        CachedDataManager.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, itemsInTitle, RequestSpecificValues.Tracer);
                     }
                     mySobekViewer = new Group_Add_Volume_MySobekViewer(RequestSpecificValues, itemsInTitle );
                     break;
