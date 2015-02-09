@@ -1110,16 +1110,16 @@ namespace SobekCM.Library.HTML
 						    }
 						    else
 						    {
-							    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
+                                Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
 						    }
 					    }
 				    }
 				    else
 				    {
-                        Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='?" + logOnUrl + "';\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
+                        Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='" + logOnUrl + "';return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/email.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
 
 					    if (RequestSpecificValues.Current_Item.Web.ItemID > 0)
-						    Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='" + logOnUrl + "';\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
+                            Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='" + logOnUrl + "';return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/plussign.png\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
 				    }
 
 					Output.WriteLine("\t\t<span id=\"sharebuttonitem\" class=\"action-sf-menu-item\" onclick=\"toggle_share_form('share_button');\"><span id=\"sharebuttonspan\">Share</span></span>");
@@ -2208,9 +2208,9 @@ namespace SobekCM.Library.HTML
                 PageViewer.Write_Within_HTML_Head(Output, Tracer);
 
             // Add a thumbnail to this item
-            if (RequestSpecificValues.Current_Item != null)
+            if ((RequestSpecificValues.Current_Item != null) && (RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail.Length > 0 ))
             {
-                string image_src = RequestSpecificValues.Current_Mode.Base_URL + "/" + RequestSpecificValues.Current_Item.Web.AssocFilePath + "/" + RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail;
+                string image_src = UI_ApplicationCache_Gateway.Settings.Image_URL + "/" + RequestSpecificValues.Current_Item.Web.AssocFilePath + "/" + RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail;
 
                 Output.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\" />");
             }

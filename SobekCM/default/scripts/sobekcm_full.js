@@ -1300,6 +1300,8 @@ function toggle(div_id) {
 }
 
 function blanket_size(popUpDivVar, linkname, windowheight) {
+    var blanket_height;
+
 	if (typeof window.innerWidth != 'undefined') {
 		viewportheight = window.innerHeight;
 	} else {
@@ -1327,13 +1329,15 @@ function blanket_size(popUpDivVar, linkname, windowheight) {
 	var popUpDiv = document.getElementById(popUpDivVar);
 
 	if (linkname != null) {
-		var link = document.getElementById(linkname);
-		maybe_top = findTop(link) - (windowheight / 2);
-		if (maybe_top < 0)
-			maybe_top = 50;
-		if ((maybe_top + windowheight / 2) > blanket_height)
-			maybe_top = blanket_height - windowheight - 50;
-		popUpDiv.style.top = maybe_top + 'px';
+	    var link = document.getElementById(linkname);
+	    var maybe_top = findTop(link) - (windowheight / 2);
+	    if (maybe_top < 0)
+	        maybe_top = 50;
+	    if ((maybe_top + windowheight / 2) > blanket_height)
+	        maybe_top = blanket_height - windowheight - 50;
+	    popUpDiv.style.top = maybe_top + 'px';
+	} else {
+	    popUpDiv.style.top = '100px';
 	}
 }
 
@@ -1365,14 +1369,21 @@ function blanket_size(popUpDivVar, windowheight) {
 	var popUpDiv = jQuery('#' + popUpDivVar);
 
 	// Set the correct top
-	var popUpHeight = popUpDiv.height();
-	var windowheight2 = jQuery(window).height();
-	popUpDiv.css({ top: ((windowheight2 - popUpHeight) / 2) + 'px' });
+	var popUpHeight = popUpDiv.css("height").replace("px", "");
+    var windowheight2 = jQuery(window).height();
 
-	// Set the correct left
+    if (popUpHeight > 0) {
+        var div_top_pos = Math.floor((windowheight2 - popUpHeight) / 2);
+        popUpDiv.css({ top: div_top_pos + 'px' });
+    } else {
+        popUpDiv.css({ top: '0px' });
+    }
+
+    // Set the correct left
 	var popUpWidth = popUpDiv.width();
 	var windowwidth = jQuery(window).width();
-	popUpDiv.css({ left: ((windowwidth - popUpWidth) / 2) + 'px' });
+    var div_left_pos = Math.floor((windowwidth - popUpWidth) / 2) - Math.floor(popUpWidth / 2);
+    popUpDiv.css({ left: div_left_pos + 'px' });
 }
 
 function window_pos(popUpDivVar, windowwidth) {
@@ -1489,6 +1500,29 @@ function popup(windowname, linkname, windowheight, windowwidth) {
 	return false;
 }
 
+function popup(windowname, popUpHeight) {
+
+    var popUpDiv = jQuery('#' + windowname);
+    blanket_size(windowname, popUpHeight);
+
+    // Set the correct top
+    var windowheight2 = jQuery(window).height();
+    popUpDiv.css({ top: ((windowheight2 - popUpHeight) / 2) + 'px' });
+
+    // Set the correct left
+    var popUpWidth = popUpDiv.width();
+    var windowwidth = jQuery(window).width();
+    popUpDiv.css({ left: ((windowwidth - popUpWidth) / 2) + 'px' });
+
+    toggle('blanket_outer');
+    toggle(windowname);
+
+    // Create the draggable object to allow this window to be dragged around
+    $('#' + windowname).draggable();
+
+    return false;
+}
+
 function popup(windowname) {
 	
 	var popUpDiv = jQuery('#' + windowname);
@@ -1497,26 +1531,24 @@ function popup(windowname) {
 	var windowheight = $('#' + windowname).height();
 
 	blanket_size(windowname, windowheight);
-	
 
-	// Set the correct top
+    // Set the correct top
 	var popUpHeight = popUpDiv.height();
+    if (popUpHeight == 0)
+        popUpHeight = 100;
 	var windowheight2 = jQuery(window).height();
 	popUpDiv.css({ top: ((windowheight2 - popUpHeight) / 2) + 'px' });
 
-	// Set the correct left
+    // Set the correct left
 	var popUpWidth = popUpDiv.width();
 	var windowwidth = jQuery(window).width();
 	popUpDiv.css({ left: ((windowwidth - popUpWidth) / 2) + 'px' });
-
 
 	toggle('blanket_outer');
 	toggle(windowname);
 	
 	// Create the draggable object to allow this window to be dragged around
-	//document.getElementById(windowname).draggable();
 	$('#' + windowname).draggable();
-	//mydrag = new Draggable( windowname, {starteffect:null});
 
 	return false;
 }
@@ -1987,14 +2019,7 @@ function print_form_open() {
 	var hiddenfield = document.getElementById('item_action');
 	hiddenfield.value = 'print';
 
-	// Toggle the print form
-	blanket_size('form_print', 300);
-	window_pos('form_print', 532);
-	toggle('blanket_outer');
-	toggle('form_print');
-
-	// Create the draggable object to allow this window to be dragged around
-	$("#form_print").draggable();
+    popup('form_print', 400);
 
 	return false;
 }
@@ -2080,26 +2105,7 @@ function email_form_open() {
 	var hiddenfield = document.getElementById('item_action');
 	hiddenfield.value = 'email';
 
-	// Variable holds the 'height' to use for form placement
-	var form_location = 300;
-	var horiz_location = 408;
-
-	// Populate the hidden field with the id
-	var hiddenfield2 = document.getElementById('bookshelf_items');
-	if (hiddenfield2 != null) {
-		hiddenfield2.value = id;
-		form_location = 664;
-		horiz_location = 480;
-	}
-
-	// Toggle the email form
-	blanket_size('form_email', form_location);
-	window_pos('form_email', horiz_location);
-	toggle('blanket_outer');
-	toggle('form_email');
-
-	// Create the draggable object to allow this window to be dragged around
-	$("#form_email").draggable();
+	popup('form_email', 450);
 
 	// Put focus on the email address
 	var focusfield = document.getElementById('email_address');
@@ -2838,7 +2844,6 @@ function logonTrapKD(event) {
 // Tab code
 // Original code by: Matt Walker
 // Code source (2013):  http://www.my-html-codes.com/jquery-tabs-my-first-plugin
-
 (function ($) {
 	$.fn.acidTabs = function (options) {
 		var settings = {
@@ -2885,3 +2890,102 @@ function logonTrapKD(event) {
 	};
 })(jQuery);
 
+; (function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register module depending on jQuery using requirejs define.
+        define(['jquery'], factory);
+    } else {
+        // No AMD.
+        factory(jQuery);
+    }
+}(function ($) {
+    $.fn.addBack = $.fn.addBack || $.fn.andSelf;
+
+    $.fn.extend({
+
+        actual: function (method, options) {
+            // check if the jQuery method exist
+            if (!this[method]) {
+                throw '$.actual => The jQuery method "' + method + '" you called does not exist';
+            }
+
+            var defaults = {
+                absolute: false,
+                clone: false,
+                includeMargin: false
+            };
+
+            var configs = $.extend(defaults, options);
+
+            var $target = this.eq(0);
+            var fix, restore;
+
+            if (configs.clone === true) {
+                fix = function () {
+                    var style = 'position: absolute !important; top: -1000 !important; ';
+
+                    // this is useful with css3pie
+                    $target = $target.
+                      clone().
+                      attr('style', style).
+                      appendTo('body');
+                };
+
+                restore = function () {
+                    // remove DOM element after getting the width
+                    $target.remove();
+                };
+            } else {
+                var tmp = [];
+                var style = '';
+                var $hidden;
+
+                fix = function () {
+                    // get all hidden parents
+                    $hidden = $target.parents().addBack().filter(':hidden');
+                    style += 'visibility: hidden !important; display: block !important; ';
+
+                    if (configs.absolute === true) style += 'position: absolute !important; ';
+
+                    // save the origin style props
+                    // set the hidden el css to be got the actual value later
+                    $hidden.each(function () {
+                        // Save original style. If no style was set, attr() returns undefined
+                        var $this = $(this);
+                        var thisStyle = $this.attr('style');
+
+                        tmp.push(thisStyle);
+                        // Retain as much of the original style as possible, if there is one
+                        $this.attr('style', thisStyle ? thisStyle + ';' + style : style);
+                    });
+                };
+
+                restore = function () {
+                    // restore origin style values
+                    $hidden.each(function (i) {
+                        var $this = $(this);
+                        var _tmp = tmp[i];
+
+                        if (_tmp === undefined) {
+                            $this.removeAttr('style');
+                        } else {
+                            $this.attr('style', _tmp);
+                        }
+                    });
+                };
+            }
+
+            fix();
+            // get the actual value with user specific methed
+            // it can be 'width', 'height', 'outerWidth', 'innerWidth'... etc
+            // configs.includeMargin only works for 'outerWidth' and 'outerHeight'
+            var actual = /(outer)/.test(method) ?
+              $target[method](configs.includeMargin) :
+              $target[method]();
+
+            restore();
+            // IMPORTANT, this plugin only return the value of the first element
+            return actual;
+        }
+    });
+}));
