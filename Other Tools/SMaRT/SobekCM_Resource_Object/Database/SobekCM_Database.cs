@@ -1331,24 +1331,6 @@ namespace SobekCM.Resource_Object.Database
             thisPackage.Web.GroupID = saveArgs.GroupID;
 			thisPackage.BibID = saveArgs.New_BibID;
 
-			// If this was a new bib id, or only a single item belongs to this item group, 
-			// try to update the OAI-PMH data stored for this item
-            if ((saveArgs.Is_New) || ((thisPackage.Web.Siblings.HasValue) && (thisPackage.Web.Siblings < 1)))
-			{
-				// Get the OAI-PMH dublin core information
-				StringBuilder oaiDataBuilder = new StringBuilder(1000);
-				StringWriter writer = new StringWriter(oaiDataBuilder);
-                METS_Sec_ReaderWriters.DC_METS_dmdSec_ReaderWriter.Write_Simple_Dublin_Core(writer, thisPackage.Bib_Info);
-
-                // Also add the URL as identifier
-                if (thisPackage.Web.Service_URL.Length > 0)
-                    oaiDataBuilder.AppendLine("<dc:identifier>" + thisPackage.Web.Service_URL.Replace("/" + thisPackage.VID, "") + "</dc:identifier>");
-				Save_Item_Group_OAI(saveArgs.GroupID, oaiDataBuilder.ToString(), "oai_dc", false);
-
-				writer.Flush();
-				writer.Close();
-			}
-
 			// If there were web skins, save that as well
             Save_Item_Group_Web_Skins(thisPackage.Web.GroupID, thisPackage);
 
@@ -2172,37 +2154,7 @@ namespace SobekCM.Resource_Object.Database
 			}
 		}
 
-		/// <summary> Saves the OAI-PMH data associated with an item group </summary>
-		/// <param name="GroupID"> Primary key for this item group within the database </param>
-		/// <param name="Data_Code"> Code for this metadata type being saved for this item group ( i.e. 'oai_dc' )</param>
-		/// <param name="OAI_Data"> Data to be stored for this item </param>
-		/// <param name="Always_Overlay"> Flag indicates if this should overlay the OAI, even if it already exists </param>
-		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks>This method calls the stored procedure 'SobekCM_Add_OAI_PMH_Data'. <br /><br />
-		/// If the OAI-PMH data is locked via the database flag on this data, this does not change the OAI stored for the item group.</remarks>
-		public static bool Save_Item_Group_OAI(int GroupID, string OAI_Data, string Data_Code, bool Always_Overlay)
-		{
-			try
-			{
-				// Build the parameter list
-				SqlParameter[] param_list = new SqlParameter[4];
-				param_list[0] = new SqlParameter("@groupid", GroupID);
-				param_list[1] = new SqlParameter("@data_code", Data_Code);
-				param_list[2] = new SqlParameter("@oai_data", OAI_Data);
-				param_list[3] = new SqlParameter("@overlay_existing", Always_Overlay);
-
-				// Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Add_OAI_PMH_Data", param_list);
-
-				return true;
-			}
-			catch (Exception ee)
-			{
-				// Pass this exception onto the method to handle it
-				exception_caught("SobekCM_Add_OAI_PMH_Data", ee);
-				return false;
-			}
-		}
+	
 
 		/// <summary> Saves the links between an item group and the web skins possible </summary>
 		/// <param name="GroupID"> Primary key to this item group / title in the SobekCM database </param>

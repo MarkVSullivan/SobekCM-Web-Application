@@ -79,12 +79,15 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<br />Choose an aggregation below to view all tags for that aggregation:");
                 Output.WriteLine("<blockquote>");
 
-                foreach (User_Permissioned_Aggregation aggregation in RequestSpecificValues.Current_User.PermissionedAggregations)
+                if (RequestSpecificValues.Current_User.PermissionedAggregations != null)
                 {
-                    if (aggregation.IsCurator )
+                    foreach (User_Permissioned_Aggregation aggregation in RequestSpecificValues.Current_User.PermissionedAggregations)
                     {
-                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = aggregation.Code;
-                        Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggregation.Name + "</a><br /><br />");
+                        if (aggregation.IsCurator)
+                        {
+                            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = aggregation.Code;
+                            Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + aggregation.Name + "</a><br /><br />");
+                        }
                     }
                 }
 
