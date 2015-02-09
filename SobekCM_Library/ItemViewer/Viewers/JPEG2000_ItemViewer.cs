@@ -96,13 +96,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("   });");
             Output.WriteLine();
-
-            //add by Keven for FIU dPanther's separate image server
-            if (UI_ApplicationCache_Gateway.Settings.Image_Server_Root != null)
-                Output.WriteLine("   viewer.open(\"" + CurrentMode.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Image_Server_Root.Replace("\\", "/") + CurrentItem.Web.AssocFilePath.Replace("\\", "/") + FileName + ".dzi\");");
-            else
-                Output.WriteLine("   viewer.open(\"" + CurrentMode.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Image_Server_Network.Replace("\\", "/") + CurrentItem.Web.AssocFilePath.Replace("\\", "/") + FileName + ".dzi\");");
-            
+            Output.WriteLine("   viewer.open(\"" + CurrentMode.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Image_Server_Network.Replace("\\","/") + CurrentItem.Web.AssocFilePath.Replace("\\","/") +  FileName + ".dzi\");");
             Output.WriteLine("</script>");
             Output.WriteLine("</td>");
         }

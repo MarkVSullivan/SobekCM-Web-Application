@@ -306,11 +306,6 @@ namespace SobekCM.Core.Settings
         [DataMember]
         public string Image_Server_Network { get; set; }
 
-        /// <summary> Network directory for the image server which holds all the resource files </summary>
-        /// Add by Keven for FIU dPanther separate image server        
-        [DataMember]
-        public string Image_Server_Root { get; set; }
-
         /// <summary> Network directory for the SobekCM web application server </summary>
         [DataMember]
         public string Application_Server_Network { get; set; }
