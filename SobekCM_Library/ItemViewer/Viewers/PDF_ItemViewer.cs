@@ -91,6 +91,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 			displayFileName = displayFileName.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
 
+            //replace single & double quote with ascII characters
+            if (displayFileName.Contains("'") || displayFileName.Contains("\""))
+            {
+                displayFileName = displayFileName.Replace("'", "&#39;");
+                displayFileName = displayFileName.Replace("\"", "&#34;");
+            }
+
             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
             if ((CurrentItem.Behaviors.Dark_Flag) || (CurrentItem.Behaviors.IP_Restriction_Membership > 0))
                 displayFileName = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + FileName;
