@@ -228,6 +228,8 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "Help URL", SettingsObject, X => X.Help_URL_Base, "http://ufdc.ufl.edu/");
                 Get_String_Value(settingsDictionary, "Help Metadata URL", SettingsObject, X => X.Metadata_Help_URL_Base, "http://ufdc.ufl.edu/");
                 Get_String_Value(settingsDictionary, "Image Server Network", SettingsObject, X => X.Image_Server_Network, ref error);
+                //add by Keven for FIU dPanther's separate image server
+                Get_String_Value(settingsDictionary, "Image Server Root", SettingsObject, X => X.Image_Server_Root, ref error);
                 Get_String_Value(settingsDictionary, "Image Server URL", SettingsObject, X => X.Image_URL, ref error);
                 Get_Boolean_Value(settingsDictionary, "Include TreeView On System Home", SettingsObject, X => X.Include_TreeView_On_System_Home, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Include Partners On System Home", SettingsObject, X => X.Include_Partners_On_System_Home, ref error, false);
