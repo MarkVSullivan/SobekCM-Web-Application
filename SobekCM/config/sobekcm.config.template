@@ -6,13 +6,12 @@
 	<Connections>
 		<!-- NOTE: If you change the database connection string in production, you need to restart the app pool/iis. -->
 		<!--       If you change the database connection string in Visual Studio, you need to restart Visual Studio. -->
-		<Connection_String type="MSSQL" isHosted="false">data source=SOB-SQL01\SOBEK2;initial catalog=Wolfsonian;integrated security=Yes;</Connection_String>
-		<!--<connection_string type="MSSQL">data source=lib-ufdc-cache\UFDCPROD;initial catalog=SobekDev;integrated security=Yes;</connection_string> -->
+		<Connection_String type="MSSQL" isHosted="false">data source=[SQL Instance];initial catalog=[DatabaseName];integrated security=Yes;</Connection_String>
 	</Connections>
 
 	<ErrorHandling>
-		<ErrorEmails>marsull@uflib.ufl.edu</ErrorEmails>
-		<ErrorPage>http://ufdc.ufl.edu/error.html</ErrorPage>
+		<ErrorEmails>[EmailAddress]</ErrorEmails>
+		<ErrorPage>[CustomErrorPage]</ErrorPage>
 	</ErrorHandling>
 
 </SobekCM_Config>

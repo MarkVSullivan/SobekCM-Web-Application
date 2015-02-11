@@ -37,7 +37,7 @@ namespace SobekCM.Library.ItemViewer.Fragments
                     actual_cols = 45;
 
                 responseBuilder.AppendLine("<!-- Add to bookshelf form -->");
-				responseBuilder.AppendLine("<div id=\"addform_content\" class=\"sbk_PopupForm\">");
+				responseBuilder.AppendLine("<div id=\"addform_content\" class=\"sbk_PopupForm\" style=\"width:530px;\">");
 				responseBuilder.AppendLine("  <div class=\"sbk_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">Add this item to your Bookshelf</td><td style=\"text-align:right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"add_item_form_close()\">X</a> &nbsp; </td></tr></table></div>");
                 responseBuilder.AppendLine("  <br />");
                 responseBuilder.AppendLine("  <fieldset><legend>Enter notes for this item in your bookshelf &nbsp; </legend>");
