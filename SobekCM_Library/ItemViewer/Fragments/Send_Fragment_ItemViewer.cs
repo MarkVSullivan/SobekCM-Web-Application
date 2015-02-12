@@ -32,7 +32,7 @@ namespace SobekCM.Library.ItemViewer.Fragments
                     actual_cols = 45;
 
                 responseBuilder.AppendLine("<!-- Email form -->");
-				responseBuilder.AppendLine("<div id=\"emailform_content\" class=\"sbk_PopupForm\">");
+                responseBuilder.AppendLine("<div id=\"emailform_content\" class=\"sbk_PopupForm\" style=\"width: 537px;\">");
 				responseBuilder.AppendLine("  <div class=\"sbk_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">Send this Item to a Friend</td><td style=\"text-align:right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
                 responseBuilder.AppendLine("  <br />");
                 responseBuilder.AppendLine("  <fieldset><legend>Enter the email information below &nbsp; </legend>");

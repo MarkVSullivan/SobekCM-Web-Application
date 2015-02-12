@@ -602,27 +602,27 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 }
 
 /** Classes used throughout the system for the popup forms **/
-.sbk_PopupForm { position:fixed; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; -moz-border-radius: 10px;border-radius: 10px;  }
+.sbk_PopupForm { position:fixed; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; -moz-border-radius: 10px;border-radius: 10px; }
 .sbk_PopupTitle { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 5px 16px 15px;border-top-left-radius: 10px;border-top-right-radius: 10px; font-variant: small-caps; }
 .sbk_PopupTitle a { color: White; text-decoration: none; font-weight: bold; }
 .sbk_PopupTable { padding-left: 20px; margin-left: 20px;text-align: left; }
 .sbk_PopupButtonsDiv { width: 100%;text-align: center; }
 
-.print_popup_div { position:absolute; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; text-align: left; -moz-border-radius: 7px; width:500px; } 
-.popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0 6px 10px;  -moz-border-radius-topleft: 7px;  -moz-border-radius-topright: 7px; }
+.print_popup_div { position:fixed; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; text-align: left; -moz-border-radius: 10px;border-radius: 10px;  } 
+.popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0 6px 10px;  -moz-border-radius-topleft: 10px;  -moz-border-radius-topright: 10px; }
 .popup_title a { color: White; text-decoration: none; font-weight: bold; }
 .popup_table { padding-left: 20px; margin-left: 20px; text-align: left; }
 .print_radiobutton { padding-bottom: 5px;	}
 
-.form_email { width: 550px; text-align: left;height: 600px; }
+.email_popup_div { position:fixed; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; text-align: left; width: 537px; text-align: left; height: 350px; -moz-border-radius: 10px; border-radius: 10px; }
 .email_input { width: 318px; margin-right: 15px; margin-top: 6px; }
 textarea.email_textarea  {  color:Blue;  margin-top: 6px; FONT-FAMILY: Arial, sans-serif; font-size: small;}
-.add_popup_div { position:absolute; background-color:#eeeeee; width:530px;  z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 7px; } 
+.add_popup_div { position:fixed; background-color:#eeeeee; width:530px; height: 338px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
 textarea.add_notes_textarea  {  color:Blue;  margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; FONT-FAMILY: Arial, sans-serif; font-size: small;}
 textarea.add_notes_textarea_focused  {  color:#0000a8;  margin-top: 6px; background-color: #fbf7b4; border-style:solid; border-width: 1px; border-color: #7f9db9;FONT-FAMILY: Arial, sans-serif; font-size: small;}
-.share_popup_div { position:absolute; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; border-style:solid; border-width: 1px; border-color: #7f9db9;  } 
+.share_popup_div { position:fixed; background-color:#eeeeee; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; border-style:solid; border-width: 1px; border-color: #7f9db9;  } 
 select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; border-style:solid; border-width: 1px; border-color: #7f9db9; }
-.describe_popup_div { position:absolute; background-color:#eeeeee; width:530px;  z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 7px; }
+.describe_popup_div { position:fixed; background-color:#eeeeee; width:530px;  z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; }
 #save_search_form { text-align: left; }
 
 #blanket_outer {
