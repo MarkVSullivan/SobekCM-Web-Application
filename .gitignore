@@ -42,6 +42,8 @@ _p.c
 .pidb
 .log
 .scc
+.suo
+.v11.suo
 
 
 # Visual C++ cache files
@@ -153,7 +155,8 @@ $RECYCLE.BIN
 # ====================================
 SobekCM/mySobek/InProcess/
 SobekCM/temp/
-SobekCM/config/
+SobekCM/config/sobekcm.config
+SobekCM/config/user
 SobekCM/design/aggregations/
 SobekCM/design/extra/
 SobekCM/design/skins/
@@ -164,6 +167,7 @@ SobekCM/SobekCM.v11.suo
 SobekCM/SobekCM_.psess
 SobekCM Web.v11.suo
 SobekCM Builder.v11.suo
+Other Tools/SMaRT/SMART.v11.suo
 
 # ====================================
 #  SMaRT files/folders to ignor

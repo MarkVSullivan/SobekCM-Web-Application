@@ -1500,7 +1500,7 @@ function popup(windowname, linkname, windowheight, windowwidth) {
 	return false;
 }
 
-function popup(windowname, popUpHeight) {
+function popup(windowname, popUpHeight, popUpWidth) {
 
     var popUpDiv = jQuery('#' + windowname);
     blanket_size(windowname, popUpHeight);
@@ -1510,7 +1510,6 @@ function popup(windowname, popUpHeight) {
     popUpDiv.css({ top: ((windowheight2 - popUpHeight) / 2) + 'px' });
 
     // Set the correct left
-    var popUpWidth = popUpDiv.width();
     var windowwidth = jQuery(window).width();
     popUpDiv.css({ left: ((windowwidth - popUpWidth) / 2) + 'px' });
 
@@ -2019,7 +2018,7 @@ function print_form_open() {
 	var hiddenfield = document.getElementById('item_action');
 	hiddenfield.value = 'print';
 
-    popup('form_print', 400);
+    popup('form_print', 500, 500 );
 
 	return false;
 }
@@ -2105,7 +2104,7 @@ function email_form_open() {
 	var hiddenfield = document.getElementById('item_action');
 	hiddenfield.value = 'email';
 
-	popup('form_email', 450);
+	popup('form_email');
 
 	// Put focus on the email address
 	var focusfield = document.getElementById('email_address');
@@ -2149,14 +2148,7 @@ function add_item_form_open() {
 	if (hiddenfield2 != null)
 		hiddenfield.value = id;
 
-	// Toggle the add item form
-	blanket_size('add_item_form', 300);
-	window_pos('add_item_form', 274);
-	toggle('blanket_outer');
-	toggle('add_item_form');
-
-	// Create the draggable object to allow this window to be dragged around
-	$("#add_item_form").draggable();
+	popup('add_item_form');
 
 	// Put focus on the notes field
 	var focusfield = document.getElementById('add_notes');
