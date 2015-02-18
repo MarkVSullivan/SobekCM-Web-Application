@@ -3396,9 +3396,112 @@ namespace SobekCM.Engine_Library.Database
 
         #endregion
 
+        #region Methods relating to sending emails from and logging emails in the database
 
-        /// <summary> Gets all the data necessary for the Builder, including file destination information,
-        /// general settings, server information, and the list of each BibID and File_Root </summary>
+        /// <summary> Send an email using databse mail through the SQL database </summary>
+        /// <param name="Recipient_List"> List of recepients, seperated by a semi-colon </param>
+        /// <param name="Subject_Line"> Subject line for the email to send </param>
+        /// <param name="Email_Body"> Body of the email to send</param>
+        /// <param name="From_Address"> Address this is FROM to override system </param>
+        /// <param name="Reply_To"> Address this should have as REPLY TO from system </param>
+        /// <param name="IsHtml"> Flag indicates if the email body is HTML-encoded, or plain text </param>
+        /// <param name="IsContactUs"> Flag indicates if this was sent from the 'Contact Us' feature of the library, rather than from a mySobek feature such as email your bookshelf </param>
+        /// <param name="ReplyToEmailID"> Primary key of the previous email, if this is a reply to a previously logged email </param>
+        /// <param name="UserID"> UserID that sent this message.  This is used to restrict the number of messages sent by the same user in the same day </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Send_Email' stored procedure to send and log this email. </remarks>
+        public static bool Send_Database_Email(string Recipient_List, string Subject_Line, string Email_Body, string From_Address, string Reply_To, bool IsHtml, bool IsContactUs, int ReplyToEmailID, int UserID)
+        {
+            try
+            {
+                // Build the parameter list
+                SqlParameter[] paramList = new SqlParameter[9];
+                paramList[0] = new SqlParameter("@recipients_list", Recipient_List.Replace(",",";"));
+                paramList[1] = new SqlParameter("@subject_line", Subject_Line);
+                paramList[2] = new SqlParameter("@email_body", Email_Body);
+                if ( String.IsNullOrEmpty(From_Address))
+                    paramList[3] = new SqlParameter("@from_address", DBNull.Value);
+                else
+                    paramList[3] = new SqlParameter("@from_address", From_Address);
+
+                if (String.IsNullOrEmpty(Reply_To))
+                    paramList[4] = new SqlParameter("@reply_to", DBNull.Value);
+                else
+                    paramList[4] = new SqlParameter("@reply_to", Reply_To);
+
+                paramList[5] = new SqlParameter("@html_format", IsHtml);
+                paramList[6] = new SqlParameter("@contact_us", IsContactUs);
+                if (ReplyToEmailID > 0)
+                {
+                    paramList[7] = new SqlParameter("@replytoemailid", ReplyToEmailID);
+                }
+                else
+                {
+                    paramList[7] = new SqlParameter("@replytoemailid", DBNull.Value);
+                }
+                paramList[8] = new SqlParameter("@userid", UserID);
+
+                // Execute this non-query stored procedure
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Send_Email", paramList);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                // Pass this exception onto the method to handle it
+                lastException = ee;
+                return false;
+            }
+        }
+
+        /// <summary> Log the fact an email was sent via a different system than the databse mail </summary>
+        /// <param name="Sender"> Name of the sender indicated in the sent email </param>
+        /// <param name="Recipient_List"> List of recepients, seperated by a semi-colon </param>
+        /// <param name="Subject_Line"> Subject line for the email to log </param>
+        /// <param name="Email_Body"> Body of the email to log</param>
+        /// <param name="IsHtml"> Flag indicates if the email body is HTML-encoded, or plain text </param>
+        /// <param name="IsContactUs"> Flag indicates if this was sent from the 'Contact Us' feature of the library, rather than from a mySobek feature such as email your bookshelf </param>
+        /// <param name="ReplyToEmailID"> Primary key of the previous email, if this is a reply to a previously logged email </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Log_Email' stored procedure. </remarks>
+        public static bool Log_Sent_Email(string Sender, string Recipient_List, string Subject_Line, string Email_Body, bool IsHtml, bool IsContactUs, int ReplyToEmailID)
+        {
+            try
+            {
+                // Build the parameter list
+                SqlParameter[] paramList = new SqlParameter[7];
+                paramList[0] = new SqlParameter("@sender", Sender);
+                paramList[1] = new SqlParameter("@recipients_list", Recipient_List);
+                paramList[2] = new SqlParameter("@subject_line", Subject_Line);
+                paramList[3] = new SqlParameter("@email_body", Email_Body);
+                paramList[4] = new SqlParameter("@html_format", IsHtml);
+                paramList[5] = new SqlParameter("@contact_us", IsContactUs);
+                if (ReplyToEmailID > 0)
+                {
+                    paramList[6] = new SqlParameter("@replytoemailid", ReplyToEmailID);
+                }
+                else
+                {
+                    paramList[6] = new SqlParameter("@replytoemailid", DBNull.Value);
+                }
+
+                // Execute this non-query stored procedure
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Log_Email", paramList);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                // Pass this exception onto the method to handle it
+                lastException = ee;
+                return false;
+            }
+        }
+
+        #endregion
+
+
+        /// <summary> Gets all the setting information necessary for SobekCM </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> DataSet with all the data necessary for the Builder, including file destination information,
         /// general settings, server information</returns>
@@ -3408,6 +3511,28 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings");
+                return tempSet;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                return null;
+            }
+        }
+
+        /// <summary> Gets the list of modules and incoming folders for the builder </summary>
+        /// <param name="IncludeDisabled"> Flag indicates whether all the disabled modules should be returned </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with all the data necessary for the Builder, including file destination information,
+        /// general settings, server information</returns>
+        /// <remarks> This calls the 'SobekCM_Builder_Get_Settings' stored procedure </remarks> 
+        public static DataSet Get_Builder_Settings( bool IncludeDisabled, Custom_Tracer Tracer  )
+        {
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[1];
+                parameters[0] = new SqlParameter("@include_disabled", IncludeDisabled);
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Builder_Get_Settings", parameters);
                 return tempSet;
             }
             catch (Exception ee)

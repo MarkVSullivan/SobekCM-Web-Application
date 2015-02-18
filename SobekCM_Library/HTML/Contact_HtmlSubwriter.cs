@@ -8,9 +8,11 @@ using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using SobekCM.Core;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Tools;
@@ -68,7 +70,11 @@ namespace SobekCM.Library.HTML
             {
                 // Some values to collect information
                 string subject = "Contact [" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Submission]";
-                string message_from = UI_ApplicationCache_Gateway.Settings.System_Email;
+                string message_from = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + "<" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
+                if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
+                {
+                    message_from = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + "<" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
+                }
                 int text_area_count = configuration.TextAreaElementCount;
                 StringBuilder emailBuilder = new StringBuilder();
 
@@ -93,7 +99,7 @@ namespace SobekCM.Library.HTML
                         if (!postBackValues.ContainsKey(control_name))
                         {
                             if (thisElement.Required)
-                                errorBuilder.Append(thisElement.QueryText.Get_Value(RequestSpecificValues.Current_Mode.Language).Replace(":","") + "<br />");
+                                errorBuilder.Append(thisElement.QueryText.Get_Value(RequestSpecificValues.Current_Mode.Language).Replace(":", "") + "<br />");
                         }
                         else
                         {
@@ -103,11 +109,17 @@ namespace SobekCM.Library.HTML
                             }
                             else if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.Email)
                             {
-                                message_from = postBackValues[control_name];
+                                string entered_message_from = postBackValues[control_name];
 
-                                if (!IsValidEmail(message_from))
+                                if (!IsValidEmail(entered_message_from))
                                 {
                                     errorBuilder.Append(thisElement.QueryText.Get_Value(RequestSpecificValues.Current_Mode.Language).Replace(":", "") + " (INVALID) <br />");
+                                }
+
+                                message_from = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + "<" + entered_message_from + ">";
+                                if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
+                                {
+                                    message_from = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + "<" + entered_message_from + ">";
                                 }
 
                             }
@@ -127,6 +139,7 @@ namespace SobekCM.Library.HTML
                             }
                             else
                             {
+
                                 emailBuilder.Append(control_name.Replace("_", " ") + ":\t\t" + postBackValues[control_name] + "\n");
                             }
                         }
@@ -146,47 +159,41 @@ namespace SobekCM.Library.HTML
 
                 // Determine the sendee
                 string sendTo = UI_ApplicationCache_Gateway.Settings.System_Email;
-                if (( RequestSpecificValues.Hierarchy_Object != null ) && ( !String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.Contact_Email)))
+                if ((RequestSpecificValues.Hierarchy_Object != null) && (!String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.Contact_Email)))
                 {
                     sendTo = RequestSpecificValues.Hierarchy_Object.Contact_Email.Replace(";", ",");
                 }
 
-                try
+                int userid = -1;
+                if (RequestSpecificValues.Current_User != null)
+                    userid = RequestSpecificValues.Current_User.UserID;
+
+                EmailInfo newEmail = new EmailInfo
                 {
-                    MailMessage myMail = new MailMessage(message_from, sendTo)
-                    {
-                        Subject = subject,
-                        Body = email_body
-                    };
+                    Body = email_body,
+                    isContactUs = true,
+                    isHTML = false,
+                    RecipientsList = sendTo,
+                    Subject = subject,
+                    UserID = userid,
+                    FromAddress = message_from
+                };
 
-                    // Mail this
-                    SmtpClient client = new SmtpClient("smtp.ufl.edu");
-                    client.Send(myMail);
+                string error_msg;
+                bool email_error = !Email_Helper.SendEmail(newEmail, out error_msg);
 
-                    // Log this
-                    string sender = message_from;
-                    SobekCM_Database.Log_Sent_Email(sender, sendTo, subject, email_body, false, true, -1);
 
+                // Send back to the home for this collection, sub, or group
+                if (email_error)
+                {
+                    HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.System_Error_URL, false);
+                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                }
+                else
+                {
                     // Send back to the home for this collection, sub, or group
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact_Sent;
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-                }
-                catch
-                {
-                    bool email_error = SobekCM_Database.Send_Database_Email(sendTo, subject, email_body, false, true, -1, -1);
-
-                    // Send back to the home for this collection, sub, or group
-                    if (email_error)
-                    {
-                        HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.System_Error_URL, false);
-                        HttpContext.Current.ApplicationInstance.CompleteRequest();
-                    }
-                    else
-                    {
-                        // Send back to the home for this collection, sub, or group
-                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact_Sent;
-                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-                    }
                 }
             }
         }

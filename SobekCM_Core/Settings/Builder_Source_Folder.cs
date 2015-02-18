@@ -1,6 +1,7 @@
 #region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 #endregion
@@ -82,9 +83,9 @@ namespace SobekCM.Core.Settings
         [DataMember]
 		public Nullable<bool> Can_Move_To_Content_Folder { get; set; }
 
-        /// <summary> Contains the raw, unanalyzed, module configuration information, as a string with XML </summary>
+        /// <summary> Builder modules settings to run for this folder </summary>
         [DataMember]
-        public string Module_Configuration_Raw { get; set;  }
+        public List<Builder_Module_Setting> Builder_Module_Settings { get; set;  }
 
  
     }

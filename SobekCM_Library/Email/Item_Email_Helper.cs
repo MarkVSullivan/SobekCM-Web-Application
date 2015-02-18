@@ -1,7 +1,10 @@
 ﻿#region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.Text;
+using SobekCM.Core;
+using SobekCM.Engine_Library.Email;
 using SobekCM.Library.Database;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
@@ -104,7 +107,13 @@ namespace SobekCM.Library.Email
 
                 messageBuilder.AppendLine("<table cellspacing=\"0px\" cellpadding=\"0px\">\n");
                 messageBuilder.AppendLine("<tr><td colspan=\"2\" style=\"background: black; color: white; font-family:Arial, Helvetica, sans-serif;\"><b>ITEM INFORMATION</b></td></tr>\n");
-                messageBuilder.AppendLine("<tr valign=\"top\"><td><a href=\"" + URL + "\"><img src=\"" + UI_ApplicationCache_Gateway.Settings.Image_URL + Item.Web.AssocFilePath.Replace("\\", "/") + "/" + Item.Behaviors.Main_Thumbnail + "\" alt=\"BLOCKED THUMBNAIL IMAGE\" border=\"1px\" /></a></td>\n");
+
+                // Include the thumbnail, if one exists
+                if (String.IsNullOrEmpty(Item.Behaviors.Main_Thumbnail))
+                    messageBuilder.AppendLine("<tr>");
+                else
+                    messageBuilder.AppendLine("<tr valign=\"top\"><td><a href=\"" + URL + "\"><img src=\"" + UI_ApplicationCache_Gateway.Settings.Image_URL + Item.Web.AssocFilePath.Replace("\\", "/") + "/" + Item.Behaviors.Main_Thumbnail + "\" alt=\"BLOCKED THUMBNAIL IMAGE\" border=\"1px\" /></a></td>\n");
+
                 messageBuilder.AppendLine("<td>");
                 messageBuilder.AppendLine("<table style=\"font-family:Arial, Helvetica, sans-serif; font-size:smaller;\">");
                 messageBuilder.AppendLine("<tr><td>Title:</td><td><a href=\"" + URL + "\"><b>" + Item.Bib_Info.Main_Title + "</b></a></td></tr>");
@@ -297,20 +306,26 @@ namespace SobekCM.Library.Email
                 int error_count = 0;
                 foreach (string thisReceipient in email_recepients)
                 {
+                    EmailInfo newEmail = new EmailInfo
+                    {
+                        Body = messageBuilder.ToString(),
+                        isContactUs = false,
+                        isHTML = true,
+                        Subject = subject,
+                        RecipientsList = thisReceipient,
+                        FromAddress = SobekCM_Instance_Name + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">",
+                        UserID = UserID
+                    };
+
+                    if (! String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
+                        newEmail.FromAddress = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
+
                     if (CC_List.Length > 0)
-                    {
-                        if (!SobekCM_Database.Send_Database_Email(thisReceipient.Trim() + "," + CC_List, subject, messageBuilder.ToString(), true, false, -1, UserID))
-                        {
-                            error_count++;
-                        }
-                    }
-                    else
-                    {
-                        if (!SobekCM_Database.Send_Database_Email(thisReceipient.Trim(), subject, messageBuilder.ToString(), true, false, -1, UserID))
-                        {
-                            error_count++;
-                        }
-                    }
+                        newEmail.RecipientsList = thisReceipient.Trim() + "," + CC_List;
+
+                    string error;
+                    if (!Email_Helper.SendEmail(newEmail, out error))
+                        error_count++;
                 }
                 return error_count <= 0;
             }
@@ -577,20 +592,27 @@ namespace SobekCM.Library.Email
                 int error_count = 0;
                 foreach (string thisReceipient in email_recepients)
                 {
+                    EmailInfo newEmail = new EmailInfo
+                    {
+                        Body = messageBuilder.ToString(),
+                        isContactUs = false,
+                        isHTML = false,
+                        Subject = subject,
+                        RecipientsList = thisReceipient,
+                        FromAddress = SobekCM_Instance_Name + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">",
+                        UserID = UserID
+                    };
+
+                    if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
+                        newEmail.FromAddress = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
+
+
                     if (CC_List.Length > 0)
-                    {
-                        if (!SobekCM_Database.Send_Database_Email(thisReceipient.Trim() + "," + CC_List, subject, messageBuilder.ToString(), false, false, -1, UserID))
-                        {
-                            error_count++;
-                        }
-                    }
-                    else
-                    {
-                        if (!SobekCM_Database.Send_Database_Email(thisReceipient.Trim(), subject, messageBuilder.ToString(), false, false, -1, UserID))
-                        {
-                            error_count++;
-                        }
-                    }
+                        newEmail.RecipientsList = thisReceipient.Trim() + "," + CC_List;
+
+                    string error;
+                    if (!Email_Helper.SendEmail(newEmail, out error))
+                        error_count++;
                 }
                 return error_count <= 0;
             }

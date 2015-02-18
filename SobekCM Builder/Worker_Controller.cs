@@ -260,7 +260,7 @@ namespace SobekCM.Builder
 
             // Set the maximum number of packages to process before moving to the next instance
             if (loaders.Count > 1)
-                Builder_Settings.Instance_Package_Limit = 100;
+                MultiInstance_Builder_Settings.Instance_Package_Limit = 100;
 
 	        bool firstRun = true;
 

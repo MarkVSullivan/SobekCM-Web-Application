@@ -34,6 +34,7 @@ namespace SobekCM.Builder
     {
         private Database_Instance_Configuration dbInstance;
         private InstanceWide_Settings settings;
+        public Builder_Settings builderSettings;
         private DataTable itemTable;
 
         private string imageMagickExecutable;
@@ -42,29 +43,18 @@ namespace SobekCM.Builder
         private DataSet incomingFileInstructions;
         private readonly LogFileXHTML logger;
         
-        
 	    private readonly bool canAbort;
         private bool aborted;
         private bool verbose;
-
-
+        
 	    private readonly bool multiInstanceBuilder;
-
 
 	    private readonly string instanceName;
 	    private string finalmessage;
-
-
+        
         private readonly List<string> aggregations_to_refresh;
         private readonly List<BibVidStruct> processed_items;
         private readonly List<BibVidStruct> deleted_items;
-
-
-        private readonly List<iPreProcessModule> preProcessModules;
-        private readonly List<iSubmissionPackageModule> processItemModules;
-        private readonly List<iSubmissionPackageModule> deleteItemModules;
-        private readonly List<iPostProcessModule> postProcessModules;
-        private readonly List<iFolderModule> folderModules;
 
         private readonly int new_item_limit;
         private bool still_pending_items;
@@ -101,7 +91,8 @@ namespace SobekCM.Builder
 
 			// get all the info
 	        settings = InstanceWide_Settings_Builder.Build_Settings(dbInstance);
-
+	        builderSettings = new Builder_Settings();
+	        Builder_Settings_Builder.Refresh(builderSettings, Engine_Database.Get_Builder_Settings(false, null));
 
 			// Ensure there is SOME instance name
 	        if (instanceName.Length == 0)
@@ -119,7 +110,10 @@ namespace SobekCM.Builder
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Building modules for pre, post, and item processing", verbose, String.Empty, String.Empty, -1);
 
             // Create the default list of pre-processor modules
-            preProcessModules = new List<iPreProcessModule> { new ProcessPendingFdaReportsModule() };
+            preProcessModules = new List<iPreProcessModule>
+            {
+                new ProcessPendingFdaReportsModule()
+            };
             foreach (iPreProcessModule thisModule in preProcessModules)
             {
                 thisModule.Error += module_Error;
@@ -127,7 +121,12 @@ namespace SobekCM.Builder
             }
 
             // Create the default list of folder modules
-	        folderModules = new List<iFolderModule> { new MoveAgedPackagesToProcessModule(), new ApplyBibIdRestrictionModule(), new ValidateAndClassifyModule() };
+	        folderModules = new List<iFolderModule>
+	        {
+	            new MoveAgedPackagesToProcessModule(), 
+                new ApplyBibIdRestrictionModule(), 
+                new ValidateAndClassifyModule()
+	        };
             foreach (iFolderModule thisModule in folderModules)
             {
                 thisModule.Error += module_Error;
@@ -135,8 +134,16 @@ namespace SobekCM.Builder
             }
 
 
-            // Create the default list of deleting a single item 
-	        deleteItemModules = new List<iSubmissionPackageModule>();
+            // Create the default list for deleting a single item 
+	        deleteItemModules = new List<iSubmissionPackageModule>
+	        {
+	            new DeleteItemModule()
+	        };
+            foreach (iSubmissionPackageModule thisModule in deleteItemModules)
+            {
+                thisModule.Error += module_Error;
+                thisModule.Process += module_Process;
+            }
 
             // Create the default list of modules for processing an item
 	        processItemModules = new List<iSubmissionPackageModule>
@@ -273,7 +280,7 @@ namespace SobekCM.Builder
             List<Incoming_Digital_Resource> deletes = new List<Incoming_Digital_Resource>();
 
             // Step through all the incoming folders, and run the folder modules
-            if (settings.Incoming_Folders.Count == 0)
+            if (builderSettings.IncomingFolders.Count == 0)
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: There are no incoming folders set in the database", "Standard", String.Empty, String.Empty, -1);
             }
@@ -281,7 +288,7 @@ namespace SobekCM.Builder
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Begin processing builder folders", verbose, String.Empty, String.Empty, -1);
 
-                foreach (Builder_Source_Folder folder in settings.Incoming_Folders)
+                foreach (Builder_Source_Folder folder in builderSettings.IncomingFolders)
                 {
                     Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder);
 
@@ -576,7 +583,7 @@ namespace SobekCM.Builder
                     if (new_item_limit > 0)
                     {
                         number_packages_processed++;
-                        if (number_packages_processed >= Builder_Settings.Instance_Package_Limit)
+                        if (number_packages_processed >= MultiInstance_Builder_Settings.Instance_Package_Limit)
                         {
                             still_pending_items = true;
                             Add_NonError_To_Log("....Still pending packages, but moving to next instances and will return for these", "Standard", String.Empty, String.Empty, -1);
@@ -686,96 +693,47 @@ namespace SobekCM.Builder
                     return;
                 }
 
-				// Read the METS and load the basic information before continuing
-	            deleteResource.Load_METS();
-				SobekCM_Database.Add_Minimum_Builder_Information(deleteResource.Metadata);
-
-                deleteResource.BuilderLogId = Add_NonError_To_Log("........Processing '" + deleteResource.Folder_Name + "'", "Standard", deleteResource.BibID + ":" + deleteResource.VID, deleteResource.METS_Type_String, -1 );
-
-				SobekCM_Database.Builder_Clear_Item_Error_Log(deleteResource.BibID, deleteResource.VID, "SobekCM Builder");
+                // Save these collections to mark them for search index building
+                Add_Delete_Info_To_PostProcess_Lists(deleteResource.BibID, deleteResource.VID, deleteResource.Metadata.Behaviors.Aggregation_Code_List);
 
                 if (itemTable.Select("BibID='" + deleteResource.BibID + "' and VID='" + deleteResource.VID + "'").Length > 0)
                 {
-                    deleteResource.File_Root = deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8);
-                    string existing_folder = settings.Image_Server_Network + deleteResource.File_Root + "\\" + deleteResource.VID;
-
-                    // Remove from the primary collection area
-                    try
+                    // Do all the item processing per instance config
+                    foreach (iSubmissionPackageModule thisModule in deleteItemModules)
                     {
-                        if (Directory.Exists(existing_folder))
+                        if (!thisModule.DoWork(deleteResource))
                         {
-                            // Make sure the delete folder exists
-							if (!Directory.Exists(settings.Image_Server_Network + "\\RECYCLE BIN"))
+                            Add_Error_To_Log("Unable to complete delete for " + deleteResource.BibID + ":" + deleteResource.VID, deleteResource.BibID + ":" + deleteResource.VID, String.Empty, deleteResource.BuilderLogId);
+
+                            // Try to move the whole package to the failures folder
+                            string final_failures_folder = Path.Combine(deleteResource.Source_Folder.Failures_Folder, deleteResource.BibID + "_" + deleteResource.VID);
+                            if (Directory.Exists(final_failures_folder))
                             {
-								Directory.CreateDirectory(settings.Image_Server_Network + "\\RECYCLE BIN");
+                                final_failures_folder = final_failures_folder + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Hour.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Minute.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Second.ToString().PadLeft(2, '0');
                             }
 
-                            // Create the final directory
-							string final_folder = settings.Image_Server_Network + "\\RECYCLE BIN\\" + deleteResource.File_Root + "\\" + deleteResource.VID;
-                            if (!Directory.Exists(final_folder))
+                            try
                             {
-                                Directory.CreateDirectory(final_folder);
+                                Directory.Move(deleteResource.Resource_Folder, final_failures_folder);
                             }
+                            catch
+                            {
 
-                            // Move each file
-                            string[] delete_files = Directory.GetFiles(existing_folder);
-                            foreach (string thisDeleteFile in delete_files)
-                            {
-                                string destination_file = final_folder + "\\" + Path.GetFileName(thisDeleteFile);
-                                if (File.Exists(destination_file))
-                                    File.Delete(destination_file);
-                                File.Move(thisDeleteFile, destination_file);
                             }
+                            return;
                         }
                     }
-                    catch (Exception ee)
-                    {
-                        Add_Error_To_Log("Unable to move resource ( " + deleteResource.BibID + ":" + deleteResource.VID + " ) to deletes", deleteResource.BibID + ":" + deleteResource.VID, deleteResource.METS_Type_String, deleteResource.BuilderLogId, ee);
-                    }
-
-                    // Delete the static page
-	                string static_page1 = settings.Static_Pages_Location + deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8) + "\\" + deleteResource.VID + "\\" + deleteResource.BibID + "_" + deleteResource.VID + ".html";
-					if (File.Exists(static_page1))
-                    {
-						File.Delete(static_page1);
-                    }
-					string static_page2 = settings.Static_Pages_Location + deleteResource.BibID.Substring(0, 2) + "\\" + deleteResource.BibID.Substring(2, 2) + "\\" + deleteResource.BibID.Substring(4, 2) + "\\" + deleteResource.BibID.Substring(6, 2) + "\\" + deleteResource.BibID.Substring(8) + "\\" + deleteResource.BibID + "_" + deleteResource.VID + ".html";
-					if (File.Exists(static_page2))
-					{
-						File.Delete(static_page2);
-					}
-
-                    // Delete the file from the database
-                    SobekCM_Database.Delete_SobekCM_Item(deleteResource.BibID, deleteResource.VID, true, "Deleted upon request by builder");
-
-                    // Delete from the solr/lucene indexes
-                    if (settings.Document_Solr_Index_URL.Length > 0)
-                    {
-                        try
-                        {
-                            Solr_Controller.Delete_Resource_From_Index(settings.Document_Solr_Index_URL, settings.Page_Solr_Index_URL, deleteResource.BibID, deleteResource.VID);
-                        }
-                        catch (Exception ee)
-                        {
-	                        Add_Error_To_Log("Error deleting item from the Solr/Lucene index.  The index may not reflect this delete.", deleteResource.BibID + ":" + deleteResource.VID, deleteResource.METS_Type_String, deleteResource.BuilderLogId);
-							Add_Error_To_Log("Solr Error: " + ee.Message, deleteResource.BibID + ":" + deleteResource.VID, deleteResource.METS_Type_String, deleteResource.BuilderLogId);
-                         }
-                    }
-                    
-
-                    // Save these collections to mark them for search index building
-                    Add_Delete_Info_To_PostProcess_Lists(deleteResource.BibID, deleteResource.VID, deleteResource.Metadata.Behaviors.Aggregation_Code_List);
                 }
                 else
                 {
-					Add_Error_To_Log("Delete ( " + deleteResource.BibID + ":" + deleteResource.VID + " ) invalid... no pre-existing resource", deleteResource.BibID + ":" + deleteResource.VID, deleteResource.METS_Type_String, deleteResource.BuilderLogId);
+                    Add_Error_To_Log("Delete ( " + deleteResource.BibID + ":" + deleteResource.VID + " ) invalid... no pre-existing resource", deleteResource.BibID + ":" + deleteResource.VID, deleteResource.METS_Type_String, deleteResource.BuilderLogId);
 
                     // Finally, clear the memory a little bit
                     deleteResource.Clear_METS();
-                }
 
-                // Delete the handled METS file and package
-                deleteResource.Delete();
+                    // Delete the handled METS file and package
+                    deleteResource.Delete();
+                }
             }
         }
 

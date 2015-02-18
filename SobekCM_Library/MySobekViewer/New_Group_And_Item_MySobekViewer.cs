@@ -14,6 +14,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
@@ -953,7 +954,7 @@ namespace SobekCM.Library.MySobekViewer
                 string email_to = UI_ApplicationCache_Gateway.Settings.System_Error_Email;
                 if (email_to.Length == 0)
                     email_to = UI_ApplicationCache_Gateway.Settings.System_Email;
-                SobekCM_Database.Send_Database_Email(email_to, error_subject, error_body, true, false, -1, -1);
+                Email_Helper.SendEmail(email_to, error_subject, error_body, true, RequestSpecificValues.Current_Mode.SobekCM_Instance_Name);
             }
 
             if (!criticalErrorEncountered)
@@ -963,7 +964,7 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     string body = "New item submission complete!<br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Submittor: " + RequestSpecificValues.Current_User.Full_Name + " ( " + RequestSpecificValues.Current_User.Email + " )<br />Link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + Item_To_Complete.BibID + ":" + Item_To_Complete.VID + "</a></blockquote>";
                     string subject = "Item submission complete for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
-                    SobekCM_Database.Send_Database_Email(completeTemplate.Email_Upon_Receipt, subject, body, true, false, -1, -1);
+                    Email_Helper.SendEmail(completeTemplate.Email_Upon_Receipt, subject, body, true, RequestSpecificValues.Current_Mode.SobekCM_Instance_Name);
                 }
 
                 // If the RequestSpecificValues.Current_User wants to have a message sent, send one
@@ -972,7 +973,7 @@ namespace SobekCM.Library.MySobekViewer
                     // Create the mail message
                     string body2 = "<strong>CONGRATULATIONS!</strong><br /><br />Your item has been successfully added to the digital library and will appear immediately.  Search indexes may take a couple minutes to build, at which time this item will be discoverable through the search interface. <br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Permanent Link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "</a></blockquote>";
                     string subject2 = "Item submission complete for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
-                    SobekCM_Database.Send_Database_Email(RequestSpecificValues.Current_User.Email, subject2, body2, true, false, -1, -1 );
+                    Email_Helper.SendEmail(RequestSpecificValues.Current_User.Email, subject2, body2, true, RequestSpecificValues.Current_Mode.SobekCM_Instance_Name);
                 }
 
                 // Also clear any searches or browses ( in the future could refine this to only remove those

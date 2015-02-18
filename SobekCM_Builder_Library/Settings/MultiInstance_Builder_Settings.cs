@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SobekCM.Builder_Library.Settings
 {
-    public static class Builder_Settings
+    public static class MultiInstance_Builder_Settings
     {
-        static Builder_Settings()
+        static MultiInstance_Builder_Settings()
         {
             Instance_Package_Limit = -1;
         }

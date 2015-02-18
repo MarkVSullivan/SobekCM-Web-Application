@@ -26,9 +26,9 @@ namespace SobekCM.Builder_Library.Modules.Folders
                 OnProcess("ValidateAndClassifyModule.Perform_BulkLoader: Begin validating and classifying packages in incoming/process folders", "Verbose", String.Empty, String.Empty, -1);
 
             // If the maximum number of (incoming, non-delete) packages have already been set aside to process, no need to continue on this folder
-            if ((Builder_Settings.Instance_Package_Limit > 0) && (IncomingPackages.Count >= Builder_Settings.Instance_Package_Limit))
+            if ((MultiInstance_Builder_Settings.Instance_Package_Limit > 0) && (IncomingPackages.Count >= MultiInstance_Builder_Settings.Instance_Package_Limit))
             {
-                OnProcess("...Package validation aborted - maximum number of packages ( "  + Builder_Settings.Instance_Package_Limit + " ) reached", "Verbose", String.Empty, String.Empty, -1);
+                OnProcess("...Package validation aborted - maximum number of packages ( " + MultiInstance_Builder_Settings.Instance_Package_Limit + " ) reached", "Verbose", String.Empty, String.Empty, -1);
                 return;
             }
                 
@@ -191,9 +191,9 @@ namespace SobekCM.Builder_Library.Modules.Folders
                             }
 
                             // If the maximum number of (incoming, non-delete) packages has now been met, no need to classify anymore
-                            if ((Builder_Settings.Instance_Package_Limit > 0) && (IncomingPackages.Count >= Builder_Settings.Instance_Package_Limit))
+                            if ((MultiInstance_Builder_Settings.Instance_Package_Limit > 0) && (IncomingPackages.Count >= MultiInstance_Builder_Settings.Instance_Package_Limit))
                             {
-                                OnProcess("...Package validation aborted - maximum number of packages ( " + Builder_Settings.Instance_Package_Limit + " ) reached", "Verbose", String.Empty, String.Empty, -1);
+                                OnProcess("...Package validation aborted - maximum number of packages ( " + MultiInstance_Builder_Settings.Instance_Package_Limit + " ) reached", "Verbose", String.Empty, String.Empty, -1);
                                 return;
                             }
                         }

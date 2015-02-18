@@ -71,6 +71,7 @@
     <Compile Include="Modules\Items\CreateImageDerivativesModule.cs" />
     <Compile Include="Modules\Items\CreatePdfThumbnailModule.cs" />
     <Compile Include="Modules\Items\CreateStaticVersionModule.cs" />
+    <Compile Include="Modules\Items\DeleteItemModule.cs" />
     <Compile Include="Modules\Items\EnsureMainThumbnailModule.cs" />
     <Compile Include="Modules\Items\ExtractTextFromHtmlModule.cs" />
     <Compile Include="Modules\Items\ExtractTextFromPdfModule.cs" />
@@ -104,7 +105,8 @@
     <Compile Include="Modules\Folders\UpdateNonBibFolders.cs" />
     <Compile Include="PDF_Tools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\Builder_Settings.cs" />
+    <Compile Include="Settings\Builder_Modules.cs" />
+    <Compile Include="Settings\MultiInstance_Builder_Settings.cs" />
     <Compile Include="Statistics\SobekCM_Hit.cs" />
     <Compile Include="Statistics\SobekCM_Log_Reader.cs" />
     <Compile Include="Statistics\SobekCM_Session.cs" />

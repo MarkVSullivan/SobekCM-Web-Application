@@ -87,6 +87,7 @@
     <Compile Include="Configuration\Web_Language_Translation_Lookup.cs" />
     <Compile Include="Configuration\Web_Language_Translation_Value.cs" />
     <Compile Include="Database\SobekCM_Database_Type_Enum.cs" />
+    <Compile Include="EmailInfo.cs" />
     <Compile Include="Items\SobekCM_Items_In_Title.cs" />
     <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetFastSerializerSurrogate.cs" />
     <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetHelper.cs" />
@@ -119,6 +120,8 @@
     <Compile Include="Results\Single_Paged_Results_Args.cs" />
     <Compile Include="Search\Metadata_Search_Field.cs" />
     <Compile Include="Serialization\iSerializationEvents.cs" />
+    <Compile Include="Settings\Builder_Module_Setting.cs" />
+    <Compile Include="Settings\Builder_Settings.cs" />
     <Compile Include="Settings\Builder_Source_Folder.cs" />
     <Compile Include="Settings\Disposition_Option.cs" />
     <Compile Include="Settings\InstanceWide_Settings.cs" />

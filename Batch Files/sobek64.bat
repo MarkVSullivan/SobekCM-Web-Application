@@ -39,7 +39,7 @@ echo REMOVING ANY EXISTING STAGING DIRECTORY
 rmdir "%source%\SobekCM_Web_WiX_Installer\Staging64" /s /q
 echo.
 echo REMOVING DIRECTORIES TO NOT MOVE TO STAGING
-rmdir %iis%\SobekCM\config /s /q
+rmdir %iis%\SobekCM\config\user /s /q
 rmdir %iis%\SobekCM\design /s /q
 rmdir %iis%\SobekCM\dev /s /q
 rmdir %iis%\SobekCM\temp /s /q
@@ -57,6 +57,8 @@ del "%source%\SobekCM_Web_WiX_Installer\Staging64\SobekCM.csproj"
 del "%source%\SobekCM_Web_WiX_Installer\Staging64\SobekCM.csproj.user"
 del "%source%\SobekCM_Web_WiX_Installer\Staging64\Web.Debug.config"
 del "%source%\SobekCM_Web_WiX_Installer\Staging64\Web.Release.config"
+del "%source%\SobekCM_Web_WiX_Installer\Staging64\SobekCM.sln"
+del "%source%\SobekCM_Web_WiX_Installer\Staging64\config\sobekcm.config"
 echo.
 
 cd c:\

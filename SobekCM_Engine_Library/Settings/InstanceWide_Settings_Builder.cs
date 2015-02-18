@@ -222,6 +222,11 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Boolean_Value(settingsDictionary, "Convert Office Files to PDF", SettingsObject, X => X.Convert_Office_Files_To_PDF, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Detailed User Permissions", SettingsObject, X => X.Detailed_User_Aggregation_Permissions, ref error, false);
                 Get_String_Value(settingsDictionary, "Document Solr Index URL", SettingsObject, X => X.Document_Solr_Index_URL, ref error);
+                Get_String_Value(settingsDictionary, "Email Default From Address", SettingsObject, X => X.EmailDefaultFromAddress, ref error);
+                Get_String_Value(settingsDictionary, "Email Default From Name", SettingsObject, X => X.EmailDefaultFromDisplay, ref error);
+                Get_String_Value(settingsDictionary, "Email Method", SettingsObject, X => X.EmailMethodString, "DATABASE MAIL");
+                Get_Integer_Value(settingsDictionary, "Email SMTP Port", SettingsObject, X => X.EmailSmtpPort, ref error, 25);
+                Get_String_Value(settingsDictionary, "Email SMTP Server", SettingsObject, X => X.EmailSmtpServer, ref error);
                 Get_Boolean_Value(settingsDictionary, "Facets Collapsible", SettingsObject, X => X.Facets_Collapsible, ref error, false);
                 Get_String_Value(settingsDictionary, "FDA Report DropBox", SettingsObject, X => X.FDA_Report_DropBox, ref error);
                 Get_String_Value(settingsDictionary, "Files To Exclude From Downloads", SettingsObject, X => X.Files_To_Exclude_From_Downloads, ref error);
@@ -296,14 +301,12 @@ namespace SobekCM.Engine_Library.Settings
                     SettingsObject.Additional_Settings[thisSetting.Key] = thisSetting.Value;
                 }
 
-                // Set the builder folder information
-                Set_Builder_Folders(SettingsObject, SobekCM_Settings.Tables[1]);
 
                 // Save the metadata types
-                Set_Metadata_Types(SettingsObject, SobekCM_Settings.Tables[2]);
+                Set_Metadata_Types(SettingsObject, SobekCM_Settings.Tables[1]);
 
                 // Set the workflow and disposition options
-                Set_Workflow_And_Disposition_Types(SettingsObject, SobekCM_Settings.Tables[3], SobekCM_Settings.Tables[4]);
+                Set_Workflow_And_Disposition_Types(SettingsObject, SobekCM_Settings.Tables[2], SobekCM_Settings.Tables[3]);
 
                 // This fills some dictionaries and such used for easy lookups
                 SettingsObject.PostUnSerialization();
@@ -417,35 +420,7 @@ namespace SobekCM.Engine_Library.Settings
 
         #endregion
 
-        private static void Set_Builder_Folders(InstanceWide_Settings SettingsObject, DataTable BuilderFoldersTable)
-        {
-            SettingsObject.Incoming_Folders.Clear();
-            foreach (DataRow thisRow in BuilderFoldersTable.Rows)
-            {
-                Builder_Source_Folder newFolder = new Builder_Source_Folder
-                {
-                    Folder_Name = thisRow["FolderName"].ToString(), 
-                    Inbound_Folder = thisRow["NetworkFolder"].ToString(), 
-                    Failures_Folder = thisRow["ErrorFolder"].ToString(), 
-                    Processing_Folder = thisRow["ProcessingFolder"].ToString(), 
-                    Perform_Checksum = Convert.ToBoolean(thisRow["Perform_Checksum_Validation"]), 
-                    Archive_TIFFs = Convert.ToBoolean(thisRow["Archive_TIFF"]), 
-                    Archive_All_Files = Convert.ToBoolean(thisRow["Archive_All_Files"]), 
-                    Allow_Deletes = Convert.ToBoolean(thisRow["Allow_Deletes"]), 
-                    Allow_Folders_No_Metadata = Convert.ToBoolean(thisRow["Allow_Folders_No_Metadata"]), 
-                    Allow_Metadata_Updates = Convert.ToBoolean(thisRow["Allow_Metadata_Updates"]), 
-                    BibID_Roots_Restrictions = thisRow["BibID_Roots_Restrictions"].ToString()
-                };
 
-                if (thisRow["Can_Move_To_Content_Folder"] == DBNull.Value)
-                    newFolder.Can_Move_To_Content_Folder = null;
-                else
-                    newFolder.Can_Move_To_Content_Folder = Convert.ToBoolean(thisRow["Can_Move_To_Content_Folder"]);
-                newFolder.Module_Configuration_Raw = thisRow["ModuleConfig"].ToString();
-
-                SettingsObject.Incoming_Folders.Add(newFolder);
-            }
-        }
 
 
         /// <summary> Saves all the metadata types from the database, to be treated as constant settings

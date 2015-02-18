@@ -12,6 +12,18 @@ using SobekCM.Core.Users;
 
 namespace SobekCM.Core.Settings
 {
+    /// <summary> Enumeration indicates the type of email sending to support </summary>
+    public enum Email_Method_Enum : byte
+    {
+        /// <summary> Send via database mail </summary>
+        MsSqlDatabaseMail = 0,
+
+        /// <summary> Send directly to the SMTP server </summary>
+        SmtpDirect
+    }
+
+
+
     /// <summary> Class provides context to constant settings based on the basic information about this instance of the application and server information </summary>
     [DataContract]
     public class InstanceWide_Settings : iSerializationEvents
@@ -72,7 +84,6 @@ namespace SobekCM.Core.Settings
                 metadataFieldsByFacetName = new Dictionary<string, Metadata_Search_Field>();
                 metadataFieldsByDisplayName = new Dictionary<string, Metadata_Search_Field>();
                 metadataFieldsByName = new Dictionary<string, Metadata_Search_Field>();
-                Incoming_Folders = new List<Builder_Source_Folder>();
                 Additional_Settings = new Dictionary<string, string>();
                 Workflow_Types = new List<Workflow_Type>();
                 Disposition_Options = new List<Disposition_Option>();
@@ -297,10 +308,6 @@ namespace SobekCM.Core.Settings
         /// <summary> Location where all the item-level page exist for search engine indexing </summary>
         [DataMember]
         public string Static_Pages_Location { get; set; }
-
-        /// <summary> List of all the incoming folders which should be checked for new resources </summary>
-        [DataMember]
-        public List<Builder_Source_Folder> Incoming_Folders { get; set; }
 
         /// <summary> Network directory for the image server which holds all the resource files </summary>
         [DataMember]
@@ -528,6 +535,56 @@ namespace SobekCM.Core.Settings
         /// <summary> Flag indicates if the florida SUS settings should be included </summary>
         [DataMember]
         public bool Show_Florida_SUS_Settings { get; set; } 
+
+        #endregion
+
+        #region Properties related to sending emails from the system
+
+        /// <summary> Method that emails are sent from this system </summary>
+        [DataMember]
+        public Email_Method_Enum EmailMethod { get; set; }
+
+        /// <summary> SMTP Server name for sending emails </summary>
+        [DataMember]
+        public string EmailSmtpServer { get; set;  }
+
+        /// <summary> SMTP Server port for sending emails </summary>
+        [DataMember]
+        public int EmailSmtpPort { get; set;  }
+
+        /// <summary> Email address for the FROM portion, if none is provided in the actual email request </summary>
+        [DataMember]
+        public string EmailDefaultFromAddress { get; set; }
+
+        /// <summary> Email address display portion, or NULL, to use if none is provided in the actual email request </summary>
+        [DataMember]
+        public string EmailDefaultFromDisplay { get; set; }
+
+        /// <summary> Get or set the values for the email method by string  </summary>
+        public string EmailMethodString
+        {
+            get
+            {
+                switch (EmailMethod)
+                {
+                    case Email_Method_Enum.MsSqlDatabaseMail:
+                        return "DATABASE MAIL";
+
+                    case Email_Method_Enum.SmtpDirect:
+                        return "SMTP DIRECT";
+
+                    default:
+                        return "DATABASE MAIL";
+                }
+            }
+            set
+            {
+                if (String.Compare(value, "DATABASE MAIL", true) == 0)
+                    EmailMethod = Email_Method_Enum.MsSqlDatabaseMail;
+                if (String.Compare(value, "SMTP DIRECT", true) == 0)
+                    EmailMethod = Email_Method_Enum.SmtpDirect;
+            }
+        }
 
         #endregion
 

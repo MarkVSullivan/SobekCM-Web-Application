@@ -17,6 +17,7 @@ using SobekCM.Core.SiteMap;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
+using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library;
 using SobekCM.Library.Database;
@@ -1364,8 +1365,7 @@ namespace SobekCM
 					      "Error Message: " + EmailTitle;
 				}
 
-                SobekCM_Database.Send_Database_Email(UI_ApplicationCache_Gateway.Settings.System_Error_Email, EmailTitle, err, true, false, -1, -1);
-
+                Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.System_Error_Email, EmailTitle, err, true, String.Empty);
 			}
 			catch (Exception)
 			{
@@ -1430,7 +1430,7 @@ namespace SobekCM
 				// Send this email
 				try
 				{
-                    SobekCM_Database.Send_Database_Email(UI_ApplicationCache_Gateway.Settings.System_Error_Email, "SobekCM Exception Caught  [Invalid Item Requested]", builder.ToString(), false, false, -1, -1);
+                    Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.System_Error_Email, "SobekCM Exception Caught  [Invalid Item Requested]", builder.ToString(), false, String.Empty);
 				}
 				catch (Exception)
 				{

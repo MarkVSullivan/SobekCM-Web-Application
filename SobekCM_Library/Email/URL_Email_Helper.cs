@@ -2,7 +2,10 @@
 
 using System;
 using System.Text;
+using SobekCM.Core;
+using SobekCM.Engine_Library.Email;
 using SobekCM.Library.Database;
+using SobekCM.UI_Library;
 
 #endregion
 
@@ -56,14 +59,26 @@ namespace SobekCM.Library.Email
                 string[] email_recepients = Recepient_List.Split(";,".ToCharArray());
                 foreach (string thisEmailRecepient in email_recepients)
                 {
+                    EmailInfo newEmail = new EmailInfo
+                    {
+                        Body = messageBuilder.ToString(), 
+                        isContactUs = false, isHTML = true, 
+                        Subject = URL_Short_Type + " from " + SobekCM_Instance_Name, 
+                        RecipientsList = thisEmailRecepient,
+                        FromAddress = SobekCM_Instance_Name + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">",
+                        UserID = UserID
+                    };
+
+                    if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
+                        newEmail.FromAddress = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
+
+                    
                     if (CC_List.Length > 0)
-                    {
-                        SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), true, false, -1, UserID);
-                    }
-                    else
-                    {
-                        SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim(), URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), true, false, -1, UserID);
-                    }
+                        newEmail.RecipientsList = thisEmailRecepient.Trim() + "," + CC_List;
+
+                    string error;
+                    if (!Email_Helper.SendEmail(newEmail, out error))
+                        return error;
                 }
                 return String.Empty;
             }
@@ -95,14 +110,27 @@ namespace SobekCM.Library.Email
                 string[] email_recepients = Recepient_List.Split(";,".ToCharArray());
                 foreach (string thisEmailRecepient in email_recepients)
                 {
+                    EmailInfo newEmail = new EmailInfo
+                    {
+                        Body = messageBuilder.ToString(),
+                        isContactUs = false,
+                        isHTML = false,
+                        Subject = URL_Short_Type + " from " + SobekCM_Instance_Name,
+                        RecipientsList = thisEmailRecepient,
+                        FromAddress = SobekCM_Instance_Name + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">",
+                        UserID = UserID
+                    };
+
+                    if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
+                        newEmail.FromAddress = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
+
+
                     if (CC_List.Length > 0)
-                    {
-                        SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim() + "," + CC_List, URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), false, false, -1, UserID);
-                    }
-                    else
-                    {
-                        SobekCM_Database.Send_Database_Email(thisEmailRecepient.Trim(), URL_Short_Type + " from " + SobekCM_Instance_Name, messageBuilder.ToString(), false, false, -1, UserID);
-                    }
+                        newEmail.RecipientsList = thisEmailRecepient.Trim() + "," + CC_List;
+
+                    string error;
+                    if (!Email_Helper.SendEmail(newEmail, out error))
+                        return error;
                 }
                 return String.Empty;
 

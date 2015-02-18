@@ -3,6 +3,8 @@
 using System;
 using System.Data;
 using System.Text;
+using SobekCM.Core;
+using SobekCM.Engine_Library.Email;
 using SobekCM.Library.Database;
 
 #endregion
@@ -29,7 +31,7 @@ namespace SobekCM.Library.Email
         /// <param name="Number_Of_Items_To_Include"> Number of items to include in this email, in case the user has many, many items linked </param>
         /// <param name="Base_URL"> Base URL to use for links to these items </param>
         /// <returns> TRUE if succesful, otherwise FALSE </returns>
-        public static bool Send_Individual_Usage_Email(int UserID, string User_Name, string User_Email, int Year, int Month, int Number_Of_Items_To_Include, string Base_URL )
+        public static bool Send_Individual_Usage_Email(int UserID, string User_Name, string User_Email, int Year, int Month, int Number_Of_Items_To_Include, string Base_URL, string FromAddress )
         {
             try
             {
@@ -86,7 +88,18 @@ namespace SobekCM.Library.Email
                     if (total_month_hits > 0)
                     {
                         // Send this email
-                        return SobekCM_Database.Send_Database_Email(User_Email, EMAIL_SUBJECT.Replace("<%DATE%>", Month_From_Int(Month) + " " + Year), email_body_user, true, false, -1, -1);
+                        EmailInfo newEmail = new EmailInfo
+                        {
+                            FromAddress = FromAddress, 
+                            RecipientsList = User_Email, 
+                            isContactUs = false, 
+                            isHTML = true, 
+                            Subject = EMAIL_SUBJECT.Replace("<%DATE%>", Month_From_Int(Month) + " " + Year), 
+                            Body = email_body_user
+                        };
+
+                        string error;
+                        return Email_Helper.SendEmail(newEmail, out error);
                     }
                 }
 

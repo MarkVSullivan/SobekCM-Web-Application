@@ -12,6 +12,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UploadiFive;
@@ -423,7 +424,7 @@ namespace SobekCM.Library.MySobekViewer
                 string email_to = UI_ApplicationCache_Gateway.Settings.System_Error_Email;
                 if (email_to.Length == 0)
                     email_to = UI_ApplicationCache_Gateway.Settings.System_Email;
-                Database.SobekCM_Database.Send_Database_Email(email_to, error_subject, error_body, true, false, -1, -1);
+                Email_Helper.SendEmail(email_to, error_subject, error_body, true, String.Empty);
             }
 
 
