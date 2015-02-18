@@ -547,7 +547,16 @@ namespace SobekCM.Library.MySobekViewer
 			            }
 
 			            Output.WriteLine("    <td>" + fileInfo.LastWriteTime + "</td>");
-						Output.WriteLine("    <td style=\"text-align:center\"> <span class=\"sbkMySobek_ActionLink\">( <a href=\"\" onclick=\"return file_delete('" + fileInfo.Name + "');\">delete</a> )</span></td>");
+
+                        //add by Keven:replace single & double quote with ascII characters
+                        string strFileName = fileInfo.Name;
+                        if (strFileName.Contains("'") || strFileName.Contains("\""))
+                        {
+                            strFileName = strFileName.Replace("'", "\\&#39;");
+                            strFileName = strFileName.Replace("\"", "\\&#34;");
+                        }
+                        Output.WriteLine("    <td style=\"text-align:center\"> <span class=\"sbkMySobek_ActionLink\">( <a href=\"\" onclick=\"return file_delete('" + strFileName + "');\">delete</a> )</span></td>");
+
 			            Output.WriteLine("  </tr>");
 		            }
 
