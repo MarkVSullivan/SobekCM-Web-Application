@@ -59,6 +59,12 @@ namespace SobekCM.Builder
         private readonly int new_item_limit;
         private bool still_pending_items;
 
+        private readonly List<iPreProcessModule> preProcessModules;
+        private readonly List<iSubmissionPackageModule> processItemModules;
+        private readonly List<iSubmissionPackageModule> deleteItemModules;
+        private readonly List<iPostProcessModule> postProcessModules;
+        private readonly List<iFolderModule> folderModules;
+
 
 	    ///  <summary> Constructor for a new instance of the Worker_BulkLoader class </summary>
 	    ///  <param name="Logger"> Log file object for logging progress </param>

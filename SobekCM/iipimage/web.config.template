@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <system.webServer>
+        <handlers accessPolicy="Read, Execute, Script">
+            <add name="IIP Image FAST CGI Mapping" path="*.fcgi" verb="*" modules="FastCgiModule" scriptProcessor="C:\SobekCM\IIPimage\iipsrv.exe" resourceType="Unspecified" requireAccess="Execute" />
+        </handlers>
+    </system.webServer>
+</configuration>
