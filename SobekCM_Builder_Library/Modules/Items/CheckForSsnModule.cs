@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using SobekCM.Engine_Library.Email;
 using SobekCM.Library.Database;
 
 #endregion
@@ -48,7 +49,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             {
                 if (Settings.Privacy_Email_Address.Length > 0)
                 {
-                    SobekCM_Database.Send_Database_Email(Settings.Privacy_Email_Address, "Possible Social Security Number Located", "A string which appeared to be a possible social security number was found while bulk loading or post-processing an item.\n\nThe SSN was found in package " + bibID + ":" + vid + " in file '" + ssn_text_file_name + "'.\n\nThe text which may be a SSN is '" + ssn_match + "'.\n\nPlease review this item and remove any private information which should not be on the web server.", false, false, -1, -1);
+                    Email_Helper.SendEmail(Settings.Privacy_Email_Address, "Possible Social Security Number Located", "A string which appeared to be a possible social security number was found while bulk loading or post-processing an item.\n\nThe SSN was found in package " + bibID + ":" + vid + " in file '" + ssn_text_file_name + "'.\n\nThe text which may be a SSN is '" + ssn_match + "'.\n\nPlease review this item and remove any private information which should not be on the web server.", false, Settings.System_Name);
                 }
                 OnProcess("Possible SSN Located (" + ssn_text_file_name + ")", "Privacy Checking", Resource.BibID + ":" + Resource.VID, Resource.METS_Type_String, Resource.BuilderLogId);
             }

@@ -1,4 +1,54 @@
 
+create table dbo.SobekCM_Item_Alias(
+	ItemAliasID int IDENTITY(1,1) NOT NULL,
+	Alias varchar(50) NOT NULL,
+	ItemID int NOT NULL,
+	CONSTRAINT [PK_SobekCM_Item_Alias] PRIMARY KEY CLUSTERED 
+(
+	ItemAliasID ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+ALTER TABLE [dbo].SobekCM_Item_Alias  WITH CHECK ADD  CONSTRAINT [FK_SobekCM_Item_Alias_SobekCM_Item] FOREIGN KEY([ItemID])
+REFERENCES [dbo].[SobekCM_Item] ([ItemID])
+GO
+
+
+
+ALTER PROCEDURE [dbo].[mySobek_Delete_User_Group]
+	@usergroupid int,
+	@message int output
+AS
+begin transaction
+
+	if ( exists ( select 1 from mySobek_User_Group_Link where UserGroupID=@usergroupid ))
+	begin
+		set @message = -1;
+	end
+	else if ( exists ( select 1 from mySobek_User_Group where UserGroupID=@usergroupid and isSpecialGroup = 'true' ))
+	begin
+		set @message = -2;
+	end
+	else
+	begin
+
+		delete from mySobek_User_Group_DefaultMetadata_Link where UserGroupID=@usergroupid;
+		delete from mySobek_User_Group_Edit_Aggregation where UserGroupID=@usergroupid;
+		delete from mySobek_User_Group_Item_Permissions where UserGroupID=@usergroupid;
+		delete from mySobek_User_Group_Editable_Link where UserGroupID=@usergroupid;
+		delete from mySobek_User_Group_Template_Link where UserGroupID=@usergroupid;
+		delete from mySobek_User_Group where UserGroupID = @usergroupid;
+
+		set @message = 1;
+	end;
+
+commit transaction;
+GO
+
+
+
 
 -- Add builder module table
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SobekCM_Builder_Module]') AND type in (N'U'))
@@ -46,6 +96,7 @@ BEGIN
 		[ModuleSetID] [int] identity(1,1) NOT NULL,
 		[ModuleTypeID] [int] NOT NULL,
 		[SetName] [varchar](50) NOT NULL,
+		SetOrder int NOT NULL
 	 CONSTRAINT [PK_SobekCM_Builder_Module_Set] PRIMARY KEY CLUSTERED 
 	(
 		[ModuleSetID] ASC
@@ -197,3 +248,165 @@ end;
 GO
 
 
+-- Sends an email via database mail and additionally logs that the email was sent
+ALTER PROCEDURE [dbo].[SobekCM_Send_Email] 
+	@recipients_list varchar(250),
+	@subject_line varchar(500),
+	@email_body nvarchar(max),
+	@from_address nvarchar(250),
+	@reply_to nvarchar(250), 
+	@html_format bit,
+	@contact_us bit,
+	@replytoemailid int,
+	@userid int
+AS
+begin transaction
+
+	if (( @userid < 0 ) or (( select count(*) from SobekCM_Email_Log where UserID = @userid and Sent_Date > DateAdd( DAY, -1, GETDATE())) < 20 ))
+	begin
+		-- Log this email
+		insert into SobekCM_Email_Log( Sender, Receipt_List, Subject_Line, Email_Body, Sent_Date, HTML_Format, Contact_Us, ReplyToEmailId, UserID )
+		values ( 'sobekcm noreply profile', @recipients_list, @subject_line, @email_body, GETDATE(), @html_format, @contact_us, @replytoemailid, @userid );
+		
+		-- Send the email
+		if ( @html_format = 'true' )
+		begin
+			if ( len(coalesce(@from_address,'')) > 0 )
+			begin
+				if ( len(coalesce(@reply_to,'')) > 0 )
+				begin
+					EXEC msdb.dbo.sp_send_dbmail
+						@profile_name= 'sobekcm noreply profile',
+						@recipients = @recipients_list,
+						@body = @email_body,
+						@subject = @subject_line,
+						@body_format = 'html',
+						@from_address = @from_address,
+						@reply_to = @reply_to;
+				end
+				else
+				begin
+					EXEC msdb.dbo.sp_send_dbmail
+						@profile_name= 'sobekcm noreply profile',
+						@recipients = @recipients_list,
+						@body = @email_body,
+						@subject = @subject_line,
+						@body_format = 'html',
+						@from_address = @from_address;
+				end;
+			end
+			else
+			begin
+				if ( len(coalesce(@reply_to,'')) > 0 )
+				begin
+					EXEC msdb.dbo.sp_send_dbmail
+						@profile_name= 'sobekcm noreply profile',
+						@recipients = @recipients_list,
+						@body = @email_body,
+						@subject = @subject_line,
+						@body_format = 'html',
+						@reply_to = @reply_to;
+				end
+				else
+				begin
+					EXEC msdb.dbo.sp_send_dbmail
+						@profile_name= 'sobekcm noreply profile',
+						@recipients = @recipients_list,
+						@body = @email_body,
+						@subject = @subject_line,
+						@body_format = 'html';
+				end;
+			end;
+		end
+		else
+		begin
+			if ( len(coalesce(@from_address,'')) > 0 )
+			begin
+				if ( len(coalesce(@reply_to,'')) > 0 )
+				begin
+					EXEC msdb.dbo.sp_send_dbmail
+						@profile_name= 'sobekcm noreply profile',
+						@recipients = @recipients_list,
+						@body = @email_body,
+						@subject = @subject_line,
+						@from_address = @from_address,
+						@reply_to = @reply_to;
+				end
+				else
+				begin
+					EXEC msdb.dbo.sp_send_dbmail
+						@profile_name= 'sobekcm noreply profile',
+						@recipients = @recipients_list,
+						@body = @email_body,
+						@subject = @subject_line,
+						@from_address = @from_address;
+				end;
+			end
+			else
+			begin
+				if ( len(coalesce(@reply_to,'')) > 0 )
+				begin
+					EXEC msdb.dbo.sp_send_dbmail
+						@profile_name= 'sobekcm noreply profile',
+						@recipients = @recipients_list,
+						@body = @email_body,
+						@subject = @subject_line,
+						@reply_to = @reply_to;
+				end
+				else
+				begin
+					EXEC msdb.dbo.sp_send_dbmail
+						@profile_name= 'sobekcm noreply profile',
+						@recipients = @recipients_list,
+						@body = @email_body,
+						@subject = @subject_line;
+				end;
+			end;
+		end;
+	end;
+	
+commit transaction;
+GO
+
+-- Gets the list of all system-wide settings from the database, including the full list of all
+-- metadata search fields, possible workflows, and all disposition data
+ALTER PROCEDURE [dbo].[SobekCM_Get_Settings]
+AS
+begin
+
+	-- No need to perform any locks here.  A slightly dirty read won't hurt much
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+	
+	-- Get all the standard SobekCM settings
+	select Setting_Key, Setting_Value
+	from SobekCM_Settings;
+
+	-- Return all the metadata search fields
+	select MetadataTypeID, MetadataName, SobekCode, SolrCode, DisplayTerm, FacetTerm, CustomField, canFacetBrowse
+	from SobekCM_Metadata_Types
+	order by DisplayTerm;
+
+	-- Return all the possible workflow types
+	select WorkFlowID, WorkFlowName, WorkFlowNotes, Start_Event_Number, End_Event_Number, Start_And_End_Event_Number, Start_Event_Desc, End_Event_Desc
+	from Tracking_WorkFlow;
+
+	-- Return all the possible disposition options
+	select DispositionID, DispositionFuture, DispositionPast, DispositionNotes
+	from Tracking_Disposition_Type;
+
+end;
+GO
+
+
+
+if (( select count(*) from SobekCM_Database_Version ) = 0 )
+begin
+	insert into SobekCM_Database_Version ( Major_Version, Minor_Version, Release_Phase )
+	values ( 4, 8, '' );
+end
+else
+begin
+	update SobekCM_Database_Version
+	set Major_Version=4, Minor_Version=8, Release_Phase='';
+end;
+GO
