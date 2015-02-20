@@ -398,15 +398,199 @@ end;
 GO
 
 
+/****** Object:  StoredProcedure [dbo].[SobekCM_Get_OAI_Data_Codes]    Script Date: 12/20/2013 05:43:37 ******/
+-- Gets the distinct data codes present in the database for OAI (such as 'oai_dc')
+ALTER PROCEDURE [dbo].[SobekCM_Get_OAI_Data_Codes]
+AS
+BEGIN
+	-- Dirty read here won't hurt anything
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	-- Return distinct codes used in the OAI table
+	select distinct(Data_Code)
+	from SobekCM_Item_OAI;
+END;
+GO
+
+
+/****** Object:  StoredProcedure [dbo].[SobekCM_Get_OAI_Data_Item]    Script Date: 12/20/2013 05:43:37 ******/
+-- Returns the OAI data for a single item from the oai source tables
+ALTER PROCEDURE [dbo].[SobekCM_Get_OAI_Data_Item]
+	@bibid varchar(10),
+	@vid varchar(5),
+	@data_code varchar(20)
+AS
+begin
+	-- No need to perform any locks here
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+	
+	-- Select the matching rows
+	select G.GroupID, BibID, O.OAI_Data, O.OAI_Date, VID
+	from SobekCM_Item_Group G, SobekCM_Item I, SobekCM_Item_OAI O
+	where G.BibID = @bibid
+	  and G.GroupID = I.GroupID
+	  and I.VID = @vid
+	  and I.ItemID = O.ItemID	
+	  and O.Data_Code = @data_code;
+end;
+GO
+
+
+/****** Object:  StoredProcedure [dbo].[SobekCM_Get_OAI_Data]    Script Date: 12/20/2013 05:43:37 ******/
+-- Return a list of the OAI data to server through the OAI-PMH server
+ALTER PROCEDURE [dbo].[SobekCM_Get_OAI_Data]
+	@aggregationcode varchar(20),
+	@data_code varchar(20),
+	@from date,
+	@until date,
+	@pagesize int, 
+	@pagenumber int,
+	@include_data bit
+AS
+begin
+
+	-- No need to perform any locks here
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	-- Do not need to maintain row counts
+	SET NoCount ON;
+
+	-- Create the temporary tables first
+	-- Create the temporary table to hold all the item id's
+		
+	-- Determine the start and end rows
+	declare @rowstart int;
+	declare @rowend int; 
+	set @rowstart = (@pagesize * ( @pagenumber - 1 )) + 1;
+	
+	-- Rowend is calculated normally, but then an additional item is
+	-- added at the end which will be used to determine if a resumption
+	-- token should be issued
+	set @rowend = (@rowstart + @pagesize - 1) + 1; 
+	
+	-- Ensure there are date values
+	if ( @from is null )
+		set @from = CONVERT(date,'19000101');
+	if ( @until is null )
+		set @until = GETDATE();
+	
+	-- Is this for a single aggregation
+	if (( @aggregationcode is not null ) and ( LEN(@aggregationcode) > 0 ) and ( @aggregationcode != 'all' ))
+	begin	
+		-- Determine the aggregationid
+		declare @aggregationid int;
+		set @aggregationid = ( select ISNULL(AggregationID,-1) from SobekCM_Item_Aggregation where Code=@aggregationcode );
+			  
+		-- Should the actual data be returned, or just the identifiers?
+		if ( @include_data='true')
+		begin
+			-- Create saved select across items/title for row numbers
+			with ITEMS_SELECT AS
+			(	select BibID, I.ItemID, VID,
+				ROW_NUMBER() OVER (order by O.OAI_Date ASC ) as RowNumber
+				from SobekCM_Item I, SobekCM_Item_Aggregation_Item_Link CL, SobekCM_Item_Group G, SobekCM_Item_OAI O
+				where ( CL.ItemID = I.ItemID )
+				  and ( CL.AggregationID = @aggregationid )
+				  and ( I.GroupID = G.GroupID )
+				  and ( I.ItemID = O.ItemID )
+				  and ( G.Suppress_OAI = 'false' )
+				  and ( O.OAI_Date >= @from )
+				  and ( O.OAI_Date <= @until )
+				  and ( O.Data_Code = @data_code ))
+				
+			-- Select the matching rows
+			select BibID, T.VID, O.OAI_Data, O.OAI_Date
+			from ITEMS_SELECT T, SobekCM_Item_OAI O
+			where RowNumber >= @rowstart
+			  and RowNumber <= @rowend
+			  and T.ItemID = O.ItemID			  
+			  and O.Data_Code = @data_code;		 
+		end
+		else
+		begin
+			-- Create saved select across titles for row numbers
+			with ITEMS_SELECT AS
+			(	select BibID, I.ItemID, VID,
+				ROW_NUMBER() OVER (order by O.OAI_Date ASC ) as RowNumber
+				from SobekCM_Item I, SobekCM_Item_Aggregation_Item_Link CL, SobekCM_Item_Group G, SobekCM_Item_OAI O
+				where ( CL.ItemID = I.ItemID )
+				  and ( CL.AggregationID = @aggregationid )
+				  and ( I.GroupID = G.GroupID )
+				  and ( I.ItemID = O.ItemID )
+				  and ( G.Suppress_OAI = 'false' )
+				  and ( O.OAI_Date >= @from )
+				  and ( O.OAI_Date <= @until )
+				  and ( O.Data_Code = @data_code ))
+				
+			-- Select the matching rows
+			select BibID, T.VID, O.OAI_Date
+			from ITEMS_SELECT T, SobekCM_Item_OAI O
+			where RowNumber >= @rowstart
+			  and RowNumber <= @rowend
+			  and T.ItemID = O.ItemID
+			  and O.Data_Code = @data_code;	
+		end;		  
+	end
+	else
+	begin
+				  
+		-- Should the actual data be returned, or just the identifiers?
+		if ( @include_data='true')
+		begin
+			-- Create saved select across titles for row numbers
+			with ITEMS_SELECT AS
+			(	select BibID, I.ItemID, VID,
+				ROW_NUMBER() OVER (order by O.OAI_Date ASC) as RowNumber
+				from SobekCM_Item_Group G, SobekCM_Item I, SobekCM_Item_OAI O
+				where ( G.GroupID = I.GroupID )
+				  and ( I.ItemID = O.ItemID )
+				  and ( G.Suppress_OAI = 'false' )
+				  and ( O.OAI_Date >= @from )
+				  and ( O.OAI_Date <= @until )
+				  and ( O.Data_Code = @data_code ))				
+								
+			-- Select the matching rows
+			select BibID, T.VID, O.OAI_Data, O.OAI_Date
+			from ITEMS_SELECT T, SobekCM_Item_OAI O
+			where RowNumber >= @rowstart
+			  and RowNumber <= @rowend
+			  and T.ItemID = O.ItemID
+			  and O.Data_Code = @data_code;				 
+		end
+		else
+		begin
+			-- Create saved select across titles for row numbers
+			with ITEMS_SELECT AS
+			(	select BibID, I.ItemID, VID,
+				ROW_NUMBER() OVER (order by O.OAI_Date ASC) as RowNumber
+				from SobekCM_Item_Group G, SobekCM_Item I, SobekCM_Item_OAI O
+				where ( G.GroupID = I.GroupID )
+				  and ( I.ItemID = O.ItemID )
+				  and ( G.Suppress_OAI = 'false' )
+				  and ( O.OAI_Date >= @from )
+				  and ( O.OAI_Date <= @until )
+				  and ( O.Data_Code = @data_code ))				
+								
+			-- Select the matching rows
+			select BibID, T.VID, O.OAI_Date
+			from ITEMS_SELECT T, SobekCM_Item_OAI O
+			where RowNumber >= @rowstart
+			  and RowNumber <= @rowend
+			  and T.ItemID = O.ItemID
+			  and O.Data_Code = @data_code;	
+		end;
+	end;
+end;
+GO
 
 if (( select count(*) from SobekCM_Database_Version ) = 0 )
 begin
 	insert into SobekCM_Database_Version ( Major_Version, Minor_Version, Release_Phase )
-	values ( 4, 8, '' );
+	values ( 4, 8, '0' );
 end
 else
 begin
 	update SobekCM_Database_Version
-	set Major_Version=4, Minor_Version=8, Release_Phase='';
+	set Major_Version=4, Minor_Version=8, Release_Phase='0';
 end;
 GO

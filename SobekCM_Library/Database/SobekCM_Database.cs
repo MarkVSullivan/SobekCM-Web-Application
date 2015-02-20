@@ -6268,7 +6268,7 @@ namespace SobekCM.Library.Database
 				// Read in each row
 				while (reader.Read())
 				{
-					returnVal.Add(Include_Record ? new OAI_Record(reader.GetString(1), reader.GetString(2), reader.GetDateTime(3)) : new OAI_Record(reader.GetString(1), reader.GetDateTime(2)));
+                    returnVal.Add(Include_Record ? new OAI_Record(reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetDateTime(3)) : new OAI_Record(reader.GetString(0), reader.GetString(1), reader.GetDateTime(2)));
 				}
 
 				// Close the reader
@@ -6279,13 +6279,14 @@ namespace SobekCM.Library.Database
 			return returnVal;
 		}
 
-		/// <summary> Returns a single OAI-PMH record, by identifier ( BibID ) </summary>
-		/// <param name="Identifier"> Code the OAI-PMH record  (which is really the BibID)</param>
-		/// <param name="Data_Code"> Code for the metadata to be served ( usually oai_dc )</param>
+		/// <summary> Returns a single OAI-PMH record, by identifier ( BibID and VID ) </summary>
+		/// <param name="BibID"> BibID the OAI-PMH record )</param>
+        /// <param name="VID"> VID for the OAI-PMH record </param>
+		/// <param name="Data_Code"> Code for the metadata to be served ( usually oai_dc or marc21)</param>
 		/// <returns> Single OAI-PMH record </returns>
 		/// <remarks> This calls the 'SobekCM_Get_OAI_Data_Item' stored procedure  <br /><br />
 		/// This is called by the <see cref="Oai_MainWriter"/> class. </remarks> 
-		public static OAI_Record Get_OAI_Record( string Identifier, string Data_Code )
+		public static OAI_Record Get_OAI_Record( string BibID, string VID, string Data_Code )
 		{
 			// Create the connection
 			SqlConnection connect = new SqlConnection(connectionString);
@@ -6293,7 +6294,8 @@ namespace SobekCM.Library.Database
 			// Create the command 
 			SqlCommand executeCommand = new SqlCommand("SobekCM_Get_OAI_Data_Item", connect) { CommandType = CommandType.StoredProcedure };
 
-			executeCommand.Parameters.AddWithValue("@bibid", Identifier);
+            executeCommand.Parameters.AddWithValue("@bibid", BibID);
+            executeCommand.Parameters.AddWithValue("@vid", VID);
 			executeCommand.Parameters.AddWithValue("@data_code", Data_Code);
 
 			// Create the data reader

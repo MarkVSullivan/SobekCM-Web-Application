@@ -27,10 +27,10 @@ namespace SobekCM.Engine_Library.Settings
         private const string BACKUP_FILES_FOLDER_NAME = "sobek_files";
 
         /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
-        private const string CURRENT_WEB_VERSION = "4.7.1";
+        private const string CURRENT_WEB_VERSION = "4.8.0";
 
         /// <summary> Current version number associated with this SobekCM builder application </summary>
-        private const string CURRENT_BUILDER_VERSION = "4.7.1";
+        private const string CURRENT_BUILDER_VERSION = "4.8.0";
 
         /// <summary> Number of ticks that a complete package must age before being processed </summary>
         /// <value> This is currently set to 15 minutes (in ticks) </value>
@@ -94,16 +94,17 @@ namespace SobekCM.Engine_Library.Settings
 
             // Load the OAI-PMH configuration file info into the OAI writer class ( in the resource object library )
             if (returnValue.OAI_PMH == null)
-                OAI_PMH_Metadata_Writers.Set_Default_Values();
-            else
             {
-                OAI_PMH_Metadata_Writers.Clear();
-                foreach (OAI_PMH_Metadata_Format thisWriter in returnValue.OAI_PMH.Metadata_Prefixes)
+                returnValue.OAI_PMH = new OAI_PMH_Configuration();
+                returnValue.OAI_PMH.Set_Default();
+            }
+
+            OAI_PMH_Metadata_Writers.Clear();
+            foreach (OAI_PMH_Metadata_Format thisWriter in returnValue.OAI_PMH.Metadata_Prefixes)
+            {
+                if (thisWriter.Enabled)
                 {
-                    if (thisWriter.Enabled)
-                    {
-                        OAI_PMH_Metadata_Writers.Add_Writer(thisWriter.Prefix, thisWriter.Assembly, thisWriter.Namespace, thisWriter.Class);
-                    }
+                    OAI_PMH_Metadata_Writers.Add_Writer(thisWriter.Prefix, thisWriter.Assembly, thisWriter.Namespace, thisWriter.Class);
                 }
             }
 

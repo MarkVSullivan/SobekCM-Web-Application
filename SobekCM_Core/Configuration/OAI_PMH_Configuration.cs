@@ -163,5 +163,36 @@ namespace SobekCM.Core.Configuration
         }
 
         #endregion
+
+        #region Code to set the default configuration ( used if no config file found )
+
+        /// <summary> Sets the defautls for the metadata prefixes ( dublin core and marc21 ) </summary>
+        public void Set_Default()
+        {
+            OAI_PMH_Metadata_Format dcFormat = new OAI_PMH_Metadata_Format
+            {
+                Class = "DC_OAI_Metadata_Type_Writer", 
+                Enabled = true,
+                MetadataNamespace = "http://www.openarchives.org/OAI/2.0/oai_dc/",
+                Namespace = "SobekCM.Resource_Object.OAI.Writer",
+                Prefix = "oai_dc",
+                Schema = "http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
+            };
+            Metadata_Prefixes.Add(dcFormat);
+
+            OAI_PMH_Metadata_Format marcFormat = new OAI_PMH_Metadata_Format
+            {
+                Class = "MarcXML_OAI_PMH_Metadata_Type_Writer",
+                Enabled = true,
+                MetadataNamespace = "http://www.loc.gov/MARC21/slim",
+                Namespace = "SobekCM.Resource_Object.OAI.Writer",
+                Prefix = "marc21",
+                Schema = "http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"
+            };
+            Metadata_Prefixes.Add(marcFormat);
+
+        }
+
+        #endregion
     }
 }

@@ -28,6 +28,9 @@ namespace SobekCM.Resource_Object.OAI.Writer
             // Add OAI DC as the default writer
             DC_OAI_Metadata_Type_Writer oai_dc_writer = new DC_OAI_Metadata_Type_Writer();
             writers.Add(new Tuple<string, iOAI_PMH_Metadata_Type_Writer>("oai_dc", oai_dc_writer));
+
+            // Add MarcXML as another default writer
+
         }
 
         /// <summary> Clear the list of OAI-PMH writers </summary>

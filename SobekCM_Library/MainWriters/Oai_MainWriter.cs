@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.OAI;
 using SobekCM.Library.Database;
@@ -37,6 +38,9 @@ namespace SobekCM.Library.MainWriters
 
         private const int WAY_FUTURE_YEAR = 2025;
         private const int WAY_PAST_YEAR = 1900;
+
+        private readonly OAI_PMH_Configuration config;
+        private List<string> metadataPrefixes;
 
         /// <summary> Constructor for a new instance of the Oai_MainWriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -68,14 +72,27 @@ namespace SobekCM.Library.MainWriters
             // Determine some global settings
             if (UI_ApplicationCache_Gateway.Settings.OAI_PMH != null)
             {
+                config = UI_ApplicationCache_Gateway.Settings.OAI_PMH;
                 oai_resource_identifier_base = UI_ApplicationCache_Gateway.Settings.OAI_PMH.Identifier_Base;
                 oai_repository_name = UI_ApplicationCache_Gateway.Settings.OAI_PMH.Name;
                 oai_repository_identifier = UI_ApplicationCache_Gateway.Settings.OAI_PMH.Identifier;
+            }
+            else
+            {
+                config = new OAI_PMH_Configuration();
+                config.Set_Default();
+                config.Enabled = true;
             }
             if (String.IsNullOrEmpty(oai_resource_identifier_base)) oai_resource_identifier_base = "oai:" + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + ":";
             if (String.IsNullOrEmpty(oai_repository_name)) oai_resource_identifier_base = UI_ApplicationCache_Gateway.Settings.System_Name;
             if (String.IsNullOrEmpty(oai_repository_identifier)) oai_resource_identifier_base = UI_ApplicationCache_Gateway.Settings.System_Abbreviation;
 
+            // Get the list of metadata prefixes permissiable by the system
+            metadataPrefixes = new List<string>();
+            foreach (OAI_PMH_Metadata_Format thisConfig in config.Metadata_Prefixes)
+            {
+                metadataPrefixes.Add(thisConfig.Prefix);
+            }
         }
 
         /// <summary> Gets the enumeration of the type of main writer </summary>
@@ -101,6 +118,13 @@ namespace SobekCM.Library.MainWriters
                 (verb != "ListRecords") && (verb != "ListSets"))
             {
                 Write_Error(Output, "verb=\"\"", "badVerb", verb + " is not a legal OAI-PMH 2.0 verb.");
+                return;
+            }
+
+            // If OAI-PMH is currently disbled, return a (custom) error and stop
+            if (!config.Enabled)
+            {
+                Write_Error(Output, "verb=\"" + verb + "\"", "disabled", "OAI-PMH is disabled");
                 return;
             }
 
@@ -206,7 +230,7 @@ namespace SobekCM.Library.MainWriters
                         if (thisKey == "resumptionToken")
                         {
                             tokenLi = queryString["resumptionToken"];
-                            if (tokenLi.Length < 26)
+                            if (tokenLi.Length < 8)
                             {
                                 Write_Error(Output, "resumptionToken=\"" + tokenLi + "\" verb=\"ListIdentifiers\"", "badResumptionToken", "no resumeAfter in resumptionToken:" + tokenLi);
                                 return;
@@ -359,16 +383,6 @@ namespace SobekCM.Library.MainWriters
         protected internal void ListRecords(TextWriter Output, string SetCode, string From, 
             string Until, string MetadataPrefix, string ResumptionToken )
         {
-            if (( ResumptionToken.Length > 0 ) && ( MetadataPrefix.Length == 0 ))
-                MetadataPrefix = "oai_dc";
-
-            // Make sure both the identifier and metadata have data
-            if (MetadataPrefix.Length == 0)
-            {
-                Write_Error(Output, "verb=\"\"", "badArgument", "metadataPrefix required argument is missing.");
-                return;
-            }
-
             // Set the default dates and page first
             DateTime from_date = new DateTime(WAY_PAST_YEAR, 1, 1);
             DateTime until_date = new DateTime(WAY_FUTURE_YEAR, 1, 1);
@@ -383,11 +397,22 @@ namespace SobekCM.Library.MainWriters
                 // Add to the request
                 request.Append("resumptionToken=\"" + ResumptionToken + "\" ");
 
+
+                // Try to get the MetadataPrefix from the token
+                if (ResumptionToken.IndexOf(":") < 0)
+                {
+                    Write_Error(Output, "resumptionToken=\"" + ResumptionToken + "\" verb=\"ListRecords\"", "badResumptionToken", "no metadata specified in resumption token:" + ResumptionToken);
+                    return;
+                }
+
                 // Compute the state from the token
                 try
                 {
-                    string page_string = ResumptionToken.Substring(0, 6);
-                    SetCode = ResumptionToken.Substring(6 + oai_repository_identifier.Length);
+                    MetadataPrefix = ResumptionToken.Substring(ResumptionToken.IndexOf(":")+1);
+                    string modifiedToken = ResumptionToken.Substring(0, ResumptionToken.IndexOf(":"));
+
+                    string page_string = modifiedToken.Substring(0, 6);
+                    SetCode = modifiedToken.Substring(6 + oai_repository_identifier.Length);
 
                     // Try to parse the page and dates now
                     if (!Int32.TryParse(page_string, out current_page))
@@ -453,15 +478,22 @@ namespace SobekCM.Library.MainWriters
                 }
             }
 
-            // Finish the request echo portion
-            request.Append("verb=\"ListRecords\"");
-
-            // Metadata prefix must currently be oai_dc
-            if (MetadataPrefix != "oai_dc")
+            // Make sure both the identifier and metadata have data
+            if (MetadataPrefix.Length == 0)
             {
-                Write_Error(Output, request.ToString(), "cannotDisseminateFormat", MetadataPrefix + " is not supported by this repository.");
+                Write_Error(Output, "verb=\"\"", "badArgument", "metadataPrefix required argument is missing.");
                 return;
             }
+
+            // Metadata prefix must be in list of acceptable
+            if (!metadataPrefixes.Contains(MetadataPrefix))
+            {
+                Write_Error(Output, "verb=\"\"", "cannotDisseminateFormat", MetadataPrefix + " is not supported by this repository.");
+                return;
+            }
+
+            // Finish the request echo portion
+            request.Append("verb=\"ListRecords\"");
 
             // Get the records
             List<OAI_Record> results = SobekCM_Database.Get_OAI_Data(SetCode, MetadataPrefix, from_date, until_date, RECORDS_PER_PAGE, current_page, true);
@@ -482,7 +514,7 @@ namespace SobekCM.Library.MainWriters
                 }
 
                 // Write the list of records/identifiers
-                Write_OAI_ListRecords(SetCode, from_date, until_date, ResumptionToken, request.ToString(), false, current_page, more_records, results, Output);
+                Write_OAI_ListRecords(SetCode, from_date, until_date, ResumptionToken, request.ToString(), false, current_page, more_records, MetadataPrefix, results, Output);
             }
         }
 
@@ -495,11 +527,12 @@ namespace SobekCM.Library.MainWriters
         /// <param name="HeadersOnly"> Flag indicates to just return the headers of each digital resource </param>
         /// <param name="Current_Page">Current page number within the set of results</param>
         /// <param name="More_Records"> Flag indicates if a resumption token should be issued</param>
+        /// <param name="MetadataPrefix"> MetadataPrefix requested </param>
         /// <param name="Records"> List of all the records to return to the user </param>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <returns> TRUE if successfuly, otherwise FALSE</returns>
         protected internal void Write_OAI_ListRecords(string SetCode, DateTime From, DateTime Until,
-            string ResumptionToken, string Request, bool HeadersOnly, int Current_Page, bool More_Records, List<OAI_Record> Records, TextWriter Output)
+            string ResumptionToken, string Request, bool HeadersOnly, int Current_Page, bool More_Records, string MetadataPrefix, List<OAI_Record> Records, TextWriter Output)
         {
             // If the first read was successful then write the header
             Output.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" ?> ");
@@ -514,13 +547,13 @@ namespace SobekCM.Library.MainWriters
             {
                 if (!HeadersOnly)
                     Output.Write("<record>");
-                Output.Write("<header><identifier>" + oai_resource_identifier_base + thisRecord.BibID + "</identifier><datestamp>" + thisRecord.Last_Modified_Date.Year + "-" + thisRecord.Last_Modified_Date.Month.ToString().PadLeft(2, '0') + "-" + thisRecord.Last_Modified_Date.Day.ToString().PadLeft(2, '0') + "</datestamp>");
+                Output.Write("<header><identifier>" + oai_resource_identifier_base + thisRecord.BibID + "_" + thisRecord.VID + "</identifier><datestamp>" + thisRecord.Last_Modified_Date.Year + "-" + thisRecord.Last_Modified_Date.Month.ToString().PadLeft(2, '0') + "-" + thisRecord.Last_Modified_Date.Day.ToString().PadLeft(2, '0') + "</datestamp>");
                 if (SetCode.Length > 0)
                     Output.Write("<setSpec>" + oai_resource_identifier_base + SetCode + "</setSpec>");
                 Output.Write("</header>");
                 if (!HeadersOnly)
                 {
-                    Output.WriteLine("<metadata><oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">" + thisRecord.Record + "</oai_dc:dc></metadata></record>");
+                    Output.WriteLine("<metadata>" + thisRecord.Record + "</metadata></record>");
                 }
             }
 
@@ -534,7 +567,7 @@ namespace SobekCM.Library.MainWriters
                 {
                     newResumptionToken = newResumptionToken + "." + From.Year + From.Month.ToString().PadLeft(2, '0') + From.Day.ToString().PadLeft(2, '0') + Until.Year + Until.Month.ToString().PadLeft(2, '0') + Until.Day.ToString().PadLeft(2, '0');
                 }
-                Output.WriteLine("<resumptionToken expirationDate=\"" + expirationDateString + "\">" + newResumptionToken + "</resumptionToken>");
+                Output.WriteLine("<resumptionToken expirationDate=\"" + expirationDateString + "\">" + newResumptionToken + ":" + MetadataPrefix + "</resumptionToken>");
             }
 
             // Write the response
@@ -551,15 +584,6 @@ namespace SobekCM.Library.MainWriters
         /// <param name="ResumptionToken"> Resumption token from the original query string, if one was provided </param>
         protected internal void ListIdentifiers(TextWriter Output, string SetCode, string From, string Until, string MetadataPrefix, string ResumptionToken )
         {
-            if ((ResumptionToken.Length > 0) && (MetadataPrefix.Length == 0))
-                MetadataPrefix = "oai_dc";
-
-            // Make sure both the identifier and metadata have data
-            if (MetadataPrefix.Length == 0)
-            {
-                Write_Error(Output, "verb=\"\"", "badArgument", "metadataPrefix required argument is missing.");
-                return;
-            }
 
             // Set the default dates and page first
             DateTime from_date = new DateTime(1900, 1, 1);
@@ -575,11 +599,22 @@ namespace SobekCM.Library.MainWriters
                 // Add to the request
                 request.Append("resumptionToken=\"" + ResumptionToken + "\" ");
 
+                // Try to get the MetadataPrefix from the token
+                if (ResumptionToken.IndexOf(":") < 0)
+                {
+                    Write_Error(Output, "resumptionToken=\"" + ResumptionToken + "\" verb=\"ListRecords\"", "badResumptionToken", "no metadata specified in resumption token:" + ResumptionToken);
+                    return;
+                }
+                
                 // Compute the state from the token
                 try
                 {
-                    string page_string = ResumptionToken.Substring(0, 6);
-                    SetCode = ResumptionToken.Substring(6 + oai_repository_identifier.Length);
+
+                    MetadataPrefix = ResumptionToken.Substring(ResumptionToken.IndexOf(":") + 1);
+                    string modifiedToken = ResumptionToken.Substring(0, ResumptionToken.IndexOf(":"));
+
+                    string page_string = modifiedToken.Substring(0, 6);
+                    SetCode = modifiedToken.Substring(6 + oai_repository_identifier.Length);
 
                     // Try to parse the page and dates now
                     if (!Int32.TryParse(page_string, out current_page))
@@ -645,11 +680,19 @@ namespace SobekCM.Library.MainWriters
                 }
             }
 
+            // Make sure both the identifier and metadata have data
+            if (MetadataPrefix.Length == 0)
+            {
+                Write_Error(Output, "verb=\"\"", "badArgument", "metadataPrefix required argument is missing.");
+                return;
+            }
+
+
             // Finish the request echo portion
             request.Append("verb=\"ListIdentifiers\"");
 
-            // Metadata prefix must currently be oai_dc
-            if (MetadataPrefix != "oai_dc")
+            // Metadata prefix must be in list of acceptable
+            if (!metadataPrefixes.Contains(MetadataPrefix))
             {
                 Write_Error(Output, request.ToString(), "cannotDisseminateFormat", MetadataPrefix + " is not supported by this repository.");
                 return;
@@ -674,7 +717,7 @@ namespace SobekCM.Library.MainWriters
                 }
 
                 // Write the list of records/identifiers
-                Write_OAI_ListRecords(SetCode, from_date, until_date, ResumptionToken, request.ToString(), true, current_page, more_records, results, Output);
+                Write_OAI_ListRecords(SetCode, from_date, until_date, ResumptionToken, request.ToString(), true, current_page, more_records, MetadataPrefix, results, Output);
             }
         }
 
@@ -691,7 +734,17 @@ namespace SobekCM.Library.MainWriters
             Output.WriteLine("<repositoryName>" + oai_repository_name + "</repositoryName>");
             Output.WriteLine("\t<baseURL>" + url + "</baseURL>");
             Output.WriteLine("\t<protocolVersion>2.0</protocolVersion>");
-            Output.WriteLine("\t<adminEmail>" + UI_ApplicationCache_Gateway.Settings.System_Email + "</adminEmail>");
+            if ((config.Admin_Emails != null) && (config.Admin_Emails.Count > 0))
+            {
+                foreach (string thisEmail in config.Admin_Emails)
+                {
+                    Output.WriteLine("\t<adminEmail>" + thisEmail + "</adminEmail>");
+                }
+            }
+            else
+            {
+                Output.WriteLine("\t<adminEmail>" + UI_ApplicationCache_Gateway.Settings.System_Email + "</adminEmail>");
+            }
             Output.WriteLine("\t<earliestDatestamp>2005-12-15</earliestDatestamp>");
             Output.WriteLine("\t<deletedRecord>transient</deletedRecord>");
             Output.WriteLine("\t<granularity>YYYY-MM-DD</granularity>");
@@ -700,9 +753,27 @@ namespace SobekCM.Library.MainWriters
             Output.WriteLine("\t\t<scheme>oai</scheme>");
             Output.WriteLine("\t\t<repositoryIdentifier>" + oai_repository_identifier + "</repositoryIdentifier>");
             Output.WriteLine("\t\t<delimiter>:</delimiter>");
-            Output.WriteLine("\t\t<sampleIdentifier>" + oai_resource_identifier_base + "AB12345678</sampleIdentifier>");
+            Output.WriteLine("\t\t<sampleIdentifier>" + oai_resource_identifier_base + "AB12345678_12345</sampleIdentifier>");
             Output.WriteLine("\t</oai-identifier>");
             Output.WriteLine("</description>");
+
+            Output.WriteLine("<description>");
+            Output.WriteLine("\t<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">");
+            Output.WriteLine("\t\t<dc:title>" + oai_repository_name + "</dc:title> ");
+            Output.WriteLine("\t\t<dc:identifier>" + oai_resource_identifier_base + "</dc:identifier>");
+            Output.WriteLine("\t\t<dc:identifier>" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + "</dc:identifier>");
+
+            if ((config.Descriptions != null) && (config.Descriptions.Count > 0))
+            {
+                foreach (string thisDesc in config.Descriptions)
+                {
+                    Output.WriteLine("\t\t<dc:description>" + thisDesc + "</dc:description>");
+                }
+            }
+
+            Output.WriteLine("\t</oai_dc:dc>");
+            Output.WriteLine("</description>");
+
             Output.WriteLine("</Identify>");
             Output.WriteLine("</OAI-PMH>");
         }
@@ -716,8 +787,8 @@ namespace SobekCM.Library.MainWriters
             // Perform check that the identifier is valid
             bool valid = true;
 
-            // Metadata prefix must currently be oai_dc currently
-            if (MetadataPrefix != "oai_dc")
+            // Metadata prefix must be in the list of acceptable metadata prefixes
+            if ( !metadataPrefixes.Contains(MetadataPrefix))
             {
                 Write_Error(Output, "identifier=\"" + Identifier + "\" metadataPrefix=\"" + MetadataPrefix + "\" verb=\"GetRecord\"", "cannotDisseminateFormat", "Item " + Identifier + " does not have metadata for " + MetadataPrefix);
                 return;
@@ -732,13 +803,15 @@ namespace SobekCM.Library.MainWriters
             else
             {
                 // Get the bib id and vid
-                string bibid = Identifier.Substring( oai_resource_identifier_base.Length);
-                if (bibid.Length != 10)
+                string bibid_vid = Identifier.Substring( oai_resource_identifier_base.Length);
+                if (bibid_vid.Length != 16)
                     valid = false;
                 else
                 {
                     // Pull the information for this item
-                    thisTitle = SobekCM_Database.Get_OAI_Record(bibid, MetadataPrefix);
+                    string bibid = bibid_vid.Substring(0, 10);
+                    string vid = bibid_vid.Substring(11);
+                    thisTitle = SobekCM_Database.Get_OAI_Record(bibid, vid, MetadataPrefix);
                 }
             }              
 
@@ -779,11 +852,16 @@ namespace SobekCM.Library.MainWriters
             else
                 Output.WriteLine("<request verb=\"ListMetadataFormats\">" + url + "</request>");
             Output.WriteLine("<ListMetadataFormats>");
-            Output.WriteLine("<metadataFormat>");
-            Output.WriteLine("<metadataPrefix>oai_dc</metadataPrefix>");
-            Output.WriteLine("<schema>http://www.openarchives.org/OAI/2.0/oai_dc.xsd</schema>");
-            Output.WriteLine("<metadataNamespace>http://www.openarchives.org/OAI/2.0/oai_dc/</metadataNamespace>");
-            Output.WriteLine("</metadataFormat>");
+
+            foreach (OAI_PMH_Metadata_Format format in config.Metadata_Prefixes)
+            {
+                Output.WriteLine("<metadataFormat>");
+                Output.WriteLine("<metadataPrefix>" + format.Prefix + "</metadataPrefix>");
+                Output.WriteLine("<schema>" + format.Schema + "</schema>");
+                Output.WriteLine("<metadataNamespace>" + format.MetadataNamespace + "</metadataNamespace>");
+                Output.WriteLine("</metadataFormat>");  
+            }
+
             Output.WriteLine("</ListMetadataFormats>");
             Output.WriteLine("</OAI-PMH>");
         }
