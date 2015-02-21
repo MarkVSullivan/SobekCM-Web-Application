@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?define UpgradeCode="{9E8A3571-4980-42C2-BDB3-21B0D8EBC010}"?>
-<?define ProductCode="{C25017E1-C8A2-44F0-AF22-3B12CA251A6C}"?>
-<?define ProductVersion="3.50.0.0"?>
+<?define ProductCode="{2692496F-E2BF-45D9-9D78-C94AB0528F08}"?>
+<?define ProductVersion="3.51.0.0"?>
 
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">

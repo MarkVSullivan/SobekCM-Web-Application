@@ -221,16 +221,7 @@ namespace SobekCM.Library
             {
                 bool error = false;
 
-                // Clear the existing server information
-                incomingFolders.Clear();
-                if (SobekCM_Settings.Tables.Count > 1)
-                {
-                    foreach (DataRow thisRow in SobekCM_Settings.Tables[1].Rows)
-                    {
-                        incomingFolders.Add(new Builder_Source_Folder(thisRow));
-                    }
-                }
-                
+               
                 // Get the settings table
                 DataTable settingsTable = SobekCM_Settings.Tables[0];
 
