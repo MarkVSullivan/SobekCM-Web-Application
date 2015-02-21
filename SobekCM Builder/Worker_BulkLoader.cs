@@ -6,7 +6,6 @@ using System.Data;
 using System.IO;
 using System.Windows.Forms;
 using SobekCM.Builder_Library.Settings;
-using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.MemoryMgmt;
@@ -17,10 +16,8 @@ using SobekCM.Builder_Library.Modules.Items;
 using SobekCM.Builder_Library.Modules.PostProcess;
 using SobekCM.Builder_Library.Modules.PreProcess;
 using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Settings;
-using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Database;
 using SobekCM.Tools.Logs;
 using SobekCM.Builder_Library;
@@ -32,15 +29,14 @@ namespace SobekCM.Builder
     /// <summary> Class is the worker thread for the main bulk loader processor </summary>
     public class Worker_BulkLoader
     {
-        private Database_Instance_Configuration dbInstance;
+        private readonly Database_Instance_Configuration dbInstance;
         private InstanceWide_Settings settings;
-        public Builder_Settings builderSettings;
+        public Builder_Modules BuilderSettings;
         private DataTable itemTable;
 
-        private string imageMagickExecutable;
-        private string ghostscriptExecutable;
-        
-        private DataSet incomingFileInstructions;
+        private readonly string imageMagickExecutable;
+        private readonly string ghostscriptExecutable;
+
         private readonly LogFileXHTML logger;
         
 	    private readonly bool canAbort;
@@ -59,18 +55,15 @@ namespace SobekCM.Builder
         private readonly int new_item_limit;
         private bool still_pending_items;
 
-        private readonly List<iPreProcessModule> preProcessModules;
-        private readonly List<iSubmissionPackageModule> processItemModules;
-        private readonly List<iSubmissionPackageModule> deleteItemModules;
-        private readonly List<iPostProcessModule> postProcessModules;
-        private readonly List<iFolderModule> folderModules;
 
-
-	    ///  <summary> Constructor for a new instance of the Worker_BulkLoader class </summary>
-	    ///  <param name="Logger"> Log file object for logging progress </param>
-	    ///  <param name="Verbose"> Flag indicates if the builder is in verbose mode, where it should log alot more information </param>
-        ///  <param name="DbInstance"> This database instance </param>
-	    public Worker_BulkLoader(LogFileXHTML Logger, bool Verbose, Database_Instance_Configuration DbInstance, bool MultiInstanceBuilder, string ImageMagickExecutable, string GhostscriptExecutable )
+        /// <summary> Constructor for a new instance of the Worker_BulkLoader class </summary>
+        /// <param name="Logger"> Log file object for logging progress </param>
+        /// <param name="Verbose"> Flag indicates if the builder is in verbose mode, where it should log alot more information </param>
+        /// <param name="DbInstance"> This database instance </param>
+        /// <param name="MultiInstanceBuilder"></param>
+        /// <param name="ImageMagickExecutable"></param>
+        /// <param name="GhostscriptExecutable"></param>
+        public Worker_BulkLoader(LogFileXHTML Logger, bool Verbose, Database_Instance_Configuration DbInstance, bool MultiInstanceBuilder, string ImageMagickExecutable, string GhostscriptExecutable )
         {
             // Save the log file and verbose flag
             logger = Logger;
@@ -97,9 +90,8 @@ namespace SobekCM.Builder
 
 			// get all the info
 	        settings = InstanceWide_Settings_Builder.Build_Settings(dbInstance);
-	        builderSettings = new Builder_Settings();
-	        Builder_Settings_Builder.Refresh(builderSettings, Engine_Database.Get_Builder_Settings(false, null));
-
+	        Refresh_Settings_And_Item_List();
+            
 			// Ensure there is SOME instance name
 	        if (instanceName.Length == 0)
 		        instanceName = settings.System_Name;
@@ -115,84 +107,6 @@ namespace SobekCM.Builder
 
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Building modules for pre, post, and item processing", verbose, String.Empty, String.Empty, -1);
 
-            // Create the default list of pre-processor modules
-            preProcessModules = new List<iPreProcessModule>
-            {
-                new ProcessPendingFdaReportsModule()
-            };
-            foreach (iPreProcessModule thisModule in preProcessModules)
-            {
-                thisModule.Error += module_Error;
-                thisModule.Process += module_Process;
-            }
-
-            // Create the default list of folder modules
-	        folderModules = new List<iFolderModule>
-	        {
-	            new MoveAgedPackagesToProcessModule(), 
-                new ApplyBibIdRestrictionModule(), 
-                new ValidateAndClassifyModule()
-	        };
-            foreach (iFolderModule thisModule in folderModules)
-            {
-                thisModule.Error += module_Error;
-                thisModule.Process += module_Process;
-            }
-
-
-            // Create the default list for deleting a single item 
-	        deleteItemModules = new List<iSubmissionPackageModule>
-	        {
-	            new DeleteItemModule()
-	        };
-            foreach (iSubmissionPackageModule thisModule in deleteItemModules)
-            {
-                thisModule.Error += module_Error;
-                thisModule.Process += module_Process;
-            }
-
-            // Create the default list of modules for processing an item
-	        processItemModules = new List<iSubmissionPackageModule>
-	        {
-	            new ConvertOfficeFilesToPdfModule(), 
-                new ExtractTextFromPdfModule(), 
-                new CreatePdfThumbnailModule(), 
-                new ExtractTextFromHtmlModule(), 
-                new ExtractTextFromXmlModule(), 
-                new OcrTiffsModule(), 
-             //   new CleanDirtyOcrModule(), 
-                new CheckForSsnModule(), 
-                new CreateImageDerivativesModule(), 
-                new CopyToArchiveFolderModule(), 
-                new MoveFilesToImageServerModule(), 
-                new ReloadMetsAndBasicDbInfoModule(), 
-                new UpdateJpegAttributesModule(), 
-                new AttachAllNonImageFilesModule(), 
-                new AddNewImagesAndViewsModule(), 
-                new EnsureMainThumbnailModule(), 
-                new GetPageCountFromPdfModule(), 
-                new UpdateWebConfigModule(), 
-                new SaveServiceMetsModule(), 
-                new SaveMarcXmlModule(), 
-                new SaveToDatabaseModule(), 
-                new SaveToSolrLuceneModule(), 
-                new CleanWebResourceFolderModule(), 
-                new CreateStaticVersionModule(), 
-                new AddTrackingWorkflowModule()
-	        };
-	        foreach (iSubmissionPackageModule thisModule in processItemModules)
-            {
-                thisModule.Error += module_Error;
-                thisModule.Process += module_Process;
-            }
-
-            // Create the default modules for post-processing
-	        postProcessModules = new List<iPostProcessModule> {new BuildAggregationBrowsesModule()};
-	        foreach (iPostProcessModule thisModule in postProcessModules)
-	        {
-	            thisModule.Error += module_Error;
-                thisModule.Process += module_Process;
-	        }
 
 	        Add_NonError_To_Log("Worker_BulkLoader.Constructor: Done", verbose, String.Empty, String.Empty, -1);
         }
@@ -233,17 +147,16 @@ namespace SobekCM.Builder
                 finalmessage = "Aborted per database request";
                 return false; 
             }
-            else
-            {
-	            // Set to standard operation then
-				Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
-            }
 
+
+	        // Set to standard operation then
+			Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
+            
             // RUN ANY PRE-PROCESSING MODULES HERE 
-            if (preProcessModules.Count > 0)
+            if (BuilderSettings.PreProcessModules.Count > 0)
             {
                 Add_NonError_To_Log("Running all pre-processing steps", verbose, String.Empty, String.Empty, -1);
-                foreach (iPreProcessModule thisModule in preProcessModules)
+                foreach (iPreProcessModule thisModule in BuilderSettings.PreProcessModules)
                 {
                     // Check for abort
                     if (CheckForAbort())
@@ -257,11 +170,11 @@ namespace SobekCM.Builder
             }
 
             // Load the settings into thall the item and folder processors
-            foreach (iSubmissionPackageModule thisModule in processItemModules)
+            foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
                 thisModule.Settings = settings;
-            foreach (iSubmissionPackageModule thisModule in deleteItemModules)
+            foreach (iSubmissionPackageModule thisModule in BuilderSettings.DeleteItemModules)
                 thisModule.Settings = settings;
-            foreach (iFolderModule thisModule in folderModules)
+            foreach (iFolderModule thisModule in BuilderSettings.AllFolderModules)
                 thisModule.Settings = settings;
 
 
@@ -286,7 +199,7 @@ namespace SobekCM.Builder
             List<Incoming_Digital_Resource> deletes = new List<Incoming_Digital_Resource>();
 
             // Step through all the incoming folders, and run the folder modules
-            if (builderSettings.IncomingFolders.Count == 0)
+            if (BuilderSettings.IncomingFolders.Count == 0)
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: There are no incoming folders set in the database", "Standard", String.Empty, String.Empty, -1);
             }
@@ -294,11 +207,11 @@ namespace SobekCM.Builder
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Begin processing builder folders", verbose, String.Empty, String.Empty, -1);
 
-                foreach (Builder_Source_Folder folder in builderSettings.IncomingFolders)
+                foreach (Builder_Source_Folder folder in BuilderSettings.IncomingFolders)
                 {
-                    Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder);
+                    Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder, BuilderSettings);
 
-                    foreach (iFolderModule thisModule in folderModules)
+                    foreach (iFolderModule thisModule in actionFolder.BuilderModules)
                     {
                         // Check for abort
                         if (CheckForAbort())
@@ -314,7 +227,7 @@ namespace SobekCM.Builder
                 }
 
                 // Since all folder processing is complete, release resources
-                foreach (iFolderModule thisModule in folderModules)
+                foreach (iFolderModule thisModule in BuilderSettings.AllFolderModules)
                     thisModule.ReleaseResources();
             }
             
@@ -343,7 +256,7 @@ namespace SobekCM.Builder
             Process_All_Incoming_Packages(incoming_packages);
 
             // Can now release these resources
-            foreach (iSubmissionPackageModule thisModule in processItemModules)
+            foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
             {
                 thisModule.ReleaseResources();
             }
@@ -353,17 +266,17 @@ namespace SobekCM.Builder
             Process_All_Deletes(deletes);
 
             // Can now release these resources
-            foreach (iSubmissionPackageModule thisModule in deleteItemModules)
+            foreach (iSubmissionPackageModule thisModule in BuilderSettings.DeleteItemModules)
             {
                 thisModule.ReleaseResources();
             }
 
 
             // RUN ANY POST-PROCESSING MODULES HERE 
-            if (postProcessModules.Count > 0)
+            if (BuilderSettings.PostProcessModules.Count > 0)
             {
                 Add_NonError_To_Log("Running all post-processing steps", verbose, String.Empty, String.Empty, -1);
-                foreach (iPostProcessModule thisModule in postProcessModules)
+                foreach (iPostProcessModule thisModule in BuilderSettings.PostProcessModules)
                 {
                     // Check for abort
                     if (CheckForAbort())
@@ -406,18 +319,17 @@ namespace SobekCM.Builder
             aggregations_to_refresh.Clear();
             processed_items.Clear();
             deleted_items.Clear();
-            incomingFileInstructions = null;
 
             // release all modules
-            foreach (iFolderModule thisModule in folderModules)
+            foreach (iFolderModule thisModule in BuilderSettings.AllFolderModules)
             {
                 thisModule.ReleaseResources();
             }
-            foreach (iSubmissionPackageModule thisModule in deleteItemModules)
+            foreach (iSubmissionPackageModule thisModule in BuilderSettings.DeleteItemModules)
             {
                 thisModule.ReleaseResources();
             }
-            foreach (iSubmissionPackageModule thisModule in processItemModules)
+            foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
             {
                 thisModule.ReleaseResources();
             }
@@ -464,8 +376,58 @@ namespace SobekCM.Builder
 		    itemTable = SobekCM_Database.Get_Item_List(true, null).Tables[0];
 
 
+            // get all the info
+            settings = InstanceWide_Settings_Builder.Build_Settings(dbInstance);
+            BuilderSettings = new Builder_Modules();
+		    DataSet builderSettingsTbl = Engine_Database.Get_Builder_Settings(false, null);
+		    if (builderSettingsTbl == null)
+		    {
+                Add_Error_To_Log("Unable to pull the newest BUILDER settings from the database", String.Empty, String.Empty, -1);
+                return false;
+		    }
+		    if (!Builder_Settings_Builder.Refresh(BuilderSettings, builderSettingsTbl))
+		    {
+                Add_Error_To_Log("Error building the builder settings from the dataset", String.Empty, String.Empty, -1);
+                return false; 
+		    }
+            List<string> errors = BuilderSettings.Builder_Modules_From_Settings();
 
-           
+            if (( errors != null ) && ( errors.Count > 0 ))
+            {
+                long logId = Add_Error_To_Log("Error(s) builder the modules from the settings", String.Empty, String.Empty, -1);
+                foreach (string thisError in errors)
+                {
+                    Add_Error_To_Log(thisError, String.Empty, String.Empty, logId);
+                }
+                return false;
+            }
+
+            // Add the event listeners 
+            foreach (iPreProcessModule thisModule in BuilderSettings.PreProcessModules)
+            {
+                thisModule.Error += module_Error;
+                thisModule.Process += module_Process;
+            }
+            foreach (iSubmissionPackageModule thisModule in BuilderSettings.DeleteItemModules)
+            {
+                thisModule.Error += module_Error;
+                thisModule.Process += module_Process;
+            }
+            foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
+            {
+                thisModule.Error += module_Error;
+                thisModule.Process += module_Process;
+            }
+            foreach (iPostProcessModule thisModule in BuilderSettings.PostProcessModules)
+            {
+                thisModule.Error += module_Error;
+                thisModule.Process += module_Process;
+            }
+            foreach (iFolderModule thisModule in BuilderSettings.AllFolderModules)
+            {
+                thisModule.Error += module_Error;
+                thisModule.Process += module_Process;
+            }
 
             return true;
         }
@@ -542,7 +504,7 @@ namespace SobekCM.Builder
                 SobekCM_Database.Add_Minimum_Builder_Information(AdditionalWorkResource.Metadata);
 
                 // Do all the item processing per instance config
-                foreach (iSubmissionPackageModule thisModule in processItemModules)
+                foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
                 {
                     thisModule.DoWork(AdditionalWorkResource);
                 }
@@ -625,7 +587,7 @@ namespace SobekCM.Builder
             try
             {
                 // Do all the item processing per instance config
-                foreach (iSubmissionPackageModule thisModule in processItemModules)
+                foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
                 {
                     if (!thisModule.DoWork(ResourcePackage))
                     {
@@ -705,7 +667,7 @@ namespace SobekCM.Builder
                 if (itemTable.Select("BibID='" + deleteResource.BibID + "' and VID='" + deleteResource.VID + "'").Length > 0)
                 {
                     // Do all the item processing per instance config
-                    foreach (iSubmissionPackageModule thisModule in deleteItemModules)
+                    foreach (iSubmissionPackageModule thisModule in BuilderSettings.DeleteItemModules)
                     {
                         if (!thisModule.DoWork(deleteResource))
                         {

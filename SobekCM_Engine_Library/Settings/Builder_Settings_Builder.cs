@@ -19,6 +19,19 @@ namespace SobekCM.Engine_Library.Settings
 
                 Set_NonScheduled_Modules(SettingsObject, SobekCM_Settings.Tables[1], setid_to_modules);
 
+                // Link the folders to the builder module sets
+                foreach (KeyValuePair<int, List<Builder_Module_Setting>> module in setid_to_modules)
+                {
+                    if (folder_to_set_dictionary.ContainsKey(module.Key))
+                    {
+                        List<Builder_Source_Folder> folders = folder_to_set_dictionary[module.Key];
+                        foreach (Builder_Source_Folder thisFolder in folders)
+                        {
+                            thisFolder.Builder_Module_Settings = module.Value;
+                        }
+                    }
+                }
+
                 return true;
             }
             catch (Exception ee)
@@ -134,7 +147,7 @@ namespace SobekCM.Engine_Library.Settings
                 else
                     newFolder.Can_Move_To_Content_Folder = Convert.ToBoolean(thisRow["Can_Move_To_Content_Folder"]);
 
-                if (thisRow["ModuleSetID"] != null)
+                if (( thisRow["ModuleSetID"] != null) && ( thisRow["ModuleSetID"].ToString().Length > 0 ))
                 {
                     int id = Int32.Parse(thisRow["ModuleSetID"].ToString());
                     if (folder_to_set_dictionary.ContainsKey(id))

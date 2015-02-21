@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SobekCM.Builder_Library.Modules.Folders;
+using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 
@@ -22,8 +24,9 @@ namespace SobekCM.Builder_Library
 
         /// <summary> Constructor for a new instance of the Actionable_Builder_Source_Folder class </summary>
         /// <param name="ExistingBaseInstance"> An existing base instance used to populate this class with data </param>
+        /// <param name="BuilderModules"> Builder modules object to retrieve the built module objects </param>
         /// <remarks> This extends the core class <see cref="Builder_Source_Folder"/> and adds some methods to perform work </remarks>
-        public Actionable_Builder_Source_Folder(Builder_Source_Folder ExistingBaseInstance )
+        public Actionable_Builder_Source_Folder(Builder_Source_Folder ExistingBaseInstance, Builder_Modules BuilderModulesConfig )
         {
             Allow_Deletes = ExistingBaseInstance.Allow_Deletes;
             Allow_Folders_No_Metadata = ExistingBaseInstance.Allow_Folders_No_Metadata;
@@ -37,8 +40,20 @@ namespace SobekCM.Builder_Library
             Inbound_Folder = ExistingBaseInstance.Inbound_Folder;
             Perform_Checksum = ExistingBaseInstance.Perform_Checksum;
             Processing_Folder = ExistingBaseInstance.Processing_Folder;
+
+            BuilderModules = new List<iFolderModule>();
+
+            // Copy over the folder modules
+            foreach (Builder_Module_Setting settings in ExistingBaseInstance.Builder_Module_Settings)
+            {
+                iFolderModule module = BuilderModulesConfig.Get_Folder_Module_By_Key(settings.Key);
+                if (module != null)
+                    BuilderModules.Add(module);
+            }
         }
 
+        /// <summary> Collection of the builder modules to be run against this folder </summary>
+        public List<iFolderModule> BuilderModules { get; private set;  }
 
         /// <summary> Gets flag indicating there are packages in the inbound folder </summary>
         public bool Items_Exist_In_Inbound

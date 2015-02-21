@@ -170,6 +170,33 @@ begin
 end;
 GO
 
+CREATE TABLE [dbo].[SobekCM_Builder_Module_Scheduled_Run](
+	[ModuleSchedRunID] [int] IDENTITY(1,1) NOT NULL,
+	[ModuleScheduleID] [int] NOT NULL,
+	[Timestamp] [datetime] NOT NULL,
+	[Outcome] [varchar](100) NOT NULL,
+	[Message] [varchar](max) NULL,
+ CONSTRAINT [PK_SobekCM_Builder_Module_Scheduled_Run] PRIMARY KEY CLUSTERED 
+(
+	[ModuleSchedRunID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+ALTER TABLE [dbo].[SobekCM_Builder_Module_Scheduled_Run]  WITH CHECK ADD  CONSTRAINT [FK_SobekCM_Builder_Module_Scheduled_Run_SobekCM_Builder_Module_Schedule] FOREIGN KEY([ModuleScheduleID])
+REFERENCES [dbo].[SobekCM_Builder_Module_Schedule] ([ModuleScheduleID])
+GO
+
+ALTER TABLE [dbo].[SobekCM_Builder_Module_Scheduled_Run] CHECK CONSTRAINT [FK_SobekCM_Builder_Module_Scheduled_Run_SobekCM_Builder_Module_Schedule]
+GO
+
+
+
+
 -- Add the foreign key from the folders table to the module sets table 
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SobekCM_Builder_Incoming_Folders_SobekCM_Builder_Module_Set]') AND parent_object_id = OBJECT_ID(N'[dbo].[SobekCM_Builder_Incoming_Folders]'))
 ALTER TABLE [dbo].[SobekCM_Builder_Incoming_Folders]  WITH CHECK ADD  CONSTRAINT [FK_SobekCM_Builder_Incoming_Folders_SobekCM_Builder_Module_Set] FOREIGN KEY([ModuleSetID])
@@ -240,11 +267,14 @@ begin
 	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 7, 'Send new item emails', 'SobekCM.Builder_Library.Modules.Schedulable.SendNewItemEmailsModule', 'true', 1 );
 	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 8, 'Solr/Lucene index optimization', 'SobekCM.Builder_Library.Modules.Schedulable.SolrLuceneIndexOptimizationModule', 'true', 1 );
 	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 9, 'Update cached aggregation browses', 'SobekCM.Builder_Library.Modules.Schedulable.UpdatedCachedAggregationMetadataModule', 'true', 1 );
-	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 10, 'Check packages for age and move', 'MoveAgedPackagesToProcessModule', 'true', 1 );
-	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 10, 'Check for any bib id restrictions on this folder', 'ApplyBibIdRestrictionModule', 'true', 2 );
-	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 10, 'Validate each folder and classify (delete v. new/update)', 'ValidateAndClassifyModule', 'true', 3 );
+	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 10, 'Check packages for age and move', 'SobekCM.Builder_Library.Modules.Folders.MoveAgedPackagesToProcessModule', 'true', 1 );
+	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 10, 'Check for any bib id restrictions on this folder', 'SobekCM.Builder_Library.Modules.Folders.ApplyBibIdRestrictionModule', 'true', 2 );
+	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 10, 'Validate each folder and classify (delete v. new/update)', 'SobekCM.Builder_Library.Modules.Folders.ValidateAndClassifyModule', 'true', 3 );
 
 end;
+GO
+
+update SobeKCM_Builder_Incoming_Folders set ModuleSetID=10;
 GO
 
 
@@ -582,6 +612,90 @@ begin
 	end;
 end;
 GO
+
+CREATE procedure [dbo].[SobekCM_Builder_Get_Settings]
+	@include_disabled bit
+as
+begin
+
+	-- Always return all the incoming folders
+	select IncomingFolderId, NetworkFolder, ErrorFolder, ProcessingFolder, Perform_Checksum_Validation, Archive_TIFF, Archive_All_Files,
+		   Allow_Deletes, Allow_Folders_No_Metadata, Allow_Metadata_Updates, FolderName, Can_Move_To_Content_Folder, BibID_Roots_Restrictions,
+		   ModuleSetID
+	from SobekCM_Builder_Incoming_Folders F;
+
+	-- Return all the non-scheduled type modules
+	if ( @include_disabled = 'true' )
+	begin
+		select M.ModuleID, M.[Assembly], M.Class, M.ModuleDesc, M.Argument1, M.Argument2, M.Argument3, M.[Enabled], S.ModuleSetID, S.SetName, S.[Enabled] as SetEnabled, T.TypeAbbrev, T.TypeDescription
+		from SobekCM_Builder_Module M, SobekCM_Builder_Module_Set S, SobekCM_Builder_Module_Type T
+		where M.ModuleSetID = S.ModuleSetID
+		  and S.ModuleTypeID = T.ModuleTypeID
+		  and T.TypeAbbrev <> 'SCHD'
+		order by TypeAbbrev, S.SetOrder, M.[Order];
+	end
+	else
+	begin
+		select M.ModuleID, M.[Assembly], M.Class, M.ModuleDesc, M.Argument1, M.Argument2, M.Argument3, M.[Enabled], S.ModuleSetID, S.SetName, S.[Enabled] as SetEnabled, T.TypeAbbrev, T.TypeDescription
+		from SobekCM_Builder_Module M, SobekCM_Builder_Module_Set S, SobekCM_Builder_Module_Type T
+		where M.ModuleSetID = S.ModuleSetID
+		  and S.ModuleTypeID = T.ModuleTypeID
+		  and M.[Enabled] = 'true'
+		  and S.[Enabled] = 'true'
+		  and T.TypeAbbrev <> 'SCHD'
+		order by TypeAbbrev, S.SetOrder, M.[Order];
+	end;
+
+	-- Return all the scheduled type modules, with the schedule and the last run info
+	if ( @include_disabled = 'true' )
+	begin
+		with last_run_cte ( ModuleScheduleID, LastRun) as 
+		(
+			select ModuleScheduleID, MAX([Timestamp])
+			from SobekCM_Builder_Module_Scheduled_Run
+			group by ModuleScheduleID
+		)
+		-- Return all the scheduled type modules, along with information on when it was last run
+		select M.ModuleID, M.[Assembly], M.Class, M.ModuleDesc, M.Argument1, M.Argument2, M.Argument3, M.[Enabled], S.ModuleSetID, S.SetName, S.[Enabled] as SetEnabled, T.TypeAbbrev, T.TypeDescription, C.ModuleScheduleID, C.[Enabled] as ScheduleEnabled, C.DaysOfWeek, C.TimesOfDay, L.LastRun
+		from SobekCM_Builder_Module M inner join
+			 SobekCM_Builder_Module_Set S on M.ModuleSetID = S.ModuleSetID inner join
+			 SobekCM_Builder_Module_Type T on S.ModuleTypeID = T.ModuleTypeID inner join
+			 SobekCM_Builder_Module_Schedule C on C.ModuleSetID = S.ModuleSetID left outer join
+			 last_run_cte L on L.ModuleScheduleID = C.ModuleScheduleID
+		where T.TypeAbbrev = 'SCHD'
+		order by TypeAbbrev, S.SetOrder, M.[Order];
+	end 
+	else
+	begin
+		with last_run_cte ( ModuleScheduleID, LastRun) as 
+		(
+			select ModuleScheduleID, MAX([Timestamp])
+			from SobekCM_Builder_Module_Scheduled_Run
+			group by ModuleScheduleID
+		)
+		-- Return all the scheduled type modules, along with information on when it was last run
+		select M.ModuleID, M.[Assembly], M.Class, M.ModuleDesc, M.Argument1, M.Argument2, M.Argument3, M.[Enabled], S.ModuleSetID, S.SetName, S.[Enabled] as SetEnabled, T.TypeAbbrev, T.TypeDescription, C.ModuleScheduleID, C.[Enabled] as ScheduleEnabled, C.DaysOfWeek, C.TimesOfDay, L.LastRun
+		from SobekCM_Builder_Module M inner join
+			 SobekCM_Builder_Module_Set S on M.ModuleSetID = S.ModuleSetID inner join
+			 SobekCM_Builder_Module_Type T on S.ModuleTypeID = T.ModuleTypeID inner join
+			 SobekCM_Builder_Module_Schedule C on C.ModuleSetID = S.ModuleSetID left outer join
+			 last_run_cte L on L.ModuleScheduleID = C.ModuleScheduleID
+		where T.TypeAbbrev = 'SCHD'
+		  and M.[Enabled] = 'true'
+		  and S.[Enabled] = 'true'
+		  and C.[Enabled] = 'true'
+		order by TypeAbbrev, S.SetOrder, M.[Order];
+	end;
+
+end;
+GO
+
+GRANT EXECUTE ON SobekCM_Builder_Get_Settings to sobek_user;
+GO
+GRANT EXECUTE ON SobekCM_Builder_Get_Settings to sobek_builder;
+GO
+
+
 
 if (( select count(*) from SobekCM_Database_Version ) = 0 )
 begin

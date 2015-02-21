@@ -21,13 +21,20 @@ namespace SobekCM.Builder_Library.Settings
         private readonly List<iSubmissionPackageModule> deleteItemModules;
         private readonly List<iPostProcessModule> postProcessModules;
 
+        private readonly List<iFolderModule> allFolderModules;
+        private readonly Dictionary<string, iFolderModule> assemblyClassToModule;
+
+
         /// <summary> Constructor for a new instance of the Builder_Modules class </summary>
-        public Builder_Modules()
+        public Builder_Modules() : base()
         {
             preProcessModules = new List<iPreProcessModule>();
             processItemModules = new List<iSubmissionPackageModule>();
             deleteItemModules = new List<iSubmissionPackageModule>();
             postProcessModules = new List<iPostProcessModule>();
+
+            allFolderModules = new List<iFolderModule>();
+            assemblyClassToModule = new Dictionary<string, iFolderModule>();
         }
 
         /// <summary> Clear all the settings and the list of modules </summary>
@@ -44,7 +51,7 @@ namespace SobekCM.Builder_Library.Settings
         /// <summary> Build the modules for the non-folder specific builder modules </summary>
         /// <param name="Settings"> Settings indicate which modules to build </param>
         /// <returns> Either null, or a list of errors encountered </returns>
-        public List<string> Builder_Modules_From_Settings()
+        public List<string> Builder_Modules_From_Settings( )
         {
             // Build the return value
             List<string> errors = new List<string>();
@@ -55,6 +62,8 @@ namespace SobekCM.Builder_Library.Settings
             processItemModules.Clear();
             deleteItemModules.Clear();
             postProcessModules.Clear();
+            allFolderModules.Clear();
+            assemblyClassToModule.Clear();
 
             // Create all the pre-process modules
             foreach (Builder_Module_Setting preSetting in PreProcessModulesSettings)
@@ -168,6 +177,97 @@ namespace SobekCM.Builder_Library.Settings
                     errors.Add(errorMessage);
                 else
                     deleteItemModules.Add(itemModule);
+            }
+
+            // Create the folder modules - look at every folder
+            foreach (Builder_Source_Folder thisFolder in IncomingFolders)
+            {
+                // If not linked to a module set, do nothing
+                if (thisFolder.Builder_Module_Settings == null)
+                {
+                    errors.Add("Folder has no module set, so no processing will occur ( " + thisFolder.Folder_Name + " )");
+                    continue;
+                }
+
+                // Step through all the folder builer modules and if it hasn't been built yet, do so now
+                foreach (Builder_Module_Setting folderSetting in thisFolder.Builder_Module_Settings)
+                {
+                   
+                    string key = folderSetting.Key;
+                    iFolderModule thisModule = null;
+
+                    // Does this already exist?
+                    if (!assemblyClassToModule.ContainsKey(key))
+                    {
+                        // Look for the standard options
+                        if (String.IsNullOrEmpty(folderSetting.Assembly))
+                        {
+                            switch (folderSetting.Class)
+                            {
+                                case "SobekCM.Builder_Library.Modules.Folders.MoveAgedPackagesToProcessModule":
+                                    thisModule = new MoveAgedPackagesToProcessModule();
+                                    break;
+
+                                case "SobekCM.Builder_Library.Modules.Folders.ApplyBibIdRestrictionModule":
+                                    thisModule = new ApplyBibIdRestrictionModule();
+                                    break;
+
+                                case "SobekCM.Builder_Library.Modules.Folders.ValidateAndClassifyModule":
+                                    thisModule = new ValidateAndClassifyModule();
+                                    break;
+
+                                case "SobekCM.Builder_Library.Modules.Folders.WolfsonianProcessorModule":
+                                    thisModule = new WolfsonianProcessorModule();
+                                    break;
+
+                                case "SobekCM.Builder_Library.Modules.Folders.UpdateNonBibFolders":
+                                    thisModule = new UpdateNonBibFolders();
+                                    break;
+
+
+                            }
+
+                            if (thisModule != null)
+                            {
+                                if ((!String.IsNullOrEmpty(folderSetting.Argument1)) || (!String.IsNullOrEmpty(folderSetting.Argument2)) || (!String.IsNullOrEmpty(folderSetting.Argument3)))
+                                {
+                                    thisModule.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument1) ? String.Empty : folderSetting.Argument1);
+                                    thisModule.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument2) ? String.Empty : folderSetting.Argument2);
+                                    thisModule.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument3) ? String.Empty : folderSetting.Argument3);
+                                }
+                                allFolderModules.Add(thisModule);
+                                assemblyClassToModule[folderSetting.Key] = thisModule;
+                                continue;
+                            }
+                        }
+
+                        object folderAsObj = Get_Module(folderSetting, out errorMessage);
+                        if ((folderAsObj == null) && (errorMessage.Length > 0))
+                        {
+                            errors.Add(errorMessage);
+                        }
+                        else
+                        {
+                            iFolderModule folderAsFolder = folderAsObj as iFolderModule;
+                            if (folderAsFolder == null)
+                            {
+                                errors.Add(folderSetting.Class + " loaded from assembly but does not implement the IFolderModule interface!");
+                            }
+                            else
+                            {
+                                if ((!String.IsNullOrEmpty(folderSetting.Argument1)) || (!String.IsNullOrEmpty(folderSetting.Argument2)) || (!String.IsNullOrEmpty(folderSetting.Argument3)))
+                                {
+                                    folderAsFolder.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument1) ? String.Empty : folderSetting.Argument1);
+                                    folderAsFolder.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument2) ? String.Empty : folderSetting.Argument2);
+                                    folderAsFolder.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument3) ? String.Empty : folderSetting.Argument3);
+                                }
+
+                                allFolderModules.Add(folderAsFolder);
+                                assemblyClassToModule[folderSetting.Key] = folderAsFolder;
+                            }
+                        }
+                    }
+                }
             }
 
 
@@ -355,12 +455,20 @@ namespace SobekCM.Builder_Library.Settings
         public ReadOnlyCollection<iPreProcessModule> PreProcessModules { get { return new ReadOnlyCollection<iPreProcessModule>(preProcessModules); }}
 
         /// <summary> Get the list of item processing module objects to use for processing a new item or update an existing item during a SobekCM builder execution </summary>
-        public ReadOnlyCollection<iSubmissionPackageModule> ProcessItemModules { get { return new ReadOnlyCollection<iSubmissionPackageModule>(processItemModules); }}
+        public ReadOnlyCollection<iSubmissionPackageModule> ItemProcessModules { get { return new ReadOnlyCollection<iSubmissionPackageModule>(processItemModules); } }
 
         /// <summary> Get the list of item delete modules objects to use when deleting an object during a SobekCM builder execution </summary>
         public ReadOnlyCollection<iSubmissionPackageModule> DeleteItemModules { get { return new ReadOnlyCollection<iSubmissionPackageModule>(deleteItemModules); }}
 
         /// <summary> Get the list of post-process module objects to use for post-processing during a SobekCM builder execution </summary>
         public ReadOnlyCollection<iPostProcessModule> PostProcessModules { get { return new ReadOnlyCollection<iPostProcessModule>(postProcessModules); }}
+
+
+        public ReadOnlyCollection<iFolderModule> AllFolderModules { get { return new ReadOnlyCollection<iFolderModule>(allFolderModules); }}
+
+        public iFolderModule Get_Folder_Module_By_Key(string Key)
+        {
+            return assemblyClassToModule[Key];
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace SobekCM.Core.Settings
 {
@@ -25,6 +27,33 @@ namespace SobekCM.Core.Settings
         /// <summary> [DataMember] Third argument necessary for the execution of this interface methods </summary>
         [DataMember(EmitDefaultValue = false)]
         public string Argument3 { get; set; }
+
+        /// <summary> Key for this setting, used to lookup for duplicate references to the same module </summary>
+        [IgnoreDataMember]
+        public string Key
+        {
+            get
+            {
+                // Get the assembly/class/arguments string for lookup
+                StringBuilder builder = new StringBuilder(1000);
+                if (!String.IsNullOrEmpty(Assembly))
+                    builder.Append(Assembly + "|");
+                else
+                    builder.Append("|");
+                builder.Append(Class);
+                if (!String.IsNullOrEmpty(Argument1))
+                    builder.Append(Argument1 + "|");
+                else
+                    builder.Append("|");
+                if (!String.IsNullOrEmpty(Argument2))
+                    builder.Append(Argument2 + "|");
+                else
+                    builder.Append("|");
+                if (!String.IsNullOrEmpty(Argument3))
+                    builder.Append(Argument3);
+                return builder.ToString();
+            }
+        }
 
     }
 }
