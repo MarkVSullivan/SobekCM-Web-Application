@@ -2108,6 +2108,22 @@ namespace SobekCM.Resource_Object.Database
             // Allow the division/file tree to save metadata here 
             metadataTerms.AddRange(ThisPackage.Divisions.Metadata_Search_Terms);
 
+            //modify by Keven for dPanther            
+            string source_code = ThisPackage.Bib_Info.Source.Code;
+
+            if ((source_code.Length > 0) && (source_code[0] != 'i') && (source_code[0] != 'I'))
+            {
+                source_code = "i" + source_code;
+            }
+            if ((source_code.Length > 2) && (source_code.ToUpper().IndexOf("II") == 0))
+                source_code = source_code.Substring(1);
+           
+            for (int aggNum = 0; aggNum < ThisPackage.Behaviors.Aggregation_Code_List.Count; aggNum++)
+            {
+                metadataTerms.Add(new KeyValuePair<string, string>("Aggregation", ThisPackage.Behaviors.Aggregation_Code_List[aggNum]));
+            }
+
+
             // Just add blanks in at the end to get this to an increment of ten
             while ((metadataTerms.Count % 10) != 0)
             {
