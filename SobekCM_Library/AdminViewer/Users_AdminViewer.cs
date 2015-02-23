@@ -53,7 +53,7 @@ namespace SobekCM.Library.AdminViewer
 		{
             RequestSpecificValues.Tracer.Add_Trace("Users_AdminViewer.Constructor", String.Empty);
 
-			// Ensure the RequestSpecificValues.Current_User is the system admin
+			// Ensure the user is the system admin
 			if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.Is_System_Admin))
 			{
 				RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
@@ -614,10 +614,10 @@ namespace SobekCM.Library.AdminViewer
 					// Should this be saved to the database?
 					if (action == "save")
 					{
-						// Save this RequestSpecificValues.Current_User
+						// Save this user
                         SobekCM_Database.Save_User(editUser, String.Empty, RequestSpecificValues.Current_User.Authentication_Type, RequestSpecificValues.Tracer);
 
-						// Update the basic RequestSpecificValues.Current_User information
+						// Update the basic user information
                         SobekCM_Database.Update_SobekCM_User(editUser.UserID, editUser.Can_Submit, editUser.Is_Internal_User, editUser.Should_Be_Able_To_Edit_All_Items, editUser.Can_Delete_All, editUser.Is_System_Admin, editUser.Is_Portal_Admin, editUser.Include_Tracking_In_Standard_Forms, editUser.Edit_Template_Code_Simple, editUser.Edit_Template_Code_Complex, true, true, true, RequestSpecificValues.Tracer);
 
 						// Update projects, if necessary
@@ -638,7 +638,7 @@ namespace SobekCM.Library.AdminViewer
 							}
 						}
 
-						// Save the aggregationPermissions linked to this RequestSpecificValues.Current_User
+						// Save the aggregationPermissions linked to this user
 					    if (editUser.PermissionedAggregations_Count > 0)
 					    {
 					        if (!SobekCM_Database.Update_SobekCM_User_Aggregations(editUser.UserID, editUser.PermissionedAggregations, RequestSpecificValues.Tracer))
@@ -647,7 +647,7 @@ namespace SobekCM.Library.AdminViewer
 					        }
 					    }
 
-					    // Save the RequestSpecificValues.Current_User group links
+					    // Save the user group links
 						List<User_Group> userGroup = Engine_Database.Get_All_User_Groups(RequestSpecificValues.Tracer);
 						Dictionary<string, int> groupnames_to_id = new Dictionary<string, int>();
 						foreach (User_Group thisRow in userGroup)

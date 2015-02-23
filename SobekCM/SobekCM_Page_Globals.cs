@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Web;
 using SobekCM.Core.Aggregations;
@@ -17,6 +19,7 @@ using SobekCM.Core.SiteMap;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library;
@@ -72,13 +75,34 @@ namespace SobekCM
 				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", String.Empty);
 			    SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
 
-                // Ensure the settings base directory is set correctly (TEMPORARY FOR UF)
-			    if (UI_ApplicationCache_Gateway.Settings.System_Abbreviation.IndexOf("UFDC") == 0)
+                // Ensure the settings base directory is set correctly 
+			    if ( String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Base_Directory))
+			    {
+                    string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
+                    UI_ApplicationCache_Gateway.Settings.Base_Directory = baseDir;
+
+                    SobekCM_Database.Set_Setting("Application Server Network", baseDir);
+			    }
+
+                // Ensure the web server IP address is set correctly
+			    if (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.SobekCM_Web_Server_IP))
+			    {
+			        string ip = get_local_ip();
+			        if (ip.Length > 0)
+			        {
+                        UI_ApplicationCache_Gateway.Settings.SobekCM_Web_Server_IP = ip;
+
+                        SobekCM_Database.Set_Setting("SobekCM Web Server IP", ip);
+			        }
+			    }
+
+
+                // (TEMPORARY FOR UF)
+			    if ( UI_ApplicationCache_Gateway.Settings.System_Abbreviation.IndexOf("UFDC") == 0)
 			    {
                     string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
                     UI_ApplicationCache_Gateway.Settings.Base_Directory = baseDir;
 			    }
-
 
 				// Check that something is saved for the original requested URL (may not exist if not forwarded)
 				if (!HttpContext.Current.Items.Contains("Original_URL"))
@@ -1451,6 +1475,32 @@ namespace SobekCM
 		}
 
 		#endregion
-	}
+
+        #region Helper method to find this server's IP address, if necessary
+
+        private string get_local_ip()
+        {
+            try
+            {
+                IPHostEntry host;
+                string localIP = "?";
+                host = Dns.GetHostEntry(Dns.GetHostName());
+                foreach (IPAddress ip in host.AddressList)
+                {
+                    if (ip.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        localIP = ip.ToString();
+                    }
+                }
+                return localIP;
+            }
+            catch
+            {
+                return String.Empty;
+            }
+        }
+
+        #endregion
+    }
 
 }

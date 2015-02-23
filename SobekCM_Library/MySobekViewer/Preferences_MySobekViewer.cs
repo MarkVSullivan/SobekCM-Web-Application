@@ -429,6 +429,15 @@ namespace SobekCM.Library.MySobekViewer
 
 							// Retrieve the user information again
                             user = SobekCM_Database.Get_User(username, password, RequestSpecificValues.Tracer);
+
+                            // Also, use the current email address for some system emails
+						    if (user.Email.Length > 0)
+						    {
+                                SobekCM_Database.Set_Setting("System Email", user.Email);
+                                SobekCM_Database.Set_Setting("System Error Email", user.Email);
+                                SobekCM_Database.Set_Setting("Privacy Email Address", user.Email);
+                                SobekCM_Database.Set_Setting("Email Default From Address", user.Email);
+						    }
 						}
 
 						user.Is_Just_Registered = true;

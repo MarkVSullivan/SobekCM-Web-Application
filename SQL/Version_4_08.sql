@@ -1,18 +1,30 @@
-
-create table dbo.SobekCM_Item_Alias(
-	ItemAliasID int IDENTITY(1,1) NOT NULL,
-	Alias varchar(50) NOT NULL,
-	ItemID int NOT NULL,
-	CONSTRAINT [PK_SobekCM_Item_Alias] PRIMARY KEY CLUSTERED 
-(
-	ItemAliasID ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+-- Drop some unnecessary tables and procedures
+IF object_id('SobekCM_Get_QC_Comments') IS NOT NULL EXEC ('drop procedure SobekCM_Get_QC_Comments;');
+GO
+IF object_id('SobekCM_Metadata_Search_Paged2') IS NOT NULL EXEC ('drop procedure SobekCM_Metadata_Search_Paged2;');
+GO
+IF object_id('mySobek_New_UFID_User') IS NOT NULL EXEC ('drop procedure mySobek_New_UFID_User;');
+GO
+IF object_id('mySobek_Update_sobek_user') IS NOT NULL EXEC ('drop procedure mySobek_Update_sobek_user;');
 GO
 
+-- Add the item alias table (not yet utiliz
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SobekCM_Item_Alias]') AND type in (N'U'))
+BEGIN
+	create table dbo.SobekCM_Item_Alias(
+		ItemAliasID int IDENTITY(1,1) NOT NULL,
+		Alias varchar(50) NOT NULL,
+		ItemID int NOT NULL,
+		CONSTRAINT [PK_SobekCM_Item_Alias] PRIMARY KEY CLUSTERED 
+	(
+		ItemAliasID ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY];
 
-ALTER TABLE [dbo].SobekCM_Item_Alias  WITH CHECK ADD  CONSTRAINT [FK_SobekCM_Item_Alias_SobekCM_Item] FOREIGN KEY([ItemID])
-REFERENCES [dbo].[SobekCM_Item] ([ItemID])
+	
+	ALTER TABLE [dbo].SobekCM_Item_Alias  WITH CHECK ADD  CONSTRAINT [FK_SobekCM_Item_Alias_SobekCM_Item] FOREIGN KEY([ItemID])
+	REFERENCES [dbo].[SobekCM_Item] ([ItemID]);
+END;
 GO
 
 
@@ -111,15 +123,15 @@ GO
 -- Add builder module type table
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SobekCM_Builder_Module_Type]') AND type in (N'U'))
 BEGIN
-CREATE TABLE [dbo].[SobekCM_Builder_Module_Type](
-	[ModuleTypeID] [int] identity(1,1) NOT NULL,
-	[TypeAbbrev] [varchar](4) NOT NULL,
-	[TypeDescription] [varchar](200) NOT NULL,
- CONSTRAINT [PK_SobekCM_Builder_Module_Types] PRIMARY KEY CLUSTERED 
-(
-	[ModuleTypeID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+	CREATE TABLE [dbo].[SobekCM_Builder_Module_Type](
+		[ModuleTypeID] [int] identity(1,1) NOT NULL,
+		[TypeAbbrev] [varchar](4) NOT NULL,
+		[TypeDescription] [varchar](200) NOT NULL,
+	 CONSTRAINT [PK_SobekCM_Builder_Module_Types] PRIMARY KEY CLUSTERED 
+	(
+		[ModuleTypeID] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY]
 END
 GO
 
@@ -170,31 +182,27 @@ begin
 end;
 GO
 
-CREATE TABLE [dbo].[SobekCM_Builder_Module_Scheduled_Run](
-	[ModuleSchedRunID] [int] IDENTITY(1,1) NOT NULL,
-	[ModuleScheduleID] [int] NOT NULL,
-	[Timestamp] [datetime] NOT NULL,
-	[Outcome] [varchar](100) NOT NULL,
-	[Message] [varchar](max) NULL,
- CONSTRAINT [PK_SobekCM_Builder_Module_Scheduled_Run] PRIMARY KEY CLUSTERED 
-(
-	[ModuleSchedRunID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+-- Add builder module type table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SobekCM_Builder_Module_Scheduled_Run]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [dbo].[SobekCM_Builder_Module_Scheduled_Run](
+		[ModuleSchedRunID] [int] IDENTITY(1,1) NOT NULL,
+		[ModuleScheduleID] [int] NOT NULL,
+		[Timestamp] [datetime] NOT NULL,
+		[Outcome] [varchar](100) NOT NULL,
+		[Message] [varchar](max) NULL,
+	 CONSTRAINT [PK_SobekCM_Builder_Module_Scheduled_Run] PRIMARY KEY CLUSTERED 
+	(
+		[ModuleSchedRunID] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
+	ALTER TABLE [dbo].[SobekCM_Builder_Module_Scheduled_Run]  WITH CHECK ADD  CONSTRAINT [FK_SobekCM_Builder_Module_Scheduled_Run_SobekCM_Builder_Module_Schedule] FOREIGN KEY([ModuleScheduleID])
+	REFERENCES [dbo].[SobekCM_Builder_Module_Schedule] ([ModuleScheduleID]);
+
+	ALTER TABLE [dbo].[SobekCM_Builder_Module_Scheduled_Run] CHECK CONSTRAINT [FK_SobekCM_Builder_Module_Scheduled_Run_SobekCM_Builder_Module_Schedule];
+END;
 GO
-
-SET ANSI_PADDING OFF
-GO
-
-ALTER TABLE [dbo].[SobekCM_Builder_Module_Scheduled_Run]  WITH CHECK ADD  CONSTRAINT [FK_SobekCM_Builder_Module_Scheduled_Run_SobekCM_Builder_Module_Schedule] FOREIGN KEY([ModuleScheduleID])
-REFERENCES [dbo].[SobekCM_Builder_Module_Schedule] ([ModuleScheduleID])
-GO
-
-ALTER TABLE [dbo].[SobekCM_Builder_Module_Scheduled_Run] CHECK CONSTRAINT [FK_SobekCM_Builder_Module_Scheduled_Run_SobekCM_Builder_Module_Schedule]
-GO
-
-
 
 
 -- Add the foreign key from the folders table to the module sets table 
@@ -274,7 +282,8 @@ begin
 end;
 GO
 
-update SobeKCM_Builder_Incoming_Folders set ModuleSetID=10;
+-- Assign the default module set to the folders
+update SobeKCM_Builder_Incoming_Folders set ModuleSetID=10 where ModuleSetID is null;
 GO
 
 
@@ -613,7 +622,12 @@ begin
 end;
 GO
 
-CREATE procedure [dbo].[SobekCM_Builder_Get_Settings]
+
+-- Ensure the stored procedure exists
+IF object_id('SobekCM_Builder_Get_Settings') IS NULL EXEC ('create procedure dbo.SobekCM_Builder_Get_Settings as select 1;');
+GO
+
+ALTER procedure [dbo].[SobekCM_Builder_Get_Settings]
 	@include_disabled bit
 as
 begin
@@ -695,7 +709,93 @@ GO
 GRANT EXECUTE ON SobekCM_Builder_Get_Settings to sobek_builder;
 GO
 
+-- Deletes an item, and deletes the group if there are no additional items attached
+ALTER PROCEDURE [dbo].[SobekCM_Delete_Item] 
+@bibid varchar(10),
+@vid varchar(5),
+@as_admin bit,
+@delete_message varchar(1000)
+AS
+begin transaction
+	-- Perform transactionally in case there is a problem deleting some of the rows
+	-- so the entire delete is rolled back
 
+   declare @itemid int;
+   set @itemid = 0;
+
+    -- first to get the itemid of the specified bibid and vid
+   select @itemid = isnull(I.itemid, 0)
+   from SobekCM_Item I, SobekCM_Item_Group G
+   where (G.bibid = @bibid) 
+       and (I.vid = @vid)
+       and ( I.GroupID = G.GroupID );
+
+   -- if there is such an itemid in the UFDC database, then delete this item and its related information
+  if ( isnull(@itemid, 0 ) > 0)
+  begin
+
+	-- Delete all references to this item 
+	delete from SobekCM_Metadata_Unique_Link where ItemID=@itemid;
+	delete from SobekCM_Metadata_Basic_Search_Table where ItemID=@itemid;
+	delete from SobekCM_Item_Footprint where ItemID=@itemid;
+	delete from SobekCM_Item_Icons where ItemID=@itemid;
+	delete from SobekCM_Item_Statistics where ItemID=@itemid;
+	delete from SobekCM_Item_GeoRegion_Link where ItemID=@itemid;
+	delete from SobekCM_Item_Aggregation_Item_Link where ItemID=@itemid;
+	delete from mySobek_User_Item where ItemID=@itemid;
+	delete from mySobek_User_Item_Link where ItemID=@itemid;
+	delete from mySobek_User_Description_Tags where ItemID=@itemid;
+	delete from SobekCM_Item_Viewers where ItemID=@itemid;
+	delete from Tracking_Item where ItemID=@itemid;
+	delete from Tracking_Progress where ItemID=@itemid;
+	
+	if ( @as_admin = 'true' )
+	begin
+		delete from Tracking_Archive_Item_Link where ItemID=@itemid;
+		update Tivoli_File_Log set DeleteMsg=@delete_message, ItemID = -1 where ItemID=@itemid;
+	end;
+	
+	--delete sobekcm_item_oai table
+    delete from sobekcm_item_oai where ItemID =@itemid;
+	
+	-- Finally, delete the item 
+	delete from SobekCM_Item where ItemID=@itemid;
+	
+	-- Delete the item group if it is the last one existing
+	if (( select count(I.ItemID) from SobekCM_Item_Group G, SobekCM_Item I where ( G.BibID = @bibid ) and ( G.GroupID = I.GroupID ) and ( I.Deleted = 0 )) < 1 )
+	begin
+		
+		declare @groupid int;
+		set @groupid = 0;	
+		
+		-- first to get the itemid of the specified bibid and vid
+		select @groupid = isnull(G.GroupID, 0)
+		from SobekCM_Item_Group G
+		where (G.bibid = @bibid);
+		
+		-- Delete if this selected something
+		if ( ISNULL(@groupid, 0 ) > 0 )
+		begin		
+			-- delete from the item group table	and all references
+			delete from SobekCM_Item_Group_External_Record where GroupID=@groupid;
+			delete from SobekCM_Item_Group_Web_Skin_Link where GroupID=@groupid;
+			delete from SobekCM_Item_Group_Statistics where GroupID=@groupid;
+			delete from mySobek_User_Bib_Link where GroupID=@groupid;
+			delete from SobekCM_Item_Group_OAI where GroupID=@groupid;
+			delete from SobekCM_Item_Group where GroupID=@groupid;
+		end;
+	end
+	else
+	begin
+		-- Finally set the volume count for this group correctly
+		update SobekCM_Item_Group
+		set ItemCount = ( select count(*) from SobekCM_Item I where ( I.GroupID = SobekCM_Item_Group.GroupID ))	
+		where ( SobekCM_Item_Group.BibID = @bibid );
+	end;
+  end;
+   
+commit transaction;
+GO
 
 if (( select count(*) from SobekCM_Database_Version ) = 0 )
 begin
@@ -708,3 +808,4 @@ begin
 	set Major_Version=4, Minor_Version=8, Release_Phase='0';
 end;
 GO
+
