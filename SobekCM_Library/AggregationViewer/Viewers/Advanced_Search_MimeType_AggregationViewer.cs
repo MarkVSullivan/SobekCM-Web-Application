@@ -110,7 +110,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string contains_exactly = "Contains exactly the search terms";
             string contains_any_form = "Contains any form of the search terms";
             const string CONTAINS_MEANING = "Contains the search term or terms of similar meaning";
-            const string INCLUDE_NO_MIMETYPE = "Include items with records only";
+            const string INCLUDE_NO_MIMETYPE = "Show only records with images or other media";
 
             //string select_collect_groups = "Select collection groups to include in search:";
             //string select_collect = "Select collections to include in search:";
@@ -264,7 +264,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("    </tr>");
 
             Output.WriteLine("    <tr style=\"height:50px; vertical-align:middle;\">");
-            Output.WriteLine("      <td colspan=\"4\">&nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkAsav_mimetypeCheck\" id=\"sbkAsav_mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkAsav_mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label></td>");
+            Output.WriteLine("      <td colspan=\"4\">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkAsav_mimetypeCheck\" id=\"sbkAsav_mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkAsav_mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label></td>");
             Output.WriteLine("      <td style=\"text-align:right;\">");
             Output.WriteLine("        <span id=\"circular_progress\" class=\"hidden_progress\">&nbsp;</span> &nbsp; ");
 

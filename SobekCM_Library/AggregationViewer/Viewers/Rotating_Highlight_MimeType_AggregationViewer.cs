@@ -131,7 +131,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             string search_collection = "Search Collection";
-            const string INCLUDE_NO_MIMETYPE = "Include items with records only";
+            const string INCLUDE_NO_MIMETYPE = "Show only records with images or other media";
 
             //string include_privates = "Include non-public items";
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
@@ -180,7 +180,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                 Output.WriteLine("            <tr>");
                 Output.WriteLine("              <td colspan=\"2\">");
-                Output.WriteLine("                &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkRhav_mimetypeCheck\" id=\"sbkRhav_mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkRhav_mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label>");
+                Output.WriteLine("                <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkRhav_mimetypeCheck\" id=\"sbkRhav_mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkRhav_mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label>");
                 Output.WriteLine("              </td>");
                 Output.WriteLine("            </tr>");
 
@@ -281,7 +281,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("            <tr>");
                 Output.WriteLine("              <td colspan=\"2\">");
-                Output.WriteLine("                &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkRhav_mimetypeCheck\" id=\"sbkRhav_mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkRhav_mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label>");
+                Output.WriteLine("                <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkRhav_mimetypeCheck\" id=\"sbkRhav_mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkRhav_mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label>");
                 Output.WriteLine("              </td>");
                 Output.WriteLine("            </tr>");
                 Output.WriteLine("          </table>");

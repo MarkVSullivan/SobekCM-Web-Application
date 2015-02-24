@@ -108,7 +108,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             string search_collection = "Search Collection";
             const string INCLUDE_PRIVATES = "Include non-public items";
-            const string INCLUDE_NO_MIMETYPE = "Include items with records only";
+            const string INCLUDE_NO_MIMETYPE = "Show only records with images or other media";
 
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
             {
@@ -141,7 +141,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>&nbsp;</td>");
                 Output.WriteLine("      <td colspan=\"4\">");
-                Output.WriteLine("          &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"PRIVATE_ITEMS\" name=\"privatecheck\" id=\"privatecheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"privatecheck\">" + INCLUDE_PRIVATES + "</label>");
+                Output.WriteLine("          <input type=\"checkbox\" value=\"PRIVATE_ITEMS\" name=\"privatecheck\" id=\"privatecheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"privatecheck\">" + INCLUDE_PRIVATES + "</label>");
                 Output.WriteLine("      </td>");
                 Output.WriteLine("    </tr>");
             }

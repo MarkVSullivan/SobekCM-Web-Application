@@ -686,7 +686,7 @@ function advanced_search_sobekcm(root, browseurl ) {
     // Look for the MIMETYPE filter
 	if (document.getElementById('sbkAsav_mimetypeCheck') != null)
 	{
-	    if (!document.getElementById('sbkAsav_mimetypeCheck').checked) {
+	    if (document.getElementById('sbkAsav_mimetypeCheck').checked) {
 	        term = term + ',NONE';
 	        fields = fields + ',-MI';
 	    } 
@@ -924,7 +924,7 @@ function basic_search_sobekcm(root, browseurl) {
     var term = trimString(document.search_form.u_search.value).replace(",", " ");
 
     // Look for the MIMETYPE filter (on basic type search )
-    if ((document.getElementById('sbkBsav_mimetypeCheck') != null) && (!document.getElementById('sbkBsav_mimetypeCheck').checked))
+    if ((document.getElementById('sbkBsav_mimetypeCheck') != null) && (document.getElementById('sbkBsav_mimetypeCheck').checked))
     {
         term = 'NONE,' + term;
         var fieldsm = '-MI,ZZ';
@@ -939,7 +939,7 @@ function basic_search_sobekcm(root, browseurl) {
     }
 
     // Look for the MIMETYPE filter ( on rotating home search )
-    if ((document.getElementById('sbkRhav_mimetypeCheck') != null) && (!document.getElementById('sbkRhav_mimetypeCheck').checked)) {
+    if ((document.getElementById('sbkRhav_mimetypeCheck') != null) && (document.getElementById('sbkRhav_mimetypeCheck').checked)) {
         term = 'NONE,' + term;
         var fieldsm = '-MI,ZZ';
 
