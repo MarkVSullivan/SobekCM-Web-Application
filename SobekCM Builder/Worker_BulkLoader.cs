@@ -34,9 +34,6 @@ namespace SobekCM.Builder
         public Builder_Modules BuilderSettings;
         private DataTable itemTable;
 
-        private readonly string imageMagickExecutable;
-        private readonly string ghostscriptExecutable;
-
         private readonly LogFileXHTML logger;
         
 	    private readonly bool canAbort;
@@ -61,9 +58,7 @@ namespace SobekCM.Builder
         /// <param name="Verbose"> Flag indicates if the builder is in verbose mode, where it should log alot more information </param>
         /// <param name="DbInstance"> This database instance </param>
         /// <param name="MultiInstanceBuilder"></param>
-        /// <param name="ImageMagickExecutable"></param>
-        /// <param name="GhostscriptExecutable"></param>
-        public Worker_BulkLoader(LogFileXHTML Logger, bool Verbose, Database_Instance_Configuration DbInstance, bool MultiInstanceBuilder, string ImageMagickExecutable, string GhostscriptExecutable )
+        public Worker_BulkLoader(LogFileXHTML Logger, bool Verbose, Database_Instance_Configuration DbInstance, bool MultiInstanceBuilder )
         {
             // Save the log file and verbose flag
             logger = Logger;
@@ -72,8 +67,6 @@ namespace SobekCM.Builder
 		    canAbort = DbInstance.Can_Abort;
 	        multiInstanceBuilder = MultiInstanceBuilder;
 	        dbInstance = DbInstance;
-	        ghostscriptExecutable = GhostscriptExecutable;
-	        imageMagickExecutable = ImageMagickExecutable;
 
 	        if (multiInstanceBuilder)
 	            new_item_limit = 100;
@@ -369,12 +362,9 @@ namespace SobekCM.Builder
 	            Add_Error_To_Log("Unable to pull the newest settings from the database", String.Empty, String.Empty, -1);
                 return false;
 		    }
-		    settings.ImageMagick_Executable = imageMagickExecutable;
-		    settings.Ghostscript_Executable = ghostscriptExecutable;
 
             // Save the item table
 		    itemTable = SobekCM_Database.Get_Item_List(true, null).Tables[0];
-
 
             // get all the info
             settings = InstanceWide_Settings_Builder.Build_Settings(dbInstance);
@@ -589,6 +579,10 @@ namespace SobekCM.Builder
                 // Do all the item processing per instance config
                 foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
                 {
+                    //if (super verbose)
+                    //{
+                    //    Add_NonError_To_Log("Running module " + thisModule.GetType().ToString(), true, ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, ResourcePackage.BuilderLogId);
+                    //}
                     if (!thisModule.DoWork(ResourcePackage))
                     {
                         Add_Error_To_Log("Unable to complete new/replacement for " + ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, ResourcePackage.BuilderLogId);

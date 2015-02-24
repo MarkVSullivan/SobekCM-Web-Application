@@ -128,7 +128,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                             }
                             else
                             {
-                                long validateId = OnProcess("....Validating METS file for " + resource.Source_Folder, "Folder Process", resource.Source_Folder.Folder_Name.Replace("_", ":"), "UNKNOWN", -1);
+                                long validateId = OnProcess("....Validating METS file for " + resource.Folder_Name, "Folder Process", resource.Folder_Name.Replace("_", ":"), "UNKNOWN", -1);
                                 string validation_errors = Validate_and_Read_METS(resource, thisMetsValidator, metsSchemeValidator);
 
                                 // Save any errors to the main log

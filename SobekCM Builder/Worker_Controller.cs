@@ -30,9 +30,7 @@ namespace SobekCM.Builder
         private DateTime feedNextBuildTime;
         private readonly bool verbose;
 
-        private string imageMagickProgram;
-        private string ghostscriptProgram;
-        private List<Database_Instance_Configuration> instances;
+        private readonly List<Database_Instance_Configuration> instances;
         private List<Worker_BulkLoader> loaders;
 
         /// <summary> Constructor for a new instance of the Worker_Controller class </summary>
@@ -71,6 +69,40 @@ namespace SobekCM.Builder
             Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
             if ((operationFlag == Builder_Operation_Flag_Enum.ABORTING) || ( operationFlag == Builder_Operation_Flag_Enum.ABORT_REQUESTED ) || ( operationFlag == Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED ))
                 Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
+
+            // start with warnings on imagemagick and ghostscript not being installed
+            if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable)))
+            {
+                string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
+                if ((!String.IsNullOrEmpty(possible_imagemagick)) && (Directory.Exists(possible_imagemagick)) && (File.Exists(Path.Combine(possible_imagemagick, "convert.exe"))))
+                {
+                    MultiInstance_Builder_Settings.ImageMagick_Executable = Path.Combine(possible_imagemagick, "convert.exe");
+                }
+            }
+            else
+            {
+                MultiInstance_Builder_Settings.ImageMagick_Executable = Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable;
+            }
+
+            if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable)))
+            {
+                string possible_ghost = Look_For_Variable_Registry_Key("SOFTWARE\\GPL Ghostscript", "GS_DLL");
+                if (!String.IsNullOrEmpty(possible_ghost))
+                {
+                    string gsPath = Path.GetDirectoryName(possible_ghost);
+                    if ((Directory.Exists(gsPath)) && ((File.Exists(Path.Combine(gsPath, "gswin32c.exe"))) || (File.Exists(Path.Combine(gsPath, "gswin64c.exe")))))
+                    {
+                        if (File.Exists(Path.Combine(gsPath, "gswin64c.exe")))
+                            MultiInstance_Builder_Settings.Ghostscript_Executable = Path.Combine(gsPath, "gswin64c.exe");
+                        else
+                            MultiInstance_Builder_Settings.Ghostscript_Executable = Path.Combine(gsPath, "gswin32c.exe");
+                    }
+                }
+            }
+            else
+            {
+                MultiInstance_Builder_Settings.Ghostscript_Executable = Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable;
+            }
         }
 
         #region Method to execute processes in background
@@ -87,59 +119,25 @@ namespace SobekCM.Builder
             // Determine the new log name
             string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
             string local_log_name = Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + "\\" + log_name;
+            if (String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory))
+            {
+                local_log_name = Application.StartupPath + "\\Logs\\" + log_name;
+            }
 
             // Create the new log file
             LogFileXHTML preloader_logger = new LogFileXHTML(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
 
             // start with warnings on imagemagick and ghostscript not being installed
-            if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable)))
+            if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.ImageMagick_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.ImageMagick_Executable)))
             {
-                string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
-                if ((!String.IsNullOrEmpty(possible_imagemagick)) && ( Directory.Exists(possible_imagemagick)) && ( File.Exists( Path.Combine(possible_imagemagick, "convert.exe"))))
-                {
-                    imageMagickProgram = Path.Combine(possible_imagemagick, "convert.exe");
-                }
-                else
-                {
-                    Console.WriteLine("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
-                    preloader_logger.AddNonError("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
-                }
-
-
-            }
-            else
-            {
-                imageMagickProgram = Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable;
+                Console.WriteLine("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
+                preloader_logger.AddNonError("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
             }
 
-            if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable)))
+            if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Ghostscript_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Ghostscript_Executable)))
             {
-                string possible_ghost = Look_For_Variable_Registry_Key("SOFTWARE\\GPL Ghostscript", "GS_DLL");
-                if (!String.IsNullOrEmpty(possible_ghost))
-                {
-                    string gsPath = Path.GetDirectoryName( possible_ghost );
-                    if ((Directory.Exists(gsPath)) && ((File.Exists(Path.Combine(gsPath, "gswin32c.exe"))) || (File.Exists(Path.Combine(gsPath, "gswin64c.exe")))))
-                    {
-                        if (File.Exists(Path.Combine(gsPath, "gswin64c.exe")))
-                            ghostscriptProgram = Path.Combine(gsPath, "gswin64c.exe");
-                        else
-                            ghostscriptProgram = Path.Combine(gsPath, "gswin32c.exe");
-                    }
-                    else
-                    {
-                        Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
-                        preloader_logger.AddNonError("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
-                    preloader_logger.AddNonError("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
-                }
-            }
-            else
-            {
-                ghostscriptProgram = Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable;
+                Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
+                preloader_logger.AddNonError("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
             }
 
 			// Set the time for the next feed building event to 10 minutes from now
@@ -230,13 +228,13 @@ namespace SobekCM.Builder
 					SobekCM_Database.Connection_String = dbConfig.Connection_String;
 					Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 
-
-                    // At this point warn on mossing the Ghostscript and ImageMagick
-                    if ( String.IsNullOrEmpty(imageMagickProgram))
+                    // At this point warn on mossing the Ghostscript and ImageMagick, to get it into each instances database logs
+                    if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.ImageMagick_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.ImageMagick_Executable)))
                     {
                         Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.", String.Empty);
                     }
-                    if ( String.IsNullOrEmpty(ghostscriptProgram))
+
+                    if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Ghostscript_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Ghostscript_Executable)))
                     {
                         Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.", String.Empty);
                     }
@@ -245,7 +243,7 @@ namespace SobekCM.Builder
 					preloader_logger.AddNonError(dbConfig.Name + " - Preparing to begin polling");
 					Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
 
-					Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1 ), imageMagickProgram, ghostscriptProgram );
+					Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1 ) );
 					loaders.Add(newLoader);
 				}
 			}
@@ -527,7 +525,7 @@ namespace SobekCM.Builder
 			        {
 				        SobekCM.Resource_Object.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 			            SobekCM.Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
-                        Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1), imageMagickProgram, ghostscriptProgram);
+                        Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1));
 						newLoader.Perform_BulkLoader(Verbose);
 
 						// Save information about this last run

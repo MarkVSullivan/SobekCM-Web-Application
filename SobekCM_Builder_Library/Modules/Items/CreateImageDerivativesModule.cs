@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using SobekCM.Builder_Library.Settings;
 using SobekCM.Resource_Object.Utilities;
 
 #endregion
@@ -19,7 +20,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
             string bibID = Resource.BibID;
             string vid = Resource.VID;
-            string imagemagick_executable = Settings.ImageMagick_Executable;
+            string imagemagick_executable = MultiInstance_Builder_Settings.ImageMagick_Executable;
 
 
             // Are there images that need to be processed here?
