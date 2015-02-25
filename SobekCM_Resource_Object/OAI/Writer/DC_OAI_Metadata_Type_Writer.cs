@@ -33,11 +33,11 @@ namespace SobekCM.Resource_Object.OAI.Writer
             // Add the URL as the identifier
             if (Item_To_Save.Bib_Info.Location.PURL.Length > 0)
             {
-                writer.WriteLine("<dc:identifer>" + Item_To_Save.Bib_Info.Location.PURL + "</dc:identifier>");
+                writer.WriteLine("<dc:identifier>" + Item_To_Save.Bib_Info.Location.PURL + "</dc:identifier>");
             }
             else if (Item_To_Save.Web.Service_URL.Length > 0)
             {
-                writer.WriteLine("<dc:identifer>" + Item_To_Save.Web.Service_URL + "</dc:identifier>");
+                writer.WriteLine("<dc:identifier>" + Item_To_Save.Web.Service_URL + "</dc:identifier>");
             }
 
             // Finish this OAI

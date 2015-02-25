@@ -441,7 +441,7 @@ namespace SobekCM.Engine_Library.Solr
         /// <param name="SolrDocumentUrl"> URL for the solr/lucene core used for searching for a single document within the library </param>
         /// <param name="SolrPageUrl"> URL for the solr/lucene core used for searching within a single document for matching pages </param>
         /// <param name="BibID"> Bibliographic identifier for the item to remove from the solr/lucene indexes </param>
-        /// <param name="VID"> Volume identifer for the item to remove from the solr/lucene indexes </param>
+        /// <param name="VID"> Volume identifier for the item to remove from the solr/lucene indexes </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool Delete_Resource_From_Index(string SolrDocumentUrl, string SolrPageUrl, string BibID, string VID)
         {
