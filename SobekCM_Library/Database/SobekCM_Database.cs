@@ -1385,7 +1385,7 @@ namespace SobekCM.Library.Database
 			adapter.Fill(tempSet);
 				
 			// If there was no data for this collection and entry point, return null (an ERROR occurred)
-			if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+			if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null))
 			{
 				return null;
 			}
