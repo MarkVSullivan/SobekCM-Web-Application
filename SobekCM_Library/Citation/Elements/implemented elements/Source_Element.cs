@@ -28,7 +28,6 @@ namespace SobekCM.Library.Citation.Elements
         {
             Repeatable = false;
             possible_select_items.Add("");
-            possible_select_items.Add("UF");
             Type = Element_Type.Source;
             clear_textbox_on_combobox_change = true;
         }
@@ -120,7 +119,7 @@ namespace SobekCM.Library.Citation.Elements
             // Check the user to see if this should be limited
             bool some_set_as_selectable = false;
             List<string> possibles = new List<string> {Bib.Bib_Info.Source.Code.ToUpper()};
-            if (!Current_User.Is_Internal_User)
+            if ((!Current_User.Is_Internal_User) && (Current_User.PermissionedAggregations != null ))
             {
                 // Are there aggregationPermissions set aside for the user?
                 List<User_Permissioned_Aggregation> allAggrs = Current_User.PermissionedAggregations;

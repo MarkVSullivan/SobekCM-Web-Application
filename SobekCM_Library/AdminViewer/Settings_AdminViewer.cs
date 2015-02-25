@@ -41,8 +41,8 @@ namespace SobekCM.Library.AdminViewer
 	    private readonly Dictionary<Setting_Info, int> settingToId;
         private bool isValid;
         private int settingCounter;
-        private readonly Dictionary<string, string> settings;
-	    private readonly List<string> standardSettingKeys; 
+        private Dictionary<string, string> settings;
+	    private List<string> standardSettingKeys; 
 	    private readonly Dictionary<string, List<Setting_Info>> categorizedSettings;
 	    private bool odd_row;
 	    private readonly bool category_view;
@@ -68,98 +68,13 @@ namespace SobekCM.Library.AdminViewer
             actionMessage = String.Empty;
 			category_view = Convert.ToBoolean(RequestSpecificValues.Current_User.Get_Setting("Settings_AdminViewer:Category_View", "false"));
 
-            // Get the current settings from the database
-            settings = SobekCM_Database.Get_Settings(RequestSpecificValues.Tracer);
+            // Add some keys, which are stored in this portion of the database, 
+            // but are not really setting values so shouldn't show here (or are hidden)
+            standardSettingKeys = new List<string> { "Builder Last Message", "Builder Last Run Finished", "Builder Version", "Builder Operation Flag", "Spreadsheet Library License" };
 
-			// Add some keys, which are stored in this portion of the database, 
-			// but are not really setting values so shouldn't show here (or are hidden)
-			standardSettingKeys = new List<string> { "Builder Last Message", "Builder Last Run Finished", "Builder Version", "Builder Operation Flag", "Spreadsheet Library License" };
-
-	        // Get the default URL and default system location
-            string default_url = RequestSpecificValues.Current_Mode.Base_URL;
-            string default_location = HttpContext.Current.Request.PhysicalApplicationPath;
-
-            // NOTE: This code is exactly the same as found in the SobekCM_Configuration tool.  That is why
-            // this feels a little strange, to be loading information about all the settings, and then handling
-            // the display portion late.  This allows the settings to be added or subtracted from rather easily 
-            // in code and also keeps the exact same code chunk to keep the configuration tool and the web 
-            // app both kept current simultaneously.
-            string[] empty_options = new string[] { };
-            string[] boolean_options = new[] { "true", "false" };
-            string[] language_options = Web_Language_Enum_Converter.Language_Name_Array;
-
-            Add_Setting_UI("Application Server Network", "Server Configuration", -1, empty_options, "Server share for the web application's network location.\n\nExample: '\\\\lib-sandbox\\Production\\'", false, default_location);
-			Add_Setting_UI("Application Server URL", "Server Configuration", -1, empty_options, "Base URL which points to the web application.\n\nExamples: 'http://localhost/sobekcm/', 'http://ufdc.ufl.edu/', etc..", false, default_url);
-            Add_Setting_UI("Archive DropBox", "Archiving", -1, empty_options, "Network location for the archive drop box.  If this is set to a value, the builder/bulk loader will place a copy of the package in this folder for archiving purposes.  This folder is where any of your archiving processes should look for new packages.", false );
-            Add_Setting_UI("Builder Log Expiration in Days", "Builder", 200, new[] { "10", "30", "365", "99999" }, "Number of days the SobekCM Builder logs are retained.", false, "10");
-            Add_Setting_UI("Builder Operation Flag", "Builder", 200, new[] { "STANDARD OPERATION", "PAUSE REQUESTED", "ABORT REQUESTED", "NO BUILDER REQUESTED" }, "Last flag set when the builder/bulk loader ran.", false );
-            Add_Setting_UI("Builder Seconds Between Polls", "Builder", 200, new[] { "15", "60", "300", "600" }, "Number of seconds the builder remains idle before checking for new incoming package again.", false, "60");
-			Add_Setting_UI("Caching Server", "Server Configuration", -1, empty_options, "URL for the AppFabric Cache host machine, if a caching server/cluster is in use in this system.", false);
-			Add_Setting_UI("Can Remove Single Search Term", "General Appearance", 70, boolean_options, "When this is set to TRUE, users can remove a single search term from their current search.  Setting this to FALSE, makes the display slightly cleaner.", false);
-			Add_Setting_UI("Can Submit Edit Online", "Resource Files", 70, boolean_options, "Flag dictates if users can submit items online, or if this is disabled in this system.", false);
-            Add_Setting_UI("Convert Office Files to PDF", "Resource Files", 70, boolean_options, "Flag dictates if users can submit items online, or if this is disabled in this system.", false, "false");
-            Add_Setting_UI("Create MARC Feed By Default", "Interoperability", 70, boolean_options, "Flag indicates if the builder/bulk loader should create the MARC feed by default when operating in background mode.", false );
-			Add_Config_Setting("Database Type", "Server Configuration", UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Database_Type_String, "Type of database used to drive the SobekCM system.\n\nCurrently, only Microsoft SQL Server is allowed with plans to add PostgreSQL to the supported database system.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.");
-			Add_Config_Setting("Database Connection String", "Server Configuration", UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String, "Connection string used to connect to the SobekCM database\n\nThis value resides in the configuration file on the web server.  See your database and web server administrator to change this value.");
-			Add_Setting_UI("Detailed User Permissions", "System Configuration", -1, boolean_options, "Flag indicates if more refined RequestSpecificValues.Current_User permissions can be assigned, such as if a RequestSpecificValues.Current_User can edit behaviors of an item in a collection vs. a more general flag that says a RequestSpecificValues.Current_User can make all changes to an item in a collection.", false);
-			Add_Setting_UI("Document Solr Index URL", "Server Configuration", -1, empty_options, "URL for the document-level solr index.\n\nExample: 'http://localhost:8080/documents'", false);
-            Add_Config_Setting("Error Emails", "Emails", UI_ApplicationCache_Gateway.Settings.System_Error_Email, "Email address for the web application to mail for any errors encountered while executing requests.\n\nThis account will be notified of inabilities to connect to servers, potential attacks, missing files, etc..\n\nIf the system is able to connect to the database, the 'System Error Email' address listed there, if there is one, will be used instead.\n\nUse a semi-colon betwen email addresses if multiple addresses are included.\n\nExample: 'person1@corp.edu;person2@corp2.edu'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.");
-			Add_Config_Setting("Error HTML Page", "System Configuration", UI_ApplicationCache_Gateway.Settings.System_Error_URL, "Static page the user should be redirected towards if an unexpected exception occurs which cannot be handled by the web application.\n\nExample: 'http://ufdc.ufl.edu/error.html'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.");
-
-            Add_Setting_UI("Email Default From Address", "Emails", -1, empty_options, "Email address that emails from this system should utilize", false);
-            Add_Setting_UI("Email Default From Name", "Emails", -1, empty_options, "Display name to associate with emails sent from this system (otherwise the instance/portal name will be used)", false);
-            Add_Setting_UI("Email Method", "Emails", -1, new string[] { "DATABASE MAIL", "SMTP DIRECT" }, "Indicated whether the database mail system or the SMTP direct email system should be utilizied", false);
-            Add_Setting_UI("Email SMTP Port", "Emails", 70, empty_options, "If direct SMTP email sending is used, the port to utilize.  This must be numeric.", false, "25");
-            Add_Setting_UI("Email SMTP Server", "Emails", -1, empty_options, "If direct SMTP email sending is used, the server name to send emails to.", false);
-
-            Add_Setting_UI("Facets Collapsible", "General Appearance", 70, boolean_options, "Flag determines if the facets are collapsible like an accordian, or if they all start fully expanded.", false);
-            Add_Setting_UI("FDA Report DropBox", "Florida SUS", -1, empty_options, "Location for the builder/bulk loader to look for incoming Florida Dark Archive XML reports to process and add to the history of digital resources.", true );
-            Add_Setting_UI("Files To Exclude From Downloads", "Resource Files", -1, empty_options, "Regular expressions used to exclude files from being added by default to the downloads of resources.\n\nExample: '((.*?)\\.(jpg|tif|jp2|jpx|bmp|jpeg|gif|png|txt|pro|mets|db|xml|bak|job)$|qc_error.html)'", false );
-            Add_Setting_UI("Help URL", "Help", -1, empty_options, "URL used for the main help pages about this system's basic functionality.\n\nExample (and default): 'http://ufdc.ufl.edu/'", false );
-            Add_Setting_UI("Help Metadata URL", "Help", -1, empty_options, "URL used for the help pages when users request help on metadata elements during online submit and editing.\n\nExample (and default): 'http://ufdc.ufl.edu/'", false );
-			Add_Setting_UI("Image Server Network", "Server Configuration", -1, empty_options, "Network location to the content for all of the digital resources (images, metadata, etc.).\n\nExample: 'C:\\inetpub\\wwwroot\\UFDC Web\\SobekCM\\content\\' or '\\\\ufdc-images\\content\\'", false, default_location + "content\\");
-			Add_Setting_UI("Image Server URL", "Server Configuration", -1, empty_options, "URL which points to the digital resource images.\n\nExample: 'http://localhost/sobekcm/content/' or 'http://ufdcimages.uflib.ufl.edu/'", false, default_url + "content/");
-			Add_Setting_UI("Include Partners On System Home", "System Configuration", 70, boolean_options, "This option controls whether a PARTNERS option appears on the main system home page, assuming there are multiple institutional aggregations.", false, "false");
-			Add_Setting_UI("Include TreeView On System Home", "System Configuration", 70, boolean_options, "This option controls whether a TREE VIEW option appears on the main system home page which displays all the active aggregations hierarchically in a tree view.", false, "false");
-			Add_Setting_UI("JPEG Height", "Resource Files", 60, empty_options, "Restriction on the size of the jpeg page images' height (in pixels) when generated automatically by the builder/bulk loader.\n\nDefault: '1000'", false);
-			Add_Setting_UI("JPEG Width", "Resource Files", 60, empty_options, "Restriction on the size of the jpeg page images' width (in pixels) when generated automatically by the builder/bulk loader.\n\nDefault: '630'", false);
-			Add_Setting_UI("JPEG2000 Server", "Server Configuration", -1, empty_options, "URL for the Aware JPEG2000 Server for displaying and zooming into JPEG2000 images.", false);
-			Add_Setting_UI("JPEG2000 Server Type", "Server Configuration", -1, new[] { "Aware", "Built-In IIPImage", "None"}, "Type of the JPEG2000 server found at the URL above.", false);
-			Add_Setting_UI("Kakadu JPEG2000 Create Command", "Resource Files", -1, empty_options, "Kakadu JPEG2000 script will override the specifications used when creating zoomable images.\n\nIf this is blank, the default specifications will be used which match those used by the National Digital Newspaper Program and University of Florida Digital Collections.", false);
-            Add_Setting_UI("Log Files Directory", "Builder", -1, empty_options, "Network location for the share within which the builder/bulk loader logs should be copied to become web accessible.\n\nExample: '\\\\lib-sandbox\\Design\\extra\\logs\\'", false, default_location + "design\\extra\\logs\\");
-            Add_Setting_UI("Log Files URL", "Builder", -1, empty_options, "URL for the builder/bulk loader logs files.\n\nExample: 'http://ufdc.ufl.edu/design/extra/logs/'", false, default_url + "design/exra/logs/");
-			Add_Setting_UI("Main Builder Input Folder", "Builder", -1, empty_options, "This is the network location to the SobekCM Builder's main incoming folder.\n\nThis is used by the SMaRT tool when doing bulk imports from spreadsheet or MARC records.", false);
-            Add_Setting_UI("Mango Union Search Base URL", "Florida SUS", -1, empty_options, "Florida SUS state-wide catalog base URL for determining the number of physical holdings which match a given search.\n\nExample: 'http://solrcits.fcla.edu/citsZ.jsp?type=search&base=uf'", true );
-            Add_Setting_UI("Mango Union Search Text", "Florida SUS", -1, empty_options, "Text to display the number of hits found in the Florida SUS-wide catalog.\n\nUse the value '%1' in the string where the number of hits should be inserted.\n\nExample: '%1 matches found in the statewide catalog'", true );
-            Add_Setting_UI("MARC Cataloging Source Code", "Interoperability", 60, empty_options, "Cataloging source code for the 040 field, ( for example 'FUG' for University of Florida )", false);
-            Add_Setting_UI("MARC Location Code", "Interoperability", 60, empty_options, "Location code for the 852 |a - if none is given the system abbreviation will be used. Otherwise, the system abbreviation will be put in the 852 |b field.", false);
-            Add_Setting_UI("MARC Reproduction Agency", "Interoperability", -1, empty_options, "Agency responsible for reproduction, or primary agency associated with the SobekCM instance ( for the added 533 |c field )\n\nThis 533 is not added for born digital items.", false);
-            Add_Setting_UI("MARC Reproduction Place", "Interoperability", -1, empty_options, "Place of reproduction, or primary location associated with the SobekCM instance ( for the added 533 |b field ).\n\nThis 533 is not added for born digital items.", false);
-            Add_Setting_UI("MARC XSLT File", "Interoperability", -1, empty_options, "XSLT file to use as a final transform, after the standard MarcXML file is written.\n\nThis only affects generated MarcXML ( for the feeds and OAI ) not the dispayed in-system MARC ( as of January 2015 ).  This file should appear in the config/users folder.", false);
-            Add_Setting_UI("MarcXML Feed Location", "Interoperability", -1, empty_options, "Network location or share where any geneated MarcXML feed should be written.\n\nExample: '\\\\lib-sandbox\\Data\\'", false, default_location + "data\\");
-            Add_Setting_UI("OCR Engine Command", "Resource Files", -1, empty_options, "If you wish to utilize an OCR engine in the builder/bulk loader, add the command-line call to the engine here.\n\nUse %1 as a place holder for the ingoing image file name and %2 as a placeholder for the output text file name.\n\nExample: 'C:\\OCR\\Engine.exe -in %1 -out %2'", false );
-			Add_Setting_UI("Page Solr Index URL", "Server Configuration", -1, empty_options, "URL for the resource-level solr index used when searching for matching pages within a single document.\n\nExample: 'http://localhost:8080/pages'", false);
-			Add_Setting_UI("PostArchive Files To Delete", "Archiving", -1, empty_options, "Regular expression indicates which files should be deleted AFTER being archived by the builder/bulk loader.\n\nExample: '(.*?)\\.(tif)'", false);
-			Add_Setting_UI("PreArchive Files To Delete", "Archiving", -1, empty_options, "Regular expression indicates which files should be deleted BEFORE being archived by the builder/bulk loader.\n\nExample: '(.*?)\\.(QC.jpg)'", false);
-            Add_Setting_UI("Privacy Email Address", "Emails", -1, empty_options, "Email address which receives notification if personal information (such as Social Security Numbers) is potentially found while loading or post-processing an item.\n\nIf you are using multiple email addresses, seperate them with a semi-colon.\n\nExample: 'person1@corp.edu;person2@corp.edu'", false );
-			Add_Setting_UI("Show Florida SUS Settings", "Florida SUS", 70, boolean_options, "Some system settings are only applicable to institutions which are part of the Florida State University System.  Setting this value to TRUE will show these settings, while FALSE will suppress them.\n\nIf this value is changed, you willl need to save the settings for it to reload and reflect the change.", false, "false");
-            Add_Setting_UI("SobekCM Web Server IP", "Server Configuration", 200, empty_options, "IP address for the web server running this web repository software.\n\nThis is used for setting restricted or dark material to only be available for the web server, which then acts as a proxy/web server to serve that content to authenticated users.", false );
-			Add_Setting_UI("Static Pages Location", "Server Configuration", -1, empty_options, "Location where the static files are located for providing the full citation and text for indexing, either on the same server as the web application or as a network share.\n\nIt is recommended that these files be on the same server as the web server, rather than remote storage, to increase the speed in which requests from search engine indexers can be fulfilled.\n\nExample: 'C:\\inetpub\\wwwroot\\UFDC Web\\SobekCM\\data\\'.", false, default_location + "data\\");
-			Add_Setting_UI("Statistics Caching Enabled", "System Configuration", 70, boolean_options, "Flag indicates if the basic usage and item count information should be cached for up to 24 hours as static XML files written in the web server's temp directory.\n\nThis should be enabled if your library is quite large as it can take a fair amount of time to retrieve this information and these screens are made available for search engine index robots for indexing.", false);
-			Add_Setting_UI("System Base Abbreviation", "System Configuration", 100, empty_options, "Base abbreviation to be used when the system refers to itself to the RequestSpecificValues.Current_User, such as the main tabs to take a RequestSpecificValues.Current_User to the home pages.\n\nThis abbreviation should be kept as short as possible.\n\nExamples: 'UFDC', 'dLOC', 'Sobek', etc..", false);
-			Add_Setting_UI("System Base Name", "System Configuration", -1, empty_options, "Overall name of the system, to be used when creating MARC records and in several other locations.", false);
-			Add_Setting_UI("System Base URL", "System Configuration", -1, empty_options, "Base URL which points to the web application.\n\nExamples: 'http://localhost/sobekcm/', 'http://ufdc.ufl.edu/', etc..", false, default_url);
-			Add_Setting_UI("System Default Language", "System Configuration", 150, language_options, "Default system RequestSpecificValues.Current_User interface language.  If the RequestSpecificValues.Current_User's HTML request does not include a language supported by the interface or which does not include specific translations for a field, this default language is utilized.", false, "English");
-            Add_Setting_UI("System Email", "Emails", -1, empty_options, "Default email address for the system, which is sent emails when users opt to contact the administrators.\n\nThis can be changed for individual aggregations but at least one email is required for the overall system.\n\nIf you are using multiple email addresses, seperate them with a semi-colon.\n\nExample: 'person1@corp.edu;person2@corp.edu'", false );
-            Add_Setting_UI("System Error Email", "Emails", -1, empty_options, "Email address used when a critical system error occurs which may require investigation or correction.\n\nIf you are using multiple email addresses, seperate them with a semi-colon.\n\nExample: 'person1@corp.edu;person2@corp.edu'", false );
-            Add_Setting_UI("Thumbnail Height", "Resource Files", 60, empty_options, "Restriction on the size of the page image thumbnails' height (in pixels) when generated automatically by the builder/bulk loader.\n\nDefault: '300'", false );
-            Add_Setting_UI("Thumbnail Width", "Resource Files", 60, empty_options, "Restriction on the size of the page image thumbnails' width (in pixels) when generated automatically by the builder/bulk loader.\n\nDefault: '150'", false );
-			Add_Setting_UI("Upload File Types", "Resource Files", -1, empty_options, "List of non-image extensions which are allowed to be uploaded into a digital resource.\n\nList should be the extensions, with the period, separated by commas.\n\nExample: .aif,.aifc,.aiff,.au,.avi,.bz2,.c,.c++,.css,.dbf,.ddl,...", false);
-			Add_Setting_UI("Upload Image Types", "Resource Files", -1, empty_options, "List of page image extensions which are allowed to be uploaded into a digital resource to display as page images.\n\nList should be the extensions, with the period, separated by commas.\n\nExample: .txt,.tif,.jpg,.jp2,.pro", false);
-			Add_Setting_UI("Web In Process Submission Location", "System Configuration", -1, empty_options, "Location where packages are built by users during online submissions and metadata updates.\n\nThis generally needs to be on the web server and have appropriate access for read/write.\n\nIf nothing is indicated in this field, the system will automatically use the 'mySobek\\InProcess' subfolder under the web application.", false, default_location + "mySobek\\InProcess\\");
-			Add_Setting_UI("Web Output Caching Minutes", "System Configuration", 200, new[] { "0", "1", "2", "3", "5", "10", "15" }, "This setting controls how long the client's browser is instructed to cache the served web page.\n\nSetting this value higher removes the round-trip when requesting a recently requested page.  It also means that some changes may not be reflected until the refresh button is pressed.\n\nIn general, this setting is only applied to public-style pages, and not personalized pages, such as the bookshelf views.", false, "0");
-
-
+            // Build the setting values
+            build_setting_objects_for_display();
+  
             // Is this a post-back requesting to save all this data?
             if (RequestSpecificValues.Current_Mode.isPostBack) 
             {
@@ -242,6 +157,9 @@ namespace SobekCM.Library.AdminViewer
 
                         // Assign this to be used by the system
                         UI_ApplicationCache_Gateway.ResetSettings();
+
+                        // Get all the settings again 
+                        build_setting_objects_for_display();
                     }
                     else
                     {
@@ -250,6 +168,105 @@ namespace SobekCM.Library.AdminViewer
                     }
                 }
             }
+        }
+
+        private void build_setting_objects_for_display()
+        {
+            // Get the current settings from the database
+            settings = SobekCM_Database.Get_Settings(RequestSpecificValues.Tracer);
+
+            // Get the default URL and default system location
+            string default_url = RequestSpecificValues.Current_Mode.Base_URL;
+            string default_location = HttpContext.Current.Request.PhysicalApplicationPath;
+
+            // Clear the lists
+            // First, save this in the setting dictionary
+            idToSetting.Clear();
+            settingToId.Clear();
+            settingCounter = 0;
+            categorizedSettings.Clear();
+            standardSettingKeys.Clear();
+
+            // NOTE: This code is exactly the same as found in the SobekCM_Configuration tool.  That is why
+            // this feels a little strange, to be loading information about all the settings, and then handling
+            // the display portion late.  This allows the settings to be added or subtracted from rather easily 
+            // in code and also keeps the exact same code chunk to keep the configuration tool and the web 
+            // app both kept current simultaneously.
+            string[] empty_options = new string[] { };
+            string[] boolean_options = new[] { "true", "false" };
+            string[] language_options = Web_Language_Enum_Converter.Language_Name_Array;
+
+            Add_Setting_UI("Application Server Network", "Server Configuration", -1, empty_options, "Server share for the web application's network location.\n\nExample: '\\\\lib-sandbox\\Production\\'", false, default_location);
+            Add_Setting_UI("Application Server URL", "Server Configuration", -1, empty_options, "Base URL which points to the web application.\n\nExamples: 'http://localhost/sobekcm/', 'http://ufdc.ufl.edu/', etc..", false, default_url);
+            Add_Setting_UI("Archive DropBox", "Archiving", -1, empty_options, "Network location for the archive drop box.  If this is set to a value, the builder/bulk loader will place a copy of the package in this folder for archiving purposes.  This folder is where any of your archiving processes should look for new packages.", false);
+            Add_Setting_UI("Builder Log Expiration in Days", "Builder", 200, new[] { "10", "30", "365", "99999" }, "Number of days the SobekCM Builder logs are retained.", false, "10");
+            Add_Setting_UI("Builder Operation Flag", "Builder", 200, new[] { "STANDARD OPERATION", "PAUSE REQUESTED", "ABORT REQUESTED", "NO BUILDER REQUESTED" }, "Last flag set when the builder/bulk loader ran.", false);
+            Add_Setting_UI("Builder Seconds Between Polls", "Builder", 200, new[] { "15", "60", "300", "600" }, "Number of seconds the builder remains idle before checking for new incoming package again.", false, "60");
+            Add_Setting_UI("Caching Server", "Server Configuration", -1, empty_options, "URL for the AppFabric Cache host machine, if a caching server/cluster is in use in this system.", false);
+            Add_Setting_UI("Can Remove Single Search Term", "General Appearance", 70, boolean_options, "When this is set to TRUE, users can remove a single search term from their current search.  Setting this to FALSE, makes the display slightly cleaner.", false);
+            Add_Setting_UI("Can Submit Edit Online", "Resource Files", 70, boolean_options, "Flag dictates if users can submit items online, or if this is disabled in this system.", false);
+            Add_Setting_UI("Convert Office Files to PDF", "Resource Files", 70, boolean_options, "Flag dictates if users can submit items online, or if this is disabled in this system.", false, "false");
+            Add_Setting_UI("Create MARC Feed By Default", "Interoperability", 70, boolean_options, "Flag indicates if the builder/bulk loader should create the MARC feed by default when operating in background mode.", false);
+            Add_Config_Setting("Database Type", "Server Configuration", UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Database_Type_String, "Type of database used to drive the SobekCM system.\n\nCurrently, only Microsoft SQL Server is allowed with plans to add PostgreSQL to the supported database system.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.");
+            Add_Config_Setting("Database Connection String", "Server Configuration", UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String, "Connection string used to connect to the SobekCM database\n\nThis value resides in the configuration file on the web server.  See your database and web server administrator to change this value.");
+            Add_Setting_UI("Detailed User Permissions", "System Configuration", -1, boolean_options, "Flag indicates if more refined RequestSpecificValues.Current_User permissions can be assigned, such as if a RequestSpecificValues.Current_User can edit behaviors of an item in a collection vs. a more general flag that says a RequestSpecificValues.Current_User can make all changes to an item in a collection.", false);
+            Add_Setting_UI("Document Solr Index URL", "Server Configuration", -1, empty_options, "URL for the document-level solr index.\n\nExample: 'http://localhost:8080/documents'", false);
+            Add_Config_Setting("Error Emails", "Emails", UI_ApplicationCache_Gateway.Settings.System_Error_Email, "Email address for the web application to mail for any errors encountered while executing requests.\n\nThis account will be notified of inabilities to connect to servers, potential attacks, missing files, etc..\n\nIf the system is able to connect to the database, the 'System Error Email' address listed there, if there is one, will be used instead.\n\nUse a semi-colon betwen email addresses if multiple addresses are included.\n\nExample: 'person1@corp.edu;person2@corp2.edu'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.");
+            Add_Config_Setting("Error HTML Page", "System Configuration", UI_ApplicationCache_Gateway.Settings.System_Error_URL, "Static page the user should be redirected towards if an unexpected exception occurs which cannot be handled by the web application.\n\nExample: 'http://ufdc.ufl.edu/error.html'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.");
+
+            Add_Setting_UI("Email Default From Address", "Emails", -1, empty_options, "Email address that emails from this system should utilize", false);
+            Add_Setting_UI("Email Default From Name", "Emails", -1, empty_options, "Display name to associate with emails sent from this system (otherwise the instance/portal name will be used)", false);
+            Add_Setting_UI("Email Method", "Emails", -1, new string[] { "DATABASE MAIL", "SMTP DIRECT" }, "Indicated whether the database mail system or the SMTP direct email system should be utilizied", false);
+            Add_Setting_UI("Email SMTP Port", "Emails", 70, empty_options, "If direct SMTP email sending is used, the port to utilize.  This must be numeric.", false, "25");
+            Add_Setting_UI("Email SMTP Server", "Emails", -1, empty_options, "If direct SMTP email sending is used, the server name to send emails to.", false);
+
+            Add_Setting_UI("Facets Collapsible", "General Appearance", 70, boolean_options, "Flag determines if the facets are collapsible like an accordian, or if they all start fully expanded.", false);
+            Add_Setting_UI("FDA Report DropBox", "Florida SUS", -1, empty_options, "Location for the builder/bulk loader to look for incoming Florida Dark Archive XML reports to process and add to the history of digital resources.", true);
+            Add_Setting_UI("Files To Exclude From Downloads", "Resource Files", -1, empty_options, "Regular expressions used to exclude files from being added by default to the downloads of resources.\n\nExample: '((.*?)\\.(jpg|tif|jp2|jpx|bmp|jpeg|gif|png|txt|pro|mets|db|xml|bak|job)$|qc_error.html)'", false);
+            Add_Setting_UI("Help URL", "Help", -1, empty_options, "URL used for the main help pages about this system's basic functionality.\n\nExample (and default): 'http://ufdc.ufl.edu/'", false);
+            Add_Setting_UI("Help Metadata URL", "Help", -1, empty_options, "URL used for the help pages when users request help on metadata elements during online submit and editing.\n\nExample (and default): 'http://ufdc.ufl.edu/'", false);
+            Add_Setting_UI("Image Server Network", "Server Configuration", -1, empty_options, "Network location to the content for all of the digital resources (images, metadata, etc.).\n\nExample: 'C:\\inetpub\\wwwroot\\UFDC Web\\SobekCM\\content\\' or '\\\\ufdc-images\\content\\'", false, default_location + "content\\");
+            Add_Setting_UI("Image Server URL", "Server Configuration", -1, empty_options, "URL which points to the digital resource images.\n\nExample: 'http://localhost/sobekcm/content/' or 'http://ufdcimages.uflib.ufl.edu/'", false, default_url + "content/");
+            Add_Setting_UI("Include Partners On System Home", "System Configuration", 70, boolean_options, "This option controls whether a PARTNERS option appears on the main system home page, assuming there are multiple institutional aggregations.", false, "false");
+            Add_Setting_UI("Include TreeView On System Home", "System Configuration", 70, boolean_options, "This option controls whether a TREE VIEW option appears on the main system home page which displays all the active aggregations hierarchically in a tree view.", false, "false");
+            Add_Setting_UI("JPEG Height", "Resource Files", 60, empty_options, "Restriction on the size of the jpeg page images' height (in pixels) when generated automatically by the builder/bulk loader.\n\nDefault: '1000'", false);
+            Add_Setting_UI("JPEG Width", "Resource Files", 60, empty_options, "Restriction on the size of the jpeg page images' width (in pixels) when generated automatically by the builder/bulk loader.\n\nDefault: '630'", false);
+            Add_Setting_UI("JPEG2000 Server", "Server Configuration", -1, empty_options, "URL for the Aware JPEG2000 Server for displaying and zooming into JPEG2000 images.", false);
+            Add_Setting_UI("JPEG2000 Server Type", "Server Configuration", -1, new[] { "Aware", "Built-In IIPImage", "None" }, "Type of the JPEG2000 server found at the URL above.", false);
+            Add_Setting_UI("Kakadu JPEG2000 Create Command", "Resource Files", -1, empty_options, "Kakadu JPEG2000 script will override the specifications used when creating zoomable images.\n\nIf this is blank, the default specifications will be used which match those used by the National Digital Newspaper Program and University of Florida Digital Collections.", false);
+            Add_Setting_UI("Log Files Directory", "Builder", -1, empty_options, "Network location for the share within which the builder/bulk loader logs should be copied to become web accessible.\n\nExample: '\\\\lib-sandbox\\Design\\extra\\logs\\'", false, default_location + "design\\extra\\logs\\");
+            Add_Setting_UI("Log Files URL", "Builder", -1, empty_options, "URL for the builder/bulk loader logs files.\n\nExample: 'http://ufdc.ufl.edu/design/extra/logs/'", false, default_url + "design/exra/logs/");
+            Add_Setting_UI("Main Builder Input Folder", "Builder", -1, empty_options, "This is the network location to the SobekCM Builder's main incoming folder.\n\nThis is used by the SMaRT tool when doing bulk imports from spreadsheet or MARC records.", false);
+            Add_Setting_UI("Mango Union Search Base URL", "Florida SUS", -1, empty_options, "Florida SUS state-wide catalog base URL for determining the number of physical holdings which match a given search.\n\nExample: 'http://solrcits.fcla.edu/citsZ.jsp?type=search&base=uf'", true);
+            Add_Setting_UI("Mango Union Search Text", "Florida SUS", -1, empty_options, "Text to display the number of hits found in the Florida SUS-wide catalog.\n\nUse the value '%1' in the string where the number of hits should be inserted.\n\nExample: '%1 matches found in the statewide catalog'", true);
+            Add_Setting_UI("MARC Cataloging Source Code", "Interoperability", 60, empty_options, "Cataloging source code for the 040 field, ( for example 'FUG' for University of Florida )", false);
+            Add_Setting_UI("MARC Location Code", "Interoperability", 60, empty_options, "Location code for the 852 |a - if none is given the system abbreviation will be used. Otherwise, the system abbreviation will be put in the 852 |b field.", false);
+            Add_Setting_UI("MARC Reproduction Agency", "Interoperability", -1, empty_options, "Agency responsible for reproduction, or primary agency associated with the SobekCM instance ( for the added 533 |c field )\n\nThis 533 is not added for born digital items.", false);
+            Add_Setting_UI("MARC Reproduction Place", "Interoperability", -1, empty_options, "Place of reproduction, or primary location associated with the SobekCM instance ( for the added 533 |b field ).\n\nThis 533 is not added for born digital items.", false);
+            Add_Setting_UI("MARC XSLT File", "Interoperability", -1, empty_options, "XSLT file to use as a final transform, after the standard MarcXML file is written.\n\nThis only affects generated MarcXML ( for the feeds and OAI ) not the dispayed in-system MARC ( as of January 2015 ).  This file should appear in the config/users folder.", false);
+            Add_Setting_UI("MarcXML Feed Location", "Interoperability", -1, empty_options, "Network location or share where any geneated MarcXML feed should be written.\n\nExample: '\\\\lib-sandbox\\Data\\'", false, default_location + "data\\");
+            Add_Setting_UI("OCR Engine Command", "Resource Files", -1, empty_options, "If you wish to utilize an OCR engine in the builder/bulk loader, add the command-line call to the engine here.\n\nUse %1 as a place holder for the ingoing image file name and %2 as a placeholder for the output text file name.\n\nExample: 'C:\\OCR\\Engine.exe -in %1 -out %2'", false);
+            Add_Setting_UI("Page Solr Index URL", "Server Configuration", -1, empty_options, "URL for the resource-level solr index used when searching for matching pages within a single document.\n\nExample: 'http://localhost:8080/pages'", false);
+            Add_Setting_UI("PostArchive Files To Delete", "Archiving", -1, empty_options, "Regular expression indicates which files should be deleted AFTER being archived by the builder/bulk loader.\n\nExample: '(.*?)\\.(tif)'", false);
+            Add_Setting_UI("PreArchive Files To Delete", "Archiving", -1, empty_options, "Regular expression indicates which files should be deleted BEFORE being archived by the builder/bulk loader.\n\nExample: '(.*?)\\.(QC.jpg)'", false);
+            Add_Setting_UI("Privacy Email Address", "Emails", -1, empty_options, "Email address which receives notification if personal information (such as Social Security Numbers) is potentially found while loading or post-processing an item.\n\nIf you are using multiple email addresses, seperate them with a semi-colon.\n\nExample: 'person1@corp.edu;person2@corp.edu'", false);
+            Add_Setting_UI("Show Florida SUS Settings", "Florida SUS", 70, boolean_options, "Some system settings are only applicable to institutions which are part of the Florida State University System.  Setting this value to TRUE will show these settings, while FALSE will suppress them.\n\nIf this value is changed, you willl need to save the settings for it to reload and reflect the change.", false, "false");
+            Add_Setting_UI("SobekCM Web Server IP", "Server Configuration", 200, empty_options, "IP address for the web server running this web repository software.\n\nThis is used for setting restricted or dark material to only be available for the web server, which then acts as a proxy/web server to serve that content to authenticated users.", false);
+            Add_Setting_UI("Static Pages Location", "Server Configuration", -1, empty_options, "Location where the static files are located for providing the full citation and text for indexing, either on the same server as the web application or as a network share.\n\nIt is recommended that these files be on the same server as the web server, rather than remote storage, to increase the speed in which requests from search engine indexers can be fulfilled.\n\nExample: 'C:\\inetpub\\wwwroot\\UFDC Web\\SobekCM\\data\\'.", false, default_location + "data\\");
+            Add_Setting_UI("Statistics Caching Enabled", "System Configuration", 70, boolean_options, "Flag indicates if the basic usage and item count information should be cached for up to 24 hours as static XML files written in the web server's temp directory.\n\nThis should be enabled if your library is quite large as it can take a fair amount of time to retrieve this information and these screens are made available for search engine index robots for indexing.", false);
+            Add_Setting_UI("System Base Abbreviation", "System Configuration", 100, empty_options, "Base abbreviation to be used when the system refers to itself to the RequestSpecificValues.Current_User, such as the main tabs to take a RequestSpecificValues.Current_User to the home pages.\n\nThis abbreviation should be kept as short as possible.\n\nExamples: 'UFDC', 'dLOC', 'Sobek', etc..", false);
+            Add_Setting_UI("System Base Name", "System Configuration", -1, empty_options, "Overall name of the system, to be used when creating MARC records and in several other locations.", false);
+            Add_Setting_UI("System Base URL", "System Configuration", -1, empty_options, "Base URL which points to the web application.\n\nExamples: 'http://localhost/sobekcm/', 'http://ufdc.ufl.edu/', etc..", false, default_url);
+            Add_Setting_UI("System Default Language", "System Configuration", 150, language_options, "Default system RequestSpecificValues.Current_User interface language.  If the RequestSpecificValues.Current_User's HTML request does not include a language supported by the interface or which does not include specific translations for a field, this default language is utilized.", false, "English");
+            Add_Setting_UI("System Email", "Emails", -1, empty_options, "Default email address for the system, which is sent emails when users opt to contact the administrators.\n\nThis can be changed for individual aggregations but at least one email is required for the overall system.\n\nIf you are using multiple email addresses, seperate them with a semi-colon.\n\nExample: 'person1@corp.edu;person2@corp.edu'", false);
+            Add_Setting_UI("System Error Email", "Emails", -1, empty_options, "Email address used when a critical system error occurs which may require investigation or correction.\n\nIf you are using multiple email addresses, seperate them with a semi-colon.\n\nExample: 'person1@corp.edu;person2@corp.edu'", false);
+            Add_Setting_UI("Thumbnail Height", "Resource Files", 60, empty_options, "Restriction on the size of the page image thumbnails' height (in pixels) when generated automatically by the builder/bulk loader.\n\nDefault: '300'", false);
+            Add_Setting_UI("Thumbnail Width", "Resource Files", 60, empty_options, "Restriction on the size of the page image thumbnails' width (in pixels) when generated automatically by the builder/bulk loader.\n\nDefault: '150'", false);
+            Add_Setting_UI("Upload File Types", "Resource Files", -1, empty_options, "List of non-image extensions which are allowed to be uploaded into a digital resource.\n\nList should be the extensions, with the period, separated by commas.\n\nExample: .aif,.aifc,.aiff,.au,.avi,.bz2,.c,.c++,.css,.dbf,.ddl,...", false);
+            Add_Setting_UI("Upload Image Types", "Resource Files", -1, empty_options, "List of page image extensions which are allowed to be uploaded into a digital resource to display as page images.\n\nList should be the extensions, with the period, separated by commas.\n\nExample: .txt,.tif,.jpg,.jp2,.pro", false);
+            Add_Setting_UI("Web In Process Submission Location", "System Configuration", -1, empty_options, "Location where packages are built by users during online submissions and metadata updates.\n\nThis generally needs to be on the web server and have appropriate access for read/write.\n\nIf nothing is indicated in this field, the system will automatically use the 'mySobek\\InProcess' subfolder under the web application.", false, default_location + "mySobek\\InProcess\\");
+            Add_Setting_UI("Web Output Caching Minutes", "System Configuration", 200, new[] { "0", "1", "2", "3", "5", "10", "15" }, "This setting controls how long the client's browser is instructed to cache the served web page.\n\nSetting this value higher removes the round-trip when requesting a recently requested page.  It also means that some changes may not be reflected until the refresh button is pressed.\n\nIn general, this setting is only applied to public-style pages, and not personalized pages, such as the bookshelf views.", false, "0");
+
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
@@ -558,18 +575,20 @@ namespace SobekCM.Library.AdminViewer
 
 		        // Write the data for each interface
 		        odd_row = true;
-				Add_Categorized_Settings("Archiving", "Archiving Settings", Output, true);
-				Add_Categorized_Settings("Authentication", "Authentication Settings", Output, false);
-				Add_Categorized_Settings("Builder", "Builder Settings", Output, false);
-				Add_Categorized_Settings("Emails", "Email Settings", Output, false);
-				if ( show_florida_sus )
-					Add_Categorized_Settings("Florida SUS", "Florida SUS-Specific Settings", Output, false);
-				Add_Categorized_Settings("Help", "Help Settings", Output, false);
-				Add_Categorized_Settings("General Appearance", "General Appearance Settings", Output, false);
-				Add_Categorized_Settings("Interoperability", "Interoperability Settings", Output, false);
-				Add_Categorized_Settings("Resource Files", "Resource File Settings", Output, false);
-		        Add_Categorized_Settings("Server Configuration", "Server Configuration", Output, false);
-		        Add_Categorized_Settings("System Configuration", "System Configuration", Output, false);
+	            bool first_row = !Add_Categorized_Settings("Archiving", "Archiving Settings", Output, true);
+                if (Add_Categorized_Settings("Authentication", "Authentication Settings", Output, first_row)) first_row = false;
+				if (Add_Categorized_Settings("Builder", "Builder Settings", Output, first_row)) first_row = false;
+				if (Add_Categorized_Settings("Emails", "Email Settings", Output, first_row)) first_row = false;
+	            if (show_florida_sus)
+	            {
+	                if (Add_Categorized_Settings("Florida SUS", "Florida SUS-Specific Settings", Output, first_row)) first_row = false;
+	            }
+	            if (Add_Categorized_Settings("Help", "Help Settings", Output, first_row)) first_row = false;
+				if (Add_Categorized_Settings("General Appearance", "General Appearance Settings", Output, first_row)) first_row = false;
+				if (Add_Categorized_Settings("Interoperability", "Interoperability Settings", Output, first_row)) first_row = false;
+				if (Add_Categorized_Settings("Resource Files", "Resource File Settings", Output, first_row)) first_row = false;
+                if (Add_Categorized_Settings("Server Configuration", "Server Configuration", Output, first_row)) first_row = false;
+		        Add_Categorized_Settings("System Configuration", "System Configuration", Output, first_row);
 
 				Output.WriteLine("        </table>");
 
@@ -780,8 +799,11 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        </table>");
 		}
 
-		private void Add_Categorized_Settings(string Category, string Title, TextWriter Output, bool FirstCategory )
+		private bool Add_Categorized_Settings(string Category, string Title, TextWriter Output, bool FirstCategory )
 		{
+            if (!categorizedSettings.ContainsKey(Category))
+                return false;
+
 			Output.WriteLine("          <tr>");
 			if (FirstCategory)
 			{
@@ -888,6 +910,8 @@ namespace SobekCM.Library.AdminViewer
 
 				odd_row = !odd_row;
 			}
+
+            return true;
 		}
 
         private void must_be_positive_number(string Value, string Key)
