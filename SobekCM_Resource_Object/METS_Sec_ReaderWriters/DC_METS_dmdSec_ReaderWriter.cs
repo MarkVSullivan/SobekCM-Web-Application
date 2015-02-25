@@ -354,6 +354,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     switch (R.Name)
                     {
                         case "dc:contributor":
+                        case "dcterms:contributor":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -362,16 +363,16 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "dc:coverage":
+                        case "dcterms:spatial":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                Subject_Info_Standard thisSubject = new Subject_Info_Standard();
-                                thisSubject.Add_Geographic(R.Value.Trim());
-                                BibInfo.Add_Subject(thisSubject);
+                                BibInfo.Add_Spatial_Subject(R.Value.Trim());
                             }
                             break;
 
                         case "dc:creator":
+                        case "dcterms:creator":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -387,6 +388,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "dc:date":
+                        case "dcterms:date":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -395,6 +397,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "dc:description":
+                        case "dcterms:description":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -403,6 +406,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "dc:format":
+                        case "dcterms:format":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -411,6 +415,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "dc:identifier":
+                        case "dcterms:identifier":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -419,6 +424,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "dc:language":
+                        case "dcterms:language":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -427,6 +433,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "dc:publisher":
+                        case "dcterms:publisher":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -435,6 +442,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "dc:relation":
+                        case "dcterms:relation":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -445,6 +453,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "dc:rights":
+                        case "dcterms:rights":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -453,6 +462,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "dc:source":
+                        case "dcterms:source":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -461,6 +471,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "dc:subject":
+                        case "dcterms:subject":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -480,6 +491,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             break;
 
                         case "dc:title":
+                        case "dcterms:title":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
@@ -494,11 +506,39 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             }
                             break;
 
-                        case "dc:type":
+                        case "dcterms:alternative":
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                BibInfo.Type.Add_Uncontrolled_Type(R.Value.Trim());
+                                BibInfo.Add_Other_Title(R.Value.Trim(), Title_Type_Enum.alternative);
+                            }
+                            break;
+
+                        case "dc:type":
+                        case "dcterms:type":
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
+                            {
+                                if (BibInfo.Type.Add_Uncontrolled_Type(R.Value.Trim()) == TypeOfResource_MODS_Enum.UNKNOWN)
+                                    BibInfo.Add_Genre(R.Value.Trim());
+                            }
+                            break;
+
+                        case "dc:extent":
+                        case "dcterms:extent":
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
+                            {
+                                BibInfo.Original_Description.Extent = R.Value.Trim();
+                            }
+                            break;
+
+                        case "dc:provenance":
+                        case "dcterms:provenance":
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
+                            {
+                                BibInfo.Add_Note(R.Value.Trim(), Note_Type_Enum.ownership);
                             }
                             break;
 
@@ -573,6 +613,39 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 								thesisInfo.Degree_Grantor = R.Value.Trim();
 							}
 							break;
+
+                        case "duke:source_collection":
+                            R.Read();
+							if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
+							{
+								Return_Package.Bib_Info.Location.Holding_Name = R.Value.Trim();
+							}
+							break;
+
+                        case "duke:print_number":
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
+                            {
+                                Return_Package.Bib_Info.Add_Identifier(R.Value.Trim(), "Print Number", "Duke Print #");
+                            }
+                            break;
+
+                        case "duke:box_number":
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
+                            {
+                                Return_Package.Bib_Info.Add_Container("Box", R.Value.Trim(), 2);
+                            }
+                            break;
+
+                        case "duke:series":
+                            R.Read();
+                            if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0) && (Return_Package != null))
+                            {
+                                Return_Package.Bib_Info.Add_Container("Series", R.Value.Trim(), 1);
+                            }
+                            break;
+
                     }
                 }
             }

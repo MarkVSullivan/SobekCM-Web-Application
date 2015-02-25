@@ -195,7 +195,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 		/// <summary> Adds an uncontrolled type to this resource </summary>
 		/// <param name="Uncontrolled_Type"> New uncontrolled type </param>
 		/// <remarks> This type is still analyzed to see if it is actually controlled </remarks>
-        public void Add_Uncontrolled_Type(string Uncontrolled_Type)
+        public TypeOfResource_MODS_Enum Add_Uncontrolled_Type(string Uncontrolled_Type)
         {
             switch (Uncontrolled_Type.ToUpper().Replace(" ", "").Replace(",", "").Replace("-", ""))
             {
@@ -250,8 +250,10 @@ namespace SobekCM.Resource_Object.Bib_Info
                     if (uncontrolledTypes == null)
                         uncontrolledTypes = new List<string>();
                     uncontrolledTypes.Add(Uncontrolled_Type);
-                    break;
+                    return TypeOfResource_MODS_Enum.UNKNOWN;
             }
+
+            return modsType;
         }
 
 

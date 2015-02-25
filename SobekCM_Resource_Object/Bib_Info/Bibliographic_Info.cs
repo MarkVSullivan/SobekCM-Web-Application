@@ -885,6 +885,18 @@ namespace SobekCM.Resource_Object.Bib_Info
 		    return New_Affiliation;
         }
 
+        /// <summary> Adds a new spatial subject (non-hierarchical) to this item </summary>
+        /// <param name="SpatialTerm"> Term for the spatial subject </param>
+        /// <returns> Subject_Info_Standard object that was created and added </returns>
+        public Subject_Info_Standard Add_Spatial_Subject(string SpatialTerm)
+        {
+            Subject_Info_Standard returnValue = new Subject_Info_Standard();
+            returnValue.Add_Geographic(SpatialTerm);
+            Add_Subject(returnValue);
+
+            return returnValue;
+        }
+
 	    /// <summary> Adds a new temporal subject to this object </summary>
 	    /// <param name="New_Temporal"> Temporral subject object to add to this item </param>
 	    /// <returns> Temporal_Info object, either the one passed in or one that equals it already in the list </returns>
