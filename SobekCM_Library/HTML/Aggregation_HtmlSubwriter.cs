@@ -1306,7 +1306,7 @@ namespace SobekCM.Library.HTML
 						if ((latest != null ) && (!latest.Hidden) && (latest.Active))
 			            {
 				            string name = childAggr.Name;
-			                string thisDescription = childAggr.Description;
+                            string thisDescription = latest.Description;
 
 				            if (name.ToUpper() == "ADDED AUTOMATICALLY")
 					            name = childAggr.Code + " ( Added Automatically )";

@@ -945,31 +945,72 @@ namespace SobekCM.Engine_Library.Items
 				int non_flash_downloads = 0;
 				List<abstract_TreeNode> downloadPages = Package_To_Finalize.Divisions.Download_Tree.Pages_PreOrder;
 				bool download_handled = false;
+                string xsl = String.Empty;
+
+                // Keep track of all the unhandled downloads, which will casue a DOWNLOAD tab to appear
+			    List<abstract_TreeNode> unhandledDownload = new List<abstract_TreeNode>();
+
+                // Step through each download page
 				foreach (Page_TreeNode downloadPage in downloadPages)
 				{
-					// Was this an EAD page?
-					if ((downloadPage.Label == "EAD")  && ( downloadPage.Files.Count == 1 ))
-					{
-						if (downloadPage.Files[0].System_Name.ToLower().IndexOf(".xml") > 0)
-						{
-							Package_To_Finalize.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.EAD;
-							ead_file = downloadPage.Files[0].System_Name;
-							download_handled = true;
-						}
-					}
+                    download_handled = false;
 
-					// Was this an XSL/EAD page?
-					if ((downloadPage.Label == "XSL") && (downloadPage.Files.Count == 1))
-					{
-						if (downloadPage.Files[0].System_Name.ToLower().IndexOf(".xsl") > 0)
-						{
-							download_handled = true;
-						}
-					}
+                    // If this page has only a single file, might be handled by a single viewer
+                    if ((!download_handled) && (downloadPage.Files.Count == 1))
+                    {
+                        string extension = downloadPage.Files[0].File_Extension;
+
+                        // Was this an EAD page?
+                        switch (extension)
+                        {
+                            case "XML":
+                                if (downloadPage.Label == "EAD")
+                                {
+                                    Package_To_Finalize.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.EAD;
+                                    ead_file = downloadPage.Files[0].System_Name;
+                                    download_handled = true;
+                                }
+                                break;
+
+                            case "SWF":
+                                // FLASH files are always handled
+                                string flashlabel = downloadPage.Label;
+                                Package_To_Finalize.Behaviors.Add_View(View_Enum.FLASH, flashlabel, String.Empty, downloadPage.Files[0].System_Name);
+                                download_handled = true;
+                                break;
+
+                            case "PDF":
+                                pdf_download++;
+                                if (pdf_download == 0)
+                                {
+                                    pdf_download_url = downloadPage.Files[0].System_Name;
+                                    download_handled = true;
+                                }
+                                break;
+
+                            case "XSL":
+                                xsl = downloadPage.Files[0].System_Name;
+                                download_handled = true;
+                                break;
+
+                            case "HTML":
+                            case "HTM":
+                                if (viewsFromDb.ContainsKey(View_Enum.HTML))
+                                {
+                                    if (String.Compare(viewsFromDb[View_Enum.HTML].Attributes, downloadPage.Files[0].System_Name, StringComparison.InvariantCultureIgnoreCase) == 0)
+                                    {
+                                        download_handled = true;
+                                    }
+                                }
+                                break;
+                        }
+                    }
 
 					// Step through each download file
 					if (!download_handled)
 					{
+					    unhandledDownload.Add(downloadPage);
+
 						foreach (SobekCM_File_Info thisFile in downloadPage.Files)
 						{
 							if (thisFile.File_Extension == "SWF")
@@ -984,8 +1025,11 @@ namespace SobekCM.Engine_Library.Items
 
 							if (thisFile.File_Extension == "PDF")
 							{
-								pdf_download++;
-								pdf_download_url = thisFile.System_Name;
+                                pdf_download++;
+                                if (pdf_download == 0)
+                                {
+                                    pdf_download_url = thisFile.System_Name;
+                                }
 							}
 						}
 					}
@@ -1017,15 +1061,14 @@ namespace SobekCM.Engine_Library.Items
 				string ufdc_type_of = Package_To_Finalize.Behaviors.Views[0].View_Type.ToString();
 
 
-				if (((non_flash_downloads > 0) && (pdf_download != 1)) || ((non_flash_downloads > 1) && (pdf_download == 1)))
+                if (unhandledDownload.Count > 0 )
 				{
-
 					Package_To_Finalize.Behaviors.Add_View(View_Enum.DOWNLOADS);
 				}
 
 				if (pdf_download == 1)
 				{
-					Package_To_Finalize.Behaviors.Add_View(View_Enum.PDF).FileName = pdf_download_url;
+                    Package_To_Finalize.Behaviors.Add_View(View_Enum.PDF).FileName = pdf_download_url;
 				}
 			}
 			else
@@ -1054,7 +1097,7 @@ namespace SobekCM.Engine_Library.Items
 			if (viewsFromDb.ContainsKey(View_Enum.TEI))
 			{
 				Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.TEI]);
-				viewsFromDb.Remove(View_Enum.HTML);
+				viewsFromDb.Remove(View_Enum.TEI);
 			}
 
 			// Look to add any index information here ( such as on SANBORN maps)

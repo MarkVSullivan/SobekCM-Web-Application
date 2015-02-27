@@ -496,7 +496,16 @@ namespace SobekCM.Builder
                 // Do all the item processing per instance config
                 foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
                 {
-                    thisModule.DoWork(AdditionalWorkResource);
+                    //if (superverbose)
+                    //{
+                    //    Add_NonError_To_Log("Running module " + thisModule.GetType().ToString(), true, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, String.Empty, AdditionalWorkResource.BuilderLogId);
+                    //}
+                    if (!thisModule.DoWork(AdditionalWorkResource))
+                    {
+                        Add_Error_To_Log("Unable to complete additional work for " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, String.Empty, AdditionalWorkResource.BuilderLogId);
+
+                        return;
+                    }
                 }
 
                 // Save these collections to mark them for refreshing the RSS feeds, etc..
@@ -579,7 +588,7 @@ namespace SobekCM.Builder
                 // Do all the item processing per instance config
                 foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
                 {
-                    //if (super verbose)
+                    //if ( superverbose)
                     //{
                     //    Add_NonError_To_Log("Running module " + thisModule.GetType().ToString(), true, ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, ResourcePackage.BuilderLogId);
                     //}

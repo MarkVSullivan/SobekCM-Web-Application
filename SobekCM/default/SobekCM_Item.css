@@ -162,6 +162,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 .sbCiv_DownloadSection p { padding-left: 40px;padding-right: 30px; }
 #Sbk_CivThumbnailDiv { float: right;padding-right: 15px;padding-left: 10px; }
 #Sbk_CivThumbnailImg { width: 150px;border: #333333 solid 1px; }
+#sbkCiv_EmptyRobotDiv { width: 0;height: 0;border: none;display: none; }
 
 /** DOWNLOAD_ITEMVIEWER (For any downloads related to the resource) */
 #sbkDiv_MainArea { width: 100%; COLOR: #222222; BACKGROUND-COLOR: #ffffff;}
