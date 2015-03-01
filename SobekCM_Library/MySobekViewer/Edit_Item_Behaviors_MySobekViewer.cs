@@ -171,9 +171,9 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<!-- Edit_Item_Behaviors_MySobekViewer.Write_ItemNavForm_Closing -->");
 			Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <h2>Edit this RequestSpecificValues.Current_Item's behaviors within this library</h2>");
+            Output.WriteLine("  <h2>Edit this item's behaviors within this library</h2>");
             Output.WriteLine("  <ul>");
-            Output.WriteLine("    <li>Enter the data for this RequestSpecificValues.Current_Item below and press the SAVE button when all your edits are complete.</li>");
+            Output.WriteLine("    <li>Enter the data for this item below and press the SAVE button when all your edits are complete.</li>");
             Output.WriteLine("    <li>Clicking on the green plus button ( <img class=\"repeat_button\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
             Output.WriteLine("    <li>Click <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/behaviors\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing behaviors online.</li>");
             Output.WriteLine("  </ul>");

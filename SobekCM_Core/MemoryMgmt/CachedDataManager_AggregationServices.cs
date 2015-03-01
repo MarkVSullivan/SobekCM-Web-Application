@@ -256,6 +256,19 @@ namespace SobekCM.Core.MemoryMgmt
         #endregion
 
 
+        /// <summary> Clears all aggregation values from the cache </summary>
+        public void Clear()
+        {
+            // Get collection of keys in the Cache
+			List<string> keys = (from DictionaryEntry thisItem in HttpContext.Current.Cache select thisItem.Key.ToString()).ToList();
+
+			// Delete all items from the Cache
+            foreach (string key in keys.Where(Key => Key.StartsWith("AGGR|"))) {
+                HttpContext.Current.Cache.Remove(key);
+            }
+        }
+
+
         /// <summary> Removes all references to a particular item aggregation from the cache or caching server </summary>
         /// <param name="Aggregation_Code"> Code for the item aggregation to remove </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>

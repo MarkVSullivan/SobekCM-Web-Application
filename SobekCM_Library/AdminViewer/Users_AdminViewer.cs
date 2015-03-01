@@ -246,7 +246,12 @@ namespace SobekCM.Library.AdminViewer
 							editUser.Is_Portal_Admin = false;
 							editUser.Include_Tracking_In_Standard_Forms = false;
 
-							// Step through each key
+					        if ((UI_ApplicationCache_Gateway.Settings.isHosted) && (RequestSpecificValues.Current_User.Is_Host_Admin))
+					        {
+                                editUser.Is_Host_Admin = false;
+					        }
+
+					        // Step through each key
 							foreach (string thisKey in getKeys)
 							{
 								switch (thisKey)
@@ -267,9 +272,13 @@ namespace SobekCM.Library.AdminViewer
 										editUser.Can_Delete_All = true;
 										break;
 
-									case "admin_user_sysadmin":
-										editUser.Is_System_Admin = true;
+									case "admin_user_host":
+										editUser.Is_Host_Admin = true;
 										break;
+
+                                    case "admin_user_sysadmin":
+                                        editUser.Is_System_Admin = true;
+                                        break;
 
 									case "admin_user_portaladmin":
 										editUser.Is_Portal_Admin = true;
@@ -809,6 +818,9 @@ namespace SobekCM.Library.AdminViewer
             if (editUser.Is_System_Admin)
                 text_builder.Append("Is system administrator<br />");
 
+            if (( UI_ApplicationCache_Gateway.Settings.isHosted ) && ( editUser.Is_Host_Admin ))
+                text_builder.Append("Is host administrator<br />");
+
             if (editUser.Include_Tracking_In_Standard_Forms)
                 text_builder.Append("Tracking data should be included in standard input forms<br />");
 
@@ -1189,6 +1201,14 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine(editUser.Is_System_Admin
                                          ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_sysadmin\" id=\"admin_user_sysadmin\" checked=\"checked\" /> <label for=\"admin_user_sysadmin\">Is system administrator</label> <br />"
                                          : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_sysadmin\" id=\"admin_user_sysadmin\" /> <label for=\"admin_user_sysadmin\">Is system administrator</label> <br />");
+
+                    if ((UI_ApplicationCache_Gateway.Settings.isHosted) && ( RequestSpecificValues.Current_User.Is_Host_Admin ))
+                    {
+                        Output.WriteLine(editUser.Is_Host_Admin
+                                ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_host\" id=\"admin_user_host\" checked=\"checked\" /> <label for=\"admin_user_host\">Is HOST administrator</label> <br />"
+                                : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_host\" id=\"admin_user_host\" /> <label for=\"admin_user_host\">Is HOST administrator</label> <br />");
+
+                    }
 
                     Output.WriteLine(editUser.Include_Tracking_In_Standard_Forms
                                          ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_includetracking\" id=\"admin_user_includetracking\" checked=\"checked\" /> <label for=\"admin_user_includetracking\">Tracking data should be included in standard input forms</label> <br />"

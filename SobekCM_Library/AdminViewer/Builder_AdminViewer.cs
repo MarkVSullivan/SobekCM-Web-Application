@@ -48,15 +48,19 @@ namespace SobekCM.Library.AdminViewer
             }
 
            // If this is a postback, handle any events first
-            if ((RequestSpecificValues.Current_Mode.isPostBack) && (RequestSpecificValues.Current_User.Is_System_Admin))
+            if (RequestSpecificValues.Current_Mode.isPostBack)
             {
-                // Pull the hidden value
-                string save_value = HttpContext.Current.Request.Form["admin_builder_tosave"].ToUpper().Trim();
-                if (save_value.Length > 0)
+                if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.isHosted)) ||
+                    (RequestSpecificValues.Current_User.Is_Host_Admin))
                 {
-                    // Set this value
-                    SobekCM_Database.Set_Setting("Builder Operation Flag", save_value);
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    // Pull the hidden value
+                    string save_value = HttpContext.Current.Request.Form["admin_builder_tosave"].ToUpper().Trim();
+                    if (save_value.Length > 0)
+                    {
+                        // Set this value
+                        SobekCM_Database.Set_Setting("Builder Operation Flag", save_value);
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    }
                 }
             }
         }
@@ -118,7 +122,8 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <table class=\"sbkBav_table\">");
                 Output.WriteLine("    <tr><td>Current Status: </td><td><strong>" + operationFlag + "</strong></td><td>&nbsp;</td></tr>");
 
-                if (RequestSpecificValues.Current_User.Is_System_Admin)
+                if (((RequestSpecificValues.Current_User.Is_System_Admin) && ( !UI_ApplicationCache_Gateway.Settings.isHosted )) ||
+                    (RequestSpecificValues.Current_User.Is_Host_Admin))
 	            {
 		            Output.WriteLine("    <tr>");
 		            Output.WriteLine("      <td>Next Status: </td>");
@@ -154,31 +159,40 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <h2>Recent Incoming Logs</h2>");
 
 				string logDirectory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "extra\\logs";
-				string[] logFiles = Directory.GetFiles(logDirectory, "incoming*.html");
+                if (Directory.Exists(logDirectory))
+                {
 
-	            if (logFiles.Length > 0)
-	            {
-		            Output.WriteLine("  <p>Select a date below to view the recent incoming resources log file:</p>");
-		            Output.WriteLine("  <ul class=\"sbkBav_List\">");
+                    string[] logFiles = Directory.GetFiles(logDirectory, "incoming*.html");
 
-		            for (int i = logFiles.Length - 1; i >= 0; i--)
-		            {
-			            string logFile = logFiles[i];
-			            string logName = (new FileInfo(logFile)).Name;
-			            string date_string = logName.ToLower().Replace("incoming_", "").Replace(".html", "");
-			            if (date_string.Length == 10)
-			            {
-				            DateTime date = new DateTime(Convert.ToInt32(date_string.Substring(0, 4)), Convert.ToInt32(date_string.Substring(5, 2)), Convert.ToInt32(date_string.Substring(8)));
-				            Output.WriteLine("    <li><a href=\"" + logURL + logName + "\">" + date.ToLongDateString() + "</a></li>");
-			            }
-		            }
-		            Output.WriteLine("  </ul>");
-	            }
-	            else
-	            {
-					Output.WriteLine("  <p>No builder logs found.</p>");
-					Output.WriteLine("  <br />");
-	            }
+                    if (logFiles.Length > 0)
+                    {
+                        Output.WriteLine("  <p>Select a date below to view the recent incoming resources log file:</p>");
+                        Output.WriteLine("  <ul class=\"sbkBav_List\">");
+
+                        for (int i = logFiles.Length - 1; i >= 0; i--)
+                        {
+                            string logFile = logFiles[i];
+                            string logName = (new FileInfo(logFile)).Name;
+                            string date_string = logName.ToLower().Replace("incoming_", "").Replace(".html", "");
+                            if (date_string.Length == 10)
+                            {
+                                DateTime date = new DateTime(Convert.ToInt32(date_string.Substring(0, 4)), Convert.ToInt32(date_string.Substring(5, 2)), Convert.ToInt32(date_string.Substring(8)));
+                                Output.WriteLine("    <li><a href=\"" + logURL + logName + "\">" + date.ToLongDateString() + "</a></li>");
+                            }
+                        }
+                        Output.WriteLine("  </ul>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("  <p>No builder logs found.</p>");
+                        Output.WriteLine("  <br />");
+                    }
+                }
+                else
+                {
+                    Output.WriteLine("  <p>No builder logs found.</p>");
+                    Output.WriteLine("  <br />");
+                }
             }
 
 			Output.WriteLine();

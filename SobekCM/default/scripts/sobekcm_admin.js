@@ -433,15 +433,9 @@ function portal_form_popup( portal_id, portal_name, portal_abbr, web_skin, aggre
     if (url_segment.length == 0)
     	document.getElementById("form_portal_url").readOnly = true;
     else
-    	document.getElementById("form_portal_url").readOnly = false;
+        document.getElementById("form_portal_url").readOnly = false;
 
-    // Toggle the url portal form
-    blanket_size('form_portal', 215);
-    toggle('blanket_outer');
-    toggle('form_portal');
-
-    // Create the draggable object to allow this window to be dragged around
-    $("#form_portal").draggable();
+    popup('form_portal');
 
     // Put focus on the portal name field
     var focusfield = document.getElementById('form_portal_name');

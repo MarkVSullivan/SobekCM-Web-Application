@@ -133,6 +133,8 @@ namespace SobekCM.Library.AdminViewer
 			else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("g_") == 0)
 				page = 10;
 
+
+
 			// If this is a postback, handle any events first
 			if (RequestSpecificValues.Current_Mode.isPostBack)
 			{

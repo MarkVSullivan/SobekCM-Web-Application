@@ -2184,6 +2184,7 @@ namespace SobekCM.Library.Database
 			user.Can_Delete_All = Convert.ToBoolean(userRow["Can_Delete_All_Items"]);
 			user.Is_System_Admin = Convert.ToBoolean(userRow["IsSystemAdmin"]);
 			user.Is_Portal_Admin = Convert.ToBoolean(userRow["IsPortalAdmin"]);
+            user.Is_Host_Admin = Convert.ToBoolean(userRow["IsHostAdmin"]);
 			user.Include_Tracking_In_Standard_Forms = Convert.ToBoolean(userRow["Include_Tracking_Standard_Forms"]);
 			user.Receive_Stats_Emails = Convert.ToBoolean(userRow["Receive_Stats_Emails"]);
 			user.Has_Item_Stats = Convert.ToBoolean(userRow["Has_Item_Stats"]);

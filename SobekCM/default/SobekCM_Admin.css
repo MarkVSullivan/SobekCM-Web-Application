@@ -28,8 +28,9 @@
 .sbkAdm_ActionLink a:hover { color:Blue; text-decoration:underline; }
 
 
-#sbkAdm_ActionMessage { width: 100%;text-align: center;margin-left: auto;margin-right: auto;font-weight: bold;}
-
+#sbkAdm_ActionMessage { width: 600px;text-align: left;margin-left: auto;margin-right: auto;font-weight: bold; background-color: #FFFFCC;border: 1px solid #333333; padding: 10px; }
+#sbkAdm_ActionMessageError { width: 600px;text-align: left;margin-left: auto;margin-right: auto;font-weight: bold;color: red; background-color: #FFFFCC;border: 1px solid #333333;padding: 10px;}
+#sbkAdm_ActionMessageSuccess { width: 600px;text-align: left;margin-left: auto;margin-right: auto;font-weight: bold;color: blue; background-color: #FFFFCC;border: 1px solid #333333;padding: 10px;}
 
 
 .sbkAdm_RoundButton { background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 4px 10px 4px 10px; cursor: pointer; letter-spacing: 0.5px; }

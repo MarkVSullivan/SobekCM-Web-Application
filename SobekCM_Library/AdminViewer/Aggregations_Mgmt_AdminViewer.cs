@@ -44,6 +44,7 @@ namespace SobekCM.Library.AdminViewer
     public class Aggregations_Mgmt_AdminViewer : abstract_AdminViewer
     {
         private readonly string actionMessage;
+
         private readonly string enteredCode;
         private readonly string enteredDescription;
         private readonly bool enteredIsActive;
@@ -69,8 +70,8 @@ namespace SobekCM.Library.AdminViewer
             enteredShortname = String.Empty;
             enteredName = String.Empty;
             enteredDescription = String.Empty;
-            enteredIsActive = false;
-            enteredIsHidden = false;
+            enteredIsActive = true;
+            enteredIsHidden = true;
 
             // If the user cannot edit this, go back
             if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
@@ -111,10 +112,10 @@ namespace SobekCM.Library.AdminViewer
 						if (errorCode <= 0)
 						{
 							string delete_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + delete_aggregation_code;
-							if (SobekCM_File_Utilities.Delete_Folders_Recursively(delete_folder))
-								actionMessage = "Deleted '" + delete_aggregation_code + "' aggregation<br /><br />Unable to remove aggregation directory<br /><br />Some of the files may be in use";
+							if (!SobekCM_File_Utilities.Delete_Folders_Recursively(delete_folder))
+                                actionMessage = "Deleted '" + delete_aggregation_code.ToUpper() + "' aggregation<br /><br />Unable to remove aggregation directory<br /><br />Some of the files may be in use";
 							else
-								actionMessage = "Deleted '" + delete_aggregation_code + "' aggregation";
+								actionMessage = "Deleted '" + delete_aggregation_code.ToUpper() + "' aggregation";
 						}
 						else
 						{
@@ -316,9 +317,16 @@ namespace SobekCM.Library.AdminViewer
 		                                    Directory.CreateDirectory(folder + "/images/buttons");
 		                                    Directory.CreateDirectory(folder + "/images/banners");
 
+                                            // Get the parent name
+                                            string link_to_parent = String.Empty;
+	                                        Item_Aggregation_Related_Aggregations parentAggr = UI_ApplicationCache_Gateway.Aggregations.Aggregation_By_ID(parentid);
+	                                        if (parentAggr != null)
+	                                            link_to_parent = "<br />" + Environment.NewLine + " ← Back to <a href=<%BASEURL%>" + parentAggr.Code + "\" alt=\"Return to parent collection\">" + parentAggr.Name + "</a>" + Environment.NewLine;
+
 		                                    // Create a default home text file
 		                                    StreamWriter writer = new StreamWriter(folder + "/html/home/text.html");
-		                                    writer.WriteLine("<br />New collection home page text goes here.<br /><br />To edit this, log on as the aggregation admin and hover over this text to edit it.<br /><br />");
+                                            writer.WriteLine(link_to_parent + "<br />" + Environment.NewLine + "<h3>About " + new_name + "</h3>" + Environment.NewLine + "<p>" + new_description + "</p>" + Environment.NewLine + "<p>To edit this, log on as the aggregation admin and hover over this text to edit it.</p>" + Environment.NewLine + "<br />");
+                                             
 		                                    writer.Flush();
 		                                    writer.Close();
 
@@ -385,13 +393,24 @@ namespace SobekCM.Library.AdminViewer
                                     {
                                         Engine_Database.Populate_Code_Manager(UI_ApplicationCache_Gateway.Aggregations, RequestSpecificValues.Tracer);
                                     }
-									if ( !String.IsNullOrEmpty(actionMessage))
-	                                    actionMessage = "New item aggregation <i>" + new_aggregation_code + "</i> saved successfully";
+
+
+                                    if (String.IsNullOrEmpty(actionMessage))
+                                    {
+                                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                                        RequestSpecificValues.Current_Mode.Aggregation = new_aggregation_code;
+                                        actionMessage = "New item aggregation (" + new_aggregation_code.ToUpper() + ") saved successfully.<br /><br /><a href=\"" + UrlWriterHelper.Redirect_URL( RequestSpecificValues.Current_Mode, true ) + "\" target=\"" + new_aggregation_code + "_AGGR\">Click here to view the new aggregation</a>";
+                                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                                    }
                                 }
                                 else
                                 {
                                     actionMessage = "ERROR saving the new item aggregation to the database";
                                 }
+
+                                // Clear all aggregation information (and thematic heading info) from the cache as well
+                                CachedDataManager.Aggregations.Clear();
                             }
                         }
                     }
@@ -443,8 +462,17 @@ namespace SobekCM.Library.AdminViewer
 
 			if (actionMessage.Length > 0)
 			{
-				Output.WriteLine("  <br />");
-				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
+			    if (actionMessage.IndexOf("Error", StringComparison.InvariantCultureIgnoreCase) >= 0)
+			    {
+                    Output.WriteLine("  <br />");
+                    Output.WriteLine("  <div id=\"sbkAdm_ActionMessageError\">" + actionMessage + "</div>");
+			    }
+			    else
+			    {
+                    Output.WriteLine("  <br />");
+                    Output.WriteLine("  <div id=\"sbkAdm_ActionMessageSuccess\">" + actionMessage + "</div>");
+			    }
+
 			}
 
             Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/aggregations\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
@@ -582,6 +610,9 @@ namespace SobekCM.Library.AdminViewer
                 }
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                 Output.WriteLine("  </ul>");
+
+
+
             }
             else
             {
@@ -628,13 +659,16 @@ namespace SobekCM.Library.AdminViewer
                         // Build the action links
                         Output.WriteLine("    <tr>");
                         Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
+                        
                         Output.Write("<a title=\"Click to edit this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/admin/editaggr/" + thisAggr.Code + "\">edit</a> | ");
+
                         if (thisAggr.Active)
                             Output.Write("<a title=\"Click to view this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/" + thisAggr.Code + "\">view</a> | ");
                         else
                             Output.Write("view | ");
 
-						Output.Write("<a title=\"Click to delete this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr('" + thisAggr.Code + "');\">delete</a> | ");
+                        if ( String.Compare(thisAggr.Code, "ALL", StringComparison.InvariantCultureIgnoreCase) != 0 )
+						    Output.Write("<a title=\"Click to delete this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr('" + thisAggr.Code + "');\">delete</a> | ");
 
                         Output.WriteLine("<a title=\"Click to reset the instance in the application cache\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return reset_aggr('" + thisAggr.Code + "');\">reset</a> )</td>");
 

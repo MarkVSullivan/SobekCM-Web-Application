@@ -448,6 +448,9 @@ namespace SobekCM.Core.Users
         /// <summary> Flag indicates if this user has general admin rights over the appearance of portions of the system </summary>
         public bool Is_Portal_Admin { get; set; }
 
+        /// <summary> Flag indicates if this user is the host administrator, if this is a hosted instance </summary>
+        public bool Is_Host_Admin { get; set; }
+
         /// <summary> Flag indicates if users should see the tracking information when adding a new volume 
         /// or performing standard operations within the system </summary>
         public bool Include_Tracking_In_Standard_Forms { get; set; }

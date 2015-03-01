@@ -43,6 +43,9 @@ namespace SobekCM.Library.AdminViewer
         private string entered_notes;
         private string entered_message;
 
+        private bool readOnlyMode;
+
+
 		/// <summary> Constructor for a new instance of the IP_Restrictions_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new item aggregation alias is handled here in the constructor </remarks>
@@ -84,8 +87,18 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
 
+            readOnlyMode = true;
+            if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.isHosted)) ||
+                (RequestSpecificValues.Current_User.Is_Host_Admin))
+            {
+                readOnlyMode = false;
+            }
+
             if ((RequestSpecificValues.Current_Mode.isPostBack) && ( RequestSpecificValues.Current_User.Is_System_Admin ))
             {
+                if (readOnlyMode)
+                    return;
+
 				// Get a reference to this form
 				NameValueCollection form = HttpContext.Current.Request.Form;
 
@@ -298,7 +311,7 @@ namespace SobekCM.Library.AdminViewer
 	            Output.WriteLine("    <tr>");
 	            Output.WriteLine("      <td> &nbsp; &nbsp; &nbsp; For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</td>");
 	            Output.WriteLine("      <td style=\"text-align:right\">");
-	            if (RequestSpecificValues.Current_User.Is_System_Admin)
+                if (!readOnlyMode)
 	            {
 					Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"parent.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
 					Output.WriteLine("        <button title=\"Save changes to this IP restriction range\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
@@ -315,7 +328,7 @@ namespace SobekCM.Library.AdminViewer
 				// Add portal admin message
 				string readonly_tag = String.Empty;
 				int columns = 4;
-				if (!RequestSpecificValues.Current_User.Is_System_Admin)
+                if (readOnlyMode)
 				{
 					Output.WriteLine("<p>Portal Admins have rights to see these settings. System Admins can change these settings.</p>");
 					readonly_tag = " readonly=\"readonly\"";
@@ -347,7 +360,7 @@ namespace SobekCM.Library.AdminViewer
 
 				Output.WriteLine("  <table class=\"sbkIpav_Table sbkAdm_Table\">");
                 Output.WriteLine("    <tr>");
-				if ( RequestSpecificValues.Current_User.Is_System_Admin )
+				if (!readOnlyMode)
 					Output.WriteLine("      <th class=\"sbkIpav_TableHeader1\">ACTIONS</th>");
 				Output.WriteLine("      <th class=\"sbkIpav_TableHeader2\">START IP</th>");
 				Output.WriteLine("      <th class=\"sbkIpav_TableHeader3\">END IP</th>");
@@ -362,7 +375,7 @@ namespace SobekCM.Library.AdminViewer
                     // Build the action links
                     Output.WriteLine("    <tr>");
 
-					if ( RequestSpecificValues.Current_User.Is_System_Admin )
+                    if (!readOnlyMode)
 						Output.WriteLine("      <td class=\"sbkAdm_ActionLink\" >( <a title=\"Click to clear this ip address\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return clear_ip_address('" + ip_primary + "');\">clear</a> )</td>");
 
                     // Add the rest of the row with data
@@ -375,7 +388,7 @@ namespace SobekCM.Library.AdminViewer
 
 
                 // Now, always add ten empty IP rows here, for system administrators
-	            if (RequestSpecificValues.Current_User.Is_System_Admin)
+                if (!readOnlyMode)
 	            {
 		            for (int i = 1; i < 10; i++)
 		            {
@@ -404,7 +417,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <p>For more information about IP restriction ranges and this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 	        Output.WriteLine();
 
-	        if (RequestSpecificValues.Current_User.Is_System_Admin)
+	        if ( !readOnlyMode )
 	        {
 		        // Add all the basic information
 		        Output.WriteLine("  <h2>New IP Restrictive Range</h2>");
@@ -438,7 +451,7 @@ namespace SobekCM.Library.AdminViewer
             if (UI_ApplicationCache_Gateway.IP_Restrictions.Count == 0)
             {
                 Output.WriteLine("  <p>No existing IP restrictive ranges exist.</p>");
-                if (RequestSpecificValues.Current_User.Is_System_Admin)
+                if (!readOnlyMode)
                     Output.WriteLine("<p>To add one, enter the information above and press SAVE.</p>");
             }
             else
@@ -453,7 +466,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"3\"></td></tr>");
 
                 string action_verb = "view";
-                if (RequestSpecificValues.Current_User.Is_System_Admin)
+                if (!readOnlyMode)
                 {
                     action_verb = "edit";
                 }
@@ -466,7 +479,7 @@ namespace SobekCM.Library.AdminViewer
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = existingRange.RangeID.ToString();
                     Output.WriteLine("<a title=\"Click to " + action_verb + " this group of IP addresses\" href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + action_verb + "</a>");
 
-                    if (RequestSpecificValues.Current_User.Is_System_Admin)
+                    if (!readOnlyMode)
                         Output.WriteLine("| <a title=\"Click to delete this group of IP addresses\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"return delete_ip_group(" + existingRange.RangeID + ", '" + HttpUtility.HtmlEncode(existingRange.Title) + "');\">delete</a>");
                     else
                         Output.WriteLine("| <a title=\"Only SYSTEM administrators can delete a group of IP addresses\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\"  onclick=\"alert('Only SYSTEM administrators can delete a group of IP addresses'); return false;\">delete</a>");
