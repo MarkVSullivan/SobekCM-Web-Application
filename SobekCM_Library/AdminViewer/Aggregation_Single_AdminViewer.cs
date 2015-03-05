@@ -212,6 +212,19 @@ namespace SobekCM.Library.AdminViewer
 					// Should this be saved to the database?
 					if (action == "save")
 					{
+                        // Backup the old aggregation info
+					    string backup_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory + "\\backup\\configs";
+					    if (!Directory.Exists(backup_folder))
+					        Directory.CreateDirectory(backup_folder);
+					    string current_config = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory + "\\" + itemAggregation.Code + ".xml";
+					    if (File.Exists(current_config))
+					    {
+					        DateTime lastModifiedDate = (new FileInfo(current_config)).LastWriteTime;
+					        string backup_name = itemAggregation.Code + lastModifiedDate.Year + lastModifiedDate.Month.ToString().PadLeft(2, '0') + lastModifiedDate.Day.ToString().PadLeft(2, '0') + ".xml";
+                            if ( !File.Exists(backup_name))
+    					        File.Copy(current_config, backup_folder + "\\" + backup_name, false );
+					    }
+
 						// Save the new configuration file
 						bool successful_save = (itemAggregation.Write_Configuration_File(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory));
 
@@ -2105,9 +2118,14 @@ namespace SobekCM.Library.AdminViewer
 				Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_banner_lang\" name=\"admin_aggr_new_banner_lang\">");
 
 				// Add each language in the combo box
+			    string language_name_default = Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language);
 				foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
 				{
-					Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+                    if ( possible_language == language_name_default )
+					    Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+                    else
+                        Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+
 				}
 				Output.WriteLine();
 				Output.WriteLine("          </td>");
@@ -3510,7 +3528,7 @@ namespace SobekCM.Library.AdminViewer
 			uploadControl.SubmitWhenQueueCompletes = true;
 			uploadControl.RemoveCompleted = true;
 			uploadControl.Multi = false;
-			uploadControl.ServerSideFileName = "coll.gif";
+            uploadControl.ServerSideFileName = ServerSideName;
 			UploadFilesPlaceHolder.Controls.Add(uploadControl);
 
 			LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());

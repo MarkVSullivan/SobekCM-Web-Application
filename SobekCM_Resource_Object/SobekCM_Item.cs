@@ -1779,7 +1779,7 @@ namespace SobekCM.Resource_Object
                 }
             }
 
-            // Add an 856 pointing to eitther ufdc or dloc first
+            // Add an 856 pointing to this item first
             MARC_Field tag856 = new MARC_Field {Tag = 856, Indicators = "40"};
             string url = Bib_Info.Location.PURL;
             if (url.Length == 0)
@@ -1789,12 +1789,12 @@ namespace SobekCM.Resource_Object
             string linkText = "Electronic Resource";
             if ((Bib_Info.Type.MODS_Type == TypeOfResource_MODS_Enum.Text))
                 linkText = "Click here for full text";
-            if (another_version_exists)
+            if ((another_version_exists) && ( SystemAbbreviation.Length > 0 ))
             {
                 if (electronic_access_note.Length > 0)
-                    tag856.Control_Field_Value = "|3 UFDC Version |u " + url + " |y " + linkText + " |z " + electronic_access_note;
+                    tag856.Control_Field_Value = "|3 " + SystemAbbreviation + " Version |u " + url + " |y " + linkText + " |z " + electronic_access_note;
                 else
-                    tag856.Control_Field_Value = "|3 UFDC Version |u " + url + " |y " + linkText;
+                    tag856.Control_Field_Value = "|3 " + SystemAbbreviation + " Version |u " + url + " |y " + linkText;
             }
             else
             {
@@ -1934,11 +1934,36 @@ namespace SobekCM.Resource_Object
             //}
 
             // Add the NEW cataloging source information
-            if (!String.IsNullOrEmpty(CatalogingSourceCode))
+            if ((!String.IsNullOrEmpty(CatalogingSourceCode)) || ( Bib_Info.Record.MARC_Record_Content_Sources_Count > 0 ))
             {
-                MARC_Field catSource = new MARC_Field { Tag = 40, Indicators = "  ", Control_Field_Value = "|a " + CatalogingSourceCode.Trim() + " |c " + CatalogingSourceCode.Trim() };
+
+                MARC_Field catSource = new MARC_Field { Tag = 40, Indicators = "  " };
+
+                StringBuilder catSourceBuilder = new StringBuilder();
+                if (Bib_Info.Record.MARC_Record_Content_Sources_Count > 0)
+                {
+                    bool a_added = false;
+                    foreach (string thisSource in Bib_Info.Record.MARC_Record_Content_Sources)
+                    {
+                        if (!a_added)
+                        {
+                            catSourceBuilder.Append("|a " + thisSource);
+                            a_added = true;
+                        }
+                        else
+                        {
+                            catSourceBuilder.Append(" |d " + thisSource);
+                        }
+                    }
+                }
+                else
+                {
+                    catSourceBuilder.Append("|a " + CatalogingSourceCode.Trim() + " |c " + CatalogingSourceCode.Trim());
+                }
+
                 if (bibInfo.Record.Description_Standard.Length > 0)
-                    catSource.Control_Field_Value = catSource.Control_Field_Value + " |e " + bibInfo.Record.Description_Standard.ToLower();
+                    catSourceBuilder.Append(" |e " + bibInfo.Record.Description_Standard.ToLower());
+                catSource.Control_Field_Value = catSourceBuilder.ToString();
                 tags.Add_Field(catSource);
             }
 
@@ -2214,7 +2239,20 @@ namespace SobekCM.Resource_Object
             // ADD THE RIGHTS 
             if (Bib_Info.Access_Condition.Text.Length > 0)
             {
-                tags.Add_Field(String.Compare(Bib_Info.Access_Condition.Type, "use and reproduction", StringComparison.OrdinalIgnoreCase) == 0 ? 540 : 506, "  ", "|a " + Bib_Info.Access_Condition.Text);
+                if (String.Compare(Bib_Info.Access_Condition.Type, "use and reproduction", StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    if ( Bib_Info.Access_Condition.Text.IndexOf("http") == 0 )
+                        tags.Add_Field(540, "  ", "|u " + Bib_Info.Access_Condition.Text);
+                    else
+                        tags.Add_Field(540, "  ", "|a " + Bib_Info.Access_Condition.Text);
+                }
+                else
+                {
+                    if (Bib_Info.Access_Condition.Text.IndexOf("http") == 0)
+                        tags.Add_Field(506, "  ", "|u " + Bib_Info.Access_Condition.Text);
+                    else
+                        tags.Add_Field(506, "  ", "|a " + Bib_Info.Access_Condition.Text);
+                }
             }
 
             // ADD THE HOLDING LOCATION

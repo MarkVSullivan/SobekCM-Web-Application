@@ -2107,17 +2107,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			string rights_statement = "<span itemprop=\"rights\">All applicable rights reserved by the source institution and holding location.</span>";
 			if (CurrentItem.Bib_Info.Access_Condition.Text.Length > 0)
 			{
-				rights_statement = "<span itemprop=\"rights\">" + CurrentItem.Bib_Info.Access_Condition.Text + "</span>";
+                if (CurrentItem.Bib_Info.Access_Condition.Text.IndexOf("http://") == 0)
+                    rights_statement = "<span itemprop=\"rights\"><a href=\"" + CurrentItem.Bib_Info.Access_Condition.Text + "\" target=\"RIGHTS\" >" + CurrentItem.Bib_Info.Access_Condition.Text + "</a></span>";
+                else
+                    rights_statement = "<span itemprop=\"rights\">" + CurrentItem.Bib_Info.Access_Condition.Text + "</span>";
 			}
 			result.AppendLine(INDENT + "    <dt style=\"width:" + width + "px\">" + Translator.Get_Translation("Rights Management", CurrentMode.Language) + ": </dt>");
 			result.Append(INDENT + "      <dd style=\"margin-left:" + width + "px\">");
 			const string SEE_TEXT = "See License Deed";
-			if (rights_statement.IndexOf("http://") == 0)
-			{
-				rights_statement = "<a href=\"" + rights_statement + "\" target=\"RIGHTS\" >" + rights_statement + "</a>";
-			}
-			else
-			{
+
 				if (rights_statement.IndexOf("[cc by-nc-nd]") >= 0)
 				{
 					rights_statement = rights_statement.Replace("[cc by-nc-nd]", "<br /><a href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + CurrentMode.Default_Images_URL + "cc_by_nc_nd.png\" /></a>");
@@ -2147,7 +2145,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					rights_statement = rights_statement.Replace("[cc0]", "<br /><a href=\"http://creativecommons.org/publicdomain/zero/1.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + CurrentMode.Default_Images_URL + "cc_zero.png\" /></a>");
 				}
 
-			}
 			result.AppendLine(rights_statement + "</dd>");
 
             // Add eembargo date, if there is one

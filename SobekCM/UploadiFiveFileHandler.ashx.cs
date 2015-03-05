@@ -54,7 +54,16 @@ namespace SobekCM
 					// Get the filename for the uploaded file
 					string filename = Path.GetFileName(postedFile.FileName);
 
-					// Should this be overriden?
+                    // Ensure there is not an additional period in the name being uploaded
+				    string extensionCheck = Path.GetExtension(postedFile.FileName);
+				    string filenameSansExtension = filename.Replace(extensionCheck, "");
+				    if (filenameSansExtension.IndexOf(".") > 0)
+				    {
+				        filenameSansExtension = filenameSansExtension.Replace(".", "_");
+				        filename = filenameSansExtension + extensionCheck;
+				    }
+
+				    // Should this be overriden?
 					if (!String.IsNullOrEmpty(tokenObj.ServerSideFileName))
 						filename = tokenObj.ServerSideFileName;
 
