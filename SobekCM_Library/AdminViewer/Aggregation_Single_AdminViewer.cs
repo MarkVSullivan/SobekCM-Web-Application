@@ -219,6 +219,7 @@ namespace SobekCM.Library.AdminViewer
 					    string current_config = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory + "\\" + itemAggregation.Code + ".xml";
 					    if (File.Exists(current_config))
 					    {
+                            // Use the last modified date as the name of the backup
 					        DateTime lastModifiedDate = (new FileInfo(current_config)).LastWriteTime;
 					        string backup_name = itemAggregation.Code + lastModifiedDate.Year + lastModifiedDate.Month.ToString().PadLeft(2, '0') + lastModifiedDate.Day.ToString().PadLeft(2, '0') + ".xml";
                             if ( !File.Exists(backup_name))
