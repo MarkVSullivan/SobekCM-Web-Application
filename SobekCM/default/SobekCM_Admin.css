@@ -78,6 +78,7 @@
 
 
 /** Aggregations_Mgmt_AdminViewer **/
+#sbkAsav_ContainerInner { margin: 0 auto; padding:0; width: 1200px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
 .sbkAsav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;padding-bottom: 20px; } 
 .sbkAsav_small_input { width: 120px; margin-right: 40px; margin-top: 2px; margin-bottom: 4px;  }
 select.sbkAsav_select { width: 155px; margin-right: 38px; margin-top: 2px; margin-bottom: 4px; }
@@ -87,11 +88,17 @@ textarea.sbkAsav_input  { width: 466px; margin-top:2px;margin-bottom: 4px; FONT-
 input.sbkAsav_checkbox { padding-top: 3px;border: 0; }
 .sbkAsav_List { padding: 0 0 30px 70px; list-style-type: none;}
 .sbkAsav_List li { padding-top: 10px; }
-.sbkAsav_Table { margin-left:22px; }
-.sbkAsav_TableHeader1 { width: 170px; padding-left: 10px;}
+.sbkAsav_Table { margin-left:22px;width: 1050px; }
+.sbkAsav_Table th { text-align: left; padding-left:0px !important;margin-left: 0;}
+.sbkAsav_Table td { text-align: left; padding-left:0px !important;margin-left: 0;}
+.sbkAsav_TableHeader1 { width: 170px; }
 .sbkAsav_TableHeader2 { width: 120px; }
 .sbkAsav_TableTitleRow { background-color:#7d90d5;color: white;font-weight: bold;}
-.sbkAsav_TableTitleRow td { padding-left: 10px; }
+.sbkAsav_TableTitleRow td { padding-left: 5px; }
+.sbkAsav_ActionLink { color:#444444; }
+.sbkAsav_ActionLink a:link { color:DarkBlue; }
+.sbkAsav_ActionLink a:visited { color:DarkBlue; }
+.sbkAsav_ActionLink a:hover { color:Blue; text-decoration:underline; }
 
 /** Aggregations_Single_AdminViewer  **/
 #sbkSaav_ContainerInner { margin: 0 auto; padding:0; width: 1120px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }

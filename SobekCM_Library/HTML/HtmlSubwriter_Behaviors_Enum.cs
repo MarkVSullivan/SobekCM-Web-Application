@@ -47,6 +47,9 @@
         MySobek_Subwriter_Mimic_Item_Subwriter,
 
         /// <summary> Used by aggregation viewers to tell the aggregation writer to NOT write out the home page text </summary>
-        Aggregation_Suppress_Home_Text
+        Aggregation_Suppress_Home_Text,
+
+        /// <summary> This viewer uses the JQuery datatables plug-in </summary>
+        Use_Jquery_DataTables
     }
 }

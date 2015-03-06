@@ -422,6 +422,14 @@ namespace SobekCM.Library.AdminViewer
             }
         }
 
+        public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner, HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables };
+            }
+        }
+
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <value> This always returns the value 'HTML Skins' </value>
         public override string Web_Title
@@ -598,6 +606,133 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  </div>");
 				Output.WriteLine();
 
+
+                Output.WriteLine("  <h2>Existing Aggregations</h2>");
+
+                Output.WriteLine("  <table class=\"sbkAsav_Table display\" id=\"adminMgmtTable\">");
+                Output.WriteLine("    <thead>");
+                Output.WriteLine("      <tr>");
+                Output.WriteLine("        <th class=\"sbkAsav_TableHeader1\">ACTIONS</th>");
+                Output.WriteLine("        <th class=\"sbkAsav_TableHeader2\">CODE</th>");
+                Output.WriteLine("        <th class=\"sbkAsav_TableHeader3\">TYPE</th>");
+                Output.WriteLine("        <th class=\"sbkAsav_TableHeader4\">NAME</th>");
+                Output.WriteLine("        <th class=\"sbkAsav_TableHeader5\">ACTIVE</th>");
+                Output.WriteLine("        <th class=\"sbkAsav_TableHeader6\">ON HOME</th>");
+                Output.WriteLine("        <th class=\"sbkAsav_TableHeader7\">PARENT</th>");
+                Output.WriteLine("      </tr>");
+                Output.WriteLine("    </thead>");
+
+                Output.WriteLine("    <tfoot>");
+                Output.WriteLine("      <tr>");
+                Output.WriteLine("        <th></th>");
+                Output.WriteLine("        <th><input id=\"adminMgmtCodeSearch\" type=\"text\" placeholder=\"Search Code\" /></th>");
+                Output.WriteLine("        <th>TYPE</th>");
+                Output.WriteLine("        <th><input id=\"adminMgmtNameSearch\"  type=\"text\" placeholder=\"Search Name\" /></th>");
+                Output.WriteLine("        <th>ACTIVE</th>");
+                Output.WriteLine("        <th>ON HOME</th>");
+                Output.WriteLine("        <th>PARENT</th>");
+                Output.WriteLine("      </tr>");
+                Output.WriteLine("    </tfoot>");
+
+                Output.WriteLine("    <tbody>");
+
+                // Show all the aggregations
+                string last_code = String.Empty;
+                foreach (Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
+                {
+                    if (thisAggr.Code != last_code)
+                    {
+                        last_code = thisAggr.Code;
+
+                        // Build the action links
+                        Output.WriteLine("      <tr>");
+                        Output.Write("        <td class=\"sbkAsav_ActionLink\" >( ");
+
+                        Output.Write("<a title=\"Click to edit this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/admin/editaggr/" + thisAggr.Code + "\">edit</a> | ");
+
+                        if (thisAggr.Active)
+                            Output.Write("<a title=\"Click to view this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/" + thisAggr.Code + "\">view</a> | ");
+                        else
+                            Output.Write("view | ");
+
+                        if (String.Compare(thisAggr.Code, "ALL", StringComparison.InvariantCultureIgnoreCase) != 0)
+                            Output.Write("<a title=\"Click to delete this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr('" + thisAggr.Code + "');\">delete</a> | ");
+
+                        Output.WriteLine("<a title=\"Click to reset the instance in the application cache\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return reset_aggr('" + thisAggr.Code + "');\">reset</a> )</td>");
+
+                        // Add the rest of the row with data
+                        Output.WriteLine("        <td>" + thisAggr.Code + "</td>");
+                        Output.WriteLine("        <td>" + thisAggr.Type + "</td>");
+                        Output.WriteLine("        <td>" + thisAggr.Name + "</td>");
+
+                        if (thisAggr.Active)
+                        {
+                            Output.WriteLine("        <td>Y</td>");
+                        }
+                        else
+                        {
+                            Output.WriteLine("        <td>N</td>");
+                        }
+
+                        if (thisAggr.Thematic_Heading != null)
+                        {
+                            Output.WriteLine("        <td>Y</td>");
+                        }
+                        else
+                        {
+                            Output.WriteLine("        <td>N</td>");
+                        }
+                        if (thisAggr.Parent_Count > 0)
+                        {
+                            Output.WriteLine("        <td>" + thisAggr.Parents[0].Code + "</td>");
+                        }
+                        else
+                        {
+                            Output.WriteLine("        <td></td>");
+                        }
+                        Output.WriteLine("      </tr>");
+                    }
+                }
+
+                Output.WriteLine("    </tbody>");
+                Output.WriteLine("  </table>");
+                Output.WriteLine("  <br />");
+                Output.WriteLine("</div>");
+
+                Output.WriteLine("<script type=\"text/javascript\">");
+                Output.WriteLine("    $(document).ready(function() { ");
+                Output.WriteLine("        var table = $('#adminMgmtTable').DataTable({ ");
+                Output.WriteLine("            \"paging\":   false, ");
+                Output.WriteLine("            \"info\":   false, ");           
+
+                Output.WriteLine("            initComplete: function () {");
+                Output.WriteLine("                var api = this.api();");
+ 
+                Output.WriteLine("                api.columns().indexes().flatten().each( function ( i ) {");
+                Output.WriteLine("                    if (( i == 2 || i == 4 || i == 5 || i == 6 )) {");
+                Output.WriteLine("                        var column = api.column( i );");
+                Output.WriteLine("                        var select = $('<select><option value=\"\"></option></select>')");
+                Output.WriteLine("                                 .appendTo( $(column.footer()).empty() )");
+                Output.WriteLine("                                 .on( 'change', function () {");
+                Output.WriteLine("                                       var val = $.fn.dataTable.util.escapeRegex($(this).val());");
+                Output.WriteLine("                                       column.search( val ? '^'+val+'$' : '', true, false ).draw();");
+                Output.WriteLine("                                        } );");
+                Output.WriteLine("                                 column.data().unique().sort().each( function ( d, j ) {");
+                Output.WriteLine("                                      select.append( '<option value=\"'+d+'\">'+d+'</option>' )");
+                Output.WriteLine("                                 } );");
+                Output.WriteLine("                        }");
+                Output.WriteLine("                    } );");
+                Output.WriteLine("               }");
+                Output.WriteLine("         });");
+
+                Output.WriteLine("         $('#adminMgmtCodeSearch').on( 'keyup change', function () { table.column( 1 ).search( this.value ).draw(); } );");
+                Output.WriteLine("         $('#adminMgmtNameSearch').on( 'keyup change', function () { table.column( 3 ).search( this.value ).draw(); } );");
+                Output.WriteLine("    } );");
+                
+                Output.WriteLine("</script>");
+                Output.WriteLine();
+                return;
+
                 Output.WriteLine("  <h2 id=\"list\">Existing Item Aggregations</h2>");
                 Output.WriteLine("  <p>Select a type below to view all matching item aggregations:</p>");
                 Output.WriteLine("  <ul class=\"sbkAsav_List\">");
@@ -616,6 +751,12 @@ namespace SobekCM.Library.AdminViewer
             }
             else
             {
+
+
+
+
+
+
                 string aggregationType = UI_ApplicationCache_Gateway.Aggregations.All_Types[index - 1];
 
                 Output.WriteLine("  <h2>Other Actions</h2>");

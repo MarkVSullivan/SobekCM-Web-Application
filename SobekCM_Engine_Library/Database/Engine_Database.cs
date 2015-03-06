@@ -532,41 +532,66 @@ namespace SobekCM.Engine_Library.Database
                     const int THEME_COL = 8;
                     const int LINK_COL = 9;
                     const int THEME_NAME_COL = 12;
+                    const int PARENT_SHORT_NAME = 13;
+                    const int PARENT_NAME = 14;
+                    const int PARENT_CODE = 15;
+
+                    Item_Aggregation_Related_Aggregations lastAggr = null;
 
                     while (reader.Read())
                     {
                         // Get the list key values out 
                         string code = reader.GetString(CODE_COL).ToUpper();
                         string type = reader.GetString(TYPE_COL);
-                        
 
-                        // Only do anything else if this is not somehow a repeat
-                        if (!Codes.isValidCode(code))
+                        if ((lastAggr != null) && (lastAggr.Code == code))
                         {
-                            // Create the object
-                            Item_Aggregation_Related_Aggregations thisAggr =
-                                new Item_Aggregation_Related_Aggregations(code, reader.GetString(NAME_COL),
-                                                                          reader.GetString(SHORT_NAME_COL), type,
-                                                                          reader.GetBoolean(IS_ACTIVE_COL),
-                                                                          reader.GetBoolean(HIDDEN_COL),
-                                                                          reader.GetString(DESC_COL),
-                                                                          (ushort)reader.GetInt32(ID_COL));
-
-                            if (!reader.IsDBNull(LINK_COL))
-                                thisAggr.External_Link = reader.GetString(LINK_COL);
-
-                            if (!reader.IsDBNull(THEME_NAME_COL))
+                            if (!reader.IsDBNull(PARENT_CODE))
                             {
-                                string theme_name = reader.GetString(THEME_NAME_COL);
-                                int theme = reader.GetInt32(THEME_COL);
-                                if (theme > 0)
-                                {
-                                    thisAggr.Thematic_Heading = new Thematic_Heading(theme, theme_name);
-                                }
+                                string second_parent_code = reader.GetString(PARENT_CODE).ToUpper();
+                                string second_parent_name = reader.GetString(PARENT_NAME).ToUpper();
+                                string second_parent_short = reader.GetString(PARENT_SHORT_NAME);
+                                lastAggr.Add_Parent_Aggregation(second_parent_code, second_parent_name, second_parent_short);
                             }
+                        }
+                        else
+                        {
+                            // Only do anything else if this is not somehow a repeat
+                            if (!Codes.isValidCode(code))
+                            {
+                                // Create the object
+                                lastAggr =
+                                    new Item_Aggregation_Related_Aggregations(code, reader.GetString(NAME_COL),
+                                        reader.GetString(SHORT_NAME_COL), type,
+                                        reader.GetBoolean(IS_ACTIVE_COL),
+                                        reader.GetBoolean(HIDDEN_COL),
+                                        reader.GetString(DESC_COL),
+                                        (ushort) reader.GetInt32(ID_COL));
 
-                            // Add this to the codes manager
-                            Codes.Add_Collection(thisAggr);
+                                if (!reader.IsDBNull(LINK_COL))
+                                    lastAggr.External_Link = reader.GetString(LINK_COL);
+
+                                if (!reader.IsDBNull(THEME_NAME_COL))
+                                {
+                                    string theme_name = reader.GetString(THEME_NAME_COL);
+                                    int theme = reader.GetInt32(THEME_COL);
+                                    if (theme > 0)
+                                    {
+                                        lastAggr.Thematic_Heading = new Thematic_Heading(theme, theme_name);
+                                    }
+                                }
+
+                                if (!reader.IsDBNull(PARENT_CODE))
+                                {
+                                    string parent_code = reader.GetString(PARENT_CODE).ToUpper();
+                                    string parent_name = reader.GetString(PARENT_NAME).ToUpper();
+                                    string parent_short = reader.GetString(PARENT_SHORT_NAME);
+                                    lastAggr.Add_Parent_Aggregation(parent_code, parent_name, parent_short);
+                                }
+
+                                // Add this to the codes manager
+                                Codes.Add_Collection(lastAggr);
+                            }
                         }
                     }
                     reader.Close();

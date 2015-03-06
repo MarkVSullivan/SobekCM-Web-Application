@@ -93,9 +93,7 @@ namespace SobekCM.Core.Aggregations
         [DataMember(Name = "link", EmitDefaultValue = false), ProtoMember(9)]
         public string External_Link { get; set; }
 
-        /// <summary> Gets the read-only collection of children item aggregation objects </summary>
-        /// <remarks> You should check the count of children first using the <see cref="Children_Count"/> before using this property.
-        /// Even if there are no children, this property creates a readonly collection to pass back out.</remarks>
+        /// <summary> Gets the collection of children item aggregation objects </summary>
         [DataMember(Name = "children", EmitDefaultValue = false), ProtoMember(10)]
         public List<Item_Aggregation_Related_Aggregations> Children { get; private set; }
 
@@ -103,15 +101,27 @@ namespace SobekCM.Core.Aggregations
         [DataMember(Name = "thematicHeading", EmitDefaultValue = false), ProtoMember(11)]
         public Thematic_Heading Thematic_Heading { get; set; }
 
-        /// <summary> Gets the number of child item aggregationPermissions present </summary>
-        /// <remarks>This should be used rather than the Count property of the <see cref="Children"/> property.  Even if 
-        /// there are no children, the Children property creates a readonly collection to pass back out.</remarks>
+        /// <summary> Gets the collection of minimally-reported parent aggregations </summary>
+        [DataMember(Name = "parents", EmitDefaultValue = false), ProtoMember(12)]
+        public List<Item_Aggregation_Minimal> Parents { get; private set; }
+
+        /// <summary> Gets the number of child item aggregations present </summary>
         [IgnoreDataMember]
         public int Children_Count
         {
             get
             {
                 return Children == null ? 0 : Children.Count;
+            }
+        }
+
+        /// <summary> Gets the number of parent item aggregations present </summary>
+        [IgnoreDataMember]
+        public int Parent_Count
+        {
+            get
+            {
+                return Parents == null ? 0 : Parents.Count;
             }
         }
 
@@ -145,6 +155,87 @@ namespace SobekCM.Core.Aggregations
                     Children.Add(Child_Aggregation);
                 }
             }
+        }
+
+        /// <summary> Method adds a minimally reported aggregation as a parent of this </summary>
+        /// <param name="Parent_Aggregation">New child aggregation</param>
+        public void Add_Parent_Aggregation(Item_Aggregation_Minimal Parent_Aggregation)
+        {
+            // If the list is currently null, create it
+            if (Parents == null)
+            {
+                Parents = new List<Item_Aggregation_Minimal> { Parent_Aggregation };
+            }
+            else
+            {
+                // If this does not exist, add it
+                if (!Parents.Contains(Parent_Aggregation))
+                {
+                    Parents.Add(Parent_Aggregation);
+                }
+            }
+        }
+
+
+        /// <summary> Method adds a minimally reported aggregation as a parent of this </summary>
+        /// <param name="Code"> Aggregation code for this minimally reported aggregation </param>
+        /// <param name="Name"> Full name for this minimally reported aggregation </param>
+        /// <param name="ShortName"> Shortened name for this minimally reported aggregation </param>
+        public void Add_Parent_Aggregation(string Code, string Name, string ShortName)
+        {
+            // Create the object
+            Item_Aggregation_Minimal parentAggregation = new Item_Aggregation_Minimal(Code, Name, ShortName);
+
+            // If the list is currently null, create it
+            if (Parents == null)
+            {
+                Parents = new List<Item_Aggregation_Minimal> { parentAggregation };
+            }
+            else
+            {
+                // If this does not exist, add it
+                if (!Parents.Contains(parentAggregation))
+                {
+                    Parents.Add(parentAggregation);
+                }
+            }
+        }
+    }
+
+    /// <summary> Class contains the very minimal amount of data used for some references to aggregations </summary>
+    public class Item_Aggregation_Minimal : IEquatable<Item_Aggregation_Minimal>
+    {
+        /// <summary> Aggregation code for this minimally reported aggregation </summary>
+        [DataMember(Name = "code"), ProtoMember(1)]
+        public readonly string Code;
+
+        /// <summary> Full name for this minimally reported aggregation </summary>
+        [DataMember(Name = "name", EmitDefaultValue = false), ProtoMember(2)]
+        public readonly string Name;
+
+        /// <summary> Shortened name for this minimally reported aggregation </summary>
+        [DataMember(Name = "shortName", EmitDefaultValue = false), ProtoMember(3)]
+        public readonly string ShortName;
+
+        /// <summary> Constructor for a new instance of the Item_Aggregaiton_Minimal object </summary>
+        /// <param name="Code"> Aggregation code for this minimally reported aggregation </param>
+        /// <param name="Name"> Full name for this minimally reported aggregation </param>
+        /// <param name="ShortName"> Shortened name for this minimally reported aggregation </param>
+        public Item_Aggregation_Minimal(string Code, string Name, string ShortName)
+        {
+            this.Code = Code;
+            this.Name = Name;
+            this.ShortName = ShortName;
+        }
+
+        public bool Equals(Item_Aggregation_Minimal other)
+        {
+            return (String.Compare(other.Code, Code, StringComparison.InvariantCultureIgnoreCase) == 0);
+        }
+
+        public override int GetHashCode()
+        {
+            return ("ItemAggregationMinimal|" + Code ).GetHashCode();
         }
     }
 }

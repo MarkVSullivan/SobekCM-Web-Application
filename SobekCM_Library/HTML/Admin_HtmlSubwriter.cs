@@ -381,6 +381,12 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
 #endif
             }
+
+            if ((adminViewer != null) && (adminViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables)))
+            {
+                Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_DataTables.css\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/datatables/js/jquery.dataTables.min.js\" ></script>");
+            }
         }
 
         /// <summary> Writes final HTML after all the forms </summary>
@@ -408,6 +414,9 @@ namespace SobekCM.Library.HTML
 
 					case Admin_Type_Enum.Aggregation_Single:
 						return "sbkSaav_ContainerInner";
+
+                    case Admin_Type_Enum.Aggregations_Mgmt:
+                        return "sbkAsav_ContainerInner";
 
                     case Admin_Type_Enum.User_Groups:
                     case Admin_Type_Enum.Users:

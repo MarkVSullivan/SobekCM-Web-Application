@@ -556,7 +556,11 @@ namespace SobekCM.Library.MainWriters
 			// Always add jQuery library (changed as of 7/8/2013)
             if ((RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.ViewerCode != "pageturner"))
             {
+
+
 #if DEBUG
+
+            //    Output.WriteLine("  <script type=\"text/javascript\" src=\"//code.jquery.com/jquery-1.11.1.min.js\"></script>");
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
 				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_full.js\"></script>");
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.qtip.min.js\"></script>");
