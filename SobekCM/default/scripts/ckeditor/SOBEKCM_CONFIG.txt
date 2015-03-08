@@ -1,0 +1,23 @@
+SOBEKCM.CONFIG.txt - instructions on how the CKEditor bundle was created via CKBuilder
+
+Last updated - Mark Sullivan ( 3/8/2015 )
+
+Creation instructions ( within CKBuilder )
+---------------------------------------------
+
+Start with CKEditor - Standard Package ( Version 4.4.7 )
+
+Add the following plugins:
+	- Auto Grow
+	- Code Snippet
+	- CodeMirror (Source) Syntax Highlighting
+	- Div Editing Area
+	- Find / Replace
+	- Image BrowseR
+	- Slideshow
+	- Table Resize
+	- Zoom
+
+Use Moona Color as the skin
+
+For languages, add German, Spanish, French, and Dutch
