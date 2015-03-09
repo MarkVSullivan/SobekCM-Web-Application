@@ -16,9 +16,10 @@ namespace SobekCM.Core.MicroservicesClient
 
         /// <summary> Constructor for a new instance of the MicroservicesClientBase class </summary>
         /// <param name="ConfigFile"> Location for the configuration file to read </param>
-        protected MicroservicesClientBase(string ConfigFile)
+        protected MicroservicesClientBase(string ConfigFile, string SystemBaseUrl )
         {
-            Config = MicroservicesClient_Config_Reader.Read_Config(ConfigFile);
+            if ( Config == null )
+                Config = MicroservicesClient_Config_Reader.Read_Config(ConfigFile, SystemBaseUrl);
         }
 
         /// <summary> Constructor for a new instance of the MicroservicesClientBase class </summary>

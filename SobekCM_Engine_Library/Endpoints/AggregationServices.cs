@@ -13,6 +13,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.JSON_Client_Helpers;
 using SobekCM.Engine_Library.Microservices;
 using SobekCM.Tools;
 
@@ -83,6 +84,45 @@ namespace SobekCM.Engine_Library.Endpoints
             else
             {
                 Serializer.Serialize(Response.OutputStream, list);
+            }
+        }
+
+        public void GetAggregationUploadedImages(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        {
+            if (UrlSegments.Count > 0)
+            {
+                string aggregation = UrlSegments[0];
+
+                // Ensure a valid aggregation
+                Item_Aggregation_Related_Aggregations aggrInfo = Engine_ApplicationCache_Gateway.Codes[aggregation];
+                if (aggrInfo != null)
+                {
+                    List<UploadedFileFolderInfo> serverFiles = new List<UploadedFileFolderInfo>();
+
+                    string design_folder = Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + aggregation + "\\uploads";
+                    if (Directory.Exists(design_folder))
+                    {
+                        string foldername = aggrInfo.ShortName;
+                        if ( String.IsNullOrEmpty(foldername))
+                            foldername = aggregation;
+
+                        string[] files = Directory.GetFiles(design_folder);
+                        foreach (string thisFile in files)
+                        {
+                            string filename = Path.GetFileName(thisFile);
+                            string extension = Path.GetExtension(thisFile);
+                            
+                            // Exclude some files
+                            if ((!String.IsNullOrEmpty(extension)) && (extension.ToLower().IndexOf(".db") < 0) && (extension.ToLower().IndexOf("bridge") < 0) && (extension.ToLower().IndexOf("cache") < 0))
+                            {
+                                string url = Engine_ApplicationCache_Gateway.Settings.System_Base_URL + "design/aggregations/" + aggregation + "/uploads/" + filename;
+                                serverFiles.Add(new UploadedFileFolderInfo(url, foldername));
+                            }
+                        }
+                    }
+
+                    JSON.Serialize(serverFiles, Response.Output, Options.ISO8601ExcludeNulls);
+                }
             }
         }
 
@@ -165,5 +205,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             return itemAggr;
         }
+
+
     }
 }

@@ -16,9 +16,9 @@ namespace SobekCM.Core.Client
 
         public static string Config_Read_Error { get; private set; }
 
-        public static bool Read_Config_File(string ConfigFile)
+        public static bool Read_Config_File(string ConfigFile, string SystemBaseUrl)
         {
-            MicroservicesClient_Configuration configObj = MicroservicesClient_Config_Reader.Read_Config(ConfigFile);
+            MicroservicesClient_Configuration configObj = MicroservicesClient_Config_Reader.Read_Config(ConfigFile, SystemBaseUrl);
             Config_Read_Attempted = true;
             if (String.IsNullOrEmpty(configObj.Error))
             {

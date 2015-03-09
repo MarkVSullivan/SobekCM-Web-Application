@@ -276,7 +276,7 @@ namespace SobekCM
 		    if (!SobekEngineClient.Config_Read_Attempted)
 		    {
                 string path = Server.MapPath("config/default/sobekcm_microservices.config");
-                SobekEngineClient.Read_Config_File(path);
+                SobekEngineClient.Read_Config_File(path, UI_ApplicationCache_Gateway.Settings.System_Base_URL);
 		    }
 
 

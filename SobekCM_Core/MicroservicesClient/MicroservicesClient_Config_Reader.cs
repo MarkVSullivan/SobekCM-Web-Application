@@ -9,8 +9,9 @@ namespace SobekCM.Core.MicroservicesClient
     {
         /// <summary> Static class is used to read the configuration file defining microservice endpoints </summary>
         /// <param name="ConfigFile"> Path and name of the configuration XML file to read </param>
+        /// <param name="SystemBaseUrl"> System base URL </param>
         /// <returns> Fully configured microservices configuration object </returns>
-        public static MicroservicesClient_Configuration Read_Config(string ConfigFile)
+        public static MicroservicesClient_Configuration Read_Config(string ConfigFile, string SystemBaseUrl )
         {
             MicroservicesClient_Configuration returnValue = new MicroservicesClient_Configuration();
 
@@ -33,7 +34,7 @@ namespace SobekCM.Core.MicroservicesClient
                         switch (readerXml.Name.ToLower())
                         {
                             case "microservicesclient":
-                                read_microservices_client_details(readerXml.ReadSubtree(), returnValue);
+                                read_microservices_client_details(readerXml.ReadSubtree(), returnValue, SystemBaseUrl);
                                 break;
                         }
                     }
@@ -58,7 +59,7 @@ namespace SobekCM.Core.MicroservicesClient
             return returnValue;
         }
 
-        private static void read_microservices_client_details(XmlReader readerXml, MicroservicesClient_Configuration config)
+        private static void read_microservices_client_details(XmlReader readerXml, MicroservicesClient_Configuration config, string SystemBaseUrl)
         {
             // Just step through the subtree of this
             while (readerXml.Read())
@@ -74,7 +75,7 @@ namespace SobekCM.Core.MicroservicesClient
                             if (readerXml.MoveToAttribute("Key"))
                                 key = readerXml.Value;
                             if (readerXml.MoveToAttribute("URL"))
-                                url = readerXml.Value;
+                                url = readerXml.Value.Replace("[BASEURL]", SystemBaseUrl);
                             if (readerXml.MoveToAttribute("Protocol"))
                                 protocol = readerXml.Value;
 

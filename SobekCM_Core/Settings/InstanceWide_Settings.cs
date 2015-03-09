@@ -40,6 +40,8 @@ namespace SobekCM.Core.Settings
 
         private string inProcessLocationOverride;
 
+        public string Engine_URL { get { return System_Base_URL + "engine/";  } }
+
         /// <summary> constructor sets all the values to default empty strings </summary>
         public InstanceWide_Settings()
         {

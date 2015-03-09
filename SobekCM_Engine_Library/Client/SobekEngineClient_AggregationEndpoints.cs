@@ -32,5 +32,13 @@ namespace SobekCM.Core.Client
         {
             return AggregationServices.get_item_aggregation_html_child_page(AggregationCode, RequestedLanguage, DefaultLanguage, isRobot, ChildPageCode, Tracer);
         }
+
+        public string Aggregation_Uploaded_Files_URL
+        {
+            get
+            {
+                return Config["Get_Aggregation_Uploaded_Files"] == null ? null : Config["Get_Aggregation_Uploaded_Files"].URL;
+            }
+        }
     }
 }

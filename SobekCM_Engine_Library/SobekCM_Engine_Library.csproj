@@ -48,6 +48,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -87,6 +88,7 @@
     </Compile>
     <Compile Include="Items\SobekCM_Item_Factory.cs" />
     <Compile Include="Items\SobekCM_METS_Based_ItemBuilder.cs" />
+    <Compile Include="JSON Client Helpers\UploadedFileFolderInfo.cs" />
     <Compile Include="MicroserviceHandler.cs" />
     <Compile Include="MicroserviceRewriter.cs" />
     <Compile Include="Microservices\Microservices_Configuration.cs" />

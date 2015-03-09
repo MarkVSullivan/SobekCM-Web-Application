@@ -10,8 +10,10 @@ using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
@@ -430,9 +432,22 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("               autoGrow_maxHeight: 800,");
                 Output.WriteLine("               removePlugins: 'resize',");
                 Output.WriteLine("               magicline_color: 'blue',");
-                Output.WriteLine("               extraPlugins: 'tableresize',");
-                Output.WriteLine("               extraPlugins : 'imagebrowser',");
-                Output.WriteLine("               imageBrowser_listUrl: 'http://sobekrepository.org/ckeditor11/existing_images3.json'");
+                Output.Write("               extraPlugins: 'tableresize'");
+
+                // Is there an endpoint defined for looking at uploaded files?
+                string upload_files_json_url = SobekEngineClient.Aggregations.Aggregation_Uploaded_Files_URL;
+                if (!String.IsNullOrEmpty(upload_files_json_url))
+                {
+                    string actual_url = String.Format(upload_files_json_url, RequestSpecificValues.Hierarchy_Object.Code);
+
+                    Output.WriteLine(",");
+                    Output.WriteLine("               extraPlugins : 'imagebrowser',");
+                    Output.WriteLine("               imageBrowser_listUrl: '" + actual_url + "'");
+                }
+                else
+                {
+                    Output.WriteLine();
+                }
                 Output.WriteLine("			});");
                 Output.WriteLine("    });");
 
@@ -470,9 +485,22 @@ namespace SobekCM.Library.HTML
 			    Output.WriteLine("               autoGrow_maxHeight: 800,");
 			    Output.WriteLine("               removePlugins: 'resize',");
 			    Output.WriteLine("               magicline_color: 'blue',");
-			    Output.WriteLine("               extraPlugins: 'tableresize',");
-			    Output.WriteLine("               extraPlugins : 'imagebrowser',");
-			    Output.WriteLine("               imageBrowser_listUrl: 'http://sobekrepository.org/ckeditor11/existing_images3.json'");
+			    Output.Write("               extraPlugins: 'tableresize'");
+
+                // Is there an endpoint defined for looking at uploaded files?
+			    string upload_files_json_url = SobekEngineClient.Aggregations.Aggregation_Uploaded_Files_URL;
+			    if (!String.IsNullOrEmpty(upload_files_json_url))
+			    {
+			        string actual_url = String.Format(upload_files_json_url, RequestSpecificValues.Hierarchy_Object.Code);
+
+			        Output.WriteLine(",");
+			        Output.WriteLine("               extraPlugins : 'imagebrowser',");
+			        Output.WriteLine("               imageBrowser_listUrl: '" + actual_url + "'");
+			    }
+			    else
+			    {
+			        Output.WriteLine();
+			    }
 			    Output.WriteLine("			});");
                 Output.WriteLine("    });");
 
