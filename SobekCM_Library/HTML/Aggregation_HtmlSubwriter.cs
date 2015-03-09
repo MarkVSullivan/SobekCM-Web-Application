@@ -405,22 +405,77 @@ namespace SobekCM.Library.HTML
 			// If this is to edit the home page, add the html editor
 	        if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 	        {
-		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.css\" />");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.min.js\"></script>");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.advancedtable.min.js\"></script>");
+                //Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.css\" />");
+                //Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.min.js\"></script>");
+                //Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.advancedtable.min.js\"></script>");
+                // Output.WriteLine("    $(document).ready(function () { $(\"#sbkAghsw_HomeTextEdit\").cleditor({height:400}); });");
+
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/ckeditor/ckeditor.js\"></script>");
+
                 Output.WriteLine("  <script type=\"text/javascript\">");
-				Output.WriteLine("    $(document).ready(function () { $(\"#sbkAghsw_HomeTextEdit\").cleditor({height:400}); });");
+                Output.WriteLine("    $(document).ready(function () { ");
+                Output.WriteLine("          CKEDITOR.replace( 'sbkAghsw_HomeTextEdit', {");
+                Output.WriteLine("               extraPlugins: 'divarea',");
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.English)
+                    Output.WriteLine("               language: 'en',");
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+                    Output.WriteLine("               language: 'es',");
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+                    Output.WriteLine("               language: 'fr',");
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.German)
+                    Output.WriteLine("               language: 'de',");
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Dutch)
+                    Output.WriteLine("               language: 'nl',");
+                Output.WriteLine("               extraPlugins: 'autogrow',");
+                Output.WriteLine("               autoGrow_maxHeight: 800,");
+                Output.WriteLine("               removePlugins: 'resize',");
+                Output.WriteLine("               magicline_color: 'blue',");
+                Output.WriteLine("               extraPlugins: 'tableresize',");
+                Output.WriteLine("               extraPlugins : 'imagebrowser',");
+                Output.WriteLine("               imageBrowser_listUrl: 'http://sobekrepository.org/ckeditor11/existing_images3.json'");
+                Output.WriteLine("			});");
+                Output.WriteLine("    });");
+
+
 		        Output.WriteLine("  </script>");
 	        }
 
 			// If this is to edit the home page, add the html editor
 			if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit))
 			{
-				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.css\" />");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.min.js\"></script>");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.advancedtable.min.js\"></script>");
+                // OLD CLEDITOR-BASED HTML EDITING
+                //Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.css\" />");
+                //Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.min.js\"></script>");
+                //Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.advancedtable.min.js\"></script>");
+                //Output.WriteLine("    $(document).ready(function () { $(\"#sbkSbia_ChildTextEdit\").cleditor({height:400}); });");
+
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/ckeditor/ckeditor.js\"></script>");
+
 				Output.WriteLine("  <script type=\"text/javascript\">");
-				Output.WriteLine("    $(document).ready(function () { $(\"#sbkSbia_ChildTextEdit\").cleditor({height:400}); });");
+
+			    Output.WriteLine("    $(document).ready(function () { ");
+			    Output.WriteLine("          CKEDITOR.replace( 'sbkSbia_ChildTextEdit', {");
+			    Output.WriteLine("               extraPlugins: 'divarea',");
+                if ( RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.English )
+    			    Output.WriteLine("               language: 'en',");
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
+                    Output.WriteLine("               language: 'es',");
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
+                    Output.WriteLine("               language: 'fr',");
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.German)
+                    Output.WriteLine("               language: 'de',");
+                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Dutch)
+                    Output.WriteLine("               language: 'nl',");
+			    Output.WriteLine("               extraPlugins: 'autogrow',");
+			    Output.WriteLine("               autoGrow_maxHeight: 800,");
+			    Output.WriteLine("               removePlugins: 'resize',");
+			    Output.WriteLine("               magicline_color: 'blue',");
+			    Output.WriteLine("               extraPlugins: 'tableresize',");
+			    Output.WriteLine("               extraPlugins : 'imagebrowser',");
+			    Output.WriteLine("               imageBrowser_listUrl: 'http://sobekrepository.org/ckeditor11/existing_images3.json'");
+			    Output.WriteLine("			});");
+                Output.WriteLine("    });");
+
 				Output.WriteLine("  </script>");
 			}
         }
