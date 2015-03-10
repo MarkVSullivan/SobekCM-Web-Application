@@ -12,7 +12,7 @@ using SobekCM.Library.UploadiFive;
 
 namespace SobekCM
 {
-	/// <summary> Handler for the uploading files </summary>
+	/// <summary> Handler for the uploading files uploaded with UploadiFive </summary>
 	public class UploadiFiveFileHandler : IHttpHandler, IReadOnlySessionState
 	{
 		/// <summary> Process this request </summary>

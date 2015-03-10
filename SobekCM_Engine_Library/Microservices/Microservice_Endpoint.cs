@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Reflection;
 using System.Web;
+using SobekCM.Engine_Library.IpRangeUtilities;
 
 namespace SobekCM.Engine_Library.Microservices
 {
@@ -41,6 +42,7 @@ namespace SobekCM.Engine_Library.Microservices
     {
         private MethodInfo methodInfo;
         private object restApiObject;
+        private IpRangeSetV4 rangeTester;
 
         public void Invoke(HttpResponse Response, List<string> UrlSegments, NameValueCollection RequestForm )
         {
@@ -103,6 +105,38 @@ namespace SobekCM.Engine_Library.Microservices
         public override bool IsEndpoint
         {
             get { return true; }
+        }
+
+        /// <summary> Check to see if this endpoint can be invoked from this IP address </summary>
+        /// <returns> TRUE if permitted, otherwise FALSE </returns>
+        public bool AccessPermitted( string IpAddress )
+        {
+            // If no restriction exists, return TRUE
+            if ((RestrictionRanges == null) || (RestrictionRanges.Count == 0))
+                return true;
+
+            // Was the comparison set built?
+            if (rangeTester == null)
+            {
+                rangeTester = new IpRangeSetV4();
+                foreach (Microservice_RestrictionRange thisRangeSet in RestrictionRanges)
+                {
+                    foreach (Microservice_IpRange thisRange in thisRangeSet.IpRanges)
+                    {
+                        if ( !String.IsNullOrEmpty(thisRange.EndIp))
+                            rangeTester.AddIpRange(thisRange.StartIp, thisRange.EndIp);
+                        else
+                            rangeTester.AddIpRange(thisRange.StartIp);
+                    }
+                }
+            }
+
+            // You can always acess from the same machine (first may only be relevant in Visual Studio while debugging)
+            if ((IpAddress == "::1") || (IpAddress == "127.0.0.1"))
+                return true;
+
+            // Now, test the IP against the tester
+            return rangeTester.Contains(new ComparableIpAddress(IpAddress));
         }
     }
 }

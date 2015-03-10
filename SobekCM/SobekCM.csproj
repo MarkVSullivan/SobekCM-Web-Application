@@ -648,6 +648,9 @@
     <Compile Include="default\scripts\CallBacks.aspx.designer.cs">
       <DependentUpon>CallBacks.aspx</DependentUpon>
     </Compile>
+    <Compile Include="HtmlEditFileHandler.ashx.cs">
+      <DependentUpon>HtmlEditFileHandler.ashx</DependentUpon>
+    </Compile>
     <Compile Include="SobekCM_Page_Globals.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
@@ -730,6 +733,7 @@
     <Content Include="config\default\sobekcm_shibboleth.config">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="HtmlEditFileHandler.ashx" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

@@ -49,6 +49,16 @@ namespace SobekCM.Engine_Library
                 }
                 else
                 {
+                    // Ensure this is allowed in the range
+                    string requestIp = context.Request.UserHostAddress;
+                    if (!endpoint.AccessPermitted(requestIp))
+                    {
+                        context.Response.StatusCode = 403;
+                        context.Response.Write("You are forbidden from accessing this endpoint");
+                        return;
+                    }
+
+                    // Set the protocoal
                     if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
                         context.Response.ContentType = "application/json";
                     if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.PROTOBUF)

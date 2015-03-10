@@ -7,7 +7,7 @@ using System;
 namespace SobekCM.Library.UploadiFive
 {
 	/// <summary> Token used to add security, via adding a key to the session
-	/// state, for uploading documents through this system </summary>
+	/// state, for uploading documents using UploadiFive through this system </summary>
 	public class UploadiFive_Security_Token
 	{
 		/// <summary> Path where the uploaded files should go </summary>

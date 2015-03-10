@@ -3,46 +3,64 @@ using System.Linq;
 
 namespace SobekCM.Engine_Library.IpRangeUtilities
 {
+    /// <summary> Set of IP address ranges used in the solution for quick IP range checks to
+    /// support lookups within IP restrictions on the SobekCM engine </summary>
+    /// <remarks>This supports very fast lookup to see if a provided IP address is within the
+    /// set of IP ranges included within this set. </remarks>
     public class IpRangeSetV4
     {
         private readonly List<SingleIpRangeV4> ranges;
         private Dictionary<byte, IList<SingleIpRangeV4>> prefixDictionary;
 
+        /// <summary> Constructor for a new instance of the IpRangeSetV4 class </summary>
         public IpRangeSetV4()
         {
             ranges = new List<SingleIpRangeV4>();
         }
 
+        /// <summary> Add a single IP restriction range to this set </summary>
+        /// <param name="IpRange"> Single IP range </param>
         public void AddIpRange(SingleIpRangeV4 IpRange )
         {
             ranges.Add(IpRange);
             prefixDictionary = null;
         }
 
+        /// <summary> Add a single IP restriction range to this set </summary>
+        /// <param name="SingleIpAddress"> Single IP address/range (as an unsigned long)</param>
         public void AddIpRange(ulong SingleIpAddress)
         {
             SingleIpRangeV4 range = new SingleIpRangeV4(SingleIpAddress);
             AddIpRange(range);
         }
 
+        /// <summary> Add a single IP restriction range to this set </summary>
+        /// <param name="StartIpAddress"> First IP address in the range (as an unsigned long)</param>
+        /// <param name="EndIpAddress">  Last IP address in the range (as an unsigned long)</param>
         public void AddIpRange(ulong StartIpAddress, ulong EndIpAddress)
         {
             SingleIpRangeV4 range = new SingleIpRangeV4(StartIpAddress, EndIpAddress);
             AddIpRange(range);
         }
 
+        /// <summary> Add a single IP restriction range to this set </summary>
+        /// <param name="SingleIpAddress"> Single IP address/range (as a string)</param>
         public void AddIpRange(string SingleIpAddress)
         {
             SingleIpRangeV4 range = new SingleIpRangeV4(SingleIpAddress);
             AddIpRange(range);
         }
 
+        /// <summary> Add a single IP restriction range to this set </summary>
+        /// <param name="StartIpAddress"> First IP address in the range (as a string)</param>
+        /// <param name="EndIpAddress">  Last IP address in the range (as a string)</param>
         public void AddIpRange(string StartIpAddress, string EndIpAddress)
         {
             SingleIpRangeV4 range = new SingleIpRangeV4(StartIpAddress, EndIpAddress);
             AddIpRange(range);
         }
 
+        /// <summary> Readies this set for comparisons, by building some internal data structures </summary>
         public void Ready()
         {
             Dictionary<byte, SortedList<ulong, SingleIpRangeV4>> tempDictionary = new Dictionary<byte, SortedList<ulong, SingleIpRangeV4>>();
@@ -67,6 +85,18 @@ namespace SobekCM.Engine_Library.IpRangeUtilities
 
         }
 
+        /// <summary> Check to see if a given IP address is within the IP ranges in this set </summary>
+        /// <param name="Address"> IP address to check for inclusion ( as a string )</param>
+        /// <returns> TRUE if the IP address is within the ranges, otherwise FALSE </returns>
+        public bool Contains(string Address)
+        {
+            ComparableIpAddress address = new ComparableIpAddress(Address);
+            return Contains(address);
+        }
+
+        /// <summary> Check to see if a given IP address is within the IP ranges in this set </summary>
+        /// <param name="Address"> IP address to check for inclusion ( as a <see cref="ComparableIpAddress" /> object )</param>
+        /// <returns> TRUE if the IP address is within the ranges, otherwise FALSE </returns>
         public bool Contains(ComparableIpAddress Address)
         {
             // If not defined, or no IP ranges included, just return FALSE

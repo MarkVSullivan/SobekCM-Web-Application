@@ -3,8 +3,11 @@ using System.Net;
 
 namespace SobekCM.Engine_Library.IpRangeUtilities
 {
+    /// <summary> Single IP address that is wrapped in such as way to quickly compare to a set of restricted IP addresses </summary>
     public class ComparableIpAddress
     {
+        /// <summary> Constructor for a new instance of the ComparableIpAddress class </summary>
+        /// <param name="Value"> IP Address as an unsigned long </param>
         public ComparableIpAddress(ulong Value)
         {
             this.Value = Value;
@@ -12,6 +15,8 @@ namespace SobekCM.Engine_Library.IpRangeUtilities
             Prefix = Convert.ToByte(Value /16777216);
         }
 
+        /// <summary> Constructor for a new instance of the ComparableIpAddress class </summary>
+        /// <param name="Value"> IP Address as a string </param>
         public ComparableIpAddress(string Value)
         {
             
@@ -23,10 +28,15 @@ namespace SobekCM.Engine_Library.IpRangeUtilities
             Prefix = bytes[0];
         }
 
+        /// <summary> Value of the IP address (as an unsigned long) </summary>
         public ulong Value { get; private set; }
 
+        /// <summary> First byte of the IP address, for quick comparison lookup </summary>
         public byte Prefix { get; private set; }
 
+        /// <summary> Static method is used to convert from a string IP address to an unsigned long IP adress </summary>
+        /// <param name="IpAddress"> IP address as a string </param>
+        /// <returns> IP address as an unsigned long </returns>
         public static ulong ToUlong(string IpAddress)
         {
             IPAddress thisIpAddr = IPAddress.Parse(IpAddress);
