@@ -407,104 +407,67 @@ namespace SobekCM.Library.HTML
 			// If this is to edit the home page, add the html editor
 	        if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 	        {
-                //Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.css\" />");
-                //Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.min.js\"></script>");
-                //Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.advancedtable.min.js\"></script>");
-                // Output.WriteLine("    $(document).ready(function () { $(\"#sbkAghsw_HomeTextEdit\").cleditor({height:400}); });");
+                // Determine the aggregation upload directory
+                string aggregation_upload_dir = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\uploads";
+                string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.System_Base_URL + "design/aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/uploads/";
 
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/ckeditor/ckeditor.js\"></script>");
-
-                Output.WriteLine("  <script type=\"text/javascript\">");
-                Output.WriteLine("    $(document).ready(function () { ");
-                Output.WriteLine("          CKEDITOR.replace( 'sbkAghsw_HomeTextEdit', {");
-                Output.WriteLine("               extraPlugins: 'divarea',");
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.English)
-                    Output.WriteLine("               language: 'en',");
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-                    Output.WriteLine("               language: 'es',");
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-                    Output.WriteLine("               language: 'fr',");
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.German)
-                    Output.WriteLine("               language: 'de',");
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Dutch)
-                    Output.WriteLine("               language: 'nl',");
-                Output.WriteLine("               extraPlugins: 'autogrow',");
-                Output.WriteLine("               autoGrow_maxHeight: 800,");
-                Output.WriteLine("               removePlugins: 'resize',");
-                Output.WriteLine("               magicline_color: 'blue',");
-                Output.Write("               extraPlugins: 'tableresize'");
-
-                // Is there an endpoint defined for looking at uploaded files?
-                string upload_files_json_url = SobekEngineClient.Aggregations.Aggregation_Uploaded_Files_URL;
-                if (!String.IsNullOrEmpty(upload_files_json_url))
+                // Create the CKEditor object
+                CKEditor.CKEditor editor = new CKEditor.CKEditor
                 {
-                    string actual_url = String.Format(upload_files_json_url, RequestSpecificValues.Hierarchy_Object.Code);
+                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL, 
+                    Language = RequestSpecificValues.Current_Mode.Language, 
+                    TextAreaID = "sbkAghsw_HomeTextEdit", 
+                    FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
+                    UploadPath = aggregation_upload_dir,
+                    UploadURL = aggregation_upload_url
+                };
 
-                    Output.WriteLine(",");
-                    Output.WriteLine("               extraPlugins : 'imagebrowser',");
-                    Output.WriteLine("               imageBrowser_listUrl: '" + actual_url + "'");
-                }
-                else
-                {
-                    Output.WriteLine();
-                }
-                Output.WriteLine("			});");
-                Output.WriteLine("    });");
+                // If there are existing files, add a reference to the URL for the image browser
+                if ((Directory.Exists(aggregation_upload_dir)) && (Directory.GetFiles(aggregation_upload_dir).Length > 0))
+	            {
+                    // Is there an endpoint defined for looking at uploaded files?
+                    string upload_files_json_url = SobekEngineClient.Aggregations.Aggregation_Uploaded_Files_URL;
+                    if (!String.IsNullOrEmpty(upload_files_json_url))
+                    {
+                        editor.ImageBrowser_ListUrl = String.Format(upload_files_json_url, RequestSpecificValues.Hierarchy_Object.Code);
+                    }
+	            }
 
-
-		        Output.WriteLine("  </script>");
+                // Add the HTML from the CKEditor object
+	            editor.Add_To_Stream(Output);
 	        }
 
 			// If this is to edit the home page, add the html editor
 			if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit))
 			{
-                // OLD CLEDITOR-BASED HTML EDITING
-                //Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.css\" />");
-                //Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.min.js\"></script>");
-                //Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/htmleditor/jquery.cleditor.advancedtable.min.js\"></script>");
-                //Output.WriteLine("    $(document).ready(function () { $(\"#sbkSbia_ChildTextEdit\").cleditor({height:400}); });");
+                // Determine the aggregation upload directory
+                string aggregation_upload_dir = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\uploads";
+			    string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.System_Base_URL + "design/aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/uploads/";
 
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/ckeditor/ckeditor.js\"></script>");
+                // Create the CKEditor object
+                CKEditor.CKEditor editor = new CKEditor.CKEditor
+                {
+                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
+                    Language = RequestSpecificValues.Current_Mode.Language,
+                    TextAreaID = "sbkSbia_ChildTextEdit",
+                    FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
+                    UploadPath = aggregation_upload_dir,
+                    UploadURL = aggregation_upload_url
+                };
 
-				Output.WriteLine("  <script type=\"text/javascript\">");
+                // If there are existing files, add a reference to the URL for the image browser
+                if ((Directory.Exists(aggregation_upload_dir)) && (Directory.GetFiles(aggregation_upload_dir).Length > 0))
+                {
+                    // Is there an endpoint defined for looking at uploaded files?
+                    string upload_files_json_url = SobekEngineClient.Aggregations.Aggregation_Uploaded_Files_URL;
+                    if (!String.IsNullOrEmpty(upload_files_json_url))
+                    {
+                        editor.ImageBrowser_ListUrl = String.Format(upload_files_json_url, RequestSpecificValues.Hierarchy_Object.Code);
+                    }
+                }
 
-			    Output.WriteLine("    $(document).ready(function () { ");
-			    Output.WriteLine("          CKEDITOR.replace( 'sbkSbia_ChildTextEdit', {");
-			    Output.WriteLine("               extraPlugins: 'divarea',");
-                if ( RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.English )
-    			    Output.WriteLine("               language: 'en',");
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
-                    Output.WriteLine("               language: 'es',");
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
-                    Output.WriteLine("               language: 'fr',");
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.German)
-                    Output.WriteLine("               language: 'de',");
-                if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Dutch)
-                    Output.WriteLine("               language: 'nl',");
-			    Output.WriteLine("               extraPlugins: 'autogrow',");
-			    Output.WriteLine("               autoGrow_maxHeight: 800,");
-			    Output.WriteLine("               removePlugins: 'resize',");
-			    Output.WriteLine("               magicline_color: 'blue',");
-			    Output.Write("               extraPlugins: 'tableresize'");
-
-                // Is there an endpoint defined for looking at uploaded files?
-			    string upload_files_json_url = SobekEngineClient.Aggregations.Aggregation_Uploaded_Files_URL;
-			    if (!String.IsNullOrEmpty(upload_files_json_url))
-			    {
-			        string actual_url = String.Format(upload_files_json_url, RequestSpecificValues.Hierarchy_Object.Code);
-
-			        Output.WriteLine(",");
-			        Output.WriteLine("               extraPlugins : 'imagebrowser',");
-			        Output.WriteLine("               imageBrowser_listUrl: '" + actual_url + "'");
-			    }
-			    else
-			    {
-			        Output.WriteLine();
-			    }
-			    Output.WriteLine("			});");
-                Output.WriteLine("    });");
-
-				Output.WriteLine("  </script>");
+                // Add the HTML from the CKEditor object
+                editor.Add_To_Stream(Output);
 			}
         }
 

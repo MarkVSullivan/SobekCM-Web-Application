@@ -23,13 +23,10 @@ namespace SobekCM.Library.CKEditor
         /// <param name="Output"> Writer to write to the stream </param>
         public void Add_To_Stream(TextWriter Output)
         {
-            // If there is no current HTTPContext, can't do this...
-            if ((UploadPath.Length > 0) && (HttpContext.Current != null))
+            if (HttpContext.Current == null)
             {
-                // Create a new security token, save in session, and set token GUID in the form data
-                CKEditor_Security_Token newToken = new CKEditor_Security_Token(UploadPath);
-                string token = newToken.ThisGuid.ToString();
-                HttpContext.Current.Session["#CKEDITOR::" + newToken.ThisGuid] = newToken;
+                Output.WriteLine("<!-- Unable to add CKEditor due to HTTPContext.Current being null -->");
+                return;
             }
 
             Output.WriteLine("  <script type=\"text/javascript\" src=\"" + BaseUrl + "default/scripts/ckeditor/ckeditor.js\"></script>");
@@ -39,6 +36,28 @@ namespace SobekCM.Library.CKEditor
             Output.WriteLine("    $(document).ready(function () { ");
             Output.WriteLine("          CKEDITOR.replace( '" + TextAreaID + "', {");
             Output.WriteLine("               extraPlugins: 'divarea',");
+            Output.WriteLine("               extraPlugins: 'autogrow',");
+            Output.WriteLine("               extraPlugins: 'tableresize',");
+
+
+            // Is there an endpoint defined for looking at uploaded files?
+            if (!String.IsNullOrEmpty(ImageBrowser_ListUrl))
+            {
+                Output.WriteLine("               extraPlugins : 'imagebrowser',");
+                Output.WriteLine("               imageBrowser_listUrl: '" + ImageBrowser_ListUrl + "',");
+            }
+
+            // Can we upload files
+            if ((!String.IsNullOrEmpty(UploadPath)) && (!String.IsNullOrEmpty(UploadURL)) && (!String.IsNullOrEmpty(FileBrowser_ImageUploadUrl)))
+            {
+                // Create a new security token, save in session, and set token GUID in the form data
+                CKEditor_Security_Token newToken = new CKEditor_Security_Token(UploadPath, UploadURL);
+                string token = newToken.ThisGuid.ToString();
+                HttpContext.Current.Session["#CKEDITOR::" + token] = newToken;
+
+                Output.WriteLine("               filebrowserImageUploadUrl: '" + FileBrowser_ImageUploadUrl + "?token=" + token + "',");
+            }
+
             if (Language == Web_Language_Enum.English)
                 Output.WriteLine("               language: 'en',");
             if (Language == Web_Language_Enum.Spanish)
@@ -49,26 +68,14 @@ namespace SobekCM.Library.CKEditor
                 Output.WriteLine("               language: 'de',");
             if (Language == Web_Language_Enum.Dutch)
                 Output.WriteLine("               language: 'nl',");
-            Output.WriteLine("               extraPlugins: 'autogrow',");
+
+
+
             Output.WriteLine("               autoGrow_maxHeight: 800,");
             Output.WriteLine("               removePlugins: 'resize',");
-            Output.WriteLine("               magicline_color: 'blue',");
-            Output.Write("               extraPlugins: 'tableresize'");
-
-            // Is there an endpoint defined for looking at uploaded files?
-            if (!String.IsNullOrEmpty(ImageBrowser_ListUrl))
-            {
-                Output.WriteLine(",");
-                Output.WriteLine("               extraPlugins : 'imagebrowser',");
-                Output.WriteLine("               imageBrowser_listUrl: '" + ImageBrowser_ListUrl + "'");
-            }
-            else
-            {
-                Output.WriteLine();
-            }
+            Output.WriteLine("               magicline_color: 'blue'");
             Output.WriteLine("			});");
             Output.WriteLine("    });");
-
             Output.WriteLine("  </script>");
         }
 
@@ -94,6 +101,9 @@ namespace SobekCM.Library.CKEditor
 
         /// <summary> Path where the uploaded files should go </summary>
         public string UploadPath { get; set; }
+
+        /// <summary> URL where the uploaded files go, to return the uploaded file URL </summary>
+        public string UploadURL { get; set; }
 
         /// <summary> ID of the existing text area where the HTML to edit resides </summary>
         public string TextAreaID {  get; set;  }

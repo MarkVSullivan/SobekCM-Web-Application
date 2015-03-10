@@ -382,6 +382,11 @@ namespace SobekCM.Engine_Library.Navigation
 									}
 								}
 								break;
+
+                            case "register":
+                                Navigator.Mode = Display_Mode_Enum.My_Sobek;
+                                Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+                                break;
 										   
 
 							case "my":
