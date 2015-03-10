@@ -1394,7 +1394,7 @@ namespace SobekCM.Resource_Object.Database
 
                     if (artifact)
                     {
-                        if (thisIdentifier.Type.ToUpper().IndexOf("ACCESSION") >= 0)
+                        if ((thisIdentifier.Type.ToUpper().IndexOf("ACCESSION") >= 0) || (thisIdentifier.Type.ToUpper().IndexOf("ACCN") >= 0))
                         {
                             accession_type = thisIdentifier.Type;
                             accession_id = thisIdentifier.Identifier;
@@ -1465,6 +1465,10 @@ namespace SobekCM.Resource_Object.Database
                     if ((!added) && (identifier_type_upper.IndexOf("ISSN") >= 0))
                     {
                         Add_External_Record_Number(ThisPackage.Web.GroupID, identifier.Identifier, "ISSN");
+                    }
+                    if ((!added) && ((identifier_type_upper.IndexOf("ACCESSION") >= 0) || (identifier_type_upper.IndexOf("ACCN") >= 0)))
+                    {
+                        Add_External_Record_Number(ThisPackage.Web.GroupID, identifier.Identifier, "ACCESSION");
                     }
                 }
             }

@@ -105,8 +105,16 @@ namespace SobekCM.Resource_Object.Bib_Info
                     foreach (Identifier_Info thisIdentifier in Identifiers)
                     {
                         metadataTerms.Add(new KeyValuePair<string, string>("Identifier", thisIdentifier.Identifier));
+
+                        if ((thisIdentifier.Type.IndexOf("ACCESSION", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                            (thisIdentifier.Type.IndexOf("ACCN", StringComparison.InvariantCultureIgnoreCase) >= 0))
+                        {
+                            metadataTerms.Add(new KeyValuePair<string, string>("Accession Number", thisIdentifier.Identifier));
+                        }
                     }
                 }
+
+
 
                 // Add the languages
                 if (Languages_Count > 0)

@@ -350,11 +350,11 @@ namespace SobekCM.Builder
             // Try to read the OAI-PMH configuration file
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\user\\sobekcm_microservices.config"))
             {
-                SobekEngineClient.Read_Config_File(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\user\\sobekcm_microservices.config");
+                SobekEngineClient.Read_Config_File(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\user\\sobekcm_microservices.config", Engine_ApplicationCache_Gateway.Settings.System_Base_URL);
             }
             else if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\default\\sobekcm_microservices.config"))
             {
-                SobekEngineClient.Read_Config_File(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\default\\sobekcm_microservices.config");
+                SobekEngineClient.Read_Config_File(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\default\\sobekcm_microservices.config", Engine_ApplicationCache_Gateway.Settings.System_Base_URL);
             }
 
 		    if (settings == null)
