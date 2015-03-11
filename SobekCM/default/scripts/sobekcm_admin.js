@@ -212,74 +212,6 @@ function reset_password( id, name )
     return false;
 }
 
-// Populate the interface form and show it
-function interface_form_popup( code, base_code, bannerlink, notes, overrideBanner, overrideHeader, suppressTopNav, buildOnLaunch  ) 
-{
-    // Populate the hidden value this data
-    var hiddenfield = document.getElementById('admin_interface_tosave');
-    hiddenfield.value = code;
-    
-    // Populate the visible fields
-    document.getElementById('form_interface_code').innerHTML = code + ' &nbsp; &nbsp ';
-    document.getElementById('form_interface_basecode').value = base_code;
-    document.getElementById('form_interface_link').value = bannerlink;
-    document.getElementById('form_interface_notes').value = notes;
-    
-    if ( overrideBanner == 'True' )
-        document.getElementById('form_interface_banner_override').checked = true;
-    else
-        document.getElementById('form_interface_banner_override').checked = false;
-        
-    if ( overrideHeader == 'True' )
-        document.getElementById('form_interface_header_override').checked = true;
-    else
-        document.getElementById('form_interface_header_override').checked = false;
-
-    if (suppressTopNav == 'True')
-        document.getElementById('form_interface_top_nav').checked = true;
-    else
-        document.getElementById('form_interface_top_nav').checked = false;
-
-    if (buildOnLaunch == 'True')
-        document.getElementById('form_interface_buildlaunch').checked = true;
-    else
-        document.getElementById('form_interface_buildlaunch').checked = false;
-
-    // Toggle the interface form
-    blanket_size('form_interface', 215);
-    toggle('blanket_outer');
-    toggle('form_interface');
-            
-    // Create the draggable object to allow this window to be dragged around
-    $("#form_interface").draggable();
-    
-    // Put focus on the interface code
-    var focusfield = document.getElementById('form_interface_basecode');
-    focusfield.focus();	
-        
-    return false;
-} 
-
-// Form was closed (cancelled) so clear all the data
-function interface_form_close( )
-{
-    // Clear the hidden value this data
-    var hiddenfield = document.getElementById('admin_interface_tosave');
-    hiddenfield.value = '';
-    
-    // Clear the data
-    document.getElementById('form_interface_code').innerHTML = '';
-    document.getElementById('form_interface_basecode').value = '';
-    document.getElementById('form_interface_link').value = '';
-    document.getElementById('form_interface_notes').value = '';
-    
-    // Close the associated form
-    popdown( 'form_interface' );    
-    
-    // Return false to prevent a return trip to the server
-    return false;
-}
-
 // Save the new interface
 function save_new_interface()
 {
@@ -791,6 +723,21 @@ function link_blurred( divname )
     var linkspan = document.getElementById(divname);
 	if (linkspan.className.indexOf('_focused') > 0)
 		linkspan.className = linkspan.className.replace('_focused', '');
+}
+
+// Save the single web skin updates
+function save_skin_edits() {
+    var hiddenfield = document.getElementById('admin_skin_save');
+    hiddenfield.value = 'save';
+    document.itemNavForm.submit();
+    return false;
+}
+
+function new_skin_edit_page(page) {
+    var hiddenfield = document.getElementById('admin_skin_save');
+    hiddenfield.value = page;
+    document.itemNavForm.submit();
+    return false;
 }
 
 // Save the aggregation updates

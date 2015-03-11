@@ -1089,3 +1089,8 @@ textarea.sbkSbia_HeaderTextArea {width: 400px; color:Blue; border-style:solid; b
 
 /*JQuery tooltip style for the Thumbnail_ResultsViewer page*/
 .qtip_BriefTitle{ color: #a5a5a5;font-weight: bold;}
+
+/** Class used for the maximized CKEditor HTML editor */
+.cke_maximized{
+    text-align: left;
+}

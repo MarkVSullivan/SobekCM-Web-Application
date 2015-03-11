@@ -305,6 +305,10 @@ input.sbkSav_checkbox { padding-top: 3px;border: 0; }
 .sbkSav_TableHeader3 { width: 90px; }
 .sbkSav_TableHeader4 { width: 340px; }
 
+/** Skins_Single_AdminViewer  **/
+#sbkSsav_ContainerInner { margin: 0 auto; padding:0; width: 1120px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
+#sbkSsav_PageContainer { margin-left: 40px;  margin-right: 40px;  text-align:center;  FONT-SIZE: small;  }
+
 /** Thematic_Heading_AdminViewer */
 .sbkThav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
 .sbkThav_PopupDiv { position:fixed; background-color:#eeeeee; width:550px; height:140px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px;  } 
@@ -409,3 +413,4 @@ input.users_large_input_focused  {  color:#0000a8;  width: 400px; margin-top: 6p
 .sbkAdmin_Focusable:focus { color:#0000a8; background-color: #fbf7b4; }
 
 .SobekAdminActionLink { color:#444444; }
+

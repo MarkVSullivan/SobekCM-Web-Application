@@ -52,6 +52,23 @@ namespace SobekCM.Library.AdminViewer
             actionMessage = String.Empty;
             string code = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 
+            string page_code = "a";
+            if (code.Contains("|"))
+            {
+                string[] parser = code.Split("|".ToCharArray());
+                code = parser[0];
+                page_code = parser[1];
+            }
+
+            // Determine the page
+            page = 1;
+            if (page_code == "b")
+                page = 2;
+            else if (page_code == "c")
+                page = 3;
+            else if (page_code == "d")
+                page = 4;
+
             // If the user cannot edit this, go back
             if ((!RequestSpecificValues.Current_User.Is_Portal_Admin ) && ( !RequestSpecificValues.Current_User.Is_System_Admin ))
             {
@@ -87,15 +104,6 @@ namespace SobekCM.Library.AdminViewer
             if (!Directory.Exists(skinDirectory))
                 Directory.CreateDirectory(skinDirectory);
 
-            // Determine the page
-            page = 1;
-            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "b")
-                page = 2;
-            else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "c")
-                page = 3;
-            else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "d")
-                page = 4;
-
             // If this is a postback, handle any events first
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
@@ -105,7 +113,7 @@ namespace SobekCM.Library.AdminViewer
                     NameValueCollection form = HttpContext.Current.Request.Form;
 
                     // Get the curret action
-                    string action = form["admin_aggr_save"];
+                    string action = form["admin_skin_save"];
 
                     // If no action, then we should return to the current tab page
                     if (action.Length == 0)
@@ -119,8 +127,7 @@ namespace SobekCM.Library.AdminViewer
                         HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code] = null;
 
                         // Redirect the RequestSpecificValues.Current_User
-                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-                        RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
                     }
@@ -181,6 +188,13 @@ namespace SobekCM.Library.AdminViewer
                     //    HttpContext.Current.ApplicationInstance.CompleteRequest();
                     //    RequestSpecificValues.Current_Mode.Request_Completed = true;
                     //}
+
+
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = code + "/" + action;
+                    string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                    HttpContext.Current.Response.Redirect(url, false);
+                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    RequestSpecificValues.Current_Mode.Request_Completed = true;
                 }
                 catch
                 {
@@ -216,8 +230,8 @@ namespace SobekCM.Library.AdminViewer
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_aggr_reset\" name=\"admin_aggr_reset\" value=\"\" />");
-            Output.WriteLine("<input type=\"hidden\" id=\"admin_aggr_save\" name=\"admin_aggr_save\" value=\"\" />");
-            Output.WriteLine("<input type=\"hidden\" id=\"admin_aggr_action\" name=\"admin_aggr_action\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_skin_save\" name=\"admin_skin_save\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_skin_action\" name=\"admin_skin_action\" value=\"\" />");
             Output.WriteLine();
 
             Tracer.Add_Trace("Skin_Single_AdminViewer.Write_ItemNavForm_Closing", "Add the rest of the form");
@@ -229,24 +243,15 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("<div id=\"sbkSaav_PageContainer\">");
 
-            // Add the buttons (unless this is a sub-page like editing the CSS file)
-            if (page < 9)
-            {
+            // Add the buttons
                 string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
                 Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-                Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('z');\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("  </div>");
                 Output.WriteLine();
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
-            }
-            else if (page == 10)
-            {
-                Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-                Output.WriteLine("    <button title=\"Close this child page details and return to main admin pages\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('g');\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK </button>");
-                Output.WriteLine("  </div>");
-            }
 
 
             Output.WriteLine("  <div class=\"sbkSaav_HomeText\">");
@@ -258,9 +263,7 @@ namespace SobekCM.Library.AdminViewer
             // Start the outer tab containe
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs\">");
 
-            // Add all the possible tabs (unless this is a sub-page like editing the CSS file)
-            if (page < 9)
-            {
+            // Add all the possible tabs 
                 Output.WriteLine("    <div class=\"tabs\">");
                 Output.WriteLine("      <ul>");
 
@@ -276,7 +279,7 @@ namespace SobekCM.Library.AdminViewer
                 }
                 else
                 {
-                    Output.WriteLine("    <li id=\"tabHeader_1\" onclick=\"return new_aggr_edit_page('a');\">" + GENERAL + "</li>");
+                    Output.WriteLine("    <li id=\"tabHeader_1\" onclick=\"return new_skin_edit_page('a');\">" + GENERAL + "</li>");
                 }
 
                 if (page == 2)
@@ -285,7 +288,7 @@ namespace SobekCM.Library.AdminViewer
                 }
                 else
                 {
-                    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_aggr_edit_page('b');\">" + STYLESHEET + "</li>");
+                    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_skin_edit_page('b');\">" + STYLESHEET + "</li>");
                 }
 
                 if (page == 3)
@@ -294,7 +297,7 @@ namespace SobekCM.Library.AdminViewer
                 }
                 else
                 {
-                    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_aggr_edit_page('c');\">" + HTML + "</li>");
+                    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_skin_edit_page('c');\">" + HTML + "</li>");
                 }
 
                 if (page == 4)
@@ -303,12 +306,11 @@ namespace SobekCM.Library.AdminViewer
                 }
                 else
                 {
-                    Output.WriteLine("    <li id=\"tabHeader_3\" onclick=\"return new_aggr_edit_page('d');\">" + BANNERS + "</li>");
+                    Output.WriteLine("    <li id=\"tabHeader_3\" onclick=\"return new_skin_edit_page('d');\">" + BANNERS + "</li>");
                 }
 
                 Output.WriteLine("      </ul>");
                 Output.WriteLine("    </div>");
-            }
 
             // Add the single tab.  When users click on a tab, it goes back to the server (here)
             // to render the correct tab content

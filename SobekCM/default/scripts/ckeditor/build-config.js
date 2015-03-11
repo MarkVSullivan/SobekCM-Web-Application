@@ -92,8 +92,7 @@ var CKBUILDER_CONFIG = {
 		'toolbar' : 1,
 		'undo' : 1,
 		'wsc' : 1,
-		'wysiwygarea' : 1,
-		'zoom' : 1
+		'wysiwygarea' : 1
 	},
 	languages : {
 		'de' : 1,

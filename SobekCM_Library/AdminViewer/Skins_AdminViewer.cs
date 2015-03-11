@@ -522,51 +522,6 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<input type=\"hidden\" id=\"admin_interface_delete\" name=\"admin_interface_delete\" value=\"\" />");
             Output.WriteLine();
 
-            Output.WriteLine("<!-- HTML Skins Edit Form -->");
-			Output.WriteLine("<div class=\"sbkSav_PopupDiv\" id=\"form_interface\" style=\"display:none;\">");
-			Output.WriteLine("  <div class=\"sbkAdm_PopupTitle\"><table style=\"width:100%;\"><tr><td style=\"text-align:left;\">EDIT WEB SKIN</td><td style=\"text-align:right;\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"interface_form_close()\">X</a> &nbsp; </td></tr></table></div>");
-            Output.WriteLine("  <br />");
-			Output.WriteLine("  <table class=\"sbkAdm_PopupTable\">");
-
-            // Add line for interface code and base interface code
-			Output.WriteLine("    <tr style=\"height:25px;\">");
-			Output.WriteLine("      <td style=\"width:112px;\"><label for=\"form_interface_code\">Web Skin Code:</label></td>");
-            Output.WriteLine("      <td style=\"width:220px;\"><span class=\"form_linkline admin_existing_code_line\" id=\"form_interface_code\"></span></td>");
-            Output.WriteLine("      <td style=\"text-align:right;\">");
-            Output.WriteLine("        <label for=\"form_interface_basecode\">Base Skin Code:</label> &nbsp; ");
-            Output.WriteLine("        <select class=\"sbkSav_small_input1 sbkAdmin_Focusable\" name=\"form_interface_basecode\" id=\"form_interface_basecode\">");
-            Output.WriteLine("          <option value=\"\"></option>");
-            foreach (string thisSkinCode in UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes)
-            {
-                Output.WriteLine("          <option value=\"" + thisSkinCode.ToUpper() + "\">" + thisSkinCode + "</option>");
-            }
-
-            Output.WriteLine("        </select>");
-            Output.WriteLine("      </td>");
-			Output.WriteLine("    </tr>");
-
-            // Add line for banner link
-			Output.WriteLine("    <tr style=\"height:25px;\"><td><label for=\"form_interface_link\">Banner Link:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"form_interface_link\" id=\"form_interface_link\" type=\"text\" value=\"\" /></td></tr>");
-
-            // Add line for notes
-			Output.WriteLine("    <tr style=\"height:25px;\"><td><label for=\"form_interface_notes\">Notes:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"form_interface_notes\" id=\"form_interface_notes\" type=\"text\" value=\"\" /></td></tr>");
-
-            // Add checkboxes for overriding the header/footer and overriding banner
-			Output.WriteLine("          <tr style=\"height:15px;\"><td>Flags:</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"form_interface_header_override\" id=\"form_interface_header_override\" checked=\"checked\" /> <label for=\"form_interface_header_override\">Override header and footer?</label></td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"form_interface_banner_override\" id=\"form_interface_banner_override\" /> <label for=\"form_interface_banner_override\">Override banner?</label></td></tr>");
-			Output.WriteLine("          <tr style=\"height:15px;\"><td>&nbsp;</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"form_interface_top_nav\" id=\"form_interface_top_nav\" /> <label for=\"form_interface_top_nav\">Suppress top-level navigation?</label></td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"form_interface_buildlaunch\" id=\"form_interface_buildlaunch\" /> <label for=\"form_interface_buildlaunch\">Build on launch?</label></td></tr>");
-
-
-			// Add the buttons
-			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-			Output.WriteLine("      <td colspan=\"3\">");
-			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return interface_form_close();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Save changes to this existing web skin\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
-			Output.WriteLine("      </td>");
-			Output.WriteLine("    </tr>");
-			Output.WriteLine("  </table>");
-			Output.WriteLine("</div>");
-			Output.WriteLine();
-
             Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
@@ -635,6 +590,7 @@ namespace SobekCM.Library.AdminViewer
             RequestSpecificValues.Current_Mode.Skin = current_skin;
 
             // Write the data for each interface
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
             foreach (DataRow thisRow in UI_ApplicationCache_Gateway.Web_Skin_Collection.Skin_Table.Rows)
             {
                 // Pull all these values
@@ -650,7 +606,10 @@ namespace SobekCM.Library.AdminViewer
                 // Build the action links
                 Output.WriteLine("    <tr>");
                 Output.Write("      <td class=\"sbkAdm_ActionLink\" >( ");
-                Output.Write("<a title=\"Click to edit\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return interface_form_popup('" + code + "','" + base_code.ToUpper() + "','" + bannerLink + "','" + notes + "','" + overrideBanner + "','" + overrideHeader + "','" + suppressTopNav + "','" + buildOnLaunch + "');\">edit</a> | ");
+
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = code;
+
+                Output.Write("<a title=\"Click to edit\" href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >edit</a> | ");
                 Output.Write("<a title=\"Click to view\" href=\"" + view_url.Replace("testskincode", code) + "\" >view</a> | ");
 				Output.Write("<a title=\"Click to reset\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"reset_interface('" + code + "');\">reset</a> | ");
 
@@ -667,6 +626,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    </tr>");
 				Output.WriteLine("    <tr><td class=\"sbkAdm_TableRule\" colspan=\"4\"></td></tr>");
             }
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
 
             Output.WriteLine("  </table>");
             Output.WriteLine("  <br />");

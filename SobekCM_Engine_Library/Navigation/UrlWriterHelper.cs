@@ -388,9 +388,6 @@ namespace SobekCM.Engine_Library.Navigation
                         case Admin_Type_Enum.Aliases:
                             return this_base_url + "admin/aliases" + urlOptions1;
 
-                        case Admin_Type_Enum.Skins_Mgmt:
-                            return this_base_url + "admin/webskins" + urlOptions1;
-
                         case Admin_Type_Enum.Default_Metadata:
                             if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
                                 return this_base_url + "admin/defaults/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
@@ -431,6 +428,14 @@ namespace SobekCM.Engine_Library.Navigation
                             if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
                                 return this_base_url + "admin/settings/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "admin/settings" + urlOptions1;
+
+                        case Admin_Type_Enum.Skins_Mgmt:
+                            return this_base_url + "admin/webskins" + urlOptions1;
+
+                        case Admin_Type_Enum.Skins_Single:
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "admin/editskin/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                            return this_base_url + "admin/webskins" + urlOptions1;
 
                         default:
                             return this_base_url + "admin" + urlOptions1;
