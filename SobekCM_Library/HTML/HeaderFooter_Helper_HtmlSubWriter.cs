@@ -290,7 +290,7 @@ namespace SobekCM.Library.HTML
             {
                 if ((RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.Override_Banner))
                 {
-                    banner = RequestSpecificValues.HTML_Skin.Banner_HTML;
+                    banner = !String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.Banner_HTML) ? RequestSpecificValues.HTML_Skin.Banner_HTML : String.Empty;
                 }
                 else
                 {

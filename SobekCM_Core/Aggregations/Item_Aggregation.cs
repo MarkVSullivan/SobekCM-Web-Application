@@ -545,7 +545,7 @@ namespace SobekCM.Core.Aggregations
             // use the web skin banner HTML instead of the aggregation's banner
             if ((ThisWebSkin != null) && (ThisWebSkin.Override_Banner) && (Type.ToLower().IndexOf("institution") < 0))
             {
-                return ThisWebSkin.Banner_HTML;
+                return !String.IsNullOrEmpty(ThisWebSkin.Banner_HTML) ? ThisWebSkin.Banner_HTML : String.Empty;
             }
 
             return BannerImage;

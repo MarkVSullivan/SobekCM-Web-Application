@@ -43,7 +43,8 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("<!-- Write the main collection, interface, or institution banner -->");
 			if ((HTML_Skin != null) && (HTML_Skin.Override_Banner))
 			{
-				Output.WriteLine(HTML_Skin.Banner_HTML);
+                if ( !String.IsNullOrEmpty(HTML_Skin.Banner_HTML))
+                    Output.WriteLine(HTML_Skin.Banner_HTML);
 			}
 			else
 			{

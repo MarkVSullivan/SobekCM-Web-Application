@@ -40,10 +40,7 @@ namespace SobekCM.Engine_Library.Skins
                 return false;
 
             // Clear existing interfaces
-            SkinList.Clear();
-
-            // Set the data table
-            SkinList.Skin_Table = skinData;
+            SkinList.Initialize(skinData);
 
             return true;
         }
@@ -58,17 +55,22 @@ namespace SobekCM.Engine_Library.Skins
             string base_interface = Skin_Row["BaseInterface"].ToString();
             bool override_banner = Convert.ToBoolean(Skin_Row["OverrideBanner"]);
             string banner_link = Skin_Row["BannerLink"].ToString();
-            string this_style = "design/skins/" + code + "/" + code + ".css";
-            if (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + code + "\\" + code + ".css"))
+            string this_style = code + ".css";
+            if (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + code + "\\" + this_style))
                 this_style = String.Empty;
 
             // Create the web skin object
-            Complete_Web_Skin_Object completeSkin = new Complete_Web_Skin_Object(code, base_interface, this_style)
+            Complete_Web_Skin_Object completeSkin = new Complete_Web_Skin_Object(code, this_style)
             {
                 Override_Banner = override_banner, 
-                Suppress_Top_Navigation = Convert.ToBoolean(Skin_Row["SuppressTopNavigation"]),
-                Banner_Link = banner_link
+                Suppress_Top_Navigation = Convert.ToBoolean(Skin_Row["SuppressTopNavigation"])
             };
+
+            // Assign the optional values
+            if (!String.IsNullOrEmpty(base_interface))
+                completeSkin.Base_Skin_Code = base_interface;
+            if (!String.IsNullOrEmpty(banner_link))
+                completeSkin.Banner_Link = banner_link;
 
             // Look for source files
 	        string html_soure_directory = Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html";
@@ -85,10 +87,10 @@ namespace SobekCM.Engine_Library.Skins
 	                if (fileName.ToLower().Contains("header_item.htm"))
 	                {
 	                    if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-	                        completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Header_Item_Source_File = fileName;
+	                        completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Header_Item_Source_File = "html\\" + fileName;
 	                    else
 	                    {
-	                        Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files {Header_Item_Source_File = fileName};
+                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Item_Source_File = "html\\" + fileName };
 	                        completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
 	                    }
 	                }
@@ -102,10 +104,10 @@ namespace SobekCM.Engine_Library.Skins
 	                        if (languageEnum != Web_Language_Enum.UNDEFINED)
 	                        {
                                 if (completeSkin.SourceFiles.ContainsKey(languageEnum))
-                                    completeSkin.SourceFiles[languageEnum].Header_Item_Source_File = fileName;
+                                    completeSkin.SourceFiles[languageEnum].Header_Item_Source_File = "html\\" + fileName;
                                 else
                                 {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Item_Source_File = fileName };
+                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Item_Source_File = "html\\" + fileName };
                                     completeSkin.SourceFiles[languageEnum] = sourceFiles;
                                 }
 	                        }
@@ -119,10 +121,10 @@ namespace SobekCM.Engine_Library.Skins
                     if (fileName.ToLower().Contains("header.htm"))
                     {
                         if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Header_Source_File = fileName;
+                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Header_Source_File = "html\\" + fileName;
                         else
                         {
-                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files {Header_Source_File = fileName};
+                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Source_File = "html\\" + fileName };
                             completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
                         }
                     }
@@ -136,10 +138,10 @@ namespace SobekCM.Engine_Library.Skins
                             if (languageEnum != Web_Language_Enum.UNDEFINED)
                             {
                                 if (completeSkin.SourceFiles.ContainsKey(languageEnum))
-                                    completeSkin.SourceFiles[languageEnum].Header_Source_File = fileName;
+                                    completeSkin.SourceFiles[languageEnum].Header_Source_File = "html\\" + fileName;
                                 else
                                 {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Source_File = fileName };
+                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Source_File = "html\\" + fileName };
                                     completeSkin.SourceFiles[languageEnum] = sourceFiles;
                                 }
                             }
@@ -153,10 +155,10 @@ namespace SobekCM.Engine_Library.Skins
                     if (fileName.ToLower().Contains("footer_item.htm"))
                     {
                         if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Footer_Item_Source_File = fileName;
+                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Footer_Item_Source_File = "html\\" + fileName;
                         else
                         {
-                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Item_Source_File = fileName };
+                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Item_Source_File = "html\\" + fileName };
                             completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
                         }
                     }
@@ -170,10 +172,10 @@ namespace SobekCM.Engine_Library.Skins
                             if (languageEnum != Web_Language_Enum.UNDEFINED)
                             {
                                 if (completeSkin.SourceFiles.ContainsKey(languageEnum))
-                                    completeSkin.SourceFiles[languageEnum].Footer_Item_Source_File = fileName;
+                                    completeSkin.SourceFiles[languageEnum].Footer_Item_Source_File = "html\\" + fileName;
                                 else
                                 {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Item_Source_File = fileName };
+                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Item_Source_File = "html\\" + fileName };
                                     completeSkin.SourceFiles[languageEnum] = sourceFiles;
                                 }
                             }
@@ -187,10 +189,10 @@ namespace SobekCM.Engine_Library.Skins
                     if (fileName.ToLower().Contains("footer.htm"))
                     {
                         if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Footer_Item_Source_File = fileName;
+                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Footer_Item_Source_File = "html\\" + fileName;
                         else
                         {
-                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Source_File = fileName };
+                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Source_File = "html\\" + fileName };
                             completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
                         }
                     }
@@ -204,10 +206,10 @@ namespace SobekCM.Engine_Library.Skins
                             if (languageEnum != Web_Language_Enum.UNDEFINED)
                             {
                                 if (completeSkin.SourceFiles.ContainsKey(languageEnum))
-                                    completeSkin.SourceFiles[languageEnum].Footer_Source_File = fileName;
+                                    completeSkin.SourceFiles[languageEnum].Footer_Source_File = "html\\" + fileName;
                                 else
                                 {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Source_File = fileName };
+                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Source_File = "html\\" + fileName };
                                     completeSkin.SourceFiles[languageEnum] = sourceFiles;
                                 }
                             }
@@ -313,12 +315,17 @@ namespace SobekCM.Engine_Library.Skins
                 return cacheObject;
 
             // Build this then
-            Web_Skin_Object returnValue = new Web_Skin_Object(CompleteSkin.Skin_Code, CompleteSkin.Base_Skin_Code, CompleteSkin.CSS_Style)
+            Web_Skin_Object returnValue = new Web_Skin_Object(CompleteSkin.Skin_Code, CompleteSkin.Base_Skin_Code, "design/skins/" + CompleteSkin.Skin_Code + "/" + CompleteSkin.CSS_Style)
             {
                 Override_Banner = CompleteSkin.Override_Banner, 
-                Suppress_Top_Navigation = CompleteSkin.Suppress_Top_Navigation, 
-                Language_Code = Web_Language_Enum_Converter.Enum_To_Code(language)
+                Suppress_Top_Navigation = CompleteSkin.Suppress_Top_Navigation
             };
+
+            // If not default, assign the language
+            if (language != Web_Language_Enum.DEFAULT)
+            {
+                returnValue.Language_Code = Web_Language_Enum_Converter.Enum_To_Code(language);
+            }
 
             // Get the source file
             Complete_Web_Skin_Source_Files sourceFiles = CompleteSkin.SourceFiles[language];
@@ -327,9 +334,9 @@ namespace SobekCM.Engine_Library.Skins
             if (returnValue.Override_Banner)
             {
                 // Find the LANGUAGE-SPECIFIC high-bandwidth banner image
-                 if (sourceFiles.Banner.Length > 0)
+                 if ( !String.IsNullOrEmpty(sourceFiles.Banner))
                 {
-                    if ( CompleteSkin.Banner_Link.Length > 0 )
+                    if ( !String.IsNullOrEmpty(CompleteSkin.Banner_Link))
                     {
                         returnValue.Banner_HTML = "<a href=\"" + CompleteSkin.Banner_Link + "\"><img border=\"0\" src=\"<%BASEURL%>skins/" + CompleteSkin.Skin_Code + "/" + sourceFiles.Banner + "\" alt=\"MISSING BANNER\" /></a>";
                     }
@@ -341,10 +348,10 @@ namespace SobekCM.Engine_Library.Skins
             }
 
             // Now, set the header and footer html
-            string this_header = sourceFiles.Header_Source_File;
-            string this_footer = sourceFiles.Footer_Source_File;
-            string this_item_header = sourceFiles.Header_Item_Source_File;
-            string this_item_footer = sourceFiles.Footer_Item_Source_File;
+            string this_header = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Header_Source_File);
+            string this_footer = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Footer_Source_File);
+            string this_item_header = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Header_Item_Source_File);
+            string this_item_footer = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Footer_Item_Source_File); 
 
             // If the item specific stuff doesn't exist, use the regular 
             if (!File.Exists(this_item_header))

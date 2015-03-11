@@ -1747,7 +1747,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        <td>");
 
 			// Get the ordered list of all skin codes
-            ReadOnlyCollection<string> skinCodes = UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes;
+            List<string> skinCodes = UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes;
 			for (int i = 0; i < 1; i++) // itemAggregation.Web_Skins.Count + 5; i++)
 			{
 				string skin = String.Empty;

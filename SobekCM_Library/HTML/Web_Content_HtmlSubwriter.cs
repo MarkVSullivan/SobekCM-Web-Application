@@ -333,7 +333,7 @@ namespace SobekCM.Library.HTML
             {
                 if (RequestSpecificValues.Static_Web_Content.Banner.ToUpper().Trim() == "DEFAULT")
                 {
-                    if ((RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.Banner_HTML.Length > 0))
+                    if ((RequestSpecificValues.HTML_Skin != null) && ( !String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.Banner_HTML)))
                     {
                         Output.WriteLine(RequestSpecificValues.HTML_Skin.Banner_HTML);
                     }

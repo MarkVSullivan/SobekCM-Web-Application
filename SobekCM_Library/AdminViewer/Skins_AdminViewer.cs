@@ -15,7 +15,7 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Skins;
+using SobekCM.Engine_Library.Skins;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -110,7 +110,7 @@ namespace SobekCM.Library.AdminViewer
 								actionMessage = "Deleted web skin <i>" + delete_value + "</i>";
 
 								// Remove this web skin from the collection
-                                SobekCM_Skin_Collection_Builder.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
+                                Web_Skin_Utilities.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
 							}
 							else
 							{
@@ -353,7 +353,7 @@ namespace SobekCM.Library.AdminViewer
                                         // Reload the list of all skins from the database, to include this new skin
                                         lock (UI_ApplicationCache_Gateway.Web_Skin_Collection)
                                         {
-                                            SobekCM_Skin_Collection_Builder.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
+                                            Web_Skin_Utilities.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
                                         }
                                         if (String.IsNullOrEmpty(actionMessage))
                                         {
@@ -436,7 +436,7 @@ namespace SobekCM.Library.AdminViewer
                                 {
                                     lock (UI_ApplicationCache_Gateway.Web_Skin_Collection)
                                     {
-                                        SobekCM_Skin_Collection_Builder.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
+                                        Web_Skin_Utilities.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
                                     }
                                     CachedDataManager.WebSkins.Remove_Skin(save_value, RequestSpecificValues.Tracer);
 

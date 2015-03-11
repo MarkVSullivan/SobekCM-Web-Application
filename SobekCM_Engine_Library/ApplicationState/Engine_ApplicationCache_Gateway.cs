@@ -12,6 +12,7 @@ using SobekCM.Core.Users;
 using SobekCM.EngineLibrary.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Settings;
+using SobekCM.Engine_Library.Skins;
 using SobekCM.Resource_Object.Database;
 
 #endregion
@@ -197,18 +198,7 @@ namespace SobekCM.Engine_Library.ApplicationState
                         webSkins = new Web_Skin_Collection();
                     }
 
-                    // Get the data from the database
-                    DataTable skinData = Engine_Database.Get_All_Web_Skins(null);
-
-                    // Clear existing interfaces
-                    webSkins.Clear();
-
-                    // Just return if the data appears bad..
-                    if ((skinData == null) || (skinData.Rows.Count == 0))
-                        return false;
-
-                    // Set the data table
-                    webSkins.Skin_Table = skinData;
+                    Web_Skin_Utilities.Populate_Default_Skins(webSkins, null);
                 }
 
                 return true;
@@ -230,14 +220,7 @@ namespace SobekCM.Engine_Library.ApplicationState
                     {
                         webSkins = new Web_Skin_Collection();
 
-                        // Get the data from the database
-                        DataTable skinData = Engine_Database.Get_All_Web_Skins(null);
-
-                        // Clear existing interfaces
-                        webSkins.Clear();
-
-                        // Set the data table
-                        webSkins.Skin_Table = skinData;
+                        Web_Skin_Utilities.Populate_Default_Skins(webSkins, null);
                     }
 
                     return webSkins;

@@ -53,7 +53,7 @@ namespace SobekCM.Core.MemoryMgmt
             int values_cleared = 0;
             foreach (DictionaryEntry thisItem in HttpContext.Current.Cache)
             {
-                if ((thisItem.Key.ToString() == "SKIN|" + Skin_Code.ToLower()) || (thisItem.Key.ToString().IndexOf("SKIN|" + Skin_Code.ToLower() + "_") == 0))
+                if ((thisItem.Key.ToString() == "SKIN|" + Skin_Code.ToLower()) || (thisItem.Key.ToString().IndexOf("SKIN|" + Skin_Code.ToLower() + "|") == 0))
                 {
                     HttpContext.Current.Cache.Remove(thisItem.Key.ToString());
                     values_cleared++;
@@ -86,8 +86,8 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             string key = "SKIN|" + Skin_Code.ToLower();
-            if ((Language_Code.Length > 0) && (Language_Code != "en"))
-                key = key + "_" + Language_Code;
+            if (Language_Code.Length > 0)
+                key = key + "|" + Language_Code;
 
             // See if this is in the local cache first
             object returnValue = HttpContext.Current.Cache.Get(key);
@@ -155,8 +155,8 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Determine the key
             string key = "SKIN|" + Skin_Code.ToLower();
-            if ((Language_Code.Length > 0) && (Language_Code != "en"))
-                key = key + "_" + Language_Code;
+            if (Language_Code.Length > 0)
+                key = key + "|" + Language_Code;
 
 
             // Check the number of item aggregationPermissions currently locally cached

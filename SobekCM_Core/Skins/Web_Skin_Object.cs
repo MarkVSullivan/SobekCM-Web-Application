@@ -46,10 +46,9 @@ namespace SobekCM.Core.Skins
             this.Skin_Code = Skin_Code;
             Override_Banner = false;
 
-            this.Base_Skin_Code = Base_Skin_Code.Length > 0 ? Base_Skin_Code : Skin_Code;
+            this.Base_Skin_Code = String.IsNullOrEmpty(Base_Skin_Code) ? Skin_Code : Base_Skin_Code;
 
             // Set some defaults
-            Banner_HTML = String.Empty;
             Header_HTML = String.Empty;
             Footer_HTML = String.Empty;
             Header_Item_HTML = String.Empty;
@@ -79,7 +78,6 @@ namespace SobekCM.Core.Skins
             Footer_HTML = String.Empty;
             Header_Item_HTML = String.Empty;
             Footer_Item_HTML = String.Empty;
-            Language_Code = String.Empty;
 	        Header_Has_Container_Directive = false;
 	        Footer_Has_Container_Directive = false;
         }
@@ -96,7 +94,7 @@ namespace SobekCM.Core.Skins
 
         /// <summary> Language code, which indicates which language this skin information pertains to </summary>
         /// <remarks> Since this object holds the header and footer information, this is language-specific </remarks>
-        [DataMember(Name = "language")]
+        [DataMember(EmitDefaultValue = false, Name = "language")]
         [ProtoMember(6)]
         public string Language_Code { get; set; }
 

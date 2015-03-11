@@ -29,7 +29,7 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Engine_Library.SiteMap;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Database;
-using SobekCM.Library.Skins;
+using SobekCM.Engine_Library.Skins;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
@@ -1816,7 +1816,7 @@ namespace SobekCM.Library
             Web_Skin_Object htmlSkin = null;
             string webskin_code_language = Web_Skin_Code;
             if ( Current_Mode.Language_Code.Length > 0 )
-                webskin_code_language = webskin_code_language + "_" + Current_Mode.Language_Code;
+                webskin_code_language = webskin_code_language + "|" + Current_Mode.Language_Code;
             if (Skin_Collection[webskin_code_language] != null)
             {
                 htmlSkin = Skin_Collection[webskin_code_language];
@@ -1852,7 +1852,7 @@ namespace SobekCM.Library
 		            Tracer.Add_Trace("SobekCM_Assistant.Get_HTML_Skin", "Building web skin '" + Web_Skin_Code + "'");
 	            }
 
-	            Web_Skin_Object new_skin = SobekCM_Skin_Collection_Builder.Build_Skin(skin_row, Current_Mode.Language_Code );
+	            Web_Skin_Object new_skin = Web_Skin_Utilities.Build_Skin(skin_row, Current_Mode.Language_Code );
 
                 // Look in the web skin row and see if it should be kept around, rather than momentarily cached
                 if (new_skin != null)

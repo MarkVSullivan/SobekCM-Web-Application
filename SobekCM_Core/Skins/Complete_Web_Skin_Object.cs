@@ -12,12 +12,11 @@ namespace SobekCM.Core.Skins
     [Serializable,DataContract,ProtoContract]
     public class Complete_Web_Skin_Object
     {
-        /// <summary> Code for the base skin which this skin derives from  </summary>
-        /// <remarks> The base skin is used for many of the common design image files which are reused, such as button images, tab images, etc..<br /><br />
-        /// This also corresponds to the location of the base skin files under the design folder.  (i.e., '\design\skins\[CODE]' ) </remarks>
-        [DataMember(EmitDefaultValue = false, Name = "base")]
+        /// <summary> Code for this skin </summary>
+        /// <remarks> This also corresponds to the location of the main interface files under the design folder.  (i.e., '\design\skins\[CODE]' ) </remarks>
+        [DataMember(Name = "code")]
         [ProtoMember(1)]
-        public readonly string Base_Skin_Code;
+        public readonly string Skin_Code;
 
         /// <summary> Additional CSS Stylesheet to be included for this skin </summary>
         /// <remarks> The standard SobekCM stylesheet is always included, but this stylesheet can override any styles from the standard </remarks>
@@ -25,28 +24,26 @@ namespace SobekCM.Core.Skins
         [ProtoMember(2)]
         public readonly string CSS_Style;
 
-        /// <summary> Code for this skin </summary>
-        /// <remarks> This also corresponds to the location of the main interface files under the design folder.  (i.e., '\design\skins\[CODE]' ) </remarks>
-        [DataMember(Name = "code")]
-        [ProtoMember(3)]
-        public readonly string Skin_Code;
-
         /// <summary> Constructor for a new instance of the Complete_Web_Skin_Object class </summary>
         /// <param name="Skin_Code"> Code for this HTML skin</param>
         /// <param name="Base_Skin_Code"> Code for the base HTML skin which this skin derives from</param>
         /// <param name="CSS_Style"> Additional CSS Stylesheet to be included for this HTML skin</param>
-        public Complete_Web_Skin_Object(string Skin_Code, string Base_Skin_Code, string CSS_Style)
+        public Complete_Web_Skin_Object(string Skin_Code, string CSS_Style)
         {
             // Save the parameters
             this.CSS_Style = CSS_Style;
             this.Skin_Code = Skin_Code;
             Override_Banner = false;
 
-            this.Base_Skin_Code = Base_Skin_Code.Length > 0 ? Base_Skin_Code : Skin_Code;
-
             SourceFiles = new Dictionary<Web_Language_Enum, Complete_Web_Skin_Source_Files>();
         }
 
+        /// <summary> Code for the base skin which this skin derives from  </summary>
+        /// <remarks> The base skin is used for many of the common design image files which are reused, such as button images, tab images, etc..<br /><br />
+        /// This also corresponds to the location of the base skin files under the design folder.  (i.e., '\design\skins\[CODE]' ) </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "base")]
+        [ProtoMember(3)]
+        public string Base_Skin_Code { get; set; }
 
         /// <summary>  Flag indicates if the top-level aggregation navigation should be suppressed for this web skin ( i.e., is the top-level navigation embedded into the header file already? ) </summary>
         [DataMember(Name = "suppressTopNav")]
@@ -69,9 +66,9 @@ namespace SobekCM.Core.Skins
         public string Notes { get; set; }
 
         /// <summary> Collection of the source files for every language supported by this web skin </summary>
-        [DataMember(Name = "languageSupport")]
+        [DataMember(EmitDefaultValue = false, Name = "sourceByLanguage")]
         [ProtoMember(8)]
-        public Dictionary<Web_Language_Enum, Complete_Web_Skin_Source_Files> SourceFiles { get; private set; }
+        public Dictionary<Web_Language_Enum, Complete_Web_Skin_Source_Files> SourceFiles { get; set; }
 
     }
 }
