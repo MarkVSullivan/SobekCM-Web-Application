@@ -43,7 +43,7 @@ namespace SobekCM.Library
             Item_Aggregation_Child_Page Browse_Object,
             SobekCM_Item Current_Item,
             Page_TreeNode Current_Page,
-            SobekCM_Skin_Object HTML_Skin,
+            Web_Skin_Object HTML_Skin,
             User_Object Current_User,
             Public_User_Folder Public_Folder,
             SobekCM_SiteMap Site_Map,
@@ -90,7 +90,7 @@ namespace SobekCM.Library
     
 
         /// <summary> HTML Web skin which controls the overall appearance of this digital library </summary>
-        public readonly SobekCM_Skin_Object HTML_Skin;
+        public readonly Web_Skin_Object HTML_Skin;
 
         /// <summary> Currently logged on user </summary>
         public readonly User_Object Current_User;

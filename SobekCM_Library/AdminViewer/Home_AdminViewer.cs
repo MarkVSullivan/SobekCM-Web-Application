@@ -107,7 +107,7 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 			// Edit web skins
-			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins;
+			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
 			Output.WriteLine("    <tr><td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "skins.gif\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Web Skins</a></td></tr>");
 
 			// Edit wordmarks

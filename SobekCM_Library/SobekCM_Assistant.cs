@@ -1798,7 +1798,7 @@ namespace SobekCM.Library
 	    /// <param name="Cache_On_Build"> Flag indicates if this should be added to the ASP.net (or caching server) cache </param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
 	    /// <returns> Fully-built object used to "skin" this digital library </returns>
-	    public SobekCM_Skin_Object Get_HTML_Skin(SobekCM_Navigation_Object Current_Mode, SobekCM_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer)
+	    public Web_Skin_Object Get_HTML_Skin(SobekCM_Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer)
         {
             return Get_HTML_Skin(Current_Mode.Skin, Current_Mode, Skin_Collection, Cache_On_Build, Tracer); 
         }
@@ -1810,10 +1810,10 @@ namespace SobekCM.Library
 		/// <param name="Cache_On_Build"> Flag indicates if this should be added to the ASP.net (or caching server) cache </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully-built object used to "skin" this digital library </returns>
-        public SobekCM_Skin_Object Get_HTML_Skin( string Web_Skin_Code, SobekCM_Navigation_Object Current_Mode, SobekCM_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer )
+        public Web_Skin_Object Get_HTML_Skin( string Web_Skin_Code, SobekCM_Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer )
         {
             // Get the interface object
-            SobekCM_Skin_Object htmlSkin = null;
+            Web_Skin_Object htmlSkin = null;
             string webskin_code_language = Web_Skin_Code;
             if ( Current_Mode.Language_Code.Length > 0 )
                 webskin_code_language = webskin_code_language + "_" + Current_Mode.Language_Code;
@@ -1831,7 +1831,7 @@ namespace SobekCM.Library
             // If no interface yet, look in the cache
             if (( Web_Skin_Code != "new") && ( Cache_On_Build ))
             {
-                htmlSkin = CachedDataManager.Retrieve_Skin(Web_Skin_Code, Current_Mode.Language_Code, Tracer);
+                htmlSkin = CachedDataManager.WebSkins.Retrieve_Skin(Web_Skin_Code, Current_Mode.Language_Code, Tracer);
                 if (htmlSkin != null)
                 {
 	                if (Tracer != null)
@@ -1852,7 +1852,7 @@ namespace SobekCM.Library
 		            Tracer.Add_Trace("SobekCM_Assistant.Get_HTML_Skin", "Building web skin '" + Web_Skin_Code + "'");
 	            }
 
-	            SobekCM_Skin_Object new_skin = SobekCM_Skin_Collection_Builder.Build_Skin(skin_row, Current_Mode.Language_Code );
+	            Web_Skin_Object new_skin = SobekCM_Skin_Collection_Builder.Build_Skin(skin_row, Current_Mode.Language_Code );
 
                 // Look in the web skin row and see if it should be kept around, rather than momentarily cached
                 if (new_skin != null)
@@ -1865,7 +1865,7 @@ namespace SobekCM.Library
                     else if ( Cache_On_Build )
                     {
                         // Momentarily cache this web skin object
-                        CachedDataManager.Store_Skin(Web_Skin_Code, Current_Mode.Language_Code, new_skin, Tracer);
+                        CachedDataManager.WebSkins.Store_Skin(Web_Skin_Code, Current_Mode.Language_Code, new_skin, Tracer);
                     }
 
                     htmlSkin = new_skin;

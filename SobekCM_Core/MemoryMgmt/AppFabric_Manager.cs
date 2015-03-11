@@ -305,7 +305,7 @@ namespace SobekCM.Core.MemoryMgmt
         //                }
         //                if ((thisType == null) && (myKey.IndexOf("SKIN_") == 0))
         //                {
-        //                    thisType = typeof(SobekCM_Skin_Object);
+        //                    thisType = typeof(Web_Skin_Object);
         //                }
         //                if ((thisType == null) && (myKey.IndexOf("AGGR_") == 0))
         //                {

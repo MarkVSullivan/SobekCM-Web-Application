@@ -646,7 +646,13 @@ namespace SobekCM.Engine_Library.Navigation
                                             break;
 
                                         case "webskins":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Skins;
+                                            Navigator.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
+                                            break;
+
+                                        case "editskin":
+                                            Navigator.Admin_Type = Admin_Type_Enum.Skins_Single;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             break;
 
                                         case "defaults":

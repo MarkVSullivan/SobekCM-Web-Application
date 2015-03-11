@@ -398,8 +398,11 @@
         /// <summary> Allows admins to view and edit system-wide settings from the database </summary>
         Settings,
 
+        /// <summary> Detailed editing of a single web skin </summary>
+        Skins_Single,
+
         /// <summary> Provides list of all existing web skins and allows admin to enter a new web skin or edit an existing web skin </summary>
-        Skins,
+        Skins_Mgmt,
 
         /// <summary> Allows the system administrator to add new thematic headings to the main home page </summary>
         Thematic_Headings,

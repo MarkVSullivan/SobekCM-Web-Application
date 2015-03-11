@@ -44,7 +44,7 @@ namespace SobekCM
 		public Page_TreeNode currentPage;
 		public User_Object currentUser;
 		public Item_Aggregation hierarchyObject;
-		public SobekCM_Skin_Object htmlSkin;
+		public Web_Skin_Object htmlSkin;
 		public SobekCM_Items_In_Title itemsInTitle;
 		public abstractMainWriter mainWriter;
 		public List<iSearch_Title_Result> pagedSearchResults;

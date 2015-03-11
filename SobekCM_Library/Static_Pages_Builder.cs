@@ -374,7 +374,7 @@ namespace SobekCM.Library
 	        currentMode.Skin = defaultSkin;
 
 			// Get the default web skin
-			SobekCM_Skin_Object defaultSkinObject = Engine_ApplicationCache_Gateway.Web_Skin_Collection[defaultSkin] ?? assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
+			Web_Skin_Object defaultSkinObject = Engine_ApplicationCache_Gateway.Web_Skin_Collection[defaultSkin] ?? assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
 
 	        // Get the list of all collections
             DataTable allCollections = SobekCM_Database.Get_Codes_Item_Aggregations( null);
@@ -688,7 +688,7 @@ namespace SobekCM.Library
 		        currentMode.Skin = Aggregation.Web_Skins[0];
 
 			// Get the skin object
-            SobekCM_Skin_Object skinObject = Engine_ApplicationCache_Gateway.Web_Skin_Collection[currentMode.Skin];
+            Web_Skin_Object skinObject = Engine_ApplicationCache_Gateway.Web_Skin_Collection[currentMode.Skin];
 			if (skinObject == null)
 			{
                 skinObject = assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
@@ -951,7 +951,7 @@ namespace SobekCM.Library
             //    currentMode.Skin = CurrentItem.Behaviors.Web_Skins[0];
 
             //// Get the skin object
-            //SobekCM_Skin_Object skinObject = skinsCollection[currentMode.Skin];
+            //Web_Skin_Object skinObject = skinsCollection[currentMode.Skin];
             //if (skinObject == null)
             //{
             //    skinObject = assistant.Get_HTML_Skin(currentMode, skinsCollection, false, null);
@@ -1290,7 +1290,7 @@ namespace SobekCM.Library
 	    /// <param name="Writer"> Open stream to write the HTML header to </param>
 	    /// <param name="HTMLSkin"> Default html web skin/interface</param>
 	    /// <param name="CurrentItem"> Current item, to include the aggregationPermissions in the breadcrumbs </param>
-	    public void Display_Header(TextWriter Writer, SobekCM_Skin_Object HTMLSkin, SobekCM_Item CurrentItem )
+	    public void Display_Header(TextWriter Writer, Web_Skin_Object HTMLSkin, SobekCM_Item CurrentItem )
         {
 			StringBuilder breadcrumb_builder = new StringBuilder("<a href=\"" + currentMode.Base_URL + "\">" + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + " Home</a>");
 
@@ -1392,7 +1392,7 @@ namespace SobekCM.Library
 		/// <param name="Writer"> Open stream to write the HTML header to </param>
 		/// <param name="HTMLSkin"> Default html web skin/interface</param>
 		/// <param name="Banner"> Banner HTML</param>
-		public void Display_Header(TextWriter Writer, SobekCM_Skin_Object HTMLSkin, string Banner)
+		public void Display_Header(TextWriter Writer, Web_Skin_Object HTMLSkin, string Banner)
 		{
 			string breadcrumbs = "<a href=\"" + currentMode.Base_URL + "\">" + UI_ApplicationCache_Gateway.Settings.System_Name + " Home</a>";
 			Writer.WriteLine(HTMLSkin.Header_Item_HTML.Replace("<%URLOPTS%>", "").Replace("<%?URLOPTS%>", "").Replace("<%&URLOPTS%>", "").Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", "").Replace("<%ENGLISH%>", "").Replace("<%FRENCH%>", "").Replace("<%SPANISH%>", "").Replace("<%LOWGRAPHICS%>", "").Replace("<%HIGHGRAPHICS%>", "").Replace("<%BASEURL%>", currentMode.Base_URL).Replace("<%BANNER%>", Banner));
@@ -1402,7 +1402,7 @@ namespace SobekCM.Library
         /// <summary> Writes the static footer to go at the bottom of the static digital resource page </summary>
         /// <param name="Writer"> Open stream to write the HTML footer to </param>
 		/// <param name="HTMLSkin"> Default html web skin/interface</param>
-		public void Display_Footer(TextWriter Writer, SobekCM_Skin_Object HTMLSkin)
+		public void Display_Footer(TextWriter Writer, Web_Skin_Object HTMLSkin)
         {
             // Get the current contact URL
             Display_Mode_Enum thisMode = currentMode.Mode;

@@ -73,6 +73,7 @@
     <Compile Include="Configuration\Shibboleth_Configuration_Reader.cs" />
     <Compile Include="Email\Email_Helper.cs" />
     <Compile Include="Endpoints\AggregationServices.cs" />
+    <Compile Include="Endpoints\WebSkinServices.cs" />
     <Compile Include="IpRangeUtilities\ComparableIpAddress.cs" />
     <Compile Include="IpRangeUtilities\IpRangeSetV4.cs" />
     <Compile Include="IpRangeUtilities\SingleIpRangeV4.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Settings\Builder_Settings_Builder.cs" />
     <Compile Include="Settings\InstanceWide_Settings_Builder.cs" />
     <Compile Include="SiteMap\SobekCM_SiteMap_Reader.cs" />
+    <Compile Include="Skins\Web_Skin_Utilities.cs" />
     <Compile Include="Solr\Solr_Controller.cs" />
     <Compile Include="Solr\Solr_Documents_Searcher.cs" />
     <Compile Include="Solr\Solr_Document_Result.cs" />

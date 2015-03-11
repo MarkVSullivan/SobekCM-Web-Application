@@ -38,7 +38,7 @@ namespace SobekCM.Library.HTML
 		/// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
 		/// <param name="CurrentMode"> Mode / navigation information for the current request</param>
 		/// <remarks> This is called by several html subwriters that otherwise tell this class to suppress writing the banner </remarks>
-		public static void Add_Banner(TextWriter Output, string Banner_Division_Name, SobekCM_Navigation_Object CurrentMode, SobekCM_Skin_Object HTML_Skin, Item_Aggregation Hierarchy_Object)
+		public static void Add_Banner(TextWriter Output, string Banner_Division_Name, SobekCM_Navigation_Object CurrentMode, Web_Skin_Object HTML_Skin, Item_Aggregation Hierarchy_Object)
 		{
 			Output.WriteLine("<!-- Write the main collection, interface, or institution banner -->");
 			if ((HTML_Skin != null) && (HTML_Skin.Override_Banner))

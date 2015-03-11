@@ -82,7 +82,11 @@ namespace SobekCM.Library.HTML
                     adminViewer = new Builder_AdminViewer(RequestSpecificValues);
                     break;
 
-                case Admin_Type_Enum.Skins:
+                case Admin_Type_Enum.Skins_Single:
+                    adminViewer = new Skin_Single_AdminViewer(RequestSpecificValues);
+                    break;
+
+                case Admin_Type_Enum.Skins_Mgmt:
                     adminViewer = new Skins_AdminViewer(RequestSpecificValues);
                     break;
 

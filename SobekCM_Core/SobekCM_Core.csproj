@@ -96,6 +96,7 @@
     <Compile Include="MemoryMgmt\CachedDataManager.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_AggregationServices.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_Settings.cs" />
+    <Compile Include="MemoryMgmt\CachedDataManager_WebSkinServices.cs" />
     <Compile Include="MemoryMgmt\Cached_Object_Info.cs" />
     <Compile Include="MemoryMgmt\Expiring_Item_Typed_List.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Configuration.cs" />
@@ -130,8 +131,10 @@
     <Compile Include="Settings\Workflow_Type.cs" />
     <Compile Include="SiteMap\SobekCM_SiteMap.cs" />
     <Compile Include="SiteMap\SobekCM_SiteMap_Node.cs" />
-    <Compile Include="Skins\SobekCM_Skin_Collection.cs" />
-    <Compile Include="Skins\SobekCM_Skin_Object.cs" />
+    <Compile Include="Skins\Complete_Web_Skin_Object.cs" />
+    <Compile Include="Skins\Complete_Web_Skin_Source_Files.cs" />
+    <Compile Include="Skins\Web_Skin_Collection.cs" />
+    <Compile Include="Skins\Web_Skin_Object.cs" />
     <Compile Include="Users\Public_User_Folder.cs" />
     <Compile Include="Users\User_Permissioned_Aggregation.cs" />
     <Compile Include="Users\User_Aggregation_Permissions.cs" />

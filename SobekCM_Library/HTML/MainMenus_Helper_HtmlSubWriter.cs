@@ -1159,7 +1159,7 @@ namespace SobekCM.Library.HTML
                     }
 
                     // Edit interfaces
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
                     Output.WriteLine("      <li id=\"sbkUsm_AdminSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "skins.png\" /> <div class=\"sbkUsm_TextWithImage\">Web Skins</div></a></li>");
 
                     // Edit wordmarks

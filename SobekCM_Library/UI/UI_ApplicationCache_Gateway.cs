@@ -96,7 +96,7 @@ namespace SobekCM.UI_Library
             get { return Engine_ApplicationCache_Gateway.Stats_Date_Range; }
         }
 
-        public static SobekCM_Skin_Collection Web_Skin_Collection
+        public static Web_Skin_Collection Web_Skin_Collection
         {
             get { return Engine_ApplicationCache_Gateway.Web_Skin_Collection; }
         }

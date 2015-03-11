@@ -1,4 +1,8 @@
-﻿using SobekCM.Core.MicroservicesClient;
+﻿using SobekCM.Core.Configuration;
+using SobekCM.Core.MicroservicesClient;
+using SobekCM.Core.Skins;
+using SobekCM.Engine_Library.Endpoints;
+using SobekCM.Tools;
 
 namespace SobekCM.Core.Client
 {
@@ -9,6 +13,16 @@ namespace SobekCM.Core.Client
         public SobekEngineClient_WebSkinEndpoints(MicroservicesClient_Configuration ConfigObj) : base(ConfigObj)
         {
             // All work done in the base constructor
+        }
+
+        public Complete_Web_Skin_Object Get_Complete_Web_Skin(string SkinCode, Custom_Tracer Tracer)
+        {
+            return WebSkinServices.get_complete_web_skin(SkinCode, Tracer);
+        }
+
+        public Web_Skin_Object Get_Aggregation(string SkinCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, Custom_Tracer Tracer)
+        {
+            return WebSkinServices.get_web_skin(SkinCode, RequestedLanguage, DefaultLanguage, Tracer);
         }
     }
 }

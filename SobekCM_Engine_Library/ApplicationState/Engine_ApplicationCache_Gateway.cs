@@ -181,7 +181,7 @@ namespace SobekCM.Engine_Library.ApplicationState
 
         #region Properties and methods for the web skin collection
 
-        private static SobekCM_Skin_Collection webSkins;
+        private static Web_Skin_Collection webSkins;
         private static readonly Object webSkinsLock = new Object();
 
         /// <summary> Refresh the web skin collection by pulling the data back from the database </summary>
@@ -194,7 +194,7 @@ namespace SobekCM.Engine_Library.ApplicationState
                 {
                     if (webSkins == null)
                     {
-                        webSkins = new SobekCM_Skin_Collection();
+                        webSkins = new Web_Skin_Collection();
                     }
 
                     // Get the data from the database
@@ -220,7 +220,7 @@ namespace SobekCM.Engine_Library.ApplicationState
         }
 
         /// <summary> Get the web skin collection object (or build the object and return it) </summary>
-        public static SobekCM_Skin_Collection Web_Skin_Collection
+        public static Web_Skin_Collection Web_Skin_Collection
         {
             get
             {
@@ -228,7 +228,7 @@ namespace SobekCM.Engine_Library.ApplicationState
                 {
                     if (webSkins == null)
                     {
-                        webSkins = new SobekCM_Skin_Collection();
+                        webSkins = new Web_Skin_Collection();
 
                         // Get the data from the database
                         DataTable skinData = Engine_Database.Get_All_Web_Skins(null);

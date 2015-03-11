@@ -16,7 +16,7 @@ namespace SobekCM.Core.Client
         public SobekEngineClient_AggregationEndpoints(MicroservicesClient_Configuration ConfigObj) : base(ConfigObj)
         {
             // All work done in the base constructor
-        }
+        } 
 
         public Complete_Item_Aggregation Get_Complete_Aggregation(string AggregationCode, bool isRobot, Custom_Tracer Tracer)
         {

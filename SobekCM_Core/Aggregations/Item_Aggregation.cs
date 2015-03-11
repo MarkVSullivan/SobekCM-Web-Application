@@ -539,7 +539,7 @@ namespace SobekCM.Core.Aggregations
             }
         }
 
-        public string Get_Banner_Image(SobekCM_Skin_Object ThisWebSkin)
+        public string Get_Banner_Image(Web_Skin_Object ThisWebSkin)
         {
             // Does the web skin exist and override the banner?  For non-institutional agggregations
             // use the web skin banner HTML instead of the aggregation's banner

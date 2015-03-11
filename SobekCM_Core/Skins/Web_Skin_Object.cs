@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization;
+using ProtoBuf;
 
 #endregion
 
@@ -12,34 +13,33 @@ namespace SobekCM.Core.Skins
     /// <remarks> This class and concept allows the same pages in this digital library to appear branded in different ways.  It allows
     /// the rendered html to be altered to match a partner's institutional web pages as well. <br /><br />
     /// Since this class holds the header, footer, and banner information, this HTML skin object is language-specific.</remarks>
-    [DataContract]
-    public class SobekCM_Skin_Object
+    [Serializable, DataContract, ProtoContract]
+    public class Web_Skin_Object
     {
-        /// <summary> Code for the banner to use, if this is set to override the banner </summary>
-        [DataMember]
-        public readonly string Banner_HTML;
-
         /// <summary> Code for the base skin which this skin derives from  </summary>
         /// <remarks> The base skin is used for many of the common design image files which are reused, such as button images, tab images, etc..<br /><br />
         /// This also corresponds to the location of the base skin files under the design folder.  (i.e., '\design\skins\[CODE]' ) </remarks>
-        [DataMember]
+        [DataMember(EmitDefaultValue = false, Name = "base")]
+        [ProtoMember(1)]
         public readonly string Base_Skin_Code;
 
         /// <summary> Additional CSS Stylesheet to be included for this skin </summary>
         /// <remarks> The standard SobekCM stylesheet is always included, but this stylesheet can override any styles from the standard </remarks>
-        [DataMember]
+        [DataMember(Name = "cssStyle")]
+        [ProtoMember(2)]
         public readonly string CSS_Style;
 
         /// <summary> Code for this skin </summary>
         /// <remarks> This also corresponds to the location of the main interface files under the design folder.  (i.e., '\design\skins\[CODE]' ) </remarks>
-        [DataMember]
+        [DataMember(Name = "code")]
+        [ProtoMember(3)]
         public readonly string Skin_Code;
 
-		/// <summary> Constructor for a new instance of the SobekCM_Skin_Object class </summary>
+		/// <summary> Constructor for a new instance of the Web_Skin_Object class </summary>
         /// <param name="Skin_Code"> Code for this HTML skin</param>
         /// <param name="Base_Skin_Code"> Code for the base HTML skin which this skin derives from</param>
         /// <param name="CSS_Style"> Additional CSS Stylesheet to be included for this HTML skin</param>
-        public SobekCM_Skin_Object(string Skin_Code, string Base_Skin_Code, string CSS_Style)
+        public Web_Skin_Object(string Skin_Code, string Base_Skin_Code, string CSS_Style)
         {
             // Save the parameters
             this.CSS_Style = CSS_Style;
@@ -59,12 +59,12 @@ namespace SobekCM.Core.Skins
 			Footer_Has_Container_Directive = false;
         }
 
-        /// <summary> Constructor for a new instance of the SobekCM_Skin_Object class </summary>
+        /// <summary> Constructor for a new instance of the Web_Skin_Object class </summary>
         /// <param name="Skin_Code"> Code for this HTML skin</param>
         /// <param name="Base_Skin_Code"> Code for the base HTML skin which this skin derives from</param>
         /// <param name="CSS_Style"> Additional CSS Stylesheet to be included for this HTML skin</param>
         /// <param name="Banner_HTML"> Code for the banner to use, if this is set to override the banner</param>
-        public SobekCM_Skin_Object(string Skin_Code, string Base_Skin_Code, string CSS_Style, string Banner_HTML)
+        public Web_Skin_Object(string Skin_Code, string Base_Skin_Code, string CSS_Style, string Banner_HTML)
         {
             // Save the parameters
             this.CSS_Style = CSS_Style;
@@ -84,45 +84,59 @@ namespace SobekCM.Core.Skins
 	        Footer_Has_Container_Directive = false;
         }
 
+        /// <summary> Code for the banner to use, if this is set to override the banner </summary>
+        [DataMember(EmitDefaultValue = false, Name = "banner")]
+        [ProtoMember(4)]
+        public string Banner_HTML { get; set; }
+
         /// <summary>  Flag indicates if the top-level aggregation navigation should be suppressed for this web skin ( i.e., is the top-level navigation embedded into the header file already? ) </summary>
-        [DataMember]
+        [DataMember(Name = "suppressTopNav")]
+        [ProtoMember(5)]
         public bool Suppress_Top_Navigation { get; set; }
 
         /// <summary> Language code, which indicates which language this skin information pertains to </summary>
         /// <remarks> Since this object holds the header and footer information, this is language-specific </remarks>
-        [DataMember]
+        [DataMember(Name = "language")]
+        [ProtoMember(6)]
         public string Language_Code { get; set; }
 
         /// <summary> Flag indicates if this skin has a banner which should override any aggregation-specific banner </summary>
-        [DataMember]
+        [DataMember(Name = "overrideBanner")]
+        [ProtoMember(7)]
         public bool Override_Banner { get; set; }
 
         /// <summary> HTML for the standard header, to be included when rendering an HTML page  </summary>
-        [DataMember]
+        [DataMember(EmitDefaultValue = false, Name = "header")]
+        [ProtoMember(8)]
         public string Header_HTML { get; set; }
 
         /// <summary> HTML for the standard footer, to be included when rendering an HTML page  </summary>
-        [DataMember]
+        [DataMember(EmitDefaultValue = false, Name = "footer")]
+        [ProtoMember(9)]
         public string Footer_HTML { get; set; }
 
         /// <summary> HTML for the item-specific header, to be included when rendering an HTML page from the item viewer  </summary>
-        [DataMember]
+        [DataMember(EmitDefaultValue = false, Name = "headerItem")]
+        [ProtoMember(10)]
         public string Header_Item_HTML { get; set; }
 
         /// <summary> HTML for the item-specific footer, to be included when rendering an HTML page from the item viewer  </summary>
-        [DataMember]
+        [DataMember(EmitDefaultValue = false, Name = "footerItem")]
+        [ProtoMember(11)]
         public string Footer_Item_HTML { get; set; }
 
 		/// <summary> Flag indicates if the main header has a %CONTAINER% directive indicating
 		/// where the container tag should be placed.  This is useful if either the whole header, or
 		/// a portion of the header, should extend past the main container. </summary>
-        [DataMember]
+        [DataMember(Name = "headerHasContainerDirective")]
+        [ProtoMember(12)]
 		public bool Header_Has_Container_Directive { get; set; }
 
 		/// <summary> Flag indicates if the main footer has a %CONTAINER% directive indicating
 		/// where the container tag should be placed.  This is useful if either the whole footer, or
 		/// a portion of the footer, should extend past the main container. </summary>
-        [DataMember]
+        [DataMember(Name = "footerHasContainerDirective")]
+        [ProtoMember(13)]
 		public bool Footer_Has_Container_Directive { get; set; }
 
         /// <summary> Method sets the header and footer to be used by this HTML skin </summary>

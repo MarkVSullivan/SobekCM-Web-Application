@@ -388,7 +388,7 @@ namespace SobekCM.Engine_Library.Navigation
                         case Admin_Type_Enum.Aliases:
                             return this_base_url + "admin/aliases" + urlOptions1;
 
-                        case Admin_Type_Enum.Skins:
+                        case Admin_Type_Enum.Skins_Mgmt:
                             return this_base_url + "admin/webskins" + urlOptions1;
 
                         case Admin_Type_Enum.Default_Metadata:

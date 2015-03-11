@@ -113,6 +113,7 @@
   <ItemGroup>
     <Compile Include="AdminViewer\abstract_AdminViewer.cs" />
     <Compile Include="AdminViewer\iMySobek_Admin_Viewer.cs" />
+    <Compile Include="AdminViewer\Skin_Single_AdminViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Advanced_Search_MimeType_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Basic_Search_MimeType_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Advanced_Search_YearRange_AggregationViewer.cs" />

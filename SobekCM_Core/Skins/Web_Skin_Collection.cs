@@ -14,24 +14,24 @@ namespace SobekCM.Core.Skins
 	/// <summary> Collection of all the HTML skin data needed, including the fully built default skins and 
     /// the raw data to create the other HTML skins required to fulfil a user's request </summary>
     [DataContract]
-	public class SobekCM_Skin_Collection
+	public class Web_Skin_Collection
 	{
         [DataMember]
-        public Dictionary<string, SobekCM_Skin_Object> DefaultSkins { get; set;  }
+        public Dictionary<string, Web_Skin_Object> DefaultSkins { get; set;  }
 
-	    /// <summary> Constructor for a new instance of the SobekCM_Skin_Collection class  </summary>
-		public SobekCM_Skin_Collection()
+	    /// <summary> Constructor for a new instance of the Web_Skin_Collection class  </summary>
+		public Web_Skin_Collection()
 		{
-            DefaultSkins = new Dictionary<string, SobekCM_Skin_Object>();
+            DefaultSkins = new Dictionary<string, Web_Skin_Object>();
 		}
 
-        /// <summary> Constructor for a new instance of the SobekCM_Skin_Collection class  </summary>
+        /// <summary> Constructor for a new instance of the Web_Skin_Collection class  </summary>
         /// <param name="Interface_Table"> Datatable with the interface details for all valid HTML skins from the database </param>
         /// <remarks> This datatable is retrieved from the database by calling 
-        /// the <see cref="SobekCM_Database.Get_All_Web_Skins"/> method</remarks>
-        public SobekCM_Skin_Collection(DataTable Interface_Table)
+        /// the <see cref="Engine_Database.Get_All_Web_Skins"/> method</remarks>
+        public Web_Skin_Collection(DataTable Interface_Table)
         {
-            DefaultSkins = new Dictionary<string, SobekCM_Skin_Object>();
+            DefaultSkins = new Dictionary<string, Web_Skin_Object>();
             Skin_Table = Interface_Table;
         }
 
@@ -51,7 +51,7 @@ namespace SobekCM.Core.Skins
 	    /// <summary> Address a single skin from this Collection, by skin code </summary>
         /// <param name="Skin_Language_Code"> Code to retrieve this skin ( [SKIN CODE] + '_' + [LANGUAGE CODE] , i.e., 'sobek', 'dloc_fr', etc.. )</param>
         /// <returns> Existing HTML skin, or NULL </returns>
-		public SobekCM_Skin_Object this[string Skin_Language_Code ]
+		public Web_Skin_Object this[string Skin_Language_Code ]
 		{
 			get {
 			    return DefaultSkins.ContainsKey(Skin_Language_Code.ToLower()) ? DefaultSkins[Skin_Language_Code.ToLower()] : null;
@@ -89,7 +89,7 @@ namespace SobekCM.Core.Skins
 
 	    /// <summary> Add a new HTML skin to this collection, to be retained as long as the application is active </summary>
 		/// <param name="NewSkin"> New HTML skin to retain in this collection </param>
-        public void Add(SobekCM_Skin_Object NewSkin)
+        public void Add(Web_Skin_Object NewSkin)
 		{
 			// Add to the hashtable
             if (NewSkin.Language_Code.Length == 0)
@@ -106,11 +106,11 @@ namespace SobekCM.Core.Skins
         /// <param name="Skin_Code"> Code for this new HTML skin</param>
         /// <param name="Base_Skin_Code"> Code for the base HTML skin which this new skin derives from</param>
         /// <param name="CSS_Style"> Additional CSS Stylesheet to be included for this new HTML skin</param>
-        /// <returns> Newly constructed <see cref="SobekCM_Skin_Object"/> object </returns>
-        public SobekCM_Skin_Object Add(string Skin_Code, string Base_Skin_Code, string CSS_Style)
+        /// <returns> Newly constructed <see cref="Web_Skin_Object"/> object </returns>
+        public Web_Skin_Object Add(string Skin_Code, string Base_Skin_Code, string CSS_Style)
 		{
             // Create the new skin object
-            SobekCM_Skin_Object newSkin = new SobekCM_Skin_Object(Skin_Code, Base_Skin_Code, CSS_Style);
+            Web_Skin_Object newSkin = new Web_Skin_Object(Skin_Code, Base_Skin_Code, CSS_Style);
 
 			// Add to the hashtable
             DefaultSkins[Skin_Code.ToLower()] = newSkin;
@@ -124,11 +124,11 @@ namespace SobekCM.Core.Skins
         /// <param name="Base_Skin_Code"> Code for the base HTML skin which this new skin derives from</param>
         /// <param name="CSS_Style"> Additional CSS Stylesheet to be included for this new HTML skin</param>
         /// <param name="Banner_HTML"> Code for the banner to use, if this is set to override the banner</param>
-        /// <returns> Newly constructed <see cref="SobekCM_Skin_Object"/> object </returns>
-        public SobekCM_Skin_Object Add(string Skin_Code, string Base_Skin_Code, string CSS_Style, string Banner_HTML)
+        /// <returns> Newly constructed <see cref="Web_Skin_Object"/> object </returns>
+        public Web_Skin_Object Add(string Skin_Code, string Base_Skin_Code, string CSS_Style, string Banner_HTML)
 		{
             // Create the new skin object
-            SobekCM_Skin_Object newSkin = new SobekCM_Skin_Object(Skin_Code, Base_Skin_Code, CSS_Style, Banner_HTML);
+            Web_Skin_Object newSkin = new Web_Skin_Object(Skin_Code, Base_Skin_Code, CSS_Style, Banner_HTML);
 
 			// Add to the hashtable
             DefaultSkins[Skin_Code.ToLower()] =  newSkin;

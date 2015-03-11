@@ -23,7 +23,6 @@ namespace SobekCM.Engine_Library.Endpoints
     {
         public void GetCompleteAggregationByCode(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
         {
-            
             if (UrlSegments.Count > 0)
             {
                 Custom_Tracer tracer = new Custom_Tracer();

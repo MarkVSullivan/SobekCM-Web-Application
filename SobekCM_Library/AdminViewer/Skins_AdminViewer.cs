@@ -84,7 +84,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            int values_cleared = CachedDataManager.Remove_Skin(reset_value, RequestSpecificValues.Tracer);
+                            int values_cleared = CachedDataManager.WebSkins.Remove_Skin(reset_value, RequestSpecificValues.Tracer);
 
                             if (values_cleared == 0)
                             {
@@ -438,7 +438,7 @@ namespace SobekCM.Library.AdminViewer
                                     {
                                         SobekCM_Skin_Collection_Builder.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
                                     }
-                                    CachedDataManager.Remove_Skin(save_value, RequestSpecificValues.Tracer);
+                                    CachedDataManager.WebSkins.Remove_Skin(save_value, RequestSpecificValues.Tracer);
 
                                     actionMessage = "Edited existing html skin <i>" + save_value + "</i>";
                                 }

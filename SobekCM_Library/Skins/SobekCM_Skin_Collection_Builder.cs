@@ -13,7 +13,7 @@ using SobekCM.UI_Library;
 
 namespace SobekCM.Library.Skins
 {
-	/// <summary> Builder creates individiual <see cref="SobekCM_Skin_Object"/> objects when application first starts and 
+	/// <summary> Builder creates individiual <see cref="Web_Skin_Object"/> objects when application first starts and 
     /// when a new skin is needed for a user request </summary>
 	public class SobekCM_Skin_Collection_Builder
 	{
@@ -22,8 +22,8 @@ namespace SobekCM.Library.Skins
         /// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering  </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> Most HTML skins are built as they are needed and then cached for a period of time.  The main default skins are
-        /// permanently stored in this global <see cref="SobekCM_Skin_Collection"/> object.</remarks>
-        public static bool Populate_Default_Skins(SobekCM_Skin_Collection Skin_List, Custom_Tracer tracer)
+        /// permanently stored in this global <see cref="Web_Skin_Collection"/> object.</remarks>
+        public static bool Populate_Default_Skins(Web_Skin_Collection Skin_List, Custom_Tracer tracer)
         {
             if (tracer != null)
             {
@@ -47,13 +47,13 @@ namespace SobekCM.Library.Skins
         }
 
 
-	    /// <summary> Builds a specific <see cref="SobekCM_Skin_Object"/> when needed by a user's request </summary>
+	    /// <summary> Builds a specific <see cref="Web_Skin_Object"/> when needed by a user's request </summary>
 	    /// <param name="Skin_Row"> Row from a database query with basic information about the interface to build ( codes, override flags, banner link )</param>
 	    /// <param name="Language_Code"> Code for the language, which determines which HTML to use </param>
 	    /// <returns> Completely built HTML interface object </returns>
 	    /// <remarks> The datarow for this method is retrieved from the database by calling the <see cref="Database.SobekCM_Database.Get_All_Web_Skins"/> method during 
-	    /// application startup and is then stored in the <see cref="SobekCM_Skin_Collection"/> class until needed. </remarks>
-	    public static SobekCM_Skin_Object Build_Skin(DataRow Skin_Row, string Language_Code )
+	    /// application startup and is then stored in the <see cref="Web_Skin_Collection"/> class until needed. </remarks>
+	    public static Web_Skin_Object Build_Skin(DataRow Skin_Row, string Language_Code )
         {
             // Pull values out from this row
             string code = Skin_Row["WebSkinCode"].ToString();
@@ -65,7 +65,7 @@ namespace SobekCM.Library.Skins
                 this_style = String.Empty;
 
             // Build the interface, along with any overriding banner
-            SobekCM_Skin_Object thisInterface;
+            Web_Skin_Object thisInterface;
             if (override_banner)
             {
                 string this_banner = String.Empty;
@@ -102,12 +102,12 @@ namespace SobekCM.Library.Skins
                 }
 
                 // Create this interface
-                thisInterface = new SobekCM_Skin_Object(code, base_interface, this_style, this_banner);
+                thisInterface = new Web_Skin_Object(code, base_interface, this_style, this_banner);
             }
             else
             {
                 // Create an interface without banner override
-                thisInterface = new SobekCM_Skin_Object(code, base_interface, this_style);
+                thisInterface = new Web_Skin_Object(code, base_interface, this_style);
             }
 
             // Assign the value to suppress top-level navigation

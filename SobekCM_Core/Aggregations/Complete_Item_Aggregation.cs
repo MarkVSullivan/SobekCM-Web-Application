@@ -858,7 +858,7 @@ namespace SobekCM.Core.Aggregations
         ///   If NO banner images were included in the aggregation XML, then this could be the empty string.<br /><br />
         ///   If the provided web skin overrides the banner, then use that web skin's banner.
         /// </remarks>
-        public string Banner_Image(Web_Language_Enum Language, SobekCM_Skin_Object ThisWebSkin)
+        public string Banner_Image(Web_Language_Enum Language, Web_Skin_Object ThisWebSkin)
         {
             // Does the web skin exist and override the banner?  For non-institutional agggregations
             // use the web skin banner HTML instead of the aggregation's banner
