@@ -316,12 +316,13 @@ namespace SobekCM.Library.AdminViewer
                                             Directory.CreateDirectory(folder + "/html/custom/home");
                                             Directory.CreateDirectory(folder + "/images/buttons");
                                             Directory.CreateDirectory(folder + "/images/banners");
+                                            Directory.CreateDirectory(folder + "/uploads");
 
                                             // Get the parent name
                                             string link_to_parent = String.Empty;
                                             Item_Aggregation_Related_Aggregations parentAggr = UI_ApplicationCache_Gateway.Aggregations.Aggregation_By_ID(parentid);
                                             if (parentAggr != null)
-                                                link_to_parent = "<br />" + Environment.NewLine + " ← Back to <a href=<%BASEURL%>" + parentAggr.Code + "\" alt=\"Return to parent collection\">" + parentAggr.Name + "</a>" + Environment.NewLine;
+                                                link_to_parent = "<br />" + Environment.NewLine + " ← Back to <a href=\"<%BASEURL%>" + parentAggr.Code + "\" alt=\"Return to parent collection\">" + parentAggr.Name + "</a>" + Environment.NewLine;
 
                                             // Create a default home text file
                                             StreamWriter writer = new StreamWriter(folder + "/html/home/text.html");
@@ -338,6 +339,7 @@ namespace SobekCM.Library.AdminViewer
 
                                             // Try to create a new custom banner
                                             bool custom_banner_created = false;
+
                                             // Create the banner with the name of the collection
                                             if (Directory.Exists(UI_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images"))
                                             {

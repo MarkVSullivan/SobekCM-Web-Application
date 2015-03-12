@@ -24,5 +24,14 @@ namespace SobekCM.Core.Client
         {
             return WebSkinServices.get_web_skin(SkinCode, RequestedLanguage, DefaultLanguage, Tracer);
         }
+
+
+        public string WebSkin_Uploaded_Files_URL
+        {
+            get
+            {
+                return Config["Get_WebSkin_Uploaded_Files"] == null ? null : Config["Get_WebSkin_Uploaded_Files"].URL;
+            }
+        }
     }
 }

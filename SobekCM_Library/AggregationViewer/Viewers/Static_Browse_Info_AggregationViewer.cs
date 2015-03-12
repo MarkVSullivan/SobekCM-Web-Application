@@ -45,8 +45,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			{
 				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\";
 
-                /// TODO: Fix this
-			    string file = aggregation_folder; // + RequestSpecificValues.Browse_Object.Get_Static_HTML_Source(RequestSpecificValues.Current_Mode.Language);
+			    string file = aggregation_folder + RequestSpecificValues.Browse_Object.Source;
 
 				// Get the header information as well
 				if ( !String.IsNullOrEmpty(form["admin_childpage_title"]))
@@ -77,7 +76,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 
 				// Assign the new text
-                RequestSpecificValues.Static_Web_Content.Content = form["sbkSbia_ChildTextEdit"];
+                RequestSpecificValues.Static_Web_Content.Content = form["sbkSbia_ChildTextEdit"].Replace("%]", "%>").Replace("[%", "<%");
                 RequestSpecificValues.Static_Web_Content.Date = DateTime.Now.ToLongDateString();
                 RequestSpecificValues.Static_Web_Content.Save_To_File(file);
 
@@ -219,10 +218,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				Output.WriteLine("  </div>");
 
 
-
+                Output.WriteLine("  <div id=\"sbkSbia_MainText\">");
 				Output.WriteLine("  <textarea id=\"sbkSbia_ChildTextEdit\" name=\"sbkSbia_ChildTextEdit\" >");
-				Output.WriteLine(static_browse_info_text);
+				Output.WriteLine(static_browse_info_text.Replace("<%","[%").Replace("%>","%]"));
 				Output.WriteLine("  </textarea>");
+                Output.WriteLine("  </div>");
 				Output.WriteLine();
 
 				Output.WriteLine("  <div id=\"sbkSbia_TextEditButtons\">");

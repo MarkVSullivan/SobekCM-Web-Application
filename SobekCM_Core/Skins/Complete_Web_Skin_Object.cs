@@ -34,6 +34,7 @@ namespace SobekCM.Core.Skins
             this.CSS_Style = CSS_Style;
             this.Skin_Code = Skin_Code;
             Override_Banner = false;
+            Build_On_Launch = false;
 
             SourceFiles = new Dictionary<Web_Language_Enum, Complete_Web_Skin_Source_Files>();
         }
@@ -65,9 +66,14 @@ namespace SobekCM.Core.Skins
         [ProtoMember(7)]
         public string Notes { get; set; }
 
+        /// <summary> Flag indicates if this sking should be built on launch </summary>
+        [DataMember(Name = "buildOnLaunch")]
+        [ProtoMember(8)]
+        public bool Build_On_Launch { get; set; }
+
         /// <summary> Collection of the source files for every language supported by this web skin </summary>
         [DataMember(EmitDefaultValue = false, Name = "sourceByLanguage")]
-        [ProtoMember(8)]
+        [ProtoMember(9)]
         public Dictionary<Web_Language_Enum, Complete_Web_Skin_Source_Files> SourceFiles { get; set; }
 
     }

@@ -169,7 +169,7 @@ namespace SobekCM.Library.HTML
 
 				// Write to the file now
 				StreamWriter homeWriter = new StreamWriter(file, false);
-				homeWriter.WriteLine(form["sbkAghsw_HomeTextEdit"]);
+			    homeWriter.WriteLine(form["sbkAghsw_HomeTextEdit"].Replace("%]", "%>").Replace("[%", "<%"));
 				homeWriter.Flush();
 				homeWriter.Close();
 
@@ -182,7 +182,7 @@ namespace SobekCM.Library.HTML
 				// If this is all, save the new text as well.
 				if (String.Compare("all", RequestSpecificValues.Hierarchy_Object.Code, StringComparison.OrdinalIgnoreCase) == 0)
 				{
-					HttpContext.Current.Application["SobekCM_Home"] = form["sbkAghsw_HomeTextEdit"];
+                    HttpContext.Current.Application["SobekCM_Home"] = form["sbkAghsw_HomeTextEdit"].Replace("%]", "%>").Replace("[%", "<%");
 				}
 
 				// Forward along
@@ -1261,7 +1261,7 @@ namespace SobekCM.Library.HTML
 					string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
 					Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 					Output.WriteLine("  <textarea id=\"sbkAghsw_HomeTextEdit\" name=\"sbkAghsw_HomeTextEdit\" >");
-					Output.WriteLine(home_html);
+					Output.WriteLine(home_html.Replace("<%","[%").Replace("%>","%]"));
 					Output.WriteLine("  </textarea>");
 					Output.WriteLine();
 
@@ -1472,7 +1472,7 @@ namespace SobekCM.Library.HTML
 		                string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
 		                Output.WriteLine("<form name=\"home_edit_form\" method=\"post\" action=\"" + post_url + "\" id=\"addedForm\" >");
 		                Output.WriteLine("  <textarea id=\"sbkAghsw_HomeTextEdit\" name=\"sbkAghsw_HomeTextEdit\" >");
-		                Output.WriteLine(sobekcm_home_page_text);
+                        Output.WriteLine(sobekcm_home_page_text.Replace("<%", "[%").Replace("%>", "%]"));
 		                Output.WriteLine("  </textarea>");
 		                Output.WriteLine();
 

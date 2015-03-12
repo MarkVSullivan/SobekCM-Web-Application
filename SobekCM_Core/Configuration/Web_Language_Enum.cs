@@ -186,6 +186,9 @@ namespace SobekCM.Core.Configuration
         /// <summary> Khmer web language ( km )</summary>
         Khmer,
 
+        /// <summary> Kinyarwanda language (rw) </summary>
+        Kinyarwanda, 
+
         /// <summary> Kirghiz web language ( ky )</summary>
         Kirghiz,
 
@@ -404,7 +407,7 @@ namespace SobekCM.Core.Configuration
         {
             get
             {
-				return new[] { "Afrikaans", "Albanian", "Arabic", "Aragonese", "Armenian", "Assamese", "Asturian", "Azerbaijani", "Basque", "Bulgarian", "Belarusian", "Bengali", "Bosnian", "Breton", "Bulgarian", "Burmese", "Catalan", "Chamorro", "Chechen", "Chinese", "Chuvash", "Corsican", "Cree", "Croatian", "Czech", "Danish", "Dutch", "English", "Esperanto", "Estonian", "Faeroese", "Farsi", "Fijian", "Finnish", "French", "Frisian", "Friulian", "Gaelic", "Galacian", "Georgian", "German", "Greek", "Gujarati", "Haitian", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Inuktitut", "Irish", "Italian", "Japanese", "Kannada", "Kashmiri", "Kazakh", "Khmer", "Kirghiz", "Klingon", "Korean", "Latin", "Latvian", "Lithuanian", "Luxembourgish", "FYRO Macedonian", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Moldavian", "Navajo", "Ndonga", "Nepali", "Norwegian", "Norwegian (Bokmal)", "Norwegian (Nynorsk)", "Occitan", "Oriya", "Oromo", "Papiamento", "Papiamentu", "Persian", "Polish", "Portuguese", "Punjabi", "Quechua", "Rhaeto-Romanic", "Romanian", "Russian", "Sami (Lappish)", "Sango", "Sanskrit", "Sardinian", "Scots Gaelic", "Sindhi", "Singhalese", "Serbian", "Slovak", "Slovenian", "Somani", "Sorbian", "Spanish", "Sutu", "Swahili", "Swedish", "Tamil", "Tatar", "Telugu", "Thai", "Tigre", "Tsonga", "Tswana", "Turkish", "Turkmen", "Ukrainian", "Upper Sorbian", "Urdu", "Venda", "Vietnamese", "Volapuk", "Walloon", "Welsh", "Xhosa", "Yiddish", "Zulu" };
+				return new[] { "Afrikaans", "Albanian", "Arabic", "Aragonese", "Armenian", "Assamese", "Asturian", "Azerbaijani", "Basque", "Bulgarian", "Belarusian", "Bengali", "Bosnian", "Breton", "Bulgarian", "Burmese", "Catalan", "Chamorro", "Chechen", "Chinese", "Chuvash", "Corsican", "Cree", "Croatian", "Czech", "Danish", "Dutch", "English", "Esperanto", "Estonian", "Faeroese", "Farsi", "Fijian", "Finnish", "French", "Frisian", "Friulian", "Gaelic", "Galacian", "Georgian", "German", "Greek", "Gujarati", "Haitian", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Inuktitut", "Irish", "Italian", "Japanese", "Kannada", "Kashmiri", "Kazakh", "Khmer", "Kinyarwanda", "Kirghiz", "Klingon", "Korean", "Latin", "Latvian", "Lithuanian", "Luxembourgish", "FYRO Macedonian", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Moldavian", "Navajo", "Ndonga", "Nepali", "Norwegian", "Norwegian (Bokmal)", "Norwegian (Nynorsk)", "Occitan", "Oriya", "Oromo", "Papiamento", "Papiamentu", "Persian", "Polish", "Portuguese", "Punjabi", "Quechua", "Rhaeto-Romanic", "Romanian", "Russian", "Sami (Lappish)", "Sango", "Sanskrit", "Sardinian", "Scots Gaelic", "Sindhi", "Singhalese", "Serbian", "Slovak", "Slovenian", "Somani", "Sorbian", "Spanish", "Sutu", "Swahili", "Swedish", "Tamil", "Tatar", "Telugu", "Thai", "Tigre", "Tsonga", "Tswana", "Turkish", "Turkmen", "Ukrainian", "Upper Sorbian", "Urdu", "Venda", "Vietnamese", "Volapuk", "Walloon", "Welsh", "Xhosa", "Yiddish", "Zulu" };
             }
         }
 
@@ -582,6 +585,9 @@ namespace SobekCM.Core.Configuration
 
                 case "km":
 	                return Web_Language_Enum.Khmer;
+
+                case "rw":
+                    return Web_Language_Enum.Kinyarwanda;
 
                 case "ky":
 	                return Web_Language_Enum.Kirghiz;
@@ -971,6 +977,9 @@ namespace SobekCM.Core.Configuration
                 case "khmer":
                     return "km";
 
+                case "kinyarwanda":
+                    return "rw";
+
                 case "kirghiz":
                     return "ky";
 
@@ -1358,6 +1367,9 @@ namespace SobekCM.Core.Configuration
                 case Web_Language_Enum.Khmer:
                     return "Khmer";
 
+                case Web_Language_Enum.Kinyarwanda:
+                    return "Kinyarwanda";
+
                 case Web_Language_Enum.Kirghiz:
                     return "Kirghiz";
 
@@ -1742,6 +1754,9 @@ namespace SobekCM.Core.Configuration
 
                 case Web_Language_Enum.Khmer:
                     return "km";
+
+                case Web_Language_Enum.Kinyarwanda:
+                    return "rw";
 
                 case Web_Language_Enum.Kirghiz:
                     return "ky";

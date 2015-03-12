@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -213,7 +216,7 @@ namespace SobekCM.Library.AdminViewer
 					if (action == "save")
 					{
                         // Backup the old aggregation info
-					    string backup_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory + "\\backup\\configs";
+					    string backup_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory.Replace("/","\\") + "backup\\configs";
 					    if (!Directory.Exists(backup_folder))
 					        Directory.CreateDirectory(backup_folder);
 					    string current_config = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory + "\\" + itemAggregation.Code + ".xml";
@@ -221,8 +224,8 @@ namespace SobekCM.Library.AdminViewer
 					    {
                             // Use the last modified date as the name of the backup
 					        DateTime lastModifiedDate = (new FileInfo(current_config)).LastWriteTime;
-					        string backup_name = itemAggregation.Code + lastModifiedDate.Year + lastModifiedDate.Month.ToString().PadLeft(2, '0') + lastModifiedDate.Day.ToString().PadLeft(2, '0') + ".xml";
-                            if ( !File.Exists(backup_name))
+                            string backup_name = itemAggregation.Code + lastModifiedDate.Year + lastModifiedDate.Month.ToString().PadLeft(2, '0') + lastModifiedDate.Day.ToString().PadLeft(2, '0') + lastModifiedDate.Hour.ToString().PadLeft(2, '0') + lastModifiedDate.Minute.ToString().PadLeft(2, '0') + ".xml";
+                            if (!File.Exists(backup_folder + "\\" + backup_name))
     					        File.Copy(current_config, backup_folder + "\\" + backup_name, false );
 					    }
 
@@ -429,17 +432,20 @@ namespace SobekCM.Library.AdminViewer
 					Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_aggr_edit_page('g');\">" + STATIC_PAGES + "</li>");
 				}
 
-				if (page == 8)
-				{
-					Output.WriteLine("    <li id=\"tabHeader_6\" class=\"tabActiveHeader\">" + SUBCOLLECTIONS + "</li>");
-				}
-				else
-				{
-					Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_aggr_edit_page('h');\">" + SUBCOLLECTIONS + "</li>");
-				}
+			    if (itemAggregation.Code.ToLower() != "all")
+			    {
+			        if (page == 8)
+			        {
+			            Output.WriteLine("    <li id=\"tabHeader_6\" class=\"tabActiveHeader\">" + SUBCOLLECTIONS + "</li>");
+			        }
+			        else
+			        {
+			            Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_aggr_edit_page('h');\">" + SUBCOLLECTIONS + "</li>");
+			        }
+			    }
 
 
-				Output.WriteLine("      </ul>");
+			    Output.WriteLine("      </ul>");
 				Output.WriteLine("    </div>");
 			}
 
@@ -2877,26 +2883,73 @@ namespace SobekCM.Library.AdminViewer
 						if (!Directory.Exists(folder))
 						{
 							// Create this directory and all the subdirectories
-							Directory.CreateDirectory(folder);
-							Directory.CreateDirectory(folder + "/html");
-							Directory.CreateDirectory(folder + "/images");
-							Directory.CreateDirectory(folder + "/html/home");
-							Directory.CreateDirectory(folder + "/images/buttons");
-							Directory.CreateDirectory(folder + "/images/banners");
+                            Directory.CreateDirectory(folder);
+                            Directory.CreateDirectory(folder + "/html");
+                            Directory.CreateDirectory(folder + "/images");
+                            Directory.CreateDirectory(folder + "/html/home");
+                            Directory.CreateDirectory(folder + "/html/custom/home");
+                            Directory.CreateDirectory(folder + "/images/buttons");
+                            Directory.CreateDirectory(folder + "/images/banners");
+                            Directory.CreateDirectory(folder + "/uploads");
 
-							// Create a default home text file
-							StreamWriter writer = new StreamWriter(folder + "/html/home/text.html");
-							writer.WriteLine("<br />New collection home page text goes here.<br /><br />To edit this, log on as the aggregation admin and hover over this text to edit it.<br /><br />");
-							writer.Flush();
-							writer.Close();
+                            // Get the parent name
+                            string link_to_parent = "<br />" + Environment.NewLine + " ← Back to <a href=\"<%BASEURL%>" + itemAggregation.Code + "\" alt=\"Return to parent collection\">" + itemAggregation.Name + "</a>" + Environment.NewLine;
+
+                            // Create a default home text file
+                            StreamWriter writer = new StreamWriter(folder + "/html/home/text.html");
+                            writer.WriteLine(link_to_parent + "<br />" + Environment.NewLine + "<h3>About " + new_name + "</h3>" + Environment.NewLine + "<p>" + new_description + "</p>" + Environment.NewLine + "<p>To edit this, log on as the aggregation admin and hover over this text to edit it.</p>" + Environment.NewLine + "<br />");
+
+                            writer.Flush();
+                            writer.Close();
 
 							// Copy the default banner and buttons from images
 							if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.png"))
 								File.Copy(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.png", folder + "/images/buttons/coll.png");
 							if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.gif"))
 								File.Copy(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.gif", folder + "/images/buttons/coll.gif");
-							if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_banner.jpg"))
-								File.Copy(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
+
+                            // Try to create a new custom banner
+                            bool custom_banner_created = false;
+
+                            // Create the banner with the name of the collection
+                            if (Directory.Exists(UI_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images"))
+                            {
+                                try
+                                {
+                                    string[] banners = Directory.GetFiles(UI_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images", "*.jpg");
+                                    if (banners.Length > 0)
+                                    {
+                                        Random randomizer = new Random();
+                                        string banner_to_use = banners[randomizer.Next(0, banners.Length - 1)];
+                                        Bitmap bitmap = (Bitmap)(Bitmap.FromFile(banner_to_use));
+
+                                        RectangleF rectf = new RectangleF(30, bitmap.Height - 55, bitmap.Width - 40, 40);
+                                        Graphics g = Graphics.FromImage(bitmap);
+                                        g.SmoothingMode = SmoothingMode.AntiAlias;
+                                        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                        g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                                        g.DrawString(new_name, new Font("Tahoma", 25, FontStyle.Bold), Brushes.Black, rectf);
+                                        g.Flush();
+
+                                        string new_file = folder + "/images/banners/coll.jpg";
+                                        if (!File.Exists(new_file))
+                                        {
+                                            bitmap.Save(new_file, ImageFormat.Jpeg);
+                                            custom_banner_created = true;
+                                        }
+                                    }
+                                }
+                                catch (Exception ee)
+                                {
+                                    // Suppress this Error... 
+                                }
+                            }
+
+                            if ((!custom_banner_created) && (!File.Exists(folder + "/images/banners/coll.jpg")))
+                            {
+                                if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_banner.jpg"))
+                                    File.Copy(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
+                            }
 
 							// Now, try to create the item aggregation and write the configuration file
                             Complete_Item_Aggregation childAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(new_aggregation_code, false, RequestSpecificValues.Tracer);
@@ -2923,186 +2976,183 @@ namespace SobekCM.Library.AdminViewer
 			}
 		}
 
-		private void Add_Page_8(TextWriter Output)
-		{
-		//	const string NEW_SUBCOLLECTION_HELP = "New subcollection help place holder";
+	    private void Add_Page_8(TextWriter Output)
+	    {
+	        //	const string NEW_SUBCOLLECTION_HELP = "New subcollection help place holder";
 
 
-			if (actionMessage.Length > 0)
-			{
-				Output.WriteLine("  <br />");
-				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\" style=\"color:Maroon;\">" + actionMessage + "</div>");
-			}
+	        if (actionMessage.Length > 0)
+	        {
+	            Output.WriteLine("  <br />");
+	            Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\" style=\"color:Maroon;\">" + actionMessage + "</div>");
+	        }
 
 
-			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
+	        Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
-			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">SubCollections</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can view existing subcollections or add new subcollections to this aggregation from this tab.  You will have full curatorial rights over any new subcollections you add.  Currently, only system administrators can DELETE subcollections.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+	        Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">SubCollections</td></tr>");
+	        Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can view existing subcollections or add new subcollections to this aggregation from this tab.  You will have full curatorial rights over any new subcollections you add.  Currently, only system administrators can DELETE subcollections.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
-			if (itemAggregation.Children_Count <= 0)
-			{
-				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-				Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
-				Output.WriteLine("    <td style=\"width: 165px\" class=\"sbkSaav_TableLabel\">Existing Subcollections:</td>");
-				Output.WriteLine("    <td style=\"font-style:italic\">This aggregation currently has no subcollections</td>");
-				Output.WriteLine("  </tr>");
-			}
-			else
-			{
-				// Add EXISTING subcollections
-				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-				Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
-				Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\" colspan=\"2\">Existing Subcollections:</td>");
-				Output.WriteLine("  </tr>");
-				Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
-				Output.WriteLine("    <td>&nbsp;</td>");
-				Output.WriteLine("    <td colspan=\"2\">");
-				Output.WriteLine("      <table class=\"sbkSaav_SubCollectionTable sbkSaav_Table\">");
-				Output.WriteLine("        <tr>");
-				Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader1\">ACTION</th>");
-				Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader2\">CODE</th>");
-				Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader3\">TYPE</th>");
-				Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader4\">ACTIVE?</th>");
-				Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader5\">NAME</th>");
-				Output.WriteLine("        </tr>");
+	        if (itemAggregation.Children_Count <= 0)
+	        {
+	            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+	            Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+	            Output.WriteLine("    <td style=\"width: 165px\" class=\"sbkSaav_TableLabel\">Existing Subcollections:</td>");
+	            Output.WriteLine("    <td style=\"font-style:italic\">This aggregation currently has no subcollections</td>");
+	            Output.WriteLine("  </tr>");
+	        }
+	        else
+	        {
+	            // Add EXISTING subcollections
+	            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+	            Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+	            Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\" colspan=\"2\">Existing Subcollections:</td>");
+	            Output.WriteLine("  </tr>");
+	            Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+	            Output.WriteLine("    <td>&nbsp;</td>");
+	            Output.WriteLine("    <td colspan=\"2\">");
+	            Output.WriteLine("      <table class=\"sbkSaav_SubCollectionTable sbkSaav_Table\">");
+	            Output.WriteLine("        <tr>");
+	            Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader1\">ACTION</th>");
+	            Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader2\">CODE</th>");
+	            Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader3\">TYPE</th>");
+	            Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader4\">ACTIVE?</th>");
+	            Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader5\">NAME</th>");
+	            Output.WriteLine("        </tr>");
 
-				// Put in alphabetical order
-				SortedDictionary<string, Item_Aggregation_Related_Aggregations> sortedChildren = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
-			    if (itemAggregation.Children_Count > 0)
-			    {
-			        foreach (Item_Aggregation_Related_Aggregations childAggrs in itemAggregation.Children)
-			            sortedChildren[childAggrs.Code] = childAggrs;
-			    }
+	            // Put in alphabetical order
+	            SortedDictionary<string, Item_Aggregation_Related_Aggregations> sortedChildren = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
+	            if (itemAggregation.Children_Count > 0)
+	            {
+	                foreach (Item_Aggregation_Related_Aggregations childAggrs in itemAggregation.Children)
+	                    sortedChildren[childAggrs.Code] = childAggrs;
+	            }
 
-			    foreach (KeyValuePair<string, Item_Aggregation_Related_Aggregations> childAggrs in sortedChildren)
-				{
-					string code = childAggrs.Key;
-                    Item_Aggregation_Related_Aggregations relatedAggr = UI_ApplicationCache_Gateway.Aggregations[code];
-					if (relatedAggr != null)
-					{
-						Output.WriteLine("        <tr>");
-						Output.Write("          <td class=\"sbkAdm_ActionLink\" style=\"padding-left: 5px;\" >( ");
-						RequestSpecificValues.Current_Mode.Aggregation = childAggrs.Key;
-						RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-						RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-						Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this subcollection\" target=\"VIEW_" + childAggrs.Key + "\">view</a> | ");
+	            foreach (KeyValuePair<string, Item_Aggregation_Related_Aggregations> childAggrs in sortedChildren)
+	            {
+	                string code = childAggrs.Key;
+	                Item_Aggregation_Related_Aggregations relatedAggr = UI_ApplicationCache_Gateway.Aggregations[code];
+	                if (relatedAggr != null)
+	                {
+	                    Output.WriteLine("        <tr>");
+	                    Output.Write("          <td class=\"sbkAdm_ActionLink\" style=\"padding-left: 5px;\" >( ");
+	                    RequestSpecificValues.Current_Mode.Aggregation = childAggrs.Key;
+	                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+	                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+	                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this subcollection\" target=\"VIEW_" + childAggrs.Key + "\">view</a> | ");
 
-						RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-						RequestSpecificValues.Current_Mode.My_Sobek_SubMode = childAggrs.Key;
-						Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this subcollection\" target=\"EDIT_" + childAggrs.Key + "\">edit</a> | ");
-						Output.WriteLine("<a title=\"Click to delete this subcollection\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return edit_aggr_delete_child_aggr('" + childAggrs.Value.Code + "');\">delete</a> )</td>");
-
-
-						Output.WriteLine("          <td>" + childAggrs.Key + "</td>");
-						Output.WriteLine("          <td>" + childAggrs.Value.Type + "</td>");
-						if (relatedAggr.Active)
-							Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/checkmark2.png\" alt=\"YES\" /></td>");
-						else
-							Output.WriteLine("          <td></td>");
-
-						Output.WriteLine("          <td>" + relatedAggr.Name + "</td>");
-						Output.WriteLine("        </tr>");
-					}
-				}
-				RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-				RequestSpecificValues.Current_Mode.My_Sobek_SubMode = itemAggregation.Code;
-
-				Output.WriteLine("      </table>");
-				Output.WriteLine("    </td>");
-				Output.WriteLine("  </tr>");
-			}
-
-			if (itemAggregation.Type.ToUpper() != "EXHIBIT")
-			{
-				// Add ability to add NEW subcollections
-				Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
-				Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
-				Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\" style=\"width:145px\">New Subcollection:</td>");
-				Output.WriteLine("    <td>");
-				Output.WriteLine("      <table class=\"sbkSaav_SubInnerTable\">");
-				// Add line for aggregation code and aggregation type
-				Output.WriteLine("      <tr>");
-				Output.WriteLine("        <td style=\"width:120px;\"><label for=\"admin_aggr_code\">Code:</label></td>");
-				Output.WriteLine("        <td><input class=\"sbkAsav_small_input sbkAdmin_Focusable\" name=\"admin_aggr_code\" id=\"admin_aggr_code\" type=\"text\" value=\"" + enteredCode + "\" /></td>");
-				Output.WriteLine("        <td style=\"text-align:right;\">");
-				Output.WriteLine("          <label for=\"admin_aggr_type\">Type:</label> &nbsp; ");
-				Output.WriteLine("          <select class=\"sbkSaav_SubTypeSelect\" name=\"admin_aggr_type\" id=\"admin_aggr_type\">");
-				if (enteredType == String.Empty)
-					Output.WriteLine("            <option value=\"\" selected=\"selected\" ></option>");
-
-				if ((itemAggregation.Type.IndexOf("Institution") < 0) && (itemAggregation.Type.IndexOf("Group") > 0))
-				{
-					Output.WriteLine(enteredType == "coll"
-						                 ? "            <option value=\"coll\" selected=\"selected\" >Collection</option>"
-						                 : "            <option value=\"coll\">Collection</option>");
-				}
-
-				Output.WriteLine(enteredType == "exhibit"
-					                 ? "            <option value=\"exhibit\" selected=\"selected\" >Exhibit</option>"
-					                 : "            <option value=\"exhibit\">Exhibit</option>");
-
-				if (itemAggregation.Type.IndexOf("Institution") == 0)
-				{
-					Output.WriteLine(enteredType == "subinst"
-						                 ? "            <option value=\"subinst\" selected=\"selected\" >Institutional Division</option>"
-						                 : "            <option value=\"subinst\">Institutional Division</option>");
-				}
-
-				if (itemAggregation.Type.IndexOf("Institution") < 0)
-				{
-					Output.WriteLine(enteredType == "subcoll"
-						                 ? "            <option value=\"subcoll\" selected=\"selected\" >SubCollection</option>"
-						                 : "            <option value=\"subcoll\">SubCollection</option>");
-				}
-
-				Output.WriteLine("          </select>");
-				Output.WriteLine("        </td>");
-				Output.WriteLine("      </tr>");
-
-				// Add the full name line
-				Output.WriteLine("      <tr><td><label for=\"admin_aggr_name\">Name (full):</label></td><td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_aggr_name\" id=\"admin_aggr_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredName) + "\" /></td></tr>");
-
-				// Add the short name line
-				Output.WriteLine("      <tr><td><label for=\"admin_aggr_shortname\">Name (short):</label></td><td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_aggr_shortname\" id=\"admin_aggr_shortname\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredShortname) + "\" /></td></tr>");
-
-				// Add the description box
-				Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_aggr_desc\">Description:</label></td><td colspan=\"2\"><textarea rows=\"6\" name=\"admin_aggr_desc\" id=\"admin_aggr_desc\" class=\"sbkSaav_SubInput sbkAdmin_Focusable\">" + HttpUtility.HtmlEncode(enteredDescription) + "</textarea></td></tr>");
-
-				// Add checkboxes for is active and is hidden
-				Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_aggr_desc\">Behaviors:</label></td>");
-				Output.WriteLine("        <td colspan=\"2\">");
-
-				Output.WriteLine("        <div style=\"float:right\"><button title=\"Save new subcollection\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_child_aggr();\">ADD</button></div>");
+	                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+	                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = childAggrs.Key;
+	                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this subcollection\" target=\"EDIT_" + childAggrs.Key + "\">edit</a> | ");
+	                    Output.WriteLine("<a title=\"Click to delete this subcollection\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return edit_aggr_delete_child_aggr('" + childAggrs.Value.Code + "');\">delete</a> )</td>");
 
 
-				Output.WriteLine(enteredIsActive
-								 ? "        <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" checked=\"checked\" /> <label for=\"admin_aggr_isactive\">Active?</label><br />"
-					             : "        <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" /> <label for=\"admin_aggr_isactive\">Active?</label><br />");
+	                    Output.WriteLine("          <td>" + childAggrs.Key + "</td>");
+	                    Output.WriteLine("          <td>" + childAggrs.Value.Type + "</td>");
+	                    if (relatedAggr.Active)
+	                        Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/checkmark2.png\" alt=\"YES\" /></td>");
+	                    else
+	                        Output.WriteLine("          <td></td>");
+
+	                    Output.WriteLine("          <td>" + relatedAggr.Name + "</td>");
+	                    Output.WriteLine("        </tr>");
+	                }
+	            }
+	            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+	            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = itemAggregation.Code;
+
+	            Output.WriteLine("      </table>");
+	            Output.WriteLine("    </td>");
+	            Output.WriteLine("  </tr>");
+	        }
 
 
-				Output.WriteLine(enteredIsHidden
-					             ? "          <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" checked=\"checked\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label>"
-					             : "          <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label>");
+	        // Add ability to add NEW subcollections
+	        Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+	        Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+	        Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\" style=\"width:145px\">New Subcollection:</td>");
+	        Output.WriteLine("    <td>");
+	        Output.WriteLine("      <table class=\"sbkSaav_SubInnerTable\">");
+	        // Add line for aggregation code and aggregation type
+	        Output.WriteLine("      <tr>");
+	        Output.WriteLine("        <td style=\"width:120px;\"><label for=\"admin_aggr_code\">Code:</label></td>");
+	        Output.WriteLine("        <td><input class=\"sbkAsav_small_input sbkAdmin_Focusable\" name=\"admin_aggr_code\" id=\"admin_aggr_code\" type=\"text\" value=\"" + enteredCode + "\" /></td>");
+	        Output.WriteLine("        <td style=\"text-align:right;\">");
+	        Output.WriteLine("          <label for=\"admin_aggr_type\">Type:</label> &nbsp; ");
+	        Output.WriteLine("          <select class=\"sbkSaav_SubTypeSelect\" name=\"admin_aggr_type\" id=\"admin_aggr_type\">");
+	        if (enteredType == String.Empty)
+	            Output.WriteLine("            <option value=\"\" selected=\"selected\" ></option>");
+
+	        if ((itemAggregation.Type.IndexOf("Institution") < 0) && (itemAggregation.Type.IndexOf("Group") > 0))
+	        {
+	            Output.WriteLine(enteredType == "coll"
+	                ? "            <option value=\"coll\" selected=\"selected\" >Collection</option>"
+	                : "            <option value=\"coll\">Collection</option>");
+	        }
+
+	        Output.WriteLine(enteredType == "exhibit"
+	            ? "            <option value=\"exhibit\" selected=\"selected\" >Exhibit</option>"
+	            : "            <option value=\"exhibit\">Exhibit</option>");
+
+	        if (itemAggregation.Type.IndexOf("Institution") == 0)
+	        {
+	            Output.WriteLine(enteredType == "subinst"
+	                ? "            <option value=\"subinst\" selected=\"selected\" >Institutional Division</option>"
+	                : "            <option value=\"subinst\">Institutional Division</option>");
+	        }
+
+	        if (itemAggregation.Type.IndexOf("Institution") < 0)
+	        {
+	            Output.WriteLine(enteredType == "subcoll"
+	                ? "            <option value=\"subcoll\" selected=\"selected\" >SubCollection</option>"
+	                : "            <option value=\"subcoll\">SubCollection</option>");
+	        }
+
+	        Output.WriteLine("          </select>");
+	        Output.WriteLine("        </td>");
+	        Output.WriteLine("      </tr>");
+
+	        // Add the full name line
+	        Output.WriteLine("      <tr><td><label for=\"admin_aggr_name\">Name (full):</label></td><td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_aggr_name\" id=\"admin_aggr_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredName) + "\" /></td></tr>");
+
+	        // Add the short name line
+	        Output.WriteLine("      <tr><td><label for=\"admin_aggr_shortname\">Name (short):</label></td><td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_aggr_shortname\" id=\"admin_aggr_shortname\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredShortname) + "\" /></td></tr>");
+
+	        // Add the description box
+	        Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_aggr_desc\">Description:</label></td><td colspan=\"2\"><textarea rows=\"6\" name=\"admin_aggr_desc\" id=\"admin_aggr_desc\" class=\"sbkSaav_SubInput sbkAdmin_Focusable\">" + HttpUtility.HtmlEncode(enteredDescription) + "</textarea></td></tr>");
+
+	        // Add checkboxes for is active and is hidden
+	        Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_aggr_desc\">Behaviors:</label></td>");
+	        Output.WriteLine("        <td colspan=\"2\">");
+
+	        Output.WriteLine("        <div style=\"float:right\"><button title=\"Save new subcollection\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_child_aggr();\">ADD</button></div>");
 
 
-				Output.WriteLine("        </td>");
-				Output.WriteLine("      </tr>");
-
-				// Add the SAVE button
-				Output.WriteLine("    </table>");
-				Output.WriteLine("    </td>");
-				Output.WriteLine("  </tr>");
-				//Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_SUBCOLLECTION_HELP + "');\"  title=\"" + NEW_SUBCOLLECTION_HELP + "\" /></td>");
-			}
+	        Output.WriteLine(enteredIsActive
+	            ? "        <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" checked=\"checked\" /> <label for=\"admin_aggr_isactive\">Active?</label><br />"
+	            : "        <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" /> <label for=\"admin_aggr_isactive\">Active?</label><br />");
 
 
+	        Output.WriteLine(enteredIsHidden
+	            ? "          <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" checked=\"checked\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label>"
+	            : "          <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label>");
 
-			Output.WriteLine("</table>");
-		}
+
+	        Output.WriteLine("        </td>");
+	        Output.WriteLine("      </tr>");
+
+	        // Add the SAVE button
+	        Output.WriteLine("    </table>");
+	        Output.WriteLine("    </td>");
+	        Output.WriteLine("  </tr>");
+	        //Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_SUBCOLLECTION_HELP + "');\"  title=\"" + NEW_SUBCOLLECTION_HELP + "\" /></td>");
 
 
-		#endregion
+	        Output.WriteLine("</table>");
+	    }
+
+
+	    #endregion
 
 		#region Methods to render (and parse) CSS page
 

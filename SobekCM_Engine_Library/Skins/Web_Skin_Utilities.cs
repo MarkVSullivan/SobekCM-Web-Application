@@ -54,7 +54,9 @@ namespace SobekCM.Engine_Library.Skins
             string code = Skin_Row["WebSkinCode"].ToString();
             string base_interface = Skin_Row["BaseInterface"].ToString();
             bool override_banner = Convert.ToBoolean(Skin_Row["OverrideBanner"]);
+            bool build_on_launch = Convert.ToBoolean(Skin_Row["Build_On_Launch"]);
             string banner_link = Skin_Row["BannerLink"].ToString();
+            string notes = Skin_Row["Notes"].ToString();
             string this_style = code + ".css";
             if (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + code + "\\" + this_style))
                 this_style = String.Empty;
@@ -63,7 +65,9 @@ namespace SobekCM.Engine_Library.Skins
             Complete_Web_Skin_Object completeSkin = new Complete_Web_Skin_Object(code, this_style)
             {
                 Override_Banner = override_banner, 
-                Suppress_Top_Navigation = Convert.ToBoolean(Skin_Row["SuppressTopNavigation"])
+                Suppress_Top_Navigation = Convert.ToBoolean(Skin_Row["SuppressTopNavigation"]),
+                Build_On_Launch = build_on_launch,
+                Notes = notes
             };
 
             // Assign the optional values

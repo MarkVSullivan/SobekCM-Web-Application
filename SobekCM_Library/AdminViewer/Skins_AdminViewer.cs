@@ -153,11 +153,7 @@ namespace SobekCM.Library.AdminViewer
                                     override_banner = true;
                                 }
 
-                                temp_object = form["admin_interface_header_override"];
-                                if (temp_object != null)
-                                {
-                                    override_header = true;
-                                }
+                                override_header = true;
 
                                 temp_object = form["admin_interface_buildlaunch"];
                                 if (temp_object != null)
@@ -562,7 +558,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <tr style=\"height:25px;\"><td><label for=\"admin_interface_notes\">Notes:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"admin_interface_notes\" id=\"admin_interface_notes\" type=\"text\" value=\"\" /></td></tr>");
 
             // Add checkboxes for overriding the header/footer and overriding banner
-			Output.WriteLine("      <tr style=\"height:15px;\"><td>Flags:</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_header_override\" id=\"admin_interface_header_override\" checked=\"checked\" /> <label for=\"admin_interface_header_override\">Override header and footer?</label></td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_banner_override\" id=\"admin_interface_banner_override\" /> <label for=\"admin_interface_banner_override\">Override banner?</label></td></tr>");
+            Output.WriteLine("      <tr style=\"height:15px;\"><td>Flags:</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_banner_override\" id=\"admin_interface_banner_override\" /> <label for=\"admin_interface_banner_override\">Override banner?</label></td><td></td></tr>");
 			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_top_nav\" id=\"admin_interface_top_nav\" /> <label for=\"admin_interface_top_nav\">Suppress top-level navigation?</label></td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_buildlaunch\" id=\"admin_interface_buildlaunch\" /> <label for=\"admin_interface_buildlaunch\">Build on launch?</label></td></tr>");
 			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td colspan=\"2\"><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_copycurrent\" id=\"admin_interface_copycurrent\" /> <label for=\"admin_interface_copycurrent\">Copy current files for this new web skin if folder does not exist?</label></td></tr>");
 
@@ -597,11 +593,11 @@ namespace SobekCM.Library.AdminViewer
                 string code = thisRow["WebSkinCode"].ToString();
                 string base_code = thisRow["BaseInterface"].ToString();
                 string notes = thisRow["Notes"].ToString();
-                bool overrideHeader = Convert.ToBoolean(thisRow["OverrideHeaderFooter"]);
-                bool overrideBanner = Convert.ToBoolean(thisRow["OverrideBanner"]);
-                bool buildOnLaunch = Convert.ToBoolean(thisRow["Build_On_Launch"]);
-                bool suppressTopNav = Convert.ToBoolean(thisRow["SuppressTopNavigation"]);
-                string bannerLink = thisRow["BannerLink"].ToString();
+                //bool overrideHeader = Convert.ToBoolean(thisRow["OverrideHeaderFooter"]);
+                //bool overrideBanner = Convert.ToBoolean(thisRow["OverrideBanner"]);
+                //bool buildOnLaunch = Convert.ToBoolean(thisRow["Build_On_Launch"]);
+                //bool suppressTopNav = Convert.ToBoolean(thisRow["SuppressTopNavigation"]);
+                //string bannerLink = thisRow["BannerLink"].ToString();
 
                 // Build the action links
                 Output.WriteLine("    <tr>");

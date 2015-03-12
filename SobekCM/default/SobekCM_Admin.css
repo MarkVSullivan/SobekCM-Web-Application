@@ -308,6 +308,7 @@ input.sbkSav_checkbox { padding-top: 3px;border: 0; }
 /** Skins_Single_AdminViewer  **/
 #sbkSsav_ContainerInner { margin: 0 auto; padding:0; width: 1120px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
 #sbkSsav_PageContainer { margin-left: 40px;  margin-right: 40px;  text-align:center;  FONT-SIZE: small;  }
+.sbkSsav_html_textbox { width: 600px;}
 
 /** Thematic_Heading_AdminViewer */
 .sbkThav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 

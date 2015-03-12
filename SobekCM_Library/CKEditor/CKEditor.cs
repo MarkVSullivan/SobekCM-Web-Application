@@ -15,7 +15,7 @@ namespace SobekCM.Library.CKEditor
         /// <summary> Constructor for a new instance of the CKEditor class </summary>
 		public CKEditor()
 		{
-
+            Start_In_Source_Mode = false;
 		}
 
         /// <summary> Add the file input and the necessary script section, with
@@ -23,17 +23,32 @@ namespace SobekCM.Library.CKEditor
         /// <param name="Output"> Writer to write to the stream </param>
         public void Add_To_Stream(TextWriter Output)
         {
+            Add_To_Stream(Output, true);
+        }
+
+        /// <summary> Add the file input and the necessary script section, with
+        /// all the options specfiedi here, directly to the streamwriter </summary>
+        /// <param name="Output"> Writer to write to the stream </param>
+        public void Add_To_Stream(TextWriter Output, bool Include_Script_Reference )
+        {
             if (HttpContext.Current == null)
             {
                 Output.WriteLine("<!-- Unable to add CKEditor due to HTTPContext.Current being null -->");
                 return;
             }
 
-            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + BaseUrl + "default/scripts/ckeditor/ckeditor.js\"></script>");
+            if ( Include_Script_Reference )
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + BaseUrl + "default/scripts/ckeditor/ckeditor.js\"></script>");
 
             Output.WriteLine("  <script type=\"text/javascript\">");
 
             Output.WriteLine("    $(document).ready(function () { ");
+
+            if (Start_In_Source_Mode)
+            {
+                Output.WriteLine("          CKEDITOR.config.startupMode = 'source';");
+            }
+
             Output.WriteLine("          CKEDITOR.replace( '" + TextAreaID + "', {");
             Output.WriteLine("               extraPlugins: 'divarea',");
             Output.WriteLine("               extraPlugins: 'autogrow',");
@@ -113,5 +128,8 @@ namespace SobekCM.Library.CKEditor
 
         /// <summary> URL for the file upload handler on the server </summary>
         public string FileBrowser_ImageUploadUrl { get; set; }
+
+        /// <summary> Flag indicates if it should start in source mode </summary>
+        public bool Start_In_Source_Mode { get; set;  }
     }
 }

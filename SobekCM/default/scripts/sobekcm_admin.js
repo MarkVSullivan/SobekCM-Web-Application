@@ -740,6 +740,25 @@ function new_skin_edit_page(page) {
     return false;
 }
 
+function new_skin_language(sel) {
+
+    var langfield = document.getElementById('admin_skin_language');
+    langfield.value = sel.value;
+
+    var hiddenfield = document.getElementById('admin_skin_save');
+    hiddenfield.value = 'c';
+    document.itemNavForm.submit();
+    return false;
+}
+
+function add_skin_language() {
+
+    var hiddenfield = document.getElementById('admin_skin_save');
+    hiddenfield.value = 'new_lang';
+    document.itemNavForm.submit();
+    return false;
+}
+
 // Save the aggregation updates
 function save_aggr_edits() {
     var hiddenfield = document.getElementById('admin_aggr_save');
