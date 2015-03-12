@@ -16,7 +16,7 @@ using SobekCM.Library;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 
-using SobekCM.Library.Skins;
+using SobekCM.Engine_Library.Skins;
 using SobekCM.Core.Users;
 
 using SobekCM.Tools;
@@ -40,7 +40,7 @@ namespace SobekCM.Builder_Library.Statistics
         private static DateTime Last_Refresh;
         private static Recent_Searches Search_History;
         private static List<string> Search_Stop_Words;
-        private static SobekCM_Skin_Collection Skins;
+        private static Web_Skin_Collection Skins;
         private static Statistics_Dates Stats_Date_Range;
         private static List<Thematic_Heading> Thematic_Headings;
         private static Language_Support_Info Translation;

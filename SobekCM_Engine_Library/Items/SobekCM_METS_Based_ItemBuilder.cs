@@ -981,7 +981,7 @@ namespace SobekCM.Engine_Library.Items
 
                             case "PDF":
                                 pdf_download++;
-                                if (pdf_download == 0)
+                                if (pdf_download == 1)
                                 {
                                     pdf_download_url = downloadPage.Files[0].System_Name;
                                     download_handled = true;
