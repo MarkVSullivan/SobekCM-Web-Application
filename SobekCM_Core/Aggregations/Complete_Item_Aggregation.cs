@@ -1343,7 +1343,6 @@ namespace SobekCM.Core.Aggregations
             }
             catch (Exception ee)
             {
-                return ee.Message.Length > 0;
                 return false;
             }
         }

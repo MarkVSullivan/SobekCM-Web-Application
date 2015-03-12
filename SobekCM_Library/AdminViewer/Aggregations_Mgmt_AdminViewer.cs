@@ -322,7 +322,12 @@ namespace SobekCM.Library.AdminViewer
                                             string link_to_parent = String.Empty;
                                             Item_Aggregation_Related_Aggregations parentAggr = UI_ApplicationCache_Gateway.Aggregations.Aggregation_By_ID(parentid);
                                             if (parentAggr != null)
-                                                link_to_parent = "<br />" + Environment.NewLine + " ← Back to <a href=\"<%BASEURL%>" + parentAggr.Code + "\" alt=\"Return to parent collection\">" + parentAggr.Name + "</a>" + Environment.NewLine;
+                                            {
+                                                if ( String.Compare(parentAggr.Code, "all", true ) == 0 )
+                                                    link_to_parent = "<br />" + Environment.NewLine + " ← Back to <a href=\"<%BASEURL%>\" alt=\"Return to parent collection\">" + parentAggr.Name + "</a>" + Environment.NewLine;
+                                                else
+                                                    link_to_parent = "<br />" + Environment.NewLine + " ← Back to <a href=\"<%BASEURL%>" + parentAggr.Code + "\" alt=\"Return to parent collection\">" + parentAggr.Name + "</a>" + Environment.NewLine;
+                                            }
 
                                             // Create a default home text file
                                             StreamWriter writer = new StreamWriter(folder + "/html/home/text.html");

@@ -40,11 +40,29 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Metadata_Browse_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            string defaultBrowseBy = RequestSpecificValues.Hierarchy_Object.Default_BrowseBy ?? String.Empty;
+            
 
             // If there is not info browse mode listed, use the default
             if (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 0)
+            {
+                string defaultBrowseBy = RequestSpecificValues.Hierarchy_Object.Default_BrowseBy ?? String.Empty;
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = defaultBrowseBy;
+
+                // Still length of zero?
+                if (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 0)
+                {
+                    // Just look for the first browse by
+                    foreach (Item_Aggregation_Child_Page browse in RequestSpecificValues.Hierarchy_Object.Child_Pages)
+                    {
+                        if (browse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By)
+                        {
+                            RequestSpecificValues.Current_Mode.Info_Browse_Mode = browse.Code;
+                            break;
+                        }
+                    }
+                }
+
+            }
 
             if ((RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 0) && (RequestSpecificValues.Hierarchy_Object.Has_Browse_By_Pages))
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = RequestSpecificValues.Hierarchy_Object.Child_Page_By_Code(RequestSpecificValues.Current_Mode.Info_Browse_Mode).Code;
@@ -285,14 +303,44 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if ((browseObject != null) && (browseObject.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML))
             {
                 // Read the content file for this browse
-                /// TODO: Fix this
-       //         HTML_Based_Content staticBrowseContent = browseObject.Get_Static_Content(RequestSpecificValues.Current_Mode.Language, RequestSpecificValues.Current_Mode.Base_URL, UI_ApplicationCache_Gateway.Settings.Base_Design_Location + RequestSpecificValues.Hierarchy_Object.ObjDirectory, Tracer);
-           
-                // Apply current user settings for this
-        //        string browseInfoDisplayText = staticBrowseContent.Apply_Settings_To_Static_Text(staticBrowseContent.Content, RequestSpecificValues.Hierarchy_Object, RequestSpecificValues.HTML_Skin.Skin_Code, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode.Base_URL, UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode), Tracer);
+                string source_file = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + RequestSpecificValues.Hierarchy_Object.ObjDirectory.Replace("/", "\\") + browseObject.Source;
+                HTML_Based_Content staticBrowseContent = HTML_Based_Content_Reader.Read_HTML_File( source_file, true, Tracer );
+                if (staticBrowseContent == null)
+                {
+                    staticBrowseContent = new HTML_Based_Content("Unable to find source file!\n\n" + RequestSpecificValues.Hierarchy_Object.ObjDirectory.Replace("/", "\\") + browseObject.Source, browseObject.Code );
+                }
 
-                // Add this to the output stream
-         //       Output.WriteLine(browseInfoDisplayText);
+                // Apply current user settings for this
+                string browseInfoDisplayText = staticBrowseContent.Apply_Settings_To_Static_Text(staticBrowseContent.Content, RequestSpecificValues.Hierarchy_Object, RequestSpecificValues.HTML_Skin.Skin_Code, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode.Base_URL, UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode), Tracer);
+
+                // Is this an admin?
+                bool isAdmin = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Aggregation_Admin(RequestSpecificValues.Hierarchy_Object.Code));
+                Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
+
+                // Output the adjusted home html
+                if (isAdmin)
+                {
+                    Output.WriteLine("<div id=\"sbkSbia_MainTextEditable\">");
+                    Output.WriteLine(browseInfoDisplayText);
+                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Child_Page_Edit;
+                    Output.WriteLine("  <div id=\"sbkSbia_EditableTextLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home text\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/edit.gif\" alt=\"\" />edit content</a></div>");
+                    RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
+                    Output.WriteLine("</div>");
+                    Output.WriteLine();
+
+                    Output.WriteLine("<script>");
+                    Output.WriteLine("  $(\"#sbkSbia_MainTextEditable\").mouseover(function() { $(\"#sbkSbia_EditableTextLink\").css(\"display\",\"inline-block\"); });");
+                    Output.WriteLine("  $(\"#sbkSbia_MainTextEditable\").mouseout(function() { $(\"#sbkSbia_EditableTextLink\").css(\"display\",\"none\"); });");
+                    Output.WriteLine("</script>");
+                    Output.WriteLine();
+
+                }
+                else
+                {
+                    Output.WriteLine("<div id=\"sbkSbia_MainText\">");
+                    Output.WriteLine(browseInfoDisplayText);
+                    Output.WriteLine("</div>");
+                }
             }
             else
             {

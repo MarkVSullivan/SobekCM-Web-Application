@@ -369,20 +369,96 @@ namespace SobekCM.Library.HTML
             ReadOnlyCollection<Item_Aggregation_Child_Page> otherBrowses = RequestSpecificValues.Hierarchy_Object.Browse_Home_Pages;
             if (otherBrowses.Count > included_browses)
             {
+                // Determine the hierarchy
+                List<Item_Aggregation_Child_Page> menuPages = new List<Item_Aggregation_Child_Page>();
+                List<Item_Aggregation_Child_Page> topPages = new List<Item_Aggregation_Child_Page>();
+                Dictionary<string, Item_Aggregation_Child_Page> pagesDictionary = new Dictionary<string, Item_Aggregation_Child_Page>();
+                Dictionary<Item_Aggregation_Child_Page, List<Item_Aggregation_Child_Page>> parentToChild = new Dictionary<Item_Aggregation_Child_Page, List<Item_Aggregation_Child_Page>>();
+
+
                 // Now, step through the sorted list
                 foreach (Item_Aggregation_Child_Page thisBrowseObj in otherBrowses.Where(ThisBrowseObj => (ThisBrowseObj.Code != "all") && (ThisBrowseObj.Code != "new")))
                 {
-                    RequestSpecificValues.Current_Mode.Info_Browse_Mode = thisBrowseObj.Code;
-                    if (browse_code == thisBrowseObj.Code)
+                    // Add to the list, to avoid re-iterating through this
+                    menuPages.Add(thisBrowseObj);
+
+                    // Add this child page to the dictionary
+                    pagesDictionary.Add(thisBrowseObj.Code.ToLower(), thisBrowseObj);
+
+                    // Is this a  top-level page?
+                    if (String.IsNullOrEmpty(thisBrowseObj.Parent_Code))
+                        topPages.Add(thisBrowseObj);
+                }
+
+                // Now, build the hierarchy
+                foreach (Item_Aggregation_Child_Page thisPage in menuPages)
+                {
+                    if (!String.IsNullOrEmpty(thisPage.Parent_Code))
                     {
-                        Output.WriteLine("    <li id=\"sbkAgm_NewBrowse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", thisBrowseObj.Code) + "\">" + thisBrowseObj.Label + "</a></li>");
+                        if (pagesDictionary.ContainsKey(thisPage.Parent_Code.ToLower()))
+                        {
+                            Item_Aggregation_Child_Page parentPage = pagesDictionary[thisPage.Parent_Code.ToLower()];
+                            if (!parentToChild.ContainsKey(parentPage))
+                                parentToChild[parentPage] = new List<Item_Aggregation_Child_Page>();
+                            parentToChild[parentPage].Add(thisPage);
+                        }
+                    }
+                }
+
+                // Now, add each top-level page, with children
+                foreach (Item_Aggregation_Child_Page topPage in topPages)
+                {
+                    RequestSpecificValues.Current_Mode.Info_Browse_Mode = topPage.Code;
+                    if (browse_code == topPage.Code)
+                    {
+                        Output.Write("    <li id=\"sbkAgm_" + topPage.Code.Replace(" ","") + "Browse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", topPage.Code) + "\">" + topPage.Label + "</a>");
                     }
                     else
                     {
-                        Output.WriteLine("    <li id=\"sbkAgm_NewBrowse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", thisBrowseObj.Code) + "\">" + thisBrowseObj.Label + "</a></li>");
+                        Output.Write("    <li id=\"sbkAgm_" + topPage.Code.Replace(" ", "") + "Browse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", topPage.Code) + "\">" + topPage.Label + "</a>");
                     }
+
+                    if ((parentToChild.ContainsKey(topPage)) && ( parentToChild[topPage].Count > 0 ))
+                    {
+                        Output.WriteLine("<ul id=\"sbkAgm_" + topPage.Code.Replace(" ", "") + " + SubMenu\">");
+                        foreach (Item_Aggregation_Child_Page middlePages in parentToChild[topPage])
+                        {
+                            RequestSpecificValues.Current_Mode.Info_Browse_Mode = middlePages.Code;
+                            if (browse_code == middlePages.Code)
+                            {
+                                Output.Write("    <li id=\"sbkAgm_" + middlePages.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", middlePages.Code) + "\">" + middlePages.Label + "</a>");
+                            }
+                            else
+                            {
+                                Output.Write("    <li id=\"sbkAgm_" + middlePages.Code.Replace(" ", "") + "Browse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", middlePages.Code) + "\">" + middlePages.Label + "</a>");
+                            }
+
+                            if ((parentToChild.ContainsKey(middlePages)) && (parentToChild[middlePages].Count > 0))
+                            {
+                                Output.WriteLine("<ul id=\"sbkAgm_" + middlePages.Code.Replace(" ", "") + " + SubMenu\">");
+                                foreach (Item_Aggregation_Child_Page bottomPages in parentToChild[middlePages])
+                                {
+                                    RequestSpecificValues.Current_Mode.Info_Browse_Mode = bottomPages.Code;
+                                    if (browse_code == bottomPages.Code)
+                                    {
+                                        Output.Write("    <li id=\"sbkAgm_" + bottomPages.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", bottomPages.Code) + "\">" + bottomPages.Label + "</a></li>");
+                                    }
+                                    else
+                                    {
+                                        Output.Write("    <li id=\"sbkAgm_" + bottomPages.Code.Replace(" ", "") + "Browse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", bottomPages.Code) + "\">" + bottomPages.Label + "</a></li>");
+                                    }
+                                }
+                                Output.Write("    </ul>");
+                            }
+                            Output.WriteLine("</li>");
+                        }
+                        Output.Write("    </ul>");
+                    }
+
+                    Output.WriteLine("</li>");
                 }
             }
+
 
             // If this is NOT the all collection, then show subcollections
             if ((RequestSpecificValues.Hierarchy_Object.Code != "all") && (RequestSpecificValues.Hierarchy_Object.Children_Count > 0))

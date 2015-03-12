@@ -56,7 +56,7 @@ namespace SobekCM.Library.HTML
 			term_counter = 0;
 
 			// Try to get the facet configuration information
-			facetInformation = "0000000";
+			facetInformation = "00000000";
 			if (HttpContext.Current.Request.Form["facet"] != null)
 				facetInformation = HttpContext.Current.Request.Form["facet"].PadRight(7, '0');
 
