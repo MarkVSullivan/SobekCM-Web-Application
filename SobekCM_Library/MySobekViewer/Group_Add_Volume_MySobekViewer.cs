@@ -112,10 +112,15 @@ namespace SobekCM.Library.MySobekViewer
             {
                 RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Reading CompleteTemplate file");
 
-                // Read this CompleteTemplate
+                // Look in the user-defined templates portion first
+                string user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\user\\standard\\" + template_code + ".xml";
+                if (!File.Exists(user_template))
+                    user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\default\\standard\\" + template_code + ".xml";
+
+                // Read this template
                 Template_XML_Reader reader = new Template_XML_Reader();
                 completeTemplate = new CompleteTemplate();
-                reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\defaults\\" + template_code + ".xml", completeTemplate, true);
+                reader.Read_XML(user_template, completeTemplate, true);
 
                 // Add the current codes to this CompleteTemplate
                 completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);

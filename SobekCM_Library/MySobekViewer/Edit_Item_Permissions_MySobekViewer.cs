@@ -228,9 +228,9 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<!-- Edit_Item_Permissions_MySobekViewer.Write_ItemNavForm_Closing -->");
             Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <h2>Edit item-level permissions for this RequestSpecificValues.Current_Item</h2>");
+            Output.WriteLine("  <h2>Edit item-level permissions for this item</h2>");
             Output.WriteLine("  <ul>");
-            Output.WriteLine("    <li>Use this form to change visibility (and related embargo dates) on this RequestSpecificValues.Current_Item </li>");
+            Output.WriteLine("    <li>Use this form to change visibility (and related embargo dates) on this item </li>");
             Output.WriteLine("    <li>This form also allows ip restriction and user group permissions to be set </li>");
             Output.WriteLine("    <li>Click <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/itempermissions\" target=\"_EDIT_INSTRUCTIONS\">here for detailed instructions</a> on editing permissions online.</li>");
             Output.WriteLine("  </ul>");
