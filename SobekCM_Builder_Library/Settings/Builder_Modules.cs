@@ -77,6 +77,8 @@ namespace SobekCM.Builder_Library.Settings
                             iPreProcessModule thisModule = new ProcessPendingFdaReportsModule();
                             if ((!String.IsNullOrEmpty(preSetting.Argument1)) || (!String.IsNullOrEmpty(preSetting.Argument2)) || (!String.IsNullOrEmpty(preSetting.Argument3)))
                             {
+                                if(thisModule.Arguments == null)
+                                     thisModule.Arguments = new List<string>();
                                 thisModule.Arguments.Add(String.IsNullOrEmpty(preSetting.Argument1) ? String.Empty : preSetting.Argument1);
                                 thisModule.Arguments.Add(String.IsNullOrEmpty(preSetting.Argument2) ? String.Empty : preSetting.Argument2);
                                 thisModule.Arguments.Add(String.IsNullOrEmpty(preSetting.Argument3) ? String.Empty : preSetting.Argument3);
