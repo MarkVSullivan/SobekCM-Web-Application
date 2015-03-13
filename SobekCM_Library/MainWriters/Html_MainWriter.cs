@@ -952,6 +952,39 @@ namespace SobekCM.Library.MainWriters
                 }
             }
 
+            try
+            {
+                StreamWriter writer = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\temp\\exceptions.txt", true);
+                writer.WriteLine();
+                writer.WriteLine("Error Caught in Application_Error event ( " + DateTime.Now.ToString() + ")");
+                writer.WriteLine("User Host Address: " + HttpContext.Current.Request.UserHostAddress);
+                writer.WriteLine("Requested URL: " + HttpContext.Current.Request.Url);
+                if (ObjErr is SobekCM_Traced_Exception)
+                {
+                    SobekCM_Traced_Exception sobekException = (SobekCM_Traced_Exception)ObjErr;
+                    writer.WriteLine("Error Message: " + sobekException.InnerException.Message);
+                    writer.WriteLine("Stack Trace: " + ObjErr.StackTrace);
+                    writer.WriteLine("Error Message:" + sobekException.InnerException.StackTrace);
+                    writer.WriteLine();
+                    writer.WriteLine(sobekException.Trace_Route);
+                }
+                else
+                {
+
+                    writer.WriteLine("Error Message: " + ObjErr.Message);
+                    writer.WriteLine("Stack Trace: " + ObjErr.StackTrace);
+                }
+
+                writer.WriteLine();
+                writer.WriteLine("------------------------------------------------------------------");
+                writer.Flush();
+                writer.Close();
+            }
+            catch (Exception)
+            {
+                // Nothing else to do here.. no other known way to log this error
+            }
+
             // Forward to our error message
             if (Redirect)
             {
