@@ -82,16 +82,21 @@ namespace SobekCM.Library.MySobekViewer
             completeTemplate = Template_MemoryMgmt_Utility.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
             if (completeTemplate != null)
             {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Found CompleteTemplate in cache");
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Found template in cache");
             }
             else
             {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Reading CompleteTemplate file");
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Reading template file");
+
+                // Look in the user-defined portion
+                string user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\user\\edit\\" + template_code + ".xml";
+                if ( !File.Exists(user_template))
+                    user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\default\\edit\\" + template_code + ".xml";
 
                 // Read this CompleteTemplate
                 Template_XML_Reader reader = new Template_XML_Reader();
                 completeTemplate = new CompleteTemplate();
-                reader.Read_XML( UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\edit\\" + template_code + ".xml", completeTemplate, true);
+                reader.Read_XML(user_template, completeTemplate, true);
 
                 // Add the current codes to this CompleteTemplate
                 completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);

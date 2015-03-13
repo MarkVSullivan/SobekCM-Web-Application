@@ -891,7 +891,7 @@ namespace SobekCM.Engine_Library.Navigation
                             }
 
                         case Aggregation_Type_Enum.Home_Edit:
-                            if (!String.IsNullOrEmpty(adjusted_aggregation))
+                            if ((!String.IsNullOrEmpty(adjusted_aggregation)) && ( adjusted_aggregation != "all"))
                             {
                                 return this_base_url + adjusted_aggregation + "/edit" + urlOptions1;
                             }

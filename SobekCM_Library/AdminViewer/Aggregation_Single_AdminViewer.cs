@@ -1808,7 +1808,7 @@ namespace SobekCM.Library.AdminViewer
 		    if (!Directory.Exists(aggregationDirectory + "\\html\\custom\\home"))
 		        Directory.CreateDirectory(aggregationDirectory + "\\html\\custom\\home");
             string[] html_files = Directory.GetFiles(aggregationDirectory + "\\html\\custom\\home", "*.htm*");
-			if (html_files.Length == 0)
+            if ((html_files.Length == 0) || (itemAggregation.Custom_Home_Page_Source_File == null ))
 			{
 				Output.WriteLine("          <td><span style=\"font-style:italic; padding-right: 5px;\">No html source files</span></td>");
                 Output.WriteLine("          <td><button title=\"Enable a completely custom home page\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_enable_custom_home();\">ENABLE</button></td>");
@@ -1821,7 +1821,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.Write("            <select class=\"sbkSaav_SelectSingle\" name=\"admin_aggr_custom_home\" id=\"admin_aggr_custom_home\" onchange=\"aggr_edit_custom_home_selectchange();\">");
 
 				// Add the NONE option first
-			    bool custom_home_exists = itemAggregation.Custom_Home_Page_Source_File.Length > 0;
+			    bool custom_home_exists = !String.IsNullOrEmpty(itemAggregation.Custom_Home_Page_Source_File);
                 Output.Write(!custom_home_exists ? "<option value=\"\" selected=\"selected\" ></option>" : "<option value=\"\"></option>");
 
 				// Add each possible source file
