@@ -183,7 +183,8 @@ input.sbkSaav_NewChildCode { width: 155px; margin-top: 2px; margin-bottom: 4px; 
 .sbkSaav_NewVersionButton { float: right;padding-right: 180px;padding-top: 60px;}
 .sbkSaav_NewVersionTable  { padding: 4px 0 0 0; }
 .sbkSaav_NewVersionTable tr { height: 25px;}
-
+.sbkSaav_UploadThumbnail { width: auto; height: auto; max-width: 200px; max-height: 200px; }
+.sbkSaav_UploadTitle { font-weight: bold; }
 
 
 

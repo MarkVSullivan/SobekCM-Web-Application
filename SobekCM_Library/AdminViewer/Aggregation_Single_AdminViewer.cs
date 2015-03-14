@@ -80,6 +80,10 @@ namespace SobekCM.Library.AdminViewer
 			actionMessage = String.Empty;
 		    string code = RequestSpecificValues.Hierarchy_Object.Code;
 
+            // Some defaults
+            enteredIsActive = true;
+            enteredIsHidden = false;
+
 			// If the RequestSpecificValues.Current_User cannot edit this, go back
             if (!RequestSpecificValues.Current_User.Is_Aggregation_Curator(code))
 			{
@@ -131,10 +135,16 @@ namespace SobekCM.Library.AdminViewer
 				page = 7;
 			else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "h")
 				page = 8;
+            else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "i")
+                page = 9;
+            else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "j")
+                page = 10;
+            else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "k")
+                page = 11;
 			else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "y")
-				page = 9;
+				page = 12;
 			else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("g_") == 0)
-				page = 10;
+				page = 13;
 
 
 
@@ -203,11 +213,15 @@ namespace SobekCM.Library.AdminViewer
 							Save_Page_8_Postback(form);
 							break;
 
-						case 9:
+                        case 9:
+                            Save_Page_9_Postback(form);
+                            break;
+
+						case 12:
 							Save_Page_CSS_Postback(form);
 							break;
 
-						case 10:
+						case 13:
 							Save_Child_Page_Postback(form);
 							break;
 					}
@@ -325,7 +339,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<div id=\"sbkSaav_PageContainer\">");
 
 			// Add the buttons (unless this is a sub-page like editing the CSS file)
-			if (page < 9)
+			if (page < 12)
 			{
 				string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 				RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
@@ -336,7 +350,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine();
 				RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
 			}
-			else if (page == 10)
+			else if (page == 13)
 			{
 				Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
 				Output.WriteLine("    <button title=\"Close this child page details and return to main admin pages\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('g');\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK </button>"); 
@@ -354,7 +368,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs\">");
 
 			// Add all the possible tabs (unless this is a sub-page like editing the CSS file)
-			if (page < 9)
+			if (page < 12)
 			{
 				Output.WriteLine("    <div class=\"tabs\">");
 				Output.WriteLine("      <ul>");
@@ -367,6 +381,9 @@ namespace SobekCM.Library.AdminViewer
 				const string HIGHLIGHTS = "Highlights";
 				const string STATIC_PAGES = "Child Pages";
 				const string SUBCOLLECTIONS = "SubCollections";
+                const string UPLOADS = "Uploads";
+                const string PERMISSIONS = "Permissions";
+                const string HISTORY = "History";
 
 				// Draw all the page tabs for this form
 				if (page == 1)
@@ -443,6 +460,30 @@ namespace SobekCM.Library.AdminViewer
 			            Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_aggr_edit_page('h');\">" + SUBCOLLECTIONS + "</li>");
 			        }
 			    }
+                if (page == 9)
+                {
+                    Output.WriteLine("    <li id=\"tabHeader_6\" class=\"tabActiveHeader\">" + UPLOADS + "</li>");
+                }
+                else
+                {
+                    Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_aggr_edit_page('i');\">" + UPLOADS + "</li>");
+                }
+                //if (page == 10)
+                //{
+                //    Output.WriteLine("    <li id=\"tabHeader_6\" class=\"tabActiveHeader\">" + PERMISSIONS + "</li>");
+                //}
+                //else
+                //{
+                //    Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_aggr_edit_page('j');\">" + PERMISSIONS + "</li>");
+                //}
+                //if (page == 11)
+                //{
+                //    Output.WriteLine("    <li id=\"tabHeader_6\" class=\"tabActiveHeader\">" + HISTORY + "</li>");
+                //}
+                //else
+                //{
+                //    Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_aggr_edit_page('k');\">" + HISTORY + "</li>");
+                //}
 
 
 			    Output.WriteLine("      </ul>");
@@ -489,11 +530,15 @@ namespace SobekCM.Library.AdminViewer
 					Add_Page_8(Output);
 					break;
 
-				case 9:
+                case 9:
+                    Add_Page_9(Output);
+                    break;
+
+				case 12:
 					Add_Page_CSS(Output);
 					break;
 
-				case 10:
+				case 13:
 					Add_Child_Page(Output);
 					break;
 			}
@@ -520,6 +565,10 @@ namespace SobekCM.Library.AdminViewer
 				case 5:
 					Finish_Page_5(Output);
 					break;
+
+                case 9:
+                    Finish_Page_9(Output);
+                    break;
 			}
 
 
@@ -1539,7 +1588,7 @@ namespace SobekCM.Library.AdminViewer
                         string custom_home = aggregationDirectory + "\\html\\custom\\home\\custom_home.html";
 						if (!Directory.Exists(aggregationDirectory + "\\html\\custom\\home"))
 							Directory.CreateDirectory(aggregationDirectory + "\\html\\custom\\home");
-                        itemAggregation.Custom_Home_Page_Source_File = "html\\custom\\home\\custom_home.html";;
+                        itemAggregation.Custom_Home_Page_Source_File = "html\\custom\\home\\custom_home.html";
                         if (!File.Exists(custom_home))
 						{
                             StreamWriter writer = new StreamWriter(custom_home);
@@ -3133,7 +3182,7 @@ namespace SobekCM.Library.AdminViewer
 	            : "        <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" /> <label for=\"admin_aggr_isactive\">Active?</label><br />");
 
 
-	        Output.WriteLine(enteredIsHidden
+	        Output.WriteLine(!enteredIsHidden
 	            ? "          <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" checked=\"checked\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label>"
 	            : "          <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label>");
 
@@ -3153,6 +3202,136 @@ namespace SobekCM.Library.AdminViewer
 
 
 	    #endregion
+
+
+        #region Methods to render (and parse) page 9 -  Uploads
+
+        private void Save_Page_9_Postback(NameValueCollection Form)
+        {
+            string action = Form["admin_aggr_action"];
+            if ((action.Length > 0) && ( action.IndexOf("delete_") == 0))
+            {
+                string file = action.Substring(7);
+                string path_file = aggregationDirectory + "\\uploads\\" + file;
+                if (File.Exists(path_file))
+                    File.Delete(path_file);
+            }
+        }
+
+
+        private void Add_Page_9(TextWriter Output)
+        {
+            // Help constants (for now)
+            const string WEB_SKIN_HELP = "Web skin help place holder";
+            const string CSS_HELP = "Aggregation-level CSS help place holder";
+            const string CUSTOM_HOME_PAGE = "Custom home page help place holder";
+            const string NEW_HOME_PAGE_HELP = "New home page help place holder";
+            const string NEW_BANNER_HELP = "New banner help place holder";
+            const string UPLOAD_BANNER_HELP = "Upload new banner help place holder";
+
+
+
+            Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
+
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Upload Images</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your upload images which can be included in your home page or static child pages.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+
+
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
+
+            Output.WriteLine("  <tr class=\"sbkSaav_UploadRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\">Upload New Images:</td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("       <table class=\"sbkSaav_InnerTable\">");
+            Output.WriteLine("         <tr>");
+            Output.WriteLine("           <td class=\"sbkSaav_UploadInstr\">To upload, browse to a GIF, PNG, JPEG, or BMP file, and then select UPLOAD</td>");
+            Output.WriteLine("           <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + UPLOAD_BANNER_HELP + "');\"  title=\"" + UPLOAD_BANNER_HELP + "\" /></td>");
+            Output.WriteLine("         </tr>");
+            Output.WriteLine("         <tr>");
+            Output.WriteLine("           <td colspan=\"2\">");
+        }
+
+        private void Finish_Page_9(TextWriter Output)
+        {
+            Output.WriteLine("           </td>");
+            Output.WriteLine("         </tr>");
+            Output.WriteLine("       </table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
+
+            string uploads_dir = aggregationDirectory + "\\uploads";
+            if (Directory.Exists(uploads_dir))
+            {
+                string[] upload_files = Directory.GetFiles(uploads_dir);
+
+                if (upload_files.Length > 0)
+                {
+                    Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Existing Images</td></tr>");
+                    Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
+                    Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+                    Output.WriteLine("    <td style=\"width:100px\"></td>");
+                    Output.WriteLine("    <td colspan=\"2\">");
+
+
+                    Output.WriteLine("  <table style=\"border:0; width:100%; border-collapse: collapse; border-spacing: 0;\" class=\"statsTable\">");
+                    //			Output.WriteLine("  <tr><td colspan=\"4\" style=\"background-color:#e7e7e7;\" ></td></tr>");
+                    Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
+
+                    int unused_column = 0;
+                    foreach (string thisImage in upload_files)
+                    {
+                        string thisImageFile = Path.GetFileName(thisImage);
+
+                        Output.Write("      <td style=\"width:210px;\">");
+                        Output.Write("<img style=\"border: 0;\" class=\"sbkSaav_UploadThumbnail\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/" + itemAggregation.Code + "/uploads/" + thisImageFile + "\" alt=\"Missing Thumbnail\" title=\"" + thisImageFile + "\" />");
+
+
+                        string display_name = thisImageFile;
+                        if (display_name.Length > 25)
+                        {
+                            Output.Write("<br /><span class=\"sbkSaav_UploadTitle\"><abbr title=\"" + display_name + "\">" + thisImageFile.Substring(0, 20) + "..." + Path.GetExtension(thisImage) + "</abbr></span>");
+                        }
+                        else
+                        {
+                            Output.Write("<br /><span class=\"sbkSaav_UploadTitle\">" + thisImageFile + "</span>");
+                        }
+
+                        
+
+                        // Build the action links
+                        Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
+                        Output.Write("<a title=\"Click to delete this file\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr_upload_file('" + thisImageFile + "');\" title=\"Delete this uploaded file\">delete</a> )</span>");
+                        Output.WriteLine("</td>");
+
+                        unused_column++;
+
+                        if (unused_column >= 4)
+                        {
+                            Output.WriteLine("    </tr>");
+                            Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
+                            Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
+                            unused_column = 0;
+                        }
+                    }
+
+                    if (unused_column > 0)
+                    {
+                        Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
+                    }
+
+                    Output.WriteLine("  </table>");
+
+                    Output.WriteLine("    </td>");
+                    Output.WriteLine("  </tr>");
+                }
+            }
+            Output.WriteLine("</table>");
+            Output.WriteLine("<br />");
+        }
+
+        #endregion
 
 		#region Methods to render (and parse) CSS page
 
@@ -3549,16 +3728,20 @@ namespace SobekCM.Library.AdminViewer
 			switch (page)
 			{
 				case 1:
-					add_upload_controls(MainPlaceHolder, ".gif", aggregationDirectory + "\\images\\buttons", "coll.gif", Tracer);
+					add_upload_controls(MainPlaceHolder, ".gif", aggregationDirectory + "\\images\\buttons", "coll.gif", false, Tracer);
 					break;
 
 				case 5:
-					add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png", aggregationDirectory + "\\images\\banners", String.Empty, Tracer);
+					add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png", aggregationDirectory + "\\images\\banners", String.Empty, false, Tracer);
 					break;
+
+                case 9:
+                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png", aggregationDirectory + "\\uploads", String.Empty, true, Tracer);
+                    break;
 			}
 		}
 
-		private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, string FileExtensions, string UploadDirectory, string ServerSideName, Custom_Tracer Tracer)
+		private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, Custom_Tracer Tracer)
 		{
 			Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
 
@@ -3578,7 +3761,7 @@ namespace SobekCM.Library.AdminViewer
 			uploadControl.AllowedFileExtensions = FileExtensions;
 			uploadControl.SubmitWhenQueueCompletes = true;
 			uploadControl.RemoveCompleted = true;
-			uploadControl.Multi = false;
+            uploadControl.Multi = UploadMultiple;
             uploadControl.ServerSideFileName = ServerSideName;
 			UploadFilesPlaceHolder.Controls.Add(uploadControl);
 

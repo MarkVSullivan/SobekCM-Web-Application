@@ -54,6 +54,7 @@ namespace SobekCM.Library.AdminViewer
         private readonly string enteredParent;
         private readonly string enteredShortname;
         private readonly string enteredType;
+        private readonly string enteredThematicHeading;
 
         /// <summary> Constructor for a new instance of the Aggregations_Mgmt_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -70,8 +71,9 @@ namespace SobekCM.Library.AdminViewer
             enteredShortname = String.Empty;
             enteredName = String.Empty;
             enteredDescription = String.Empty;
+            enteredThematicHeading = String.Empty;
             enteredIsActive = true;
-            enteredIsHidden = true;
+            enteredIsHidden = false;
 
             // If the user cannot edit this, go back
             if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
@@ -156,6 +158,7 @@ namespace SobekCM.Library.AdminViewer
                             string new_shortname = form["admin_aggr_shortname"].Trim();
                             string new_description = form["admin_aggr_desc"].Trim();
                             string new_link = form["admin_aggr_link"].Trim();
+                            string new_thematic_heading = form["admin_aggr_heading"].Trim();
 
                             object temp_object = form["admin_aggr_isactive"];
                             if (temp_object != null)
@@ -252,6 +255,7 @@ namespace SobekCM.Library.AdminViewer
                                 enteredShortname = new_shortname;
                                 enteredType = new_type;
                                 enteredLink = new_link;
+                                enteredThematicHeading = new_thematic_heading;
                             }
                             else
                             {
@@ -572,7 +576,10 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("            <option value=\"-1\" selected=\"selected\" ></option>");
             foreach (Thematic_Heading thisHeading in UI_ApplicationCache_Gateway.Thematic_Headings)
             {
-                Output.Write("            <option value=\"" + thisHeading.ID + "\">" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
+                if ( thisHeading.Text == enteredThematicHeading )
+                    Output.Write("            <option value=\"" + thisHeading.ID + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
+                else
+                    Output.Write("            <option value=\"" + thisHeading.ID + "\">" + HttpUtility.HtmlEncode(thisHeading.Text) + "</option>");
             }
             Output.WriteLine("          </select>");
             Output.WriteLine("        </td>");
@@ -589,7 +596,7 @@ namespace SobekCM.Library.AdminViewer
                 : "          <tr style=\"height:30px\"><td>Behavior:</td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" /> <label for=\"admin_aggr_isactive\">Active?</label></td></tr> ");
 
 
-            Output.Write(enteredIsHidden
+            Output.Write(!enteredIsHidden
                 ? "          <tr><td></td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" checked=\"checked\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label></td></tr> "
                 : "          <tr><td></td><td colspan=\"2\"><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label></td></tr> ");
 
@@ -654,8 +661,15 @@ namespace SobekCM.Library.AdminViewer
 
                     Output.WriteLine("<a title=\"Click to reset the instance in the application cache\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return reset_aggr('" + thisAggr.Code + "');\">reset</a> )</td>");
 
+                    // Special code to start istitutions with a small letter 'i'
+                    string code = thisAggr.Code;
+                    if ((thisAggr.Type.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0 ) && ( code[0] == 'I') && ( code.Length > 1 ))
+                    {
+                        code = "i" + code.Substring(1);
+                    }
+
                     // Add the rest of the row with data
-                    Output.WriteLine("        <td>" + thisAggr.Code + "</td>");
+                    Output.WriteLine("        <td>" + code + "</td>");
                     Output.WriteLine("        <td>" + thisAggr.Type + "</td>");
                     Output.WriteLine("        <td>" + thisAggr.Name + "</td>");
 
