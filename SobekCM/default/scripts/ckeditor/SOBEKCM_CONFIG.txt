@@ -16,7 +16,6 @@ Add the following plugins:
 	- Image BrowseR
 	- Slideshow
 	- Table Resize
-	- Zoom
 
 Use Moona Color as the skin
 
