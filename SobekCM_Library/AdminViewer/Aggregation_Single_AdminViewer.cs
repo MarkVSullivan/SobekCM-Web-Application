@@ -3203,7 +3203,6 @@ namespace SobekCM.Library.AdminViewer
 
 	    #endregion
 
-
         #region Methods to render (and parse) page 9 -  Uploads
 
         private void Save_Page_9_Postback(NameValueCollection Form)
@@ -3264,7 +3263,7 @@ namespace SobekCM.Library.AdminViewer
             string uploads_dir = aggregationDirectory + "\\uploads";
             if (Directory.Exists(uploads_dir))
             {
-                string[] upload_files = Directory.GetFiles(uploads_dir);
+                string[] upload_files = SobekCM_File_Utilities.GetFiles(uploads_dir, "*.jpg|*.jpeg|*.bmp|*.gif|*.png");
 
                 if (upload_files.Length > 0)
                 {
@@ -3732,11 +3731,11 @@ namespace SobekCM.Library.AdminViewer
 					break;
 
 				case 5:
-					add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png", aggregationDirectory + "\\images\\banners", String.Empty, false, Tracer);
+					add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg", aggregationDirectory + "\\images\\banners", String.Empty, false, Tracer);
 					break;
 
                 case 9:
-                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png", aggregationDirectory + "\\uploads", String.Empty, true, Tracer);
+                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg", aggregationDirectory + "\\uploads", String.Empty, true, Tracer);
                     break;
 			}
 		}

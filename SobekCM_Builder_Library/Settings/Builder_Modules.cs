@@ -104,6 +104,8 @@ namespace SobekCM.Builder_Library.Settings
                     {
                         if ((!String.IsNullOrEmpty(preSetting.Argument1)) || (!String.IsNullOrEmpty(preSetting.Argument2)) || (!String.IsNullOrEmpty(preSetting.Argument3)))
                         {
+                            if (preAsPre.Arguments == null)
+                                preAsPre.Arguments = new List<string>();
                             preAsPre.Arguments.Add(String.IsNullOrEmpty(preSetting.Argument1) ? String.Empty : preSetting.Argument1);
                             preAsPre.Arguments.Add(String.IsNullOrEmpty(preSetting.Argument2) ? String.Empty : preSetting.Argument2);
                             preAsPre.Arguments.Add(String.IsNullOrEmpty(preSetting.Argument3) ? String.Empty : preSetting.Argument3);
@@ -126,6 +128,8 @@ namespace SobekCM.Builder_Library.Settings
                             iPostProcessModule thisModule = new BuildAggregationBrowsesModule();
                             if ((!String.IsNullOrEmpty(postSetting.Argument1)) || (!String.IsNullOrEmpty(postSetting.Argument2)) || (!String.IsNullOrEmpty(postSetting.Argument3)))
                             {
+                                if (thisModule.Arguments == null)
+                                    thisModule.Arguments = new List<string>();
                                 thisModule.Arguments.Add(String.IsNullOrEmpty(postSetting.Argument1) ? String.Empty : postSetting.Argument1);
                                 thisModule.Arguments.Add(String.IsNullOrEmpty(postSetting.Argument2) ? String.Empty : postSetting.Argument2);
                                 thisModule.Arguments.Add(String.IsNullOrEmpty(postSetting.Argument3) ? String.Empty : postSetting.Argument3);
@@ -151,6 +155,8 @@ namespace SobekCM.Builder_Library.Settings
                     {
                         if ((!String.IsNullOrEmpty(postSetting.Argument1)) || (!String.IsNullOrEmpty(postSetting.Argument2)) || (!String.IsNullOrEmpty(postSetting.Argument3)))
                         {
+                            if (postAsPost.Arguments == null)
+                                postAsPost.Arguments = new List<string>();
                             postAsPost.Arguments.Add(String.IsNullOrEmpty(postSetting.Argument1) ? String.Empty : postSetting.Argument1);
                             postAsPost.Arguments.Add(String.IsNullOrEmpty(postSetting.Argument2) ? String.Empty : postSetting.Argument2);
                             postAsPost.Arguments.Add(String.IsNullOrEmpty(postSetting.Argument3) ? String.Empty : postSetting.Argument3);
@@ -233,6 +239,8 @@ namespace SobekCM.Builder_Library.Settings
                             {
                                 if ((!String.IsNullOrEmpty(folderSetting.Argument1)) || (!String.IsNullOrEmpty(folderSetting.Argument2)) || (!String.IsNullOrEmpty(folderSetting.Argument3)))
                                 {
+                                    if (thisModule.Arguments == null)
+                                        thisModule.Arguments = new List<string>();
                                     thisModule.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument1) ? String.Empty : folderSetting.Argument1);
                                     thisModule.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument2) ? String.Empty : folderSetting.Argument2);
                                     thisModule.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument3) ? String.Empty : folderSetting.Argument3);
@@ -259,6 +267,8 @@ namespace SobekCM.Builder_Library.Settings
                             {
                                 if ((!String.IsNullOrEmpty(folderSetting.Argument1)) || (!String.IsNullOrEmpty(folderSetting.Argument2)) || (!String.IsNullOrEmpty(folderSetting.Argument3)))
                                 {
+                                    if (folderAsFolder.Arguments == null)
+                                        folderAsFolder.Arguments = new List<string>();
                                     folderAsFolder.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument1) ? String.Empty : folderSetting.Argument1);
                                     folderAsFolder.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument2) ? String.Empty : folderSetting.Argument2);
                                     folderAsFolder.Arguments.Add(String.IsNullOrEmpty(folderSetting.Argument3) ? String.Empty : folderSetting.Argument3);
@@ -395,6 +405,8 @@ namespace SobekCM.Builder_Library.Settings
                 {
                     if ((!String.IsNullOrEmpty(itemSetting.Argument1)) || (!String.IsNullOrEmpty(itemSetting.Argument2)) || (!String.IsNullOrEmpty(itemSetting.Argument3)))
                     {
+                        if (thisModule.Arguments == null)
+                            thisModule.Arguments = new List<string>();
                         thisModule.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument1) ? String.Empty : itemSetting.Argument1);
                         thisModule.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument2) ? String.Empty : itemSetting.Argument2);
                         thisModule.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument3) ? String.Empty : itemSetting.Argument3);
@@ -420,6 +432,8 @@ namespace SobekCM.Builder_Library.Settings
                 {
                     if ((!String.IsNullOrEmpty(itemSetting.Argument1)) || (!String.IsNullOrEmpty(itemSetting.Argument2)) || (!String.IsNullOrEmpty(itemSetting.Argument3)))
                     {
+                        if (itemAsItem.Arguments == null)
+                            itemAsItem.Arguments = new List<string>();
                         itemAsItem.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument1) ? String.Empty : itemSetting.Argument1);
                         itemAsItem.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument2) ? String.Empty : itemSetting.Argument2);
                         itemAsItem.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument3) ? String.Empty : itemSetting.Argument3);
