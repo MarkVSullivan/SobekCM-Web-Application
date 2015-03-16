@@ -1026,7 +1026,7 @@ namespace SobekCM.Engine_Library.Items
 							if (thisFile.File_Extension == "PDF")
 							{
                                 pdf_download++;
-                                if (pdf_download == 0)
+                                if (pdf_download == 1)
                                 {
                                     pdf_download_url = thisFile.System_Name;
                                 }
