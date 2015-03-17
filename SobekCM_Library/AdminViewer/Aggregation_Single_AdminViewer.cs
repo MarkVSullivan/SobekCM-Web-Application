@@ -1826,7 +1826,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
 			Output.WriteLine("        <tr>");
 
-			if ( !String.IsNullOrEmpty(itemAggregation.CSS_File))
+			if ( String.IsNullOrEmpty(itemAggregation.CSS_File))
 			{
 				Output.WriteLine("          <td><span style=\"font-style:italic; padding-right:20px;\">No custom aggregation-level stylesheet</span></td>");
 				Output.WriteLine("          <td><button title=\"Enable an aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_enable_css();\">ENABLE</button></td>");
@@ -3343,7 +3343,17 @@ namespace SobekCM.Library.AdminViewer
 				string css_contents = Form["admin_aggr_css_edit"].Trim();
 				if ( css_contents.Length == 0 )
 					css_contents = "/**  Aggregation-level CSS for " + itemAggregation.Code + " **/";
-				string file = aggregationDirectory + "\\" + itemAggregation.CSS_File;
+			    string file = aggregationDirectory + "\\" + itemAggregation.Code + ".css";
+                
+                // Just in case there was a custom CSS referenced
+			    if (!String.IsNullOrEmpty(itemAggregation.CSS_File))
+			    {
+			        file = aggregationDirectory + "\\" + itemAggregation.CSS_File;
+			    }
+			    else // this WAS null.. so actually assign this back
+			    {
+                    itemAggregation.CSS_File = itemAggregation.Code + ".css";
+			    }
 				StreamWriter writer = new StreamWriter(file, false);
 				writer.WriteLine(css_contents);
 				writer.WriteLine();

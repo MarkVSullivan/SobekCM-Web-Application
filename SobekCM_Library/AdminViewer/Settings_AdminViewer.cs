@@ -321,11 +321,11 @@ namespace SobekCM.Library.AdminViewer
                         break;
 
                     case "Application Server URL":
-                        must_start_end_with(value, key, "http://", "/", NewSettings);
+                        must_start_end_with(value, key, new string[] {"http://", "https://" }, "/", NewSettings);
                         break;
 
                     case "Document Solr Index URL":
-                        must_start_end_with(value, key, "http://", "/", NewSettings);
+                        must_start_end_with(value, key, new string[] { "http://", "https://" }, "/", NewSettings);
                         break;
 
                     case "Files To Exclude From Downloads":
@@ -337,7 +337,7 @@ namespace SobekCM.Library.AdminViewer
                         break;
 
                     case "Image Server URL":
-                        must_start_end_with(value, key, "http://", "/", NewSettings);
+                        must_start_end_with(value, key, new string[] { "http://", "https://" }, "/", NewSettings);
                         break;
 
                     case "JPEG Height":
@@ -353,11 +353,11 @@ namespace SobekCM.Library.AdminViewer
                         break;
 
                     case "Log Files URL":
-                        must_start_end_with(value, key, "http://", "/", NewSettings);
+                        must_start_end_with(value, key, new string[] { "http://", "https://" }, "/", NewSettings);
                         break;
 
                     case "Mango Union Search Base URL":
-                        must_start_with(value, key, "http://", NewSettings);
+                        must_start_with(value, key, new string[] { "http://", "https://" }, NewSettings);
                         break;
 
                     case "Mango Union Search Text":
@@ -380,7 +380,7 @@ namespace SobekCM.Library.AdminViewer
                         break;
 
                     case "Page Solr Index URL":
-                        must_start_end_with(value, key, "http://", "/", NewSettings);
+                        must_start_end_with(value, key, new string[] { "http://", "https://" }, "/", NewSettings);
                         break;
 
                     case "PostArchive Files To Delete":
@@ -411,7 +411,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            must_start_end_with(value, key, "http://", "/", NewSettings);
+                            must_start_end_with(value, key, new string[] { "http://", "https://" }, "/", NewSettings);
                         }
                         break;
 
@@ -1020,6 +1020,28 @@ namespace SobekCM.Library.AdminViewer
             }
         }
 
+        private static void must_start_with(string Value, string Key, string[] StartsWith, Dictionary<string, string> NewSettings)
+        {
+            if (Value.Length == 0)
+                return;
+
+            // Check for the start against all possible combinations
+            bool missing_start = true;
+            foreach (string possibleStart in StartsWith)
+            {
+                if (Value.StartsWith(possibleStart, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    missing_start = false;
+                    break;
+                }
+            }
+
+            if (missing_start)
+            {
+                NewSettings[Key] = StartsWith[0] + Value;
+            }
+        }
+
         private static void must_end_with(string Value, string Key, string EndsWith, Dictionary<string, string> NewSettings)
         {
             if (Value.Length == 0)
@@ -1040,6 +1062,32 @@ namespace SobekCM.Library.AdminViewer
             {
                 if (!Value.StartsWith(StartsWith, StringComparison.InvariantCultureIgnoreCase))
                     Value = StartsWith + Value;
+                if (!Value.EndsWith(EndsWith, StringComparison.InvariantCultureIgnoreCase))
+                    Value = Value + EndsWith;
+                NewSettings[Key] = Value;
+            }
+        }
+
+        private static void must_start_end_with(string Value, string Key, string[] StartsWith, string EndsWith, Dictionary<string, string> NewSettings)
+        {
+            if (Value.Length == 0)
+                return;
+
+            // Check for the start against all possible combinations
+            bool missing_start = true;
+            foreach (string possibleStart in StartsWith)
+            {
+                if (Value.StartsWith(possibleStart, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    missing_start = false;
+                    break;
+                }
+            }
+
+            if ((missing_start) || (!Value.EndsWith(EndsWith, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                if (missing_start)
+                    Value = StartsWith[0] + Value;
                 if (!Value.EndsWith(EndsWith, StringComparison.InvariantCultureIgnoreCase))
                     Value = Value + EndsWith;
                 NewSettings[Key] = Value;
