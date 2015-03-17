@@ -2198,6 +2198,14 @@ namespace SobekCM.Library.HTML
             {
                 Tracer.Add_Trace("Statistics_HtmlSubwriter.add_overall_usage", "Rendering HTML read from source file");
                 Output.WriteLine(overall_stats_header);
+
+     //              //Now add the JQuery chart to display the count
+     //           string chart_element = String.Empty;
+    //             Output.WriteLine("<canvas id=\"sbk_statsChart\" width=\"400\" height=\"400\"></canvas>");
+
+                //Create the total hits data subset to pass to the JavaScript method
+
+             
             }
             else
             {
@@ -3263,8 +3271,11 @@ namespace SobekCM.Library.HTML
 
 			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Stats.css\" rel=\"stylesheet\" type=\"text/css\" />");
 			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_DataTables.css\" rel=\"stylesheet\" type=\"text/css\" />");
-			Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/datatables/js/jquery.dataTables.min.js\" ></script>");
-		//	Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/datatables/js/ColReorderWithResize.js\" />");
+            Output.WriteLine("    <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
+            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/datatables/js/jquery.dataTables.min.js\" ></script>");
+            Output.WriteLine("   <script type = \"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/Chartjs/Chart.js\"></script>");
+            Output.WriteLine("    <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobek_stats_chart.js\"></script>");
+            //	Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/datatables/js/ColReorderWithResize.js\" />");
 
             // Add the code for the calendar pop-up if it may be required
             if (RequestSpecificValues.Current_Mode.Statistics_Type == Statistics_Type_Enum.Item_Count_Arbitrary_View)
