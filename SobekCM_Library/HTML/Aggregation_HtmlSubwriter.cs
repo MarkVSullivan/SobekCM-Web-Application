@@ -179,11 +179,12 @@ namespace SobekCM.Library.HTML
 				// Clear this aggreation from the cache
                 CachedDataManager.Aggregations.Remove_Item_Aggregation(RequestSpecificValues.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
 
-				// If this is all, save the new text as well.
-				if (String.Compare("all", RequestSpecificValues.Hierarchy_Object.Code, StringComparison.OrdinalIgnoreCase) == 0)
-				{
-                    HttpContext.Current.Application["SobekCM_Home"] = form["sbkAghsw_HomeTextEdit"].Replace("%]", "%>").Replace("[%", "<%");
-				}
+                // If this is all, save the new text as well
+                if (String.Compare("all", RequestSpecificValues.Hierarchy_Object.Code, StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language_Code;
+                    HttpContext.Current.Application[home_app_key] = form["sbkAghsw_HomeTextEdit"].Replace("%]", "%>").Replace("[%", "<%");
+                }
 
 				// Forward along
 				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
@@ -1450,7 +1451,8 @@ namespace SobekCM.Library.HTML
 					// This is the main home page, so call one of the special functions to draw the home
                     // page types ( i.e., icon view, brief view, or tree view )
                     string sobekcm_home_page_text;
-                    object sobekcm_home_page_obj = HttpContext.Current.Application["SobekCM_Home"];
+                    string home_app_key = "SobekCM_Home_" + RequestSpecificValues.Current_Mode.Language_Code;
+                    object sobekcm_home_page_obj = HttpContext.Current.Application[home_app_key];
                     if (sobekcm_home_page_obj == null)
                     {
                         if (Tracer != null)
@@ -1460,7 +1462,7 @@ namespace SobekCM.Library.HTML
 
                         sobekcm_home_page_text = RequestSpecificValues.Hierarchy_Object.HomePageHtml.Content; //.Get_Home_HTML(RequestSpecificValues.Current_Mode.Language, Tracer);
 
-                        HttpContext.Current.Application["SobekCM_Home"] = sobekcm_home_page_text;
+                        HttpContext.Current.Application[home_app_key] = sobekcm_home_page_text;
                     }
                     else
                     {

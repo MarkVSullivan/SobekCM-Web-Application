@@ -102,11 +102,11 @@ input.sbkAsav_checkbox { padding-top: 3px;border: 0; }
 
 /** Aggregations_Single_AdminViewer  **/
 #sbkSaav_ContainerInner { margin: 0 auto; padding:0; width: 1120px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
-#sbkSaav_PageContainer { margin-left: 40px;  margin-right: 40px;  text-align:center;  FONT-SIZE: small;  }
+#sbkSaav_PageContainer { margin-left: 40px;  margin-right: 40px;  text-align:center;  FONT-SIZE: small;width: 1040px; }
 .sbkSaav_HomeText  { padding-left: 50px; padding-bottom: 5px;text-align: left;}
 .sbkSaav_HomeText a:link { color:#000080; }
 .sbkSaav_HomeText a:hover { color:Blue; text-decoration:underline; }
-.sbkSaav_ButtonsDiv { float: right;padding-top: 30px;padding-right: 45px; }
+.sbkSaav_ButtonsDiv { float: right;padding-top: 30px;padding-right: 45px;width: 500px;text-align: right; }
 .sbkSaav_TitleRow { font-size: 1.1em; color: #888888; font-weight: bold;}
 .sbkSaav_TitleRow2 { font-size: 1.1em; color: #888888; font-weight: bold; }
 .sbkSaav_TitleRow2 td { padding-top: 40px; }
@@ -183,7 +183,8 @@ input.sbkSaav_NewChildCode { width: 155px; margin-top: 2px; margin-bottom: 4px; 
 .sbkSaav_NewVersionButton { float: right;padding-right: 180px;padding-top: 60px;}
 .sbkSaav_NewVersionTable  { padding: 4px 0 0 0; }
 .sbkSaav_NewVersionTable tr { height: 25px;}
-
+.sbkSaav_UploadThumbnail { width: auto; height: auto; max-width: 200px; max-height: 200px; }
+.sbkSaav_UploadTitle { font-weight: bold; }
 
 
 

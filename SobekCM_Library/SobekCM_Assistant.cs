@@ -1700,11 +1700,7 @@ namespace SobekCM.Library
                 Tracer.Add_Trace("SobekCM_Assistant.Get_Entire_Collection_Hierarchy", String.Empty);
             }
 
-            string languageCode = "en";
-            if (Current_Mode.Language == Web_Language_Enum.Spanish)
-                languageCode = "es";
-            if (Current_Mode.Language == Web_Language_Enum.French)
-                languageCode = "fr";
+            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Current_Mode.Language);
 
             // If there is an aggregation listed, try to get that now
             if ((Current_Mode.Aggregation.Length > 0) && (Current_Mode.Aggregation != "all"))

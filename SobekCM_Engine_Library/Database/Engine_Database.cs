@@ -3388,7 +3388,10 @@ namespace SobekCM.Engine_Library.Database
                 paramList[11] = new SqlParameter("@map_display", Map_Display);
                 paramList[12] = new SqlParameter("@oai_flag", OAI_Flag);
                 paramList[13] = new SqlParameter("@oai_metadata", OAI_Metadata);
-                paramList[14] = new SqlParameter("@contactemail", ContactEmail);
+                if ( ContactEmail == null )
+                    paramList[14] = new SqlParameter("@contactemail", String.Empty);
+                else
+                    paramList[14] = new SqlParameter("@contactemail", ContactEmail);
                 paramList[15] = new SqlParameter("@defaultinterface", DefaultInterface);
                 paramList[16] = new SqlParameter("@externallink", ExternalLink);
                 paramList[17] = new SqlParameter("@parentid", ParentID);

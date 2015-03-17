@@ -351,6 +351,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 Child_Types = CompAggr.Child_Types,
                 Contact_Email = CompAggr.Contact_Email,
                 ContactForm = CompAggr.ContactForm,
+                CSS_File = CompAggr.CSS_File,
                 Default_BrowseBy = CompAggr.Default_BrowseBy,
                 Default_Result_View = CompAggr.Default_Result_View,
                 Default_Skin = CompAggr.Default_Skin,
