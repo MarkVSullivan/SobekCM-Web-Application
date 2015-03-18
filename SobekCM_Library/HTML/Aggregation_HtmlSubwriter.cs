@@ -13,11 +13,8 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.MemoryMgmt;
-using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
-using SobekCM.Core.WebContent;
-using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.AggregationViewer;
 using SobekCM.Library.AggregationViewer.Viewers;
@@ -403,6 +400,11 @@ namespace SobekCM.Library.HTML
             if (( RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation ) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home))
             {
                 Output.WriteLine("  <link rel=\"search\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/opensearch.xml\" type=\"application/opensearchdescription+xml\"  title=\"Add " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Search\" />");
+
+                if (RequestSpecificValues.Current_Mode.Home_Type == Home_Type_Enum.Tree)
+                {
+                    Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jstree/themes/default/style.min.css\" />");
+                }
             }
 
 			// If this is to edit the home page, add the html editor
@@ -470,6 +472,8 @@ namespace SobekCM.Library.HTML
                 // Add the HTML from the CKEditor object
                 editor.Add_To_Stream(Output);
 			}
+
+
         }
 
 
@@ -1178,43 +1182,6 @@ namespace SobekCM.Library.HTML
         /// <returns>Flag indicates if secondary text contains controls </returns>
         public bool Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
-            if (((RequestSpecificValues.Current_Mode.Home_Type == Home_Type_Enum.Tree_Collapsed) || (RequestSpecificValues.Current_Mode.Home_Type == Home_Type_Enum.Tree_Expanded)) && (RequestSpecificValues.Hierarchy_Object.Code == "all"))
-            {
-                Tracer.Add_Trace("Aggregation_HtmlSubwriter.Add_Controls", "Adding tree view of collection hierarchy");
-
-                //// Make sure the ALL aggregations has the collection hierarchies
-                //if (RequestSpecificValues.Hierarchy_Object.Children_Count == -1)
-                //{
-                //    // Get the collection hierarchy information
-                //    Engine_Database.Add_Children_To_Main_Agg(RequestSpecificValues.Hierarchy_Object, Tracer);
-                //}
-
-                Home_Type_Enum currentType = RequestSpecificValues.Current_Mode.Home_Type;
-                RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree_Expanded;
-                string expand_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
-                string collapsed_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                RequestSpecificValues.Current_Mode.Home_Type = currentType;
-
-				Literal literal1 = new Literal { Text = string.Format("<div class=\"SobekText\">" + Environment.NewLine + "<h2 style=\"margin-top:0;\">All Collections</h2>" + Environment.NewLine + "<blockquote>" + Environment.NewLine + "<div style=\"text-align:right;\"><a href=\"{0}\">Collapse All</a> | <a href=\"{1}\">Expand All</a></div>" + Environment.NewLine, collapsed_url, expand_url) };
-                MainPlaceHolder.Controls.Add(literal1);
-
-                // Create the treeview
-                TreeView treeView1 = new TreeView
-                                         {CssClass = "SobekCollectionTreeView", ExpandDepth = 0, NodeIndent = 15};
-
-                // load the table of contents in the tree
-                Create_TreeView_From_Collections(treeView1);
-
-                // Add the tree view to the placeholder
-                MainPlaceHolder.Controls.Add(treeView1);
-
-                Literal literal2 = new Literal {Text = @"</blockquote></div>"};
-                MainPlaceHolder.Controls.Add(literal2);
-
-                return true;
-            }
-
             if (collectionViewer.Secondary_Text_Requires_Controls)
             {
                 collectionViewer.Add_Secondary_Controls(MainPlaceHolder, Tracer);
@@ -1605,13 +1572,13 @@ namespace SobekCM.Library.HTML
 
 		                        if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
 		                        {
-			                        if ((startHomeType == Home_Type_Enum.Tree_Collapsed) || (startHomeType == Home_Type_Enum.Tree_Expanded))
+			                        if (startHomeType == Home_Type_Enum.Tree) 
 			                        {
 										Output.WriteLine("  <li class=\"current\">" + treeText + "</li>");
 			                        }
 			                        else
 			                        {
-				                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
+				                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
 				                        Output.WriteLine("  <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + treeText + "</a></li>");
 			                        }
 		                        }
@@ -1641,13 +1608,13 @@ namespace SobekCM.Library.HTML
 
 							if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
 							{
-								if ((startHomeType == Home_Type_Enum.Tree_Collapsed) || (startHomeType == Home_Type_Enum.Tree_Expanded))
+								if (startHomeType == Home_Type_Enum.Tree) 
 								{
 									Output.WriteLine("  <li class=\"current\">" + treeText + "</li>");
 								}
 								else
 								{
-									RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
+									RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
 									Output.WriteLine("  <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + treeText + "</a></li>");
 								}
 							}
@@ -1681,10 +1648,9 @@ namespace SobekCM.Library.HTML
                         write_institution_icons(Output, Tracer);
                         break;
 
-                    case Home_Type_Enum.Tree_Expanded:
-                    case Home_Type_Enum.Tree_Collapsed:
-						Output.WriteLine("</div>");
-                        return false;
+                    case Home_Type_Enum.Tree:
+                        write_treeview(Output, Tracer);
+                        break;
                 }
             }
 
@@ -1710,114 +1676,120 @@ namespace SobekCM.Library.HTML
 
         #region Method to create the tree view
 
-        private void Create_TreeView_From_Collections(TreeView TreeView1)
+        private void add_children_to_tree(string LeadingSpaces, TextWriter Output, Item_Aggregation_Related_Aggregations Aggr )
         {
-            // Save the current home type
-            TreeNode rootNode = new TreeNode("Collection Hierarchy") {SelectAction = TreeNodeSelectAction.None};
-            TreeView1.Nodes.Add(rootNode);
-
-	        string currentSkin = RequestSpecificValues.Current_Mode.Skin;
-
             // Step through each node under this
-            SortedList<string, TreeNode> sorted_node_list = new SortedList<string, TreeNode>();
-            if (RequestSpecificValues.Hierarchy_Object.Children_Count > 0)
+            if (Aggr.Children_Count > 0)
             {
-                foreach (Item_Aggregation_Related_Aggregations childAggr in RequestSpecificValues.Hierarchy_Object.Children)
+                Output.WriteLine(LeadingSpaces + "<ul>");
+                foreach (Item_Aggregation_Related_Aggregations childAggr in Aggr.Children)
                 {
                     if ((!childAggr.Hidden) && (childAggr.Active))
                     {
                         // Set the aggregation value, for the redirect URL
                         RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
 
-                        // Set some default interfaces
-                        if (RequestSpecificValues.Current_Mode.Aggregation == "dloc1")
-                            RequestSpecificValues.Current_Mode.Skin = "dloc";
-                        if (RequestSpecificValues.Current_Mode.Aggregation == "edlg")
-                            RequestSpecificValues.Current_Mode.Skin = "edl";
-
-                        // Create this tree node
-                        TreeNode childNode = new TreeNode("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
-                        if (RequestSpecificValues.Current_Mode.Internal_User)
+                        if (childAggr.Children_Count > 0)
                         {
-                            childNode.Text = string.Format("<a href=\"{0}\"><abbr title=\"{1}\">{2} ( {3} )</abbr></a>", UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), childAggr.Description, childAggr.Name, childAggr.Code);
+                            Output.WriteLine(LeadingSpaces + "  <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
+
+                            // Check the children nodes recursively
+                            add_children_to_tree(LeadingSpaces + "   ", Output, childAggr);
+
+                            Output.WriteLine(LeadingSpaces + "  </li>");
                         }
-                        childNode.SelectAction = TreeNodeSelectAction.None;
-                        childNode.NavigateUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
-                        // Add to the sorted list
-                        if ((childAggr.Name.Length > 4) && (childAggr.Name.IndexOf("The ") == 0))
-                            sorted_node_list.Add(childAggr.Name.Substring(4).ToUpper(), childNode);
                         else
-                            sorted_node_list.Add(childAggr.Name.ToUpper(), childNode);
-
-                        // Check the children nodes recursively
-                        add_children_to_tree(childAggr, childNode);
-
-                        RequestSpecificValues.Current_Mode.Skin = String.Empty;
+                        {
+                            Output.WriteLine(LeadingSpaces + "  <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a></li>");
+                        }
                     }
                 }
-            }
 
-            // Now add the sorted nodes to the tree
-            foreach( TreeNode childNode in sorted_node_list.Values )
-            {
-                rootNode.ChildNodes.Add(childNode);
-            }
-
-            RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
-
-            if ((RequestSpecificValues.Current_Mode.Home_Type == Home_Type_Enum.Tree_Expanded) || ( RequestSpecificValues.Current_Mode.Is_Robot ))
-            {
-                TreeView1.ExpandAll();
-            }
-            else
-            {
-                TreeView1.CollapseAll();
-                rootNode.Expand();
-            }
-
-	        RequestSpecificValues.Current_Mode.Skin = currentSkin;
-        }
-
-        private void add_children_to_tree(Item_Aggregation_Related_Aggregations Aggr, TreeNode Node)
-        {
-            // Step through each node under this
-            SortedList<string, TreeNode> sorted_node_list = new SortedList<string, TreeNode>();
-            foreach (Item_Aggregation_Related_Aggregations childAggr in Aggr.Children)
-            {
-                if ((!childAggr.Hidden) && ( childAggr.Active ))
-                {
-                    // Set the aggregation value, for the redirect URL
-                    RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
-
-                    // Create this tree node
-                    TreeNode childNode = new TreeNode("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
-                    if (RequestSpecificValues.Current_Mode.Internal_User)
-                    {
-                        childNode.Text = string.Format("<a href=\"{0}\"><abbr title=\"{1}\">{2} ( {3} )</abbr></a>", UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), childAggr.Description, childAggr.Name, childAggr.Code);
-                    }
-                    childNode.SelectAction = TreeNodeSelectAction.None;
-                    childNode.NavigateUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
-                    // Add to the sorted list
-                    if ((childAggr.Name.Length > 4) && (childAggr.Name.IndexOf("The ") == 0))
-                        sorted_node_list.Add(childAggr.Name.Substring(4).ToUpper(), childNode);
-                    else
-                        sorted_node_list.Add(childAggr.Name.ToUpper(), childNode);
-
-                    // Check the children nodes recursively
-                    add_children_to_tree(childAggr, childNode); 
-                }
-            }
-
-            // Now add the sorted nodes to the tree
-            foreach (TreeNode childNode in sorted_node_list.Values)
-            {
-                Node.ChildNodes.Add(childNode);
+                Output.WriteLine(LeadingSpaces + "</ul>");
             }
         }
 
         #endregion
+
+        protected internal void write_treeview(TextWriter Output, Custom_Tracer Tracer)
+        {
+            // Add the text
+            Output.WriteLine("<div class=\"SobekText\">");
+            Output.WriteLine("<h2 style=\"margin-top:0;\">All Collections</h2>");
+            Output.WriteLine("<blockquote>");
+            Output.WriteLine("  <div style=\"text-align:right;\">");
+            Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('close_all');return false;\">Collapse All</a> | ");
+            Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('open_all');return false;\">Expand All</a>");
+            Output.WriteLine("  </div>");
+
+            // Get the hierarchy
+            Aggregation_Hierarchy hierarchy = SobekEngineClient.Aggregations.Get_Aggregation_Hierarchy(Tracer);
+            
+            Output.WriteLine("  <div id=\"aggregationTree\">");
+            Output.WriteLine("    <ul>");
+            Output.WriteLine("      <li>Collection Hierarchy");
+
+            // Step through each node under this
+            if (hierarchy.Collections.Count > 0)
+            {
+                Output.WriteLine("        <ul>");
+                foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchy.Collections)
+                {
+                    if ((!childAggr.Hidden) && (childAggr.Active))
+                    {
+                        // Set the aggregation value, for the redirect URL
+                        RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
+
+                        Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
+
+                        // Check the children nodes recursively
+                        add_children_to_tree("            ", Output, childAggr);
+
+                        Output.WriteLine("          </li>");
+                    }
+                }
+                Output.WriteLine("        </ul>");
+            }
+            Output.WriteLine("      </li>");
+
+            if (hierarchy.Institutions.Count > 0)
+            {
+                Output.WriteLine("      <li>Institutions");
+                Output.WriteLine("        <ul>");
+                foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchy.Institutions)
+                {
+                    if ((!childAggr.Hidden) && (childAggr.Active))
+                    {
+                        // Set the aggregation value, for the redirect URL
+                        RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
+
+                        Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
+
+                        // Check the children nodes recursively
+                        add_children_to_tree("            ", Output, childAggr);
+
+                        Output.WriteLine("          </li>");
+                    }
+                }
+                Output.WriteLine("        </ul>");
+                Output.WriteLine("      </li>");
+            }
+
+            Output.WriteLine("    </ul>");
+            Output.WriteLine("  </div>");
+            Output.WriteLine("</blockquote>");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
+
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jstree/jstree.min.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\">");
+            Output.WriteLine("   $('#aggregationTree').jstree().bind(\"select_node.jstree\", function (e, data) { var href = data.node.a_attr.href; document.location.href = href; });");
+            Output.WriteLine("</script>");
+            Output.WriteLine();
+
+            RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
+
+        }
 
         #region Method to create the descriptive home page
 
@@ -1917,9 +1889,9 @@ namespace SobekCM.Library.HTML
                     }
 
                     Output.WriteLine("  </tr>");
+                    Output.WriteLine("</table>");
+                    Output.WriteLine("<br />");
                 }
-                Output.WriteLine("</table>");
-                Output.WriteLine("<br />");
             }
 
             RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
@@ -2023,9 +1995,11 @@ namespace SobekCM.Library.HTML
                     }
                     Output.WriteLine("  </tr>");
                     Output.WriteLine("</table>");
+                    Output.WriteLine("<br />");
+                    Output.WriteLine();
                 }
+                
 
-                Output.WriteLine("<br />");
             }
 
             RequestSpecificValues.Current_Mode.Aggregation = String.Empty;

@@ -124,6 +124,7 @@ namespace SobekCM.Library.AdminViewer
                             actionMessage = delete_error;
                         }
 
+                        CachedDataManager.Aggregations.Clear();
 
                         // Reload the list of all codes, to include this new one and the new hierarchy
                         lock (UI_ApplicationCache_Gateway.Aggregations)

@@ -110,7 +110,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
             if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
             {
-                RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
+                RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
                 Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
             }
             if (UI_ApplicationCache_Gateway.Settings.Include_Partners_On_System_Home)

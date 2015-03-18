@@ -33,6 +33,11 @@ namespace SobekCM.Core.Client
             return AggregationServices.get_item_aggregation_html_child_page(AggregationCode, RequestedLanguage, DefaultLanguage, isRobot, ChildPageCode, Tracer);
         }
 
+        public Aggregation_Hierarchy Get_Aggregation_Hierarchy(Custom_Tracer Tracer)
+        {
+            return AggregationServices.get_aggregation_hierarchy(Tracer);
+        }
+
         public string Aggregation_Uploaded_Files_URL
         {
             get

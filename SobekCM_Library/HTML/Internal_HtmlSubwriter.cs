@@ -880,7 +880,7 @@ namespace SobekCM.Library.HTML
             ReadOnlyCollection<Item_Aggregation_Related_Aggregations> aggregations = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_Type(current_type);
 
             // Get the relationships between aggregationPermissions
-            DataTable aggregationRelationships = Engine_Database.Get_Aggregation_Hierarchies(Tracer);
+            DataTable aggregationRelationships = Engine_Database.Get_Aggregation_Hierarchies(Tracer).Tables[0];
             DataColumn childCodeColumn = null;
             DataColumn childNameColumn = null;
             DataColumn parentCodeColumn = null;

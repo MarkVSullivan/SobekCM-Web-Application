@@ -863,11 +863,7 @@ namespace SobekCM.Engine_Library.Navigation
 								Navigator.Mode = Display_Mode_Enum.Aggregation;
 								Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
 								Navigator.Aggregation = String.Empty;
-								Navigator.Home_Type = Home_Type_Enum.Tree_Collapsed;
-								if ((url_relative_list.Count > 1) && (url_relative_list[1] == "expanded"))
-								{
-									Navigator.Home_Type = Home_Type_Enum.Tree_Expanded;
-								}
+								Navigator.Home_Type = Home_Type_Enum.Tree;
 								break;
 
 							case "brief":

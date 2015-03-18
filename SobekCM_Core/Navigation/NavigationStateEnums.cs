@@ -243,10 +243,7 @@
         Personalized,
 
         /// <summary> Display the hierarchical tree view, initially fully collapsed </summary>
-        Tree_Collapsed,
-
-        /// <summary> Display the hierarchical tree view, initially fully expanded </summary>
-        Tree_Expanded
+        Tree,
     };
 
     /// <summary> Type of statistical information to display </summary>

@@ -871,11 +871,8 @@ namespace SobekCM.Engine_Library.Navigation
                                 case Home_Type_Enum.Descriptions:
                                     return this_base_url + "brief" + urlOptions1;
 
-                                case Home_Type_Enum.Tree_Collapsed:
+                                case Home_Type_Enum.Tree:
                                     return this_base_url + "tree" + urlOptions1;
-
-                                case Home_Type_Enum.Tree_Expanded:
-                                    return this_base_url + "tree/expanded" + urlOptions1;
 
                                 case Home_Type_Enum.Partners_List:
                                     return this_base_url + "partners" + urlOptions1;

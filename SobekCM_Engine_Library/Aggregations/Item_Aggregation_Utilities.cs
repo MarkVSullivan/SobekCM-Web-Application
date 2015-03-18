@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Text;
 using SobekCM.Core.Aggregations;
@@ -593,6 +594,79 @@ namespace SobekCM.Engine_Library.Aggregations
                 return new HTML_Based_Content("<div class=\"error_div\">EXCEPTION CAUGHT WHILE TRYING TO READ THE HOME PAGE SOURCE FILE '" + homeFileSource + "'.<br /><br />ERROR: " + ee.Message + "</div>", null, homeFileSource);
             }
         }
+
+        #endregion
+
+        #region Methods related to the item aggrgegation hierarchy
+
+        /// <summary> Adds the entire collection hierarchy under the ALL aggregation object </summary>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This is postponed until it is needed for the TREE VIEW on the home page, to allow the system to start
+        /// faster, even with a great number of item aggregationPermissions in the hierarchy </remarks>
+        public static Aggregation_Hierarchy Get_Collection_Hierarchy(Custom_Tracer Tracer)
+        {
+            // Get the database table
+            DataSet childInfo = Engine_Database.Get_Aggregation_Hierarchies(Tracer);
+            if (childInfo == null)
+                return null;
+
+            // Build the return value
+            Aggregation_Hierarchy returnValue = new Aggregation_Hierarchy();
+
+            // Add all the collections
+            add_hierarchy_children(returnValue.Collections, childInfo.Tables[0]);
+
+            // Add all the institutions
+            add_hierarchy_children(returnValue.Institutions, childInfo.Tables[1]);
+
+            //add_children(AllInfoObject, childInfo);
+            return returnValue;
+        }
+
+        /// <summary> Adds the child information to the item aggregation object from the datatable extracted from the database </summary>
+        /// <param name="AggrList"> List into which to populate the hierarchy </param>
+        /// <param name="ChildInfo"> Datatable from database calls with child item aggregation information </param>
+        private static void add_hierarchy_children(List<Item_Aggregation_Related_Aggregations> AggrList, DataTable ChildInfo)
+        {
+            if (ChildInfo.Rows.Count == 0)
+                return;
+
+            // Build a dictionary of nodes while building this tree
+            Dictionary<string, Item_Aggregation_Related_Aggregations> nodes = new Dictionary<string, Item_Aggregation_Related_Aggregations>(ChildInfo.Rows.Count);
+
+            // Step through each row of children
+            foreach (DataRow thisRow in ChildInfo.Rows)
+            {
+                // pull some of the basic data out
+                int hierarchyLevel = Convert.ToInt16(thisRow[5]);
+                string code = thisRow[0].ToString().ToLower();
+                string parentCode = thisRow[1].ToString().ToLower();
+
+                // If this does not already exist, create it
+                if (!nodes.ContainsKey(code))
+                {
+                    // Create the object
+                    Item_Aggregation_Related_Aggregations childObject = new Item_Aggregation_Related_Aggregations(code, thisRow[2].ToString(), thisRow[4].ToString(), Convert.ToBoolean(thisRow[6]), Convert.ToBoolean(thisRow[7]));
+
+                    // Add this object to the node dictionary
+                    nodes.Add(code, childObject);
+
+                    // Check for parent in the node list
+                    if ((parentCode.Length > 0) && (nodes.ContainsKey(parentCode)))
+                    {
+                        nodes[parentCode].Add_Child_Aggregation(childObject);
+                    }
+
+                    // If this is the first hierarchy, add to the main item aggregation object
+                    if (hierarchyLevel == -1)
+                    {
+                        AggrList.Add(childObject);
+                    }
+                }
+            }
+        }
+
 
         #endregion
     }

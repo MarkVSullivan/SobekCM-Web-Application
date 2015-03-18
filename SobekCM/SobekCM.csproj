@@ -724,6 +724,10 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="HtmlEditFileHandler.ashx" />
+    <Content Include="config\default\sobekcm_engine.config" />
+    <Content Include="config\default\sobekcm_contactform.config" />
+    <Content Include="config\default\sobekcm_microservices.config" />
+    <Content Include="config\default\sobekcm_oaipmh.config" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

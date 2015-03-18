@@ -165,7 +165,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("      <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
                     if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
                     {
-                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
+                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
                         Output.WriteLine("      <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
                     }
                     Output.WriteLine("    </ul></li>");
@@ -222,7 +222,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("        <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
                     if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
                     {
-                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
+                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
                         Output.WriteLine("        <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
                     }
                     if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn))
@@ -763,7 +763,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("      <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
                     if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
                     {
-                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
+                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
                         Output.WriteLine("      <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
                     }
                     Output.WriteLine("    </ul></li>");
@@ -806,7 +806,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("        <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
                     if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
                     {
-                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
+                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
                         Output.WriteLine("        <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
                     }
                     if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn))
@@ -1053,7 +1053,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("      <li id=\"sbkUsm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
             if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
             {
-                RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree_Collapsed;
+                RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
                 Output.WriteLine("      <li id=\"sbkUsm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
             }
             if (RequestSpecificValues.Current_User != null)

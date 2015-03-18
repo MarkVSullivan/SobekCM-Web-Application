@@ -255,6 +255,102 @@ namespace SobekCM.Core.MemoryMgmt
 
         #endregion
 
+        #region Method related to the entire collection hierarchy
+
+        /// <summary> Retrieves the item aggregation hierarchy from the cache or caching server </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the item aggregation hierarchy </returns>
+        public Aggregation_Hierarchy Retrieve_Aggregation_Hierarchy(Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if ((settings.Disabled) || (HttpContext.Current == null))
+                return null;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Hierarchy", "");
+            }
+
+            // Determine the key
+            string key = "AGGR_HIERARCHY";
+
+            // See if this is in the local cache first
+            Aggregation_Hierarchy returnValue = HttpContext.Current.Cache.Get(key) as Aggregation_Hierarchy;
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Hierarchy", "Found item aggregation hierarchy on local cache");
+                }
+
+                return returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Hierarchy", "Aggregation hierarchy not found in either the local cache or caching server");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Stores the item aggregation hierarchy to the cache or caching server </summary>
+        /// <param name="StoreObject"> Item aggregation object to store for later retrieval </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_Aggregation_Hierarchy(Aggregation_Hierarchy StoreObject, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager.Store_Aggregation_Hierarchy", "Entering Store_Item_Aggregation method");
+            }
+
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager.Store_Aggregation_Hierarchy", "Caching is disabled");
+                return;
+            }
+
+            // Determine the key
+            string key = "AGGR_HIERARCHY";
+
+            // Check the number of item aggregationPermissions currently locally cached
+            //int items_cached = 0;
+            int local_expiration = 15;
+            //if (Aggregation_Code != "all")
+            //{
+            //    local_expiration = 1;
+            //    if ((LOCALLY_CACHED_AGGREGATION_LIMIT > 0) && ( caching_serving_enabled ))
+            //    {
+            //        items_cached += HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("AGGR_") == 0);
+            //    }
+            //}
+
+            // Locally cache if this doesn't exceed the limit
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager.Store_Aggregation_Hierarchy", "Adding object '" + key + "' to the local cache with expiration of " + local_expiration + " minute(s)");
+            }
+
+            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(local_expiration));
+        }
+
+        public void Clear_Aggregation_Hierarchy()
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                return;
+            }
+
+            // Determine the key
+            string key = "AGGR_HIERARCHY";
+            HttpContext.Current.Cache.Remove(key);
+        }
+
+        #endregion
+
 
         /// <summary> Clears all aggregation values from the cache </summary>
         public void Clear()
@@ -266,6 +362,9 @@ namespace SobekCM.Core.MemoryMgmt
             foreach (string key in keys.Where(Key => Key.StartsWith("AGGR|"))) {
                 HttpContext.Current.Cache.Remove(key);
             }
+
+            // Delete the hierarchy
+            Clear_Aggregation_Hierarchy();
         }
 
 

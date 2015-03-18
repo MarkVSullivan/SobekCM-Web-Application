@@ -13,6 +13,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.JSON_Client_Helpers;
 using SobekCM.Engine_Library.Microservices;
 using SobekCM.Tools;
@@ -125,6 +126,40 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
+        public void GetCollectionHierarchy(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        {
+            // Get the aggregation code manager
+            Aggregation_Hierarchy returnValue = get_aggregation_hierarchy(null);
+
+            if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
+            {
+                JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
+            }
+            else
+            {
+                Serializer.Serialize(Response.OutputStream, returnValue);
+            }
+        }
+
+        #region Helper methods (some may currently be public though)
+
+        public static Aggregation_Hierarchy get_aggregation_hierarchy(Custom_Tracer Tracer)
+        {
+            // Get the aggregation code manager
+            Aggregation_Hierarchy returnValue = CachedDataManager.Aggregations.Retrieve_Aggregation_Hierarchy(Tracer);
+            if (returnValue == null)
+            {
+                // Build the collection hierarchy (from the database)
+                returnValue = Item_Aggregation_Utilities.Get_Collection_Hierarchy(Tracer);
+
+                // Store in the cache
+                CachedDataManager.Aggregations.Store_Aggregation_Hierarchy(returnValue, Tracer);
+            }
+
+            return returnValue;
+        }
+
+
         public static HTML_Based_Content get_item_aggregation_html_child_page(string AggregationCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, bool isRobot, string ChildPageCode, Custom_Tracer Tracer)
         {
             // Try to pull from the cache
@@ -204,6 +239,8 @@ namespace SobekCM.Engine_Library.Endpoints
 
             return itemAggr;
         }
+
+        #endregion
 
 
     }

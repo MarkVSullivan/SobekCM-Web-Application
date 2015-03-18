@@ -494,7 +494,7 @@ namespace SobekCM
 							break;
 
 						case Home_Type_Enum.Descriptions:
-						case Home_Type_Enum.Tree_Collapsed:
+						case Home_Type_Enum.Tree:
 						case Home_Type_Enum.Partners_List:
 							if (url_relative_depth > 1)
 							{
@@ -506,7 +506,6 @@ namespace SobekCM
 							}
 							break;
 
-						case Home_Type_Enum.Tree_Expanded:
 						case Home_Type_Enum.Partners_Thumbnails:
 							if (url_relative_depth > 2)
 							{

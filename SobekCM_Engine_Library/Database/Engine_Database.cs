@@ -3073,22 +3073,6 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
-        /// <summary> Adds the entire collection hierarchy under the ALL aggregation object </summary>
-        /// <param name="AllInfoObject"> All aggregationPermissions object within which to populate the hierarchy </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This is postponed until it is needed for the TREE VIEW on the home page, to allow the system to start
-        /// faster, even with a great number of item aggregationPermissions in the hierarchy </remarks>
-        public static bool Add_Children_To_Main_Agg(Complete_Item_Aggregation AllInfoObject, Custom_Tracer Tracer)
-        {
-            DataTable childInfo = Get_Aggregation_Hierarchies(Tracer);
-            if (childInfo == null)
-                return false;
-
-            add_children(AllInfoObject, childInfo);
-            return true;
-        }
-
         /// <summary> Creates the item aggregation object from the datatable extracted from the database </summary>
         /// <param name="BasicInfo">Datatable from database calls ( either SobekCM_Get_Item_Aggregation or SobekCM_Get_All_Groups )</param>
         /// <returns>Minimally built aggregation object</returns>
@@ -3275,7 +3259,7 @@ namespace SobekCM.Engine_Library.Database
         /// <returns> DataTable with relationships between all aggregationPermissions</returns>
         /// <remarks> This calls the 'SobekCM_Get_Collection_Hierarchies' stored procedure <br /><br />
         /// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
-        public static DataTable Get_Aggregation_Hierarchies(Custom_Tracer Tracer)
+        public static DataSet Get_Aggregation_Hierarchies(Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -3294,7 +3278,7 @@ namespace SobekCM.Engine_Library.Database
                 }
 
                 // Return the first table from the returned dataset
-                return tempSet.Tables[0];
+                return tempSet;
             }
             catch (Exception ee)
             {

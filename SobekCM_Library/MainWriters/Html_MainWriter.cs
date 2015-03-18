@@ -310,11 +310,7 @@ namespace SobekCM.Library.MainWriters
                     case Display_Mode_Enum.Aggregation:
 		                if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home) || (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 		                {
-			                if ((RequestSpecificValues.Current_Mode.Aggregation.Length != 0) && (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() != "ALL"))
-			                {
-				                return false;
-			                }
-			                return (RequestSpecificValues.Current_Mode.Home_Type == Home_Type_Enum.Tree_Collapsed) || (RequestSpecificValues.Current_Mode.Home_Type == Home_Type_Enum.Tree_Expanded);
+                            return false;
 		                }
 		                return true;
 

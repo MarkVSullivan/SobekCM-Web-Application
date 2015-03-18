@@ -259,6 +259,7 @@ namespace SobekCM.Library.AdminViewer
 
 						// Clear the aggregation from the cache
 						CachedDataManager.Aggregations.Remove_Item_Aggregation(itemAggregation.Code, null);
+					    CachedDataManager.Aggregations.Clear_Aggregation_Hierarchy();
 
 						// Forward back to the aggregation home page, if this was successful
 						if (successful_save)
