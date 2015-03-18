@@ -18,9 +18,6 @@ namespace SobekCM.Core.Aggregations
     {
 
         public Dictionary<string, Item_Aggregation_Custom_Directive> Custom_Directives;
-        public string Custom_Home_Page_Source_File;
-        //public string Home_Page_File(Web_Language_Enum Language ) { return "UNIMPLIMENTED"; }
-        //public string Get_Home_HTML(Web_Language_Enum Language, Custom_Tracer Tracer) { return "UNIMPLIMENTED"; }
 
         #region Private variables
 

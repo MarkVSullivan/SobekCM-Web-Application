@@ -508,6 +508,38 @@ namespace SobekCM.Engine_Library.Aggregations
             {
                 returnValue.Custom_Home_Page = true;
                 returnValue.HomePageSource = CompAggr.Custom_Home_Page_Source_File;
+
+                // Get the home file source
+                string homeFileSource = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, CompAggr.ObjDirectory, CompAggr.Custom_Home_Page_Source_File);
+
+                // If no home file source even found, return a message to that affect
+                if (homeFileSource.Length == 0)
+                {
+                    returnValue.HomePageHtml = new HTML_Based_Content("<div class=\"error_div\">NO HOME PAGE SOURCE FILE FOUND</div>", null, homeFileSource);
+                }
+                else
+                {
+
+                    // Do the rest in a try/catch
+                    try
+                    {
+                        // Does the file exist?
+                        if (!File.Exists(homeFileSource))
+                        {
+                            returnValue.HomePageHtml = new HTML_Based_Content("<div class=\"error_div\">HOME PAGE SOURCE FILE '" + homeFileSource + "' DOES NOT EXIST.</div>", null, homeFileSource);
+                        }
+                        else
+                        {
+                            HTML_Based_Content content = HTML_Based_Content_Reader.Read_HTML_File(homeFileSource, true, Tracer);
+                            content.TEMP_Source = homeFileSource;
+                            returnValue.HomePageHtml = content;
+                        }
+                    }
+                    catch (Exception ee)
+                    {
+                        returnValue.HomePageHtml = new HTML_Based_Content("<div class=\"error_div\">EXCEPTION CAUGHT WHILE TRYING TO READ THE HOME PAGE SOURCE FILE '" + homeFileSource + "'.<br /><br />ERROR: " + ee.Message + "</div>", null, homeFileSource);
+                    }
+                }
             }
             else
             {

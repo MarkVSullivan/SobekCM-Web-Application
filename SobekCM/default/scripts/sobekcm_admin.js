@@ -759,6 +759,16 @@ function add_skin_language() {
     return false;
 }
 
+function delete_skin_language(lang) {
+    var langfield = document.getElementById('admin_skin_language');
+    langfield.value = '-' + lang;
+
+    var hiddenfield = document.getElementById('admin_skin_save');
+    hiddenfield.value = 'delete_skin';
+    document.itemNavForm.submit();
+    return false;
+}
+
 // Save the aggregation updates
 function save_aggr_edits() {
     var hiddenfield = document.getElementById('admin_aggr_save');

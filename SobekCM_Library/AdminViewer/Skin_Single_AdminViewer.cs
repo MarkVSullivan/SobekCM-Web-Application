@@ -169,6 +169,14 @@ namespace SobekCM.Library.AdminViewer
                         // Save this existing interface
                         bool successful_save = SobekCM_Database.Save_Web_Skin(webSkin.Skin_Code, webSkin.Base_Skin_Code, webSkin.Override_Banner, true, webSkin.Banner_Link, webSkin.Notes, webSkin.Build_On_Launch, webSkin.Suppress_Top_Navigation, RequestSpecificValues.Tracer);
 
+                        // Prepare the backup folders
+                        string backup_folder =  skinDirectory + "\\backup\\html";
+                        if (!Directory.Exists(backup_folder))
+                            Directory.CreateDirectory(backup_folder);
+                        string css_backup_folder = skinDirectory + "\\backup\\css";
+                        if (!Directory.Exists(css_backup_folder))
+                            Directory.CreateDirectory(css_backup_folder);
+
                         // Also, save all the updated files
                         foreach (KeyValuePair<string, string> pairs in updatedSourceFiles)
                         {
@@ -177,25 +185,82 @@ namespace SobekCM.Library.AdminViewer
                                 if (pairs.Key != "CSS")
                                 {
                                     string filename = Path.Combine(skinDirectory, pairs.Key);
-                                    if (pairs.Value == null)
+                                    if (String.IsNullOrEmpty(pairs.Value))
                                     {
                                         if (File.Exists(filename))
+                                        {
+                                            // Use the last modified date as the name of the backup
+                                            DateTime lastModifiedDate = (new FileInfo(filename)).LastWriteTime;
+                                            string backup_name = Path.GetFileName(filename).Replace(Path.GetExtension(filename),"") + lastModifiedDate.Year + lastModifiedDate.Month.ToString().PadLeft(2, '0') + lastModifiedDate.Day.ToString().PadLeft(2, '0') + lastModifiedDate.Hour.ToString().PadLeft(2, '0') + lastModifiedDate.Minute.ToString().PadLeft(2, '0') + Path.GetExtension(filename);
+                                            if (!File.Exists(backup_folder + "\\" + backup_name))
+                                                File.Copy(filename, backup_folder + "\\" + backup_name, false);
+
+                                            // Now, delete the file
                                             File.Delete(filename);
+                                        }
                                     }
                                     else
                                     {
-                                        StreamWriter writer = new StreamWriter(Path.Combine(skinDirectory, filename));
-                                        writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
-                                        writer.Flush();
-                                        writer.Close();
+                                        string fullName = Path.Combine(skinDirectory, filename);
+                                        if (File.Exists(fullName))
+                                        {
+                                            StreamReader reader = new StreamReader(fullName);
+                                            string current_contents = reader.ReadToEnd();
+                                            reader.Close();
+
+                                            if (String.Compare(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"), current_contents) != 0)
+                                            {
+                                                // Use the last modified date as the name of the backup
+                                                DateTime lastModifiedDate = (new FileInfo(filename)).LastWriteTime;
+                                                string backup_name = Path.GetFileName(filename).Replace(Path.GetExtension(filename), "") + lastModifiedDate.Year + lastModifiedDate.Month.ToString().PadLeft(2, '0') + lastModifiedDate.Day.ToString().PadLeft(2, '0') + lastModifiedDate.Hour.ToString().PadLeft(2, '0') + lastModifiedDate.Minute.ToString().PadLeft(2, '0') + Path.GetExtension(filename);
+                                                if (!File.Exists(backup_folder + "\\" + backup_name))
+                                                    File.Copy(fullName, backup_folder + "\\" + backup_name, false);
+
+                                                StreamWriter writer = new StreamWriter(fullName, false);
+                                                writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
+                                                writer.Flush();
+                                                writer.Close();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            StreamWriter writer = new StreamWriter(fullName, false);
+                                            writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
+                                            writer.Flush();
+                                            writer.Close();
+                                        }
                                     }
                                 }
                                 else
                                 {
-                                    StreamWriter writer = new StreamWriter(Path.Combine(skinDirectory, webSkin.CSS_Style));
-                                    writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
-                                    writer.Flush();
-                                    writer.Close();
+                                    string new_skin_file = Path.Combine(skinDirectory, webSkin.CSS_Style);
+                                    if (File.Exists(new_skin_file))
+                                    {
+                                        StreamReader reader = new StreamReader(new_skin_file);
+                                        string current_contents = reader.ReadToEnd();
+                                        reader.Close();
+
+                                        if (String.Compare(pairs.Value, current_contents) != 0)
+                                        {
+                                            // Use the last modified date as the name of the backup
+                                            DateTime lastModifiedDate = (new FileInfo(new_skin_file)).LastWriteTime;
+                                            string backup_name = Path.GetFileName(new_skin_file).Replace(Path.GetExtension(new_skin_file), "") + lastModifiedDate.Year + lastModifiedDate.Month.ToString().PadLeft(2, '0') + lastModifiedDate.Day.ToString().PadLeft(2, '0') + lastModifiedDate.Hour.ToString().PadLeft(2, '0') + lastModifiedDate.Minute.ToString().PadLeft(2, '0') + Path.GetExtension(new_skin_file);
+                                            if (!File.Exists(css_backup_folder + "\\" + backup_name))
+                                                File.Copy(new_skin_file, css_backup_folder + "\\" + backup_name, false);
+
+                                            StreamWriter writer = new StreamWriter(new_skin_file, false);
+                                            writer.Write(pairs.Value);
+                                            writer.Flush();
+                                            writer.Close();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        StreamWriter writer = new StreamWriter(new_skin_file, false);
+                                        writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
+                                        writer.Flush();
+                                        writer.Close();
+                                    }
                                 }
                             }
                             catch
@@ -281,11 +346,34 @@ namespace SobekCM.Library.AdminViewer
                             }
                         }
 
+                        // Determine the base URL to redirect to
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = code + "/" + action;
+
+                        // Delete language support for a single language?
+                        if (action == "delete_skin")
+                        {
+                            string lang = form["admin_skin_language"];
+                            if (lang.IndexOf("-") == 0)
+                            {
+                                Web_Language_Enum langEnum = Web_Language_Enum_Converter.Code_To_Enum(lang.Substring(1));
+                                if (webSkin.SourceFiles.ContainsKey(langEnum))
+                                {
+                                    Complete_Web_Skin_Source_Files sources = webSkin.SourceFiles[langEnum];
+                                    webSkin.SourceFiles.Remove(langEnum);
+                                    updatedSourceFiles[sources.Header_Source_File] = String.Empty;
+                                    updatedSourceFiles[sources.Footer_Source_File] = String.Empty;
+                                    updatedSourceFiles[sources.Header_Item_Source_File] = String.Empty;
+                                    updatedSourceFiles[sources.Footer_Item_Source_File] = String.Empty;
+                                }
+                            }
+
+                            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = code + "/c";
+                        }
+
                         // Save the updated info
                         HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code + "|object"] = webSkin;
                         HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code + "|files"] = updatedSourceFiles;
 
-                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = code + "/" + action;
                         string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
                         if (action == "c")
@@ -690,7 +778,7 @@ namespace SobekCM.Library.AdminViewer
         private void Save_Page_3_Postback(NameValueCollection Form)
         {
             string current_language_code = String.Empty;
-            Web_Language_Enum current_language = Web_Language_Enum.UNDEFINED;
+            Web_Language_Enum current_language = Web_Language_Enum.DEFAULT;
 
             if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["lang"]))
             {
@@ -740,7 +828,7 @@ namespace SobekCM.Library.AdminViewer
         private void Add_Page_3(TextWriter Output)
         {
             string current_language_code = String.Empty;
-            Web_Language_Enum current_language = Web_Language_Enum.UNDEFINED;
+            Web_Language_Enum current_language = Web_Language_Enum.DEFAULT;
 
             if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["lang"]))
             {
@@ -767,55 +855,37 @@ namespace SobekCM.Library.AdminViewer
 
             //Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\"></tr>");
 
-            // Add the existing languages
+            // Find all the existing languages
             List<string> existing_languages = new List<string>();
             bool found_language = false;
             if ((webSkin.SourceFiles != null) && (webSkin.SourceFiles.Count > 0))
             {
-                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-                Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("    <td class=\"sbkSaav_TableLabel\" style=\"width:135px\"><label for=\"webskin_existing_language\">Existing Languages:</label></td>");
-                Output.WriteLine("    <td>");
-                Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-
-                Output.WriteLine("        <select class=\"sbkSav_small_input1 sbkAdmin_Focusable\" name=\"webskin_existing_language\" id=\"webskin_existing_language\" onchange=\"return new_skin_language(this);\">");
-                Output.WriteLine("          <option value=\"\"></option>");
-                
                 foreach (KeyValuePair<Web_Language_Enum, Complete_Web_Skin_Source_Files> languageSupport in webSkin.SourceFiles)
                 {
-                    string thisLangCode = Web_Language_Enum_Converter.Enum_To_Code(languageSupport.Key);
-                    string thisLangTerm = Web_Language_Enum_Converter.Enum_To_Name(languageSupport.Key);
-
-                    if (languageSupport.Key == Web_Language_Enum.DEFAULT)
-                    {
-                        thisLangCode = "def";
-                        thisLangTerm = "DEFAULT";
-                    }
-
                     if (languageSupport.Key == current_language)
                     {
                         found_language = true;
-                        Output.WriteLine("          <option value=\"" + thisLangCode + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(thisLangTerm) + "</option>");
                     }
-                    else
-                        Output.WriteLine("          <option value=\"" + thisLangCode + "\">" + HttpUtility.HtmlEncode(thisLangTerm) + "</option>");
 
+                    string thisLangTerm = Web_Language_Enum_Converter.Enum_To_Name(languageSupport.Key);
+                    if (languageSupport.Key == Web_Language_Enum.DEFAULT)
+                    {
+                        thisLangTerm = "DEFAULT";
+                    }
                     existing_languages.Add(thisLangTerm);
                 }
-
-                Output.WriteLine("        </select></td>");
-                Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + EXISTING_LANGUAGE_HELP + "');\"  title=\"" + EXISTING_LANGUAGE_HELP + "\" /></td></tr></table>");
-                Output.WriteLine("     </td>");
-                Output.WriteLine("  </tr>");
             }
 
             if (!found_language)
                 current_language = Web_Language_Enum.UNDEFINED;
 
-            // Write the add new home page information
+
+            // Write the add new web skin information
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Add New Language</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Use this option to add a new supported language to this web skin.  This allows you to customize the headers and footers for users that request this language, either explicitly or through their browser settings.</p></td></tr>");
             Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
             Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
-            Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\" style=\"width:135px\">Add New Language:</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\" style=\"width:135px\">New Language:</td>");
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
             Output.WriteLine("      <tr>");
@@ -855,6 +925,49 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_LANGUAGE_HELP + "');\"  title=\"" + NEW_LANGUAGE_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td><tr>");
+
+            // Add the existing languages
+            if ((webSkin.SourceFiles != null) && (webSkin.SourceFiles.Count > 0))
+            {
+                Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Existing Language Support</td></tr>");
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+                Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+                Output.WriteLine("    <td class=\"sbkSaav_TableLabel\" style=\"width:135px\"><label for=\"webskin_existing_language\">Existing Languages:</label></td>");
+                Output.WriteLine("    <td>");
+                Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+
+                Output.WriteLine("        <select class=\"sbkSav_small_input1 sbkAdmin_Focusable\" name=\"webskin_existing_language\" id=\"webskin_existing_language\" onchange=\"return new_skin_language(this);\">");
+                
+                foreach (KeyValuePair<Web_Language_Enum, Complete_Web_Skin_Source_Files> languageSupport in webSkin.SourceFiles)
+                {
+                    string thisLangCode = Web_Language_Enum_Converter.Enum_To_Code(languageSupport.Key);
+                    string thisLangTerm = Web_Language_Enum_Converter.Enum_To_Name(languageSupport.Key);
+
+                    if (languageSupport.Key == Web_Language_Enum.DEFAULT)
+                    {
+                        thisLangCode = "def";
+                        thisLangTerm = "DEFAULT";
+                    }
+
+                    if (languageSupport.Key == current_language)
+                    {
+                        found_language = true;
+                        Output.WriteLine("          <option value=\"" + thisLangCode + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(thisLangTerm) + "</option>");
+                    }
+                    else
+                        Output.WriteLine("          <option value=\"" + thisLangCode + "\">" + HttpUtility.HtmlEncode(thisLangTerm) + "</option>");
+                }
+
+                Output.WriteLine("        </select></td>");
+                if ((current_language != Web_Language_Enum.DEFAULT) && (webSkin.SourceFiles.Count > 1))
+                {
+                    Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Remove support for this language from this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return delete_skin_language('" + Web_Language_Enum_Converter.Enum_To_Code(current_language) + "');\">REMOVE</button></td>");
+                }
+                Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + EXISTING_LANGUAGE_HELP + "');\"  title=\"" + EXISTING_LANGUAGE_HELP + "\" /></td></tr></table>");
+                Output.WriteLine("     </td>");
+                Output.WriteLine("  </tr>");
+            }
 
 
             if (current_language != Web_Language_Enum.UNDEFINED)
@@ -868,7 +981,7 @@ namespace SobekCM.Library.AdminViewer
 
 
                 // Add the standard headers and footers
-                Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Standard Headers and Footers</td></tr>");
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td><tr>");
                 Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"webskin_header_source\">Standard Header:</label></td>");
@@ -888,7 +1001,8 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  </tr>");
 
                 // Add the item headers and footers
-                Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Item-Specific Headers and Footers</td></tr>");
+                //Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Item-Specific Headers and Footers</td></tr>");
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td><tr>");
                 Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"webskin_header_item_source\">Item Header:</label></td>");

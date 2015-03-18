@@ -250,7 +250,7 @@ namespace SobekCM.Library.HTML
 				{
 					case Aggregation_Type_Enum.Home:
 					case Aggregation_Type_Enum.Home_Edit:
-				        if (String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.Custom_Home_Page_Source_File))
+				        if (!RequestSpecificValues.Hierarchy_Object.Custom_Home_Page)
 				        {
 				            collectionViewer = AggregationViewer_Factory.Get_Viewer(base.RequestSpecificValues.Hierarchy_Object.Views_And_Searches[0], RequestSpecificValues);
 				        }
@@ -692,13 +692,10 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Aggregation_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
             // Is this the custom home page viewer?
-            if ((collectionViewer == null) && (!String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.Custom_Home_Page_Source_File)))
+            if ((collectionViewer == null) && (RequestSpecificValues.Hierarchy_Object.Custom_Home_Page))
             {
-                string path = "/design/aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/" + RequestSpecificValues.Hierarchy_Object.Custom_Home_Page_Source_File ;
-                string file = HttpContext.Current.Server.MapPath(path);
-                HTML_Based_Content fileContent = HTML_Based_Content_Reader.Read_HTML_File(file, true, Tracer);
-                Output.Write(fileContent.Content);
-                
+                Output.Write( RequestSpecificValues.Hierarchy_Object.HomePageHtml.Content);
+               
 
                 return true;
             }
