@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.SessionState;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -124,8 +125,8 @@ namespace SobekCM.Library.HTML
                 string stat_title = String.Empty;
                 switch( type )
                 {
-                    case Internal_Type_Enum.Aggregations:
                     case Internal_Type_Enum.Aggregations_List:
+                    case Internal_Type_Enum.Aggregations_Tree:
                         stat_title = collection_details_title;
                         break;
 
@@ -150,52 +151,6 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <h1>" + stat_title + "</h1>");
                 Output.WriteLine("</div>");
 
-
-                /*  THIS IS CURRENTLY DISABLED.. ONLY EVER SHOWS THE MASTER LIST 
-                // Add subtypes for collection information
-                if ((type == Internal_Type_Enum.Aggregations) || ( type == Internal_Type_Enum.Aggregations_List ))
-                {
-                    // Create the strings for the sub views
-                    const string aggregationPermissions = "MASTER LIST";
-                    const string single = "SINGLE AGGREGATIONS";
-                    string submode = currentMode.Info_Browse_Mode;
-
-                    // Add the master list first
-                    Output.WriteLine("<div class=\"ShowSelectRow\">");
-                    if (type == Internal_Type_Enum.Aggregations_List)
-                    {
-                        Output.WriteLine("  " + Down_Selected_Tab_Start + aggregationPermissions + Down_Selected_Tab_End);
-                    }
-                    else
-                    {
-                        currentMode.Internal_Type = Internal_Type_Enum.Aggregations_List;
-                        currentMode.Info_Browse_Mode = String.Empty;
-                        Output.WriteLine("  <a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + aggregationPermissions + Down_Tab_End + "</a>");
-                        currentMode.Internal_Type = type;
-                    }
-
-                    // Add the aggregation list next
-                    if (UI_ApplicationCache_Gateway.Aggregations.All_Types.Count > 0)
-                    {
-                        if (type == Internal_Type_Enum.Aggregations)
-                        {
-                            Output.WriteLine("  " + Down_Selected_Tab_Start + single + Down_Selected_Tab_End);
-                        }
-                        else
-                        {
-                            currentMode.Internal_Type = Internal_Type_Enum.Aggregations;
-                            currentMode.Info_Browse_Mode = UI_ApplicationCache_Gateway.Aggregations.All_Types[0];
-                            Output.WriteLine("  <a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative + currentMode.Redirect_URL() + "\">" + Down_Tab_Start + single + Down_Tab_End + "</a>");
-                            currentMode.Internal_Type = type;
-                        }
-                    }
-
-                   
-                    currentMode.Internal_Type = type;
-                    currentMode.Info_Browse_Mode = submode;
-                    Output.WriteLine("</div>");
-                } */
-
                 // Set the type back
                 RequestSpecificValues.Current_Mode.Internal_Type = type;
 
@@ -206,12 +161,12 @@ namespace SobekCM.Library.HTML
                         add_aggregations_master_list_html(Output, Tracer);
                         break;
 
-                    case Internal_Type_Enum.Cache:
-                        add_cache_html(Output, Tracer);
+                    case Internal_Type_Enum.Aggregations_Tree:
+                        add_aggregations_tree_html(Output, Tracer);
                         break;
 
-                    case Internal_Type_Enum.Aggregations:
-                        add_single_aggregation_html(Output, Tracer);
+                    case Internal_Type_Enum.Cache:
+                        add_cache_html(Output, Tracer);
                         break;
 
 
@@ -828,368 +783,281 @@ namespace SobekCM.Library.HTML
 
         #endregion
 
-        #region Method to add information about a single aggregation to the response stream
+        #region Method to add the master tree of ALL aggrgeations
 
-        /// <summary> Adds information about a single type of aggregation to the response stream </summary>
+        /// <summary> Adds information about all aggregationPermissions to the response stream </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        protected internal void add_single_aggregation_html(TextWriter Output, Custom_Tracer Tracer)
+        protected internal void add_aggregations_tree_html(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Internal_HtmlSubwriter.add_collection_html", "Rendering HTML");
+            Tracer.Add_Trace("Internal_HtmlSubwriter.add_aggregations_tree_html", "Rendering HTML");
 
-            // Start the text
-            Output.WriteLine("<br />");
-            Output.WriteLine("<div class=\"SobekText\">");
-            Output.WriteLine("<h2>All Aggregation Types</h2>");
-            Output.WriteLine("<p>Select one of the aggregation types below to view information about all aggregations of that type.</p>");
-            Output.WriteLine("<blockquote>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jstree/jstree.min.js\"></script>");
 
-            // Now, add each individual aggregation type
-            RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations;
-            string curentSubMode = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
-            ReadOnlyCollection<string> allTypes = UI_ApplicationCache_Gateway.Aggregations.All_Types;
-            SortedList<string, string> sortedTypes = new SortedList<string, string>();
-            foreach (string t in allTypes)
-                sortedTypes.Add(t, t);
-            string current_type = allTypes[0];
-            foreach (string thisType in sortedTypes.Keys)
+            // Get the hierarchy
+            Aggregation_Hierarchy hierarchy = SobekEngineClient.Aggregations.Get_Aggregation_Hierarchy(Tracer);
+
+            if (hierarchy != null)
             {
-                if (curentSubMode == thisType.ToLower())
+                // Add the text
+                Output.WriteLine("<div class=\"sbkIhsw_HomeText\">");
+                Output.WriteLine("<p>Below is the complete master tree of all aggregations within this library.  This includes all active aggregations, as well as all hidden or inactive collections.</p>");
+                Output.WriteLine("<br /><br />");
+
+                Output.WriteLine("<blockquote>");
+                Output.WriteLine("  <div style=\"text-align:right;\">");
+                Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('close_all');return false;\">Collapse All</a> | ");
+                Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('open_all');return false;\">Expand All</a>");
+                Output.WriteLine("  </div>");
+                
+
+                Output.WriteLine("  <div id=\"aggregationTree\">");
+                Output.WriteLine("    <ul>");
+                Output.WriteLine("      <li>Collection Hierarchy");
+
+                // Step through each node under this
+                if (hierarchy.Collections.Count > 0)
                 {
-                    current_type = thisType;
-                    Output.WriteLine("<span style=\"color:Gray\">" + thisType +"</span><br />");
-                }
-                else
-                {
-                    RequestSpecificValues.Current_Mode.Info_Browse_Mode = thisType;
-                    Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + thisType + "</a><br />");
-                }
-            }
-            RequestSpecificValues.Current_Mode.Info_Browse_Mode = curentSubMode;
-            Output.WriteLine("</blockquote>");
-            Output.WriteLine("<h2>All " + current_type + "s</h2>");
-
-            string active = "ACTIVE " + current_type.ToUpper() + "S";
-            string inactive = "INACTIVE " + current_type.ToUpper() + "S";
-
-            // Start the data
-            Output.WriteLine("</div>");
-            Output.WriteLine("</div> <!-- ends PageContainer div momentarily for this extra wide table -->");
-
-            // Get all the matching aggregationPermissions
-            ReadOnlyCollection<Item_Aggregation_Related_Aggregations> aggregations = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_Type(current_type);
-
-            // Get the relationships between aggregationPermissions
-            DataTable aggregationRelationships = Engine_Database.Get_Aggregation_Hierarchies(Tracer).Tables[0];
-            DataColumn childCodeColumn = null;
-            DataColumn childNameColumn = null;
-            DataColumn parentCodeColumn = null;
-            DataColumn parentNameColumn = null;
-            if (aggregationRelationships != null)
-            {
-                childCodeColumn = aggregationRelationships.Columns["Code"];
-                childNameColumn = aggregationRelationships.Columns["ShortName"];
-                parentCodeColumn = aggregationRelationships.Columns["ParentCode"];
-                parentNameColumn = aggregationRelationships.Columns["Parent_ShortName"];
-            }
-
-            // If there was no count, or no rows returned, say something
-            if ((aggregations == null) || (aggregations.Count == 0))
-            {
-                Output.WriteLine("<b>NO INFORMATION AVAILABLE</b>");
-                return;
-            }
-
-            // Add the header information
-            Output.WriteLine("<table width=\"1215px\" border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\">");
-
-            Output.WriteLine("    <th align=\"left\" width=\"50px\"><span style=\"color: White\"><b>SobekCM CODE</b></span></th>");
-            Output.WriteLine("    <th align=\"left\" width=\"301px\"><span style=\"color: White\"><b>NAME</b></span></th>");
-            Output.WriteLine("    <th align=\"left\" width=\"432px\"><span style=\"color: White\"><b>PARENTS</b></span></th>");
-            Output.WriteLine("    <th align=\"left\" width=\"432px\"><span style=\"color: White\"><b>CHILDREN</b></span></th>");
-            Output.WriteLine("  </tr>");
-
-            // See if both activa and inactive exist
-            bool active_exist = false;
-            bool inactive_exist = false;
-            foreach (Item_Aggregation_Related_Aggregations thisAggregation in aggregations)
-            {
-                if (thisAggregation.Active)
-                    active_exist = true;
-                if (!thisAggregation.Active)
-                    inactive_exist = true;
-                if ((active_exist) && (inactive_exist))
-                    break;
-            }
-
-            // Now, add each active line
-            if (active_exist)
-            {
-                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\"><td colspan=\"4\"><span style=\"color: White\"><b>" + active + "</b></span></td></tr>");
-                foreach (Item_Aggregation_Related_Aggregations thisAggregation in aggregations)
-                {
-                    // Add this row
-                    if (thisAggregation.Active)
+                    Output.WriteLine("        <ul>");
+                    foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchy.Collections)
                     {
-                        Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
+                            // Set the aggregation value, for the redirect URL
+                            RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
 
-                        Output.WriteLine("  <tr align=\"left\" valign=\"top\">");
+                            Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
 
-                        Output.WriteLine("    <td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisAggregation.Code + "\">" + thisAggregation.Code + "</a></td>");
+                            // Check the children nodes recursively
+                            add_children_to_tree("            ", Output, childAggr);
 
-                        //Output.WriteLine("    <td>" + thisAggregation.Code + "</td>");
-
-                        Output.WriteLine("    <td>" + thisAggregation.ShortName + "</td>");
-
-                        // Add relationship information
-                        if (aggregationRelationships != null)
-                        {
-                            // Add parents codes first
-                            DataRow[] parents = aggregationRelationships.Select("ChildID=" + thisAggregation.ID);
-                            if (parents.Length > 0)
-                            {
-                                Output.Write("    <td>");
-                                int parent_count = 0;
-                                foreach (DataRow thisRow in parents)
-                                {
-                                    string code = thisRow[parentCodeColumn].ToString();
-                                    if (code != "ALL")
-                                    {
-                                        if (parent_count > 0)
-                                            Output.Write("<br />");
-                                        Item_Aggregation_Related_Aggregations parentAggr = UI_ApplicationCache_Gateway.Aggregations[code];
-                                        if ((parentAggr != null) && (parentAggr.Active))
-                                            Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + code + "\">" + code + "</a> (" + parentAggr.ShortName + ")");
-                                        else
-                                            Output.Write(code + " (" + thisRow[parentNameColumn] + ")");
-                                        parent_count++;
-                                    }
-                                }
-                                Output.WriteLine("</td>");
-                            }
-                            else
-                            {
-                                Output.WriteLine("    <td>&nbsp;</td>");
-                            }
-
-                            // Add child codes next
-                            DataRow[] children = aggregationRelationships.Select("ParentID=" + thisAggregation.ID);
-                            if (children.Length > 0)
-                            {
-                                Output.Write("    <td>");
-                                int child_count = 0;
-                                foreach (DataRow thisRow in children)
-                                {
-                                    string code = thisRow[childCodeColumn].ToString();
-                                    if (child_count > 0)
-                                        Output.Write("<br />");
-                                    Item_Aggregation_Related_Aggregations childAggr = UI_ApplicationCache_Gateway.Aggregations[code];
-                                    if ((childAggr != null) && (childAggr.Active))
-                                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + code + "\">" + code + "</a> (" + childAggr.ShortName + ")");
-                                    else
-                                        Output.Write(thisRow[childCodeColumn] + " (" + thisRow[childNameColumn] + ")");
-                                    child_count++;
-                                }
-                                Output.WriteLine("</td>");
-                            }
-                            else
-                            {
-                                Output.WriteLine("    <td>&nbsp;</td>");
-                            }
-                        }
-                        else
-                        {
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                        }
-                        Output.WriteLine("  </tr>");
+                            Output.WriteLine("          </li>");
                     }
+                    Output.WriteLine("        </ul>");
                 }
-            }
+                Output.WriteLine("      </li>");
 
-            // Now, add each inactive line
-            if (inactive_exist)
-            {
-                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\"><td colspan=\"4\"><span style=\"color: White\"><b>" + inactive + "</b></span></td></tr>");
-                foreach (Item_Aggregation_Related_Aggregations thisAggregation in aggregations)
+                if (hierarchy.Institutions.Count > 0)
                 {
-                    // Add this row
-                    if (!thisAggregation.Active)
+                    Output.WriteLine("      <li>Institutions");
+                    Output.WriteLine("        <ul>");
+                    foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchy.Institutions)
                     {
-                        Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
-                        Output.WriteLine("  <tr align=\"left\" valign=\"top\">");
-                        Output.WriteLine("    <td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + thisAggregation.Code + "\">" + thisAggregation.Code + "</a></td>");
-                        Output.WriteLine("    <td>" + thisAggregation.ShortName + "</td>");
-
-                        // Add relationship information
-                        if (aggregationRelationships != null)
+                        if ((!childAggr.Hidden) && (childAggr.Active))
                         {
-                            // Add parents codes first
-                            DataRow[] parents = aggregationRelationships.Select("ChildID=" + thisAggregation.ID);
-                            if (parents.Length > 0)
-                            {
-                                Output.Write("    <td>");
-                                int parent_count = 0;
-                                foreach (DataRow thisRow in parents)
-                                {
-                                    string code = thisRow[parentCodeColumn].ToString();
-                                    if (code != "ALL")
-                                    {
-                                        if (parent_count > 0)
-                                            Output.Write("<br />");
-                                        Item_Aggregation_Related_Aggregations parentAggr = UI_ApplicationCache_Gateway.Aggregations[code];
-                                        if ((parentAggr != null) && (parentAggr.Active))
-                                            Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + code + "\">" + code + "</a> (" + parentAggr.ShortName + ")");
-                                        else
-                                            Output.Write(code + " (" + thisRow[parentNameColumn] + ")");
-                                        parent_count++;
-                                    }
-                                }
-                                Output.WriteLine("</td>");
-                            }
-                            else
-                            {
-                                Output.WriteLine("    <td>&nbsp;</td>");
-                            }
+                            // Set the aggregation value, for the redirect URL
+                            RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
 
-                            // Add child codes next
-                            DataRow[] children = aggregationRelationships.Select("ParentID=" + thisAggregation.ID);
-                            if (parents.Length > 0)
-                            {
-                                Output.Write("    <td>");
-                                int child_count = 0;
-                                foreach (DataRow thisRow in children)
-                                {
-                                    string code = thisRow[childCodeColumn].ToString();
-                                    if (child_count > 0)
-                                        Output.Write("<br />");
-                                    Item_Aggregation_Related_Aggregations childAggr = UI_ApplicationCache_Gateway.Aggregations[code];
-                                    if ((childAggr != null) && (childAggr.Active))
-                                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + code + "\">" + code + "</a> (" + childAggr.ShortName + ")");
-                                    else
-                                        Output.Write(thisRow[childCodeColumn] + " (" + thisRow[childNameColumn] + ")");
-                                    child_count++;
-                                }
-                                Output.WriteLine("</td>");
-                            }
-                            else
-                            {
-                                Output.WriteLine("    <td>&nbsp;</td>");
-                            }
+                            Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
+
+                            // Check the children nodes recursively
+                            add_children_to_tree("            ", Output, childAggr);
+
+                            Output.WriteLine("          </li>");
                         }
-                        else
-                        {
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                            Output.WriteLine("    <td>&nbsp;</td>");
-                        }
-                        Output.WriteLine("  </tr>");
                     }
+                    Output.WriteLine("        </ul>");
+                    Output.WriteLine("      </li>");
                 }
+
+                Output.WriteLine("    </ul>");
+                Output.WriteLine("  </div>");
+                Output.WriteLine("</blockquote>");
+                Output.WriteLine("</div>");
+                Output.WriteLine();
+
+                Output.WriteLine("<script type=\"text/javascript\">");
+                Output.WriteLine("   $('#aggregationTree').jstree().bind(\"select_node.jstree\", function (e, data) { var href = data.node.a_attr.href; document.location.href = href; });");
+                Output.WriteLine("</script>");
+                Output.WriteLine();
             }
 
-            // Close out this table
-            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
-            Output.WriteLine("</table>");
-            Output.WriteLine("<br /> <br />");
-            Output.WriteLine("<div id=\"pagecontainer_resumed\">");
-            Output.WriteLine();
+            RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
+
+        }
+
+
+        private void add_children_to_tree(string LeadingSpaces, TextWriter Output, Item_Aggregation_Related_Aggregations Aggr)
+        {
+            // Step through each node under this
+            if (Aggr.Children_Count > 0)
+            {
+                Output.WriteLine(LeadingSpaces + "<ul>");
+                foreach (Item_Aggregation_Related_Aggregations childAggr in Aggr.Children)
+                {
+                    // Set the aggregation value, for the redirect URL
+                    RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
+
+                    if (childAggr.Children_Count > 0)
+                    {
+                        Output.WriteLine(LeadingSpaces + "  <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
+
+                        // Check the children nodes recursively
+                        add_children_to_tree(LeadingSpaces + "   ", Output, childAggr);
+
+                        Output.WriteLine(LeadingSpaces + "  </li>");
+                    }
+                    else
+                    {
+                        Output.WriteLine(LeadingSpaces + "  <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a></li>");
+                    }
+
+                    Output.WriteLine(LeadingSpaces + "</ul>");
+                }
+            }
         }
 
         #endregion
 
-        #region Method to add the master list of ALL aggregationPermissions
+        #region Method to add the master list of ALL aggregations
 
         /// <summary> Adds information about all aggregationPermissions to the response stream </summary>
         /// <param name="Output"> Stream to which to write the HTML for this subwriter </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         protected internal void add_aggregations_master_list_html(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Internal_HtmlSubwriter.add_collection_html", "Rendering HTML");
-
-
-            // Get the collection information
-            DataTable collInfo = SobekCM_Database.Get_Codes_Item_Aggregations( Tracer);
-
-            // If there was no count, or no rows returned, say something
-            if ((collInfo == null) || (collInfo.Rows.Count == 0))
-            {
-                Output.WriteLine("<b>ERROR PULLING MASTER LIST</b>");
-                return;
-            }
-
-            // Put the data into a data view
-            DataView collInfoView = new DataView(collInfo);
+            Tracer.Add_Trace("Internal_HtmlSubwriter.add_aggregations_master_list_html", "Rendering HTML");
 
             // Add text at the top and sort the dataset if necessary
-            Output.WriteLine("<div class=\"SobekText\">");
-            Output.WriteLine("<br />");
+            Output.WriteLine("<div class=\"sbkIhsw_HomeText\">");
             Output.WriteLine("<p>Below is the complete master list of all aggregations within this library.  This includes all active aggregations, as well as all hidden or inactive collections.</p>");
-            if ((RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 0) || (RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper() != "DATE"))
-            {
-                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "date";
-                Output.WriteLine("<p><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Click here to sort by DATE ADDED</a></p>");
-                RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
-            }
-            else
-            {
-                RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
-                Output.WriteLine("<p><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Click here to sort by CODE</a></p>");
-                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "date";
+            Output.WriteLine("<br /><br />");
+            Output.WriteLine("  <table class=\"sbkIhsw_Table display\" id=\"adminMgmtTable\">");
+            Output.WriteLine("    <thead>");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <th>CODE</th>");
+            Output.WriteLine("        <th>TYPE</th>");
+            Output.WriteLine("        <th>NAME</th>");
+            Output.WriteLine("        <th>ACTIVE</th>");
+            Output.WriteLine("        <th>ON HOME</th>");
+            Output.WriteLine("        <th>PARENT</th>");
+            Output.WriteLine("      </tr>");
+            Output.WriteLine("    </thead>");
 
-                collInfoView.Sort = "DateAdded DESC, Code ASC";
-            }
-            Output.WriteLine("<br />");
-            Output.WriteLine("</div>");
-            Output.WriteLine("</div>");
-            Output.WriteLine("<center>");
+            Output.WriteLine("    <tfoot>");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <th><input id=\"intAggrCodeSearch\" type=\"text\" placeholder=\"Search Code\" /></th>");
+            Output.WriteLine("        <th>TYPE</th>");
+            Output.WriteLine("        <th><input id=\"intAggrNameSearch\"  type=\"text\" placeholder=\"Search Name\" /></th>");
+            Output.WriteLine("        <th>ACTIVE</th>");
+            Output.WriteLine("        <th>ON HOME</th>");
+            Output.WriteLine("        <th>PARENT</th>");
+            Output.WriteLine("      </tr>");
+            Output.WriteLine("    </tfoot>");
 
-            // Add the header information
-            Output.WriteLine("<table width=\"900px\" border=\"0px\" cellspacing=\"0px\" class=\"statsTable\">");
-            Output.WriteLine("  <tr align=\"left\" bgcolor=\"#0022a7\">");
-            Output.WriteLine("    <th><span style=\"color: White\"><b>SobekCM CODE</b></span></th>");
-            Output.WriteLine("    <th><span style=\"color: White\"><b>TYPE</b></span></th>");
-            Output.WriteLine("    <th><span style=\"color: White\"><b>NAME</b></span></th>");
-            Output.WriteLine("    <th><span style=\"color: White\"><b>DATE ADDED</b></span></th>");
-            Output.WriteLine("  </tr>");
+            Output.WriteLine("    <tbody>");
 
-            // Now, add each active line
-            string lastCode = String.Empty;
-            foreach (DataRowView thisRow in collInfoView)
+            // Show all the aggregations
+            string last_code = String.Empty;
+            foreach (Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
             {
-                string code = thisRow.Row["Code"].ToString();
-                if ( code != lastCode )
+                if (thisAggr.Code != last_code)
                 {
-                    lastCode = code;
+                    last_code = thisAggr.Code;
 
-                    // Add this row
-                    Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
+                    // Build the action links
+                    if (thisAggr.Active)
+                        Output.WriteLine("      <tr>");
+  //                      Output.WriteLine("        <td class=\"sbkAsav_ActionLink\" >( <a title=\"Click to view this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/" + thisAggr.Code + "\">view</a> )");
+                    else
+                        Output.WriteLine("      <tr>");
 
-                    Output.WriteLine("  <tr align=\"left\">");
-                    Output.WriteLine("    <td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + code + "\">" + code + "</a></td>");
-                    Output.WriteLine("    <td>" + thisRow.Row["Type"] + "</td>");
-                    Output.WriteLine("    <td>" + thisRow.Row["ShortName"] + "</td>");
-
-                    DateTime dateAdded = Convert.ToDateTime( thisRow.Row["DateAdded"]);
-                    if ( dateAdded.Year > 2000 )
+                    // Special code to start istitutions with a small letter 'i'
+                    string code = thisAggr.Code;
+                    if ((thisAggr.Type.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0) && (code[0] == 'I') && (code.Length > 1))
                     {
-                        Output.WriteLine("    <td>" + dateAdded.ToShortDateString() + "</td>");
+                        code = "i" + code.Substring(1);
+                    }
+
+                    // Add the rest of the row with data
+                    Output.WriteLine("        <td>" + code + "</td>");
+                    Output.WriteLine("        <td>" + thisAggr.Type + "</td>");
+                    Output.WriteLine("        <td>" + thisAggr.Name + "</td>");
+
+                    if (thisAggr.Active)
+                    {
+                        Output.WriteLine("        <td>Y</td>");
                     }
                     else
                     {
-                        Output.WriteLine("    <td>&nbsp;</td>");
+                        Output.WriteLine("        <td>N</td>");
                     }
-                    Output.WriteLine("  </tr>");
+
+                    if (thisAggr.Thematic_Heading != null)
+                    {
+                        Output.WriteLine("        <td>Y</td>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("        <td>N</td>");
+                    }
+                    if (thisAggr.Parent_Count > 0)
+                    {
+                        Output.WriteLine("        <td>" + thisAggr.Parents[0].Code + "</td>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("        <td></td>");
+                    }
+                    Output.WriteLine("      </tr>");
                 }
             }
 
+            Output.WriteLine("    </tbody>");
+            Output.WriteLine("  </table>");
 
-            // Close out this table
-            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
-            Output.WriteLine("</table>");
-            Output.WriteLine("</center>");
-            Output.WriteLine("<div id=\"pagecontainer_resumed\">");
-            Output.WriteLine("<br /> <br />");
+            Output.WriteLine("<script type=\"text/javascript\">");
+            Output.WriteLine("    $(document).ready(function() { ");
+            Output.WriteLine("        var table = $('#adminMgmtTable').DataTable({ ");
+
+            // If 100 or less aggregations, suppress paging
+            if (UI_ApplicationCache_Gateway.Aggregations.All_Aggregations.Count <= 100)
+            {
+                Output.WriteLine("            \"paging\":   false, ");
+                Output.WriteLine("            \"info\":   false, ");
+            }
+            else
+            {
+                Output.WriteLine("            \"lengthMenu\": [ [50, 100, -1], [50, 100, \"All\"] ], ");
+                Output.WriteLine("            \"pageLength\":  50, ");
+            }
+
+            Output.WriteLine("            initComplete: function () {");
+            Output.WriteLine("                var api = this.api();");
+
+            Output.WriteLine("                api.columns().indexes().flatten().each( function ( i ) {");
+            Output.WriteLine("                    if (( i == 1 || i == 3 || i == 4 || i == 5 )) {");
+            Output.WriteLine("                        var column = api.column( i );");
+            Output.WriteLine("                        var select = $('<select><option value=\"\"></option></select>')");
+            Output.WriteLine("                                 .appendTo( $(column.footer()).empty() )");
+            Output.WriteLine("                                 .on( 'change', function () {");
+            Output.WriteLine("                                       var val = $.fn.dataTable.util.escapeRegex($(this).val());");
+            Output.WriteLine("                                       column.search( val ? '^'+val+'$' : '', true, false ).draw();");
+            Output.WriteLine("                                        } );");
+            Output.WriteLine("                                 column.data().unique().sort().each( function ( d, j ) {");
+            Output.WriteLine("                                      select.append( '<option value=\"'+d+'\">'+d+'</option>' )");
+            Output.WriteLine("                                 } );");
+            Output.WriteLine("                        }");
+            Output.WriteLine("                    } );");
+            Output.WriteLine("               }");
+            Output.WriteLine("         });");
+
+            Output.WriteLine("         $('#intAggrCodeSearch').on( 'keyup change', function () { table.column( 0 ).search( this.value ).draw(); } );");
+            Output.WriteLine("         $('#intAggrNameSearch').on( 'keyup change', function () { table.column( 2 ).search( this.value ).draw(); } );");
+
+            Output.WriteLine("         $('#adminMgmtTable').on('click', 'tr', function(ev) {");
+            Output.WriteLine("             var aData = $('#adminMgmtTable').dataTable().fnGetData(this);");
+            Output.WriteLine("             key = aData[0];");
+            Output.WriteLine("             window.location.href = \"" + RequestSpecificValues.Current_Mode.Base_URL + "/\" + key;");
+            Output.WriteLine("             ev.preventDefault();");
+            Output.WriteLine("             ev.stopPropagation();");
+            Output.WriteLine("          });");
+            Output.WriteLine("    } );");
+
+            Output.WriteLine("</script>");
+            Output.WriteLine();
+
+
+            Output.WriteLine("  <br />");
+            Output.WriteLine("</div>");
             Output.WriteLine();
         }
 
@@ -1563,6 +1431,18 @@ namespace SobekCM.Library.HTML
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
+
+            if (RequestSpecificValues.Current_Mode.Internal_Type == Internal_Type_Enum.Aggregations_List)
+            {
+                Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_DataTables.css\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/datatables/js/jquery.dataTables.min.js\" ></script>");
+            }
+
+            if (RequestSpecificValues.Current_Mode.Internal_Type == Internal_Type_Enum.Aggregations_Tree)
+            {
+                Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jstree/themes/default/style.min.css\" />");
+            }
+
         }
 
         public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
@@ -1588,7 +1468,7 @@ namespace SobekCM.Library.HTML
                 if (RequestSpecificValues.Current_Mode.Internal_Type == Internal_Type_Enum.Wordmarks)
 					return "container-inner1000";
 
-                if (RequestSpecificValues.Current_Mode.Internal_Type == Internal_Type_Enum.Aggregations)
+                if (RequestSpecificValues.Current_Mode.Internal_Type == Internal_Type_Enum.Aggregations_List)
 					return "container-inner1215";
 
 				return base.Container_CssClass;

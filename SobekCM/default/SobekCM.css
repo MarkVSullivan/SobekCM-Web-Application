@@ -973,6 +973,13 @@ textarea.sbkSbia_HeaderTextArea {width: 400px; color:Blue; border-style:solid; b
 
 /** Internal_HtmlSubwriter **/
 #sbkInternalHsw_ViewSelectDiv { margin-left:auto;margin-right:auto;height:15px;text-align: center;}
+.sbkIhsw_HomeText { text-align: justify; padding-bottom: 5px; }
+.sbkIhsw_HomeText a:link { color:#000080; }
+.sbkIhsw_HomeText A:hover { color:Blue; text-decoration:underline; }
+.sbkIhsw_HomeText h2 { color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; }
+.sbkIhsw_HomeText p { width: 800px;margin: 10px auto;}
+.sbkIhsw_Table { border:0; border-collapse: collapse; border-spacing: 0; margin-bottom: 40px; }
+.sbkIhsw_Table th { text-align: left;  }
 
 /** Class used for all administrative boxes which take focus */
 .sbk_Focusable:focus { color:#0000a8; background-color: #fbf7b4; }

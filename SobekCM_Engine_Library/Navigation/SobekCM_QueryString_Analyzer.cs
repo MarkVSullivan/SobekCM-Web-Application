@@ -264,15 +264,9 @@ namespace SobekCM.Engine_Library.Navigation
 											Navigator.Internal_Type = Internal_Type_Enum.Aggregations_List;
 											if (url_relative_list.Count > 2)
 											{
-												if (url_relative_list[2] == "list")
+												if (url_relative_list[2] == "tree")
 												{
-													if (url_relative_list.Count > 3)
-														Navigator.Info_Browse_Mode = url_relative_list[3];
-												}
-												else
-												{
-													Navigator.Internal_Type = Internal_Type_Enum.Aggregations;
-													Navigator.Info_Browse_Mode = url_relative_list[2].Replace("_"," ");
+												    Navigator.Internal_Type = Internal_Type_Enum.Aggregations_Tree;
 												}
 											}
 											break;

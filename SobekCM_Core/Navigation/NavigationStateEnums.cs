@@ -203,17 +203,17 @@
     /// <summary> Type of administrative information requested for display </summary>
     public enum Internal_Type_Enum : byte
     {
-        /// <summary> Gets the complete list of all aggregationPermissions </summary>
+        /// <summary> Gets the complete list of all aggregations </summary>
         Aggregations_List,
+
+        /// <summary> Display list of aggregations of one particular type</summary>
+        Aggregations_Tree,
 
         /// <summary> Gets list of recent failures encountered during building </summary>
         Build_Failures,
 
         /// <summary> Display list of all items in memory; global, cache, and session </summary>
         Cache,
-
-        /// <summary> Display list of aggregationPermissions of one particular type</summary>
-        Aggregations,
 
         /// <summary> Display list of all new and modified items in last week (or so) </summary>
         New_Items,

@@ -88,17 +88,13 @@ namespace SobekCM.Engine_Library.Navigation
                     switch (Current_Mode.Internal_Type)
                     {
                         case Internal_Type_Enum.Aggregations_List:
-                            if (!String.IsNullOrEmpty(Current_Mode.Info_Browse_Mode))
-                                return this_base_url + "internal/aggregations/list/" + Current_Mode.Info_Browse_Mode + urlOptions1;
                             return this_base_url + "internal/aggregations/list" + urlOptions1;
 
                         case Internal_Type_Enum.Cache:
                             return this_base_url + "internal/cache" + urlOptions1;
 
-                        case Internal_Type_Enum.Aggregations:
-                            if (!String.IsNullOrEmpty(Current_Mode.Info_Browse_Mode))
-                                return this_base_url + "internal/aggregations/" + Current_Mode.Info_Browse_Mode.Replace(" ", "_") + urlOptions1;
-                            return this_base_url + "internal/aggregations" + urlOptions1;
+                        case Internal_Type_Enum.Aggregations_Tree:
+                            return this_base_url + "internal/aggregations/tree/" + urlOptions1;
 
                         case Internal_Type_Enum.New_Items:
                             if (!String.IsNullOrEmpty(Current_Mode.Info_Browse_Mode))

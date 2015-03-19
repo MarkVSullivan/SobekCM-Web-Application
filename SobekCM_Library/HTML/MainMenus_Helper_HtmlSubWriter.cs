@@ -1069,7 +1069,8 @@ namespace SobekCM.Library.HTML
             const string partners_text = "Browse Partners";
             const string advanced_search_text = "Advanced Search";
 
-            string collection_details_text = "Collection Hierarchy";
+            string collection_details_text = "Collection List";
+            string collection_tree_text = "Collection Hierarchy";
             string new_items_text = "New Items";
             string memory_mgmt_text = "Memory Management";
             string wordmarks_text = "Wordmarks";
@@ -1210,6 +1211,9 @@ namespace SobekCM.Library.HTML
 
                     RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations_List;
                     Output.WriteLine("      <li id=\"sbkUsm_InternalAggregations\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + collection_details_text + "</a></li>");
+
+                    RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations_Tree;
+                    Output.WriteLine("      <li id=\"sbkUsm_InternalAggrTree\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + collection_tree_text + "</a></li>");
 
                     RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.New_Items;
                     Output.WriteLine("      <li id=\"sbkUsm_InternalNewItems\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + new_items_text + "</a></li>");
