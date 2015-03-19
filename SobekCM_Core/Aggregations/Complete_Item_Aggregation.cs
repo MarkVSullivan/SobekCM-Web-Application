@@ -421,7 +421,7 @@ namespace SobekCM.Core.Aggregations
         public List<Item_Aggregation_Views_Searches_Enum> Views_And_Searches { get; private set; }
 
         /// <summary> Gets the read-only collection of children item aggregation objects </summary>
-        /// <remarks> You should check the count of children first using the <see cref = "Children_Count" /> before using this property.
+        /// <remarks> You should check the count of children first using the <see cref = "Active_Children_Count" /> before using this property.
         ///   Even if there are no children, this property creates a readonly collection to pass back out. </remarks>
         [DataMember(EmitDefaultValue = false, Name = "children"), ProtoMember(37)]
         public List<Item_Aggregation_Related_Aggregations> Children { get; set; }
@@ -546,12 +546,25 @@ namespace SobekCM.Core.Aggregations
         /// <remarks> This should be used rather than the Count property of the <see cref = "Children" /> property.  Even if 
         ///   there are no children, the Children property creates a readonly collection to pass back out. </remarks>
         [IgnoreDataMember]
-        public int Children_Count
+        public int Active_Children_Count
         {
             get
             {
                 if (Children == null) return -1;
                 return Children.Count(ThisChild => (ThisChild.Active) && (!ThisChild.Hidden));
+            }
+        }
+
+        /// <summary> Gets the number of child item aggregationPermissions present </summary>
+        /// <remarks> This should be used rather than the Count property of the <see cref = "Children" /> property.  Even if 
+        ///   there are no children, the Children property creates a readonly collection to pass back out. </remarks>
+        [IgnoreDataMember]
+        public int Children_Count
+        {
+            get
+            {
+                if (Children == null) return -1;
+                return Children.Count;
             }
         }
 

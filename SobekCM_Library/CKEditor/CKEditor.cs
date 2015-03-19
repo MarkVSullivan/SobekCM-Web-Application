@@ -49,7 +49,8 @@ namespace SobekCM.Library.CKEditor
                 Output.WriteLine("          CKEDITOR.config.startupMode = 'source';");
             }
             Output.WriteLine("          CKEDITOR.config.resize_dir = 'vertical';");
-            Output.WriteLine("          CKEDITOR.config.codemirror.lineWrapping  = false;");
+            Output.WriteLine("          CKEDITOR.config.height = 500;");
+            Output.WriteLine("          CKEDITOR.config.codemirror = { theme: 'default', lineNumbers: true, lineWrapping: true  };");
 
             Output.WriteLine("          CKEDITOR.replace( '" + TextAreaID + "', {");
             Output.WriteLine("               extraPlugins: 'divarea',");

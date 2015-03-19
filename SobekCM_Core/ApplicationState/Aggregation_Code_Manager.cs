@@ -218,7 +218,7 @@ namespace SobekCM.Core.ApplicationState
             Item_Aggregation_Related_Aggregations thisAggr = aggregationsByCode[Code.ToUpper()];
 
             // If this is NULL, just return
-		    if (!ThematicHeadingID.HasValue)
+		    if ((!ThematicHeadingID.HasValue) || ( ThematicHeadingID.Value < 0 ))
 		    {
                 foreach (KeyValuePair<int, List<Item_Aggregation_Related_Aggregations>> theme in Aggregations_By_Thematic_Heading)
                 {

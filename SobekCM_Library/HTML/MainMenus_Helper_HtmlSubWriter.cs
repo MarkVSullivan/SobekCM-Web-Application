@@ -148,27 +148,35 @@ namespace SobekCM.Library.HTML
                     if (pre_menu_options_exist)
                     {
                         if (isOnHome)
-                            Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a><ul id=\"sbkAgm_HomeSubMenu\">");
+                            Output.Write("    <li class=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a>");
                         else
-                            Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a><ul id=\"sbkAgm_HomeSubMenu\">");
+                            Output.Write("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a>");
                     }
                     else
                     {
                         if ( isOnHome )
-                            Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+                            Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
                         else
-                            Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+                            Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
                     }
 
-                    Output.WriteLine("      <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
-                    RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
-                    Output.WriteLine("      <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
-                    if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                    if (( UI_ApplicationCache_Gateway.Thematic_Headings != null ) && ( UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0 ))
                     {
-                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
-                        Output.WriteLine("      <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
+                        Output.WriteLine("<ul id=\"sbkAgm_HomeSubMenu\">");
+                        Output.WriteLine("      <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
+                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
+                        Output.WriteLine("      <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
+                        if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                        {
+                            RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
+                            Output.WriteLine("      <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
+                        }
+                        Output.WriteLine("    </ul></li>");
                     }
-                    Output.WriteLine("    </ul></li>");
+                    else
+                    {
+                        Output.WriteLine("</li>");
+                    }
                 }
                 else
                 {
@@ -216,14 +224,19 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    Output.WriteLine("      <li id=\"sbkAgm_InstanceHome\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a><ul id=\"sbkAgm_InstanceHomeSubMenu\">");
-                    Output.WriteLine("        <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
-                    RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
-                    Output.WriteLine("        <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
-                    if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                    Output.Write("      <li id=\"sbkAgm_InstanceHome\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a>");
+                    Output.WriteLine("<ul id=\"sbkAgm_InstanceHomeSubMenu\">");
+
+                    if ((UI_ApplicationCache_Gateway.Thematic_Headings != null) && (UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0))
                     {
-                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
-                        Output.WriteLine("        <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
+                        Output.WriteLine("        <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
+                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
+                        Output.WriteLine("        <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
+                        if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                        {
+                            RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
+                            Output.WriteLine("        <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
+                        }
                     }
                     if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn))
                     {
@@ -321,6 +334,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = "XYXYXYXYXY";
             string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.Page = 1;
+           // RequestSpecificValues.Current_Mode.Mode = thisMode;
 
             // Only show ALL and NEW if they are in the collection list of searches and views
             int included_browses = 0;
@@ -332,7 +346,7 @@ namespace SobekCM.Library.HTML
                     bool includeNew = ((RequestSpecificValues.Hierarchy_Object.Contains_Browse_Info("new")) && (!RequestSpecificValues.Current_Mode.Is_Robot));
                     if (includeNew)
                     {
-                        if ((browse_code == "all") || (browse_code == "new" ))
+                        if (( thisMode == Display_Mode_Enum.Aggregation ) && ((browse_code == "all") || (browse_code == "new" )))
                         {
                             Output.WriteLine("    <li id=\"sbkAgm_ViewItems\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", "all").Replace("/info/", "/") + "\">" + viewItems + "</a><ul id=\"sbkAgm_ViewItemsSubMenu\">");
                         }
@@ -348,7 +362,7 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        if (browse_code == "all") 
+                        if (( thisMode == Display_Mode_Enum.Aggregation ) && (browse_code == "all"))
                         {
                             Output.WriteLine("    <li id=\"sbkAgm_ViewItems\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", "all").Replace("/info/", "/") + "\">" + viewItems + "</a></li>");
                         }
@@ -409,12 +423,30 @@ namespace SobekCM.Library.HTML
                 foreach (Item_Aggregation_Child_Page topPage in topPages)
                 {
                     RequestSpecificValues.Current_Mode.Info_Browse_Mode = topPage.Code;
+                    bool selected = false;
                     if (browse_code == topPage.Code)
-                    {
-                        Output.Write("    <li id=\"sbkAgm_" + topPage.Code.Replace(" ","") + "Browse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", topPage.Code) + "\">" + topPage.Label + "</a>");
-                    }
+                        selected = true;
                     else
                     {
+                        if ((parentToChild.ContainsKey(topPage)) && (parentToChild[topPage].Count > 0))
+                        {
+                            foreach (Item_Aggregation_Child_Page middlePages in parentToChild[topPage])
+                            {
+                                if (browse_code == middlePages.Code)
+                                {
+                                    selected = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if (selected)
+                    {
+                        Output.Write("    <li id=\"sbkAgm_" + topPage.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", topPage.Code) + "\">" + topPage.Label + "</a>");
+                    }
+                    else
+                    { 
+
                         Output.Write("    <li id=\"sbkAgm_" + topPage.Code.Replace(" ", "") + "Browse\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", topPage.Code) + "\">" + topPage.Label + "</a>");
                     }
 
@@ -751,22 +783,30 @@ namespace SobekCM.Library.HTML
                     // If some instance-wide pre-menu items existed, don't use the home image
                     if (pre_menu_options_exist)
                     {
-                        Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a><ul id=\"sbkAgm_HomeSubMenu\">");
+                        Output.Write("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a>");
                     }
                     else
                     {
-                        Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+                        Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
                     }
 
-                    Output.WriteLine("      <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
-                    RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
-                    Output.WriteLine("      <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
-                    if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                    if ((UI_ApplicationCache_Gateway.Thematic_Headings != null) && (UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0))
                     {
-                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
-                        Output.WriteLine("      <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
+                        Output.WriteLine("<ul id=\"sbkAgm_HomeSubMenu\">");
+                        Output.WriteLine("      <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
+                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
+                        Output.WriteLine("      <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
+                        if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                        {
+                            RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
+                            Output.WriteLine("      <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
+                        }
+                        Output.WriteLine("    </ul></li>");
                     }
-                    Output.WriteLine("    </ul></li>");
+                    else
+                    {
+                        Output.WriteLine("</li>");
+                    }
                 }
                 else
                 {
@@ -801,13 +841,21 @@ namespace SobekCM.Library.HTML
                 else
                 {
                     Output.WriteLine("      <li id=\"sbkAgm_InstanceHome\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a><ul id=\"sbkAgm_InstanceHomeSubMenu\">");
-                    Output.WriteLine("        <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
-                    RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
-                    Output.WriteLine("        <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
-                    if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+
+                    if ((UI_ApplicationCache_Gateway.Thematic_Headings != null) && (UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0))
                     {
-                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
-                        Output.WriteLine("        <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
+                        Output.WriteLine("        <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
+                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
+                        Output.WriteLine("        <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
+                        if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                        {
+                            RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
+                            Output.WriteLine("        <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
+                        }
+                    }
+                    else
+                    {
+                        Output.WriteLine("        <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a></li>");
                     }
                     if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn))
                     {
@@ -1048,13 +1096,22 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
             RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
             Output.WriteLine("    <li id=\"sbkUsm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkUsm_HomeSubMenu\">");
-            Output.WriteLine("      <li id=\"sbkUsm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
-            RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
-            Output.WriteLine("      <li id=\"sbkUsm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
-            if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+
+            if ((UI_ApplicationCache_Gateway.Thematic_Headings != null) && (UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0))
             {
-                RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
-                Output.WriteLine("      <li id=\"sbkUsm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
+                Output.WriteLine("      <li id=\"sbkUsm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
+                RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
+                Output.WriteLine("      <li id=\"sbkUsm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
+                if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                {
+                    RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
+                    Output.WriteLine("      <li id=\"sbkUsm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
+                }
+            }
+            else
+            {
+                Output.WriteLine("      <li id=\"sbkUsm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a></li>");
+
             }
             if (RequestSpecificValues.Current_User != null)
             {

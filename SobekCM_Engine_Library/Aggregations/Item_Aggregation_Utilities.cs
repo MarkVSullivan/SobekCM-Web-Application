@@ -370,7 +370,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 Type = CompAggr.Type
             };
 
-            if (CompAggr.Children_Count > 0)
+            if (CompAggr.Active_Children_Count > 0)
             {
                 returnValue.Children = new List<Item_Aggregation_Related_Aggregations>();
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in CompAggr.Children)

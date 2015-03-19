@@ -1,18 +1,30 @@
-
-create table dbo.SobekCM_Item_Alias(
-	ItemAliasID int IDENTITY(1,1) NOT NULL,
-	Alias varchar(50) NOT NULL,
-	ItemID int NOT NULL,
-	CONSTRAINT [PK_SobekCM_Item_Alias] PRIMARY KEY CLUSTERED 
-(
-	ItemAliasID ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+-- Drop some unnecessary tables and procedures
+IF object_id('SobekCM_Get_QC_Comments') IS NOT NULL EXEC ('drop procedure SobekCM_Get_QC_Comments;');
+GO
+IF object_id('SobekCM_Metadata_Search_Paged2') IS NOT NULL EXEC ('drop procedure SobekCM_Metadata_Search_Paged2;');
+GO
+IF object_id('mySobek_New_UFID_User') IS NOT NULL EXEC ('drop procedure mySobek_New_UFID_User;');
+GO
+IF object_id('mySobek_Update_sobek_user') IS NOT NULL EXEC ('drop procedure mySobek_Update_sobek_user;');
 GO
 
+-- Add the item alias table (not yet utiliz
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SobekCM_Item_Alias]') AND type in (N'U'))
+BEGIN
+	create table dbo.SobekCM_Item_Alias(
+		ItemAliasID int IDENTITY(1,1) NOT NULL,
+		Alias varchar(50) NOT NULL,
+		ItemID int NOT NULL,
+		CONSTRAINT [PK_SobekCM_Item_Alias] PRIMARY KEY CLUSTERED 
+	(
+		ItemAliasID ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY];
 
-ALTER TABLE [dbo].SobekCM_Item_Alias  WITH CHECK ADD  CONSTRAINT [FK_SobekCM_Item_Alias_SobekCM_Item] FOREIGN KEY([ItemID])
-REFERENCES [dbo].[SobekCM_Item] ([ItemID])
+	
+	ALTER TABLE [dbo].SobekCM_Item_Alias  WITH CHECK ADD  CONSTRAINT [FK_SobekCM_Item_Alias_SobekCM_Item] FOREIGN KEY([ItemID])
+	REFERENCES [dbo].[SobekCM_Item] ([ItemID]);
+END;
 GO
 
 
@@ -111,15 +123,15 @@ GO
 -- Add builder module type table
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SobekCM_Builder_Module_Type]') AND type in (N'U'))
 BEGIN
-CREATE TABLE [dbo].[SobekCM_Builder_Module_Type](
-	[ModuleTypeID] [int] identity(1,1) NOT NULL,
-	[TypeAbbrev] [varchar](4) NOT NULL,
-	[TypeDescription] [varchar](200) NOT NULL,
- CONSTRAINT [PK_SobekCM_Builder_Module_Types] PRIMARY KEY CLUSTERED 
-(
-	[ModuleTypeID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
+	CREATE TABLE [dbo].[SobekCM_Builder_Module_Type](
+		[ModuleTypeID] [int] identity(1,1) NOT NULL,
+		[TypeAbbrev] [varchar](4) NOT NULL,
+		[TypeDescription] [varchar](200) NOT NULL,
+	 CONSTRAINT [PK_SobekCM_Builder_Module_Types] PRIMARY KEY CLUSTERED 
+	(
+		[ModuleTypeID] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY]
 END
 GO
 
@@ -169,6 +181,29 @@ begin
 
 end;
 GO
+
+-- Add builder module type table
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SobekCM_Builder_Module_Scheduled_Run]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [dbo].[SobekCM_Builder_Module_Scheduled_Run](
+		[ModuleSchedRunID] [int] IDENTITY(1,1) NOT NULL,
+		[ModuleScheduleID] [int] NOT NULL,
+		[Timestamp] [datetime] NOT NULL,
+		[Outcome] [varchar](100) NOT NULL,
+		[Message] [varchar](max) NULL,
+	 CONSTRAINT [PK_SobekCM_Builder_Module_Scheduled_Run] PRIMARY KEY CLUSTERED 
+	(
+		[ModuleSchedRunID] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+
+	ALTER TABLE [dbo].[SobekCM_Builder_Module_Scheduled_Run]  WITH CHECK ADD  CONSTRAINT [FK_SobekCM_Builder_Module_Scheduled_Run_SobekCM_Builder_Module_Schedule] FOREIGN KEY([ModuleScheduleID])
+	REFERENCES [dbo].[SobekCM_Builder_Module_Schedule] ([ModuleScheduleID]);
+
+	ALTER TABLE [dbo].[SobekCM_Builder_Module_Scheduled_Run] CHECK CONSTRAINT [FK_SobekCM_Builder_Module_Scheduled_Run_SobekCM_Builder_Module_Schedule];
+END;
+GO
+
 
 -- Add the foreign key from the folders table to the module sets table 
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_SobekCM_Builder_Incoming_Folders_SobekCM_Builder_Module_Set]') AND parent_object_id = OBJECT_ID(N'[dbo].[SobekCM_Builder_Incoming_Folders]'))
@@ -240,11 +275,15 @@ begin
 	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 7, 'Send new item emails', 'SobekCM.Builder_Library.Modules.Schedulable.SendNewItemEmailsModule', 'true', 1 );
 	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 8, 'Solr/Lucene index optimization', 'SobekCM.Builder_Library.Modules.Schedulable.SolrLuceneIndexOptimizationModule', 'true', 1 );
 	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 9, 'Update cached aggregation browses', 'SobekCM.Builder_Library.Modules.Schedulable.UpdatedCachedAggregationMetadataModule', 'true', 1 );
-	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 10, 'Check packages for age and move', 'MoveAgedPackagesToProcessModule', 'true', 1 );
-	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 10, 'Check for any bib id restrictions on this folder', 'ApplyBibIdRestrictionModule', 'true', 2 );
-	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 10, 'Validate each folder and classify (delete v. new/update)', 'ValidateAndClassifyModule', 'true', 3 );
+	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 10, 'Check packages for age and move', 'SobekCM.Builder_Library.Modules.Folders.MoveAgedPackagesToProcessModule', 'true', 1 );
+	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 10, 'Check for any bib id restrictions on this folder', 'SobekCM.Builder_Library.Modules.Folders.ApplyBibIdRestrictionModule', 'true', 2 );
+	insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] ) values ( 10, 'Validate each folder and classify (delete v. new/update)', 'SobekCM.Builder_Library.Modules.Folders.ValidateAndClassifyModule', 'true', 3 );
 
 end;
+GO
+
+-- Assign the default module set to the folders
+update SobeKCM_Builder_Incoming_Folders set ModuleSetID=10 where ModuleSetID is null;
 GO
 
 
@@ -398,15 +437,375 @@ end;
 GO
 
 
+/****** Object:  StoredProcedure [dbo].[SobekCM_Get_OAI_Data_Codes]    Script Date: 12/20/2013 05:43:37 ******/
+-- Gets the distinct data codes present in the database for OAI (such as 'oai_dc')
+ALTER PROCEDURE [dbo].[SobekCM_Get_OAI_Data_Codes]
+AS
+BEGIN
+	-- Dirty read here won't hurt anything
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	-- Return distinct codes used in the OAI table
+	select distinct(Data_Code)
+	from SobekCM_Item_OAI;
+END;
+GO
+
+
+/****** Object:  StoredProcedure [dbo].[SobekCM_Get_OAI_Data_Item]    Script Date: 12/20/2013 05:43:37 ******/
+-- Returns the OAI data for a single item from the oai source tables
+ALTER PROCEDURE [dbo].[SobekCM_Get_OAI_Data_Item]
+	@bibid varchar(10),
+	@vid varchar(5),
+	@data_code varchar(20)
+AS
+begin
+	-- No need to perform any locks here
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+	
+	-- Select the matching rows
+	select G.GroupID, BibID, O.OAI_Data, O.OAI_Date, VID
+	from SobekCM_Item_Group G, SobekCM_Item I, SobekCM_Item_OAI O
+	where G.BibID = @bibid
+	  and G.GroupID = I.GroupID
+	  and I.VID = @vid
+	  and I.ItemID = O.ItemID	
+	  and O.Data_Code = @data_code;
+end;
+GO
+
+
+/****** Object:  StoredProcedure [dbo].[SobekCM_Get_OAI_Data]    Script Date: 12/20/2013 05:43:37 ******/
+-- Return a list of the OAI data to server through the OAI-PMH server
+ALTER PROCEDURE [dbo].[SobekCM_Get_OAI_Data]
+	@aggregationcode varchar(20),
+	@data_code varchar(20),
+	@from date,
+	@until date,
+	@pagesize int, 
+	@pagenumber int,
+	@include_data bit
+AS
+begin
+
+	-- No need to perform any locks here
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	-- Do not need to maintain row counts
+	SET NoCount ON;
+
+	-- Create the temporary tables first
+	-- Create the temporary table to hold all the item id's
+		
+	-- Determine the start and end rows
+	declare @rowstart int;
+	declare @rowend int; 
+	set @rowstart = (@pagesize * ( @pagenumber - 1 )) + 1;
+	
+	-- Rowend is calculated normally, but then an additional item is
+	-- added at the end which will be used to determine if a resumption
+	-- token should be issued
+	set @rowend = (@rowstart + @pagesize - 1) + 1; 
+	
+	-- Ensure there are date values
+	if ( @from is null )
+		set @from = CONVERT(date,'19000101');
+	if ( @until is null )
+		set @until = GETDATE();
+	
+	-- Is this for a single aggregation
+	if (( @aggregationcode is not null ) and ( LEN(@aggregationcode) > 0 ) and ( @aggregationcode != 'all' ))
+	begin	
+		-- Determine the aggregationid
+		declare @aggregationid int;
+		set @aggregationid = ( select ISNULL(AggregationID,-1) from SobekCM_Item_Aggregation where Code=@aggregationcode );
+			  
+		-- Should the actual data be returned, or just the identifiers?
+		if ( @include_data='true')
+		begin
+			-- Create saved select across items/title for row numbers
+			with ITEMS_SELECT AS
+			(	select BibID, I.ItemID, VID,
+				ROW_NUMBER() OVER (order by O.OAI_Date ASC ) as RowNumber
+				from SobekCM_Item I, SobekCM_Item_Aggregation_Item_Link CL, SobekCM_Item_Group G, SobekCM_Item_OAI O
+				where ( CL.ItemID = I.ItemID )
+				  and ( CL.AggregationID = @aggregationid )
+				  and ( I.GroupID = G.GroupID )
+				  and ( I.ItemID = O.ItemID )
+				  and ( G.Suppress_OAI = 'false' )
+				  and ( O.OAI_Date >= @from )
+				  and ( O.OAI_Date <= @until )
+				  and ( O.Data_Code = @data_code ))
+				
+			-- Select the matching rows
+			select BibID, T.VID, O.OAI_Data, O.OAI_Date
+			from ITEMS_SELECT T, SobekCM_Item_OAI O
+			where RowNumber >= @rowstart
+			  and RowNumber <= @rowend
+			  and T.ItemID = O.ItemID			  
+			  and O.Data_Code = @data_code;		 
+		end
+		else
+		begin
+			-- Create saved select across titles for row numbers
+			with ITEMS_SELECT AS
+			(	select BibID, I.ItemID, VID,
+				ROW_NUMBER() OVER (order by O.OAI_Date ASC ) as RowNumber
+				from SobekCM_Item I, SobekCM_Item_Aggregation_Item_Link CL, SobekCM_Item_Group G, SobekCM_Item_OAI O
+				where ( CL.ItemID = I.ItemID )
+				  and ( CL.AggregationID = @aggregationid )
+				  and ( I.GroupID = G.GroupID )
+				  and ( I.ItemID = O.ItemID )
+				  and ( G.Suppress_OAI = 'false' )
+				  and ( O.OAI_Date >= @from )
+				  and ( O.OAI_Date <= @until )
+				  and ( O.Data_Code = @data_code ))
+				
+			-- Select the matching rows
+			select BibID, T.VID, O.OAI_Date
+			from ITEMS_SELECT T, SobekCM_Item_OAI O
+			where RowNumber >= @rowstart
+			  and RowNumber <= @rowend
+			  and T.ItemID = O.ItemID
+			  and O.Data_Code = @data_code;	
+		end;		  
+	end
+	else
+	begin
+				  
+		-- Should the actual data be returned, or just the identifiers?
+		if ( @include_data='true')
+		begin
+			-- Create saved select across titles for row numbers
+			with ITEMS_SELECT AS
+			(	select BibID, I.ItemID, VID,
+				ROW_NUMBER() OVER (order by O.OAI_Date ASC) as RowNumber
+				from SobekCM_Item_Group G, SobekCM_Item I, SobekCM_Item_OAI O
+				where ( G.GroupID = I.GroupID )
+				  and ( I.ItemID = O.ItemID )
+				  and ( G.Suppress_OAI = 'false' )
+				  and ( O.OAI_Date >= @from )
+				  and ( O.OAI_Date <= @until )
+				  and ( O.Data_Code = @data_code ))				
+								
+			-- Select the matching rows
+			select BibID, T.VID, O.OAI_Data, O.OAI_Date
+			from ITEMS_SELECT T, SobekCM_Item_OAI O
+			where RowNumber >= @rowstart
+			  and RowNumber <= @rowend
+			  and T.ItemID = O.ItemID
+			  and O.Data_Code = @data_code;				 
+		end
+		else
+		begin
+			-- Create saved select across titles for row numbers
+			with ITEMS_SELECT AS
+			(	select BibID, I.ItemID, VID,
+				ROW_NUMBER() OVER (order by O.OAI_Date ASC) as RowNumber
+				from SobekCM_Item_Group G, SobekCM_Item I, SobekCM_Item_OAI O
+				where ( G.GroupID = I.GroupID )
+				  and ( I.ItemID = O.ItemID )
+				  and ( G.Suppress_OAI = 'false' )
+				  and ( O.OAI_Date >= @from )
+				  and ( O.OAI_Date <= @until )
+				  and ( O.Data_Code = @data_code ))				
+								
+			-- Select the matching rows
+			select BibID, T.VID, O.OAI_Date
+			from ITEMS_SELECT T, SobekCM_Item_OAI O
+			where RowNumber >= @rowstart
+			  and RowNumber <= @rowend
+			  and T.ItemID = O.ItemID
+			  and O.Data_Code = @data_code;	
+		end;
+	end;
+end;
+GO
+
+
+-- Ensure the stored procedure exists
+IF object_id('SobekCM_Builder_Get_Settings') IS NULL EXEC ('create procedure dbo.SobekCM_Builder_Get_Settings as select 1;');
+GO
+
+ALTER procedure [dbo].[SobekCM_Builder_Get_Settings]
+	@include_disabled bit
+as
+begin
+
+	-- Always return all the incoming folders
+	select IncomingFolderId, NetworkFolder, ErrorFolder, ProcessingFolder, Perform_Checksum_Validation, Archive_TIFF, Archive_All_Files,
+		   Allow_Deletes, Allow_Folders_No_Metadata, Allow_Metadata_Updates, FolderName, Can_Move_To_Content_Folder, BibID_Roots_Restrictions,
+		   ModuleSetID
+	from SobekCM_Builder_Incoming_Folders F;
+
+	-- Return all the non-scheduled type modules
+	if ( @include_disabled = 'true' )
+	begin
+		select M.ModuleID, M.[Assembly], M.Class, M.ModuleDesc, M.Argument1, M.Argument2, M.Argument3, M.[Enabled], S.ModuleSetID, S.SetName, S.[Enabled] as SetEnabled, T.TypeAbbrev, T.TypeDescription
+		from SobekCM_Builder_Module M, SobekCM_Builder_Module_Set S, SobekCM_Builder_Module_Type T
+		where M.ModuleSetID = S.ModuleSetID
+		  and S.ModuleTypeID = T.ModuleTypeID
+		  and T.TypeAbbrev <> 'SCHD'
+		order by TypeAbbrev, S.SetOrder, M.[Order];
+	end
+	else
+	begin
+		select M.ModuleID, M.[Assembly], M.Class, M.ModuleDesc, M.Argument1, M.Argument2, M.Argument3, M.[Enabled], S.ModuleSetID, S.SetName, S.[Enabled] as SetEnabled, T.TypeAbbrev, T.TypeDescription
+		from SobekCM_Builder_Module M, SobekCM_Builder_Module_Set S, SobekCM_Builder_Module_Type T
+		where M.ModuleSetID = S.ModuleSetID
+		  and S.ModuleTypeID = T.ModuleTypeID
+		  and M.[Enabled] = 'true'
+		  and S.[Enabled] = 'true'
+		  and T.TypeAbbrev <> 'SCHD'
+		order by TypeAbbrev, S.SetOrder, M.[Order];
+	end;
+
+	-- Return all the scheduled type modules, with the schedule and the last run info
+	if ( @include_disabled = 'true' )
+	begin
+		with last_run_cte ( ModuleScheduleID, LastRun) as 
+		(
+			select ModuleScheduleID, MAX([Timestamp])
+			from SobekCM_Builder_Module_Scheduled_Run
+			group by ModuleScheduleID
+		)
+		-- Return all the scheduled type modules, along with information on when it was last run
+		select M.ModuleID, M.[Assembly], M.Class, M.ModuleDesc, M.Argument1, M.Argument2, M.Argument3, M.[Enabled], S.ModuleSetID, S.SetName, S.[Enabled] as SetEnabled, T.TypeAbbrev, T.TypeDescription, C.ModuleScheduleID, C.[Enabled] as ScheduleEnabled, C.DaysOfWeek, C.TimesOfDay, L.LastRun
+		from SobekCM_Builder_Module M inner join
+			 SobekCM_Builder_Module_Set S on M.ModuleSetID = S.ModuleSetID inner join
+			 SobekCM_Builder_Module_Type T on S.ModuleTypeID = T.ModuleTypeID inner join
+			 SobekCM_Builder_Module_Schedule C on C.ModuleSetID = S.ModuleSetID left outer join
+			 last_run_cte L on L.ModuleScheduleID = C.ModuleScheduleID
+		where T.TypeAbbrev = 'SCHD'
+		order by TypeAbbrev, S.SetOrder, M.[Order];
+	end 
+	else
+	begin
+		with last_run_cte ( ModuleScheduleID, LastRun) as 
+		(
+			select ModuleScheduleID, MAX([Timestamp])
+			from SobekCM_Builder_Module_Scheduled_Run
+			group by ModuleScheduleID
+		)
+		-- Return all the scheduled type modules, along with information on when it was last run
+		select M.ModuleID, M.[Assembly], M.Class, M.ModuleDesc, M.Argument1, M.Argument2, M.Argument3, M.[Enabled], S.ModuleSetID, S.SetName, S.[Enabled] as SetEnabled, T.TypeAbbrev, T.TypeDescription, C.ModuleScheduleID, C.[Enabled] as ScheduleEnabled, C.DaysOfWeek, C.TimesOfDay, L.LastRun
+		from SobekCM_Builder_Module M inner join
+			 SobekCM_Builder_Module_Set S on M.ModuleSetID = S.ModuleSetID inner join
+			 SobekCM_Builder_Module_Type T on S.ModuleTypeID = T.ModuleTypeID inner join
+			 SobekCM_Builder_Module_Schedule C on C.ModuleSetID = S.ModuleSetID left outer join
+			 last_run_cte L on L.ModuleScheduleID = C.ModuleScheduleID
+		where T.TypeAbbrev = 'SCHD'
+		  and M.[Enabled] = 'true'
+		  and S.[Enabled] = 'true'
+		  and C.[Enabled] = 'true'
+		order by TypeAbbrev, S.SetOrder, M.[Order];
+	end;
+
+end;
+GO
+
+GRANT EXECUTE ON SobekCM_Builder_Get_Settings to sobek_user;
+GO
+GRANT EXECUTE ON SobekCM_Builder_Get_Settings to sobek_builder;
+GO
+
+-- Deletes an item, and deletes the group if there are no additional items attached
+ALTER PROCEDURE [dbo].[SobekCM_Delete_Item] 
+@bibid varchar(10),
+@vid varchar(5),
+@as_admin bit,
+@delete_message varchar(1000)
+AS
+begin transaction
+	-- Perform transactionally in case there is a problem deleting some of the rows
+	-- so the entire delete is rolled back
+
+   declare @itemid int;
+   set @itemid = 0;
+
+    -- first to get the itemid of the specified bibid and vid
+   select @itemid = isnull(I.itemid, 0)
+   from SobekCM_Item I, SobekCM_Item_Group G
+   where (G.bibid = @bibid) 
+       and (I.vid = @vid)
+       and ( I.GroupID = G.GroupID );
+
+   -- if there is such an itemid in the UFDC database, then delete this item and its related information
+  if ( isnull(@itemid, 0 ) > 0)
+  begin
+
+	-- Delete all references to this item 
+	delete from SobekCM_Metadata_Unique_Link where ItemID=@itemid;
+	delete from SobekCM_Metadata_Basic_Search_Table where ItemID=@itemid;
+	delete from SobekCM_Item_Footprint where ItemID=@itemid;
+	delete from SobekCM_Item_Icons where ItemID=@itemid;
+	delete from SobekCM_Item_Statistics where ItemID=@itemid;
+	delete from SobekCM_Item_GeoRegion_Link where ItemID=@itemid;
+	delete from SobekCM_Item_Aggregation_Item_Link where ItemID=@itemid;
+	delete from mySobek_User_Item where ItemID=@itemid;
+	delete from mySobek_User_Item_Link where ItemID=@itemid;
+	delete from mySobek_User_Description_Tags where ItemID=@itemid;
+	delete from SobekCM_Item_Viewers where ItemID=@itemid;
+	delete from Tracking_Item where ItemID=@itemid;
+	delete from Tracking_Progress where ItemID=@itemid;
+	
+	if ( @as_admin = 'true' )
+	begin
+		delete from Tracking_Archive_Item_Link where ItemID=@itemid;
+		update Tivoli_File_Log set DeleteMsg=@delete_message, ItemID = -1 where ItemID=@itemid;
+	end;
+	
+	--delete sobekcm_item_oai table
+    delete from sobekcm_item_oai where ItemID =@itemid;
+	
+	-- Finally, delete the item 
+	delete from SobekCM_Item where ItemID=@itemid;
+	
+	-- Delete the item group if it is the last one existing
+	if (( select count(I.ItemID) from SobekCM_Item_Group G, SobekCM_Item I where ( G.BibID = @bibid ) and ( G.GroupID = I.GroupID ) and ( I.Deleted = 0 )) < 1 )
+	begin
+		
+		declare @groupid int;
+		set @groupid = 0;	
+		
+		-- first to get the itemid of the specified bibid and vid
+		select @groupid = isnull(G.GroupID, 0)
+		from SobekCM_Item_Group G
+		where (G.bibid = @bibid);
+		
+		-- Delete if this selected something
+		if ( ISNULL(@groupid, 0 ) > 0 )
+		begin		
+			-- delete from the item group table	and all references
+			delete from SobekCM_Item_Group_External_Record where GroupID=@groupid;
+			delete from SobekCM_Item_Group_Web_Skin_Link where GroupID=@groupid;
+			delete from SobekCM_Item_Group_Statistics where GroupID=@groupid;
+			delete from mySobek_User_Bib_Link where GroupID=@groupid;
+			delete from SobekCM_Item_Group_OAI where GroupID=@groupid;
+			delete from SobekCM_Item_Group where GroupID=@groupid;
+		end;
+	end
+	else
+	begin
+		-- Finally set the volume count for this group correctly
+		update SobekCM_Item_Group
+		set ItemCount = ( select count(*) from SobekCM_Item I where ( I.GroupID = SobekCM_Item_Group.GroupID ))	
+		where ( SobekCM_Item_Group.BibID = @bibid );
+	end;
+  end;
+   
+commit transaction;
+GO
 
 if (( select count(*) from SobekCM_Database_Version ) = 0 )
 begin
 	insert into SobekCM_Database_Version ( Major_Version, Minor_Version, Release_Phase )
-	values ( 4, 8, '' );
+	values ( 4, 8, '0' );
 end
 else
 begin
 	update SobekCM_Database_Version
-	set Major_Version=4, Minor_Version=8, Release_Phase='';
+	set Major_Version=4, Minor_Version=8, Release_Phase='0';
 end;
 GO
+

@@ -153,7 +153,8 @@ namespace SobekCM.Engine_Library.Endpoints
                 returnValue = Item_Aggregation_Utilities.Get_Collection_Hierarchy(Tracer);
 
                 // Store in the cache
-                CachedDataManager.Aggregations.Store_Aggregation_Hierarchy(returnValue, Tracer);
+                if ( returnValue != null )
+                    CachedDataManager.Aggregations.Store_Aggregation_Hierarchy(returnValue, Tracer);
             }
 
             return returnValue;

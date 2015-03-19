@@ -770,9 +770,12 @@ function delete_skin_language(lang) {
 }
 
 // Save the aggregation updates
-function save_aggr_edits() {
+function save_aggr_edits(complete) {
     var hiddenfield = document.getElementById('admin_aggr_save');
-    hiddenfield.value = 'save';
+    if ( complete == true)
+        hiddenfield.value = 'save_exit';
+    else
+        hiddenfield.value = 'save';
     document.itemNavForm.submit();
     return false;
 }

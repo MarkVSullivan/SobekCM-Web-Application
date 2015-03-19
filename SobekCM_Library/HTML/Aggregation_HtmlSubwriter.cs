@@ -962,7 +962,7 @@ namespace SobekCM.Library.HTML
 			//bool sobekcm_main_home_page = (currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) && (RequestSpecificValues.Hierarchy_Object.Code == "all");
 
 			//// Add the collection selector, if it ever appears here
-			//if ((!sobekcm_main_home_page) && (collectionViewer.Selection_Panel_Display != Selection_Panel_Display_Enum.Never) && (RequestSpecificValues.Hierarchy_Object.Children_Count > 0))
+			//if ((!sobekcm_main_home_page) && (collectionViewer.Selection_Panel_Display != Selection_Panel_Display_Enum.Never) && (RequestSpecificValues.Hierarchy_Object.Active_Children_Count > 0))
 			//{
 			//	// Get the collection of children
 			//	ReadOnlyCollection<Item_Aggregation_Related_Aggregations> child_aggregations = RequestSpecificValues.Hierarchy_Object.Children;
@@ -1713,79 +1713,85 @@ namespace SobekCM.Library.HTML
 
         protected internal void write_treeview(TextWriter Output, Custom_Tracer Tracer)
         {
-            // Add the text
-            Output.WriteLine("<div class=\"SobekText\">");
-            Output.WriteLine("<h2 style=\"margin-top:0;\">All Collections</h2>");
-            Output.WriteLine("<blockquote>");
-            Output.WriteLine("  <div style=\"text-align:right;\">");
-            Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('close_all');return false;\">Collapse All</a> | ");
-            Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('open_all');return false;\">Expand All</a>");
-            Output.WriteLine("  </div>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jstree/jstree.min.js\"></script>");
 
             // Get the hierarchy
             Aggregation_Hierarchy hierarchy = SobekEngineClient.Aggregations.Get_Aggregation_Hierarchy(Tracer);
-            
-            Output.WriteLine("  <div id=\"aggregationTree\">");
-            Output.WriteLine("    <ul>");
-            Output.WriteLine("      <li>Collection Hierarchy");
 
-            // Step through each node under this
-            if (hierarchy.Collections.Count > 0)
+            if (hierarchy != null)
             {
-                Output.WriteLine("        <ul>");
-                foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchy.Collections)
+                // Add the text
+                Output.WriteLine("<div class=\"SobekText\">");
+                Output.WriteLine("<h2 style=\"margin-top:0;\">All Collections</h2>");
+                Output.WriteLine("<blockquote>");
+                Output.WriteLine("  <div style=\"text-align:right;\">");
+                Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('close_all');return false;\">Collapse All</a> | ");
+                Output.WriteLine("    <a onclick=\"$('#aggregationTree').jstree('open_all');return false;\">Expand All</a>");
+                Output.WriteLine("  </div>");
+
+
+
+                Output.WriteLine("  <div id=\"aggregationTree\">");
+                Output.WriteLine("    <ul>");
+                Output.WriteLine("      <li>Collection Hierarchy");
+
+                // Step through each node under this
+                if (hierarchy.Collections.Count > 0)
                 {
-                    if ((!childAggr.Hidden) && (childAggr.Active))
+                    Output.WriteLine("        <ul>");
+                    foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchy.Collections)
                     {
-                        // Set the aggregation value, for the redirect URL
-                        RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
+                        if ((!childAggr.Hidden) && (childAggr.Active))
+                        {
+                            // Set the aggregation value, for the redirect URL
+                            RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
 
-                        Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
+                            Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
 
-                        // Check the children nodes recursively
-                        add_children_to_tree("            ", Output, childAggr);
+                            // Check the children nodes recursively
+                            add_children_to_tree("            ", Output, childAggr);
 
-                        Output.WriteLine("          </li>");
+                            Output.WriteLine("          </li>");
+                        }
                     }
+                    Output.WriteLine("        </ul>");
                 }
-                Output.WriteLine("        </ul>");
-            }
-            Output.WriteLine("      </li>");
-
-            if (hierarchy.Institutions.Count > 0)
-            {
-                Output.WriteLine("      <li>Institutions");
-                Output.WriteLine("        <ul>");
-                foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchy.Institutions)
-                {
-                    if ((!childAggr.Hidden) && (childAggr.Active))
-                    {
-                        // Set the aggregation value, for the redirect URL
-                        RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
-
-                        Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
-
-                        // Check the children nodes recursively
-                        add_children_to_tree("            ", Output, childAggr);
-
-                        Output.WriteLine("          </li>");
-                    }
-                }
-                Output.WriteLine("        </ul>");
                 Output.WriteLine("      </li>");
+
+                if (hierarchy.Institutions.Count > 0)
+                {
+                    Output.WriteLine("      <li>Institutions");
+                    Output.WriteLine("        <ul>");
+                    foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchy.Institutions)
+                    {
+                        if ((!childAggr.Hidden) && (childAggr.Active))
+                        {
+                            // Set the aggregation value, for the redirect URL
+                            RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
+
+                            Output.WriteLine("          <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a>");
+
+                            // Check the children nodes recursively
+                            add_children_to_tree("            ", Output, childAggr);
+
+                            Output.WriteLine("          </li>");
+                        }
+                    }
+                    Output.WriteLine("        </ul>");
+                    Output.WriteLine("      </li>");
+                }
+
+                Output.WriteLine("    </ul>");
+                Output.WriteLine("  </div>");
+                Output.WriteLine("</blockquote>");
+                Output.WriteLine("</div>");
+                Output.WriteLine();
+
+                Output.WriteLine("<script type=\"text/javascript\">");
+                Output.WriteLine("   $('#aggregationTree').jstree().bind(\"select_node.jstree\", function (e, data) { var href = data.node.a_attr.href; document.location.href = href; });");
+                Output.WriteLine("</script>");
+                Output.WriteLine();
             }
-
-            Output.WriteLine("    </ul>");
-            Output.WriteLine("  </div>");
-            Output.WriteLine("</blockquote>");
-            Output.WriteLine("</div>");
-            Output.WriteLine();
-
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jstree/jstree.min.js\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\">");
-            Output.WriteLine("   $('#aggregationTree').jstree().bind(\"select_node.jstree\", function (e, data) { var href = data.node.a_attr.href; document.location.href = href; });");
-            Output.WriteLine("</script>");
-            Output.WriteLine();
 
             RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
 

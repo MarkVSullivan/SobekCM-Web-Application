@@ -141,6 +141,9 @@ textarea.sbkSaav_input  { margin-top: 6px; font-size: small;}
 .sbkSaav_UploadInstr { font-size: 0.90em;font-style: italic;}
 .sbkSaav_EditCssTextarea { width: 800px;height: 600px; }
 .sbkSaav_Table { border:0; border-collapse: collapse; border-spacing: 0; margin-bottom: 40px; border-left:2px solid #cccccc; border-right: 2px solid #cccccc; }
+.sbkSaav_Table a:link { color:#444444;text-decoration: none; }
+.sbkSaav_Table a:visited {color: #444444;text-decoration: none; }
+.sbkSaav_Table a:hover { color:#000080;text-decoration: underline; }
 .sbkSaav_Table tr { min-height: 25px; }
 .sbkSaav_Table td { border-bottom: 2px solid #cccccc; }
 .sbkSaav_Table th { color: black;background-color: #cccccc; text-align: left; }
@@ -158,9 +161,10 @@ textarea.sbkSaav_input  { margin-top: 6px; font-size: small;}
 #sbkSaav_SelectedBannerImage { max-width: 480px;max-height: 150px; }
 .sbkSaav_SubCollectionTable { width: 810px; margin-top: 8px; margin-left: 20px; }
 .sbkSaav_SubCollectionTableHeader1 { width: 130px; padding-left: 20px;}
-.sbkSaav_SubCollectionTableHeader2 { width: 140px; }
+.sbkSaav_SubCollectionTableHeader2 { width: 130px; }
 .sbkSaav_SubCollectionTableHeader3 { width: 100px; }
 .sbkSaav_SubCollectionTableHeader4 { width: 60px; }
+.sbkSaav_SubCollectionTableHeader6 { width: 70px; }
 .sbkSaav_SubInnerTable { padding: 4px 0 0 0; width: 600px;}
 .sbkSaav_SubInnerTable tr { min-height: 25px; }
 select.sbkSaav_SubTypeSelect { width: 155px; margin-top: 2px; margin-bottom: 4px; }
@@ -309,7 +313,7 @@ input.sbkSav_checkbox { padding-top: 3px;border: 0; }
 /** Skins_Single_AdminViewer  **/
 #sbkSsav_ContainerInner { margin: 0 auto; padding:0; width: 1120px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
 #sbkSsav_PageContainer { margin-left: 40px;  margin-right: 40px;  text-align:center;  FONT-SIZE: small;  }
-.sbkSsav_html_textbox { width: 710px; word-wrap:break-word;}
+.sbkSsav_html_textbox { width: 710px; word-wrap:break-word;height: 500px;}
 
 /** Thematic_Heading_AdminViewer */
 .sbkThav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 

@@ -227,7 +227,7 @@ namespace SobekCM.Library.AdminViewer
 					}
 
 					// Should this be saved to the database?
-					if (action == "save")
+					if ((action == "save") || ( action == "save_exit"))
 					{
                         // Backup the old aggregation info
 					    string backup_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory.Replace("/","\\") + "backup\\configs";
@@ -269,9 +269,16 @@ namespace SobekCM.Library.AdminViewer
 							HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] = null;
 
 							// Redirect the RequestSpecificValues.Current_User
-							RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-							RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-							UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+						    if (action == "save_exit")
+						    {
+						        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+						        RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+						        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+						    }
+						    else
+						    {
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+						    }
 						}
 						else
 						{
@@ -328,7 +335,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<input type=\"hidden\" id=\"admin_aggr_reset\" name=\"admin_aggr_reset\" value=\"\" />");
 			Output.WriteLine("<input type=\"hidden\" id=\"admin_aggr_save\" name=\"admin_aggr_save\" value=\"\" />");
 			Output.WriteLine("<input type=\"hidden\" id=\"admin_aggr_action\" name=\"admin_aggr_action\" value=\"\" />");
-			Output.WriteLine();
+			Output.WriteLine(); 
 
 			Tracer.Add_Trace("Aggregation_Single_AdminViewer.Write_ItemNavForm_Closing", "Add the rest of the form");
 
@@ -346,7 +353,8 @@ namespace SobekCM.Library.AdminViewer
 				RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 				Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
 				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('z');\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-				Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(false);\"> SAVE </button> &nbsp; &nbsp; ");
+				Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(true);\">SAVE & EXIT <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 				Output.WriteLine("  </div>");
 				Output.WriteLine();
 				RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
@@ -1148,10 +1156,10 @@ namespace SobekCM.Library.AdminViewer
 						itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Table );
 						break;
 
-					case "full":
-						itemAggregation.Default_Result_View = Result_Display_Type_Enum.Full_Citation;
-						itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Full_Citation );
-						break;
+                    //case "full":
+                    //    itemAggregation.Default_Result_View = Result_Display_Type_Enum.Full_Citation;
+                    //    itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Full_Citation );
+                    //    break;
 				}
 			}
 
@@ -1182,10 +1190,10 @@ namespace SobekCM.Library.AdminViewer
 							itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Table );
 						break;
 
-				case "full":
-						if ( !itemAggregation.Result_Views.Contains( Result_Display_Type_Enum.Full_Citation ))
-							itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Full_Citation );
-						break;
+                //case "full":
+                //        if ( !itemAggregation.Result_Views.Contains( Result_Display_Type_Enum.Full_Citation ))
+                //            itemAggregation.Result_Views.Add( Result_Display_Type_Enum.Full_Citation );
+                //        break;
 				}
 		}
 
@@ -1295,7 +1303,7 @@ namespace SobekCM.Library.AdminViewer
 
 			Output.Write(Result_Type == Result_Display_Type_Enum.Thumbnails ? "<option value=\"thumbnails\" selected=\"selected\" >Thumbnail View</option>" : "<option value=\"thumbnails\">Thumbnail View</option>");
 
-			Output.Write(Result_Type == Result_Display_Type_Enum.Full_Citation ? "<option value=\"full\" selected=\"selected\" >Full View</option>" : "<option value=\"full\">Full View</option>");
+			//Output.Write(Result_Type == Result_Display_Type_Enum.Full_Citation ? "<option value=\"full\" selected=\"selected\" >Full View</option>" : "<option value=\"full\">Full View</option>");
 			Output.WriteLine("</select>");
 		}
 
@@ -2147,15 +2155,31 @@ namespace SobekCM.Library.AdminViewer
 				Directory.CreateDirectory(banner_folder);
 			string[] banner_files = SobekCM_File_Utilities.GetFiles(banner_folder, "*.jpg|*.bmp|*.gif|*.png");
 			string last_added_banner = String.Empty;
-			if (HttpContext.Current.Items["Uploaded File"] != null)
-			{
-				string newBanner = HttpContext.Current.Items["Uploaded File"].ToString();
-				last_added_banner = Path.GetFileName(newBanner);
-			}
+		    if (HttpContext.Current.Items["Uploaded File"] != null)
+		    {
+		        string newBanner = HttpContext.Current.Items["Uploaded File"].ToString();
+		        last_added_banner = Path.GetFileName(newBanner);
+		    }
+		    else
+		    {
+		        DateTime lastModDate = DateTime.MinValue;
+		        foreach (string thisBannerFile in banner_files)
+		        {
+		            DateTime thisDate = (new FileInfo(thisBannerFile)).LastWriteTime;
+		            if (thisDate.CompareTo(lastModDate) > 0)
+		            {
+                        lastModDate = thisDate;
+                        last_added_banner = Path.GetFileName(thisBannerFile);
+		            }
+		        }
+		    }
 
 			// Write the add new banner information
 			if (banner_files.Length > 0)
 			{
+                if (String.IsNullOrEmpty(last_added_banner))
+                    last_added_banner = Path.GetFileName(banner_files[0]);
+
 				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
 				Output.WriteLine("    <td>&nbsp;</td>");
 				Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\">New Banner:</td>");
@@ -2165,7 +2189,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("    <td>&nbsp;</td>");
 				Output.WriteLine("    <td colspan=\"2\">");
 
-				string current_banner = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/images/banners/" + Path.GetFileName(banner_files[0]);
+                string current_banner = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/images/banners/" + last_added_banner;
 				Output.WriteLine("      <div style=\"width:510px; float:right;\"><img id=\"sbkSaav_SelectedBannerImage\" name=\"sbkSaav_SelectedBannerImage\" src=\"" + current_banner + "\" alt=\"Missing\" Title=\"Selected image file\" /></div>");
 
 				Output.WriteLine("      <table class=\"sbkSaav_BannerInnerTable\">");
@@ -2203,15 +2227,14 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("          <td>Image:</td>");
 				Output.WriteLine("          <td>");
 				Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_banner_image\" name=\"admin_aggr_new_banner_image\"  onchange=\"edit_aggr_banner_select_changed('" + RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/" + itemAggregation.Code + "/images/banners/');\">");
-				if ( !String.IsNullOrEmpty(last_added_banner))
-				{
-					Output.Write("<option selected=\"selected\" value=\"" + last_added_banner + "\">" + last_added_banner + "</option>");
-				}
 				foreach (string thisFile in banner_files)
 				{
 					string name = Path.GetFileName(thisFile);
-					if ( name != last_added_banner )
+					if (( String.IsNullOrEmpty(last_added_banner)) || ( name != last_added_banner ))
 						Output.Write("<option value=\"" + name + "\">" + name + "</option>");
+                    else
+                        Output.Write("<option selected=\"selected\" value=\"" + last_added_banner + "\">" + last_added_banner + "</option>");
+
 				}
 				Output.WriteLine("</select>");
 				Output.WriteLine("          </td>");
@@ -3066,17 +3089,15 @@ namespace SobekCM.Library.AdminViewer
 	            Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader1\">ACTION</th>");
 	            Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader2\">CODE</th>");
 	            Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader3\">TYPE</th>");
-	            Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader4\">ACTIVE?</th>");
-	            Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader5\">NAME</th>");
+                Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader5\">NAME</th>");
+	            Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader4\">ACTIVE</th>");
+                Output.WriteLine("          <th class=\"sbkSaav_SubCollectionTableHeader6\">ON HOME</th>");
 	            Output.WriteLine("        </tr>");
 
 	            // Put in alphabetical order
 	            SortedDictionary<string, Item_Aggregation_Related_Aggregations> sortedChildren = new SortedDictionary<string, Item_Aggregation_Related_Aggregations>();
-	            if (itemAggregation.Children_Count > 0)
-	            {
-	                foreach (Item_Aggregation_Related_Aggregations childAggrs in itemAggregation.Children)
-	                    sortedChildren[childAggrs.Code] = childAggrs;
-	            }
+	            foreach (Item_Aggregation_Related_Aggregations childAggrs in itemAggregation.Children)
+	                sortedChildren[childAggrs.Code] = childAggrs;
 
 	            foreach (KeyValuePair<string, Item_Aggregation_Related_Aggregations> childAggrs in sortedChildren)
 	            {
@@ -3099,12 +3120,20 @@ namespace SobekCM.Library.AdminViewer
 
 	                    Output.WriteLine("          <td>" + childAggrs.Key + "</td>");
 	                    Output.WriteLine("          <td>" + childAggrs.Value.Type + "</td>");
+                        Output.WriteLine("          <td>" + relatedAggr.Name + "</td>");
+
 	                    if (relatedAggr.Active)
 	                        Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/checkmark2.png\" alt=\"YES\" /></td>");
 	                    else
-	                        Output.WriteLine("          <td></td>");
+                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/checkmark.png\" alt=\"NO\" /></td>");
 
-	                    Output.WriteLine("          <td>" + relatedAggr.Name + "</td>");
+
+                        if (!relatedAggr.Hidden)
+                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/checkmark2.png\" alt=\"YES\" /></td>");
+                        else
+                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/checkmark.png\" alt=\"NO\" /></td>");
+
+	                    
 	                    Output.WriteLine("        </tr>");
 	                }
 	            }
