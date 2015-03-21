@@ -570,14 +570,14 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      </tr>");
 
             // Add line for banner link
-			Output.WriteLine("      <tr style=\"height:25px;\"><td><label for=\"admin_interface_link\">Banner Link:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"admin_interface_link\" id=\"admin_interface_link\" type=\"text\" value=\"\" /></td></tr>");
+            Output.WriteLine("      <tr id=\"banner_link_row\" style=\"height:25px; display:none;\"><td><label for=\"admin_interface_link\">Banner Link:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"admin_interface_link\" id=\"admin_interface_link\" type=\"text\" value=\"\" /></td></tr>");
 
             // Add line for notes
 			Output.WriteLine("      <tr style=\"height:25px;\"><td><label for=\"admin_interface_notes\">Notes:</label></td><td colspan=\"2\"><input class=\"sbkSav_large_input sbkAdmin_Focusable\" name=\"admin_interface_notes\" id=\"admin_interface_notes\" type=\"text\" value=\"\" /></td></tr>");
 
             // Add checkboxes for overriding the header/footer and overriding banner
-            Output.WriteLine("      <tr style=\"height:15px;\"><td>Flags:</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_banner_override\" id=\"admin_interface_banner_override\" /> <label for=\"admin_interface_banner_override\">Override banner?</label></td><td></td></tr>");
-			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_top_nav\" id=\"admin_interface_top_nav\" /> <label for=\"admin_interface_top_nav\">Suppress top-level navigation?</label></td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_buildlaunch\" id=\"admin_interface_buildlaunch\" /> <label for=\"admin_interface_buildlaunch\">Build on launch?</label></td></tr>");
+            Output.WriteLine("      <tr style=\"height:15px;\"><td>Flags:</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_banner_override\" id=\"admin_interface_banner_override\" onchange=\"return skins_display_banner_link(this);\" /> <label for=\"admin_interface_banner_override\" >Override banner?</label></td><td></td></tr>");
+			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_top_nav\" id=\"admin_interface_top_nav\" /> <label for=\"admin_interface_top_nav\">Suppress main menu?</label></td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_buildlaunch\" id=\"admin_interface_buildlaunch\" /> <label for=\"admin_interface_buildlaunch\">Build on launch?</label></td></tr>");
 			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td colspan=\"2\"><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_copycurrent\" id=\"admin_interface_copycurrent\" checked=\"checked\" /> <label for=\"admin_interface_copycurrent\">Copy current files for this new web skin if folder does not exist?</label></td></tr>");
 
 			// Add the SAVE button
@@ -634,7 +634,10 @@ namespace SobekCM.Library.AdminViewer
 
 
                 // Add the rest of the row with data
-                Output.WriteLine("      <td>" + code + "</span></td>");
+                if ( String.Compare(code, current_skin, StringComparison.InvariantCultureIgnoreCase) == 0 )
+                    Output.WriteLine("      <td>" + code + "*</span></td>");
+                else
+                    Output.WriteLine("      <td>" + code + "</span></td>");
                 Output.WriteLine("      <td>" + base_code + "</span></td>");
                 Output.WriteLine("      <td>" + notes + "</span></td>");
                 Output.WriteLine("    </tr>");
@@ -643,6 +646,7 @@ namespace SobekCM.Library.AdminViewer
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
 
             Output.WriteLine("  </table>");
+            Output.WriteLine("  <p>* indicates the current web skin in the table above</p>");
             Output.WriteLine("  <br />");
             Output.WriteLine("</div>");
             Output.WriteLine();

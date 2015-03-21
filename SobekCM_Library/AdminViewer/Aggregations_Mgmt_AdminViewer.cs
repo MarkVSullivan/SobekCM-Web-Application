@@ -506,7 +506,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("        <td><input class=\"sbkAsav_small_input sbkAdmin_Focusable\" name=\"admin_aggr_code\" id=\"admin_aggr_code\" type=\"text\" value=\"" + enteredCode + "\" /></td>");
             Output.WriteLine("        <td style=\"width:300px;text-align:right;\">");
             Output.WriteLine("          <label for=\"admin_aggr_type\">Type:</label> &nbsp; ");
-            Output.WriteLine("          <select class=\"sbkAsav_select \" name=\"admin_aggr_type\" id=\"admin_aggr_type\">");
+            Output.WriteLine("          <select class=\"sbkAsav_select \" name=\"admin_aggr_type\" id=\"admin_aggr_type\" onchange=\"return aggr_display_external_link(this);\">");
             if (enteredType == String.Empty)
                 Output.WriteLine("            <option value=\"\" selected=\"selected\" ></option>");
 
@@ -567,7 +567,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      <tr><td><label for=\"admin_aggr_shortname\">Name (short):</label></td><td colspan=\"2\"><input class=\"sbkAsav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_shortname\" id=\"admin_aggr_shortname\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredShortname) + "\" /></td></tr>");
 
             // Add the link line
-            Output.WriteLine("      <tr><td><label for=\"admin_aggr_link\">External Link:</label></td><td colspan=\"2\"><input class=\"sbkAsav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_link\" id=\"admin_aggr_link\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredLink) + "\" /></td></tr>");
+            Output.WriteLine("      <tr id=\"external_link_row\" style=\"display:none;\"><td><label for=\"admin_aggr_link\">External Link:</label></td><td colspan=\"2\"><input class=\"sbkAsav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_link\" id=\"admin_aggr_link\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredLink) + "\" /></td></tr>");
 
             // Add the thematic heading line
             Output.WriteLine("      <tr>");

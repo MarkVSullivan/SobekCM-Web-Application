@@ -648,7 +648,7 @@ namespace SobekCM.Engine_Library.Navigation
                                             if (url_relative_list.Count > 2)
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             if (url_relative_list.Count > 3)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2] + "|" + url_relative_list[3];
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2] + "/" + url_relative_list[3];
                                             break;
 
                                         case "defaults":

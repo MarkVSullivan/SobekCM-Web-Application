@@ -769,6 +769,43 @@ function delete_skin_language(lang) {
     return false;
 }
 
+// Verify deletion of the existing uploAD
+function delete_skin_upload_file(filename) {
+    var input_box = confirm("Do you really want to delete the uploaded file '" + filename + "'?");
+    if (input_box == true) {
+        // Set the hidden value this data
+        var hiddenfield = document.getElementById('admin_skin_action');
+        hiddenfield.value = "delete_" + filename;
+
+        document.itemNavForm.submit();
+    }
+
+    // Return false to prevent another return trip to the server
+    return false;
+}
+
+function skins_display_banner_link(check) {
+    var linkRowElement = document.getElementById('banner_link_row');
+    if (check.checked) {
+        linkRowElement.style.display = 'table-row';
+    } else {
+        linkRowElement.style.display = 'none';
+    }
+    return false;
+}
+
+function aggr_display_external_link(combo) {
+    var selected_text = combo.options[combo.selectedIndex].text;
+    var linkRowElement = document.getElementById('external_link_row');
+    if (selected_text.indexOf("Institution") >= 0 ) {
+        linkRowElement.style.display = 'table-row';
+    } else {
+        linkRowElement.style.display = 'none';
+    }
+    return false;
+}
+
+
 // Save the aggregation updates
 function save_aggr_edits(complete) {
     var hiddenfield = document.getElementById('admin_aggr_save');

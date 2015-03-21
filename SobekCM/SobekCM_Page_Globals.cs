@@ -54,6 +54,7 @@ namespace SobekCM
 		public HTML_Based_Content staticWebContent;
 		public Item_Aggregation_Child_Page thisBrowseObject;
 		public Custom_Tracer tracer;
+	    private string defaultSkin;
 
 		#endregion
 
@@ -169,6 +170,7 @@ namespace SobekCM
 			    currentMode.isPostBack = isPostBack;
                 currentMode.Browser_Type = request.Browser.Type.ToUpper();
 				currentMode.Set_Robot_Flag(request.UserAgent, request.UserHostAddress);
+                defaultSkin = currentMode.Skin;
 			}
 			catch
 			{
@@ -974,24 +976,27 @@ namespace SobekCM
 				// Try to get the web skin from the cache or skin collection, otherwise build it
 				htmlSkin = assistant.Get_HTML_Skin(current_skin_code, currentMode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, tracer);
 
-				// If there was no web skin returned, forward user to URL with no web skin. 
+                // If the skin was somehow overriden, default back to the default skin
+                if (( htmlSkin == null ) && ( !String.IsNullOrEmpty(defaultSkin)))
+			    {
+			        if (String.Compare(current_skin_code, defaultSkin, StringComparison.InvariantCultureIgnoreCase) != 0)
+			        {
+			            currentMode.Skin = defaultSkin;
+                        htmlSkin = assistant.Get_HTML_Skin(defaultSkin, currentMode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, tracer);
+			        }
+			    }
+
+			    // If there was no web skin returned, forward user to URL with no web skin. 
 				// This happens if the web skin code is invalid.  If a robot, just return a bad request 
 				// value though.
 				if (htmlSkin == null)
 				{
-					if ((currentMode == null) || (currentMode.Is_Robot))
-					{
+
 						HttpContext.Current.Response.StatusCode = 404;
 						HttpContext.Current.Response.Output.WriteLine("404 - INVALID URL");
+                        HttpContext.Current.Response.Output.WriteLine("Web skin indicated is invalid, default web skin invalid");
 						HttpContext.Current.ApplicationInstance.CompleteRequest();
 						currentMode.Request_Completed = true;
-					}
-					else
-					{
-						currentMode.Skin = String.Empty;
-						UrlWriterHelper.Redirect(currentMode);
-						return;
-					}
 
 					return;
 				}

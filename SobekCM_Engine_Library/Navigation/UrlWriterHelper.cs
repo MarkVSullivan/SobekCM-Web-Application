@@ -430,7 +430,7 @@ namespace SobekCM.Engine_Library.Navigation
 
                         case Admin_Type_Enum.Skins_Single:
                             if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/editskin/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                                return this_base_url + "admin/editskin/" + Current_Mode.My_Sobek_SubMode.Replace("|", "/") + urlOptions1;
                             return this_base_url + "admin/webskins" + urlOptions1;
 
                         default:

@@ -76,14 +76,19 @@ namespace SobekCM.Engine_Library.Aggregations
 
 	                Add_HTML(hierarchyObject);
 	                Add_All_New_Browses(hierarchyObject);
-	                if (!IsRobot)
+	                Add_Browse_Files(hierarchyObject, Tracer);
+
+                    // If no HTML found, just add one
+	                if ((hierarchyObject.Home_Page_File_Dictionary == null) || (hierarchyObject.Home_Page_File_Dictionary.Count == 0))
 	                {
-	                    if (Tracer != null)
-	                    {
-	                        Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Scanning Design Directory for browse and info files");
-	                    }
-	                    Add_Browse_Files(hierarchyObject, Tracer);
+	                    hierarchyObject.Add_Home_Page_File("html\\home\\text.html", Web_Language_Enum.DEFAULT, false);
 	                }
+
+                    // If no banner found, just add one
+                    if ((hierarchyObject.Banner_Dictionary == null) || (hierarchyObject.Banner_Dictionary.Count == 0))
+                    {
+                        hierarchyObject.Add_Banner_Image("images/banners/coll.jpg", Web_Language_Enum.DEFAULT);
+                    }
 
 	                // Since there was no configuration file, save one
 	                hierarchyObject.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + hierarchyObject.ObjDirectory);

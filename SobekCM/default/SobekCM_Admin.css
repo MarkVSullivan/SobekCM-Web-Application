@@ -190,7 +190,10 @@ input.sbkSaav_NewChildCode { width: 155px; margin-top: 2px; margin-bottom: 4px; 
 .sbkSaav_NewVersionButton { float: right;padding-right: 180px;padding-top: 60px;}
 .sbkSaav_NewVersionTable  { padding: 4px 0 0 0; }
 .sbkSaav_NewVersionTable tr { height: 25px;}
-.sbkSaav_UploadThumbnail { width: auto; height: auto; max-width: 200px; max-height: 200px; }
+#sbkSaav_UploadTable { border:0; width:100%; border-collapse: collapse; border-spacing: 0; margin-left: 10px; }
+#sbkSaav_UploadTable tr { text-align:center; vertical-align:bottom;}
+#sbkSaav_UploadTable td { width: 230px; padding-bottom: 30px;  }
+.sbkSaav_UploadThumbnail { width: auto; height: auto; max-width: 200px; max-height: 200px;border: 1px solid #888888; }
 .sbkSaav_UploadTitle { font-weight: bold; }
 
 

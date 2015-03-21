@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -57,9 +55,9 @@ namespace SobekCM.Library.AdminViewer
             string code = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 
             string page_code = "a";
-            if (code.Contains("|"))
+            if (code.Contains("/"))
             {
-                string[] parser = code.Split("|".ToCharArray());
+                string[] parser = code.Split("/".ToCharArray());
                 code = parser[0];
                 page_code = parser[1];
             }
@@ -72,6 +70,8 @@ namespace SobekCM.Library.AdminViewer
                 page = 3;
             else if (page_code == "d")
                 page = 4;
+            else if (page_code == "e")
+                page = 5;
 
             // If the user cannot edit this, go back
             if ((!RequestSpecificValues.Current_User.Is_Portal_Admin ) && ( !RequestSpecificValues.Current_User.Is_System_Admin ))
@@ -85,14 +85,7 @@ namespace SobekCM.Library.AdminViewer
             // Load the web skin, either currenlty from the session (if already editing this skin )
             // or by building the complete web skin object
             Complete_Web_Skin_Object cachedInstance = HttpContext.Current.Session["Edit_Skin_" + code + "|object"] as Complete_Web_Skin_Object;
-            if (cachedInstance != null)
-            {
-                webSkin = cachedInstance;
-            }
-            else
-            {
-                webSkin = SobekEngineClient.WebSkins.Get_Complete_Web_Skin(code, RequestSpecificValues.Tracer);
-            }
+            webSkin = cachedInstance ?? SobekEngineClient.WebSkins.Get_Complete_Web_Skin(code, RequestSpecificValues.Tracer);
 
             // If unable to retrieve this skin, send to home
             if (webSkin == null)
@@ -103,11 +96,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Get the dictionary for updated source files
-            updatedSourceFiles = HttpContext.Current.Session["Edit_Skin_" + code + "|files"] as Dictionary<string, string>;
-            if (updatedSourceFiles == null)
-            {
-                updatedSourceFiles = new Dictionary<string, string>();
-            }
+            updatedSourceFiles = HttpContext.Current.Session["Edit_Skin_" + code + "|files"] as Dictionary<string, string> ?? new Dictionary<string, string>();
 
             // Get the skin directory and ensure it exists
             skinDirectory = HttpContext.Current.Server.MapPath("design/skins/" + webSkin.Skin_Code);
@@ -127,7 +116,7 @@ namespace SobekCM.Library.AdminViewer
 
                     // If no action, then we should return to the current tab page
                     if (action.Length == 0)
-                        action = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+                        action = page_code;
 
                     // If this is to cancel, handle that here; no need to handle post-back from the
                     // editing form page first
@@ -160,6 +149,10 @@ namespace SobekCM.Library.AdminViewer
 
                         case 4:
                             Save_Page_4_Postback(form);
+                            break;
+
+                        case 5:
+                            Save_Page_Uploads_Postback(form);
                             break;
                     }
 
@@ -208,7 +201,7 @@ namespace SobekCM.Library.AdminViewer
                                             string current_contents = reader.ReadToEnd();
                                             reader.Close();
 
-                                            if (String.Compare(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"), current_contents) != 0)
+                                            if (String.CompareOrdinal(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"), current_contents) != 0)
                                             {
                                                 // Use the last modified date as the name of the backup
                                                 DateTime lastModifiedDate = (new FileInfo(filename)).LastWriteTime;
@@ -240,7 +233,7 @@ namespace SobekCM.Library.AdminViewer
                                         string current_contents = reader.ReadToEnd();
                                         reader.Close();
 
-                                        if (String.Compare(pairs.Value, current_contents) != 0)
+                                        if (String.CompareOrdinal(pairs.Value, current_contents) != 0)
                                         {
                                             // Use the last modified date as the name of the backup
                                             DateTime lastModifiedDate = (new FileInfo(new_skin_file)).LastWriteTime;
@@ -267,9 +260,7 @@ namespace SobekCM.Library.AdminViewer
                             {
                                 
                             }
-
                         }
-
 
 
                         lock (UI_ApplicationCache_Gateway.Web_Skin_Collection)
@@ -277,9 +268,6 @@ namespace SobekCM.Library.AdminViewer
                             Web_Skin_Utilities.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
                         }
                         CachedDataManager.WebSkins.Remove_Skin(webSkin.Skin_Code, RequestSpecificValues.Tracer);
-
-
-
 
                         if (successful_save)
                         {
@@ -290,7 +278,6 @@ namespace SobekCM.Library.AdminViewer
                             // Redirect the user to the skins mgmt screen
                             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
                             UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-                            return;
                         }
                         else
                         {
@@ -472,6 +459,7 @@ namespace SobekCM.Library.AdminViewer
                 const string STYLESHEET = "CSS Stylesheet";
                 const string HTML = "HTML (Headers/Footers)";
                 const string BANNERS = "Banners";
+                const string UPLOADS = "Uploads";
 
                 // Draw all the page tabs for this form
                 if (page == 1)
@@ -510,6 +498,15 @@ namespace SobekCM.Library.AdminViewer
                 //    Output.WriteLine("    <li id=\"tabHeader_3\" onclick=\"return new_skin_edit_page('d');\">" + BANNERS + "</li>");
                 //}
 
+                if (page == 5)
+                {
+                    Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + UPLOADS + "</li>");
+                }
+                else
+                {
+                    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_skin_edit_page('e');\">" + UPLOADS + "</li>");
+                }
+
                 Output.WriteLine("      </ul>");
                 Output.WriteLine("    </div>");
 
@@ -536,6 +533,10 @@ namespace SobekCM.Library.AdminViewer
                 case 4:
                     Add_Page_4(Output);
                     break;
+
+                case 5:
+                    Add_Page_Uploads(Output);
+                    break;
             }
         }
 
@@ -550,8 +551,12 @@ namespace SobekCM.Library.AdminViewer
 
             switch (page)
             {
-                case 1:
+                case 4:
                     Finish_Page_4(Output);
+                    break;
+
+                case 5:
+                    Finish_Page_Uploads(Output);
                     break;
             }
 
@@ -571,7 +576,6 @@ namespace SobekCM.Library.AdminViewer
             string edit_notes = Form["webskin_notes"].Trim();
 
             bool override_banner = false;
-            bool override_header = false;
             bool build_on_launch = false;
             bool suppress_top_nav = false;
 
@@ -616,7 +620,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Basic Information</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The information in this section is the basic information about the web skin, such as the base skin, banner information, whether this skin overrides the banner over all aggregations, etc..</p><p>For more information about the settings on this tab, click here to view the help page.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The information in this section is the basic information about the web skin, such as the base skin, banner information, whether this skin overrides the banner over all aggregations, etc..</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
             // Add the web skin code
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
@@ -636,7 +640,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("          <option value=\"\"></option>");
             foreach (string thisSkinCode in UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes)
             {
-                if (( !String.IsNullOrEmpty(webSkin.Base_Skin_Code)) && ( String.Compare(webSkin.Base_Skin_Code, thisSkinCode, true ) == 0 ))
+                if (( !String.IsNullOrEmpty(webSkin.Base_Skin_Code)) && ( String.Compare(webSkin.Base_Skin_Code, thisSkinCode, StringComparison.OrdinalIgnoreCase) == 0 ))
                     Output.WriteLine("          <option value=\"" + thisSkinCode.ToUpper() + "\" selected=\"selected\">" + thisSkinCode + "</option>");
                 else
                     Output.WriteLine("          <option value=\"" + thisSkinCode.ToUpper() + "\">" + thisSkinCode + "</option>");
@@ -647,7 +651,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </tr>");
 
             // Add the banner link
-            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            if ( webSkin.Override_Banner )
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" id=\"banner_link_row\" style=\"display:table-row;\">");
+            else
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" id=\"banner_link_row\" style=\"display:none;\">");
+
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_bannerlink\">Banner Link:</label></td>");
             Output.WriteLine("    <td>");
@@ -673,7 +681,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\">Flags:</td>");
             Output.WriteLine("    <td>");
-            Output.Write("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"webskin_banner_override\" id=\"webskin_banner_override\" ");
+            Output.Write("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"webskin_banner_override\" id=\"webskin_banner_override\" onchange=\"return skins_display_banner_link(this);\" ");
             if (webSkin.Override_Banner)
                 Output.Write("checked=\"checked\" ");
             Output.WriteLine("/> <label for=\"webskin_banner_override\">Override banner?</label></td>");
@@ -689,7 +697,7 @@ namespace SobekCM.Library.AdminViewer
             Output.Write("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"webskin_suppress_top_nav\" id=\"webskin_suppress_top_nav\" ");
             if (webSkin.Suppress_Top_Navigation)
                 Output.Write("checked=\"checked\" ");
-            Output.WriteLine("/> <label for=\"webskin_suppress_top_nav\">Suppress top-level navigation?</label></td>");
+            Output.WriteLine("/> <label for=\"webskin_suppress_top_nav\">Suppress main menu?</label></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + SUPPRESS_TOP_NAV_HELP + "');\"  title=\"" + SUPPRESS_TOP_NAV_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -754,7 +762,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Web Skin Custom Stylesheet (CSS)</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can edit the contents of the web skin stylesheet (css) file here.</p><p>Your changes will not take affect until you actually click SAVE when you are done making all your changes.</p><p>NOTE: You may need to refresh your browser when you are all done for your changes to take affect.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can edit the contents of the web skin stylesheet (css) file here.</p><p>Your changes will not take affect until you actually click SAVE when you are done making all your changes.</p><p>NOTE: You may need to refresh your browser when you are all done for your changes to take affect.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
             // Add the css edit textarea code
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" >");
@@ -777,16 +785,12 @@ namespace SobekCM.Library.AdminViewer
 
         private void Save_Page_3_Postback(NameValueCollection Form)
         {
-            string current_language_code = String.Empty;
             Web_Language_Enum current_language = Web_Language_Enum.DEFAULT;
 
             if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["lang"]))
             {
-                current_language_code = HttpContext.Current.Request.QueryString["lang"];
-                if (current_language_code.ToLower() == "def")
-                    current_language = Web_Language_Enum.DEFAULT;
-                else
-                    current_language = Web_Language_Enum_Converter.Code_To_Enum(current_language_code);
+                string current_language_code = HttpContext.Current.Request.QueryString["lang"];
+                current_language = current_language_code.ToLower() == "def" ? Web_Language_Enum.DEFAULT : Web_Language_Enum_Converter.Code_To_Enum(current_language_code);
             }
 
             if (current_language != Web_Language_Enum.UNDEFINED)
@@ -810,11 +814,13 @@ namespace SobekCM.Library.AdminViewer
                     if ( current_language == Web_Language_Enum.DEFAULT )
                         language_code = String.Empty;
 
-                    Complete_Web_Skin_Source_Files sources = new Complete_Web_Skin_Source_Files();
-                    sources.Header_Source_File = "html\\header" + language_code + ".html";
-                    sources.Footer_Source_File = "html\\footer" + language_code + ".html";
-                    sources.Header_Item_Source_File = "html\\header_item" + language_code + ".html";
-                    sources.Footer_Item_Source_File = "html\\footer_item" + language_code + ".html";
+                    Complete_Web_Skin_Source_Files sources = new Complete_Web_Skin_Source_Files
+                    {
+                        Header_Source_File = "html\\header" + language_code + ".html", 
+                        Footer_Source_File = "html\\footer" + language_code + ".html", 
+                        Header_Item_Source_File = "html\\header_item" + language_code + ".html", 
+                        Footer_Item_Source_File = "html\\footer_item" + language_code + ".html"
+                    };
                     webSkin.SourceFiles[current_language] = sources;
 
                     updatedSourceFiles[sources.Header_Source_File] = header_source;
@@ -827,16 +833,12 @@ namespace SobekCM.Library.AdminViewer
 
         private void Add_Page_3(TextWriter Output)
         {
-            string current_language_code = String.Empty;
             Web_Language_Enum current_language = Web_Language_Enum.DEFAULT;
 
             if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["lang"]))
             {
-                current_language_code = HttpContext.Current.Request.QueryString["lang"];
-                if (current_language_code.ToLower() == "def")
-                    current_language = Web_Language_Enum.DEFAULT;
-                else
-                    current_language = Web_Language_Enum_Converter.Code_To_Enum(current_language_code);
+                string current_language_code = HttpContext.Current.Request.QueryString["lang"];
+                current_language = current_language_code.ToLower() == "def" ? Web_Language_Enum.DEFAULT : Web_Language_Enum_Converter.Code_To_Enum(current_language_code);
             }
 
             string HEADER_HELP = String.Empty;
@@ -851,7 +853,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Language-Specific Headers and Footers</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The web skin defines the headers and footers that display at the top and bottom of every page and these can be customized for each different language you expect your users to request.</p><p>In addition, you can define a header/footer pair for most non-item pages and another pair to use when users are viewing a digital resource within your system.  This allows the item-specific headers and footers to have a smaller height, a lower profile, and work better with the full screen.</p>Your changes will not take affect until you actually click SAVE when you are done making all your changes.</p><p>NOTE: You may need to refresh your browser when you are all done for your changes to take affect.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The web skin defines the headers and footers that display at the top and bottom of every page and these can be customized for each different language you expect your users to request.</p><p>In addition, you can define a header/footer pair for most non-item pages and another pair to use when users are viewing a digital resource within your system.  This allows the item-specific headers and footers to have a smaller height, a lower profile, and work better with the full screen.</p>Your changes will not take affect until you actually click SAVE when you are done making all your changes.</p><p>NOTE: You may need to refresh your browser when you are all done for your changes to take affect.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
             //Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\"></tr>");
 
@@ -901,26 +903,37 @@ namespace SobekCM.Library.AdminViewer
             }
             Output.WriteLine();
             Output.WriteLine("        </td>");
-            Output.WriteLine("        <td style=\"padding-left:35px;\">Copy from existing: </td>");
-            Output.WriteLine("        <td>");
-            Output.Write("          <select id=\"webskin_new_lang_copy\" name=\"webskin_new_lang_copy\">");
-            Output.Write("<option value=\"\" selected=\"selected\"></option>");
-            foreach (KeyValuePair<Web_Language_Enum, Complete_Web_Skin_Source_Files> languageSupport in webSkin.SourceFiles)
+            if ((webSkin.SourceFiles != null) && (webSkin.SourceFiles.Count > 0))
             {
-                string thisLangCode = Web_Language_Enum_Converter.Enum_To_Code(languageSupport.Key);
-                string thisLangTerm = Web_Language_Enum_Converter.Enum_To_Name(languageSupport.Key);
+                Output.WriteLine("        <td style=\"padding-left:35px;\">Copy from existing: </td>");
+                Output.WriteLine("        <td>");
+                Output.Write("          <select id=\"webskin_new_lang_copy\" name=\"webskin_new_lang_copy\">");
+                Output.Write("<option value=\"\" selected=\"selected\"></option>");
 
-                if (languageSupport.Key == Web_Language_Enum.DEFAULT)
+
+                foreach (KeyValuePair<Web_Language_Enum, Complete_Web_Skin_Source_Files> languageSupport in webSkin.SourceFiles)
                 {
-                    thisLangCode = "def";
-                    thisLangTerm = "DEFAULT";
+                    string thisLangCode = Web_Language_Enum_Converter.Enum_To_Code(languageSupport.Key);
+                    string thisLangTerm = Web_Language_Enum_Converter.Enum_To_Name(languageSupport.Key);
+
+                    if (languageSupport.Key == Web_Language_Enum.DEFAULT)
+                    {
+                        thisLangCode = "def";
+                        thisLangTerm = "DEFAULT";
+                    }
+
+                    Output.WriteLine("          <option value=\"" + thisLangCode + "\">" + HttpUtility.HtmlEncode(thisLangTerm) + "</option>");
                 }
 
-                Output.WriteLine("          <option value=\"" + thisLangCode + "\">" + HttpUtility.HtmlEncode(thisLangTerm) + "</option>");
+                Output.WriteLine("</select>");
+                Output.WriteLine("        </td>");
+            }
+            else
+            {
+                Output.WriteLine("        <td></td>");
+                Output.WriteLine("        <td></td>");
             }
 
-            Output.WriteLine("</select>");
-            Output.WriteLine("        </td>");
             Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Add new language\" class=\"sbkAdm_RoundButton\" onclick=\"return add_skin_language();\">ADD</button></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_LANGUAGE_HELP + "');\"  title=\"" + NEW_LANGUAGE_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
@@ -952,7 +965,6 @@ namespace SobekCM.Library.AdminViewer
 
                     if (languageSupport.Key == current_language)
                     {
-                        found_language = true;
                         Output.WriteLine("          <option value=\"" + thisLangCode + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(thisLangTerm) + "</option>");
                     }
                     else
@@ -1102,15 +1114,12 @@ namespace SobekCM.Library.AdminViewer
             string file_in_dir = Path.Combine(skinDirectory, FileName);
             if (!File.Exists(file_in_dir))
                 return String.Empty;
-            else
-            {
-                StreamReader reader = new StreamReader(file_in_dir);
-                string contents = reader.ReadToEnd();
-                reader.Close();
 
-                return contents.Replace("<%", "[%").Replace("%>", "%]");
+            StreamReader reader = new StreamReader(file_in_dir);
+            string contents = reader.ReadToEnd();
+            reader.Close();
 
-            }
+            return contents.Replace("<%", "[%").Replace("%>", "%]");
         }
 
         #endregion
@@ -1134,6 +1143,124 @@ namespace SobekCM.Library.AdminViewer
 
         #endregion
 
+        #region Methods to render (and parse) page 5 -  Uploads
+
+        private void Save_Page_Uploads_Postback(NameValueCollection Form)
+        {
+            string action = Form["admin_skin_action"];
+            if ((action.Length > 0) && (action.IndexOf("delete_") == 0))
+            {
+                string file = action.Substring(7);
+                string path_file = skinDirectory + "\\uploads\\" + file;
+                if (File.Exists(path_file))
+                    File.Delete(path_file);
+            }
+        }
+
+
+        private void Add_Page_Uploads(TextWriter Output)
+        {
+            // Help constants (for now)
+            const string UPLOAD_BANNER_HELP = "Upload new banner help place holder";
+
+
+
+            Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
+
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Upload Images</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your uploaded images which can be included in your web skin (either in the CSS or in the headers/footers).</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+
+
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
+
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Upload New Images</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_UploadRow\">");
+            Output.WriteLine("    <td style=\"width:100px\">&nbsp;</td>");
+            Output.WriteLine("    <td colspan=\"2\">");
+            Output.WriteLine("       <table class=\"sbkSaav_InnerTable\">");
+            Output.WriteLine("         <tr>");
+            Output.WriteLine("           <td class=\"sbkSaav_UploadInstr\">To upload one or more images to use in this web skin, browse to a GIF, PNG, JPEG, or BMP file, and then select UPLOAD</td>");
+            Output.WriteLine("           <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + UPLOAD_BANNER_HELP + "');\"  title=\"" + UPLOAD_BANNER_HELP + "\" /></td>");
+            Output.WriteLine("         </tr>");
+            Output.WriteLine("         <tr>");
+            Output.WriteLine("           <td colspan=\"2\">");
+        }
+
+        private void Finish_Page_Uploads(TextWriter Output)
+        {
+            Output.WriteLine("           </td>");
+            Output.WriteLine("         </tr>");
+            Output.WriteLine("       </table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
+
+            string uploads_dir = skinDirectory + "\\uploads";
+            if (Directory.Exists(uploads_dir))
+            {
+                string[] upload_files = SobekCM_File_Utilities.GetFiles(uploads_dir, "*.jpg|*.jpeg|*.bmp|*.gif|*.png");
+
+                if (upload_files.Length > 0)
+                {
+                    Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Existing Images</td></tr>");
+                    Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
+                    Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+                    Output.WriteLine("    <td colspan=\"3\">");
+
+
+                    Output.WriteLine("  <table id=\"sbkSaav_UploadTable\" class=\"statsTable\">");
+                    Output.WriteLine("    <tr>");
+
+                    int unused_column = 0;
+                    foreach (string thisImage in upload_files)
+                    {
+                        string thisImageFile = Path.GetFileName(thisImage);
+                        string thisImageFile_URL = RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + webSkin.Skin_Code + "/uploads/" + thisImageFile;
+
+                        Output.Write("      <td>");
+                        Output.Write("<img class=\"sbkSaav_UploadThumbnail\" src=\"" + thisImageFile_URL + "\" alt=\"Missing Thumbnail\" title=\"" + thisImageFile + "\" />");
+
+
+                        string display_name = thisImageFile;
+                        if (display_name.Length > 25)
+                        {
+                            Output.Write("<br /><span class=\"sbkSaav_UploadTitle\"><abbr title=\"" + display_name + "\">" + thisImageFile.Substring(0, 20) + "..." + Path.GetExtension(thisImage) + "</abbr></span>");
+                        }
+                        else
+                        {
+                            Output.Write("<br /><span class=\"sbkSaav_UploadTitle\">" + thisImageFile + "</span>");
+                        }
+
+
+
+                        // Build the action links
+                        Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
+                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_skin_upload_file('" + thisImageFile + "');\" title=\"Delete this uploaded file\">delete</a> | ");
+                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"window.prompt('Below is the URL, available to copy to your clipboard.  To copy to clipboard, press Ctrl+C (or Cmd+C) and Enter', '" + thisImageFile_URL + "'); return false;\" title=\"View the URL for this file\">view url</a>");
+                        Output.WriteLine(" )</span></td>");
+
+                        unused_column++;
+
+                        if (unused_column >= 4)
+                        {
+                            Output.WriteLine("    </tr>");
+                            Output.WriteLine("    <tr>");
+                            unused_column = 0;
+                        }
+                    }
+
+                    Output.WriteLine("  </table>");
+
+                    Output.WriteLine("    </td>");
+                    Output.WriteLine("  </tr>");
+                }
+            }
+            Output.WriteLine("</table>");
+            Output.WriteLine("<br />");
+        }
+
+        #endregion
+
         #region Methods to add file upload controls to the page
 
         /// <summary> Add controls directly to the form in the main control area placeholder </summary>
@@ -1141,19 +1268,23 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("File_Managament_MySobekViewer.Add_Controls", String.Empty);
+            Tracer.Add_Trace("Skin_Single_AdminViewer.Add_Controls", String.Empty);
 
             switch (page)
             {
                 case 4:
-                    add_upload_controls(MainPlaceHolder, ".gif", skinDirectory, "banner.gif", Tracer);
+                    add_upload_controls(MainPlaceHolder, ".gif", skinDirectory, "banner.gif", false, Tracer);
+                    break;
+
+                case 5:
+                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg", skinDirectory + "\\uploads", String.Empty, true, Tracer);
                     break;
             }
         }
 
-        private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, string FileExtensions, string UploadDirectory, string ServerSideName, Custom_Tracer Tracer)
+        private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
+            Tracer.Add_Trace("Skin_Single_AdminViewer.add_upload_controls", String.Empty);
 
             // Ensure the directory exists
             if (!File.Exists(UploadDirectory))
@@ -1165,14 +1296,16 @@ namespace SobekCM.Library.AdminViewer
             UploadFilesPlaceHolder.Controls.Add(filesLiteral2);
             filesBuilder.Remove(0, filesBuilder.Length);
 
-            UploadiFiveControl uploadControl = new UploadiFiveControl();
-            uploadControl.UploadPath = UploadDirectory;
-            uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
-            uploadControl.AllowedFileExtensions = FileExtensions;
-            uploadControl.SubmitWhenQueueCompletes = true;
-            uploadControl.RemoveCompleted = true;
-            uploadControl.Multi = false;
-            uploadControl.ServerSideFileName = ServerSideName;
+            UploadiFiveControl uploadControl = new UploadiFiveControl
+            {
+                UploadPath = UploadDirectory, 
+                UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx", 
+                AllowedFileExtensions = FileExtensions, 
+                SubmitWhenQueueCompletes = true, 
+                RemoveCompleted = true,
+                Multi = UploadMultiple, 
+                ServerSideFileName = ServerSideName
+            };
             UploadFilesPlaceHolder.Controls.Add(uploadControl);
 
             LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());

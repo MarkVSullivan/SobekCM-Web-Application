@@ -214,7 +214,7 @@ namespace SobekCM.Library.AdminViewer
 							break;
 
                         case 9:
-                            Save_Page_9_Postback(form);
+                            Save_Page_Uploads_Postback(form);
                             break;
 
 						case 12:
@@ -543,7 +543,7 @@ namespace SobekCM.Library.AdminViewer
 					break;
 
                 case 9:
-                    Add_Page_9(Output);
+                    Add_Page_Uploads(Output);
                     break;
 
 				case 12:
@@ -579,7 +579,7 @@ namespace SobekCM.Library.AdminViewer
 					break;
 
                 case 9:
-                    Finish_Page_9(Output);
+                    Finish_Page_Uploads(Output);
                     break;
 			}
 
@@ -3152,7 +3152,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 9 -  Uploads
 
-        private void Save_Page_9_Postback(NameValueCollection Form)
+        private void Save_Page_Uploads_Postback(NameValueCollection Form)
         {
             string action = Form["admin_aggr_action"];
             if ((action.Length > 0) && ( action.IndexOf("delete_") == 0))
@@ -3165,40 +3165,35 @@ namespace SobekCM.Library.AdminViewer
         }
 
 
-        private void Add_Page_9(TextWriter Output)
+        private void Add_Page_Uploads(TextWriter Output)
         {
             // Help constants (for now)
-            const string WEB_SKIN_HELP = "Web skin help place holder";
-            const string CSS_HELP = "Aggregation-level CSS help place holder";
-            const string CUSTOM_HOME_PAGE = "Custom home page help place holder";
-            const string NEW_HOME_PAGE_HELP = "New home page help place holder";
-            const string NEW_BANNER_HELP = "New banner help place holder";
-            const string UPLOAD_BANNER_HELP = "Upload new banner help place holder";
+            const string UPLOAD_BANNER_HELP = "Upload new image help place holder";
 
 
 
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Upload Images</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your upload images which can be included in your home page or static child pages.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your uploaded images which can be included in your home page or static child pages.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
 
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Upload New Images</td></tr>");
             Output.WriteLine("  <tr class=\"sbkSaav_UploadRow\">");
-            Output.WriteLine("    <td>&nbsp;</td>");
-            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\">Upload New Images:</td>");
-            Output.WriteLine("    <td>");
+            Output.WriteLine("    <td style=\"width:100px\">&nbsp;</td>");
+            Output.WriteLine("    <td colspan=\"2\">");
             Output.WriteLine("       <table class=\"sbkSaav_InnerTable\">");
             Output.WriteLine("         <tr>");
-            Output.WriteLine("           <td class=\"sbkSaav_UploadInstr\">To upload, browse to a GIF, PNG, JPEG, or BMP file, and then select UPLOAD</td>");
+            Output.WriteLine("           <td class=\"sbkSaav_UploadInstr\">To upload one or more images to use in this aggregation, browse to a GIF, PNG, JPEG, or BMP file, and then select UPLOAD</td>");
             Output.WriteLine("           <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + UPLOAD_BANNER_HELP + "');\"  title=\"" + UPLOAD_BANNER_HELP + "\" /></td>");
             Output.WriteLine("         </tr>");
             Output.WriteLine("         <tr>");
             Output.WriteLine("           <td colspan=\"2\">");
         }
 
-        private void Finish_Page_9(TextWriter Output)
+        private void Finish_Page_Uploads(TextWriter Output)
         {
             Output.WriteLine("           </td>");
             Output.WriteLine("         </tr>");
@@ -3217,21 +3212,20 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Existing Images</td></tr>");
                     Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
                     Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-                    Output.WriteLine("    <td style=\"width:100px\"></td>");
-                    Output.WriteLine("    <td colspan=\"2\">");
+                    Output.WriteLine("    <td colspan=\"3\">");
 
 
-                    Output.WriteLine("  <table style=\"border:0; width:100%; border-collapse: collapse; border-spacing: 0;\" class=\"statsTable\">");
-                    //			Output.WriteLine("  <tr><td colspan=\"4\" style=\"background-color:#e7e7e7;\" ></td></tr>");
-                    Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
+                    Output.WriteLine("  <table id=\"sbkSaav_UploadTable\" class=\"statsTable\">");
+                    Output.WriteLine("    <tr>");
 
                     int unused_column = 0;
                     foreach (string thisImage in upload_files)
                     {
                         string thisImageFile = Path.GetFileName(thisImage);
+                        string thisImageFile_URL = RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/" + itemAggregation.Code + "/uploads/" + thisImageFile;
 
-                        Output.Write("      <td style=\"width:210px;\">");
-                        Output.Write("<img style=\"border: 0;\" class=\"sbkSaav_UploadThumbnail\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/" + itemAggregation.Code + "/uploads/" + thisImageFile + "\" alt=\"Missing Thumbnail\" title=\"" + thisImageFile + "\" />");
+                        Output.Write("      <td>");
+                        Output.Write("<img class=\"sbkSaav_UploadThumbnail\" src=\"" + thisImageFile_URL + "\" alt=\"Missing Thumbnail\" title=\"" + thisImageFile + "\" />");
 
 
                         string display_name = thisImageFile;
@@ -3248,23 +3242,19 @@ namespace SobekCM.Library.AdminViewer
 
                         // Build the action links
                         Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
-                        Output.Write("<a title=\"Click to delete this file\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr_upload_file('" + thisImageFile + "');\" title=\"Delete this uploaded file\">delete</a> )</span>");
-                        Output.WriteLine("</td>");
+                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr_upload_file('" + thisImageFile + "');\" title=\"Delete this uploaded file\">delete</a> | ");
+                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"window.prompt('Below is the URL, available to copy to your clipboard.  To copy to clipboard, press Ctrl+C (or Cmd+C) and Enter', '" + thisImageFile_URL + "'); return false;\" title=\"View the URL for this file\">view url</a>");
+
+                        Output.WriteLine(" )</span></td>");
 
                         unused_column++;
 
                         if (unused_column >= 4)
                         {
                             Output.WriteLine("    </tr>");
-                            Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
-                            Output.WriteLine("    <tr style=\"text-align:center; vertical-align:bottom;\" >");
+                            Output.WriteLine("    <tr>");
                             unused_column = 0;
                         }
-                    }
-
-                    if (unused_column > 0)
-                    {
-                        Output.WriteLine("    <tr><td colspan=\"4\" class=\"sbkWav_TableRule\" ></td></tr>");
                     }
 
                     Output.WriteLine("  </table>");

@@ -1031,6 +1031,13 @@ namespace SobekCM.Core.Aggregations
             {
                 string filename = Code.ToLower() + ".xml";
 
+                // If the directory does not exist, creat it
+                if (!System.IO.Directory.Exists(Directory))
+                {
+                    System.IO.Directory.CreateDirectory(Directory);
+                }
+
+
                 // Create the writer object
                 StreamWriter writer = new StreamWriter(Directory + "\\" + filename, false);
 
@@ -1125,7 +1132,7 @@ namespace SobekCM.Core.Aggregations
                 {
                     foreach (KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> homePair in Home_Page_File_Dictionary)
                     {
-                        writer.WriteLine("    <hi:body lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\" isCustom=\"" + homePair.Value.isCustomHome.ToString().ToLower() + "\">" + homePair.Value.Source + "</hi:body>");
+                        writer.WriteLine("    <hi:body lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\" isCustom=\"" + homePair.Value.isCustomHome.ToString().ToLower() + "\">" + homePair.Value.Source.Replace("/","\\") + "</hi:body>");
                     }
                 }
                 writer.WriteLine("</hi:home>");
@@ -1142,7 +1149,7 @@ namespace SobekCM.Core.Aggregations
                 {
                     foreach (KeyValuePair<Web_Language_Enum, string> homePair in Banner_Dictionary)
                     {
-                        writer.WriteLine("    <hi:source lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\">" + homePair.Value + "</hi:source>");
+                        writer.WriteLine("    <hi:source lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\">" + homePair.Value.Replace("/", "\\") + "</hi:source>");
                     }
                 }
                 if (Front_Banner_Dictionary != null)

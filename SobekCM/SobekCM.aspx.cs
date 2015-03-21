@@ -135,7 +135,7 @@ namespace SobekCM
 
 		#endregion
 
-		#region Methods called during execution of the HTML from UFDC.aspx
+		#region Methods called during execution of the HTML from SobekCM.aspx
 
 		protected void Write_Page_Title()
 		{
@@ -166,7 +166,7 @@ namespace SobekCM
 
 			pageGlobals.tracer.Add_Trace("sobekcm(.aspx).Write_Within_HTML_Head", String.Empty);
 
-			// Only bother writing the style references if this is writing HTML (either logged out or logged in via myUFDC)
+			// Only bother writing the style references if this is writing HTML (either logged out or logged in via mySobekCM)
 			if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
 			{
 				((Html_MainWriter)pageGlobals.mainWriter).Write_Within_HTML_Head(Response.Output, pageGlobals.tracer);
