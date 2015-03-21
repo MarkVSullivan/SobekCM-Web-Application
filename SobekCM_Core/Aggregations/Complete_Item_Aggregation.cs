@@ -393,12 +393,6 @@ namespace SobekCM.Core.Aggregations
         [ProtoMember(31)]
 		public string CSS_File { get; set; }
 
-		/// <summary> Custom home page source file, if one exists </summary>
-		/// <remarks> This overrides many of the other parts of the item aggregation if in affect </remarks>
-        [DataMember(EmitDefaultValue = false, Name = "customHomeFile")]
-        [ProtoMember(32)]
-		public string Custom_Home_Page_Source_File { get; set; }
-
         /// <summary> External link associated with this item aggregation  </summary>
         /// <remarks> This shows up in the citation view when an item is linked to this item aggregation </remarks>
         [DataMember(EmitDefaultValue = false, Name = "externalLink")]
@@ -442,7 +436,7 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Gets the raw home page source file </summary>
         [DataMember(EmitDefaultValue = false, Name = "homePageFiles"), ProtoMember(41)]
-        public Dictionary<Web_Language_Enum, string> Home_Page_File_Dictionary { get; private set; }
+        public Dictionary<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> Home_Page_File_Dictionary { get; private set; }
 
         /// <summary> Get the standard banner dictionary, by language </summary>
         [DataMember(EmitDefaultValue = false, Name = "banners"), ProtoMember(42)]
@@ -763,20 +757,23 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Add the home page source file information, by language </summary>
         /// <param name = "Home_Page_File"> Home page text source file </param>
         /// <param name = "Language"> Language code </param>
-        public void Add_Home_Page_File(string Home_Page_File, Web_Language_Enum Language)
+        /// <param name = "isCustomHome"> Flag indicates if this is a custom home page, which will
+        /// override all other home page writing methods, and control the rendered page
+        /// from the top to the bottom  </param>
+        public void Add_Home_Page_File(string Home_Page_File, Web_Language_Enum Language, bool isCustomHome )
         {
             if (Home_Page_File_Dictionary == null)
-                Home_Page_File_Dictionary = new Dictionary<Web_Language_Enum, string>();
+                Home_Page_File_Dictionary = new Dictionary<Web_Language_Enum, Complete_Item_Aggregation_Home_Page>();
 
             // If no language code, then always use this as the default
             if (Language == Web_Language_Enum.DEFAULT)
             {
-                Home_Page_File_Dictionary[defaultUiLanguage] = Home_Page_File;
+                Home_Page_File_Dictionary[defaultUiLanguage] = new Complete_Item_Aggregation_Home_Page(Home_Page_File, isCustomHome, Language);
             }
             else
             {
                 // Save this under the normalized language code
-                Home_Page_File_Dictionary[Language] = Home_Page_File;
+                Home_Page_File_Dictionary[Language] = new Complete_Item_Aggregation_Home_Page(Home_Page_File, isCustomHome, Language);
             }
         }
 
@@ -951,10 +948,10 @@ namespace SobekCM.Core.Aggregations
         /// <remarks>
         ///   If NO home page files were included in the aggregation XML, then this could be the empty string.
         /// </remarks>
-        public string Home_Page_File(Web_Language_Enum Language)
+        public Complete_Item_Aggregation_Home_Page Home_Page_File(Web_Language_Enum Language)
         {
             if (Home_Page_File_Dictionary == null)
-                return String.Empty;
+                return null;
 
             // Does this language exist in the home page file lookup dictionary?
             if (Home_Page_File_Dictionary.ContainsKey(Language))
@@ -969,7 +966,7 @@ namespace SobekCM.Core.Aggregations
             }
 
             // Just return the first, assuming one exists
-            return Home_Page_File_Dictionary.Count > 0 ? Home_Page_File_Dictionary.ElementAt(0).Value : String.Empty;
+            return Home_Page_File_Dictionary.Count > 0 ? Home_Page_File_Dictionary.ElementAt(0).Value : null;
         }
 
    
@@ -1095,15 +1092,7 @@ namespace SobekCM.Core.Aggregations
 					writer.WriteLine("    <hi:css>" + CSS_File + "</hi:css>");
 					writer.WriteLine();
 				}
-
-				// Add the custom home page source file
-				if (!String.IsNullOrEmpty(Custom_Home_Page_Source_File))
-				{
-					writer.WriteLine("    <!-- Custom home page source file  -->");
-					writer.WriteLine("    <hi:customhome>" + Custom_Home_Page_Source_File + "</hi:customhome>");
-					writer.WriteLine();
-				}
-				
+		
 
                 writer.WriteLine("    <!-- Facets here indicate which metadata elements should appear as facets    -->");
                 writer.WriteLine("    <!-- on the left when viewing browse or search results within this           -->");
@@ -1134,9 +1123,9 @@ namespace SobekCM.Core.Aggregations
                 writer.WriteLine("<hi:home>");
                 if (Home_Page_File_Dictionary != null)
                 {
-                    foreach (KeyValuePair<Web_Language_Enum, string> homePair in Home_Page_File_Dictionary)
+                    foreach (KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> homePair in Home_Page_File_Dictionary)
                     {
-                        writer.WriteLine("    <hi:body lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\">" + homePair.Value + "</hi:body>");
+                        writer.WriteLine("    <hi:body lang=\"" + Web_Language_Enum_Converter.Enum_To_Code(homePair.Key) + "\" isCustom=\"" + homePair.Value.isCustomHome.ToString().ToLower() + "\">" + homePair.Value.Source + "</hi:body>");
                     }
                 }
                 writer.WriteLine("</hi:home>");

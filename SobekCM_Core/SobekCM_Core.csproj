@@ -50,6 +50,7 @@
     <Compile Include="Aggregations\Aggregation_Hierarchy.cs" />
     <Compile Include="Aggregations\Complete_Item_Aggregation.cs" />
     <Compile Include="Aggregations\Complete_Item_Aggregation_Child_Page.cs" />
+    <Compile Include="Aggregations\Complete_Item_Aggregation_Home_Page.cs" />
     <Compile Include="Aggregations\Complete_Item_Aggregation_Metadata_Type.cs" />
     <Compile Include="Aggregations\Item_Aggregation.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Child_Page.cs" />

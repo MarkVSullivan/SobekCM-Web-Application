@@ -247,7 +247,8 @@ namespace SobekCM.Engine_Library.Aggregations
 
 						case "HI:CUSTOMHOME":
 							NodeReader.Read();
-							HierarchyObject.Custom_Home_Page_Source_File = NodeReader.Value.Trim();
+                            // No longer do anything with this tag
+							///HierarchyObject.Custom_Home_Page_Source_File = NodeReader.Value.Trim();
 							break;
 
                         case "HI:FACETS":
@@ -287,18 +288,21 @@ namespace SobekCM.Engine_Library.Aggregations
                     switch (nodeName)
                     {
                         case "HI:BODY":
+                            Web_Language_Enum langEnum = Web_Language_Enum.DEFAULT;
+                            bool isCustom = false;
                             if ((NodeReader.HasAttributes) && (NodeReader.MoveToAttribute("lang")))
                             {
                                 string bodyLanguage = NodeReader.GetAttribute("lang");
-                                NodeReader.Read();
-                                HierarchyObject.Add_Home_Page_File(  NodeReader.Value, Web_Language_Enum_Converter.Code_To_Enum(bodyLanguage));
+                                langEnum = Web_Language_Enum_Converter.Code_To_Enum(bodyLanguage);
                             }
-                            else
+                            if ((NodeReader.HasAttributes) && (NodeReader.MoveToAttribute("isCustom")))
                             {
-                                NodeReader.Read();
-                                HierarchyObject.Add_Home_Page_File( NodeReader.Value, Web_Language_Enum.DEFAULT);
+                                if (NodeReader.GetAttribute("isCustom").ToLower() == "true")
+                                    isCustom = true;
                             }
 
+                            NodeReader.Read();
+                            HierarchyObject.Add_Home_Page_File(NodeReader.Value, langEnum, isCustom );
                             break;
                     }
                 }

@@ -703,12 +703,12 @@ namespace SobekCM.Library.HTML
             }
 			
 			// Draw the banner and add links to the other views first
-	        if (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Rotating_Highlight_Search)
+	        if ((collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Rotating_Highlight_Search) && (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Custom_Home_Page))
 	        {
-		        if (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.DataSet_Browse)
+                if (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.DataSet_Browse) 
 		        {
 			        // Add the main aggrgeation menu here
-                    if (!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation)
+                    if ((!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_MainMenu)))
                         MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(Output, RequestSpecificValues);
 
 					// Start the page container
@@ -718,7 +718,7 @@ namespace SobekCM.Library.HTML
 				else
 				{
 					// Add the main aggrgeation menu here
-                    if (!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation)
+                    if ((!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_MainMenu)))
                         MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, false);
 
 					// Start the (optional) page container
@@ -741,7 +741,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine(collectionViewer.Search_Script_Reference);
 
             // Write the search box
-            if (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.DataSet_Browse)
+            if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_SearchForm))
             {
                 string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
 
@@ -947,144 +947,16 @@ namespace SobekCM.Library.HTML
 	                //Output.WriteLine(((currentMode.Mode != Display_Mode_Enum.Aggregation) || (currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map_Beta)) ? "</div>" : "<div id=\"pagecontainer_resumed\">");
                 }
 
+                Output.WriteLine("</form>");
                 Output.WriteLine();
+
             }
             else
             {
                 collectionViewer.Add_Search_Box_HTML(Output, Tracer);
+
+                //Output.WriteLine("</form>");
             }
-
-			#region Old code to show the collection selection panel, now deprecated for the main menu
-
-			//// Prepare to add the collection selector information, but first, check to see if this the main home page
-			//bool sobekcm_main_home_page = (currentMode.Mode == Display_Mode_Enum.Aggregation) && (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) && (RequestSpecificValues.Hierarchy_Object.Code == "all");
-
-			//// Add the collection selector, if it ever appears here
-			//if ((!sobekcm_main_home_page) && (collectionViewer.Selection_Panel_Display != Selection_Panel_Display_Enum.Never) && (RequestSpecificValues.Hierarchy_Object.Active_Children_Count > 0))
-			//{
-			//	// Get the collection of children
-			//	ReadOnlyCollection<Item_Aggregation_Related_Aggregations> child_aggregations = RequestSpecificValues.Hierarchy_Object.Children;
-
-			//	// Set the strings for the tab here
-			//	string show_collect_groups = "SHOW COLLECTION GROUPS";
-			//	string show_collect = "SHOW COLLECTIONS";
-			//	string show_subcollect = "SHOW SUBCOLLECTIONS";
-			//	string hide_collect_groups = "HIDE COLLECTION GROUPS";
-			//	string hide_collect = "HIDE COLLECTIONS";
-			//	string hide_subcollect = "HIDE SUBCOLLECTIONS";
-			//	string select_collect_groups = "Select collection groups to include in search:";
-			//	string select_collect = "Select collections to include in search:";
-			//	string select_subcollect = "Select subcollections to include in search:";
-
-			//	// Change text if this is Spanish
-			//	if (currentMode.Language == Web_Language_Enum.Spanish)
-			//	{
-			//		show_collect_groups = "SELECCIONE GRUPOS DE COLECCIONES";
-			//		show_collect = "SELECCIONE COLECCIONES";
-			//		show_subcollect = "SELECCIONE SUBCOLECCIONES";
-			//		hide_collect_groups = "ESCONDA GRUPOS DE COLECCIONES";
-			//		hide_collect = "ESCONDA COLECCIONES";
-			//		hide_subcollect = "ESCONDA SUBCOLECCIONES";
-			//		select_collect_groups = "Seleccione grupos de colecciones para incluir en la búsqueda:";
-			//		select_collect = "Seleccione colecciones para incluir en la búsqueda:";
-			//		select_subcollect = "Seleccione subcolecciones para incluir en la búsqueda:";
-
-			//	}
-
-			//	// Change the text if this is french
-			//	if (currentMode.Language == Web_Language_Enum.French)
-			//	{
-			//		show_collect_groups = "VOIR LE GROUPE DE COLLECTION";
-			//		show_collect = "VOIR LES COLLECTIONS";
-			//		show_subcollect = "VOIR LES SOUSCOLLECTIONS";
-			//		hide_collect_groups = "SUPPRIMER LE GROUPE DE COLLECTION";
-			//		hide_collect = "SUPPRIMER LES COLLECTIONS";
-			//		hide_subcollect = "SUPPRIMER LES SOUSCOLLECTIONS";
-			//		select_collect_groups = "Choisir les group de collection pour inclure dans votre recherche:";
-			//		select_collect = "Choisir les collections pour inclure dans votre recherche:";
-			//		select_subcollect = "Choisir les souscollections pour inclure dans votre recherche:";
-			//	}
-
-			//	// Determine the sub text to use
-			//	string select_text = select_subcollect;
-			//	string show_text = show_subcollect;
-			//	string hide_text = hide_subcollect;
-			//	if (RequestSpecificValues.Hierarchy_Object.Code == "all")
-			//	{
-			//		select_text = select_collect_groups;
-			//		show_text = show_collect_groups;
-			//		hide_text = hide_collect_groups;
-			//	}
-			//	else
-			//	{
-			//		if (child_aggregations[0].Type.ToUpper() == "COLLECTION")
-			//		{
-			//			select_text = select_collect;
-			//			show_text = show_collect;
-			//			hide_text = hide_collect;
-			//		}
-			//	}
-
-			//	if ((collectionViewer.Selection_Panel_Display == Selection_Panel_Display_Enum.Selectable) && (!currentMode.Show_Selection_Panel))
-			//	{
-			//		Output.WriteLine("<div class=\"ShowSelectRow\">");
-			//		//currentMode.Show_Selection_Panel = true;
-			//		Output.WriteLine("  <a href=\"\" onclick=\"return set_subaggr_display('true');\">" + Down_Tab_Start + show_text + Down_Tab_End + "</a>");
-			//		//currentMode.Show_Selection_Panel = false;
-			//		Output.WriteLine("</div>");
-			//		Output.WriteLine();
-			//	}
-			//	else
-			//	{
-			//		if (collectionViewer.Selection_Panel_Display == Selection_Panel_Display_Enum.Selectable)
-			//		{
-			//			Output.WriteLine("<div class=\"HideSelectRow\">");
-			//			//currentMode.Show_Selection_Panel = false;
-			//			Output.WriteLine("  <a href=\"\" onclick=\"return set_subaggr_display('false');\">" + Unselected_Tab_Start + hide_text + Unselected_Tab_End + "</a>");
-			//			//currentMode.Show_Selection_Panel = true;
-			//			Output.WriteLine("</div>");
-			//			Output.WriteLine();
-			//		}
-			//		else
-			//		{
-			//			Output.WriteLine("<br />");
-			//		}
-
-			//		Output.WriteLine("<div class=\"SobekSelectPanel\"><b>" + select_text + "</b>");
-			//		Output.WriteLine("  <br />");
-
-			//		Display_Mode_Enum lastDisplayMode = currentMode.Mode;
-			//		Aggregation_Type_Enum lastAggrType = currentMode.Aggregation_Type;
-			//		string thisAggr = currentMode.Aggregation;
-			//		string thisAlias = currentMode.Aggregation_Alias;
-			//		currentMode.Aggregation_Alias = String.Empty;
-			//		currentMode.Mode = Display_Mode_Enum.Aggregation;
-			//		currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-			//		foreach (Item_Aggregation_Related_Aggregations t in child_aggregations)
-			//		{
-			//			if ((t.Active) && (!t.Hidden))
-			//			{
-			//				Output.WriteLine("  <span class=\"SobekSelectCheckBox\">");
-			//				Output.Write("    <input type=\"checkbox\" value=\"" + t.Code + "\" name=\"checkgroup\"");
-			//				Output.WriteLine("< checked=\"checked\" />");
-			//			//    Output.WriteLine(currentMode.SubAggregation.IndexOf(t.Code) < 0 ? " />" : " checked />");
-			//				currentMode.Aggregation = t.Code;
-			//				Output.WriteLine("    <a href=\"" + currentMode.Redirect_URL() + "\">" + t.Name + "</a>");
-			//				Output.WriteLine("  </span>");
-			//				Output.WriteLine("  <br />");
-			//			}
-			//		}
-			//		currentMode.Aggregation = thisAggr;
-			//		currentMode.Aggregation_Alias = thisAlias;
-			//		currentMode.Mode = lastDisplayMode;
-			//		currentMode.Aggregation_Type = lastAggrType;
-			//		Output.WriteLine("</div>");
-			//	}
-			//}
-
-			#endregion
-
-			Output.WriteLine("</form>");
 
             // Add the secondary HTML ot the home page
             bool finish_page = true;
@@ -2348,102 +2220,106 @@ namespace SobekCM.Library.HTML
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_Final_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (collectionViewer != null)
+            if ((collectionViewer != null) && (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.Custom_Home_Page))
             {
                 Output.WriteLine("<!-- Close the pagecontainer div -->");
                 Output.WriteLine("</div>");
                 Output.WriteLine();
-            }
 
-	        // Add the scripts needed
+
+                // Add the scripts needed
 #if DEBUG
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.js\"></script>");
 #else
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.min.js\"></script>");
 #endif
-            // NOTE: The jquery.hovercard.min.js file included below has been modified for SobekCM, and also includes a bug fix. DO NOT REPLACE with another version
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.hovercard.min.js\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\">");
-            Output.WriteLine("    $(document).ready(function () {");
-            Output.WriteLine("        $('[id*=sbkAghsw_CollectionButtonImg]').each(function () {");
-            Output.WriteLine("            var $this = $(this);");
-            Output.WriteLine("            var hovercardTitle = '<div style=\"display:inline; float:left; font-weight:bold;margin-left:70px;margin-top:-10px;\" class=\"sbkAghsw_CollectionButtonTxt\"><a href=' + $this.find('a').attr('href') + '>' + $this.find('img').attr('alt') + '</a></div><br/>';");
-            Output.WriteLine("            var hovercardHTML = '<div style=\"display:inline;margin:70px;\">' + $this.find('.spanHoverText').text() + '</div><br/>';");
-            Output.WriteLine("            $this.hovercard({detailsHTML: hovercardTitle+hovercardHTML, width: 300, openOnLeft: false,autoAdjust: false, delay:0 }); ");
-            Output.WriteLine("        });");
-            Output.WriteLine("    });");
-            Output.WriteLine("</script>");      
-            Output.WriteLine();
-
-            // Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
-            string LEFT_BUTTONS = String.Empty;
-            string RIGHT_BUTTONS = String.Empty;
-            string first_page = "First Page";
-            string previous_page = "Previous Page";
-            string next_page = "Next Page";
-            string last_page = "Last Page";
-            string first_page_text = "First";
-            string previous_page_text = "Previous";
-            string next_page_text = "Next";
-            string last_page_text = "Last";
-
-            if (RequestSpecificValues.Results_Statistics != null && RequestSpecificValues.Results_Statistics.Total_Items > 0)
-            {
-                #region Determine the Next, Last, First, Previous buttons display
-                //if(RequestSpecificValues.Results_Statistics.)
-                ushort current_page = RequestSpecificValues.Current_Mode.Page;
-                StringBuilder buttons_builder = new StringBuilder(1000);
-
-                if (current_page > 1)
-                {
-                    buttons_builder.Append("<div class=\"sbkPrsw_LeftButtons\">");
-                    RequestSpecificValues.Current_Mode.Page = 1;
-                    buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-                    RequestSpecificValues.Current_Mode.Page = (ushort)(current_page - 1);
-                    buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
-                    buttons_builder.Append("</div>");
-                    LEFT_BUTTONS = buttons_builder.ToString();
-                    buttons_builder.Clear();
-                }
-                else
-                {
-                    LEFT_BUTTONS = "<div class=\"sbkPrsw_NoLeftButtons\">&nbsp;</div>";
-                }
-
-
-                // Should the next and last buttons be enabled?
-                if ((current_page * RESULTS_PER_PAGE) < RequestSpecificValues.Results_Statistics.Total_Titles)
-                {
-                    buttons_builder.Append("<div class=\"sbkPrsw_RightButtons\">");
-                    RequestSpecificValues.Current_Mode.Page = (ushort)(current_page + 1);
-                    buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-                    RequestSpecificValues.Current_Mode.Page = (ushort)(RequestSpecificValues.Results_Statistics.Total_Titles / RESULTS_PER_PAGE);
-                    if (RequestSpecificValues.Results_Statistics.Total_Titles % RESULTS_PER_PAGE > 0)
-                        RequestSpecificValues.Current_Mode.Page = (ushort)(RequestSpecificValues.Current_Mode.Page + 1);
-                    buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
-                    buttons_builder.Append("</div>");
-                    RIGHT_BUTTONS = buttons_builder.ToString();
-                }
-                else
-                {
-                    RIGHT_BUTTONS = "<div class=\"sbkPrsw_NoRightButtons\">&nbsp;</div>";
-                }
-                // Save the buttons for later, to be used at the bottom of the page
-                leftButtons = LEFT_BUTTONS;
-                rightButtons = RIGHT_BUTTONS;
-
-                RequestSpecificValues.Current_Mode.Page = current_page;
-
-                #endregion
-                Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">");
-                Output.Write(leftButtons);
-                //Output.WriteLine("  " + Showing_Text);
-                Output.Write(rightButtons);
-                Output.WriteLine("</div>");
-                Output.WriteLine("<br />");
+                // NOTE: The jquery.hovercard.min.js file included below has been modified for SobekCM, and also includes a bug fix. DO NOT REPLACE with another version
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.hovercard.min.js\"></script>");
+                Output.WriteLine("<script type=\"text/javascript\">");
+                Output.WriteLine("    $(document).ready(function () {");
+                Output.WriteLine("        $('[id*=sbkAghsw_CollectionButtonImg]').each(function () {");
+                Output.WriteLine("            var $this = $(this);");
+                Output.WriteLine("            var hovercardTitle = '<div style=\"display:inline; float:left; font-weight:bold;margin-left:70px;margin-top:-10px;\" class=\"sbkAghsw_CollectionButtonTxt\"><a href=' + $this.find('a').attr('href') + '>' + $this.find('img').attr('alt') + '</a></div><br/>';");
+                Output.WriteLine("            var hovercardHTML = '<div style=\"display:inline;margin:70px;\">' + $this.find('.spanHoverText').text() + '</div><br/>';");
+                Output.WriteLine("            $this.hovercard({detailsHTML: hovercardTitle+hovercardHTML, width: 300, openOnLeft: false,autoAdjust: false, delay:0 }); ");
+                Output.WriteLine("        });");
+                Output.WriteLine("    });");
+                Output.WriteLine("</script>");
                 Output.WriteLine();
-            }
 
+
+
+                if (RequestSpecificValues.Results_Statistics != null && RequestSpecificValues.Results_Statistics.Total_Items > 0)
+                {
+                    // Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
+                    string LEFT_BUTTONS = String.Empty;
+                    string RIGHT_BUTTONS = String.Empty;
+                    string first_page = "First Page";
+                    string previous_page = "Previous Page";
+                    string next_page = "Next Page";
+                    string last_page = "Last Page";
+                    string first_page_text = "First";
+                    string previous_page_text = "Previous";
+                    string next_page_text = "Next";
+                    string last_page_text = "Last";
+
+                    #region Determine the Next, Last, First, Previous buttons display
+
+                    //if(RequestSpecificValues.Results_Statistics.)
+                    ushort current_page = RequestSpecificValues.Current_Mode.Page;
+                    StringBuilder buttons_builder = new StringBuilder(1000);
+
+                    if (current_page > 1)
+                    {
+                        buttons_builder.Append("<div class=\"sbkPrsw_LeftButtons\">");
+                        RequestSpecificValues.Current_Mode.Page = 1;
+                        buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                        RequestSpecificValues.Current_Mode.Page = (ushort) (current_page - 1);
+                        buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                        buttons_builder.Append("</div>");
+                        LEFT_BUTTONS = buttons_builder.ToString();
+                        buttons_builder.Clear();
+                    }
+                    else
+                    {
+                        LEFT_BUTTONS = "<div class=\"sbkPrsw_NoLeftButtons\">&nbsp;</div>";
+                    }
+
+
+                    // Should the next and last buttons be enabled?
+                    if ((current_page*RESULTS_PER_PAGE) < RequestSpecificValues.Results_Statistics.Total_Titles)
+                    {
+                        buttons_builder.Append("<div class=\"sbkPrsw_RightButtons\">");
+                        RequestSpecificValues.Current_Mode.Page = (ushort) (current_page + 1);
+                        buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                        RequestSpecificValues.Current_Mode.Page = (ushort) (RequestSpecificValues.Results_Statistics.Total_Titles/RESULTS_PER_PAGE);
+                        if (RequestSpecificValues.Results_Statistics.Total_Titles%RESULTS_PER_PAGE > 0)
+                            RequestSpecificValues.Current_Mode.Page = (ushort) (RequestSpecificValues.Current_Mode.Page + 1);
+                        buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                        buttons_builder.Append("</div>");
+                        RIGHT_BUTTONS = buttons_builder.ToString();
+                    }
+                    else
+                    {
+                        RIGHT_BUTTONS = "<div class=\"sbkPrsw_NoRightButtons\">&nbsp;</div>";
+                    }
+                    // Save the buttons for later, to be used at the bottom of the page
+                    leftButtons = LEFT_BUTTONS;
+                    rightButtons = RIGHT_BUTTONS;
+
+                    RequestSpecificValues.Current_Mode.Page = current_page;
+
+                    #endregion
+
+                    Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">");
+                    Output.Write(leftButtons);
+                    //Output.WriteLine("  " + Showing_Text);
+                    Output.Write(rightButtons);
+                    Output.WriteLine("</div>");
+                    Output.WriteLine("<br />");
+                    Output.WriteLine();
+                }
+            }
         }
         /// <summary> Text which indicates which values of the current result or browse are being shown</summary>
         public string Showing_Text { get; private set; }

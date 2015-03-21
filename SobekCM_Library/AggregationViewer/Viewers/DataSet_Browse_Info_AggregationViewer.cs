@@ -61,7 +61,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 return new List<HtmlSubwriter_Behaviors_Enum>
                         {
-                            HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text
+                            HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text,
+                            HtmlSubwriter_Behaviors_Enum.Suppress_SearchForm
                         };
             }
         }

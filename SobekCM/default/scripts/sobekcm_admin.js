@@ -787,38 +787,29 @@ function new_aggr_edit_page(page) {
     return false;
 }
 
+function change_custom_home_flag(language, code, initial_check) {
+    if (initial_check == true) {
 
-function aggr_edit_enable_custom_home() {
-    var hiddenfield = document.getElementById('admin_aggr_action');
-    hiddenfield.value = 'enable_custom_home';
-    document.itemNavForm.submit();
-    return false;
-}
-
-function aggr_edit_delete_custom_home() {
-    var hiddenfield = document.getElementById('admin_aggr_custom_home');
-    var strSelect = hiddenfield.options[hiddenfield.selectedIndex].value;
-    if (strSelect.length == 0) return false;
-
-    var input_box = confirm("Do you really want to delete the custom home page source file '" + strSelect + "'?");
-    if (input_box == true) {
-        var hiddenfield = document.getElementById('admin_aggr_action');
-        hiddenfield.value = 'delete_custom_home';
-        document.itemNavForm.submit();
-    }
-
-    // Return false to prevent another return trip to the server
-    return false;
-}
-
-function aggr_edit_custom_home_selectchange() {
-    var hiddenfield = document.getElementById('admin_aggr_custom_home');
-    var strSelect = hiddenfield.options[hiddenfield.selectedIndex].value;
-    if (strSelect.length > 0) {
-        document.getElementById("customHomePageDeleteButton").disabled = false;
+        var input_box = confirm("Do you really want to convert the custom home type for " + language + " to the standard home page type?");
+        if (input_box == true) {
+            var hiddenfield = document.getElementById('admin_aggr_save');
+            hiddenfield.value = 'e';
+            var hiddenfield2 = document.getElementById('admin_aggr_action');
+            hiddenfield2.value = 'uncustomize_' + code;
+            document.itemNavForm.submit();
+        }
     } else {
-        document.getElementById("customHomePageDeleteButton").disabled = true;
+        var input_box = confirm("Do you really want to convert the standard home type for " + language + " to a custom home page type?\n\nCustom home pages override the entire page (including banners, headers, footers, and search boxes) and allow you to completely control the look and feel from top to bottom.");
+        if (input_box == true) {
+            var hiddenfield = document.getElementById('admin_aggr_save');
+            hiddenfield.value = 'e';
+            var hiddenfield2 = document.getElementById('admin_aggr_action');
+            hiddenfield2.value = 'customize_' + code;
+            document.itemNavForm.submit();
+        }
     }
+
+    return false;
 }
 
 function save_css_edits() {

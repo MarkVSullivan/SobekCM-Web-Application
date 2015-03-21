@@ -197,15 +197,15 @@ namespace SobekCM.Engine_Library.Aggregations
 		{
 			// Just use the standard home text
             if ( File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text.html"))
-    			ThisObject.Add_Home_Page_File(  "html/home/text.html", Engine_ApplicationCache_Gateway.Settings.Default_UI_Language );
+    			ThisObject.Add_Home_Page_File(  "html/home/text.html", Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, false );
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_en.html"))
-                ThisObject.Add_Home_Page_File("html/home/text_en.html",  Web_Language_Enum.English );
+                ThisObject.Add_Home_Page_File("html/home/text_en.html",  Web_Language_Enum.English, false );
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_fr.html"))
-                ThisObject.Add_Home_Page_File("html/home/text_fr.html", Web_Language_Enum.French);
+                ThisObject.Add_Home_Page_File("html/home/text_fr.html", Web_Language_Enum.French, false);
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_es.html"))
-                ThisObject.Add_Home_Page_File("html/home/text_es.html", Web_Language_Enum.Spanish);
+                ThisObject.Add_Home_Page_File("html/home/text_es.html", Web_Language_Enum.Spanish, false);
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_sp.html"))
-                ThisObject.Add_Home_Page_File("html/home/text_sp.html", Web_Language_Enum.Spanish);
+                ThisObject.Add_Home_Page_File("html/home/text_sp.html", Web_Language_Enum.Spanish, false);
 
 			// Just use the standard banner image
             if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll.jpg"))
@@ -505,50 +505,9 @@ namespace SobekCM.Engine_Library.Aggregations
 
             // Language-specific source page
             returnValue.HomePageSource = String.Empty;
-            if (!String.IsNullOrEmpty(CompAggr.Custom_Home_Page_Source_File))
-            {
-                returnValue.Custom_Home_Page = true;
-                returnValue.HomePageSource = CompAggr.Custom_Home_Page_Source_File;
-
-                // Get the home file source
-                string homeFileSource = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, CompAggr.ObjDirectory, CompAggr.Custom_Home_Page_Source_File);
-
-                // If no home file source even found, return a message to that affect
-                if (homeFileSource.Length == 0)
-                {
-                    returnValue.HomePageHtml = new HTML_Based_Content("<div class=\"error_div\">NO HOME PAGE SOURCE FILE FOUND</div>", null, homeFileSource);
-                }
-                else
-                {
-
-                    // Do the rest in a try/catch
-                    try
-                    {
-                        // Does the file exist?
-                        if (!File.Exists(homeFileSource))
-                        {
-                            returnValue.HomePageHtml = new HTML_Based_Content("<div class=\"error_div\">HOME PAGE SOURCE FILE '" + homeFileSource + "' DOES NOT EXIST.</div>", null, homeFileSource);
-                        }
-                        else
-                        {
-                            HTML_Based_Content content = HTML_Based_Content_Reader.Read_HTML_File(homeFileSource, true, Tracer);
-                            content.TEMP_Source = homeFileSource;
-                            returnValue.HomePageHtml = content;
-                        }
-                    }
-                    catch (Exception ee)
-                    {
-                        returnValue.HomePageHtml = new HTML_Based_Content("<div class=\"error_div\">EXCEPTION CAUGHT WHILE TRYING TO READ THE HOME PAGE SOURCE FILE '" + homeFileSource + "'.<br /><br />ERROR: " + ee.Message + "</div>", null, homeFileSource);
-                    }
-                }
-            }
-            else
-            {
-                HTML_Based_Content homeHtml = Get_Home_HTML(CompAggr, RequestedLanguage, null);
-
-
-                returnValue.HomePageHtml = homeHtml;
-            }
+            HTML_Based_Content homeHtml = Get_Home_HTML(CompAggr, RequestedLanguage, null);
+            returnValue.HomePageHtml = homeHtml;
+	        returnValue.Custom_Home_Page = CompAggr.Home_Page_File(RequestedLanguage).isCustomHome;
 
             return returnValue;
 	    }
@@ -567,7 +526,7 @@ namespace SobekCM.Engine_Library.Aggregations
             }
 
             // Get the home file source
-            string homeFileSource = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, CompAggr.ObjDirectory, CompAggr.Home_Page_File(Language));
+            string homeFileSource = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, CompAggr.ObjDirectory, CompAggr.Home_Page_File(Language).Source);
 
             // If no home file source even found, return a message to that affect
             if (homeFileSource.Length == 0)

@@ -45,9 +45,12 @@
 
 
 /** Styles used for the forms (both pop-up and in-line) throughout the admin pages **/
+.sbkAdm_PopupTable { padding-left: 20px; margin-left: 20px;text-align: left; }
+.sbkAdm_PopupTable a:link { color:DarkBlue; }
+.sbkAdm_PopupTable a:visited { color:DarkBlue; }
+.sbkAdm_PopupTable a:hover { color:Blue; text-decoration:underline; }
 .sbkAdm_PopupTitle { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 5px 6px 15px;border-top-left-radius: 10px;border-top-right-radius: 10px; }
 .sbkAdm_PopupTitle a { color: White; text-decoration: none; font-weight: bold; }
-.sbkAdm_PopupTable { padding-left: 20px; margin-left: 20px;text-align: left; }
 
 .popup_title { background-color: #0022a7; font-weight: bold; color: White; font-size: larger; padding: 6px 0 6px 10px; }
 .popup_title a { color: White; text-decoration: none; font-weight: bold; }

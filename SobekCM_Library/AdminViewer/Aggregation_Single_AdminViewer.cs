@@ -198,7 +198,7 @@ namespace SobekCM.Library.AdminViewer
 							break;
 
 						case 5:
-							Save_Page_5_Postback(form);
+							Save_Page_Appearance_Postback(form);
 							break;
 
 						case 6:
@@ -404,6 +404,15 @@ namespace SobekCM.Library.AdminViewer
 					Output.WriteLine("    <li id=\"tabHeader_1\" onclick=\"return new_aggr_edit_page('a');\">" + GENERAL + "</li>");
 				}
 
+                if (page == 5)
+                {
+                    Output.WriteLine("    <li id=\"tabHeader_4\" class=\"tabActiveHeader\">" + APPEARANCE + "</li>");
+                }
+                else
+                {
+                    Output.WriteLine("    <li id=\"tabHeader_4\" onclick=\"return new_aggr_edit_page('e');\">" + APPEARANCE + "</li>");
+                }
+
 				if (page == 2)
 				{
 					Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + SEARCH + "</li>");
@@ -431,25 +440,19 @@ namespace SobekCM.Library.AdminViewer
 					Output.WriteLine("    <li id=\"tabHeader_3\" onclick=\"return new_aggr_edit_page('d');\">" + METADATA + "</li>");
 				}
 
-				if (page == 5)
-				{
-					Output.WriteLine("    <li id=\"tabHeader_4\" class=\"tabActiveHeader\">" + APPEARANCE + "</li>");
-				}
-				else
-				{
-					Output.WriteLine("    <li id=\"tabHeader_4\" onclick=\"return new_aggr_edit_page('e');\">" + APPEARANCE + "</li>");
-				}
+			    if ((itemAggregation.Highlights != null ) && ( itemAggregation.Highlights.Count > 0))
+			    {
+			        if (page == 6)
+			        {
+			            Output.WriteLine("    <li id=\"tabHeader_5\" class=\"tabActiveHeader\">" + HIGHLIGHTS + "</li>");
+			        }
+			        else
+			        {
+			            Output.WriteLine("    <li id=\"tabHeader_5\" onclick=\"return new_aggr_edit_page('f');\">" + HIGHLIGHTS + "</li>");
+			        }
+			    }
 
-				if (page == 6)
-				{
-					Output.WriteLine("    <li id=\"tabHeader_5\" class=\"tabActiveHeader\">" + HIGHLIGHTS + "</li>");
-				}
-				else
-				{
-					Output.WriteLine("    <li id=\"tabHeader_5\" onclick=\"return new_aggr_edit_page('f');\">" + HIGHLIGHTS + "</li>");
-				}
-
-				if (page == 7)
+			    if (page == 7)
 				{
 					Output.WriteLine("    <li id=\"tabHeader_6\" class=\"tabActiveHeader\">" + STATIC_PAGES + "</li>");
 				}
@@ -524,9 +527,9 @@ namespace SobekCM.Library.AdminViewer
 					break;
 
 				case 5:
-					Add_Page_5(Output);
+					Add_Page_Appearance(Output);
 					break;
-
+                
 				case 6:
 					Add_Page_6(Output);
 					break;
@@ -808,6 +811,644 @@ namespace SobekCM.Library.AdminViewer
 		}
 
 		#endregion
+
+
+        #region Methods to render (and parse) -  Appearance
+
+        private void Save_Page_Appearance_Postback(NameValueCollection Form)
+        {
+            // Some interesting custom actions on this page, so get the actions
+            // query string first
+            string action = Form["admin_aggr_action"];
+            if (action.Length > 0)
+            {
+                switch (action)
+                {
+                    case "enable_css":
+                        itemAggregation.CSS_File = itemAggregation.Code + ".css";
+                        string file = aggregationDirectory + "\\" + itemAggregation.CSS_File;
+                        if (!File.Exists(file))
+                        {
+                            StreamWriter writer = new StreamWriter(file);
+                            writer.WriteLine("/**  Aggregation-level CSS for " + itemAggregation.Code + " **/");
+                            writer.WriteLine();
+                            writer.Flush();
+                            writer.Close();
+                        }
+                        break;
+
+                    case "disable_css":
+                        itemAggregation.CSS_File = null;
+                        break;
+
+                    case "add_home":
+                        string language = Form["admin_aggr_new_home_lang"];
+                        string copyFrom = Form["admin_aggr_new_home_copy"];
+                        if (language.Length > 0)
+                        {
+                            Web_Language_Enum enumVal = Web_Language_Enum_Converter.Code_To_Enum(language);
+                            string new_file_name = "text_" + language.ToLower() + ".html";
+                            string new_file = aggregationDirectory + "\\html\\home\\" + new_file_name;
+                            if (!Directory.Exists(aggregationDirectory + "\\html\\home"))
+                                Directory.CreateDirectory(aggregationDirectory + "\\html\\home");
+                            bool created_exists = false;
+                            if (copyFrom.Length > 0)
+                            {
+                                string copy_file = aggregationDirectory + "\\" + copyFrom;
+                                if (File.Exists(copy_file))
+                                {
+                                    File.Copy(copy_file, new_file, true);
+                                    created_exists = true;
+                                }
+                            }
+                            if ((!created_exists) && (!File.Exists(new_file)))
+                            {
+                                StreamWriter writer = new StreamWriter(new_file);
+                                writer.WriteLine("New home page text in " + language + " goes here.");
+                                writer.Flush();
+                                writer.Close();
+                            }
+
+                            itemAggregation.Add_Home_Page_File("html\\home\\" + new_file_name, enumVal, false);
+
+                            // Add this to the list of JUST ADDED home pages, which can't be edited or viewed until saved
+                            List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
+                            newLanguages.Add(enumVal);
+                            HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] = newLanguages;
+                        }
+                        break;
+
+                    case "add_banner":
+                        string blanguage = Form["admin_aggr_new_banner_lang"];
+                        string bfile = Form["admin_aggr_new_banner_image"];
+                        string btype = Form["admin_aggr_new_banner_type"];
+                        if (blanguage.Length > 0)
+                        {
+                            Web_Language_Enum enumVal = Web_Language_Enum_Converter.Code_To_Enum(blanguage);
+                            if (btype == "standard")
+                            {
+                                itemAggregation.Add_Banner_Image("images\\banners\\" + bfile, enumVal);
+                            }
+                            else
+                            {
+                                Item_Aggregation_Front_Banner_Type_Enum btypeEnum = Item_Aggregation_Front_Banner_Type_Enum.Full;
+                                if (btype == "left")
+                                    btypeEnum = Item_Aggregation_Front_Banner_Type_Enum.Left;
+                                if (btype == "right")
+                                    btypeEnum = Item_Aggregation_Front_Banner_Type_Enum.Right;
+                                Item_Aggregation_Front_Banner newFront = new Item_Aggregation_Front_Banner("images\\banners\\" + bfile) { Type = btypeEnum };
+
+                                try
+                                {
+                                    string banner_file = aggregationDirectory + "\\images\\banners\\" + bfile;
+                                    if (File.Exists(banner_file))
+                                    {
+                                        using (Image bannerImage = Image.FromFile(banner_file))
+                                        {
+                                            newFront.Width = (ushort)bannerImage.Width;
+                                            newFront.Height = (ushort)bannerImage.Height;
+                                            bannerImage.Dispose();
+                                        }
+                                    }
+                                }
+                                catch (Exception)
+                                {
+
+                                }
+
+
+                                itemAggregation.Add_Front_Banner_Image(newFront, enumVal);
+                            }
+                        }
+
+
+                        break;
+
+                    default:
+                        if (action.IndexOf("delete_home_") == 0)
+                        {
+                            string code_to_delete = action.Replace("delete_home_", "");
+                            Web_Language_Enum enum_to_delete = Web_Language_Enum_Converter.Code_To_Enum(code_to_delete);
+                            itemAggregation.Delete_Home_Page(enum_to_delete);
+                        }
+                        if (action.IndexOf("delete_standard_") == 0)
+                        {
+                            string code_to_delete = action.Replace("delete_standard_", "");
+                            Web_Language_Enum enum_to_delete = Web_Language_Enum_Converter.Code_To_Enum(code_to_delete);
+                            if (itemAggregation.Banner_Dictionary != null)
+                                itemAggregation.Banner_Dictionary.Remove(enum_to_delete);
+                        }
+                        if (action.IndexOf("delete_front_") == 0)
+                        {
+                            string code_to_delete = action.Replace("delete_front_", "");
+                            Web_Language_Enum enum_to_delete = Web_Language_Enum_Converter.Code_To_Enum(code_to_delete);
+                            if (itemAggregation.Front_Banner_Dictionary != null)
+                                itemAggregation.Front_Banner_Dictionary.Remove(enum_to_delete);
+                        }
+                        if ((action.IndexOf("customize_") == 0) || (action.IndexOf("uncustomize_") == 0))
+                        {
+                            string code = action.Replace("uncustomize_", "").Replace("customize_", "");
+                            Web_Language_Enum asEnum = Web_Language_Enum_Converter.Code_To_Enum(code);
+                            if (itemAggregation.Home_Page_File_Dictionary.ContainsKey(asEnum))
+                            {
+                                if (action.IndexOf("uncustomize_") == 0)
+                                {
+                                    itemAggregation.Home_Page_File_Dictionary[asEnum].isCustomHome = false;
+                                }
+                                else
+                                {
+                                    itemAggregation.Home_Page_File_Dictionary[asEnum].isCustomHome = true;
+                                }
+                            }
+                        }
+                        break;
+
+                }
+            }
+
+            // Set the web skin
+            itemAggregation.Web_Skins = null;
+            itemAggregation.Default_Skin = null;
+            if ((Form["admin_aggr_skin_1"] != null) && (Form["admin_aggr_skin_1"].Length > 0))
+            {
+                itemAggregation.Web_Skins = new List<string> { Form["admin_aggr_skin_1"] };
+                itemAggregation.Default_Skin = Form["admin_aggr_skin_1"];
+            }
+        }
+
+
+        private void Add_Page_Appearance(TextWriter Output)
+        {
+            // Help constants (for now)
+            const string WEB_SKIN_HELP = "Web skin help place holder";
+            const string CSS_HELP = "Aggregation-level CSS help place holder";
+            const string NEW_HOME_PAGE_HELP = "New home page help place holder";
+            const string NEW_BANNER_HELP = "New banner help place holder";
+            const string UPLOAD_BANNER_HELP = "Upload new banner help place holder";
+
+
+
+            Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
+
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Appearance Options</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>These three settings have the most profound affects on the appearance of this aggregation, by forcing it to appear under a particular web skin, allowing a custom aggregation-level stylesheet, or completely overriding the system-generated home page for a custom home page HTML source file.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+
+            // Add the web skin code
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" >");
+            Output.WriteLine("    <td style=\"width:50px;\">&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\" style=\"width:140px\">Web Skin:</label></td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <td>");
+
+            // Get the ordered list of all skin codes
+            List<string> skinCodes = UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes;
+            for (int i = 0; i < 1; i++) // itemAggregation.Web_Skins.Count + 5; i++)
+            {
+                string skin = String.Empty;
+                if ((itemAggregation.Web_Skins != null) && (i < itemAggregation.Web_Skins.Count))
+                    skin = itemAggregation.Web_Skins[i];
+                Skin_Writer_Helper(Output, "admin_aggr_skin_" + (i + 1).ToString(), skin, skinCodes);
+                if ((i + 1) % 3 == 0)
+                    Output.WriteLine("<br />");
+            }
+            Output.WriteLine("        </td>");
+            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + WEB_SKIN_HELP + "');\"  title=\"" + WEB_SKIN_HELP + "\" /></td></tr></table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
+
+
+            // Add the css line
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_shortname\">Custom Stylesheet:</label></td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
+            Output.WriteLine("        <tr>");
+
+            if (String.IsNullOrEmpty(itemAggregation.CSS_File))
+            {
+                Output.WriteLine("          <td><span style=\"font-style:italic; padding-right:20px;\">No custom aggregation-level stylesheet</span></td>");
+                Output.WriteLine("          <td><button title=\"Enable an aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_enable_css();\">ENABLE</button></td>");
+            }
+            else
+            {
+                string css_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + itemAggregation.CSS_File;
+                Output.WriteLine("          <td style=\"padding-right:20px;\"><a href=\"" + css_url + "\" title=\"View CSS file\">" + itemAggregation.CSS_File + "</a></td>");
+                Output.WriteLine("          <td style=\"padding-right:10px;\"><button title=\"Disable this aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_disable_css();\">DISABLE</button></td>");
+                Output.WriteLine("          <td><button title=\"Edit this aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('y');\">EDIT</button></td>");
+            }
+            Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + CSS_HELP + "');\"  title=\"" + CSS_HELP + "\" /></td>");
+            Output.WriteLine("        </tr>");
+            Output.WriteLine("      </table>");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
+
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Home Page Text</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section controls all the language-specific (and default) text which appears on the home page.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+
+            // Add all the existing home page information
+            Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\">Existing Home Pages:</td>");
+            Output.WriteLine("    <td>");
+
+            Output.WriteLine("      <table class=\"sbkSaav_HomeTable sbkSaav_Table\">");
+            Output.WriteLine("        <tr>");
+            Output.WriteLine("          <th class=\"sbkSaav_HomeTableHeader1\">LANGUAGE</th>");
+            Output.WriteLine("          <th class=\"sbkSaav_HomeTableHeader2\">SOURCE FILE</th>");
+            Output.WriteLine("          <th class=\"sbkSaav_HomeTableHeader3\">ACTIONS</th>");
+            Output.WriteLine("          <th class=\"sbkSaav_HomeTableHeader3\">CUSTOM</th>");
+            Output.WriteLine("        </tr>");
+
+            // Get the list of all recently added home page languages
+            List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
+
+            // Add all the home page information
+            Web_Language_Enum currLanguage = RequestSpecificValues.Current_Mode.Language;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+            List<string> existing_languages = new List<string>();
+            if (itemAggregation.Home_Page_File_Dictionary != null)
+            {
+                foreach (KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
+                {
+                    Output.WriteLine("        <tr>");
+                    bool canDelete = true;
+                    if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
+                    {
+                        canDelete = false;
+                        existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language));
+                        Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
+                    }
+                    else
+                    {
+                        existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key));
+                        Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "</td>");
+                    }
+
+                    string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisHomeSource.Value.Source.Replace("\\", "/");
+
+                    Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View source file\">" + thisHomeSource.Value.Source.Replace("html\\home\\", "") + "</a></td>");
+                    Output.Write("          <td class=\"sbkAdm_ActionLink\" >( ");
+
+                    if (!newLanguages.Contains(thisHomeSource.Key))
+                    {
+                        if (canDelete)
+                        {
+                            RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
+                            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+
+                            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
+                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+                        }
+                        else
+                        {
+                            RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
+                            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
+
+                            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
+                            Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
+                        }
+                    }
+                    else
+                    {
+                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added home pages.');return false\">view</a> | ");
+                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added home pages.');return false\">edit</a> ");
+                    }
+
+                    if (canDelete)
+                    {
+                        Output.Write("| <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_home('" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + " home page\" >delete</a> ");
+                    }
+
+                    Output.WriteLine(" )</td>");
+
+                    // Add checkbox for language home page being custom
+                    string langCode = Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key);
+                    string langTerm = Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key);
+                    Output.Write("          <td><input type=\"checkbox\" id=\"custom_" + langCode + "_check\" name=\"custom_" + langCode + "_check\" ");
+                    if (thisHomeSource.Value.isCustomHome)
+                        Output.Write("checked=\"checked\" onclick=\"return change_custom_home_flag('" + langTerm + "','" + langCode + "', true);\" ");
+                    else
+                        Output.Write("onclick=\"return change_custom_home_flag('" + langTerm + "','" + langCode + "', false);\" ");
+                    Output.WriteLine("/></td>");
+                    Output.WriteLine("        </tr>");
+                }
+            }
+            Output.WriteLine("      </table>");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
+            RequestSpecificValues.Current_Mode.Language = currLanguage;
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+
+            // Write the add new home page information
+            Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\">New Home Page:</td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <td>");
+
+            Output.Write("          <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_home_lang\" name=\"admin_aggr_new_home_lang\">");
+
+            // Add each language in the combo box
+            foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
+            {
+                if (!existing_languages.Contains(possible_language))
+                    Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+            }
+            Output.WriteLine();
+            Output.WriteLine("        </td>");
+            Output.WriteLine("        <td style=\"padding-left:35px;\">Copy from existing home: </td>");
+            Output.WriteLine("        <td>");
+            Output.Write("          <select id=\"admin_aggr_new_home_copy\" name=\"admin_aggr_new_home_copy\">");
+            Output.Write("<option value=\"\" selected=\"selected\"></option>");
+            if (itemAggregation.Home_Page_File_Dictionary != null)
+            {
+                foreach (KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
+                {
+                    if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
+                    {
+                        Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language)) + "</option>");
+                    }
+                    else
+                    {
+                        Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
+                    }
+                }
+            }
+
+            Output.WriteLine("</select>");
+            Output.WriteLine("        </td>");
+            Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Add new home page\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_add_home();\">ADD</button></td>");
+            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_HOME_PAGE_HELP + "');\"  title=\"" + NEW_HOME_PAGE_HELP + "\" /></td></tr></table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
+
+
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Banners</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section shows all the existing language-specific banners for this aggregation and allows you upload new banners for this aggregation.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+
+
+            // Add all the EXISTING banner information
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\">Existing Banners:</td>");
+            Output.WriteLine("    <td></td>");
+            Output.WriteLine("  </tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td colspan=\"2\">");
+            Output.WriteLine("      <table class=\"sbkSaav_BannerTable sbkSaav_Table\">");
+            Output.WriteLine("        <tr style=\"height:25px;\">");
+            Output.WriteLine("          <th class=\"sbkSaav_BannerTableHeader1\">LANGUAGE</th>");
+            Output.WriteLine("          <th class=\"sbkSaav_BannerTableHeader2\">TYPE</th>");
+            Output.WriteLine("          <th class=\"sbkSaav_BannerTableHeader3\">ACTION</th>");
+            Output.WriteLine("          <th class=\"sbkSaav_BannerTableHeader4\">IMAGE</th>");
+            Output.WriteLine("        </tr>");
+            if (itemAggregation.Front_Banner_Dictionary != null)
+            {
+                foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> thisBannerInfo in itemAggregation.Front_Banner_Dictionary)
+                {
+                    Output.WriteLine("        <tr>");
+                    if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
+                    {
+                        Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisBannerInfo.Key) + "</td>");
+                    }
+
+                    // Show the TYPE
+                    switch (thisBannerInfo.Value.Type)
+                    {
+                        case Item_Aggregation_Front_Banner_Type_Enum.Full:
+                            Output.WriteLine("          <td>Home Page</td>");
+                            break;
+
+                        case Item_Aggregation_Front_Banner_Type_Enum.Left:
+                            Output.WriteLine("          <td>Home Page - Left</td>");
+                            break;
+
+                        case Item_Aggregation_Front_Banner_Type_Enum.Right:
+                            Output.WriteLine("          <td>Home Page - Right</td>");
+                            break;
+
+                    }
+
+
+                    string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisBannerInfo.Value.File.Replace("\\", "/");
+
+                    Output.Write("          <td class=\"sbkAdm_ActionLink\" > ( <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_banner('" + Web_Language_Enum_Converter.Enum_To_Code(thisBannerInfo.Key) + "', 'front');\" title=\"Delete this banner\" >delete</a> )</td>");
+
+
+                    Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View banner image file\" target=\"" + itemAggregation.Code + "_" + thisBannerInfo.Value.File.Replace("\\", "_").Replace("/", "_") + "\"><img src=\"" + file + "\" alt=\"THIS BANNER IMAGE IS MISSING\" class=\"sbkSaav_BannerImage\" /></a></td>");
+                    Output.WriteLine("        </tr>");
+                }
+            }
+
+            if (itemAggregation.Banner_Dictionary != null)
+            {
+                foreach (KeyValuePair<Web_Language_Enum, string> thisBannerInfo in itemAggregation.Banner_Dictionary)
+                {
+                    Output.WriteLine("        <tr>");
+                    bool canDelete = true;
+                    if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
+                    {
+                        canDelete = false;
+                        Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisBannerInfo.Key) + "</td>");
+                    }
+
+                    // Show the TYPE
+                    Output.WriteLine("          <td>Standard</td>");
+
+                    string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisBannerInfo.Value.Replace("\\", "/");
+
+                    if (canDelete)
+                    {
+                        Output.Write("          <td class=\"sbkAdm_ActionLink\" > ( <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_banner('" + Web_Language_Enum_Converter.Enum_To_Code(thisBannerInfo.Key) + "', 'standard');\" title=\"Delete this banner\" >delete</a> )</td>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("          <td></td>");
+                    }
+
+
+                    Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View banner image file\" target=\"" + itemAggregation.Code + "_" + thisBannerInfo.Value.Replace("\\", "_").Replace("/", "_") + "\"><img src=\"" + file + "\" alt=\"THIS BANNER IMAGE IS MISSING\" class=\"sbkSaav_BannerImage\" /></a></td>");
+                    Output.WriteLine("        </tr>");
+                }
+            }
+
+            Output.WriteLine("      </table>");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
+
+            // Get list of existing banners
+            string banner_folder = aggregationDirectory + "\\images\\banners";
+            if (!Directory.Exists(banner_folder))
+                Directory.CreateDirectory(banner_folder);
+            string[] banner_files = SobekCM_File_Utilities.GetFiles(banner_folder, "*.jpg|*.bmp|*.gif|*.png");
+            string last_added_banner = String.Empty;
+            if (HttpContext.Current.Items["Uploaded File"] != null)
+            {
+                string newBanner = HttpContext.Current.Items["Uploaded File"].ToString();
+                last_added_banner = Path.GetFileName(newBanner);
+            }
+            else
+            {
+                DateTime lastModDate = DateTime.MinValue;
+                foreach (string thisBannerFile in banner_files)
+                {
+                    DateTime thisDate = (new FileInfo(thisBannerFile)).LastWriteTime;
+                    if (thisDate.CompareTo(lastModDate) > 0)
+                    {
+                        lastModDate = thisDate;
+                        last_added_banner = Path.GetFileName(thisBannerFile);
+                    }
+                }
+            }
+
+            // Write the add new banner information
+            if (banner_files.Length > 0)
+            {
+                if (String.IsNullOrEmpty(last_added_banner))
+                    last_added_banner = Path.GetFileName(banner_files[0]);
+
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+                Output.WriteLine("    <td>&nbsp;</td>");
+                Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\">New Banner:</td>");
+                Output.WriteLine("    <td></td>");
+                Output.WriteLine("  </tr>");
+                Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+                Output.WriteLine("    <td>&nbsp;</td>");
+                Output.WriteLine("    <td colspan=\"2\">");
+
+                string current_banner = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/images/banners/" + last_added_banner;
+                Output.WriteLine("      <div style=\"width:510px; float:right;\"><img id=\"sbkSaav_SelectedBannerImage\" name=\"sbkSaav_SelectedBannerImage\" src=\"" + current_banner + "\" alt=\"Missing\" Title=\"Selected image file\" /></div>");
+
+                Output.WriteLine("      <table class=\"sbkSaav_BannerInnerTable\">");
+                Output.WriteLine("        <tr>");
+                Output.WriteLine("          <td>Language:</td>");
+                Output.WriteLine("          <td>");
+                Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_banner_lang\" name=\"admin_aggr_new_banner_lang\">");
+
+                // Add each language in the combo box
+                string language_name_default = Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language);
+                foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
+                {
+                    if (possible_language == language_name_default)
+                        Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+                    else
+                        Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
+
+                }
+                Output.WriteLine();
+                Output.WriteLine("          </td>");
+                Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_BANNER_HELP + "');\"  title=\"" + NEW_BANNER_HELP + "\" /></td>");
+                Output.WriteLine("        <tr>");
+                Output.WriteLine("        <tr>");
+                Output.WriteLine("          <td>Banner Type:</td>");
+                Output.WriteLine("          <td>");
+                Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_banner_type\" name=\"admin_aggr_new_banner_type\">");
+                Output.Write("<option selected=\"selected\" value=\"standard\">Standard</option>");
+                Output.Write("<option value=\"home\">Home Page</option>");
+                Output.Write("<option value=\"left\">Home Page - Left</option>");
+                Output.WriteLine("<option value=\"right\">Home Page - Right</option></select>");
+                Output.WriteLine("          </td>");
+                Output.WriteLine("          <td></td>");
+                Output.WriteLine("        </tr>");
+                Output.WriteLine("        <tr>");
+                Output.WriteLine("          <td>Image:</td>");
+                Output.WriteLine("          <td>");
+                Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_banner_image\" name=\"admin_aggr_new_banner_image\"  onchange=\"edit_aggr_banner_select_changed('" + RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/" + itemAggregation.Code + "/images/banners/');\">");
+                foreach (string thisFile in banner_files)
+                {
+                    string name = Path.GetFileName(thisFile);
+                    if ((String.IsNullOrEmpty(last_added_banner)) || (name != last_added_banner))
+                        Output.Write("<option value=\"" + name + "\">" + name + "</option>");
+                    else
+                        Output.Write("<option selected=\"selected\" value=\"" + last_added_banner + "\">" + last_added_banner + "</option>");
+
+                }
+                Output.WriteLine("</select>");
+                Output.WriteLine("          </td>");
+                Output.WriteLine("          <td></td>");
+                Output.WriteLine("        </tr>");
+                Output.WriteLine("        <tr>");
+                Output.WriteLine("          <td colspan=\"2\" style=\"text-align: center;\"><button title=\"Add new banner\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_add_banner();\">ADD</button></td>");
+                Output.WriteLine("          <td></td>");
+                Output.WriteLine("        </tr>");
+                Output.WriteLine("      </table>");
+                Output.WriteLine("    </td>");
+                Output.WriteLine("  </tr>");
+            }
+
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td colspan=\"3\">&nbsp;</td>");
+            Output.WriteLine("  </tr>");
+
+            Output.WriteLine("  <tr class=\"sbkSaav_UploadRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\">Upload New Banner Image:</td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("       <table class=\"sbkSaav_InnerTable\">");
+            Output.WriteLine("         <tr>");
+            Output.WriteLine("           <td class=\"sbkSaav_UploadInstr\">To upload, browse to a GIF, PNG, JPEG, or BMP file, and then select UPLOAD</td>");
+            Output.WriteLine("           <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + UPLOAD_BANNER_HELP + "');\"  title=\"" + UPLOAD_BANNER_HELP + "\" /></td>");
+            Output.WriteLine("         </tr>");
+            Output.WriteLine("         <tr>");
+            Output.WriteLine("           <td colspan=\"2\">");
+
+
+
+
+        }
+
+        private void Finish_Page_5(TextWriter Output)
+        {
+            Output.WriteLine("           </td>");
+            Output.WriteLine("         </tr>");
+            Output.WriteLine("       </table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
+            Output.WriteLine("</table>");
+            Output.WriteLine("<br />");
+        }
+
+        private void Skin_Writer_Helper(TextWriter Output, string SkinID, string Skin, IEnumerable<string> Skin_Codes)
+        {
+            // Start the select box
+            Output.Write("          <select class=\"sbkSaav_SelectSingle\" name=\"" + SkinID + "\" id=\"" + SkinID + "\">");
+
+            // Add the NONE option first
+            Output.Write(Skin.Length == 0 ? "<option value=\"\" selected=\"selected\" ></option>" : "<option value=\"\"></option>");
+
+            // Add each metadata field to the select boxes
+            foreach (string skinCode in Skin_Codes)
+            {
+                if (String.Compare(Skin, skinCode, StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    Output.Write("<option value=\"" + skinCode + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(skinCode) + "</option>");
+                }
+                else
+                {
+                    Output.Write("<option value=\"" + skinCode + "\">" + HttpUtility.HtmlEncode(skinCode) + "</option>");
+                }
+            }
+            Output.WriteLine("</select>");
+        }
+
+        #endregion
+
 
 		#region Methods to render (and parse) page 2 - Search
 
@@ -1575,730 +2216,6 @@ namespace SobekCM.Library.AdminViewer
 							Output.Write("<option value=\"" + metadataField.ID + "\">" + HttpUtility.HtmlEncode(metadataField.Display_Term) + "</option>");
 						}
 					}
-				}
-			}
-			Output.WriteLine("</select>");
-		}
-
-		#endregion
-
-		#region Methods to render (and parse) page 5 -  Appearance
-
-		private void Save_Page_5_Postback(NameValueCollection Form)
-		{
-			// Some interesting custom actions on this page, so get the actions
-			// query string first
-			string action = Form["admin_aggr_action"];
-			if (action.Length > 0)
-			{
-				switch (action)
-				{
-                    case "enable_custom_home":
-                        string custom_home = aggregationDirectory + "\\html\\custom\\home\\custom_home.html";
-						if (!Directory.Exists(aggregationDirectory + "\\html\\custom\\home"))
-							Directory.CreateDirectory(aggregationDirectory + "\\html\\custom\\home");
-                        itemAggregation.Custom_Home_Page_Source_File = "html\\custom\\home\\custom_home.html";
-                        if (!File.Exists(custom_home))
-						{
-                            StreamWriter writer = new StreamWriter(custom_home);
-                            writer.WriteLine("<html>");
-                            writer.WriteLine("<head>");
-                            writer.WriteLine("<title>Custom home page for " + itemAggregation.ShortName + "</title>");
-                            writer.WriteLine("</head>");
-                            writer.WriteLine("<body>");
-							writer.WriteLine("<br /><br />THIS IS THE DEFAULT CUSTOM HOME PAGE FOR THIS COLLECTION<br /><br /><br />");
-                            writer.WriteLine("</body>");
-                            writer.WriteLine("</html>");
-							writer.WriteLine();
-							writer.Flush();
-							writer.Close();
-						}
-						break;
-
-                    case "delete_custom_home":
-				        string file_to_delete = Form["admin_aggr_custom_home"];
-				        if (!String.IsNullOrEmpty(file_to_delete))
-				        {
-				            string custom_home_delete_file = aggregationDirectory + "\\html\\custom\\home\\" + file_to_delete;
-				            if (File.Exists(custom_home_delete_file))
-				            {
-                                try
-                                {
-                                    File.Delete(custom_home_delete_file);
-                                }
-                                catch { }
-				            }
-				        }
-                        if ( itemAggregation.Custom_Home_Page_Source_File == "html\\custom\\home\\" + file_to_delete )
-                            itemAggregation.Custom_Home_Page_Source_File = String.Empty;
-						break;
-
-                    case "enable_css":
-                        itemAggregation.CSS_File = itemAggregation.Code + ".css";
-                        string file = aggregationDirectory + "\\" + itemAggregation.CSS_File;
-                        if (!File.Exists(file))
-                        {
-                            StreamWriter writer = new StreamWriter(file);
-                            writer.WriteLine("/**  Aggregation-level CSS for " + itemAggregation.Code + " **/");
-                            writer.WriteLine();
-                            writer.Flush();
-                            writer.Close();
-                        }
-                        break;
-
-                    case "disable_css":
-                        itemAggregation.CSS_File = null;
-                        break;
-
-					case "add_home":
-						string language = Form["admin_aggr_new_home_lang"];
-						string copyFrom = Form["admin_aggr_new_home_copy"];
-						if (language.Length > 0)
-						{
-							Web_Language_Enum enumVal = Web_Language_Enum_Converter.Code_To_Enum(language);
-							string new_file_name = "text_" + language.ToLower() + ".html";
-							string new_file = aggregationDirectory + "\\html\\home\\" + new_file_name;
-							if (!Directory.Exists(aggregationDirectory + "\\html\\home"))
-								Directory.CreateDirectory(aggregationDirectory + "\\html\\home");
-							bool created_exists = false;
-							if (copyFrom.Length > 0)
-							{
-								string copy_file = aggregationDirectory + "\\" + copyFrom;
-								if (File.Exists(copy_file))
-								{
-									File.Copy(copy_file, new_file, true);
-									created_exists = true;
-								}
-							}
-							if ((!created_exists) && (!File.Exists(new_file)))
-							{
-								StreamWriter writer = new StreamWriter(new_file);
-								writer.WriteLine("New home page text in " + language + " goes here.");
-								writer.Flush();
-								writer.Close();
-							}
-
-						    itemAggregation.Add_Home_Page_File("html\\home\\" + new_file_name, enumVal);
-
-							// Add this to the list of JUST ADDED home pages, which can't be edited or viewed until saved
-							List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
-							newLanguages.Add(enumVal);
-							HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] = newLanguages;
-						}
-						break;
-
-					case "add_banner":
-						string blanguage = Form["admin_aggr_new_banner_lang"];
-						string bfile = Form["admin_aggr_new_banner_image"];
-						string btype = Form["admin_aggr_new_banner_type"];
-						if (blanguage.Length > 0)
-						{
-							Web_Language_Enum enumVal = Web_Language_Enum_Converter.Code_To_Enum(blanguage);
-							if (btype == "standard")
-							{
-							    itemAggregation.Add_Banner_Image("images\\banners\\" + bfile, enumVal);
-							}
-							else
-							{
-                                Item_Aggregation_Front_Banner_Type_Enum btypeEnum = Item_Aggregation_Front_Banner_Type_Enum.Full;
-								if ( btype == "left" )
-                                    btypeEnum = Item_Aggregation_Front_Banner_Type_Enum.Left;
-								if ( btype == "right" )
-                                    btypeEnum = Item_Aggregation_Front_Banner_Type_Enum.Right;
-								Item_Aggregation_Front_Banner newFront = new Item_Aggregation_Front_Banner("images\\banners\\" + bfile) {Type = btypeEnum};
-
-								try
-								{
-									string banner_file = aggregationDirectory + "\\images\\banners\\" + bfile;
-									if (File.Exists(banner_file))
-									{
-										using (Image bannerImage = Image.FromFile(banner_file))
-										{
-											newFront.Width = (ushort) bannerImage.Width;
-											newFront.Height = (ushort) bannerImage.Height;
-											bannerImage.Dispose();
-										}
-									}
-								}
-								catch (Exception)
-								{
-
-								}
-
-
-								itemAggregation.Add_Front_Banner_Image(newFront, enumVal); 
-							}
-						}
-
-
-						break;
-
-					default:
-						if (action.IndexOf("delete_home_") == 0)
-						{
-							string code_to_delete = action.Replace("delete_home_", "");
-							Web_Language_Enum enum_to_delete = Web_Language_Enum_Converter.Code_To_Enum(code_to_delete);
-							itemAggregation.Delete_Home_Page(enum_to_delete);
-						}
-						if ( action.IndexOf("delete_standard_") == 0 )
-						{
-							string code_to_delete = action.Replace("delete_standard_", "");
-							Web_Language_Enum enum_to_delete = Web_Language_Enum_Converter.Code_To_Enum(code_to_delete);
-                            if ( itemAggregation.Banner_Dictionary != null )
-    							itemAggregation.Banner_Dictionary.Remove(enum_to_delete);
-						}
-						if (action.IndexOf("delete_front_") == 0)
-						{
-							string code_to_delete = action.Replace("delete_front_", "");
-							Web_Language_Enum enum_to_delete = Web_Language_Enum_Converter.Code_To_Enum(code_to_delete);
-                            if ( itemAggregation.Front_Banner_Dictionary != null )
-    							itemAggregation.Front_Banner_Dictionary.Remove(enum_to_delete);
-						}
-						break;
-
-				}
-			}
-
-			// Set the web skin
-            itemAggregation.Web_Skins = null;
-			itemAggregation.Default_Skin = null;
-			if (( Form["admin_aggr_skin_1"] != null ) && ( Form["admin_aggr_skin_1"].Length > 0 ))
-			{
-			    itemAggregation.Web_Skins = new List<string> {Form["admin_aggr_skin_1"]};
-			    itemAggregation.Default_Skin = Form["admin_aggr_skin_1"];
-			}
-
-			// Set the custom home source file
-			if (Form["admin_aggr_custom_home"] != null)
-			{
-			    string custom_home_file_name = Form["admin_aggr_custom_home"];
-                if ((String.IsNullOrEmpty(custom_home_file_name)) || (!File.Exists(aggregationDirectory + "\\html\\custom\\home\\" + custom_home_file_name)))
-			    {
-			        itemAggregation.Custom_Home_Page_Source_File = String.Empty;
-			    }
-			    else
-                {
-                    itemAggregation.Custom_Home_Page_Source_File = "html\\custom\\home\\" + custom_home_file_name;
-                }
-			}
-		}
-
-
-		private void Add_Page_5(TextWriter Output)
-		{
-			// Help constants (for now)
-			const string WEB_SKIN_HELP = "Web skin help place holder";
-			const string CSS_HELP = "Aggregation-level CSS help place holder";
-			const string CUSTOM_HOME_PAGE = "Custom home page help place holder";
-			const string NEW_HOME_PAGE_HELP = "New home page help place holder";
-			const string NEW_BANNER_HELP = "New banner help place holder";
-			const string UPLOAD_BANNER_HELP = "Upload new banner help place holder";
-
-
-
-			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
-
-			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Appearance Options</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>These three settings have the most profound affects on the appearance of this aggregation, by forcing it to appear under a particular web skin, allowing a custom aggregation-level stylesheet, or completely overriding the system-generated home page for a custom home page HTML source file.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
-
-			// Add the web skin code
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" >");
-			Output.WriteLine("    <td style=\"width:50px;\">&nbsp;</td>");
-			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\" style=\"width:140px\">Web Skin:</label></td>");
-			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
-			Output.WriteLine("      <tr>");
-			Output.WriteLine("        <td>");
-
-			// Get the ordered list of all skin codes
-            List<string> skinCodes = UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes;
-			for (int i = 0; i < 1; i++) // itemAggregation.Web_Skins.Count + 5; i++)
-			{
-				string skin = String.Empty;
-				if (( itemAggregation.Web_Skins != null ) && ( i < itemAggregation.Web_Skins.Count))
-					skin = itemAggregation.Web_Skins[i];
-				Skin_Writer_Helper(Output, "admin_aggr_skin_" + (i + 1).ToString(), skin, skinCodes);
-				if ((i + 1) % 3 == 0)
-					Output.WriteLine("<br />");
-			}
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + WEB_SKIN_HELP + "');\"  title=\"" + WEB_SKIN_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
-
-
-			// Add the css line
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
-			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_shortname\">Custom Stylesheet:</label></td>");
-			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
-			Output.WriteLine("        <tr>");
-
-			if ( String.IsNullOrEmpty(itemAggregation.CSS_File))
-			{
-				Output.WriteLine("          <td><span style=\"font-style:italic; padding-right:20px;\">No custom aggregation-level stylesheet</span></td>");
-				Output.WriteLine("          <td><button title=\"Enable an aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_enable_css();\">ENABLE</button></td>");
-			}
-			else
-			{
-				string css_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + itemAggregation.CSS_File;
-				Output.WriteLine("          <td style=\"padding-right:20px;\"><a href=\"" + css_url + "\" title=\"View CSS file\">" + itemAggregation.CSS_File + "</a></td>");
-				Output.WriteLine("          <td style=\"padding-right:10px;\"><button title=\"Disable this aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_disable_css();\">DISABLE</button></td>");
-				Output.WriteLine("          <td><button title=\"Edit this aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('y');\">EDIT</button></td>");
-			}
-			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + CSS_HELP + "');\"  title=\"" + CSS_HELP + "\" /></td>");
-			Output.WriteLine("        </tr>");
-			Output.WriteLine("      </table>");
-			Output.WriteLine("    </td>");
-			Output.WriteLine("  </tr>");
-
-			// Add the custom home page HTML for this aggregation
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" >");
-			Output.WriteLine("    <td style=\"width:50px;\">&nbsp;</td>");
-			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\" style=\"width:140px\">Custom Home Page:</label></td>");
-			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
-			Output.WriteLine("        <tr>");
-			
-
-			// Get the list of all HTML at the top-level
-		    if (!Directory.Exists(aggregationDirectory + "\\html\\custom\\home"))
-		        Directory.CreateDirectory(aggregationDirectory + "\\html\\custom\\home");
-            string[] html_files = Directory.GetFiles(aggregationDirectory + "\\html\\custom\\home", "*.htm*");
-            if ((html_files.Length == 0) || (itemAggregation.Custom_Home_Page_Source_File == null ))
-			{
-				Output.WriteLine("          <td><span style=\"font-style:italic; padding-right: 5px;\">No html source files</span></td>");
-                Output.WriteLine("          <td><button title=\"Enable a completely custom home page\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_enable_custom_home();\">ENABLE</button></td>");
-			}
-			else
-			{
-                Output.WriteLine("          <td>");
-
-				// Start the select box
-                Output.Write("            <select class=\"sbkSaav_SelectSingle\" name=\"admin_aggr_custom_home\" id=\"admin_aggr_custom_home\" onchange=\"aggr_edit_custom_home_selectchange();\">");
-
-				// Add the NONE option first
-			    bool custom_home_exists = !String.IsNullOrEmpty(itemAggregation.Custom_Home_Page_Source_File);
-                Output.Write(!custom_home_exists ? "<option value=\"\" selected=\"selected\" ></option>" : "<option value=\"\"></option>");
-
-				// Add each possible source file
-			    string current_file = itemAggregation.Custom_Home_Page_Source_File.Replace("html\\custom\\home\\", "");
-
-				foreach (string thisFile in html_files)
-				{
-					string thisFileName = (new FileInfo(thisFile)).Name;
-
-                    if (String.Compare(current_file, thisFileName, StringComparison.OrdinalIgnoreCase) == 0)
-					{
-						Output.Write("<option value=\"" + thisFileName + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(thisFileName) + "</option>");
-					}
-					else
-					{
-						Output.Write("<option value=\"" + thisFileName + "\">" + HttpUtility.HtmlEncode(thisFileName) + "</option>");
-					}
-				}
-				Output.WriteLine("</select> &nbsp; &nbsp; ");
-                Output.WriteLine("          </td>");
-			    Output.Write("          <td style=\"padding-right:10px;\"><button title=\"Delete this custom home page file\" class=\"sbkAdm_RoundButton\" id=\"customHomePageDeleteButton\" onclick=\"return aggr_edit_delete_custom_home();\"");
-                if ( !custom_home_exists )
-    			    Output.Write(" disabled=\"disabled\"");
-                Output.WriteLine(">DELETE</button></td>");
-                Output.WriteLine("          <td><button title=\"Add a new custom home page file\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_enable_css();\">ADD</button></td>");
-			}
-			
-			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + CUSTOM_HOME_PAGE + "');\"  title=\"" + CUSTOM_HOME_PAGE + "\" /></td>");
-            Output.WriteLine("        </tr>");
-            Output.WriteLine("      </table>");
-			Output.WriteLine("    </td>");
-			Output.WriteLine("  </tr>");
-
-			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Home Page Text</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section controls all the language-specific (and default) text which appears on the home page.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
-
-			// Add all the existing home page information
-			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
-			Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\">Existing Home Pages:</td>");
-			Output.WriteLine("    <td>");
-
-			Output.WriteLine("      <table class=\"sbkSaav_HomeTable sbkSaav_Table\">");
-			Output.WriteLine("        <tr>");
-			Output.WriteLine("          <th class=\"sbkSaav_HomeTableHeader1\">LANGUAGE</th>");
-			Output.WriteLine("          <th class=\"sbkSaav_HomeTableHeader2\">SOURCE FILE</th>");
-			Output.WriteLine("          <th class=\"sbkSaav_HomeTableHeader3\">ACTIONS</th>");
-			Output.WriteLine("        </tr>");
-
-			// Get the list of all recently added home page languages
-			List<Web_Language_Enum> newLanguages = HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] as List<Web_Language_Enum> ?? new List<Web_Language_Enum>();
-
-			// Add all the home page information
-			Web_Language_Enum currLanguage = RequestSpecificValues.Current_Mode.Language;
-			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-			List<string> existing_languages = new List<string>();
-		    if (itemAggregation.Home_Page_File_Dictionary != null)
-		    {
-		        foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
-		        {
-		            Output.WriteLine("        <tr>");
-		            bool canDelete = true;
-		            if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == Web_Language_Enum.UNDEFINED) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
-		            {
-		                canDelete = false;
-		                existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language));
-		                Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
-		            }
-		            else
-		            {
-		                existing_languages.Add(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key));
-		                Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "</td>");
-		            }
-
-		            string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisHomeSource.Value.Replace("\\", "/");
-
-		            Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View source file\">" + thisHomeSource.Value.Replace("html\\home\\", "") + "</a></td>");
-		            Output.Write("          <td class=\"sbkAdm_ActionLink\" >( ");
-
-		            if (!newLanguages.Contains(thisHomeSource.Key))
-		            {
-		                if (canDelete)
-		                {
-		                    RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
-		                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-		                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
-
-		                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-		                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page in " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + "\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
-		                }
-		                else
-		                {
-		                    RequestSpecificValues.Current_Mode.Language = thisHomeSource.Key;
-		                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-		                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this home page\" target=\"VIEW" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">view</a> | ");
-
-		                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-		                    Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home page\" target=\"EDIT" + itemAggregation.Code + "_" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "\">edit</a> ");
-		                }
-		            }
-		            else
-		            {
-		                Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added home pages.');return false\">view</a> | ");
-		                Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"alert('You must SAVE your changes before you can view or edit newly added home pages.');return false\">edit</a> ");
-		            }
-
-		            if (canDelete)
-		            {
-		                Output.Write("| <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_home('" + Web_Language_Enum_Converter.Enum_To_Code(thisHomeSource.Key) + "');\" title=\"Delete this " + Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key) + " home page\" >delete</a> ");
-		            }
-
-		            Output.WriteLine(" )</td>");
-		            Output.WriteLine("        </tr>");
-		        }
-		    }
-		    Output.WriteLine("      </table>");
-			Output.WriteLine("    </td>");
-			Output.WriteLine("  </tr>");
-			RequestSpecificValues.Current_Mode.Language = currLanguage;
-			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-
-			// Write the add new home page information
-			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
-			Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\">New Home Page:</td>");
-			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\">");
-			Output.WriteLine("      <tr>");
-			Output.WriteLine("        <td>");
-
-			Output.Write("          <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_home_lang\" name=\"admin_aggr_new_home_lang\">");
-
-			// Add each language in the combo box
-			foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
-			{
-				if ( !existing_languages.Contains(possible_language))
-					Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
-			}
-			Output.WriteLine();
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td style=\"padding-left:35px;\">Copy from existing home: </td>");
-			Output.WriteLine("        <td>");
-			Output.Write("          <select id=\"admin_aggr_new_home_copy\" name=\"admin_aggr_new_home_copy\">");
-			Output.Write("<option value=\"\" selected=\"selected\"></option>");
-		    if (itemAggregation.Home_Page_File_Dictionary != null)
-		    {
-		        foreach (KeyValuePair<Web_Language_Enum, string> thisHomeSource in itemAggregation.Home_Page_File_Dictionary)
-		        {
-		            if ((thisHomeSource.Key == Web_Language_Enum.DEFAULT) || (thisHomeSource.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
-		            {
-		                Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language)) + "</option>");
-		            }
-		            else
-		            {
-		                Output.Write("<option value=\"" + thisHomeSource.Value + "\">" + HttpUtility.HtmlEncode(Web_Language_Enum_Converter.Enum_To_Name(thisHomeSource.Key)) + "</option>");
-		            }
-		        }
-		    }
-
-		    Output.WriteLine("</select>");
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Add new home page\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_add_home();\">ADD</button></td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_HOME_PAGE_HELP + "');\"  title=\"" + NEW_HOME_PAGE_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
-
-
-			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Banners</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section shows all the existing language-specific banners for this aggregation and allows you upload new banners for this aggregation.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
-
-
-			// Add all the EXISTING banner information
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
-			Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\">Existing Banners:</td>");
-			Output.WriteLine("    <td></td>");
-			Output.WriteLine("  </tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
-			Output.WriteLine("    <td colspan=\"2\">");
-			Output.WriteLine("      <table class=\"sbkSaav_BannerTable sbkSaav_Table\">");
-			Output.WriteLine("        <tr style=\"height:25px;\">");
-			Output.WriteLine("          <th class=\"sbkSaav_BannerTableHeader1\">LANGUAGE</th>");
-			Output.WriteLine("          <th class=\"sbkSaav_BannerTableHeader2\">TYPE</th>");
-			Output.WriteLine("          <th class=\"sbkSaav_BannerTableHeader3\">ACTION</th>");
-			Output.WriteLine("          <th class=\"sbkSaav_BannerTableHeader4\">IMAGE</th>");
-			Output.WriteLine("        </tr>");
-		    if (itemAggregation.Front_Banner_Dictionary != null)
-		    {
-		        foreach (KeyValuePair<Web_Language_Enum, Item_Aggregation_Front_Banner> thisBannerInfo in itemAggregation.Front_Banner_Dictionary)
-		        {
-		            Output.WriteLine("        <tr>");
-		            if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
-		            {
-		                Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
-		            }
-		            else
-		            {
-		                Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisBannerInfo.Key) + "</td>");
-		            }
-
-		            // Show the TYPE
-		            switch (thisBannerInfo.Value.Type)
-		            {
-                        case Item_Aggregation_Front_Banner_Type_Enum.Full:
-		                    Output.WriteLine("          <td>Home Page</td>");
-		                    break;
-
-                        case Item_Aggregation_Front_Banner_Type_Enum.Left:
-		                    Output.WriteLine("          <td>Home Page - Left</td>");
-		                    break;
-
-                        case Item_Aggregation_Front_Banner_Type_Enum.Right:
-		                    Output.WriteLine("          <td>Home Page - Right</td>");
-		                    break;
-
-		            }
-
-
-		            string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisBannerInfo.Value.File.Replace("\\", "/");
-
-		            Output.Write("          <td class=\"sbkAdm_ActionLink\" > ( <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_banner('" + Web_Language_Enum_Converter.Enum_To_Code(thisBannerInfo.Key) + "', 'front');\" title=\"Delete this banner\" >delete</a> )</td>");
-
-
-		            Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View banner image file\" target=\"" + itemAggregation.Code + "_" + thisBannerInfo.Value.File.Replace("\\", "_").Replace("/", "_") + "\"><img src=\"" + file + "\" alt=\"THIS BANNER IMAGE IS MISSING\" class=\"sbkSaav_BannerImage\" /></a></td>");
-		            Output.WriteLine("        </tr>");
-		        }
-		    }
-
-		    if (itemAggregation.Banner_Dictionary != null)
-		    {
-		        foreach (KeyValuePair<Web_Language_Enum, string> thisBannerInfo in itemAggregation.Banner_Dictionary)
-		        {
-		            Output.WriteLine("        <tr>");
-		            bool canDelete = true;
-		            if ((thisBannerInfo.Key == Web_Language_Enum.DEFAULT) || (thisBannerInfo.Key == UI_ApplicationCache_Gateway.Settings.Default_UI_Language))
-		            {
-		                canDelete = false;
-		                Output.WriteLine("          <td style=\"font-style:italic; padding-left:5px;\">default</td>");
-		            }
-		            else
-		            {
-		                Output.WriteLine("          <td style=\"padding-left:5px;\">" + Web_Language_Enum_Converter.Enum_To_Name(thisBannerInfo.Key) + "</td>");
-		            }
-
-		            // Show the TYPE
-		            Output.WriteLine("          <td>Standard</td>");
-
-		            string file = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/" + thisBannerInfo.Value.Replace("\\", "/");
-
-		            if (canDelete)
-		            {
-		                Output.Write("          <td class=\"sbkAdm_ActionLink\" > ( <a  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return aggr_edit_delete_banner('" + Web_Language_Enum_Converter.Enum_To_Code(thisBannerInfo.Key) + "', 'standard');\" title=\"Delete this banner\" >delete</a> )</td>");
-		            }
-		            else
-		            {
-		                Output.WriteLine("          <td></td>");
-		            }
-
-
-		            Output.WriteLine("          <td><a href=\"" + file + "\" title=\"View banner image file\" target=\"" + itemAggregation.Code + "_" + thisBannerInfo.Value.Replace("\\", "_").Replace("/", "_") + "\"><img src=\"" + file + "\" alt=\"THIS BANNER IMAGE IS MISSING\" class=\"sbkSaav_BannerImage\" /></a></td>");
-		            Output.WriteLine("        </tr>");
-		        }
-		    }
-
-		    Output.WriteLine("      </table>");
-			Output.WriteLine("    </td>");
-			Output.WriteLine("  </tr>");
-
-			// Get list of existing banners
-			string banner_folder = aggregationDirectory + "\\images\\banners";
-			if (!Directory.Exists(banner_folder))
-				Directory.CreateDirectory(banner_folder);
-			string[] banner_files = SobekCM_File_Utilities.GetFiles(banner_folder, "*.jpg|*.bmp|*.gif|*.png");
-			string last_added_banner = String.Empty;
-		    if (HttpContext.Current.Items["Uploaded File"] != null)
-		    {
-		        string newBanner = HttpContext.Current.Items["Uploaded File"].ToString();
-		        last_added_banner = Path.GetFileName(newBanner);
-		    }
-		    else
-		    {
-		        DateTime lastModDate = DateTime.MinValue;
-		        foreach (string thisBannerFile in banner_files)
-		        {
-		            DateTime thisDate = (new FileInfo(thisBannerFile)).LastWriteTime;
-		            if (thisDate.CompareTo(lastModDate) > 0)
-		            {
-                        lastModDate = thisDate;
-                        last_added_banner = Path.GetFileName(thisBannerFile);
-		            }
-		        }
-		    }
-
-			// Write the add new banner information
-			if (banner_files.Length > 0)
-			{
-                if (String.IsNullOrEmpty(last_added_banner))
-                    last_added_banner = Path.GetFileName(banner_files[0]);
-
-				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-				Output.WriteLine("    <td>&nbsp;</td>");
-				Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\">New Banner:</td>");
-				Output.WriteLine("    <td></td>");
-				Output.WriteLine("  </tr>");
-				Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
-				Output.WriteLine("    <td>&nbsp;</td>");
-				Output.WriteLine("    <td colspan=\"2\">");
-
-                string current_banner = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/images/banners/" + last_added_banner;
-				Output.WriteLine("      <div style=\"width:510px; float:right;\"><img id=\"sbkSaav_SelectedBannerImage\" name=\"sbkSaav_SelectedBannerImage\" src=\"" + current_banner + "\" alt=\"Missing\" Title=\"Selected image file\" /></div>");
-
-				Output.WriteLine("      <table class=\"sbkSaav_BannerInnerTable\">");
-				Output.WriteLine("        <tr>");
-				Output.WriteLine("          <td>Language:</td>");
-				Output.WriteLine("          <td>");
-				Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_banner_lang\" name=\"admin_aggr_new_banner_lang\">");
-
-				// Add each language in the combo box
-			    string language_name_default = Web_Language_Enum_Converter.Enum_To_Name(UI_ApplicationCache_Gateway.Settings.Default_UI_Language);
-				foreach (string possible_language in Web_Language_Enum_Converter.Language_Name_Array)
-				{
-                    if ( possible_language == language_name_default )
-					    Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\" selected=\"selected\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
-                    else
-                        Output.Write("<option value=\"" + Web_Language_Enum_Converter.Name_To_Code(possible_language) + "\">" + HttpUtility.HtmlEncode(possible_language) + "</option>");
-
-				}
-				Output.WriteLine();
-				Output.WriteLine("          </td>");
-				Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + NEW_BANNER_HELP + "');\"  title=\"" + NEW_BANNER_HELP + "\" /></td>");
-				Output.WriteLine("        <tr>");
-				Output.WriteLine("        <tr>");
-				Output.WriteLine("          <td>Banner Type:</td>");
-				Output.WriteLine("          <td>");
-				Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_banner_type\" name=\"admin_aggr_new_banner_type\">");
-				Output.Write("<option selected=\"selected\" value=\"standard\">Standard</option>");
-				Output.Write("<option value=\"home\">Home Page</option>");
-				Output.Write("<option value=\"left\">Home Page - Left</option>");
-				Output.WriteLine("<option value=\"right\">Home Page - Right</option></select>");
-				Output.WriteLine("          </td>");
-				Output.WriteLine("          <td></td>");
-				Output.WriteLine("        </tr>");
-				Output.WriteLine("        <tr>");
-				Output.WriteLine("          <td>Image:</td>");
-				Output.WriteLine("          <td>");
-				Output.Write("            <select class=\"sbkSaav_SelectSingle\" id=\"admin_aggr_new_banner_image\" name=\"admin_aggr_new_banner_image\"  onchange=\"edit_aggr_banner_select_changed('" + RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/" + itemAggregation.Code + "/images/banners/');\">");
-				foreach (string thisFile in banner_files)
-				{
-					string name = Path.GetFileName(thisFile);
-					if (( String.IsNullOrEmpty(last_added_banner)) || ( name != last_added_banner ))
-						Output.Write("<option value=\"" + name + "\">" + name + "</option>");
-                    else
-                        Output.Write("<option selected=\"selected\" value=\"" + last_added_banner + "\">" + last_added_banner + "</option>");
-
-				}
-				Output.WriteLine("</select>");
-				Output.WriteLine("          </td>");
-				Output.WriteLine("          <td></td>");
-				Output.WriteLine("        </tr>");
-				Output.WriteLine("        <tr>");
-				Output.WriteLine("          <td colspan=\"2\" style=\"text-align: center;\"><button title=\"Add new banner\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_add_banner();\">ADD</button></td>");
-				Output.WriteLine("          <td></td>");
-				Output.WriteLine("        </tr>");
-				Output.WriteLine("      </table>");
-				Output.WriteLine("    </td>");
-				Output.WriteLine("  </tr>");
-			}
-
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-			Output.WriteLine("    <td colspan=\"3\">&nbsp;</td>");
-			Output.WriteLine("  </tr>");
-
-			Output.WriteLine("  <tr class=\"sbkSaav_UploadRow\">");
-			Output.WriteLine("    <td>&nbsp;</td>");
-			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\">Upload New Banner Image:</td>");
-			Output.WriteLine("    <td>");
-			Output.WriteLine("       <table class=\"sbkSaav_InnerTable\">");
-			Output.WriteLine("         <tr>");
-			Output.WriteLine("           <td class=\"sbkSaav_UploadInstr\">To upload, browse to a GIF, PNG, JPEG, or BMP file, and then select UPLOAD</td>");
-			Output.WriteLine("           <td><img class=\"sbkSaav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + UPLOAD_BANNER_HELP + "');\"  title=\"" + UPLOAD_BANNER_HELP + "\" /></td>");
-			Output.WriteLine("         </tr>");
-			Output.WriteLine("         <tr>");
-			Output.WriteLine("           <td colspan=\"2\">");
-
-
-
-
-		}
-
-		private void Finish_Page_5(TextWriter Output)
-		{
-			Output.WriteLine("           </td>");
-			Output.WriteLine("         </tr>");
-			Output.WriteLine("       </table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
-			Output.WriteLine("</table>");
-			Output.WriteLine("<br />");
-		}
-
-		private void Skin_Writer_Helper(TextWriter Output, string SkinID, string Skin, IEnumerable<string> Skin_Codes )
-		{
-			// Start the select box
-			Output.Write("          <select class=\"sbkSaav_SelectSingle\" name=\"" + SkinID + "\" id=\"" + SkinID + "\">");
-
-			// Add the NONE option first
-			Output.Write(Skin.Length == 0 ? "<option value=\"\" selected=\"selected\" ></option>" : "<option value=\"\"></option>");
-
-			// Add each metadata field to the select boxes
-			foreach ( string skinCode in Skin_Codes)
-			{
-				if (String.Compare(Skin, skinCode, StringComparison.OrdinalIgnoreCase) == 0)
-				{
-					Output.Write("<option value=\"" + skinCode + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(skinCode) + "</option>");
-				}
-				else
-				{
-					Output.Write("<option value=\"" + skinCode + "\">" + HttpUtility.HtmlEncode(skinCode) + "</option>");
 				}
 			}
 			Output.WriteLine("</select>");

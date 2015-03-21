@@ -18,18 +18,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 {
     public class Custom_Home_Page_AggregationViewer : abstractAggregationViewer
     {
-        private HTML_Based_Content homePageInfo;
 
         /// <summary> Constructor for a new instance of the Custom_Home_Page_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Custom_Home_Page_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            /// TODO: Fix this 
-            string path = "/design/aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/"; // + RequestSpecificValues.Hierarchy_Object.Custom_Home_Page_Source_File;
-            string file = HttpContext.Current.Server.MapPath(path);
-            homePageInfo = HTML_Based_Content_Reader.Read_HTML_File(file, true, RequestSpecificValues.Tracer);
+            // All work done in base class?
         }
-
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
         /// <value> This returns the <see cref="Item_Aggregation_Views_Searches_Enum.Custom_Home_Page"/> enumerational value </value>
@@ -57,7 +52,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 return new List<HtmlSubwriter_Behaviors_Enum>
                         {
-                            HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text
+                            HtmlSubwriter_Behaviors_Enum.Aggregation_Suppress_Home_Text,
+                            HtmlSubwriter_Behaviors_Enum.Suppress_Header,
+                            HtmlSubwriter_Behaviors_Enum.Suppress_Footer,
+                            HtmlSubwriter_Behaviors_Enum.Suppress_Banner,
+                            HtmlSubwriter_Behaviors_Enum.Suppress_MainMenu,
+                            HtmlSubwriter_Behaviors_Enum.Suppress_SearchForm
                         };
             }
         }
@@ -81,7 +81,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Advanced_Search_AggregationViewer.Add_Secondary_HTML", "Adding simple search tips");
             }
 
-            Output.Write(homePageInfo.Content);
+            Output.Write(RequestSpecificValues.Hierarchy_Object.HomePageHtml.Content);
         }
 
     }

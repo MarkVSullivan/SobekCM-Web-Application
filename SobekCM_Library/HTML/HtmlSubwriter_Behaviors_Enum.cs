@@ -17,6 +17,12 @@
 		/// <summary> Do not show the banner </summary>
         Suppress_Banner,
 
+        /// <summary> Do not show the main menu </summary>
+        Suppress_MainMenu,
+
+        /// <summary> Do not show the search form </summary>
+        Suppress_SearchForm,
+
 		/// <summary> Do not put the container tags around the resultant page </summary>
         Item_Subwriter_NonWindowed_Mode,
 
