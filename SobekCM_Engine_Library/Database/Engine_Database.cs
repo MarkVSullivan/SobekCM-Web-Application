@@ -2973,10 +2973,9 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Code"> Code specifying the item aggregation to retrieve </param>
         /// <param name="Include_Counts"> Flag indicates whether to pull the title/item/page counts for this aggregation </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <param name="Is_Robot"> Flag indicates if this is a request from an indexing robot, which leaves out a good bit of the work </param>
         /// <returns> Arguments which include the <see cref="Item_Aggregation"/> object and a DataTable of the search field information</returns>
         /// <remarks> This method calls the stored procedure 'SobekCM_Get_Item_Aggregation2'. </remarks>
-        public static Complete_Item_Aggregation Get_Item_Aggregation(string Code, bool Include_Counts, bool Is_Robot, Custom_Tracer Tracer)
+        public static Complete_Item_Aggregation Get_Item_Aggregation(string Code, bool Include_Counts, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {

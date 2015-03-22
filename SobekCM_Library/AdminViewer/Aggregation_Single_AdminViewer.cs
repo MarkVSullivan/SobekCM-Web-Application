@@ -103,7 +103,7 @@ namespace SobekCM.Library.AdminViewer
 		    }
 		    else
 		    {
-		        itemAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(code, false, RequestSpecificValues.Tracer);
+		        itemAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(code, RequestSpecificValues.Tracer);
 		    }
 
 			// If unable to retrieve this aggregation, send to home
@@ -2942,7 +2942,7 @@ namespace SobekCM.Library.AdminViewer
                             }
 
 							// Now, try to create the item aggregation and write the configuration file
-                            Complete_Item_Aggregation childAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(new_aggregation_code, false, RequestSpecificValues.Tracer);
+                            Complete_Item_Aggregation childAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(new_aggregation_code, RequestSpecificValues.Tracer);
 							childAggregation.Write_Configuration_File(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + childAggregation.ObjDirectory);
 						}
 					}

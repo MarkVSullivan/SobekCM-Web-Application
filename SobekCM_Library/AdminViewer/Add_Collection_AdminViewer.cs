@@ -1,8 +1,4 @@
-﻿// HTML5 10/14/2013
-
-#region Using directives
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -13,31 +9,14 @@ using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
-using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
-using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
-#endregion
-
 namespace SobekCM.Library.AdminViewer
 {
-    /// <summary> Class allows an authenticated system admin to view all existing item aggregationPermissions, select an item aggregation to edit, and add new aggregationPermissions </summary>
-    /// <remarks> This class extends the <see cref="abstract_AdminViewer"/> class.<br /><br />
-    /// MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
-    /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
-    /// During a valid html request, the following steps occur:
-    /// <ul>
-    /// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-    /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
-    /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
-    /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
-    /// <li>The mySobek subwriter creates an instance of this viewer to view and edit existing item aggregationPermissions in this digital library</li>
-    /// </ul></remarks>
-    public class Aggregations_Mgmt_AdminViewer : abstract_AdminViewer
+    public class Add_Collection_AdminViewer : abstract_AdminViewer
     {
         private readonly string actionMessage;
 
@@ -52,12 +31,12 @@ namespace SobekCM.Library.AdminViewer
         private readonly string enteredType;
         private readonly string enteredThematicHeading;
 
-        /// <summary> Constructor for a new instance of the Aggregations_Mgmt_AdminViewer class </summary>
+        /// <summary> Constructor for a new instance of the Add_Collection_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-        public Aggregations_Mgmt_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Add_Collection_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            RequestSpecificValues.Tracer.Add_Trace("Aggregations_Mgmt_AdminViewer.Constructor", String.Empty);
+            RequestSpecificValues.Tracer.Add_Trace("Add_Collection_AdminViewer.Constructor", String.Empty);
 
             // Set some defaults
             actionMessage = String.Empty;
@@ -92,49 +71,6 @@ namespace SobekCM.Library.AdminViewer
                     string new_aggregation_code = String.Empty;
                     if (form["admin_aggr_code"] != null)
                         new_aggregation_code = form["admin_aggr_code"].ToUpper().Trim();
-
-                    // Check for reset request as well
-                    string reset_aggregation_code = String.Empty;
-                    if (form["admin_aggr_reset"] != null)
-                        reset_aggregation_code = form["admin_aggr_reset"].ToLower().Trim();
-
-                    string delete_aggregation_code = String.Empty;
-                    if (form["admin_aggr_delete"] != null)
-                        delete_aggregation_code = form["admin_aggr_delete"].ToLower().Trim();
-
-                    // Was this to delete the aggregation?
-                    if (delete_aggregation_code.Length > 0)
-                    {
-                        string delete_error;
-                        int errorCode = SobekCM_Database.Delete_Item_Aggregation(delete_aggregation_code, RequestSpecificValues.Current_User.Is_System_Admin, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Tracer, out delete_error);
-                        if (errorCode <= 0)
-                        {
-                            string delete_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + delete_aggregation_code;
-                            if (!SobekCM_File_Utilities.Delete_Folders_Recursively(delete_folder))
-                                actionMessage = "Deleted '" + delete_aggregation_code.ToUpper() + "' aggregation<br /><br />Unable to remove aggregation directory<br /><br />Some of the files may be in use";
-                            else
-                                actionMessage = "Deleted '" + delete_aggregation_code.ToUpper() + "' aggregation";
-                        }
-                        else
-                        {
-                            actionMessage = delete_error;
-                        }
-
-                        CachedDataManager.Aggregations.Clear();
-
-                        // Reload the list of all codes, to include this new one and the new hierarchy
-                        lock (UI_ApplicationCache_Gateway.Aggregations)
-                        {
-                            Engine_Database.Populate_Code_Manager(UI_ApplicationCache_Gateway.Aggregations, RequestSpecificValues.Tracer);
-                        }
-                    }
-
-
-                    // If there is a reset request here, purge the aggregation from the cache
-                    if (reset_aggregation_code.Length > 0)
-                    {
-                        CachedDataManager.Aggregations.Remove_Item_Aggregation(reset_aggregation_code, RequestSpecificValues.Tracer);
-                    }
 
                     // If there was a save value continue to pull the rest of the data
                     if (save_value.Length > 0)
@@ -317,14 +253,16 @@ namespace SobekCM.Library.AdminViewer
 
                                 if (msg.ErrorType == ErrorRestType.Successful)
                                 {
-                                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-                                    RequestSpecificValues.Current_Mode.Aggregation = new_aggregation_code;
-                                    actionMessage = "New item aggregation (" + new_aggregation_code.ToUpper() + ") saved successfully.<br /><br /><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode, true) + "\" target=\"" + new_aggregation_code + "_AGGR\">Click here to view the new aggregation</a>";
-                                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
-
                                     // Clear all aggregation information (and thematic heading info) from the cache as well
                                     CachedDataManager.Aggregations.Clear();
+
+                                    // Forward to the aggregation
+                                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                                    RequestSpecificValues.Current_Mode.Aggregation = new_aggregation_code;
+
+                                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                                    return;
                                 }
                                 else
                                 {
@@ -350,7 +288,7 @@ namespace SobekCM.Library.AdminViewer
         /// <value> This always returns the value 'HTML Skins' </value>
         public override string Web_Title
         {
-            get { return "Aggregation Management"; }
+            get { return "Add a Collection Wizard"; }
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
@@ -359,7 +297,7 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing, since the interface list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Aggregations_Mgmt_AdminViewer.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("Add_Collection_AdminViewer.Write_HTML", "Do nothing");
         }
 
         /// <summary> This is an opportunity to write HTML directly into the main form, without
@@ -369,7 +307,7 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
         public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Aggregations_Mgmt_AdminViewer.Write_ItemNavForm_Closing", "");
+            Tracer.Add_Trace("Add_Collection_AdminViewer.Write_ItemNavForm_Closing", "");
 
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
 
@@ -514,148 +452,6 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    </table>");
             Output.WriteLine("  </div>");
             Output.WriteLine();
-
-
-            Output.WriteLine("  <h2>Existing Aggregations</h2>");
-
-            Output.WriteLine("  <table class=\"sbkAsav_Table display\" id=\"adminMgmtTable\">");
-            Output.WriteLine("    <thead>");
-            Output.WriteLine("      <tr>");
-            Output.WriteLine("        <th class=\"sbkAsav_TableHeader1\">ACTIONS</th>");
-            Output.WriteLine("        <th class=\"sbkAsav_TableHeader2\">CODE</th>");
-            Output.WriteLine("        <th class=\"sbkAsav_TableHeader3\">TYPE</th>");
-            Output.WriteLine("        <th class=\"sbkAsav_TableHeader4\">NAME</th>");
-            Output.WriteLine("        <th class=\"sbkAsav_TableHeader5\">ACTIVE</th>");
-            Output.WriteLine("        <th class=\"sbkAsav_TableHeader6\">ON HOME</th>");
-            Output.WriteLine("        <th class=\"sbkAsav_TableHeader7\">PARENT</th>");
-            Output.WriteLine("      </tr>");
-            Output.WriteLine("    </thead>");
-
-            Output.WriteLine("    <tfoot>");
-            Output.WriteLine("      <tr>");
-            Output.WriteLine("        <th></th>");
-            Output.WriteLine("        <th><input id=\"adminMgmtCodeSearch\" type=\"text\" placeholder=\"Search Code\" /></th>");
-            Output.WriteLine("        <th>TYPE</th>");
-            Output.WriteLine("        <th><input id=\"adminMgmtNameSearch\"  type=\"text\" placeholder=\"Search Name\" /></th>");
-            Output.WriteLine("        <th>ACTIVE</th>");
-            Output.WriteLine("        <th>ON HOME</th>");
-            Output.WriteLine("        <th>PARENT</th>");
-            Output.WriteLine("      </tr>");
-            Output.WriteLine("    </tfoot>");
-
-            Output.WriteLine("    <tbody>");
-
-            // Show all the aggregations
-            string last_code = String.Empty;
-            foreach (Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
-            {
-                if (thisAggr.Code != last_code)
-                {
-                    last_code = thisAggr.Code;
-
-                    // Build the action links
-                    Output.WriteLine("      <tr>");
-                    Output.Write("        <td class=\"sbkAsav_ActionLink\" >( ");
-
-                    Output.Write("<a title=\"Click to edit this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/admin/editaggr/" + thisAggr.Code + "\">edit</a> | ");
-
-                    if (thisAggr.Active)
-                        Output.Write("<a title=\"Click to view this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/" + thisAggr.Code + "\">view</a> | ");
-                    else
-                        Output.Write("view | ");
-
-                    if (String.Compare(thisAggr.Code, "ALL", StringComparison.InvariantCultureIgnoreCase) != 0)
-                        Output.Write("<a title=\"Click to delete this item aggregation\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr('" + thisAggr.Code + "');\">delete</a> | ");
-
-                    Output.WriteLine("<a title=\"Click to reset the instance in the application cache\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return reset_aggr('" + thisAggr.Code + "');\">reset</a> )</td>");
-
-                    // Special code to start istitutions with a small letter 'i'
-                    string code = thisAggr.Code;
-                    if ((thisAggr.Type.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0 ) && ( code[0] == 'I') && ( code.Length > 1 ))
-                    {
-                        code = "i" + code.Substring(1);
-                    }
-
-                    // Add the rest of the row with data
-                    Output.WriteLine("        <td>" + code + "</td>");
-                    Output.WriteLine("        <td>" + thisAggr.Type + "</td>");
-                    Output.WriteLine("        <td>" + thisAggr.Name + "</td>");
-
-                    if (thisAggr.Active)
-                    {
-                        Output.WriteLine("        <td>Y</td>");
-                    }
-                    else
-                    {
-                        Output.WriteLine("        <td>N</td>");
-                    }
-
-                    if (thisAggr.Thematic_Heading != null)
-                    {
-                        Output.WriteLine("        <td>Y</td>");
-                    }
-                    else
-                    {
-                        Output.WriteLine("        <td>N</td>");
-                    }
-                    if (thisAggr.Parent_Count > 0)
-                    {
-                        Output.WriteLine("        <td>" + thisAggr.Parents[0].Code + "</td>");
-                    }
-                    else
-                    {
-                        Output.WriteLine("        <td></td>");
-                    }
-                    Output.WriteLine("      </tr>");
-                }
-            }
-
-            Output.WriteLine("    </tbody>");
-            Output.WriteLine("  </table>");
-
-            Output.WriteLine("<script type=\"text/javascript\">");
-            Output.WriteLine("    $(document).ready(function() { ");
-            Output.WriteLine("        var table = $('#adminMgmtTable').DataTable({ ");
-
-            // If 100 or less aggregations, suppress paging
-            if (UI_ApplicationCache_Gateway.Aggregations.All_Aggregations.Count <= 100)
-            {
-                Output.WriteLine("            \"paging\":   false, ");
-                Output.WriteLine("            \"info\":   false, ");
-            }
-            else
-            {
-                Output.WriteLine("            \"lengthMenu\": [ [50, 100, -1], [50, 100, \"All\"] ], ");
-                Output.WriteLine("            \"pageLength\":  50, ");
-            }
-
-            Output.WriteLine("            initComplete: function () {");
-            Output.WriteLine("                var api = this.api();");
-
-            Output.WriteLine("                api.columns().indexes().flatten().each( function ( i ) {");
-            Output.WriteLine("                    if (( i == 2 || i == 4 || i == 5 || i == 6 )) {");
-            Output.WriteLine("                        var column = api.column( i );");
-            Output.WriteLine("                        var select = $('<select><option value=\"\"></option></select>')");
-            Output.WriteLine("                                 .appendTo( $(column.footer()).empty() )");
-            Output.WriteLine("                                 .on( 'change', function () {");
-            Output.WriteLine("                                       var val = $.fn.dataTable.util.escapeRegex($(this).val());");
-            Output.WriteLine("                                       column.search( val ? '^'+val+'$' : '', true, false ).draw();");
-            Output.WriteLine("                                        } );");
-            Output.WriteLine("                                 column.data().unique().sort().each( function ( d, j ) {");
-            Output.WriteLine("                                      select.append( '<option value=\"'+d+'\">'+d+'</option>' )");
-            Output.WriteLine("                                 } );");
-            Output.WriteLine("                        }");
-            Output.WriteLine("                    } );");
-            Output.WriteLine("               }");
-            Output.WriteLine("         });");
-
-            Output.WriteLine("         $('#adminMgmtCodeSearch').on( 'keyup change', function () { table.column( 1 ).search( this.value ).draw(); } );");
-            Output.WriteLine("         $('#adminMgmtNameSearch').on( 'keyup change', function () { table.column( 3 ).search( this.value ).draw(); } );");
-            Output.WriteLine("    } );");
-
-            Output.WriteLine("</script>");
-            Output.WriteLine();
-
 
             Output.WriteLine("  <br />");
             Output.WriteLine("</div>");

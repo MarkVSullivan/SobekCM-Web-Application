@@ -554,7 +554,7 @@ namespace SobekCM.Library
                     break;
 
                 case Item_Aggregation_Child_Source_Data_Enum.Static_HTML:
-                    Browse_Info_Display_Text = SobekEngineClient.Aggregations.Get_Aggregation_HTML_Child_Page(Aggregation_Object.Code, Aggregation_Object.Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, false, Browse_Object.Code, Tracer);
+                    Browse_Info_Display_Text = SobekEngineClient.Aggregations.Get_Aggregation_HTML_Child_Page(Aggregation_Object.Code, Aggregation_Object.Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, Browse_Object.Code, Tracer);
                     break;
             }
             return true;
@@ -1750,7 +1750,7 @@ namespace SobekCM.Library
                 return cacheInstance;
 
             // Get the item aggregation from the Sobek Engine Client
-            Item_Aggregation returned = SobekEngineClient.Aggregations.Get_Aggregation(Aggregation_Code, Web_Language_Enum_Converter.Code_To_Enum(Language_Code), UI_ApplicationCache_Gateway.Settings.Default_UI_Language, IsRobot, Tracer );
+            Item_Aggregation returned = SobekEngineClient.Aggregations.Get_Aggregation(Aggregation_Code, Web_Language_Enum_Converter.Code_To_Enum(Language_Code), UI_ApplicationCache_Gateway.Settings.Default_UI_Language, Tracer );
                 
             // Return the object
             return returned;
@@ -1773,7 +1773,7 @@ namespace SobekCM.Library
                     return cacheInstance;
 
                 // Get the item aggregation from the Sobek Engine Client
-                Item_Aggregation returned = SobekEngineClient.Aggregations.Get_Aggregation("all", Web_Language_Enum_Converter.Code_To_Enum(Language_Code), UI_ApplicationCache_Gateway.Settings.Default_UI_Language, IsRobot, Tracer);
+                Item_Aggregation returned = SobekEngineClient.Aggregations.Get_Aggregation("all", Web_Language_Enum_Converter.Code_To_Enum(Language_Code), UI_ApplicationCache_Gateway.Settings.Default_UI_Language, Tracer);
 
                 // Return the object
                 return returned;

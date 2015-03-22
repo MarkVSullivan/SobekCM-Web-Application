@@ -11,7 +11,6 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.AdminViewer;
-using SobekCM.Library.Database;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MySobekViewer;
 using SobekCM.Resource_Object;
@@ -70,8 +69,16 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Tracer.Add_Trace("Admin_HtmlSubwriter.Constructor", "Building the my sobek viewer object");
             switch (RequestSpecificValues.Current_Mode.Admin_Type)
             {
+                case Admin_Type_Enum.Add_Collection_Wizard:
+                    adminViewer = new Add_Collection_AdminViewer(RequestSpecificValues);
+                    break;
+
                 case Admin_Type_Enum.Aggregation_Single:
                     adminViewer = new Aggregation_Single_AdminViewer(RequestSpecificValues);
+                    break;
+
+                case Admin_Type_Enum.Aggregations_Mgmt:
+                    adminViewer = new Aggregations_Mgmt_AdminViewer(RequestSpecificValues);
                     break;
 
                 case Admin_Type_Enum.Home:
@@ -110,9 +117,10 @@ namespace SobekCM.Library.HTML
                     adminViewer = new User_Group_AdminViewer(RequestSpecificValues);
                     break;
 
-                case Admin_Type_Enum.Aggregations_Mgmt:
-                    adminViewer = new Aggregations_Mgmt_AdminViewer(RequestSpecificValues);
+                case Admin_Type_Enum.User_Permissions_Reports:
+                    adminViewer = new Permissions_Reports_AdminViewer(RequestSpecificValues);
                     break;
+
 
                 case Admin_Type_Enum.IP_Restrictions:
                     adminViewer = new IP_Restrictions_AdminViewer(RequestSpecificValues);

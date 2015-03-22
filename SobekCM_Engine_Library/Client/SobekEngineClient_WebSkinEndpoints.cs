@@ -6,6 +6,7 @@ using SobekCM.Tools;
 
 namespace SobekCM.Core.Client
 {
+    /// <summary> Gateway to all the web skin-related endpoints exposed by the SobekCM engine </summary>
     public class SobekEngineClient_WebSkinEndpoints : MicroservicesClientBase
     {
         /// <summary> Constructor for a new instance of the SobekEngineClient_WebSkinEndpoints class </summary>

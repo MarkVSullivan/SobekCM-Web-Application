@@ -15,8 +15,13 @@ using SobekCM.Tools;
 
 namespace SobekCM.Engine_Library.Endpoints
 {
+    /// <summary> Class supports all the web skin-level services provided by the SobekCM engine </summary>
     public class WebSkinServices
     {
+        /// <summary> Gets the complete (language agnostic) web skin, by web skin code </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="Protocol"></param>
         public void GetCompleteWebSkin(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (UrlSegments.Count > 0)
@@ -39,7 +44,10 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
-
+        /// <summary> Gets the language-specific web skin, by web skin code and language code </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="Protocol"></param>
         public void GetWebSkin(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (UrlSegments.Count > 1)
@@ -65,6 +73,10 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
+        /// <summary> Get the list of ordered web skin codes </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="Protocol"></param>
         public void GetOrderedCodes(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
@@ -77,6 +89,11 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
+        /// <summary> [PUBLIC] Get the list of uploaded images for a particular web skin </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="Protocol"></param>
+        /// <remarks> This REST API should be publicly available for users that are performing administrative work </remarks>
         public void GetWebSkinUploadedImages(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (UrlSegments.Count > 0)
@@ -114,6 +131,14 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
+        #region Helper methods, destined to be private
+
+        /// <summary> [HELPER] Gets the complete (language agnostic) web skin, by web skin code </summary>
+        /// <param name="SkinCode"> Web skin code </param>
+        /// <param name="Tracer"></param>
+        /// <returns> A built complete web skin </returns>
+        /// <remarks> This may be public now, but this will be converted into a private helped class with 
+        /// the release of SobekCM 5.0 </remarks>
         public static Complete_Web_Skin_Object get_complete_web_skin(string SkinCode, Custom_Tracer Tracer)
         {
             DataRow thisRow = Engine_ApplicationCache_Gateway.Web_Skin_Collection.Skin_Row(SkinCode);
@@ -124,6 +149,14 @@ namespace SobekCM.Engine_Library.Endpoints
             return returnObject;
         }
 
+        /// <summary> [HELPER] Gets the language-specific web skin, by web skin code and language code </summary>
+        /// <param name="SkinCode"> Web skin code </param>
+        /// <param name="RequestedLanguage"> Web language </param>
+        /// <param name="DefaultLanguage"> Default language, in case the requested web language does nto exist </param>
+        /// <param name="Tracer"></param>
+        /// <returns> A build language-specific web skin </returns>
+        /// <remarks> This may be public now, but this will be converted into a private helped class with 
+        /// the release of SobekCM 5.0 </remarks>
         public static Web_Skin_Object get_web_skin(string SkinCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, Custom_Tracer Tracer)
         {
             Complete_Web_Skin_Object completeSkin = get_complete_web_skin(SkinCode, Tracer);
@@ -133,5 +166,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             return Web_Skin_Utilities.Build_Skin(completeSkin, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage));
         }
+
+        #endregion
     }
 }

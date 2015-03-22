@@ -27,13 +27,12 @@ namespace SobekCM.Engine_Library.Aggregations
 	{
 	    /// <summary> Gets a fully built item aggregation object for a particular aggregation code   </summary>
 	    /// <param name="AggregationCode">Code for this aggregation object</param>
-	    /// <param name="IsRobot">Flag tells if this request is from a robot (which will vary cacheing time)</param>
 	    /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
 	    /// <returns>Fully built item aggregation object for the particular aggregation code and language code</returns>
 	    /// <remarks>Item aggregation object is also placed in the cache.<br /><br />
 	    /// Building of an item aggregation always starts by pulling the item from the database ( either <see cref="Engine_Database.Get_Item_Aggregation"/> or <see cref="SobekCM_Database.Get_Main_Aggregation"/> ).<br /><br />
 	    /// Then, either the Item Aggregation XML file is read (if present) or the entire folder hierarchy is analyzed to find the browses, infos, banners, etc..</remarks>
-	    public static Complete_Item_Aggregation Get_Complete_Item_Aggregation(string AggregationCode, bool IsRobot, Custom_Tracer Tracer)
+	    public static Complete_Item_Aggregation Get_Complete_Item_Aggregation(string AggregationCode, Custom_Tracer Tracer)
 	    {
 	        // Does this exist in the cache?
 	        if (Tracer != null)
@@ -44,7 +43,7 @@ namespace SobekCM.Engine_Library.Aggregations
 	        // Get the information about this collection and this entry point
 	        Complete_Item_Aggregation hierarchyObject;
 	        if ((AggregationCode.Length > 0) && (AggregationCode != "all"))
-	            hierarchyObject = Engine_Database.Get_Item_Aggregation(AggregationCode, false, IsRobot, Tracer);
+	            hierarchyObject = Engine_Database.Get_Item_Aggregation(AggregationCode, false, Tracer);
 	        else
 	            hierarchyObject = Engine_Database.Get_Main_Aggregation(Tracer);
 

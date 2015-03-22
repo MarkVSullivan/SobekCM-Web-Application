@@ -621,6 +621,10 @@ namespace SobekCM.Engine_Library.Navigation
                                             Navigator.Admin_Type = Admin_Type_Enum.Builder_Status;
                                             break;
 
+                                        case "addcoll":
+                                            Navigator.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                                            break;
+
                                         case "aggregations":
                                             Navigator.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
                                             if (url_relative_list.Count > 2)
@@ -675,6 +679,12 @@ namespace SobekCM.Engine_Library.Navigation
 
                                         case "groups":
                                             Navigator.Admin_Type = Admin_Type_Enum.User_Groups;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
+                                        case "permissions":
+                                            Navigator.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
                                             if (url_relative_list.Count > 2)
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             break;

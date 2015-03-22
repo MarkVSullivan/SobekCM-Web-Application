@@ -368,8 +368,11 @@
     /// <summary> Type of admin display or action requested by the system or portal administrator </summary>
     public enum Admin_Type_Enum : byte
     {
+        /// <summary> Adds a single collection to this instance, via the wizard </summary>
+        Add_Collection_Wizard = 1,
+
         /// <summary> Allows all the information and behaviors for a single aggregation to be viewed / edited </summary>
-        Aggregation_Single = 1,
+        Aggregation_Single,
 
         /// <summary> Provides list of all existing aggregationPermissions and allows admin to enter a new aggregation </summary>
         Aggregations_Mgmt,
@@ -412,6 +415,9 @@
 
         /// <summary> Allows for editing and viewing of user groups </summary>
         User_Groups,
+
+        /// <summary> Provides top-level reports regarding permissions granted to users </summary>
+        User_Permissions_Reports,
 
         /// <summary> Provides list of all existing wordmarks/icons and allows admin to enter a new wordmark or edit an existing wordmark </summary>
         Wordmarks

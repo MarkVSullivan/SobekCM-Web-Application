@@ -38,6 +38,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -62,6 +63,7 @@
     <Compile Include="Aggregations\Item_Aggregation_Metadata_Type.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Related_Aggregations.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Statistics.cs" />
+    <Compile Include="Aggregations\New_Aggregation_Arguments.cs" />
     <Compile Include="Aggregations\Thematic_Heading.cs" />
     <Compile Include="ApplicationState\Aggregation_Code_Manager.cs" />
     <Compile Include="ApplicationState\Default_Metadata.cs" />
@@ -101,6 +103,7 @@
     <Compile Include="MemoryMgmt\CachedDataManager_WebSkinServices.cs" />
     <Compile Include="MemoryMgmt\Cached_Object_Info.cs" />
     <Compile Include="MemoryMgmt\Expiring_Item_Typed_List.cs" />
+    <Compile Include="Message\ErrorRestMessage.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Configuration.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Config_Reader.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Endpoint.cs" />

@@ -13,6 +13,7 @@ using SobekCM.Tools;
 
 namespace SobekCM.Core.Aggregations
 {
+    /// <summary> Language-specific item aggregation data </summary>
     [Serializable, DataContract, ProtoContract]
     public class Item_Aggregation
     {
