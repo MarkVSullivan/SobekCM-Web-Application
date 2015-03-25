@@ -802,7 +802,14 @@ namespace SobekCM.Library.HTML
                 // Add the text
                 Output.WriteLine("<div class=\"sbkIhsw_HomeText\">");
                 Output.WriteLine("<p>Below is the complete master tree of all aggregations within this library.  This includes all active aggregations, as well as all hidden or inactive collections.</p>");
-                Output.WriteLine("<br /><br />");
+                Output.WriteLine("<br />");
+
+                RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations_List;
+                string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations_Tree;
+
+                Output.WriteLine("<p><a href=\"" + url + "\">Click here to view the aggregations in table view</a></p>");
+                Output.WriteLine("<br />");
 
                 Output.WriteLine("<blockquote>");
                 Output.WriteLine("  <div style=\"text-align:right;\">");
@@ -900,8 +907,8 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine(LeadingSpaces + "  <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><abbr title=\"" + childAggr.Description + "\">" + childAggr.Name + "</abbr></a></li>");
                     }
 
-                    Output.WriteLine(LeadingSpaces + "</ul>");
                 }
+                Output.WriteLine(LeadingSpaces + "</ul>");
             }
         }
 
@@ -919,7 +926,14 @@ namespace SobekCM.Library.HTML
             // Add text at the top and sort the dataset if necessary
             Output.WriteLine("<div class=\"sbkIhsw_HomeText\">");
             Output.WriteLine("<p>Below is the complete master list of all aggregations within this library.  This includes all active aggregations, as well as all hidden or inactive collections.</p>");
-            Output.WriteLine("<br /><br />");
+            Output.WriteLine("<br />");
+            RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations_Tree;
+            string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations_List;
+
+            Output.WriteLine("<p><a href=\"" + url + "\">Click here to view the aggregations in tree view</a></p>");
+            Output.WriteLine("<br />");
+
             Output.WriteLine("  <table class=\"sbkIhsw_Table display\" id=\"adminMgmtTable\">");
             Output.WriteLine("    <thead>");
             Output.WriteLine("      <tr>");

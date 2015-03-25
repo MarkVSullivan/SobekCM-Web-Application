@@ -1192,16 +1192,6 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("    </ul></li>");
 
 
-                // Add link to my libary (repeat of option in mySobek menu)
-                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
-                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
-                Output.WriteLine("    <li id=\"sbkUsm_Bookshelf\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + myLibrary + "</a></li>");
-
-                // Add a link to my account (repeat of option in mySobek menu)
-                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
-                Output.WriteLine("      <li id=\"sbkUsm_Account\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + myPreferences + "</a></li>");
-
                 // If this user is internal, add that
                 if ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin))
                 {
@@ -1210,10 +1200,13 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("    <li id=\"sbkUsm_Internal\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + internal_text + "</a><ul id=\"sbkUsm_InternalSubMenu\">");
 
                     RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations_List;
-                    Output.WriteLine("      <li id=\"sbkUsm_InternalAggregations\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + collection_details_text + "</a></li>");
+                    Output.WriteLine("      <li id=\"sbkUsm_InternalAggregations\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + collection_details_text + "</a><ul id=\"sbkUsm_InternalAggrSubMenu\">");
+
+                    Output.WriteLine("      <li id=\"sbkUsm_InternalAggrList\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + collection_details_text + "</a></li>");
 
                     RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.Aggregations_Tree;
                     Output.WriteLine("      <li id=\"sbkUsm_InternalAggrTree\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + collection_tree_text + "</a></li>");
+                    Output.WriteLine("      </ul></li>");
 
                     RequestSpecificValues.Current_Mode.Internal_Type = Internal_Type_Enum.New_Items;
                     Output.WriteLine("      <li id=\"sbkUsm_InternalNewItems\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + new_items_text + "</a></li>");
@@ -1253,63 +1246,202 @@ namespace SobekCM.Library.HTML
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
+                    string current_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
                     Output.WriteLine("    <li id=\"sbkUsm_Admin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_admin_text + "</a><ul id=\"sbkUsm_AdminSubMenu\">");
 
-                    // Edit forwarding
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminForwarding\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "forwarding.png\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Aliases</div></a></li>");
+                    // Common tasks menu
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminCommonTasks\"><a href=\"" + current_url + "#common\"> <div class=\"sbkUsm_TextWithImage\">Common Tasks</div></a><ul>");
 
-                    // Edit item aggregationPermissions
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminAggr\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "building.gif\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Management</div></a></li>");
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminAggrWizard\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "wizard.png\" /> <div class=\"sbkUsm_TextWithImage\">Add Collection Wizard</div></a></li>");
 
-
-                    // View and set SobekCM Builder Status
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminStatus\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "gears.png\" /> <div class=\"sbkUsm_TextWithImage\">Builder Status</div></a></li>");
-
-                    // Edit Default_Metadata
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminProjects\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "pmets.gif\" /> <div class=\"sbkUsm_TextWithImage\">Default Metadata</div></a></li>");
-
-                    // Edit IP Restrictions
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminRestrictions\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "firewall.png\" /> <div class=\"sbkUsm_TextWithImage\">IP Restriction Ranges</div></a></li>");
-
-                    // Edit Settings
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminSettings\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "wrench.png\" /> <div class=\"sbkUsm_TextWithImage\">System-Wide Settings</div></a></li>");
-
-                    // Edit Thematic Headings
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminThematic\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><div class=\"sbkUsm_TextNoImage\">Thematic Headings</div></a></li>");
-
-                    // Edit URL Portals
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminPortals\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "portals.png\" /> <div class=\"sbkUsm_TextWithImage\">URL Portals</div></a></li>");
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminCurrSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "skins.png\" /> <div class=\"sbkUsm_TextWithImage\">Edit Current Web Skin</div></a></li>");
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 
                     if (RequestSpecificValues.Current_User.Is_System_Admin)
                     {
                         // Edit users
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
-                        Output.WriteLine("      <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "users.png\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
+                        Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "users.png\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
                     }
+
+                    Output.WriteLine("      </ul></li>");
+
+                    // Appearance submenu
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminAppearance\"><a href=\"" + current_url + "#appearance\"> <div class=\"sbkUsm_TextWithImage\">Appearance</div></a><ul>");
+
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminCurrSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "skins.png\" /> <div class=\"sbkUsm_TextWithImage\">Edit Current Web Skin</div></a></li>");
+                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+
+                    // Edit URL Portals
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminPortals\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "portals.png\" /> <div class=\"sbkUsm_TextWithImage\">URL Portals</div></a></li>");
 
                     // Edit interfaces
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "skins.png\" /> <div class=\"sbkUsm_TextWithImage\">Web Skins</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "skins.png\" /> <div class=\"sbkUsm_TextWithImage\">Web Skins</div></a></li>");
+
+                    Output.WriteLine("      </ul></li>");
+
+                    // Collections submenu
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminCollections\"><a href=\"" + current_url + "#collections\"> <div class=\"sbkUsm_TextWithImage\">Collections</div></a><ul>");
+
+
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminAggrWizard\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "wizard.png\" /> <div class=\"sbkUsm_TextWithImage\">Add Collection Wizard</div></a></li>");
+
+                    // Edit forwarding
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminForwarding\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "forwarding.png\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Aliases</div></a></li>");
+
+                    // Edit item aggregationPermissions
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminAggr\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "building.gif\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Management</div></a></li>");
+
+                    // Edit Thematic Headings
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminThematic\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><div class=\"sbkUsm_TextNoImage\">Thematic Headings</div></a></li>");
+
+
+                    Output.WriteLine("      </ul></li>");
+
+                    // Items submenu
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminItems\"><a href=\"" + current_url + "#items\"> <div class=\"sbkUsm_TextWithImage\">Items</div></a><ul>");
+
+                    // Edit Default_Metadata
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminProjects\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "pmets.gif\" /> <div class=\"sbkUsm_TextWithImage\">Default Metadata</div></a></li>");
 
                     // Edit wordmarks
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminWordmarks\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "wordmarks.gif\" /> <div class=\"sbkUsm_TextWithImage\">Wordmarks / Icons</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminWordmarks\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "wordmarks.gif\" /> <div class=\"sbkUsm_TextWithImage\">Wordmarks / Icons</div></a></li>");
 
+                    // View and set SobekCM Builder Status
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminStatus\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "gears.png\" /> <div class=\"sbkUsm_TextWithImage\">Builder Status</div></a></li>");
+
+                    Output.WriteLine("      </ul></li>");
+                    
+                    // Permissions submenu
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminPermissions\"><a href=\"" + current_url + "#permissions\"> <div class=\"sbkUsm_TextWithImage\">Permissions</div></a><ul>");
+
+                    // Edit users
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "icon_permission.png\" /> <div class=\"sbkUsm_TextWithImage\">User Permissions Reports</div></a></li>");
+
+                    // Edit users
+                    if (RequestSpecificValues.Current_User.Is_System_Admin)
+                    {
+                        // Edit users
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                        Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "users.png\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
+                    }
+
+                    Output.WriteLine("      </ul></li>");
+
+                    // Settings submenu
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminSettings\"><a href=\"" + current_url + "#settings\"> <div class=\"sbkUsm_TextWithImage\">Settings</div></a><ul>");
+
+
+
+                    // Edit IP Restrictions
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminRestrictions\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "firewall.png\" /> <div class=\"sbkUsm_TextWithImage\">IP Restriction Ranges</div></a></li>");
+
+                    // Edit Settings
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminSettings\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "wrench.png\" /> <div class=\"sbkUsm_TextWithImage\">System-Wide Settings</div></a></li>");
+
+                    
                     // Reset cache
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminReset\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "refresh.png\" /> <div class=\"sbkUsm_TextWithImage\">Reset Cache</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminReset\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "refresh.png\" /> <div class=\"sbkUsm_TextWithImage\">Reset Cache</div></a></li>");
+
+                    Output.WriteLine("      </ul></li>");
 
                     Output.WriteLine("    </ul></li>");
                 }
+           
             }
+
+                            // If this user is a sys admin or portal admin, add that
+            //    if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
+            //    {
+            //        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+            //        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
+            //        Output.WriteLine("    <li id=\"sbkUsm_Admin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_admin_text + "</a><ul id=\"sbkUsm_AdminSubMenu\">");
+
+            //        // Edit forwarding
+            //        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
+            //        Output.WriteLine("      <li id=\"sbkUsm_AdminForwarding\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "forwarding.png\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Aliases</div></a></li>");
+
+            //        // Edit item aggregationPermissions
+            //        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+            //        Output.WriteLine("      <li id=\"sbkUsm_AdminAggr\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "building.gif\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Management</div></a></li>");
+
+
+            //        // View and set SobekCM Builder Status
+            //        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
+            //        Output.WriteLine("      <li id=\"sbkUsm_AdminStatus\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "gears.png\" /> <div class=\"sbkUsm_TextWithImage\">Builder Status</div></a></li>");
+
+            //        // Edit Default_Metadata
+            //        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
+            //        Output.WriteLine("      <li id=\"sbkUsm_AdminProjects\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "pmets.gif\" /> <div class=\"sbkUsm_TextWithImage\">Default Metadata</div></a></li>");
+
+            //        // Edit IP Restrictions
+            //        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.IP_Restrictions;
+            //        Output.WriteLine("      <li id=\"sbkUsm_AdminRestrictions\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "firewall.png\" /> <div class=\"sbkUsm_TextWithImage\">IP Restriction Ranges</div></a></li>");
+
+            //        // Edit Settings
+            //        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
+            //        Output.WriteLine("      <li id=\"sbkUsm_AdminSettings\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "wrench.png\" /> <div class=\"sbkUsm_TextWithImage\">System-Wide Settings</div></a></li>");
+
+            //        // Edit Thematic Headings
+            //        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
+            //        Output.WriteLine("      <li id=\"sbkUsm_AdminThematic\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><div class=\"sbkUsm_TextNoImage\">Thematic Headings</div></a></li>");
+
+            //        // Edit URL Portals
+            //        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.URL_Portals;
+            //        Output.WriteLine("      <li id=\"sbkUsm_AdminPortals\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "portals.png\" /> <div class=\"sbkUsm_TextWithImage\">URL Portals</div></a></li>");
+
+            //        if (RequestSpecificValues.Current_User.Is_System_Admin)
+            //        {
+            //            // Edit users
+            //            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+            //            Output.WriteLine("      <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "users.png\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
+            //        }
+
+            //        // Edit interfaces
+            //        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
+            //        Output.WriteLine("      <li id=\"sbkUsm_AdminSkin\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "skins.png\" /> <div class=\"sbkUsm_TextWithImage\">Web Skins</div></a></li>");
+
+            //        // Edit wordmarks
+            //        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
+            //        Output.WriteLine("      <li id=\"sbkUsm_AdminWordmarks\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "wordmarks.gif\" /> <div class=\"sbkUsm_TextWithImage\">Wordmarks / Icons</div></a></li>");
+
+            //        // Reset cache
+            //        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
+            //        Output.WriteLine("      <li id=\"sbkUsm_AdminReset\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "refresh.png\" /> <div class=\"sbkUsm_TextWithImage\">Reset Cache</div></a></li>");
+
+            //        Output.WriteLine("    </ul></li>");
+            //    }
+            //}
+
+
+            // Add link to my libary (repeat of option in mySobek menu)
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+            RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;
+            Output.WriteLine("    <li id=\"sbkUsm_Bookshelf\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + myLibrary + "</a></li>");
+
+            // Add a link to my account (repeat of option in mySobek menu)
+            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+            Output.WriteLine("      <li id=\"sbkUsm_Account\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + myPreferences + "</a></li>");
 
 
             Output.WriteLine("  </ul>");

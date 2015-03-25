@@ -623,6 +623,8 @@ namespace SobekCM.Engine_Library.Navigation
 
                                         case "addcoll":
                                             Navigator.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             break;
 
                                         case "aggregations":

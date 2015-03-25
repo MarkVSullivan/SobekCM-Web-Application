@@ -218,13 +218,13 @@ select.sbkAav_input  { margin-right: 10px; margin-top: 6px; }
 select.sbkBav_select { width: 210px; margin-bottom: 1px; margin-right: 20px; }
 
 /** Home_AdminViewer **/
-.sbkHav_MainText { text-align: justify; padding-bottom: 25px;padding-left: 180px;padding-top: 30px; font-size: larger; }
+.sbkHav_MainText { text-align: justify; padding-bottom: 25px;padding-left: 60px;padding-top: 30px; font-size: larger; }
 .sbkHav_MainText a:link { color:#000080; }
 .sbkHav_MainText A:hover { color:Blue; text-decoration:underline; }
-.sbkHav_MainText h2 { color:Gray; font-weight: bold; font-size: 1.2em; line-height:25px; }
-.sbkHav_MainText p { font-size: smaller;padding-left: -30px; }
-#sbkHav_OptionsTable { padding: 20px 0 20px 40px; }
-#sbkHav_OptionsTable tr {height: 40px;vertical-align: middle; }
+.sbkHav_MainText h2 { color:Gray; font-weight: bold; font-size: 1.1em; line-height:25px; }
+.sbkHav_MainText p { font-size: smaller;padding-left: 60px; }
+#sbkHav_OptionsTable { padding: 20px 0 20px 0px; }
+#sbkHav_OptionsTable tr {height: 50px;vertical-align: middle; }
 
 /** IP_Restrictions_AdminViewer **/
 .sbkIpav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 

@@ -215,7 +215,7 @@ namespace SobekCM.Library.HTML
 				if (RequestSpecificValues.Current_User == null)
 					return false;
 
-                if ((RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Wordmarks) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Skins_Single))
+                if ((RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Wordmarks) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Skins_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Add_Collection_Wizard))
 					return true;
 
 
@@ -261,7 +261,7 @@ namespace SobekCM.Library.HTML
 
             if ((!adminViewer.Contains_Popup_Forms) && (!RequestSpecificValues.Current_Mode.Logon_Required))
             {
-                if (( RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single ) && ( RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Skins_Single ))
+                if ((RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Skins_Single) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Add_Collection_Wizard))
                 {
                     // Add the banner
                     Add_Banner(Output, "sbkAhs_BannerDiv", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Hierarchy_Object);
@@ -371,7 +371,7 @@ namespace SobekCM.Library.HTML
             }
 
 			// Add the uploader libraries if editing an item
-            if ((RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Wordmarks) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Skins_Single))
+            if ((RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Wordmarks) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Skins_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Add_Collection_Wizard))
 	        {
 #if DEBUG
                 Output.WriteLine("  <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadifive/jquery.uploadifive.js\" type=\"text/javascript\"></script>");
@@ -430,6 +430,7 @@ namespace SobekCM.Library.HTML
 					case Admin_Type_Enum.Aggregation_Single:
 						return "sbkSaav_ContainerInner";
 
+                    case Admin_Type_Enum.Add_Collection_Wizard:
                     case Admin_Type_Enum.Aggregations_Mgmt:
                         return "sbkAsav_ContainerInner";
 

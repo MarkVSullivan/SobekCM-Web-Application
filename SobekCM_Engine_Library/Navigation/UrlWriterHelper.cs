@@ -369,7 +369,9 @@ namespace SobekCM.Engine_Library.Navigation
                             return this_base_url + "admin" + urlOptions1;
 
                         case Admin_Type_Enum.Add_Collection_Wizard:
-                            return this_base_url + "addcoll" + urlOptions1;
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "admin/addcoll/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                            return this_base_url + "admin/addcoll" + urlOptions1;
 
                         case Admin_Type_Enum.Aggregation_Single:
                             if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
