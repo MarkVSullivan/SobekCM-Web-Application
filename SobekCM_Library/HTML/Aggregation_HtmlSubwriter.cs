@@ -403,7 +403,7 @@ namespace SobekCM.Library.HTML
 
                 if (RequestSpecificValues.Current_Mode.Home_Type == Home_Type_Enum.Tree)
                 {
-                    Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jstree/themes/default/style.min.css\" />");
+                    Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jstree/themes/default/jstree.min.css\" />");
                 }
             }
 
