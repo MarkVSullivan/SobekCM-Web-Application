@@ -155,6 +155,8 @@ namespace SobekCM.Library.Settings
             Geo_Blue_Png = "http://cdn.sobekrepository.org/images/misc/geo_blue.png";
             Get_Adobe_Reader_Png = "http://cdn.sobekrepository.org/images/misc/get_adobe_reader.png";
             Getuserlocation_Png = "http://cdn.sobekrepository.org/images/mapedit/getUserLocation.png";
+            Gmaps_Infobox_Js = "http://cdn.sobekrepository.org/includes/gmaps-infobox/1.0/gmaps-infobox.js";
+            Gmaps_MarkerwithLabel_Js = "http://cdn.sobekrepository.org/includes/gmaps-markerwithlabel/1.9.1/gmaps-markerwithlabel-1.9.1.js";
             Go_Button_Png = "http://cdn.sobekrepository.org/images/misc/go_button.png";
             Go_Gray_Gif = "http://cdn.sobekrepository.org/images/misc/go_gray.gif";
             Google_Share_Gif = "http://cdn.sobekrepository.org/images/misc/google_share.gif";
@@ -178,6 +180,7 @@ namespace SobekCM.Library.Settings
             Jquery_Mousewheel_Js = "http://cdn.sobekrepository.org/includes/jquery-mousewheel/3.1.3/jquery.mousewheel.js";
             Jquery_Qtip_Css = "http://cdn.sobekrepository.org/includes/jquery-qtip/2.2.0/jquery.qtip.min.css";
             Jquery_Qtip_Js = "http://cdn.sobekrepository.org/includes/jquery-qtip/2.2.0/jquery.qtip.min.js";
+            Jquery_Searchbox_Css = "http://cdn.sobekrepository.org/includes/jquery-searchbox/1.0/jquery-searchbox.css";
             Jquery_Timeentry_Css = "http://cdn.sobekrepository.org/includes/timeentry/1.5.2/jquery.timeentry.css";
             Jquery_Timeentry_Js = "http://cdn.sobekrepository.org/includes/timeentry/1.5.2/jquery.timeentry.min.js";
             Jquery_Timers_Js = "http://cdn.sobekrepository.org/includes/jquery-timers/1.2/jquery.timers.min.js";
@@ -192,6 +195,7 @@ namespace SobekCM.Library.Settings
             Jquery_Ui_1_10_1_Js = "http://cdn.sobekrepository.org/includes/jquery-ui/1.10.1/jquery-ui-1.10.1.js";
             Jquery_Ui_1_10_3_Custom_Js = "http://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui-1.10.3.custom.min.js";
             Jquery_Ui_1_10_3_Draggable_Js = "http://cdn.sobekrepository.org/includes/jquery-ui-draggable/1.10.3/jquery-ui-1.10.3.draggable.min.js";
+            Jquery_Ui_Css = "http://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui.css";
             Jsdatepick_Full_1_3_Js = "http://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick.full.1.3.js";
             Jsdatepick_Min_1_3_Js = "http://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick.min.1.3.js";
             Jsdatepick_Ltr_Css = "http://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick_ltr.css";
@@ -280,6 +284,7 @@ namespace SobekCM.Library.Settings
             Sobekcm_Datatables_Css = "http://cdn.sobekrepository.org/css/sobekcm-datatables/4.8.4/SobekCM_DataTables.css";
             Sobekcm_Full_Js = "http://cdn.sobekrepository.org/js/sobekcm-full/4.8.4/sobekcm_full.min.js";
             Sobekcm_Item_Css = "http://cdn.sobekrepository.org/css/sobekcm-item/4.8.4/SobekCM_Item.min.css";
+            Sobekcm_Map_Editor_Js = "http://cdn.sobekrepository.org/js/sobekcm-map-editor/4.8.4/sobekcm_map_editor.js";
             Sobekcm_Map_Search_Js = "http://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_search.js";
             Sobekcm_Map_Tool_Js = "http://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_tool.js";
             Sobekcm_Mapeditor_Css = "http://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapEditor.css";
@@ -773,6 +778,12 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'getuserlocation.png' file ( http://cdn.sobekrepository.org/images/mapedit/getUserLocation.png by default)</summary>
         public static string Getuserlocation_Png { get; private set; }
 
+        /// <summary> URL for the default resource 'gmaps-infobox.js' file ( http://cdn.sobekrepository.org/includes/gmaps-infobox/1.0/gmaps-infobox.js by default)</summary>
+        public static string Gmaps_Infobox_Js { get; private set; }
+
+        /// <summary> URL for the default resource 'gmaps-markerwithlabel.js' file ( http://cdn.sobekrepository.org/includes/gmaps-markerwithlabel/1.9.1/gmaps-markerwithlabel-1.9.1.js by default)</summary>
+        public static string Gmaps_MarkerwithLabel_Js { get; private set; }
+
         /// <summary> URL for the default resource 'go_button.png' file ( http://cdn.sobekrepository.org/images/misc/go_button.png by default)</summary>
         public static string Go_Button_Png { get; private set; }
 
@@ -842,6 +853,9 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'jquery.qtip.js' file ( http://cdn.sobekrepository.org/includes/jquery-qtip/2.2.0/jquery.qtip.min.js by default)</summary>
         public static string Jquery_Qtip_Js { get; private set; }
 
+        /// <summary> URL for the default resource 'jquery-searchbox.css' file ( http://cdn.sobekrepository.org/includes/jquery-searchbox/1.0/jquery-searchbox.css by default)</summary>
+        public static string Jquery_Searchbox_Css { get; private set; }
+
         /// <summary> URL for the default resource 'jquery.timeentry.css' file ( http://cdn.sobekrepository.org/includes/timeentry/1.5.2/jquery.timeentry.css by default)</summary>
         public static string Jquery_Timeentry_Css { get; private set; }
 
@@ -883,6 +897,9 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'jquery-ui-1.10.3.draggable.js' file ( http://cdn.sobekrepository.org/includes/jquery-ui-draggable/1.10.3/jquery-ui-1.10.3.draggable.min.js by default)</summary>
         public static string Jquery_Ui_1_10_3_Draggable_Js { get; private set; }
+
+        /// <summary> URL for the default resource 'jquery-ui.css' file ( http://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui.css by default)</summary>
+        public static string Jquery_Ui_Css { get; private set; }
 
         /// <summary> URL for the default resource 'jsdatepick.full.1.3.js' file ( http://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick.full.1.3.js by default)</summary>
         public static string Jsdatepick_Full_1_3_Js { get; private set; }
@@ -1147,6 +1164,9 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'sobekcm_item.css' file ( http://cdn.sobekrepository.org/css/sobekcm-item/4.8.4/SobekCM_Item.min.css by default)</summary>
         public static string Sobekcm_Item_Css { get; private set; }
+
+        /// <summary> URL for the default resource 'sobekcm_map_search.js' file ( http://cdn.sobekrepository.org/js/sobekcm-map-editor/4.8.4/sobekcm_map_editor.js by default)</summary>
+        public static string Sobekcm_Map_Editor_Js { get; private set; }
 
         /// <summary> URL for the default resource 'sobekcm_map_search.js' file ( http://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_search.js by default)</summary>
         public static string Sobekcm_Map_Search_Js { get; private set; }
@@ -1916,6 +1936,14 @@ namespace SobekCM.Library.Settings
                     Getuserlocation_Png = Source;
                     break;
 
+                case "gmaps-infobox.js":
+                    Gmaps_Infobox_Js = Source;
+                    break;
+
+                case "gmaps-markerwithlabel.js":
+                    Gmaps_MarkerwithLabel_Js = Source;
+                    break;
+
                 case "go_button.png":
                     Go_Button_Png = Source;
                     break;
@@ -2052,6 +2080,10 @@ namespace SobekCM.Library.Settings
                     Jquery_Rotate_Js = Source;
                     break;
 
+                case "jquery-searchbox.css":
+                    Jquery_Searchbox_Css = Source;
+                    break;
+
                 case "jquery-ui-1.10.1.js":
                     Jquery_Ui_1_10_1_Js = Source;
                     break;
@@ -2062,6 +2094,10 @@ namespace SobekCM.Library.Settings
 
                 case "jquery-ui-1.10.3.draggable.js":
                     Jquery_Ui_1_10_3_Draggable_Js = Source;
+                    break;
+
+                case "jquery-ui.css":
+                    Jquery_Ui_Css = Source;
                     break;
 
                 case "jsdatepick.full.1.3.js":
@@ -2414,6 +2450,10 @@ namespace SobekCM.Library.Settings
 
                 case "sobekcm_item.css":
                     Sobekcm_Item_Css = Source;
+                    break;
+
+                case "sobekcm_map_editor.js":
+                    Sobekcm_Map_Editor_Js = Source;
                     break;
 
                 case "sobekcm_map_search.js":

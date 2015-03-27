@@ -837,7 +837,7 @@ namespace SobekCM.Library.AdminViewer
 
 					Output.WriteLine("                  </td>");
 					Output.WriteLine("                  <td>");
-					Output.WriteLine("                    <img  class=\"sbkSeav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + settingInfo.Help_Message.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\"  title=\"" + settingInfo.Help_Message.Replace("\\", "\\\\").Replace("\n", "") + "\" />");
+					Output.WriteLine("                    <img  class=\"sbkSeav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + settingInfo.Help_Message.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\"  title=\"" + settingInfo.Help_Message.Replace("\\", "\\\\").Replace("\n", "") + "\" />");
 					Output.WriteLine("                  </td>");
 					Output.WriteLine("                </tr>");
 					Output.WriteLine("              </table>");
@@ -965,7 +965,7 @@ namespace SobekCM.Library.AdminViewer
 
 				Output.WriteLine("                  </td>");
 				Output.WriteLine("                  <td>");
-				Output.WriteLine("                    <img class=\"sbkSeav_HelpButton\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/help_button.jpg\" onclick=\"alert('" + settingInfo.Help_Message.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + settingInfo.Help_Message.Replace("\\", "\\\\").Replace("\n", "") + "\" />");
+				Output.WriteLine("                    <img class=\"sbkSeav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + settingInfo.Help_Message.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\" title=\"" + settingInfo.Help_Message.Replace("\\", "\\\\").Replace("\n", "") + "\" />");
 				Output.WriteLine("                  </td>");
 				Output.WriteLine("                </tr>");
 				Output.WriteLine("              </table>");

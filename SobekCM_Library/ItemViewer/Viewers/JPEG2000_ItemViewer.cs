@@ -76,7 +76,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<script type=\"text/javascript\">");
             Output.WriteLine("   viewer = OpenSeadragon({");
             Output.WriteLine("      id: \"sbkJp2_Container\",");
-			Output.WriteLine("      prefixUrl : \"/iipimage/openseadragon/images/\",");
+			Output.WriteLine("      prefixUrl : \"http://cdn.sobekrepository.org/includes/openseadragon/1.2.1/images/\",");
 
 			if (suppressNavigator)
 			{
@@ -156,7 +156,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("<script src=\"" + CurrentMode.Base_URL + "iipimage/openseadragon/openseadragon.min.js\"></script>");
+            Output.WriteLine("<script src=\"http://cdn.sobekrepository.org/includes/openseadragon/1.2.1/openseadragon.min.js\"></script>");
         }
 
         /// <summary> Gets the collection of special behaviors which this item viewer

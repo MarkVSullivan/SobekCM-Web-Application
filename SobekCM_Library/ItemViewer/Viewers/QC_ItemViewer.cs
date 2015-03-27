@@ -1424,9 +1424,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Qc_Css + "\" /> ");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/scrollbars.css\" />");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/scrollbars-black.css\" />");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\" />");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Jquery_Ui_Css + "\" />");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\""+ Static_Resources.Sobekcm_Mysobek_Css + "\"/>");
 
             Output.WriteLine("  <style type=\"text/css\">");
@@ -2071,7 +2069,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<script type=\"text/javascript\">var qc_image_folder; var thumbnailImageDictionary={};</script>");
 
             //Save the global image folder location
-            Output.WriteLine("<script type=\"text/javascript\">Save_Image_Folder('" + CurrentMode.Default_Images_URL + "');</script>");
+           // Output.WriteLine("<script type=\"text/javascript\">Save_Image_Folder('" + CurrentMode.Default_Images_URL + "');</script>");
             
             //Save all the thumbnail image locations in the JavaScript global image dictionary
             List<string> image_by_pageindex = new List<string>();

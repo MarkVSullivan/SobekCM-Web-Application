@@ -838,7 +838,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Color_2_1_1_Js + "\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Timers_Js + "\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Track_Item_Js + "\" ></script>");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" +  RequestSpecificValues.Current_Mode.Base_URL + "default/jquery-ui.css\" />");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Jquery_Ui_Css + "\" />");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Timeentry_Js + "\"></script>");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\"  href=\"" + Static_Resources.Jquery_Timeentry_Css + "\"/>");
         }

@@ -55,10 +55,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             mapSearchBuilder.AppendLine("     <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/external_jquery_1.10.2.js\"></script> ");
             mapSearchBuilder.AppendLine("     <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/external_jquery_ui.min.js\"></script> ");
             mapSearchBuilder.AppendLine("     <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/external_jquery_ui_labeledslider.js\"></script> ");
-            mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/external_gmaps_infobox.js\"></script> ");
+            mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + Static_Resources.Gmaps_Infobox_Js + "\" /></script> ");
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/custom_geoObjects.js\"></script>  ");
             mapSearchBuilder.AppendLine("     <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/mapsearch/sobekcm_mapsearch.js\"></script> ");
-            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/external_jquery_ui_1.10.4.css\"> ");
+            mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + Static_Resources.Jquery_1_10_2_Js +  "default/external_jquery_ui_1.10.4.css\"> ");
             mapSearchBuilder.AppendLine("     <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_MapSearch.css\"> ");
 
             //apply theming

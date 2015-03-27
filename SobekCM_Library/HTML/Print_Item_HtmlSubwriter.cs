@@ -116,13 +116,13 @@ namespace SobekCM.Library.HTML
         {
             if (RequestSpecificValues.Current_Mode.Base_Skin == "ufdc")
             {
-                Output.WriteLine("<img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "ufdc_banner_" + image_width + ".jpg\" />");
+                Output.WriteLine("<img src=\"ufdc_banner_" + image_width + ".jpg\" />");
                 Output.WriteLine("<br />");
             }
 
             if (RequestSpecificValues.Current_Mode.Base_Skin == "dloc")
             {
-                Output.WriteLine("<img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "dloc_banner_" + image_width + ".jpg\" />");
+                Output.WriteLine("<img src=\"dloc_banner_" + image_width + ".jpg\" />");
                 Output.WriteLine("<br />");
             }
 
@@ -271,13 +271,13 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("</center>");
             if (RequestSpecificValues.Current_Mode.Base_Skin == "ufdc")
             {
-                Output.WriteLine("<img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "ufdc_banner_700.jpg\" />");
+                Output.WriteLine("<img src=\"ufdc_banner_700.jpg\" />");
                 Output.WriteLine("<br />");
             }
 
             if (RequestSpecificValues.Current_Mode.Base_Skin == "dloc")
             {
-                Output.WriteLine("<img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "dloc_banner_700.jpg\" />");
+                Output.WriteLine("<img src=\"dloc_banner_700.jpg\" />");
                 Output.WriteLine("<br />");
             }
 

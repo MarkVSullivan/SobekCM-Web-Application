@@ -555,7 +555,7 @@ namespace SobekCM.Library.MySobekViewer
                 TreeNode rootNode = new TreeNode
                                         {
                                             Text = "&nbsp; <a title=\"Manage my library\" href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", String.Empty) + "\">My Library  (Manage my bookshelves)</a>",
-                                            ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/bookshelf.jpg",
+                                            ImageUrl = Static_Resources.Bookshelf_Jpg,
                                             SelectAction = TreeNodeSelectAction.None
                                         };
                 treeView1.Nodes.Add(rootNode);
@@ -592,12 +592,12 @@ namespace SobekCM.Library.MySobekViewer
                             selectedNodes.Add(folderNode);
                             if (thisFolder.IsPublic)
                             {
-                                folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/open_folder_public.jpg";
+                                folderNode.ImageUrl = Static_Resources.Open_Folder_Public_Jpg;
                                 folderNode.ImageToolTip = "Public folder";
                             }
                             else
                             {
-                                folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/open_folder.jpg";
+                                folderNode.ImageUrl = Static_Resources.Open_Folder_Jpg;
                             }
                             folderNode.Text = "&nbsp; <span class=\"Selected_TreeNode_Text\">" + thisFolder.Folder_Name + "</span>";
                             folderNode.SelectAction = TreeNodeSelectAction.None;
@@ -606,12 +606,12 @@ namespace SobekCM.Library.MySobekViewer
                         {
                             if (thisFolder.IsPublic)
                             {
-                                folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/closed_folder_public.jpg";
+                                folderNode.ImageUrl = Static_Resources.Closed_Folder_Public_Jpg;
                                 folderNode.ImageToolTip = "Public folder";
                             }
                             else
                             {
-                                folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/closed_folder.jpg";
+                                folderNode.ImageUrl = Static_Resources.Closed_Folder_Jpg;
                             }
                             folderNode.Text = "&nbsp; <a href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", thisFolder.Folder_Name_Encoded) + "\">" + thisFolder.Folder_Name + "</a>";
                         }
@@ -708,9 +708,9 @@ namespace SobekCM.Library.MySobekViewer
                 bookshelfManageBuilder.AppendLine("  <blockquote>");
                 bookshelfManageBuilder.AppendLine("  <table width=\"630px\">");
                 bookshelfManageBuilder.AppendLine("    <tr valign=\"middle\">");
-                bookshelfManageBuilder.AppendLine("      <td align=\"left\" width=\"30px\"><a href=\"?\" id=\"new_bookshelf_link\" name=\"new_bookshelf_link\" onclick=\"return open_new_bookshelf_folder();\" title=\"Click to add a new bookshelf\" ><img title=\"Click to add a new bookshelf\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/new_folder.jpg\" /></a><td>");
+                bookshelfManageBuilder.AppendLine("      <td align=\"left\" width=\"30px\"><a href=\"?\" id=\"new_bookshelf_link\" name=\"new_bookshelf_link\" onclick=\"return open_new_bookshelf_folder();\" title=\"Click to add a new bookshelf\" ><img title=\"Click to add a new bookshelf\" src=\"" + Static_Resources.New_Folder_Jpg + "\" /></a><td>");
                 bookshelfManageBuilder.AppendLine("      <td align=\"left\"><a href=\"?\" id=\"new_bookshelf_link\" name=\"new_bookshelf_link\" onclick=\"return open_new_bookshelf_folder();\" title=\"Click to add a new bookshelf\" >Add New Bookshelf</a><td>");
-                bookshelfManageBuilder.AppendLine("      <td align=\"right\" width=\"40px\"><a href=\"?\" id=\"refresh_bookshelf_link\" name=\"refresh_bookshelf_link\" onclick=\"return refresh_bookshelves();\" title=\"Refresh bookshelf list\" ><img title=\"Refresh bookshelf list\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/refresh_folder.jpg\" /></a><td>");
+                bookshelfManageBuilder.AppendLine("      <td align=\"right\" width=\"40px\"><a href=\"?\" id=\"refresh_bookshelf_link\" name=\"refresh_bookshelf_link\" onclick=\"return refresh_bookshelves();\" title=\"Refresh bookshelf list\" ><img title=\"Refresh bookshelf list\" src=\"" + Static_Resources.Refresh_Folder_Jpg + "\" /></a><td>");
                 bookshelfManageBuilder.AppendLine("      <td align=\"left\" width=\"150px\"><a href=\"?\" id=\"refresh_bookshelf_link\" name=\"refresh_bookshelf_link\" onclick=\"return refresh_bookshelves();\" title=\"Refresh bookshelf list\" >Refresh Bookshelves</a><td>");
                 bookshelfManageBuilder.AppendLine("    </tr>");
                 bookshelfManageBuilder.AppendLine("  </table>");
@@ -760,13 +760,13 @@ namespace SobekCM.Library.MySobekViewer
                         {
                             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Public_Folder;
                             RequestSpecificValues.Current_Mode.FolderID = thisFolder.Folder_ID;
-                            bookshelfManageBuilder.AppendLine("      <td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img title=\"Public folder\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/closed_folder_public.jpg\" /><a/></td>");
+                            bookshelfManageBuilder.AppendLine("      <td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img title=\"Public folder\" src=\"" + Static_Resources.Closed_Folder_Public_Jpg + "\" /><a/></td>");
                             bookshelfManageBuilder.AppendLine("      <td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + thisFolder.Folder_Name + "</a></td>");
                             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                         }
                         else
                         {
-                            bookshelfManageBuilder.AppendLine("      <td><img title=\"Private folder\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/closed_folder.jpg\" /></td>");
+                            bookshelfManageBuilder.AppendLine("      <td><img title=\"Private folder\" src=\"" + Static_Resources.Closed_Folder_Jpg + "\" /></td>");
                             bookshelfManageBuilder.AppendLine("      <td>" + thisFolder.Folder_Name + "</td>");
                         }
                         bookshelfManageBuilder.AppendLine("     </tr>");
@@ -801,12 +801,12 @@ namespace SobekCM.Library.MySobekViewer
                     SelectedNodes.Add(folderNode);
                     if (childFolders.IsPublic)
                     {
-                        folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/open_folder_public.jpg";
+                        folderNode.ImageUrl = Static_Resources.Open_Folder_Public_Jpg;
                         folderNode.ImageToolTip = "Public folder";
                     }
                     else
                     {
-                        folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/open_folder.jpg";
+                        folderNode.ImageUrl = Static_Resources.Open_Folder_Jpg;
                     }
 
                     folderNode.Text = "&nbsp; <span class=\"Selected_TreeNode_Text\">" + childFolders.Folder_Name + "</span>";
@@ -816,12 +816,12 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     if (childFolders.IsPublic)
                     {
-                        folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/closed_folder_public.jpg";
+                        folderNode.ImageUrl = Static_Resources.Closed_Folder_Public_Jpg;
                         folderNode.ImageToolTip = "Public folder";
                     }
                     else
                     {
-                        folderNode.ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/closed_folder.jpg";
+                        folderNode.ImageUrl = Static_Resources.Closed_Folder_Jpg;
                     }
                     folderNode.Text = "&nbsp; <a href=\"" + RedirectURL.Replace("XXXXXXXXXXXXXXXXXX", childFolders.Folder_Name_Encoded) + "\">" + childFolders.Folder_Name + "</a>";
                 }
