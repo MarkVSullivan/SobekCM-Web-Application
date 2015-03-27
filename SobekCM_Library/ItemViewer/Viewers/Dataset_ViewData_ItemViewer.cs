@@ -418,8 +418,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// <remarks> Adds the javascript and styles needed for the jQuery datatables </remarks>
 		public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
 		{
-			Output.WriteLine("  <link href=\"" + CurrentMode.Base_URL + "default/SobekCM_DataTables.css\" rel=\"stylesheet\" type=\"text/css\" />");
-			Output.WriteLine("  <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/datatables/js/jquery.dataTables.js\" ></script>");
+			Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Datatables_Js + "\" ></script>");
 
 		}
 

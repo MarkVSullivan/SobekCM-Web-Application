@@ -467,7 +467,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("File_Management_MySobekViewer.Write_HTML", "Add instructions");
 
-            Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 
 			// Write the top RequestSpecificValues.Current_Item mimic html portion
 			Write_Item_Type_Top(Output, RequestSpecificValues.Current_Item);
@@ -504,7 +504,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"phase\" name=\"phase\" value=\"\" />");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" ></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Metadata_Js + "\" ></script>");
 
             Output.WriteLine("<hr />");
             Output.WriteLine("<br />");
@@ -630,7 +630,7 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.add_upload_controls", String.Empty);
 
             StringBuilder filesBuilder = new StringBuilder(2000);
-            filesBuilder.AppendLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+            filesBuilder.AppendLine("<script src=\"" + Static_Resources.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             filesBuilder.AppendLine("Add a new page image for this package:");
             filesBuilder.AppendLine("<blockquote>");
 

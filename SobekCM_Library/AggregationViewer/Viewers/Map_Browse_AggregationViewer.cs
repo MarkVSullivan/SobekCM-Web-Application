@@ -42,7 +42,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             StringBuilder scriptBuilder = new StringBuilder(10000);
 
             scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?sensor=false\"></script>");
-            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/keydragzoom_packed.js\"></script>");
+            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Keydragzoom_Packed_Js + "\"></script>");
             scriptBuilder.AppendLine("<script type=\"text/javascript\">");
             scriptBuilder.AppendLine("  //<![CDATA[");
             scriptBuilder.AppendLine("  // Global values");

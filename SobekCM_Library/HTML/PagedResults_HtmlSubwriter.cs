@@ -843,7 +843,7 @@ namespace SobekCM.Library.HTML
                 // Add the scripts needed
                 if (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek)
                 {
-                    Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+                    Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
                     Output.WriteLine();
                 }
 

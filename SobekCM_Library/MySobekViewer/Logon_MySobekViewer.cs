@@ -159,7 +159,7 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("<div class=\"sbkLomv_ErrorMsg\">" + errorMessage + "</div>");
 			}
 
-			Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+			Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
 			Output.WriteLine("  <br />");
 			Output.WriteLine("  <p>The feature you are trying to access requires a valid logon.<p>");
@@ -210,7 +210,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Logon_MySobekViewer.Add_Popup_HTML", "Add any popup divisions for form elements");
 
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
 
             // Add the popup form
             Output.WriteLine("<!-- mySobek Log On Form -->");

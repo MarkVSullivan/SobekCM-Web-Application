@@ -342,7 +342,7 @@ namespace SobekCM.Library.AdminViewer
 
 			Output.WriteLine("<!-- Users_AdminViewer.Write_ItemNavForm_Closing -->");
 
-			Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+			Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 			Output.WriteLine();
 
 			Output.WriteLine("<div id=\"sbkSaav_PageContainer\">");

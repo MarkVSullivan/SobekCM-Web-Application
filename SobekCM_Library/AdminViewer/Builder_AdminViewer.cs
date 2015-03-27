@@ -98,7 +98,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("<!-- Hidden field to keep the newly requested status -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_builder_tosave\" name=\"admin_builder_tosave\" value=\"\" />");
-            Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             // Start to show the text 
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");

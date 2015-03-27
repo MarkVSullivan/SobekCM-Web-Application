@@ -118,8 +118,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             StringBuilder scriptBuilder = new StringBuilder();
             
             scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?v=3.2&sensor=false\"></script>");
-            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_map_search.js\"></script>");
-            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_map_tool.js\"></script>");
+            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Map_Search_Js + "\"></script>");
+            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Map_Tool_Js + "\"></script>");
             
             scriptBuilder.AppendLine("<script type=\"text/javascript\">");
             scriptBuilder.AppendLine("  //<![CDATA[");

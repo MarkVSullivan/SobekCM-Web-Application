@@ -1487,7 +1487,7 @@ namespace SobekCM.Library.HTML
 
         protected internal void write_treeview(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jstree/jstree.min.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jstree_Js + "\"></script>");
 
             // Get the hierarchy
             Aggregation_Hierarchy hierarchy = SobekEngineClient.Aggregations.Get_Aggregation_Hierarchy(Tracer);
@@ -2132,13 +2132,10 @@ namespace SobekCM.Library.HTML
 
 
                 // Add the scripts needed
-#if DEBUG
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.js\"></script>");
-#else
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.draggable.min.js\"></script>");
-#endif
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Draggable_Js + "\"></script>");
+
                 // NOTE: The jquery.hovercard.min.js file included below has been modified for SobekCM, and also includes a bug fix. DO NOT REPLACE with another version
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.hovercard.min.js\"></script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Hovercard_Js + "\"></script>");
                 Output.WriteLine("<script type=\"text/javascript\">");
                 Output.WriteLine("    $(document).ready(function () {");
                 Output.WriteLine("        $('[id*=sbkAghsw_CollectionButtonImg]').each(function () {");

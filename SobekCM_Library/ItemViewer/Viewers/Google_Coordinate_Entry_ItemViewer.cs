@@ -585,14 +585,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Output.WriteLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/jquery-searchbox.css\"/> ");
 
 				//custom css
-				Output.WriteLine(" <link rel=\"stylesheet\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_MapEditor.css\"/> ");
+				Output.WriteLine(" <link rel=\"stylesheet\" href=\"" + Static_Resources.Sobekcm_Mapeditor_Css + "\"/> ");
 
 				//standard js files
-				Output.WriteLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script> ");
-				Output.WriteLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-migrate-1.1.1.min.js\"></script> ");
-				Output.WriteLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-rotate.js\"></script> ");
-				Output.WriteLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-knob.js\"></script> ");
-				Output.WriteLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-json-2.4.min.js\"></script> ");
+				Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script> ");
+				Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Migrate_1_1_1_Js + "\"></script> ");
+				Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Rotate_Js + "\"></script> ");
+				Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Knob_Js + "\"></script> ");
+				Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Json_2_4_Js + "\"></script> ");
 				Output.WriteLine(" <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&libraries=drawing\"></script> ");
 				Output.WriteLine(" <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/mapeditor/gmaps-infobox.js\"></script> ");
 

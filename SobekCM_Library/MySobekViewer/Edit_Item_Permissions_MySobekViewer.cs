@@ -249,7 +249,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
             Output.WriteLine("      <!-- Add SAVE and CANCEL buttons to top of form -->");
-            Output.WriteLine("      <script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_metadata.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("      <script src=\"" + Static_Resources.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine();
             Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
             Output.WriteLine("        <button onclick=\"window.location.href='" + item_url + "';return false;\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");

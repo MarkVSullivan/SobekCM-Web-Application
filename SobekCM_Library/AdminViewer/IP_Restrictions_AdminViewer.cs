@@ -278,7 +278,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<!-- IP_Restrictions_AdminViewer.Write_ItemNavForm_Closing -->");
 
 			// Add the stylesheet(s)and javascript  needed
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" ></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" ></script>");
 			Output.WriteLine();
 
 			// Add the hidden field

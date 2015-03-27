@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using SobekCM.Core.Configuration;
+using SobekCM.Library.Settings;
 
 
 namespace SobekCM.Library.CKEditor
@@ -38,7 +39,7 @@ namespace SobekCM.Library.CKEditor
             }
 
             if ( Include_Script_Reference )
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + BaseUrl + "default/scripts/ckeditor/ckeditor.js\"></script>");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Ckeditor_Js + "\"></script>");
 
             Output.WriteLine("  <script type=\"text/javascript\">");
 

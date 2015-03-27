@@ -168,8 +168,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t\t<!-- RELATED IMAGES VIEWER TOP NAV ROW -->");
 
 			//Include the js files
- 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
-			Output.WriteLine("<script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
+ 			Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+			Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Color_2_1_1_Js + "\"></script>");
 		    Output.WriteLine("<table style=\"width: 100%\">");
             Output.WriteLine("\t<tr>");
 

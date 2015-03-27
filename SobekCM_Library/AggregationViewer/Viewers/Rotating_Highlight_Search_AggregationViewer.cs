@@ -10,6 +10,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion
@@ -143,7 +144,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             if ((RequestSpecificValues.Hierarchy_Object.Highlights != null) && ( RequestSpecificValues.Hierarchy_Object.Highlights.Count > 1))
             {
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/contentslider.js\" > </script>");
+                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Contentslider_Js + "\" > </script>");
                 Output.WriteLine("<!-- *****************************************");
                 Output.WriteLine( "    * Featured Content Slider- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)");
                 Output.WriteLine("     * This notice MUST stay intact for legal use");

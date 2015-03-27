@@ -29,7 +29,7 @@ namespace SobekCM.Library.Settings
             Bookshelf_Png = "http://cdn.sobekrepository.org/images/misc/bookshelf.png";
             Bookturner_Html = "http://cdn.sobekrepository.org/images/misc/bookturner.html";
             Bookturner_Js = "http://cdn.sobekrepository.org/includes/bookturner/1.0.0/bookturner.js";
-            Brief_Blue_Png = "http://cdn.sobekrepository.org/images/mapsearch/brief_blue.png";
+            Brief_Blue_Png = "http://cdn.sobekrepository.org/images/misc/brief_blue.png";
             Building_Gif = "http://cdn.sobekrepository.org/images/misc/building.gif";
             Button_Down_Arrow_Png = "http://cdn.sobekrepository.org/images/misc/button_down_arrow.png";
             Button_First_Arrow_Png = "http://cdn.sobekrepository.org/images/misc/button_first_arrow.png";
@@ -152,7 +152,7 @@ namespace SobekCM.Library.Settings
             Forwarding_Gif = "http://cdn.sobekrepository.org/images/misc/forwarding.gif";
             Forwarding_Png = "http://cdn.sobekrepository.org/images/misc/forwarding.png";
             Gears_Png = "http://cdn.sobekrepository.org/images/misc/gears.png";
-            Geo_Blue_Png = "http://cdn.sobekrepository.org/images/mapsearch/geo_blue.png";
+            Geo_Blue_Png = "http://cdn.sobekrepository.org/images/misc/geo_blue.png";
             Get_Adobe_Reader_Png = "http://cdn.sobekrepository.org/images/misc/get_adobe_reader.png";
             Getuserlocation_Png = "http://cdn.sobekrepository.org/images/mapedit/getUserLocation.png";
             Go_Button_Png = "http://cdn.sobekrepository.org/images/misc/go_button.png";
@@ -253,11 +253,11 @@ namespace SobekCM.Library.Settings
             Rect_Large_Ico = "http://cdn.sobekrepository.org/images/qc/rect_large.ico";
             Rect_Medium_Ico = "http://cdn.sobekrepository.org/images/qc/rect_medium.ico";
             Rect_Small_Ico = "http://cdn.sobekrepository.org/images/qc/rect_small.ico";
-            Red_Pushpin_Png = "http://cdn.sobekrepository.org/images/mapedit/mapIcons/red-pushpin.png";
+            Red_Pushpin_Png = "http://cdn.sobekrepository.org/images/misc/red-pushpin.png";
             Refresh_Gif = "http://cdn.sobekrepository.org/images/misc/refresh.gif";
             Refresh_Png = "http://cdn.sobekrepository.org/images/misc/refresh.png";
             Refresh_Folder_Jpg = "http://cdn.sobekrepository.org/images/misc/refresh_folder.jpg";
-            Removeicon_Gif = "http://cdn.sobekrepository.org/images/mapsearch/removeIcon.gif";
+            Removeicon_Gif = "http://cdn.sobekrepository.org/images/misc/removeIcon.gif";
             Restricted_Resource_Png = "http://cdn.sobekrepository.org/images/misc/restricted_resource.png";
             Restricted_Resource_Icon_Png = "http://cdn.sobekrepository.org/images/misc/restricted_resource_icon.png";
             Return_Gif = "http://cdn.sobekrepository.org/images/misc/return.gif";
@@ -300,8 +300,8 @@ namespace SobekCM.Library.Settings
             Stumbleupon_Share_Gif = "http://cdn.sobekrepository.org/images/misc/stumbleupon_share.gif";
             Stumbleupon_Share_H_Gif = "http://cdn.sobekrepository.org/images/misc/stumbleupon_share_h.gif";
             Submitted_Items_Gif = "http://cdn.sobekrepository.org/images/misc/submitted_items.gif";
-            Table_Blue_Png = "http://cdn.sobekrepository.org/images/mapsearch/table_blue.png";
-            Thumb_Blue_Png = "http://cdn.sobekrepository.org/images/mapsearch/thumb_blue.png";
+            Table_Blue_Png = "http://cdn.sobekrepository.org/images/misc/table_blue.png";
+            Thumb_Blue_Png = "http://cdn.sobekrepository.org/images/misc/thumb_blue.png";
             Thumbnail_Cursor_Cur = "http://cdn.sobekrepository.org/images/qc/thumbnail_cursor.cur";
             Thumbnail_Large_Gif = "http://cdn.sobekrepository.org/images/misc/thumbnail_large.gif";
             Thumbs1_Gif = "http://cdn.sobekrepository.org/images/misc/thumbs1.gif";

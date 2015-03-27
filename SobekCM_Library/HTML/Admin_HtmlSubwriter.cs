@@ -363,7 +363,7 @@ namespace SobekCM.Library.HTML
             if ((RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Wordmarks) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Skins_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Add_Collection_Wizard))
 	        {
                 Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadifive_Js + "\" type=\"text/javascript\"></script>");
-                Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadify_Js + "default/scripts/uploadify/jquery.uploadify.js\" type=\"text/javascript\"></script>");
+                Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadify_Js + "\" type=\"text/javascript\"></script>");
 
 		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Uploadifive_Css + "\">");
 		        Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Uploadify_Css + "\">");

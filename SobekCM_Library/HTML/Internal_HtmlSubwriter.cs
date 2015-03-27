@@ -793,7 +793,7 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Internal_HtmlSubwriter.add_aggregations_tree_html", "Rendering HTML");
 
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jstree/jstree.min.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jstree_Js + "\"></script>");
 
             // Get the hierarchy
             Aggregation_Hierarchy hierarchy = SobekEngineClient.Aggregations.Get_Aggregation_Hierarchy(Tracer);

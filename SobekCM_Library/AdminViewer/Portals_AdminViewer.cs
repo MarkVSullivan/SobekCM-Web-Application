@@ -309,7 +309,7 @@ namespace SobekCM.Library.AdminViewer
             Tracer.Add_Trace("Portals_AdminViewer.Write_ItemNavForm_Closing", "Adds the portal information to the main form");
 
             Output.WriteLine("<!-- Portals_AdminViewer.Write_ItemNavForm_Closing -->");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
             Output.WriteLine();
 
             // Add the hidden field
@@ -424,7 +424,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
 
 
-            Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
             if (actionMessage.Length > 0)

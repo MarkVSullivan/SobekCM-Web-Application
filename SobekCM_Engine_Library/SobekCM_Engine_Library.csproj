@@ -42,9 +42,8 @@
     <Reference Include="protobuf-net">
       <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="SolrNet, Version=0.3.0.0, Culture=neutral, PublicKeyToken=bc21753e8aa334cb, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\SolrNet.dll</HintPath>
+    <Reference Include="SolrNet">
+      <HintPath>..\DLLs\SolrNet\SolrNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

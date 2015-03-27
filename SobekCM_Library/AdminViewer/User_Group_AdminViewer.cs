@@ -506,7 +506,7 @@ namespace SobekCM.Library.AdminViewer
             Tracer.Add_Trace("User_Group_AdminViewer.Write_ItemNavForm_Closing", "Add the rest of the form");
 
             Output.WriteLine("<!-- User_Group_AdminViewer.Write_ItemNavForm_Closing -->");
-            Output.WriteLine("<script src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_admin.js\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
 
             // Is this for a single user edit more, or to list all the users
