@@ -16,6 +16,7 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Divisions;
@@ -1422,16 +1423,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_QC.css\" /> ");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Qc_Css + "\" /> ");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/scrollbars.css\" />");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/scrollbars-black.css\" />");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/jquery-ui.css\" />");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\""+CurrentMode.Base_URL+ "default/SobekCM_MySobek.css\"/>");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\""+ Static_Resources.Sobekcm_Mysobek_Css + "\"/>");
 
             Output.WriteLine("  <style type=\"text/css\">");
-            Output.WriteLine("    .qcPickMainThumbnailCursor{cursor:url(" + CurrentMode.Base_URL + "default/images/qc/thumbnail_cursor.cur),default;}");
-            Output.WriteLine("    .qcMovePagesCursor{cursor:url(" + CurrentMode.Base_URL + "default/images/qc/move_pages_cursor.cur),default;}");
-            Output.WriteLine("    .qcDeletePagesCursor{cursor:url(" + CurrentMode.Base_URL + "default/images/qc/delete_cursor.cur),default;}");
+            Output.WriteLine("    .qcPickMainThumbnailCursor{cursor:url(" + Static_Resources.Thumbnail_Cursor_Cur + "),default;}");
+            Output.WriteLine("    .qcMovePagesCursor{cursor:url(" + Static_Resources.Move_Pages_Cursor_Cur + "),default;}");
+            Output.WriteLine("    .qcDeletePagesCursor{cursor:url(" + Static_Resources.Delete_Cursor_Cur + "),default;}");
             Output.WriteLine("  </style>");
         }
 
@@ -1633,9 +1634,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("<div id=\"sbkQc_MenuRightActions\">");
 
-            //Get the icons for the thumbnail sizes
-            string image_location = CurrentMode.Default_Images_URL;
-
             string viewerCode = CurrentMode.ViewerCode;
             CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
             CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
@@ -1643,33 +1641,33 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentMode.Mode = Display_Mode_Enum.Item_Display;
             CurrentMode.ViewerCode = viewerCode;
 
-            Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"javascript:UploadNewPageImages('" + url + "');return false;\"><img src=\"" + image_location + "qc/qc_addfiles.png" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Upload new page image files\"/></a></span>");
-            Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + image_location + "qc/Save.ico" + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Save the resource and apply your changes\" /></a></span>");
+            Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"javascript:UploadNewPageImages('" + url + "');return false;\"><img src=\"" + Static_Resources.Qc_Addfiles_Png + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Upload new page image files\"/></a></span>");
+            Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"javascript:behaviors_save_form(); return false;\"><img src=\"" + Static_Resources.Save_Ico + "\" height=\"20\" width=\"20\" alt=\"Missing icon\" title=\"Save the resource and apply your changes\" /></a></span>");
 
             Output.WriteLine("<span class=\"sbkQc_MainMenuSeperator\"></span>");
 
             if (thumbnailSize == 1)
-                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_small.ico\" title=\"Small thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + Static_Resources.Rect_Small_Ico + "\" title=\"Small thumbnails\"/></a></span>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 1;
-                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_small.ico\" title=\"Small thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + Static_Resources.Rect_Small_Ico + "\" title=\"Small thumbnails\"/></a></span>");
             }
 
             if (thumbnailSize == 2)
-                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_medium.ico\" title=\"Medium thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + Static_Resources.Rect_Medium_Ico + "\" title=\"Medium thumbnails\"/></a></span>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 2;
-                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_medium.ico\" title=\"Medium thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + Static_Resources.Rect_Medium_Ico + "\" title=\"Medium thumbnails\"/></a></span>");
             }
 
             if (thumbnailSize == 3)
-                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_large.ico\" title=\"Large thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + Static_Resources.Rect_Large_Ico + "\" title=\"Large thumbnails\"/></a></span>");
             else
             {
                 CurrentMode.Size_Of_Thumbnails = 3;
-                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + image_location + "qc/rect_large.ico\" title=\"Large thumbnails\"/></a></span>");
+                Output.WriteLine("<span class=\"sbkQc_MainMenuIcon\" ><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1qc") + "\" onclick=\"qc_auto_save();\"><img src=\"" + Static_Resources.Rect_Large_Ico + "\" title=\"Large thumbnails\"/></a></span>");
             }
 
             //Reset the current mode
@@ -1677,10 +1675,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("<span class=\"sbkQc_MainMenuSeperator\"></span>");
 
-            Output.WriteLine("<span id=\"qc_mainmenu_default\" class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"\" onclick=\"return defaulticon_click();\"><img src=\"" + image_location + "qc/Point13.ICO" + "\" alt=\"Missing icon\" title=\"Standard cursor\" style=\"height:20px;width:20px\" /></a></span>");
-            Output.WriteLine("<span id=\"qc_mainmenu_thumb\" class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"return mainthumbnailicon_click();\"><img src=\"" + image_location + "qc/thumbnail_large.gif" + "\" alt=\"Missing icon\" title=\"Choose main Thumbnail\" style=\"height:20px;width:20px\" /></a></span>");
-            Output.WriteLine("<span id=\"qc_mainmenu_move\" class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"return movepagesicon_click();\"><img src=\"" + image_location + "qc/DRAG1PG.ICO" + "\" alt=\"Missing icon\" title=\"Move multiple pages\" style=\"height:20px;width:20px\" /></a></span>");
-            Output.WriteLine("<span id=\"qc_mainmenu_delete\" class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"return bulkdeleteicon_click();\"><img src=\"" + image_location + "qc/TRASH01.ICO" + "\" alt=\"Missing icon\" title=\"Delete multiple pages\" style=\"height:20px;width:20px\" /></a></span>");
+            Output.WriteLine("<span id=\"qc_mainmenu_default\" class=\"sbkQc_MainMenuIcon sbkQc_MainMenuIconCurrent\" ><a href=\"\" onclick=\"return defaulticon_click();\"><img src=\"" + Static_Resources.Point13_Ico + "\" alt=\"Missing icon\" title=\"Standard cursor\" style=\"height:20px;width:20px\" /></a></span>");
+            Output.WriteLine("<span id=\"qc_mainmenu_thumb\" class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"return mainthumbnailicon_click();\"><img src=\"" + Static_Resources.Thumbnail_Large_Gif + "\" alt=\"Missing icon\" title=\"Choose main Thumbnail\" style=\"height:20px;width:20px\" /></a></span>");
+            Output.WriteLine("<span id=\"qc_mainmenu_move\" class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"return movepagesicon_click();\"><img src=\"" + Static_Resources.Drag1pg_Ico + "\" alt=\"Missing icon\" title=\"Move multiple pages\" style=\"height:20px;width:20px\" /></a></span>");
+            Output.WriteLine("<span id=\"qc_mainmenu_delete\" class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"return bulkdeleteicon_click();\"><img src=\"" + Static_Resources.Trash01_Ico + "\" alt=\"Missing icon\" title=\"Delete multiple pages\" style=\"height:20px;width:20px\" /></a></span>");
             Output.WriteLine("</div>");
 
             // Add the option to GO TO a certain thumbnail next
@@ -1738,8 +1736,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             // Get the checkmarks
-            string noCheckmark = "<img src=\"" + image_location + "nocheckmark.png\" alt=\"\" /> ";
-            string checkmark = "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" /> ";
+            string noCheckmark = "<img src=\"" + Static_Resources.Nocheckmark_Png + "\" alt=\"\" /> ";
+            string checkmark = "<img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"*\" /> ";
             
 
             Output.WriteLine("<li><a onclick=\"return false;\">Resource</a><ul>");
@@ -1831,27 +1829,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t<li><a onclick=\"return false;\">Automatic Numbering</a><ul>");
             if (autonumber_mode == 2)
             {
-                 Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(2,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(2,'" + Static_Resources.Checkmark_Png + "', '" + Static_Resources.Nocheckmark_Png + "'); return false;\">" + "<img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"*\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
             }
             else
             {
-                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(2,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(2,'" + Static_Resources.Checkmark_Png + "', '" + Static_Resources.Nocheckmark_Png + "'); return false;\">" + "<img src=\"" + Static_Resources.Nocheckmark_Png + "\" id=\"checkmarkMode2\" /> " + "No automatic numbering</a></li>");
             }
             if (autonumber_mode == 1)
             {
-                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(1,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(1,'" + Static_Resources.Checkmark_Png + "', '" + Static_Resources.Nocheckmark_Png + "'); return false;\">" + "<img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"*\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
             }
             else
             {
-                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(1,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(1,'" + Static_Resources.Checkmark_Png + "', '" + Static_Resources.Nocheckmark_Png + "'); return false;\">" + "<img src=\"" + Static_Resources.Nocheckmark_Png + "\" id=\"checkmarkMode1\" /> " + "Within same division</a></li>");
             }
             if (autonumber_mode == 0)
             {
-                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(0,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(0,'" + Static_Resources.Checkmark_Png + "', '" + Static_Resources.Nocheckmark_Png + "'); return false;\">" + "<img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"*\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
             }
             else
             {
-                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(0,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
+                Output.WriteLine("\t\t<li><a href=\"\" onclick=\"javascript:Autonumbering_mode_changed(0,'" + Static_Resources.Checkmark_Png + "', '" + Static_Resources.Nocheckmark_Png + "'); return false;\">" + "<img src=\"" + Static_Resources.Nocheckmark_Png + "\" id=\"checkmarkMode0\" /> " + "Entire document</a></li>");
             }
 
 
@@ -1860,19 +1858,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("\t<li><a onclick=\"return false;\">Drag & Drop Pages</a><ul>");
             if(makeSortable==1)
-            Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(1,'"+image_location+"'); return false;\">"+"<img src=\""+image_location+"checkmark.png\" alt=\"*\" id=\"checkmarkEnableSorting\"/>"+"Enabled</a></li>");
+                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(1,'" + Static_Resources.Checkmark_Png + "', '" + Static_Resources.Nocheckmark_Png + "'); return false;\">" + "<img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"*\" id=\"checkmarkEnableSorting\"/>" + "Enabled</a></li>");
             else
-              Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(1,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkEnableSorting\"/>" + "Enabled</a></li>");
+                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(1,'" + Static_Resources.Checkmark_Png + "', '" + Static_Resources.Nocheckmark_Png + "'); return false;\">" + "<img src=\"" + Static_Resources.Nocheckmark_Png + "\" id=\"checkmarkEnableSorting\"/>" + "Enabled</a></li>");
 
             if (makeSortable==2)
-                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(2,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "checkmark.png\" alt=\"*\" id=\"checkmarkEnableSorting_conf\"/>" + "Enabled with Confirmation</a></li>");
+                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(2,'" + Static_Resources.Checkmark_Png + "', '" + Static_Resources.Nocheckmark_Png + "'); return false;\">" + "<img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"*\" id=\"checkmarkEnableSorting_conf\"/>" + "Enabled with Confirmation</a></li>");
             else
-                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(2,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkEnableSorting_conf\"/>" + "Enabled with Confirmation</a></li>");
+                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(2,'" + Static_Resources.Checkmark_Png + "', '" + Static_Resources.Nocheckmark_Png + "'); return false;\">" + "<img src=\"" + Static_Resources.Nocheckmark_Png + "\" id=\"checkmarkEnableSorting_conf\"/>" + "Enabled with Confirmation</a></li>");
 
             if(makeSortable==3)
-                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(3,'"+image_location+"'); return false;\">"+"<img src=\""+image_location+"checkmark.png\" alt=\"*\" id=\"checkmarkDisableSorting\"/>"+"Disabled</a></li>");
+                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(3,'" + Static_Resources.Checkmark_Png + "', '" + Static_Resources.Nocheckmark_Png + "'); return false;\">" + "<img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"*\" id=\"checkmarkDisableSorting\"/>" + "Disabled</a></li>");
             else
-                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(3,'" + image_location + "'); return false;\">" + "<img src=\"" + image_location + "noCheckmark.png\" id=\"checkmarkDisableSorting\"/>" + "Disabled</a></li>");
+                Output.WriteLine("\t<li><a href=\"\" onclick=\"QC_Change_Sortable_Setting(3,'" + Static_Resources.Checkmark_Png + "', '" + Static_Resources.Nocheckmark_Png + "'); return false;\">" + "<img src=\"" + Static_Resources.Nocheckmark_Png + "\" id=\"checkmarkDisableSorting\"/>" + "Disabled</a></li>");
                 
             Output.WriteLine("</ul></li>");
             
@@ -2123,7 +2121,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // If nothing found (but this is a page division) use the no thumbs image
                 if (thumbnail_filename.Length == 0)
                 {
-                    thumbnail_url = CurrentMode.Default_Images_URL + "NoThumb.jpg";
+                    thumbnail_url = Static_Resources.Nothumb_Jpg;
                 }
 
                 string image_url;
@@ -2142,7 +2140,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     image_url = (qc_item.Web.Source_URL + "/" + filename).Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
                     if (filename.Length == 0 )
                     {
-                        image_url = CurrentMode.Default_Images_URL + "MissingImage.jpg";
+                        image_url = Static_Resources.Missingimage_Jpg;
                         bool b = true;
                     }
                    
@@ -2260,29 +2258,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 //Write the main thumbnail icon
 			    Output.WriteLine("        <input type=\"hidden\" id=\"filename" + page_index + "\" name=\"filename" + page_index + "\" value=\"" + filename_sans_extension + "\" />");
                 if (hidden_main_thumbnail.ToLower() == filename_sans_extension.ToLower())
-                    Output.WriteLine("       <a onclick=\"apply_Main_Thumbnail_Cursor_Control();return false;\" href=\"\"><img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Visible\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;\" /></a>");
+                    Output.WriteLine("       <a onclick=\"apply_Main_Thumbnail_Cursor_Control();return false;\" href=\"\"><img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + Static_Resources.Thumbnail_Large_Gif + "\" class=\"QC_MainThumbnail_Visible\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;\" /></a>");
                 else
-                    Output.WriteLine("        <a onclick=\"apply_Main_Thumbnail_Cursor_Control();return false;\" href=\"\" ><img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/thumbnail_large.gif\" class=\"QC_MainThumbnail_Hidden\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;\" /></a>");
+                    Output.WriteLine("        <a onclick=\"apply_Main_Thumbnail_Cursor_Control();return false;\" href=\"\" ><img id=\"pick_main_thumbnail" + page_index + "\" src=\"" + Static_Resources.Thumbnail_Large_Gif + "\" class=\"QC_MainThumbnail_Hidden\" style=\"height:" + pick_main_thumbnail_height + "px;width:" + pick_main_thumbnail_width + "px;\" /></a>");
 
                 //Write the filename on the top left corner
                 Output.WriteLine("<span class=\"sbkQc_Filename\" title=\"" + filenameTooltipText + "\">" + filenameToDisplay + "</span>");
 
-                    
-                   
-
-                    //Add the checkbox for moving this thumbnail
-				   // Output.WriteLine("      <td>");
                     Output.WriteLine("        <input type=\"checkbox\" id=\"chkMoveThumbnail" + page_index + "\" name=\"chkMoveThumbnail" + page_index + "\" class=\"sbkQc_Checkbox\" onchange=\"qccheckbox_onchange(event, this.id);\"/>");
-                    //Output.WriteLine("        <span id=\"movePageArrows" + page_index + "\" class=\"sbkQc_MovePageArrowsSpan\">");
-                    //Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','Before'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05LT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) before this page\"/></a>");
-                    //Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('"+page_index+"','" + thisFile.File_Name_Sans_Extension + "','After'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05RT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
-                    //Output.WriteLine("        </span>");
 			    //Default "0": No error
                 string error_code_to_set_form = "0";
 			    if (errorPresentThisPage)
 			        error_code_to_set_form = thisError.ErrorCode;
 
-                Output.WriteLine("<span id=\"error" + page_index + "\" class=\"errorIconSpan\"><a href=\"\" onclick=\"return popup('form_qcError');\"><img title=\"" + error_text + "\" height=\"" + error_icon_height + "\" width=\"" + error_icon_width + "\" src=\"" + CurrentMode.Base_URL + "default/images/qc/Cancel.ico" + "\" onclick=\"Set_Error_Page('" + filename_sans_extension + "','" + error_code_to_set_form + "');\"/></a></span>");
+                Output.WriteLine("<span id=\"error" + page_index + "\" class=\"errorIconSpan\"><a href=\"\" onclick=\"return popup('form_qcError');\"><img title=\"" + error_text + "\" height=\"" + error_icon_height + "\" width=\"" + error_icon_width + "\" src=\"" + Static_Resources.Cancel_Ico + "\" onclick=\"Set_Error_Page('" + filename_sans_extension + "','" + error_code_to_set_form + "');\"/></a></span>");
 
                     Output.WriteLine("      </td>");
                     Output.WriteLine("    </tr>");
@@ -2436,19 +2425,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
                   //  Output.WriteLine("      <td colspan=\"2\">");
                     Output.WriteLine("<td>");
                     Output.WriteLine("        <span id=\"movePageArrows" + page_index + "\" class=\"sbkQc_MovePageArrowsSpan\">");
-                    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('" + page_index + "','" + filename_sans_extension + "','Before'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05LT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) before this page\"/></a>");
-                    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('" + page_index + "','" + filename_sans_extension + "','After'); return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/qc/ARW05RT.gif\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
+                    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('" + page_index + "','" + filename_sans_extension + "','Before'); return false;\"><img src=\"" + Static_Resources.Arw05lt_Gif + "\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) before this page\"/></a>");
+                    Output.WriteLine("          <a href=\"\" onclick=\"popup('form_qcmove'); update_popup_form('" + page_index + "','" + filename_sans_extension + "','After'); return false;\"><img src=\"" + Static_Resources.Arw05rt_Gif + "\" style=\"height:" + arrow_height + "px;width:" + arrow_width + "px;\" alt=\"Missing Icon Image\" title=\"Move selected page(s) after this page\"/></a>");
                     Output.WriteLine("        </span>");
                     Output.WriteLine("</td>");
                     Output.WriteLine("<td>");
 				    Output.WriteLine("        <span id=\"qcPageOptions" + page_index + "\" class=\"sbkQc_PageOptionsSpan\">");
-                    Output.WriteLine("          <img title=\"" + info_text + "\" src=\""+CurrentMode.Base_URL+"default/images/qc/Main_Information.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
-                    Output.WriteLine("          <a href=\"" + url + "\" target=\"_blank\" title=\"" + view_text + "\" ><img src=\"" + CurrentMode.Base_URL + "default/images/qc/View.ico\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" /></a>");
-                    Output.WriteLine("          <img title=\"" + delete_text + "\" onClick=\"return ImageDeleteClicked('" + filename_sans_extension + "');\" src=\"" + CurrentMode.Base_URL + "default/images/qc/TRASH01.ICO\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
-
-
-					//Output.WriteLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT02.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
-					//Output.WriteLine("<img src=\"" + CurrentMode.Base_URL + "default/images/ToolboxImages/POINT04.ICO\" height=\"" + icon_height + "\" width=\"" + icon_width + "\" alt=\"Missing Icon Image\"></img>");
+                    Output.WriteLine("          <img title=\"" + info_text + "\" src=\"" + Static_Resources.Main_Information_Ico + "\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
+                    Output.WriteLine("          <a href=\"" + url + "\" target=\"_blank\" title=\"" + view_text + "\" ><img src=\"" + Static_Resources.View_Ico + "\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" /></a>");
+                    Output.WriteLine("          <img title=\"" + delete_text + "\" onClick=\"return ImageDeleteClicked('" + filename_sans_extension + "');\" src=\"" + Static_Resources.Trash01_Ico + "\" class=\"" + icon_class + "\" alt=\"Missing Icon Image\" />");
 
                     Output.WriteLine("        </span>");
                     Output.WriteLine("      </td>");

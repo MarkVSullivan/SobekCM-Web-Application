@@ -15,6 +15,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Settings;
 using SobekCM.Library.UploadiFive;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
@@ -643,7 +644,7 @@ namespace SobekCM.Library.MySobekViewer
 			uploadControl.AllowedFileExtensions = UI_ApplicationCache_Gateway.Settings.Upload_Image_Types;
 			uploadControl.SubmitWhenQueueCompletes = true;
 	        uploadControl.RemoveCompleted = true;
-			uploadControl.Swf = RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/uploadify/uploadify.swf";
+			uploadControl.Swf = Static_Resources.Uploadify_Swf;
 			uploadControl.RevertToFlashVersion = true;
 			placeHolder.Controls.Add(uploadControl);
 

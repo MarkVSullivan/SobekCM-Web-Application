@@ -444,8 +444,8 @@ namespace SobekCM.Library
 
 		                if (Create_RSS_Feed(code, staticSobekcmDataLocation + "rss\\", thisCollectionView.Row["Name"].ToString(), items))
 		                {
-			                recent_rss_link_builder.Append("<img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/" + code + "_short_rss.xml\">" + thisCollectionView.Row["Name"] + "</a><br />" + Environment.NewLine);
-			                all_rss_link_builder.Append("<img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/" + code + "_rss.xml\">" + thisCollectionView.Row["Name"] + "</a><br />" + Environment.NewLine);
+			                recent_rss_link_builder.Append("<img src=\"http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/" + code + "_short_rss.xml\">" + thisCollectionView.Row["Name"] + "</a><br />" + Environment.NewLine);
+                            all_rss_link_builder.Append("<img src=\"http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/" + code + "_rss.xml\">" + thisCollectionView.Row["Name"] + "</a><br />" + Environment.NewLine);
 		                }
 	                }
                 }
@@ -583,8 +583,8 @@ namespace SobekCM.Library
                 writer.WriteLine("      <br />");
                 writer.WriteLine("      In addition, the following three RSS feeds are provided:");
                 writer.WriteLine("      <blockquote>");
-                writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_rss.xml\">All items in " + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + "</a><br />");
-				writer.WriteLine("        <img src=\"" + primaryWebServerUrl + "default/images/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_short_rss.xml\">Most recently added items in " + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + " (last 100)</a><br />");
+                writer.WriteLine("        <img src=\"http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_rss.xml\">All items in " + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + "</a><br />");
+                writer.WriteLine("        <img src=\"http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png\" alt=\"RSS\" width=\"16\" height=\"16\">&nbsp;<a href=\"" + primaryWebServerUrl + "rss/all_short_rss.xml\">Most recently added items in " + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + " (last 100)</a><br />");
                 writer.WriteLine("      </blockquote>");
                 writer.WriteLine("      RSS feeds	are a way to keep up-to-date on new materials that are added to the Digital Collections. RSS feeds are written in XML    and require a news reader to access.<br />");
                 writer.WriteLine("      <br />");

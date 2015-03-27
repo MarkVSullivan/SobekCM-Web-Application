@@ -10,6 +10,7 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Engine_Library.Solr;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion
@@ -100,7 +101,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("      <div style=\"padding:10px 0 10px 0;\" >");
             Output.WriteLine("        <label for=\"searchTextBox\">" + search_this_document + ":</label> &nbsp;");
 			Output.WriteLine("        <input class=\"sbkTsv_SearchBox sbkIsw_Focusable\" id=\"searchTextBox\" name=\"searchTextBox\" type=\"text\" value=\"" + CurrentMode.Text_Search.Replace(" =", " or ") + "\" onkeydown=\"item_search_keytrap(event, '" + redirect_url + "');\" /> &nbsp; ");
-            Output.WriteLine("        <button title=\"" + search_this_document + "\" class=\"sbkIsw_RoundButton\" onclick=\"item_search_sobekcm('" + redirect_url + "'); return false;\">GO<img src=\"" + CurrentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("        <button title=\"" + search_this_document + "\" class=\"sbkIsw_RoundButton\" onclick=\"item_search_sobekcm('" + redirect_url + "'); return false;\">GO<img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("      </div>");
             if (results != null)
             {
@@ -172,8 +173,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         string prevButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);;
 
                         buttonWriter.AppendLine("              <span class=\"sbkIsw_LeftPaginationButtons\">");
-                        buttonWriter.AppendLine("                <button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-                        buttonWriter.AppendLine("                <button title=\"" + previous_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + CurrentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                        buttonWriter.AppendLine("                <button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + Static_Resources.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                        buttonWriter.AppendLine("                <button title=\"" + previous_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + prevButtonURL + "'; return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
                         buttonWriter.AppendLine("              </span>");
                     }
 
@@ -190,8 +191,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         string nextButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);;
 
                         buttonWriter.AppendLine("              <span class=\"sbkIsw_RightPaginationButtons\">");
-                        buttonWriter.AppendLine("                <button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + CurrentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-                        buttonWriter.AppendLine("                <button title=\"" + last_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + CurrentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                        buttonWriter.AppendLine("                <button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                        buttonWriter.AppendLine("                <button title=\"" + last_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + lastButtonURL + "'; return false;\">" + last_page_text + "<img src=\"" + Static_Resources.Button_Last_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                         buttonWriter.AppendLine("              </span>");
                     }
 
@@ -256,7 +257,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
                         else
                         {
-                            Output.WriteLine("            <td style=\"text-align:left; width: 150px;\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + CurrentMode.Default_Images_URL + "NoThumb.jpg\" class=\"sbkTsv_Thumbnail\" /></a></td>");
+                            Output.WriteLine("            <td style=\"text-align:left; width: 150px;\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + Static_Resources.Nothumb_Jpg + "\" class=\"sbkTsv_Thumbnail\" /></a></td>");
                         }
                     }
 

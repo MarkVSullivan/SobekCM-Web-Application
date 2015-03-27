@@ -1,11 +1,13 @@
 #region Using directives
 
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -98,7 +100,7 @@ namespace SobekCM.Library.ResultsViewer
                 // Draw the thumbnail 
                 if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
-                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "NoThumb.jpg\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></td>");
+                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" + Static_Resources.Nothumb_Jpg + "\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></td>");
                 }
                 else
                 {

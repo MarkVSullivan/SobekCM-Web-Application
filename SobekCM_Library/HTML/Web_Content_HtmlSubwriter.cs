@@ -10,6 +10,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.SiteMap;
 using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion
@@ -410,13 +411,9 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-
 			// Write the style sheet to use 
-#if DEBUG
-            Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Metadata.css\" rel=\"stylesheet\" type=\"text/css\" />");
-#else
-			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Metadata.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
-#endif
+            /// TODO: Why is this always included?  Just hard code this in the HEAD for the files that need it
+            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Metadata_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
             // If this is the static html web content view, add any special text which came from the original
             // static html file which was already read, which can include style sheets, etc..

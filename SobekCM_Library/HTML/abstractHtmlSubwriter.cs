@@ -9,6 +9,7 @@ using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion
@@ -152,7 +153,7 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("              </select>");
 			Output.WriteLine("            </td>");
 			Output.WriteLine("            <td>");
-            Output.WriteLine("              <a onclick=\"internal_search('" + RequestSpecificValues.Current_Mode.Base_URL + "contains')\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/go_gray.gif\" title=\"Perform search\" alt=\"Perform search\" style=\"margin-top: 1px\" /></a>");
+            Output.WriteLine("              <a onclick=\"internal_search('" + RequestSpecificValues.Current_Mode.Base_URL + "contains')\"><img src=\"" + Static_Resources.Go_Gray_Gif + "\" title=\"Perform search\" alt=\"Perform search\" style=\"margin-top: 1px\" /></a>");
 			Output.WriteLine("              &nbsp;");
 			Output.WriteLine("            </td>");
 			Output.WriteLine("          </tr>");

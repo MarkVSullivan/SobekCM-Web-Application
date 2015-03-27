@@ -521,12 +521,12 @@ namespace SobekCM.Core.Navigation
 
 		#region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 
-		/// <summary> URL for the general image folder containing images used throughout the system, and not aggregation or item specific </summary>
-		/// <value> [Base_URL] + 'default/images/' </value>
-		public string Default_Images_URL
-		{
-			get { return baseUrl + "default/images/"; }
-		}
+        ///// <summary> URL for the general image folder containing images used throughout the system, and not aggregation or item specific </summary>
+        ///// <value> [Base_URL] + 'default/images/' </value>
+        //public string Default_Images_URL
+        //{
+        //    get { return baseUrl + "default/images/"; }
+        //}
 
 		/// <summary> URL to this application's design folder </summary>
 		/// <value> [Base_URL] + 'design/' </value>

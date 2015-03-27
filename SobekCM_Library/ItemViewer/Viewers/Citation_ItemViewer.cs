@@ -15,6 +15,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
+using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
@@ -2118,31 +2119,31 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 				if (rights_statement.IndexOf("[cc by-nc-nd]") >= 0)
 				{
-					rights_statement = rights_statement.Replace("[cc by-nc-nd]", "<br /><a href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + CurrentMode.Default_Images_URL + "cc_by_nc_nd.png\" /></a>");
+					rights_statement = rights_statement.Replace("[cc by-nc-nd]", "<br /><a href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + Static_Resources.Cc_By_Nc_Nd_Png + "\" /></a>");
 				}
 				if (rights_statement.IndexOf("[cc by-nc-sa]") >= 0)
 				{
-					rights_statement = rights_statement.Replace("[cc by-nc-sa]", "<br /><a href=\"http://creativecommons.org/licenses/by-nc-sa/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + CurrentMode.Default_Images_URL + "cc_by_nc_sa.png\" /></a>");
+					rights_statement = rights_statement.Replace("[cc by-nc-sa]", "<br /><a href=\"http://creativecommons.org/licenses/by-nc-sa/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + Static_Resources.Cc_By_Nc_Sa_Png + "\" /></a>");
 				}
 				if (rights_statement.IndexOf("[cc by-nc]") >= 0)
 				{
-					rights_statement = rights_statement.Replace("[cc by-nc]", "<br /><a href=\"http://creativecommons.org/licenses/by-nc/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + CurrentMode.Default_Images_URL + "cc_by_nc.png\" /></a>");
+					rights_statement = rights_statement.Replace("[cc by-nc]", "<br /><a href=\"http://creativecommons.org/licenses/by-nc/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + Static_Resources.Cc_By_Nc_Png + "\" /></a>");
 				}
 				if (rights_statement.IndexOf("[cc by-nd]") >= 0)
 				{
-					rights_statement = rights_statement.Replace("[cc by-nd]", "<br /><a href=\"http://creativecommons.org/licenses/by-nd/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + CurrentMode.Default_Images_URL + "cc_by_nd.png\" /></a>");
+					rights_statement = rights_statement.Replace("[cc by-nd]", "<br /><a href=\"http://creativecommons.org/licenses/by-nd/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + Static_Resources.Cc_By_Nd_Png + "\" /></a>");
 				}
 				if (rights_statement.IndexOf("[cc by-sa]") >= 0)
 				{
-					rights_statement = rights_statement.Replace("[cc by-sa]", "<br /><a href=\"http://creativecommons.org/licenses/by-sa/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + CurrentMode.Default_Images_URL + "cc_by_sa.png\" /></a>");
+					rights_statement = rights_statement.Replace("[cc by-sa]", "<br /><a href=\"http://creativecommons.org/licenses/by-sa/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + Static_Resources.Cc_By_Sa_Png + "\" /></a>");
 				}
 				if (rights_statement.IndexOf("[cc by]") >= 0)
 				{
-					rights_statement = rights_statement.Replace("[cc by]", "<br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + CurrentMode.Default_Images_URL + "cc_by.png\" /></a>");
+					rights_statement = rights_statement.Replace("[cc by]", "<br /><a href=\"http://creativecommons.org/licenses/by/3.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + Static_Resources.Cc_By_Png + "\" /></a>");
 				}
 				if (rights_statement.IndexOf("[cc0]") >= 0)
 				{
-					rights_statement = rights_statement.Replace("[cc0]", "<br /><a href=\"http://creativecommons.org/publicdomain/zero/1.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + CurrentMode.Default_Images_URL + "cc_zero.png\" /></a>");
+					rights_statement = rights_statement.Replace("[cc0]", "<br /><a href=\"http://creativecommons.org/publicdomain/zero/1.0/\" alt=\"" + SEE_TEXT + "\" target=\"cc_license\"><img src=\"" + Static_Resources.Cc_Zero_Png + "\" /></a>");
 				}
 
 			result.AppendLine(rights_statement + "</dd>");

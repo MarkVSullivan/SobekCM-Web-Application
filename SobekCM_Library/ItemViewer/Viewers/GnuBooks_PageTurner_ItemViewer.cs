@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Settings;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 
@@ -247,10 +248,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <remarks> By default this does nothing, but can be overwritten by all the individual item viewers </remarks>
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + CurrentMode.Base_URL + "default/SobekCM_BookTurner.css\" /> ");
-            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/bookturner/jquery-1.2.6.min.js\"></script> ");
-            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/bookturner/jquery.easing.1.3.js\"></script> ");
-            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + CurrentMode.Base_URL + "default/scripts/bookturner/bookturner.js\"></script>    ");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Bookturner_Css + "\" /> ");
+            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_1_2_6_Min_Js + "\"></script> ");
+            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Easing_1_3_Js + "\"></script> ");
+            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Bookturner_Js + "\"></script>    ");
 
 
         }

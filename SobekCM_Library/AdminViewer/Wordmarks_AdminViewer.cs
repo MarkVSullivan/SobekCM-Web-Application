@@ -18,6 +18,7 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.Settings;
 using SobekCM.Library.UploadiFive;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
@@ -299,8 +300,8 @@ namespace SobekCM.Library.AdminViewer
 			// Add the buttons
 			Output.WriteLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
 			Output.WriteLine("      <td colspan=\"2\">");
-			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return wordmark_form_close();\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("        <button title=\"Save changes to this existing wordmark\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return wordmark_form_close();\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("        <button title=\"Save changes to this existing wordmark\" class=\"sbkAdm_RoundButton\" type=\"submit\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button> &nbsp; &nbsp; ");
 			Output.WriteLine("      </td>");
 			Output.WriteLine("    </tr>");
 			Output.WriteLine("  </table>");
@@ -362,7 +363,7 @@ namespace SobekCM.Library.AdminViewer
 		        Output.WriteLine("        <tr><td><label for=\"admin_wordmark_link\">Link:</label></td><td><input class=\"sbkWav_large_input sbkAdmin_Focusable\" name=\"admin_wordmark_link\" id=\"admin_wordmark_link\" type=\"text\" value=\"\" /></td></tr>");
 
 				// Add the SAVE button
-				Output.WriteLine("        <tr style=\"height:30px; text-align: center;\"><td colspan=\"2\"><button title=\"Save new wordmark\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_wordmark();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
+				Output.WriteLine("        <tr style=\"height:30px; text-align: center;\"><td colspan=\"2\"><button title=\"Save new wordmark\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_wordmark();\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td></tr>");
 		        Output.WriteLine("      </table>");
 		        Output.WriteLine("    </div>");
 	        }

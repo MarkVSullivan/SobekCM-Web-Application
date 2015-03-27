@@ -61,7 +61,7 @@ function QC_Add_Image_To_Dictionary(filename, file_location, thumb_location) {
 
 
 //Called when the user clicks on one of the sorting options in the menu 
-function QC_Change_Sortable_Setting(option, image_location)
+function QC_Change_Sortable_Setting(option, checked_image, no_checked_image)
 {
   //Assign the sorting option to the global variable. 
     makeSortable = option;
@@ -76,24 +76,24 @@ function QC_Change_Sortable_Setting(option, image_location)
   var disableID = document.getElementById('checkmarkDisableSorting');
   var enableWithConfID = document.getElementById('checkmarkEnableSorting_conf');
   
-  enableID.src=image_location+"noCheckmark.png";
-  disableID.src = image_location+"noCheckmark.png";
-  enableWithConfID.src = image_location+"noCheckmark.png";
+  enableID.src = no_checked_image;
+  disableID.src = no_checked_image;
+  enableWithConfID.src = no_checked_image;
   
   //Now check the selected option
   if(option==1)
    {
-     enableID.src=image_location+"checkmark.png";
+      enableID.src = checked_image;
 	  $("#allThumbnailsOuterDiv").sortable("enable");
    }
   else if(option==2)
   {
-    enableWithConfID.src = image_location+"checkmark.png";
+      enableWithConfID.src = checked_image;
 	$("#allThumbnailsOuterDiv").sortable("enable");
   }
   else
   {
-    disableID.src = image_location+"checkmark.png";
+      disableID.src = checked_image;
     $("#allThumbnailsOuterDiv").sortable("disable");
 
       //Override the mouse events for input and select fields within the sortable div, otherwise these get disabled as well
@@ -118,7 +118,7 @@ function QC_Change_Sortable_Setting(option, image_location)
 
 
 //Check/uncheck the corresponding autonumbering option when selected in the menu
-function Autonumbering_mode_changed(mode, image_location)
+function Autonumbering_mode_changed(mode, checked_image, no_checked_image)
 {
    //Set the global mode variable to this value
     autonumberingMode = mode;
@@ -131,13 +131,13 @@ function Autonumbering_mode_changed(mode, image_location)
    {
 
 	   var uncheckedImageID = document.getElementById('checkmarkMode'+i);
-	   uncheckedImageID.src=image_location+"noCheckmark.png";
+	   uncheckedImageID.src = no_checked_image;
 	 
    }
   
    //Now check the selected autonumber mode option
    var imageID = document.getElementById('checkmarkMode'+mode);
-   imageID.src= image_location+"checkmark.png";
+   imageID.src = checked_image;
   
     // Close the superfish menu
    $('ul.qc-menu').hideSuperfishUl();

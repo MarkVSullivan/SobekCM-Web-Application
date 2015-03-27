@@ -10,6 +10,7 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -104,7 +105,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 			RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home; 
             RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
-            Output.WriteLine("\t\t<li id=\"sbkShs_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + RequestSpecificValues.Current_Mode.Default_Images_URL + "home.png\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkShs_HomeSubMenu\">");
+            Output.WriteLine("\t\t<li id=\"sbkShs_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkShs_HomeSubMenu\">");
             Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
             RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
             Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
@@ -674,7 +675,7 @@ namespace SobekCM.Library.HTML
 			}
 			Output.WriteLine("    </select>");
 			Output.WriteLine("    &nbsp; &nbsp;");
-			Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
 			Output.WriteLine("<br /><br />");
 
 			Output.WriteLine("    By Code: <select name=\"collection_selector2\" class=\"sbkShw_CollectionSelector2\">");
@@ -692,7 +693,7 @@ namespace SobekCM.Library.HTML
             }
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-			Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">GO <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the collection shown, choose the collection above and hit the GO button.</p>");
@@ -807,7 +808,7 @@ namespace SobekCM.Library.HTML
 			}
 			Output.WriteLine("    </select>");
 			Output.WriteLine("    &nbsp; &nbsp;");
-			Output.WriteLine("    <button title=\"GO\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("    <button title=\"GO\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
 			Output.WriteLine("<br /><br />");
 
 			Output.WriteLine("    By Code: <select name=\"collection_selector2\" class=\"sbkShw_CollectionSelector2\">");
@@ -825,7 +826,7 @@ namespace SobekCM.Library.HTML
 			}
 			Output.WriteLine("    </select>");
 			Output.WriteLine("    &nbsp; &nbsp;");
-			Output.WriteLine("    <button title=\"GO\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">GO <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("    <button title=\"GO\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
 			Output.WriteLine("  </blockquote>");
 			Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the collection shown, choose the collection above and hit the GO button.</p>");
@@ -1203,7 +1204,7 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-			Output.WriteLine("    <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("    <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the date shown, choose your dates above and hit the GO button.</p>");
@@ -1497,7 +1498,7 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("    </select>");
             Output.WriteLine("    &nbsp; &nbsp;");
-			Output.WriteLine("    <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("    <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"date_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
             Output.WriteLine("<p>To change the date shown, choose your dates above and hit the GO button.</p>");
@@ -1737,7 +1738,7 @@ namespace SobekCM.Library.HTML
 			}
 			Output.WriteLine("    </select>");
 			Output.WriteLine("    &nbsp; &nbsp;");
-			Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
 			Output.WriteLine("<br /><br />");
 
 			Output.WriteLine("    By Code: <select name=\"collection_selector2\" class=\"sbkShw_CollectionSelector2\">");
@@ -1755,7 +1756,7 @@ namespace SobekCM.Library.HTML
 			}
 			Output.WriteLine("    </select>");
 			Output.WriteLine("    &nbsp; &nbsp;");
-			Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">GO <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("    <button title=\"Select Collection\" class=\"sbkShw_RoundButton\" onclick=\"collection_jump_sobekcm2('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
 
             Output.WriteLine("  </blockquote>");
             Output.WriteLine("</form>");
@@ -3035,7 +3036,7 @@ namespace SobekCM.Library.HTML
 		    {
                 Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"sbkShw_smallinput_initial\" value=\"mm/dd/yyyy\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
 		    }
-		    Output.WriteLine("        <td style=\"width:50px;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/calendar_button.png\" title=\"Show a calendar to select this date\"  onclick=\"return false;\" name=\"calendar1img\" ID=\"calendar1img\" class=\"calendar_button\" /></td>");
+            Output.WriteLine("        <td style=\"width:50px;\"><img src=\"" + Static_Resources.Calendar_Button_Png + "\" title=\"Show a calendar to select this date\"  onclick=\"return false;\" name=\"calendar1img\" ID=\"calendar1img\" class=\"calendar_button\" /></td>");
 		    Output.WriteLine("        <td>&nbsp;</td>");
 		    Output.WriteLine("      </tr>");
 
@@ -3050,9 +3051,9 @@ namespace SobekCM.Library.HTML
 		    {
                 Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"sbkShw_smallinput_initial\" value=\"mm/dd/yyyy\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
 		    }
-		    Output.WriteLine("        <td><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/calendar_button.png\" title=\"Show a calendar to select this date\" onclick=\"return false;\" name=\"calendar2img\" ID=\"calendar2img\" class=\"calendar_button\" /></td>");
+		    Output.WriteLine("        <td><img src=\"" + Static_Resources.Calendar_Button_Png + "\" title=\"Show a calendar to select this date\" onclick=\"return false;\" name=\"calendar2img\" ID=\"calendar2img\" class=\"calendar_button\" /></td>");
 		    Output.WriteLine("        <td>");
-			Output.WriteLine("          <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"arbitrary_item_count('" + redirect_url + "'); return false;\">GO <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+			Output.WriteLine("          <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"arbitrary_item_count('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
 		    Output.WriteLine("        <td>");
 		    Output.WriteLine("      </tr>");
 		    Output.WriteLine("    </table>");
@@ -3269,19 +3270,18 @@ namespace SobekCM.Library.HTML
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
 
-			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Stats.css\" rel=\"stylesheet\" type=\"text/css\" />");
-			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_DataTables.css\" rel=\"stylesheet\" type=\"text/css\" />");
-            Output.WriteLine("    <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
-            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/datatables/js/jquery.dataTables.min.js\" ></script>");
-            Output.WriteLine("   <script type = \"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/Chartjs/Chart.js\"></script>");
+			Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Stats_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("    <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_1_10_2_Js + "\"></script>");
+            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Datatables_Js + "\" ></script>");
+            Output.WriteLine("   <script type = \"text/javascript\" src=\"" + Static_Resources.Chart_Js + "\"></script>");
             Output.WriteLine("    <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobek_stats_chart.js\"></script>");
-            //	Output.WriteLine("  <script type=\"text/javascript\" src=\"" + currentMode.Base_URL + "default/scripts/datatables/js/ColReorderWithResize.js\" />");
 
             // Add the code for the calendar pop-up if it may be required
             if (RequestSpecificValues.Current_Mode.Statistics_Type == Statistics_Type_Enum.Item_Count_Arbitrary_View)
             {
-                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/jsDatePick_ltr.css\" />");
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/datepicker/jsDatePick.full.1.3.js\"></script>");
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + Static_Resources.Jsdatepick_Ltr_Css + "\" />");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jsdatepick_Full_1_3_Js + "\"></script>");
             }
         }
 

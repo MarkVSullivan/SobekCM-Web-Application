@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 
@@ -231,30 +232,28 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//Add the control for the thumbnail size
 
 			//Get the icons for the thumbnail sizes
-			string image_location = CurrentMode.Default_Images_URL;
-
             Output.WriteLine("\t\t<td id=\"sbkRi_Thumbnailsizeselect\">");
 			if (thumbnailSize == 1)
-                Output.Write("\t\t\t<img src=\"" + image_location + "thumbs3_selected.gif\" alt=\"Small\" />");
+                Output.Write("\t\t\t<img src=\"" + Static_Resources.Thumbs3_Selected_Gif + "\" alt=\"Small\" />");
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = 1;
-                Output.Write("\t\t\t<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1thumbs") + "\" title=\"" + SMALL_THUMBNAILS + "\"><img src=\"" + image_location + "thumbs3.gif\" alt=\"Small\" /></a>");
+                Output.Write("\t\t\t<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1thumbs") + "\" title=\"" + SMALL_THUMBNAILS + "\"><img src=\"" + Static_Resources.Thumbs3_Gif + "\" alt=\"Small\" /></a>");
 			}
 
 			if (thumbnailSize == 2)
-                Output.Write("<img src=\"" + image_location + "thumbs2_selected.gif\" alt=\"Medium\" />");
+                Output.Write("<img src=\"" + Static_Resources.Thumbs2_Selected_Gif + "\" alt=\"Medium\" />");
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = 2;
-                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1thumbs") + "\" title=\"" + MEDIUM_THUMBNAILS + "\"><img src=\"" + image_location + "thumbs2.gif\" alt=\"Medium\" /></a>");
+                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1thumbs") + "\" title=\"" + MEDIUM_THUMBNAILS + "\"><img src=\"" + Static_Resources.Thumbs2_Gif + "\" alt=\"Medium\" /></a>");
 			}
 			if (thumbnailSize == 3)
-                Output.Write("<img src=\"" + image_location + "thumbs1_selected.gif\" alt=\"Large\" />");
+                Output.Write("<img src=\"" + Static_Resources.Thumbs2_Selected_Gif + "\" alt=\"Large\" />");
 			else
 			{
 				CurrentMode.Size_Of_Thumbnails = 3;
-                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1thumbs") + "\" title=\"" + LARGE_THUMBNAILS + "\"><img src=\"" + image_location + "thumbs1.gif\" alt=\"Large\" /></a>");
+                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "1thumbs") + "\" title=\"" + LARGE_THUMBNAILS + "\"><img src=\"" + Static_Resources.Thumbs1_Gif + "\" alt=\"Large\" /></a>");
 			}
 			//Reset the current mode
 			CurrentMode.Size_Of_Thumbnails = -1;

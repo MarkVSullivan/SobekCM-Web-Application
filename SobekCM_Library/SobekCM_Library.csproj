@@ -353,6 +353,7 @@
     <Compile Include="MySobekViewer\Edit_Item_Permissions_MySobekViewer.cs" />
     <Compile Include="RequestCache.cs" />
     <Compile Include="ResultsViewer\Google_Map_ResultsViewer_Beta.cs" />
+    <Compile Include="Settings\Static_Resources.cs" />
     <Compile Include="UI\UI_ApplicationCache_Gateway.cs" />
     <Compile Include="UploadiFive\UploadiFive_Settings.cs" />
     <Compile Include="MySobekViewer\Page_Image_Upload_MySobekViewer.cs" />

@@ -12,6 +12,7 @@ using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -270,7 +271,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("  <p>Enter DELETE in the textbox below and select GO to complete this deletion.</p>");
 				Output.WriteLine("  <div id=\"sbkDimv_VerifyDiv\">");
 				Output.WriteLine("    <input class=\"sbkDimv_input sbkMySobek_Focusable\" name=\"admin_delete_confirm\" id=\"admin_delete_confirm\" type=\"text\" value=\"\" /> &nbsp; &nbsp; ");
-				Output.WriteLine("    <button title=\"Confirm delete of this item\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+				Output.WriteLine("    <button title=\"Confirm delete of this item\" class=\"sbkMySobek_RoundButton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("  </div>");
                 Output.WriteLine("</div>");
 				Output.WriteLine();

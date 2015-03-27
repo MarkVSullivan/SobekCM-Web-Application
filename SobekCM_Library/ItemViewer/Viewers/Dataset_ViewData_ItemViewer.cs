@@ -10,6 +10,7 @@ using System.Web.Caching;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion
@@ -266,7 +267,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					}
 
 					Output.WriteLine("              </select> &nbsp; ");
-					Output.WriteLine("              <button title=\"Filter results\" id=\"sbkDvd_FilterButton\" class=\"sbkIsw_RoundButton\" onclick=\"data_search('" + UrlWriterHelper.Redirect_URL(CurrentMode) + "'); return false;\">GO<img src=\"http://ufdc.ufl.edu/default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+					Output.WriteLine("              <button title=\"Filter results\" id=\"sbkDvd_FilterButton\" class=\"sbkIsw_RoundButton\" onclick=\"data_search('" + UrlWriterHelper.Redirect_URL(CurrentMode) + "'); return false;\">GO<img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
 
 					Output.WriteLine("            </div");
 				}

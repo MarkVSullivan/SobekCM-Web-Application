@@ -7,6 +7,7 @@ using System.Linq;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.EngineLibrary.ApplicationState;
+using SobekCM.Library.Settings;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
@@ -164,7 +165,7 @@ namespace SobekCM.Library.MainWriters
                 string thumb = currentGreenstoneImageRoot + titleResult.BibID.Substring(0,2) + "/" + titleResult.BibID.Substring(2,2) + "/" + titleResult.BibID.Substring(4,2) + "/" + titleResult.BibID.Substring(6,2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + firstItemResult.MainThumbnail;
                 if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
-                    thumb = RequestSpecificValues.Current_Mode.Default_Images_URL + "NoThumb.jpg";
+                    thumb = Static_Resources.Nothumb_Jpg;
                 }
                 thumb = thumb.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
 

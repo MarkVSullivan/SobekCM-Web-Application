@@ -16,6 +16,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -1448,13 +1449,13 @@ namespace SobekCM.Library.HTML
 
             if (RequestSpecificValues.Current_Mode.Internal_Type == Internal_Type_Enum.Aggregations_List)
             {
-                Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_DataTables.css\" rel=\"stylesheet\" type=\"text/css\" />");
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/datatables/js/jquery.dataTables.min.js\" ></script>");
+                Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Datatables_Js + "\" ></script>");
             }
 
             if (RequestSpecificValues.Current_Mode.Internal_Type == Internal_Type_Enum.Aggregations_Tree)
             {
-                Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jstree/themes/default/jstree.min.css\" />");
+                Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + Static_Resources.Jstree_Css + "\" />");
             }
 
         }

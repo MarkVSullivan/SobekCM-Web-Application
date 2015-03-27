@@ -26,6 +26,7 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.Settings;
 using SobekCM.Library.UploadiFive;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
@@ -352,9 +353,9 @@ namespace SobekCM.Library.AdminViewer
 				string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 				RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 				Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('z');\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('z');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
                 Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(false);\"> SAVE </button> &nbsp; &nbsp; ");
-				Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(true);\">SAVE & EXIT <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+				Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 				Output.WriteLine("  </div>");
 				Output.WriteLine();
 				RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
@@ -362,7 +363,7 @@ namespace SobekCM.Library.AdminViewer
 			else if (page == 13)
 			{
 				Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-				Output.WriteLine("    <button title=\"Close this child page details and return to main admin pages\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('g');\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK </button>"); 
+				Output.WriteLine("    <button title=\"Close this child page details and return to main admin pages\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('g');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK </button>"); 
 				Output.WriteLine("  </div>");
 			}
 
@@ -3040,15 +3041,15 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("          <td>" + relatedAggr.Name + "</td>");
 
 	                    if (relatedAggr.Active)
-	                        Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/checkmark2.png\" alt=\"YES\" /></td>");
+	                        Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"YES\" /></td>");
 	                    else
-                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/checkmark.png\" alt=\"NO\" /></td>");
+                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"NO\" /></td>");
 
 
                         if (!relatedAggr.Hidden)
-                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/checkmark2.png\" alt=\"YES\" /></td>");
+                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"YES\" /></td>");
                         else
-                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/checkmark.png\" alt=\"NO\" /></td>");
+                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"NO\" /></td>");
 
 	                    
 	                    Output.WriteLine("        </tr>");
@@ -3335,8 +3336,8 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" style=\"height:60px\">");
 			Output.WriteLine("    <td>&nbsp;</td>");
 			Output.WriteLine("    <td style=\"text-align:right; padding-right: 100px\">");
-			Output.WriteLine("      <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('e');\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("      <button title=\"Save changes to this stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return save_css_edits();\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("      <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('e');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("      <button title=\"Save changes to this stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return save_css_edits();\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("    </td>");
 			Output.WriteLine("  </tr>");
 

@@ -19,6 +19,7 @@ using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
@@ -564,7 +565,7 @@ namespace SobekCM.Library.MySobekViewer
                                         {
                                             Text = "&nbsp; <a title=\"View my collections home page\" href=\"" + personalized_home + "\">My Collections Home</a>", 
                                             SelectAction = TreeNodeSelectAction.None,
-                                            ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/home_folder.gif"
+                                            ImageUrl = Static_Resources.Home_Folder_Gif
                                         };
                 rootNode.ChildNodes.Add(homeNode);
 
@@ -573,7 +574,7 @@ namespace SobekCM.Library.MySobekViewer
                                                  {
                                                      Text ="&nbsp; <a title=\"View my saved searches\" href=\"" + saved_search_url + "\">My Saved Searches</a>",
                                                      SelectAction = TreeNodeSelectAction.None,
-                                                     ImageUrl = RequestSpecificValues.Current_Mode.Base_URL + "default/images/saved_searches.gif"
+                                                     ImageUrl = Static_Resources.Saved_Searches_Gif
                                                  };
                 rootNode.ChildNodes.Add(savedSearchesNode);
 

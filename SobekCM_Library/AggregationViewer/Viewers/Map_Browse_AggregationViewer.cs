@@ -10,6 +10,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -69,7 +70,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 scriptBuilder.AppendLine("    // Create the custom icon / marker image");
                 scriptBuilder.AppendLine("    var iconSize = new google.maps.Size(11, 11);");
                 scriptBuilder.AppendLine("    var iconAnchor = new google.maps.Point(5, 5);");
-                scriptBuilder.AppendLine("    var pointer_image = '" + RequestSpecificValues.Current_Mode.Base_URL + "/default/images/map_point.png';");
+                scriptBuilder.AppendLine("    var pointer_image = '" + Static_Resources.Map_Point_Png + "';");
                 scriptBuilder.AppendLine("    custom_icon = new google.maps.MarkerImage(pointer_image, iconSize, null, iconAnchor);");
 
                 scriptBuilder.AppendLine();
@@ -194,7 +195,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 string thumb = UI_ApplicationCache_Gateway.Settings.Image_URL + groupThumbnail.Replace("\\", "/").Replace("//", "/");
                 if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
-                    thumb = RequestSpecificValues.Current_Mode.Default_Images_URL + "NoThumb.jpg";
+                    thumb = Static_Resources.Nothumb_Jpg;
                 }
 
 				contentBuilder.Append("<td><table class=\"sbkMbav_Thumb\" >");

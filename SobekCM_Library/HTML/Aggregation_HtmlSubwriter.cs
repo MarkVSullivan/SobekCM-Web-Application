@@ -20,6 +20,7 @@ using SobekCM.Library.AggregationViewer;
 using SobekCM.Library.AggregationViewer.Viewers;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -403,7 +404,7 @@ namespace SobekCM.Library.HTML
 
                 if (RequestSpecificValues.Current_Mode.Home_Type == Home_Type_Enum.Tree)
                 {
-                    Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jstree/themes/default/jstree.min.css\" />");
+                    Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + Static_Resources.Jstree_Css + "\" />");
                 }
             }
 
@@ -822,106 +823,11 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("<div class=\"SobekSearchPanel\">");
                         Add_Sharing_Buttons(Output, FORM_NAME, "SobekResultsSort");
                     }
-
-                    //#region LEFT and RIGHT Buttons
-                    //// Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
-                    //string LEFT_BUTTONS = String.Empty;
-                    //string RIGHT_BUTTONS = String.Empty;
-                    //string first_page = "First Page";
-                    //string previous_page = "Previous Page";
-                    //string next_page = "Next Page";
-                    //string last_page = "Last Page";
-                    //string first_page_text = "First";
-                    //string previous_page_text = "Previous";
-                    //string next_page_text = "Next";
-                    //string last_page_text = "Last";
-
-                    //if (currentMode.Language == Web_Language_Enum.Spanish)
-                    //{
-                    //    first_page = "Primera Página";
-                    //    previous_page = "Página Anterior";
-                    //    next_page = "Página Siguiente";
-                    //    last_page = "Última Página";
-                    //    first_page_text = "Primero";
-                    //    previous_page_text = "Anterior";
-                    //    next_page_text = "Proximo";
-                    //    last_page_text = "Último";
-                    //}
-
-                    //if (currentMode.Language == Web_Language_Enum.French)
-                    //{
-                    //    first_page = "Première Page";
-                    //    previous_page = "Page Précédente";
-                    //    next_page = "Page Suivante";
-                    //    last_page = "Dernière Page";
-                    //    first_page_text = "Première";
-                    //    previous_page_text = "Précédente";
-                    //    next_page_text = "Suivante";
-                    //    last_page_text = "Derniere";
-                    //}
-
-                    //// Make sure the result writer has been created
-                    //if (resultWriter == null)
-                    //    create_resultwriter();
-                    //if (resultWriter != null)
-                    //{
-                    //    Debug.Assert(resultWriter != null, "resultWriter != null");
-
-                    //    if (RESULTS_PER_PAGE < resultWriter.Total_Results)
-                    //    {
-                    //        ushort current_page = currentMode.Page;
-                    //        StringBuilder buttons_builder = new StringBuilder(1000);
-
-                    //        // Should the previous and first buttons be enabled?
-                    //        if (current_page > 1)
-                    //        {
-                    //            buttons_builder.Append("<div class=\"sbkPrsw_LeftButtons\">");
-                    //            currentMode.Page = 1;
-                    //            buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
-                    //            currentMode.Page = (ushort)(current_page - 1);
-                    //            buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\"><img src=\"" + currentMode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
-                    //            buttons_builder.Append("</div>");
-                    //            LEFT_BUTTONS = buttons_builder.ToString();
-                    //            buttons_builder.Clear();
-                    //        }
-                    //        else
-                    //        {
-                    //            LEFT_BUTTONS = "<div class=\"sbkPrsw_NoLeftButtons\">&nbsp;</div>";
-                    //        }
-
-
-                    //        // Should the next and last buttons be enabled?
-                    //        if ((current_page * RESULTS_PER_PAGE) < resultWriter.Total_Results)
-                    //        {
-                    //            buttons_builder.Append("<div class=\"sbkPrsw_RightButtons\">");
-                    //            currentMode.Page = (ushort)(current_page + 1);
-                    //            buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-                    //            currentMode.Page = (ushort)(resultWriter.Total_Results / RESULTS_PER_PAGE);
-                    //            if (resultWriter.Total_Results % RESULTS_PER_PAGE > 0)
-                    //                currentMode.Page = (ushort)(currentMode.Page + 1);
-                    //            buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + currentMode.Redirect_URL().Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + currentMode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
-                    //            buttons_builder.Append("</div>");
-                    //            RIGHT_BUTTONS = buttons_builder.ToString();
-                    //        }
-                    //        else
-                    //        {
-                    //            RIGHT_BUTTONS = "<div class=\"sbkPrsw_NoRightButtons\">&nbsp;</div>";
-                    //        }
-
-                    //        currentMode.Page = current_page;
-                    //    }
-                    //}
-
-
-                    //#endregion
                 }
                 else
                 {
                     if (( RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Aggregation ) || ( RequestSpecificValues.Current_Mode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map ))
                         Output.WriteLine("<div class=\"SobekSearchPanel\">");
-
-                    //if ((currentMode.Mode != Display_Mode_Enum.Aggregation) || (currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map_Beta))
-                    //    Output.WriteLine("<div class=\"SobekSearchPanel\">");
                 }
 
                 if (collectionViewer.Type == Item_Aggregation_Views_Searches_Enum.Rotating_Highlight_Search)
@@ -943,8 +849,6 @@ namespace SobekCM.Library.HTML
                     collectionViewer.Add_Search_Box_HTML(Output, Tracer);
 
 	                Output.WriteLine((( RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Aggregation ) || ( RequestSpecificValues.Current_Mode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map )) ? "</div>" : "<div id=\"pagecontainer_resumed\">");
-
-	                //Output.WriteLine(((currentMode.Mode != Display_Mode_Enum.Aggregation) || (currentMode.Aggregation_Type != Aggregation_Type_Enum.Browse_Map_Beta)) ? "</div>" : "<div id=\"pagecontainer_resumed\">");
                 }
 
                 Output.WriteLine("</form>");
@@ -1102,8 +1006,8 @@ namespace SobekCM.Library.HTML
 
 					Output.WriteLine("<div id=\"sbkAghsw_HomeEditButtons\">");
 					RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-					Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-					Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+					Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+					Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
 					Output.WriteLine("</div>");
 					Output.WriteLine("</form>");
 					Output.WriteLine("<br /><br /><br />");
@@ -1150,7 +1054,7 @@ namespace SobekCM.Library.HTML
 						Output.WriteLine("<div id=\"sbkAghsw_EditableHome\">");
 			            Output.WriteLine(home_html);
 						RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-						Output.WriteLine("<div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home text\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/edit.gif\" alt=\"\" />edit content</a></div>");
+						Output.WriteLine("<div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home text\"><img src=\"" + Static_Resources.Edit_Gif + "\" alt=\"\" />edit content</a></div>");
 						RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
 						Output.WriteLine("</div>");
 						Output.WriteLine();
@@ -1314,8 +1218,8 @@ namespace SobekCM.Library.HTML
 
 		                Output.WriteLine("<div id=\"sbkAghsw_HomeEditButtons\">");
 		                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-		                Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-		                Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+		                Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+		                Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
 		                Output.WriteLine("</div>");
 		                Output.WriteLine("</form>");
 						Output.WriteLine("<br /><br /><br />");
@@ -1357,7 +1261,7 @@ namespace SobekCM.Library.HTML
 							Output.WriteLine("<div id=\"sbkAghsw_EditableHome\">");
 							Output.WriteLine(adjusted_home);
 							RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
-							Output.WriteLine("  <div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home text\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/edit.gif\" alt=\"\" />edit content</a></div>");
+							Output.WriteLine("  <div id=\"sbkAghsw_EditableHomeLink\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this home text\"><img src=\"" + Static_Resources.Edit_Gif + "\" alt=\"\" />edit content</a></div>");
 							RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
 							Output.WriteLine("</div>");
 							Output.WriteLine();
@@ -1893,11 +1797,11 @@ namespace SobekCM.Library.HTML
             // Build the list of html to display, first adding collections and subcollections
             SortedList<string, string> html_list = new SortedList<string, string>();
 
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.qtip.min.js\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_1_10_2_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Qtip_Js + "\"></script>");
             //NOTE: The jquery.hovercard.min.js file included below has been modified for SobekCM, and also includes bug fixes. DO NOT REPLACE with another version
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.hovercard.min.js\"></script>");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.qtip.min.css\" /> ");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Hovercard_Js + "\"></script>");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Jquery_Qtip_Css + "\" /> ");
 
             if(RequestSpecificValues.Current_User.PermissionedAggregations !=null )
               foreach (User_Permissioned_Aggregation thisAggregation in RequestSpecificValues.Current_User.PermissionedAggregations.Where(ThisAggregation => ThisAggregation.OnHomePage))
@@ -2038,13 +1942,13 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
-			Output.WriteLine("    <td class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/home_button.gif\" alt=\"Go to my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " home\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home</a></span>" + Environment.NewLine + "    </td>");
+			Output.WriteLine("    <td class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Home_Button_Gif + "\" alt=\"Go to my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " home\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home</a></span>" + Environment.NewLine + "    </td>");
 
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
-			Output.WriteLine("    <td class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/big_bookshelf.gif\" alt=\"Go to my bookshelf\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">My Library</a></span>" + Environment.NewLine + "    </td>");
+			Output.WriteLine("    <td class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Big_Bookshelf_Gif + "\" alt=\"Go to my bookshelf\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">My Library</a></span>" + Environment.NewLine + "    </td>");
 
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Saved_Searches;
-			Output.WriteLine("    <td class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/saved_searches_big.gif\" alt=\"Go to my saved searches\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">My Saved Searches</a></span>" + Environment.NewLine + "    </td>");
+			Output.WriteLine("    <td class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Saved_Searches_Gif + "\" alt=\"Go to my saved searches\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">My Saved Searches</a></span>" + Environment.NewLine + "    </td>");
 
 			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 			RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
@@ -2273,9 +2177,9 @@ namespace SobekCM.Library.HTML
                     {
                         buttons_builder.Append("<div class=\"sbkPrsw_LeftButtons\">");
                         RequestSpecificValues.Current_Mode.Page = 1;
-                        buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_first_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                        buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + Static_Resources.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
                         RequestSpecificValues.Current_Mode.Page = (ushort) (current_page - 1);
-                        buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                        buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
                         buttons_builder.Append("</div>");
                         LEFT_BUTTONS = buttons_builder.ToString();
                         buttons_builder.Clear();
@@ -2291,11 +2195,11 @@ namespace SobekCM.Library.HTML
                     {
                         buttons_builder.Append("<div class=\"sbkPrsw_RightButtons\">");
                         RequestSpecificValues.Current_Mode.Page = (ushort) (current_page + 1);
-                        buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                        buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
                         RequestSpecificValues.Current_Mode.Page = (ushort) (RequestSpecificValues.Results_Statistics.Total_Titles/RESULTS_PER_PAGE);
                         if (RequestSpecificValues.Results_Statistics.Total_Titles%RESULTS_PER_PAGE > 0)
                             RequestSpecificValues.Current_Mode.Page = (ushort) (RequestSpecificValues.Current_Mode.Page + 1);
-                        buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_last_arrow.png\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                        buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + Static_Resources.Button_Last_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                         buttons_builder.Append("</div>");
                         RIGHT_BUTTONS = buttons_builder.ToString();
                     }

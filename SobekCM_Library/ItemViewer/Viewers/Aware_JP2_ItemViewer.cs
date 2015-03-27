@@ -367,9 +367,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Viewport_Size = size;
 				CurrentMode.Viewport_Zoom = zoom;
 
-
-				////				navRow.Append( "<img src=\"" + currentMode.Base_URL + "default/images/shim_grey.gif\" width=\"15\" height=\"5\" >" + Environment.NewLine );
-				////				navRow.Append( "<img src=\"" + currentMode.Base_URL + "default/images/fittowindow.gif\" alt=\"Fit to window\" />" + Environment.NewLine );
 				navRow.Append("</td>" + Environment.NewLine );
 
 

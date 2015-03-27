@@ -11,6 +11,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Divisions;
@@ -576,7 +577,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 				//loading blanket
 				Output.WriteLine("  ");
-				Output.WriteLine(" <div id=\"mapedit_blanket_loading\"><div>Loading...<br/><br/><img src=\"" + CurrentMode.Base_URL + "default/images/mapedit/ajax-loader.gif\"></div></div> ");
+				Output.WriteLine(" <div id=\"mapedit_blanket_loading\"><div>Loading...<br/><br/><img src=\"" + Static_Resources.Ajax_Loader_Gif + "\"></div></div> ");
 				Output.WriteLine("  ");
 
 				//standard css

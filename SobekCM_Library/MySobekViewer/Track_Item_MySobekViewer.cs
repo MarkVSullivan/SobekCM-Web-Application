@@ -14,6 +14,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion
@@ -833,16 +834,13 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("Track_Item_MySobekViewer.Write_HTML", "Do nothing");
 
             //Include the js files
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.timers.min.js\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_track_item.js\" ></script>");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/jquery-ui.css\" />");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/timeentry/jquery.timeentry.min.js\"></script>");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\"  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/timeentry/jquery.timeentry.css\"/>");
-            //Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery.formatter.js\"></script>");
-            //Output.WriteLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/formatter.js\"></script>");
-
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Color_2_1_1_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Timers_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Track_Item_Js + "\" ></script>");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" +  RequestSpecificValues.Current_Mode.Base_URL + "default/jquery-ui.css\" />");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Timeentry_Js + "\"></script>");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\"  href=\"" + Static_Resources.Jquery_Timeentry_Css + "\"/>");
         }
 
 
@@ -856,11 +854,11 @@ namespace SobekCM.Library.MySobekViewer
 
             StringBuilder builder = new StringBuilder(2000);
             builder.AppendLine("<!-- Track_Item_MySobekViewer.Add_Controls -->");
-            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_MySobek.css\" /> ");
-            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Admin.css\" /> ");
+            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Mysobek_Css + "\" /> ");
+            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" /> ");
 
-            builder.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-ui-1.10.3.custom.min.js\"></script>");
-            builder.AppendLine("<script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery.color-2.1.1.js\"></script>");
+            builder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            builder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Color_2_1_1_Js + "\"></script>");
 
             //Set the JavaScript global page value based on the currently selected tab
             builder.AppendLine("<script type=\"text/javascript\">");

@@ -10,6 +10,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -267,7 +268,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     {
                         Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td><span style=\"line-height:160%\"> &nbsp; &nbsp; 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map &nbsp; &nbsp; <br /> &nbsp; &nbsp; 2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</span> </td>");
-						Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button></td></tr>");
+						Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + Static_Resources.Button_Next_Arrow2_Png + "\" alt=\"\" /></button></td></tr>");
                         Output.WriteLine("          </table>");
                     }
                     else
@@ -292,7 +293,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     {
                         Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td><span style=\"line-height:160%\"> &nbsp; &nbsp; 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map &nbsp; &nbsp; <br /> &nbsp; &nbsp; 2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</span> </td>");
-						Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button></td></tr>");
+						Output.WriteLine("                <td><button name=\"searchButton\" id=\"searchButton\" class=\"SobekSearchButton\" onclick=\"" + Search_Script_Action + "\">" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + Static_Resources.Button_Next_Arrow2_Png + "\" alt=\"\" /></button></td></tr>");
                         Output.WriteLine("          </table>");
                     }
                     else
@@ -319,7 +320,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("          <label for=\"AddressTextBox\">" + address_text + ":</label> &nbsp; ");
 				Output.WriteLine("          <input name=\"AddressTextBox\" type=\"text\" id=\"AddressTextBox\" class=\"sbkMsav_AddressBox sbk_Focusable\" value=\"\" placeholder=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" data-placeholder-text=\"Enter address ( i.e., 12 Main Street, Gainesville Florida )\" onleave=\"address_box_changed(this);\" onchange=\"address_box_changed(this);\" onkeydown=\"address_keydown(event, this);\" /> &nbsp; ");
 				Output.WriteLine("          <button name=\"findButton\" id=\"findButton\" class=\"sbk_SearchButton\" onclick=\"map_address_geocode();return false;\" >" + find_button_text + "</button> &nbsp; ");
-				Output.WriteLine("          <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\" >" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow2.png\" alt=\"\" /></button>");
+				Output.WriteLine("          <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\" >" + search_button_text + "<img id=\"sbkMsav_ButtonArrow\" src=\"" + Static_Resources.Button_Next_Arrow2_Png + "\" alt=\"\" /></button>");
                 Output.WriteLine("        </div>");
             }
             Output.WriteLine("    </td>");

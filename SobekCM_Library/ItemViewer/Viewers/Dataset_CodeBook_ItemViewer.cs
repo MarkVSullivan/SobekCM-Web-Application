@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion
@@ -195,7 +196,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 								if (fkConstraint.Columns[0] == thisColumn)
 								{
 									column_definition = "FK";
-									column_reference = fkConstraint.RelatedColumns[0].Table.TableName + "." + fkConstraint.RelatedColumns[0].ColumnName + " <img src=\"" + CurrentMode.Base_URL + "default/images/leftarrow.png\" alt=\"<--\" />";
+									column_reference = fkConstraint.RelatedColumns[0].Table.TableName + "." + fkConstraint.RelatedColumns[0].ColumnName + " <img src=\"" + Static_Resources.Leftarrow_Png + "\" alt=\"<--\" />";
 								}
 							}
 						}
@@ -307,7 +308,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							{
 								column_definition = "FK";
 								CurrentMode.SubPage = (ushort) (itemDataset.Tables.IndexOf(fkConstraint.RelatedColumns[0].Table) + 2);
-								column_reference = "<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" title=\"View details of linked table\">" + fkConstraint.RelatedColumns[0].Table.TableName + "</a>." + fkConstraint.RelatedColumns[0].ColumnName + " <img src=\"" + CurrentMode.Base_URL + "default/images/leftarrow.png\" alt=\"<--\" />";
+								column_reference = "<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" title=\"View details of linked table\">" + fkConstraint.RelatedColumns[0].Table.TableName + "</a>." + fkConstraint.RelatedColumns[0].ColumnName + " <img src=\"" + Static_Resources.Leftarrow_Png + "\" alt=\"<--\" />";
 							}
 						}
 					}

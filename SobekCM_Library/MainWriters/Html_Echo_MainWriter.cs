@@ -2,6 +2,7 @@
 
 using System.IO;
 using SobekCM.Core.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion
@@ -38,29 +39,16 @@ namespace SobekCM.Library.MainWriters
             Output.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
 
 			// Write the style sheet to use 
-#if DEBUG
-            Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" />");
-#else
-			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM.min.css\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
-#endif
 			// Write the main SobekCM item style sheet to use 
-#if DEBUG
-			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Item.css\" rel=\"stylesheet\" type=\"text/css\" />");
-#else
-			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/SobekCM_Item.min.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-#endif
+			Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
 			// Always add jQuery library (changed as of 7/8/2013)
 			if ((RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.ViewerCode != "pageturner"))
 			{
-#if DEBUG
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-1.10.2.js\"></script>");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_full.js\"></script>");
-#else
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
-#endif
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_1_10_2_Js + "\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Full_Js + "\"></script>");
 			}
 
 			// Include the interface's style sheet if it has one

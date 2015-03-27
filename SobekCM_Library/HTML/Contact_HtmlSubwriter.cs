@@ -15,6 +15,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -546,8 +547,8 @@ namespace SobekCM.Library.HTML
                         return_url = "?" + lastMode;
                 }
 
-                Output.WriteLine("      <button title=\"" + cancel + "\" class=\"sbkChsw_Button\" onclick=\"window.location.href='" + return_url + "'; return false;\" type=\"button\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_previous_arrow.png\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + cancel + "</button> &nbsp; &nbsp; ");
-                Output.WriteLine("      <button title=\"" + submit + "\" class=\"sbkChsw_Button\" onclick=\"return send_contact_email();\" type=\"submit\">" + submit + " <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/button_next_arrow.png\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("      <button title=\"" + cancel + "\" class=\"sbkChsw_Button\" onclick=\"window.location.href='" + return_url + "'; return false;\" type=\"button\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> " + cancel + "</button> &nbsp; &nbsp; ");
+                Output.WriteLine("      <button title=\"" + submit + "\" class=\"sbkChsw_Button\" onclick=\"return send_contact_email();\" type=\"submit\">" + submit + " <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 
 
                 Output.WriteLine("    </div>");

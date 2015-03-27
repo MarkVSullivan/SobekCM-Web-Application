@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Library.HTML;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion
