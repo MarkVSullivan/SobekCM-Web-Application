@@ -900,50 +900,49 @@ namespace SobekCM.Library.ItemViewer.Viewers
             result.AppendLine(INDENT + "</div>");
 
 			// Now, try to add the thumbnail from any page images here
-			bool thumb_added = false;
-			if (CurrentItem.Web.Static_PageCount > 0)
-			{
-				if (CurrentItem.Web.Pages_By_Sequence[0].Files.Count > 0)
-				{
-					string jpeg = String.Empty;
-					foreach (SobekCM_File_Info thisFileInfo in CurrentItem.Web.Pages_By_Sequence[0].Files)
-					{
-						if (thisFileInfo.System_Name.ToLower().IndexOf(".jpg") > 0)
-						{
-							if (jpeg.Length == 0)
-								jpeg = thisFileInfo.System_Name;
-							else if (thisFileInfo.System_Name.ToLower().IndexOf("thm.jpg") < 0)
-								jpeg = thisFileInfo.System_Name;
-						}
-					}
+		    if (CurrentItem.Behaviors.Dark_Flag != true)
+		    {
+		        if (!String.IsNullOrEmpty(CurrentItem.Behaviors.Main_Thumbnail))
+		        {
+		            string name_for_image = HttpUtility.HtmlEncode(CurrentItem.Bib_Info.Main_Title.ToString());
+		            result.AppendLine();
+		            result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + CurrentItem.Behaviors.Main_Thumbnail + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+		            result.AppendLine();
+		        }
+		        else if (CurrentItem.Web.Static_PageCount > 0)
+		        {
+		            if (CurrentItem.Web.Pages_By_Sequence[0].Files.Count > 0)
+		            {
+		                string jpeg = String.Empty;
+		                foreach (SobekCM_File_Info thisFileInfo in CurrentItem.Web.Pages_By_Sequence[0].Files)
+		                {
+		                    if (thisFileInfo.System_Name.ToLower().IndexOf(".jpg") > 0)
+		                    {
+		                        if (jpeg.Length == 0)
+		                            jpeg = thisFileInfo.System_Name;
+		                        else if (thisFileInfo.System_Name.ToLower().IndexOf("thm.jpg") < 0)
+		                            jpeg = thisFileInfo.System_Name;
+		                    }
+		                }
 
-					string name_for_image = HttpUtility.HtmlEncode(CurrentItem.Bib_Info.Main_Title.ToString());
-					string name_of_page = CurrentItem.Web.Pages_By_Sequence[0].Label;
-					name_for_image = name_for_image + " - " + HttpUtility.HtmlEncode(name_of_page);
-
-
-					// If a jpeg was found, show it
-					if (jpeg.Length > 0)
-					{
-						result.AppendLine();
-						result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + jpeg + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
-						result.AppendLine();
-						thumb_added = true;
-					}
-				}
-			}
-
-			// If no thumbnail added, try to add from main thumb information
-			if ((!thumb_added) && ( CurrentItem.Behaviors.Main_Thumbnail.Length > 0 ))
-			{					
-				string name_for_image = HttpUtility.HtmlEncode(CurrentItem.Bib_Info.Main_Title.ToString());
-				result.AppendLine();
-				result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + CurrentItem.Behaviors.Main_Thumbnail + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
-				result.AppendLine();
-			}
+		                string name_for_image = HttpUtility.HtmlEncode(CurrentItem.Bib_Info.Main_Title.ToString());
+		                string name_of_page = CurrentItem.Web.Pages_By_Sequence[0].Label;
+		                name_for_image = name_for_image + " - " + HttpUtility.HtmlEncode(name_of_page);
 
 
-			result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_BiblioSection\" >");
+		                // If a jpeg was found, show it
+		                if (jpeg.Length > 0)
+		                {
+		                    result.AppendLine();
+		                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + jpeg + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+		                    result.AppendLine();
+		                }
+		            }
+		        }
+		    }
+
+
+		    result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_BiblioSection\" >");
 		    result.AppendLine(INDENT + "<h2>" + biblio_info + "</h2>");
 			result.AppendLine(INDENT + "  <dl>");
 

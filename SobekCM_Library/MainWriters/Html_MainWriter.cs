@@ -550,8 +550,6 @@ namespace SobekCM.Library.MainWriters
             {
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_1_10_2_Js + "\"></script>");
 				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Full_Js + "\"></script>");
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Qtip_Js + "\"></script>");
-                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Jquery_Qtip_Css + "\" /> ");
 			}
 
 			// Special code for the menus, if this is not IE

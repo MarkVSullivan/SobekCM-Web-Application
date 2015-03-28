@@ -37,6 +37,7 @@ namespace SobekCM.Library.HTML
         private string leftButtons;
         private string rightButtons;
         private const int RESULTS_PER_PAGE = 20;
+        private bool thematicHeadingsAdded;
 
         /// <summary> Constructor creates a new instance of the Aggregation_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -44,6 +45,7 @@ namespace SobekCM.Library.HTML
         {
             leftButtons = String.Empty;
             rightButtons = String.Empty;
+            thematicHeadingsAdded = false;
 
 			// Check to see if the user should be able to edit the home page
 			if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
@@ -473,6 +475,14 @@ namespace SobekCM.Library.HTML
                 // Add the HTML from the CKEditor object
                 editor.Add_To_Stream(Output);
 			}
+
+            if ((RequestSpecificValues.Results_Statistics != null ) && 
+                ( RequestSpecificValues.Results_Statistics.Total_Items > 0) &&
+                ( RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Thumbnails ))
+            {
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Qtip_Js + "\"></script>");
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Jquery_Qtip_Css + "\" /> ");
+            }
         }
 
 
@@ -1741,6 +1751,7 @@ namespace SobekCM.Library.HTML
                     // Write this theme
 					if (first)
 					{
+                        thematicHeadingsAdded = true;
 						Output.WriteLine("<h2 style=\"margin-top:0;\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(thisTheme.Text, RequestSpecificValues.Current_Mode.Language) + "</h2>");
 						first = false;
 					}
@@ -1796,6 +1807,7 @@ namespace SobekCM.Library.HTML
         {
             // Build the list of html to display, first adding collections and subcollections
             SortedList<string, string> html_list = new SortedList<string, string>();
+
 
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_1_10_2_Js + "\"></script>");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Qtip_Js + "\"></script>");
@@ -2132,22 +2144,25 @@ namespace SobekCM.Library.HTML
 
 
                 // Add the scripts needed
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Draggable_Js + "\"></script>");
+                //Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Draggable_Js + "\"></script>");
 
                 // NOTE: The jquery.hovercard.min.js file included below has been modified for SobekCM, and also includes a bug fix. DO NOT REPLACE with another version
-                Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Hovercard_Js + "\"></script>");
-                Output.WriteLine("<script type=\"text/javascript\">");
-                Output.WriteLine("    $(document).ready(function () {");
-                Output.WriteLine("        $('[id*=sbkAghsw_CollectionButtonImg]').each(function () {");
-                Output.WriteLine("            var $this = $(this);");
-                Output.WriteLine("            var hovercardTitle = '<div style=\"display:inline; float:left; font-weight:bold;margin-left:70px;margin-top:-10px;\" class=\"sbkAghsw_CollectionButtonTxt\"><a href=' + $this.find('a').attr('href') + '>' + $this.find('img').attr('alt') + '</a></div><br/>';");
-                Output.WriteLine("            var hovercardHTML = '<div style=\"display:inline;margin:70px;\">' + $this.find('.spanHoverText').text() + '</div><br/>';");
-                Output.WriteLine("            $this.hovercard({detailsHTML: hovercardTitle+hovercardHTML, width: 300, openOnLeft: false,autoAdjust: false, delay:0 }); ");
-                Output.WriteLine("        });");
-                Output.WriteLine("    });");
-                Output.WriteLine("</script>");
-                Output.WriteLine();
 
+                if (thematicHeadingsAdded)
+                {
+                    Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Hovercard_Js + "\"></script>");
+                    Output.WriteLine("<script type=\"text/javascript\">");
+                    Output.WriteLine("    $(document).ready(function () {");
+                    Output.WriteLine("        $('[id*=sbkAghsw_CollectionButtonImg]').each(function () {");
+                    Output.WriteLine("            var $this = $(this);");
+                    Output.WriteLine("            var hovercardTitle = '<div style=\"display:inline; float:left; font-weight:bold;margin-left:70px;margin-top:-10px;\" class=\"sbkAghsw_CollectionButtonTxt\"><a href=' + $this.find('a').attr('href') + '>' + $this.find('img').attr('alt') + '</a></div><br/>';");
+                    Output.WriteLine("            var hovercardHTML = '<div style=\"display:inline;margin:70px;\">' + $this.find('.spanHoverText').text() + '</div><br/>';");
+                    Output.WriteLine("            $this.hovercard({detailsHTML: hovercardTitle+hovercardHTML, width: 300, openOnLeft: false,autoAdjust: false, delay:0 }); ");
+                    Output.WriteLine("        });");
+                    Output.WriteLine("    });");
+                    Output.WriteLine("</script>");
+                    Output.WriteLine();
+                }
 
 
                 if (RequestSpecificValues.Results_Statistics != null && RequestSpecificValues.Results_Statistics.Total_Items > 0)
