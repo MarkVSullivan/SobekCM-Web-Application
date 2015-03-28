@@ -259,6 +259,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "SobekCM Image Server", SettingsObject, X => X.SobekCM_ImageServer, String.Empty);
                 Get_String_Value(settingsDictionary, "SobekCM Web Server IP", SettingsObject, X => X.SobekCM_Web_Server_IP, String.Empty);
                 Get_String_Value(settingsDictionary, "Static Pages Location", SettingsObject, X => X.Static_Pages_Location, ref error);
+                Get_String_Value(settingsDictionary, "Static Resources Source", SettingsObject, X => X.Static_Resources_Config_File, "CDN");          
                 Get_Boolean_Value(settingsDictionary, "Statistics Caching Enabled", SettingsObject, X => X.Statistics_Caching_Enabled, ref error, false);
                 Get_String_Value(settingsDictionary, "System Base Abbreviation", SettingsObject, X => X.System_Abbreviation, String.Empty);
                 Get_String_Value(settingsDictionary, "System Base Name", SettingsObject, X => X.System_Name, SettingsObject.System_Abbreviation);

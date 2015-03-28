@@ -413,7 +413,7 @@ input.users_large_input_focused  {  color:#0000a8;  width: 400px; margin-top: 6p
 
 .shown_progress
 { 
-	background-image: url( http://128.227.223.117/UFDC/default/images/spinner.gif );
+	background-image: url( ../../../images/misc/spinner.gif  );
 	cursor: wait;
 	padding: 0;
 	width: 32px;

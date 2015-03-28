@@ -75,6 +75,7 @@ namespace SobekCM.Core.Settings
                 Facets_Collapsible = false;
                 Can_Remove_Single_Term = true;
                 isHosted = false;
+                Static_Resources_Config_File = "CDN";
 
                 MarcGeneration = new Marc21_Settings();
 
@@ -211,6 +212,84 @@ namespace SobekCM.Core.Settings
 
         #region Public Properties
 
+        /// <summary> Additional custom settings associated with this SobekCM system at
+        /// the highest level </summary>
+        [DataMember]
+        public Dictionary<string, string> Additional_Settings { get; set; }
+
+        /// <summary> Network directory for the SobekCM web application server </summary>
+        [DataMember]
+        public string Application_Server_Network { get; set; }
+
+        /// <summary> Primary URL for this instance of the SobekCM web application server </summary>
+        [DataMember]
+        public string Application_Server_URL { get; set; }
+
+        /// <summary> Drop box where packages can be placed to be archived locally </summary>
+        [DataMember]
+        public string Archive_DropBox { get; set; }
+
+        /// <summary> Name for the backup files folder within each digital resource </summary>
+        [DataMember]
+        public string Backup_Files_Folder_Name { get; set; }
+
+        /// <summary> Base directory where the ASP.net application is running on the application server </summary>
+        [DataMember]
+        public string Base_Directory { get { return Application_Server_Network; } set { Application_Server_Network = value; } }
+
+        /// <summary> Relative location to the folders on the web server </summary>
+        /// <remarks> This is only used when building pages in the SobekCM Builder, which allows for
+        /// the replacement of all the relative references ( i.e., '/design/skins/dloc/dloc.css') with the full
+        /// link ( i.e., 'http://example.edu/design/skins/dloc/dloc.css' ) </remarks>
+        [DataMember]
+        public string Base_SobekCM_Location_Relative { get; set; }
+
+        /// <summary> Gets the base URL for this instance, without the application name </summary>
+        [DataMember]
+        public string Base_URL { get; set; }
+
+        /// <summary> Number of days builder logs remain before the builder will try to delete it </summary>
+        [DataMember]
+        public int Builder_Log_Expiration_Days { get; set; }
+
+        /// <summary> Directory where the builder should publish log to, before sleeping between
+        /// actions </summary>
+        [DataMember]
+        public string Builder_Logs_Publish_Directory { get; set; }
+
+        /// <summary> Number of seconds the builder waits between polls </summary>
+        [DataMember]
+        public int Builder_Seconds_Between_Polls { get; set; }
+
+        /// <summary> Flag indicates if the builder should be extra verbose in the log files (used for debugging purposes mostly) </summary>
+        [DataMember]
+        public bool Builder_Verbose_Flag { get; set; }
+
+        /// <summary> Name of the caching server (or blank if disabled) </summary>
+        [DataMember]
+        public string Caching_Server { get; set; }
+
+        /// <summary> Flag indicates if users can remove a single part of their search term </summary>
+        [DataMember]
+        public bool Can_Remove_Single_Term { get; set; }
+
+        /// <summary> Number of ticks that a complete package must age before being processed </summary>
+        /// <value> This is currently set to 15 minutes (in ticks) </value>
+        [DataMember]
+        public long Complete_Package_Required_Aging { get; set; }
+
+        /// <summary> Flag indicates if the builder should try to convert office files (Word and Powerpoint) to PDF during load and post-processing </summary>
+        [DataMember]
+        public bool Convert_Office_Files_To_PDF { get; set; }
+
+        /// <summary> Current version number associated with this SobekCM builder application </summary>
+        [DataMember]
+        public string Current_Builder_Version { get; set; }
+
+        /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
+        [DataMember]
+        public string Current_Web_Version { get; set; }
+
         /// <summary> Returns the default user interface language </summary>
         [DataMember]
         public Web_Language_Enum Default_UI_Language { get; set; }
@@ -225,91 +304,30 @@ namespace SobekCM.Core.Settings
             get { return Web_Language_Enum_Converter.Enum_To_Name(Default_UI_Language); }
         }
 
-        /// <summary> Gets the base name for this system </summary>
+        /// <summary> Flag determines if the detailed view of user permissions for items in an aggregation should show </summary>
         [DataMember]
-        public string System_Name { get; set; }
+        public bool Detailed_User_Aggregation_Permissions { get; set; }
 
-        /// <summary> Email address used when a possible privacy issue appears, such as an apaprent social security number </summary>
+        /// <summary> URL for the Solr/Lucene index for the document metadata and text </summary>
         [DataMember]
-        public string Privacy_Email_Address { get; set; }
+        public string Document_Solr_Index_URL { get; set; }
 
-        /// <summary> Flag indicates if the partners browse should be displayed on the home page </summary>
+        /// <summary> Flag indicates if facets start out collapsed </summary>
         [DataMember]
-        public bool Include_Partners_On_System_Home { get; set; }
-
-        /// <summary> Flag indicates if the tree view should be displayed on the home page </summary>
-        [DataMember]
-        public bool Include_TreeView_On_System_Home { get; set; }
-
-        /// <summary> Flag indicates if the builder should try to convert office files (Word and Powerpoint) to PDF during load and post-processing </summary>
-        [DataMember]
-        public bool Convert_Office_Files_To_PDF { get; set; }
-
-        /// <summary> Kakadu JPEG2000 script will override the specifications used when creating zoomable images </summary>
-        [DataMember]
-        public string Kakadu_JP2_Create_Command { get; set; }
-
-        /// <summary> Command to launch the OCR engine against a single TIFF to produce a single TEXT file </summary>
-        [DataMember]
-        public string OCR_Command_Prompt { get; set; }
-
-        /// <summary> Flag indicates if the statistics information should be cached for very quick 
-        /// retrieval for search engine robots. </summary>
-        [DataMember]
-        public bool Statistics_Caching_Enabled { get; set; }
-
-        /// <summary> Gets the regular expression for matching files names to delete BEFORE archiving
-        /// incoming digital resource files </summary>
-        [DataMember]
-        public string PreArchive_Files_To_Delete { get; set; }
-
-        /// <summary> Gets the regular expression for matching files names to delete AFTER archiving
-        /// incoming digital resource files </summary>
-        [DataMember]
-        public string PostArchive_Files_To_Delete { get; set; }
+        public bool Facets_Collapsible { get; set; }
 
         /// <summary> Gets regular expression for matching file names (with extension) to exclude 
         /// from automatically adding gto the downloads for incoming digital resources </summary>
         [DataMember]
         public string Files_To_Exclude_From_Downloads { get; set; }
 
-        /// <summary> Gets the library-wide setting for width of created jpeg derivatives </summary>
+        /// <summary> Ghostscript executable file </summary>
         [DataMember]
-        public int JPEG_Width { get; set; }
+        public string Ghostscript_Executable { get; set; }
 
-        /// <summary> Gets the library-wide setting for height created jpeg derivatives </summary>
+        /// <summary> ImageMagick executable file </summary>
         [DataMember]
-        public int JPEG_Height { get; set; }
-
-        /// <summary> Gets the library-wide setting for width for created jpeg thumbnails </summary>
-        [DataMember]
-        public int Thumbnail_Width { get; set; }
-
-        /// <summary> Gets the library-wide setting for height for created jpeg thumbnails </summary>
-        [DataMember]
-        public int Thumbnail_Height { get; set; }
-
-        /// <summary> Directory where the local logs are written </summary>
-        /// <remarks> This is determined the first time this class is referenced and is just
-        /// a <b>Logs</b> subfolder uynder the application startup path</remarks>
-        [DataMember]
-        public string Local_Log_Directory { get; set; }
-
-        /// <summary> Folder where files bound for archiving are placed </summary>
-        [DataMember]
-        public string Package_Archival_Folder { get; set; }
-
-        /// <summary> Final destination of the processing log (usually the web server) </summary>
-        [DataMember]
-        public string Log_Files_Directory { get; set; }
-
-        /// <summary> Final URL for the processing log, for any links between different failure logs </summary>
-        [DataMember]
-        public string Log_Files_URL { get; set; }
-
-        /// <summary> Location where all the item-level page exist for search engine indexing </summary>
-        [DataMember]
-        public string Static_Pages_Location { get; set; }
+        public string ImageMagick_Executable { get; set; }
 
         /// <summary> Network directory for the image server which holds all the resource files </summary>
         [DataMember]
@@ -320,45 +338,96 @@ namespace SobekCM.Core.Settings
         [DataMember]
         public string Image_Server_Root { get; set; }
 
-        /// <summary> Network directory for the SobekCM web application server </summary>
+        /// <summary> Base image URL for all digital resource images </summary>
         [DataMember]
-        public string Application_Server_Network { get; set; }
+        public string Image_URL { get; set; }
 
-        /// <summary> Primary URL for this instance of the SobekCM web application server </summary>
+        /// <summary> Flag indicates if the partners browse should be displayed on the home page </summary>
         [DataMember]
-        public string Application_Server_URL { get; set; }
+        public bool Include_Partners_On_System_Home { get; set; }
 
-        /// <summary> Dropbox to check for any <a href="http://fclaweb.fcla.edu/FDA_landing_page">Florida Digital Archive</a> ingest reports </summary>
+        /// <summary> Flag indicates if the tree view should be displayed on the home page </summary>
         [DataMember]
-        public string FDA_Report_DropBox { get; set; }
+        public bool Include_TreeView_On_System_Home { get; set; }
 
-        /// <summary> Drop box where packages can be placed to be archived locally </summary>
+        /// <summary> Gets the TYPE of the JPEG2000 server - allowing the system to support different
+        /// types of the zoomable server ( i.e., Aware, Djatoka, etc.. ) </summary>
         [DataMember]
-        public string Archive_DropBox { get; set; }
+        public string JP2ServerType { get; set; }
 
-        /// <summary> URL for the Solr/Lucene index for the document metadata and text </summary>
+        /// <summary> URL to the Aware JPEG2000 zoomable image server </summary>
         [DataMember]
-        public string Document_Solr_Index_URL { get; set; }
+        public string JP2ServerUrl { get; set; }
+
+        /// <summary> Gets the library-wide setting for width of created jpeg derivatives </summary>
+        [DataMember]
+        public int JPEG_Width { get; set; }
+
+        /// <summary> Gets the library-wide setting for height created jpeg derivatives </summary>
+        [DataMember]
+        public int JPEG_Height { get; set; }
+
+        /// <summary> Kakadu JPEG2000 script will override the specifications used when creating zoomable images </summary>
+        [DataMember]
+        public string Kakadu_JP2_Create_Command { get; set; }
+
+        /// <summary> Directory where the local logs are written </summary>
+        /// <remarks> This is determined the first time this class is referenced and is just
+        /// a <b>Logs</b> subfolder uynder the application startup path</remarks>
+        [DataMember]
+        public string Local_Log_Directory { get; set; }
+
+        /// <summary> Final destination of the processing log (usually the web server) </summary>
+        [DataMember]
+        public string Log_Files_Directory { get; set; }
+
+        /// <summary> Final URL for the processing log, for any links between different failure logs </summary>
+        [DataMember]
+        public string Log_Files_URL { get; set; }
+
+        /// <summary> Returns the network location for the main builder, which runs essentially
+        /// without restrictions </summary>
+        [DataMember]
+        public string Main_Builder_Input_Folder { get; set; }
+
+        /// <summary> Number of ticks that a metadata only package must age before being processed </summary>
+        /// <value> This is currently set to 1 minute (in ticks) </value>
+        [DataMember]
+        public long METS_Only_Package_Required_Aging { get; set; }
+
+        /// <summary> Command to launch the OCR engine against a single TIFF to produce a single TEXT file </summary>
+        [DataMember]
+        public string OCR_Command_Prompt { get; set; }
+
+        /// <summary> Flag indicates if online submissions and edits can occur at the moment </summary>
+        [DataMember]
+        public bool Online_Edit_Submit_Enabled { get; set; }
+
+        /// <summary> Folder where files bound for archiving are placed </summary>
+        [DataMember]
+        public string Package_Archival_Folder { get; set; }
+
+        /// <summary> List of possible page image extensions </summary>
+        [DataMember]
+        public List<string> Page_Image_Extensions { get; set; }
 
         /// <summary> URL for the Solr/Lucene index for the page text </summary>
         [DataMember]
         public string Page_Solr_Index_URL { get; set; }
 
-        /// <summary> Email address for system errors </summary>
+        /// <summary> Gets the regular expression for matching files names to delete AFTER archiving
+        /// incoming digital resource files </summary>
         [DataMember]
-        public string System_Error_Email { get; set; }
+        public string PostArchive_Files_To_Delete { get; set; }
 
-        /// <summary> Main email address for this system </summary>
+        /// <summary> Gets the regular expression for matching files names to delete BEFORE archiving
+        /// incoming digital resource files </summary>
         [DataMember]
-        public string System_Email { get; set; }
+        public string PreArchive_Files_To_Delete { get; set; }
 
-        /// <summary> Gets the Mango Union search base URL, in support of Florida SUS's</summary>
+        /// <summary> Email address used when a possible privacy issue appears, such as an apaprent social security number </summary>
         [DataMember]
-        public string Mango_Union_Search_Base_URL { get; set; }
-
-        /// <summary> Gets the Mango Union search text to be displayed, in support of Florida SUS's</summary>
-        [DataMember]
-        public string Mango_Union_Search_Text { get; set; }
+        public string Privacy_Email_Address { get; set; }
 
         /// <summary> Flag indicates whether the facets should be pulled during a browse </summary>
         [DataMember]
@@ -368,98 +437,70 @@ namespace SobekCM.Core.Settings
         [DataMember]
         public bool Pull_Facets_On_Search { get; set; }
 
-        /// <summary> Name of the caching server (or blank if disabled) </summary>
+        /// <summary> Gets the list of reserved keywords that cannot be used
+        /// for aggregation codes or aggregation aliases </summary>
+        /// <remarks> These are all lower case </remarks>
         [DataMember]
-        public string Caching_Server { get; set; }
+        public List<string> Reserved_Keywords { get; set; }
+
+        /// <summary> Flag indicates if the florida SUS settings should be included </summary>
+        [DataMember]
+        public bool Show_Florida_SUS_Settings { get; set; }
 
         /// <summary> URL to the SobekCM Image Server, initially used just when features need to be drawn on images </summary>
         [DataMember]
         public string SobekCM_ImageServer { get; set; }
 
-        /// <summary> Flag indicates if online submissions and edits can occur at the moment </summary>
+        /// <summary> IP address for the SobekCM web server </summary>
         [DataMember]
-        public bool Online_Edit_Submit_Enabled { get; set; }
+        public string SobekCM_Web_Server_IP { get; set; }
 
-        /// <summary> Gets the error web page to send users to when a catastrophic error occurs </summary>
-        /// <value> For example, for UFDC this always returns 'http://ufdc.ufl.edu/error.html' </value>
+        /// <summary> Location where all the item-level page exist for search engine indexing </summary>
         [DataMember]
-        public string System_Error_URL { get; set; }
+        public string Static_Pages_Location { get; set; }
+
+        /// <summary> Indicates which static resources configuration file to use </summary>
+        [DataMember]
+        public string Static_Resources_Config_File { get; set; }
+
+        /// <summary> Flag indicates if the statistics information should be cached for very quick 
+        /// retrieval for search engine robots. </summary>
+        [DataMember]
+        public bool Statistics_Caching_Enabled { get; set; }
+
+        /// <summary> Gets the abbrevation used to refer to this digital library </summary>
+        [DataMember]
+        public string System_Abbreviation { get; set; }
 
         /// <summary> Gets the complete url to this instance of SobekCM library software </summary>
         /// <value> Currently this always returns 'http://ufdc.ufl.edu/' </value>
         [DataMember]
         public string System_Base_URL { get; set; }
 
-        /// <summary> Gets the abbrevation used to refer to this digital library </summary>
+        /// <summary> Email address for system errors </summary>
         [DataMember]
-        public string System_Abbreviation { get; set; }
+        public string System_Error_Email { get; set; }
 
-        /// <summary> Relative location to the folders on the web server </summary>
-        /// <remarks> This is only used when building pages in the SobekCM Builder, which allows for
-        /// the replacement of all the relative references ( i.e., '/design/skins/dloc/dloc.css') with the full
-        /// link ( i.e., 'http://example.edu/design/skins/dloc/dloc.css' ) </remarks>
+        /// <summary> Main email address for this system </summary>
         [DataMember]
-        public string Base_SobekCM_Location_Relative { get; set; }
+        public string System_Email { get; set; }
 
-        /// <summary> URL to the Aware JPEG2000 zoomable image server </summary>
+        /// <summary> Gets the base name for this system </summary>
         [DataMember]
-        public string JP2ServerUrl { get; set; }
+        public string System_Name { get; set; }
 
-        /// <summary> Gets the TYPE of the JPEG2000 server - allowing the system to support different
-        /// types of the zoomable server ( i.e., Aware, Djatoka, etc.. ) </summary>
+        /// <summary> Gets the error web page to send users to when a catastrophic error occurs </summary>
+        /// <value> For example, for UFDC this always returns 'http://ufdc.ufl.edu/error.html' </value>
         [DataMember]
-        public string JP2ServerType { get; set; }
+        public string System_Error_URL { get; set; }
 
-        /// <summary> Number of seconds between polls, from the configuration file (not the database) </summary>
-        /// <remarks> This is used if the SobekCM Builder is working between multiple instances. If the SobekCM
-        /// Builder is only servicing a single instance, then the data can be pulled from the database. </remarks>
+        /// <summary> Gets the library-wide setting for height for created jpeg thumbnails </summary>
         [DataMember]
-        public int Builder_Override_Seconds_Between_Polls { get; set; }
+        public int Thumbnail_Height { get; set; }
 
-        /// <summary> Base directory where the ASP.net application is running on the application server </summary>
+        /// <summary> Gets the library-wide setting for width for created jpeg thumbnails </summary>
         [DataMember]
-        public string Base_Directory { get { return Application_Server_Network; } set { Application_Server_Network = value; } }
-
-        /// <summary> Gets the base URL for this instance, without the application name </summary>
-        [DataMember]
-        public string Base_URL { get; set; }
-
-        /// <summary> Base image URL for all digital resource images </summary>
-        [DataMember]
-        public string Image_URL { get; set; }
-
-        /// <summary> Number of seconds the builder waits between polls </summary>
-        [DataMember]
-        public int Builder_Seconds_Between_Polls { get; set; }
-
-        /// <summary> Number of days builder logs remain before the builder will try to delete it </summary>
-        [DataMember]
-        public int Builder_Log_Expiration_Days { get; set; }
-
-        /// <summary> Flag indicates if the builder should be extra verbose in the log files (used for debugging purposes mostly) </summary>
-        [DataMember]
-        public bool Builder_Verbose_Flag { get; set; }
-
-        /// <summary> Number of minutes clients are suggested to cache the web output </summary>
-        [DataMember]
-        public int Web_Output_Caching_Minutes { get; set; }
-
-        /// <summary> ImageMagick executable file </summary>
-        [DataMember]
-        public string ImageMagick_Executable { get; set; }
-
-        /// <summary> Ghostscript executable file </summary>
-        [DataMember]
-        public string Ghostscript_Executable { get; set; }
-
-        /// <summary> Returns the network location for the main builder, which runs essentially
-        /// without restrictions </summary>
-        [DataMember]
-        public string Main_Builder_Input_Folder { get; set; }
-
-        /// <summary> IP address for the SobekCM web server </summary>
-        [DataMember]
-        public string SobekCM_Web_Server_IP { get; set; }
+        public int Thumbnail_Width { get; set; }
 
         /// <summary> List of file type extensions which can be uploaded in the
         /// file management interface. These should all treated as downloads in the system. </summary>
@@ -471,74 +512,42 @@ namespace SobekCM.Core.Settings
         [DataMember]
         public string Upload_Image_Types { get; set; }
 
-        /// <summary> Additional custom settings associated with this SobekCM system at
-        /// the highest level </summary>
+        /// <summary> Flag indicates whether checksums should be verified </summary>
         [DataMember]
-        public Dictionary<string, string> Additional_Settings { get; set; }
+        public bool VerifyCheckSum { get; set; }
 
-        /// <summary> Directory where the builder should publish log to, before sleeping between
-        /// actions </summary>
+        /// <summary> Number of minutes clients are suggested to cache the web output </summary>
         [DataMember]
-        public string Builder_Logs_Publish_Directory { get; set; }
+        public int Web_Output_Caching_Minutes { get; set; }
 
-        /// <summary> Flag indicates if facets start out collapsed </summary>
-        [DataMember]
-        public bool Facets_Collapsible { get; set; }
+        #endregion
 
-        /// <summary> Flag indicates if users can remove a single part of their search term </summary>
-        [DataMember]
-        public bool Can_Remove_Single_Term { get; set; }
+        #region Florida SUS-specific settings
 
-        /// <summary> Flag determines if the detailed view of user permissions for items in an aggregation should show </summary>
+        /// <summary> Dropbox to check for any <a href="http://fclaweb.fcla.edu/FDA_landing_page">Florida Digital Archive</a> ingest reports </summary>
         [DataMember]
-        public bool Detailed_User_Aggregation_Permissions { get; set; }
+        public string FDA_Report_DropBox { get; set; }
+
+        /// <summary> Gets the Mango Union search base URL, in support of Florida SUS's</summary>
+        [DataMember]
+        public string Mango_Union_Search_Base_URL { get; set; }
+
+        /// <summary> Gets the Mango Union search text to be displayed, in support of Florida SUS's</summary>
+        [DataMember]
+        public string Mango_Union_Search_Text { get; set; }
+
+        #endregion
+
+        /// <summary> Number of seconds between polls, from the configuration file (not the database) </summary>
+        /// <remarks> This is used if the SobekCM Builder is working between multiple instances. If the SobekCM
+        /// Builder is only servicing a single instance, then the data can be pulled from the database. </remarks>
+        [DataMember]
+        public int Builder_Override_Seconds_Between_Polls { get; set; }
 
         /// <summary> Flag indicates if this is a 'hosted' solution of SobekCM, in which case
         /// certain fields should not be made available, even to "system admins" </summary>
         [DataMember]
         public bool isHosted { get; set; }
-
-        /// <summary> List of possible page image extensions </summary>
-        [DataMember]
-        public List<string> Page_Image_Extensions { get; set; }
-
-        /// <summary> Name for the backup files folder within each digital resource </summary>
-        [DataMember]
-        public string Backup_Files_Folder_Name { get; set; }
-
-        /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
-        [DataMember]
-        public string Current_Web_Version { get; set; }
-
-        /// <summary> Current version number associated with this SobekCM builder application </summary>
-        [DataMember]
-        public string Current_Builder_Version { get; set; }
-
-        /// <summary> Number of ticks that a complete package must age before being processed </summary>
-        /// <value> This is currently set to 15 minutes (in ticks) </value>
-        [DataMember]
-        public long Complete_Package_Required_Aging { get; set; }
-
-        /// <summary> Number of ticks that a metadata only package must age before being processed </summary>
-        /// <value> This is currently set to 1 minute (in ticks) </value>
-        [DataMember]
-        public long METS_Only_Package_Required_Aging { get; set; }
-
-        /// <summary> Flag indicates whether checksums should be verified </summary>
-        [DataMember]
-        public bool VerifyCheckSum { get; set; }
-
-        /// <summary> Gets the list of reserved keywords that cannot be used
-        /// for aggregation codes or aggregation aliases </summary>
-        /// <remarks> These are all lower case </remarks>
-        [DataMember]
-        public List<string> Reserved_Keywords { get; set; }
-
-        /// <summary> Flag indicates if the florida SUS settings should be included </summary>
-        [DataMember]
-        public bool Show_Florida_SUS_Settings { get; set; } 
-
-        #endregion
 
         #region Properties related to sending emails from the system
 

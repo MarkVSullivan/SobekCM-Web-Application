@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -187,6 +188,9 @@ namespace SobekCM.Library.AdminViewer
                         // Assign this to be used by the system
                         UI_ApplicationCache_Gateway.ResetSettings();
 
+                        // Also, reset the source for static files, as thatmay have changed
+                        Static_Resources.Config_Read_Attempted = false;
+
                         // Get all the settings again 
                         build_setting_objects_for_display();
                     }
@@ -284,6 +288,21 @@ namespace SobekCM.Library.AdminViewer
             Add_Setting_UI("Show Florida SUS Settings", "Florida SUS", 70, boolean_options, "Some system settings are only applicable to institutions which are part of the Florida State University System.  Setting this value to TRUE will show these settings, while FALSE will suppress them.\n\nIf this value is changed, you willl need to save the settings for it to reload and reflect the change.", false, "false");
             if (!limitedRightsMode) Add_Setting_UI("SobekCM Web Server IP", "Server Configuration", 200, empty_options, "IP address for the web server running this web repository software.\n\nThis is used for setting restricted or dark material to only be available for the web server, which then acts as a proxy/web server to serve that content to authenticated users.", false);
             if (!limitedRightsMode) Add_Setting_UI("Static Pages Location", "Server Configuration", -1, empty_options, "Location where the static files are located for providing the full citation and text for indexing, either on the same server as the web application or as a network share.\n\nIt is recommended that these files be on the same server as the web server, rather than remote storage, to increase the speed in which requests from search engine indexers can be fulfilled.\n\nExample: 'C:\\inetpub\\wwwroot\\UFDC Web\\SobekCM\\data\\'.", false, default_location + "data\\");
+            if (!limitedRightsMode)
+            {
+                string[] files = Directory.GetFiles(UI_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\default", "sobekcm_static_resources_*.config");
+                List<string> config_file_names = new List<string>();
+                TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+                foreach (string thisFile in files)
+                {
+                    string name = (Path.GetFileName(thisFile)).ToLower().Replace("sobekcm_static_resources_", "").Replace(".config", "");
+                    name = textInfo.ToTitleCase(name.Replace("_", " "));
+                    if (name.IndexOf("Cdn") == 0)
+                        name = name.Replace("Cdn", "CDN");
+                    config_file_names.Add(name);
+                }
+                Add_Setting_UI("Static Resources Source", "System Configuration", 100, config_file_names.ToArray(), "Indicates the general source of all the static resources, such as javascript, system default stylesheets, images, and included libraries.\n\nUsing CDN will result in better performance, but can only be used when users will have access to the database.\n\nThis actually indicates which configuration file to read to determine the base location of the default resources.", false, "CDN");
+            }
             Add_Setting_UI("Statistics Caching Enabled", "System Configuration", 70, boolean_options, "Flag indicates if the basic usage and item count information should be cached for up to 24 hours as static XML files written in the web server's temp directory.\n\nThis should be enabled if your library is quite large as it can take a fair amount of time to retrieve this information and these screens are made available for search engine index robots for indexing.", false);
             Add_Setting_UI("System Base Abbreviation", "System Configuration", 100, empty_options, "Base abbreviation to be used when the system refers to itself to the RequestSpecificValues.Current_User, such as the main tabs to take a RequestSpecificValues.Current_User to the home pages.\n\nThis abbreviation should be kept as short as possible.\n\nExamples: 'UFDC', 'dLOC', 'Sobek', etc..", false).Set_ReadOnly(limitedRightsMode);
             Add_Setting_UI("System Base Name", "System Configuration", -1, empty_options, "Overall name of the system, to be used when creating MARC records and in several other locations.", false).Set_ReadOnly(limitedRightsMode);

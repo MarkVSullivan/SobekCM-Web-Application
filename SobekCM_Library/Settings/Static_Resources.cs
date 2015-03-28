@@ -11,6 +11,8 @@ namespace SobekCM.Library.Settings
         /// <summary> Static constructor for the Static_Resources class </summary>
         static Static_Resources()
         {
+            Config_Read_Attempted = false;
+
             // Set the default values, using the CDN
             Sixteen_Px_Feed_Icon_Svg_Png = "http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png";
             Add_Geospatial_Icon_Png = "http://cdn.sobekrepository.org/images/misc/add_geospatial_icon.png";
@@ -349,6 +351,10 @@ namespace SobekCM.Library.Settings
             Zoomin_Png = "http://cdn.sobekrepository.org/images/bookturner/zoomin.png";
             Zoomout_Png = "http://cdn.sobekrepository.org/images/bookturner/zoomout.png";
         }
+
+        /// <summary> Flag indicates if the configuration file read was attempted </summary>
+        public static bool Config_Read_Attempted { get; set; }
+
         /// <summary> URL for the default resource '16px-feed-icon.svg.png' file ( http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png by default)</summary>
         public static string Sixteen_Px_Feed_Icon_Svg_Png { get; private set; }
 
@@ -2712,14 +2718,15 @@ namespace SobekCM.Library.Settings
         }
         /// <summary> Read the indicated configuration file for these default statis resources </summary>
         /// <param name="ConfigFile"> Configuration file to read </param>
+        /// <param name="SystemBaseUrl"> System base URL, used as the base if nothing is indicated in the config file</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Read_Config(string ConfigFile)
+        public static bool Read_Config(string ConfigFile, string SystemBaseUrl )
         {
             // Streams used for reading
             Stream readerStream = null;
             XmlTextReader readerXml = null;
             bool returnValue = true;
-            string base_url = "[%BASEURL%]";
+            string base_url = SystemBaseUrl;
 
             try
             {
@@ -2735,7 +2742,7 @@ namespace SobekCM.Library.Settings
                     {
                         switch (readerXml.Name.ToLower())
                         {
-                            case "default_resources":
+                            case "static_resources":
                                 if (readerXml.MoveToAttribute("baseUrl")) base_url = readerXml.Value;
                                 break;
 

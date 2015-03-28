@@ -202,7 +202,7 @@
 	/*width: 15px; */
 	height: 28px;
 	border:none;
-	background: url(images/mapsearch/blue-pin.png) no-repeat center;
+	background: url(../../../images/mapsearch/blue-pin.png) no-repeat center;
 	z-index:99999;
  }
 .ui-slider-range { background:#7D90D5; }
@@ -224,7 +224,7 @@
 	text-align: center;
 }
 .ui-accordion .ui-icon{
-    background-image: url(images/mapsearch/ui-icons_ffffff_256x240.png);
+    background-image: url(../../../images/mapsearch/ui-icons_ffffff_256x240.png);
 }
 .ui-accordion{
 	width:100%;
@@ -279,11 +279,11 @@
 }
 .sortResults:hover{
 	cursor:pointer;
-	opactiy:0.4;
+	opacity:0.4;
 }
 .loadmoreResults:hover{
 	cursor:pointer;
-	opactiy:0.4;
+	opacity:0.4;
 }
 .ui-accordion-content ul{
 	text-align:left;
@@ -438,7 +438,7 @@
 	background:#FFFFFF;
 }
 .ui-slider .ui-slider-handle{ 
-	background: url(images/mapsearch/blue-pin.png) no-repeat center;
+	background: url(../../../images/mapsearch/blue-pin.png) no-repeat center;
 }
 .ui-slider-range{ 
 	background:#7D90D5; 
@@ -450,7 +450,7 @@
 	background: #7D90D5;
 }
 .ui-accordion .ui-icon{
-    background-image: url(images/mapsearch/ui-icons_ffffff_256x240.png);
+    background-image: url(../../../images/mapsearch/ui-icons_ffffff_256x240.png);
 }
 .ui-accordion-header{
 	color: #FFFFFF;

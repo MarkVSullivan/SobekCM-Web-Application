@@ -585,7 +585,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 
 .shown_progress
 { 
-    background-image: url( images/spinner.gif );
+    background-image: url( ../../../images/misc/spinner.gif );
     cursor: wait;
     padding: 0;
     width: 32px;
@@ -594,7 +594,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 
 .shown_progress_gray
 { 
-    background-image: url( images/spinner_gray.gif  );
+    background-image: url( ../../../images/misc/spinner_gray.gif  );
     cursor: wait;
     padding: 0;
     width: 32px;
@@ -682,7 +682,7 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
     vertical-align: middle;
     border: none;
     width: 54px; 
-    background: url(images/go_button.png) no-repeat;   
+    background: url(../../../images/misc/go_button.png) no-repeat;   
     cursor: pointer;
 }
 
@@ -725,7 +725,7 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 {
     width: 81px;
     height: 25px;
-    background: url(images/hide_internal_header2.png) no-repeat;   
+    background: url(../../../images/misc/hide_internal_header2.png) no-repeat;   
 }
 
 .hide_intheader_button_aggr:hover { background-position: 0 -25px; }
@@ -734,34 +734,34 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 {
     width: 202px;
     height: 18px;
-    background: url(images/show_internal_header.png) no-repeat;   
+    background: url(../../../images/misc/show_internal_header.png) no-repeat;   
 }
 
 .show_intheader_button_aggr:hover { background-position: 0 -18px; }
 
 .view_private_items {
-    background: url(images/private_items.png) no-repeat;  
+    background: url(../../../images/misc/private_items.png) no-repeat;  
     width:100px; 
 }
 
 .view_private_items:hover { background-position: 0 -39px; }
 
 .show_item_count {
-    background: url(images/item_count.png) no-repeat;   
+    background: url(../../../images/misc/item_count.png) no-repeat;   
     width:100px; 
 }
 
 .show_item_count:hover { background-position: 0 -39px; }
 
 .show_usage_statistics {
-    background: url(images/usage_statistics.png) no-repeat;   
+    background: url(../../../images/misc/usage_statistics.png) no-repeat;   
 
 }
 
 .show_usage_statistics:hover { background-position: 0 -39px; }
 
 .admin_view_button {
-    background: url(images/admin_view.png) no-repeat;   
+    background: url(../../../images/misc/admin_view.png) no-repeat;   
     width:100px; 
 }
 
@@ -771,7 +771,7 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 {
     width: 246px;
     height: 25px;
-    background: url(images/hide_internal_header.png) no-repeat;   
+    background: url(../../../images/misc/hide_internal_header.png) no-repeat;   
 }
 
 .hide_intheader_button:hover { background-position: 0 -25px; }
@@ -827,7 +827,7 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 #sbk_QuickTips H1 { font-size:1.3em;color:#999;text-align:left;}
 #sbk_QuickTips UL { padding:0; margin:0 0 0 15px;font-weight:bold;}
 #sbk_QuickTips P.tagline { padding:0 0 6px 0;margin:0 0 0 10px;color:black;font-weight:normal;}
-#sbk_QuickTips LI { padding:3px 0 4px 25px;list-style-position:outside;background:url( images/pointer_blue.gif) no-repeat 15px 7px;margin-bottom:7px;line-height:16px;list-style-type:none;}
+#sbk_QuickTips LI { padding:3px 0 4px 25px;list-style-position:outside;background:url( ../../../images/misc/pointer_blue.gif) no-repeat 15px 7px;margin-bottom:7px;line-height:16px;list-style-type:none;}
 
 /** Aggregation Html SubWriter */
 #sbkAghsw_HomeTextEdit { width: 100%;height: 400px; }

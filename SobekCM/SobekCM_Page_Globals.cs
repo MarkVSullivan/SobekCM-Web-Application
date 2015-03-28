@@ -25,6 +25,7 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library;
 using SobekCM.Library.Database;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
@@ -252,6 +253,9 @@ namespace SobekCM
 					if ((currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type == Admin_Type_Enum.Reset))
 					{
 						Reset_Memory();
+
+                        // Also re-read the configuration file for static resources
+                        Static_Resources.Config_Read_Attempted = false;
 
 						// Since this reset, send to the admin, memory management portion
 						currentMode.Mode = Display_Mode_Enum.Internal;
