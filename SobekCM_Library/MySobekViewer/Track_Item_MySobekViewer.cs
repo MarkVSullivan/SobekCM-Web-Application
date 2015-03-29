@@ -840,7 +840,6 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Track_Item_Js + "\" ></script>");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Jquery_Ui_Css + "\" />");
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Timeentry_Js + "\"></script>");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\"  href=\"" + Static_Resources.Jquery_Timeentry_Css + "\"/>");
         }
 
 

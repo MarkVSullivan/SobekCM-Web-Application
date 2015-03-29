@@ -1,3 +1,4 @@
+
 /**************************************************************************
 **     SOBEKCM.css                                                      
 **                                                                      
@@ -1100,4 +1101,10 @@ textarea.sbkSbia_HeaderTextArea {width: 400px; color:Blue; border-style:solid; b
 /** Class used for the maximized CKEditor HTML editor */
 .cke_maximized{
     text-align: left;
+}
+
+/* TimeEntry styles */
+.timeEntry_control {
+	vertical-align: middle;
+	margin-left: 2px;
 }

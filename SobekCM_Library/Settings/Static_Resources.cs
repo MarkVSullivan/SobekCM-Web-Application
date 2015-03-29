@@ -183,7 +183,6 @@ namespace SobekCM.Library.Settings
             Jquery_Qtip_Css = "http://cdn.sobekrepository.org/includes/jquery-qtip/2.2.0/jquery.qtip.min.css";
             Jquery_Qtip_Js = "http://cdn.sobekrepository.org/includes/jquery-qtip/2.2.0/jquery.qtip.min.js";
             Jquery_Searchbox_Css = "http://cdn.sobekrepository.org/includes/jquery-searchbox/1.0/jquery-searchbox.css";
-            Jquery_Timeentry_Css = "http://cdn.sobekrepository.org/includes/timeentry/1.5.2/jquery.timeentry.css";
             Jquery_Timeentry_Js = "http://cdn.sobekrepository.org/includes/timeentry/1.5.2/jquery.timeentry.min.js";
             Jquery_Timers_Js = "http://cdn.sobekrepository.org/includes/jquery-timers/1.2/jquery.timers.min.js";
             Jquery_Uploadifive_Js = "http://cdn.sobekrepository.org/includes/uploadifive/1.1.2/jquery.uploadifive.min.js";
@@ -198,7 +197,6 @@ namespace SobekCM.Library.Settings
             Jquery_Ui_1_10_3_Custom_Js = "http://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui-1.10.3.custom.min.js";
             Jquery_Ui_1_10_3_Draggable_Js = "http://cdn.sobekrepository.org/includes/jquery-ui-draggable/1.10.3/jquery-ui-1.10.3.draggable.min.js";
             Jquery_Ui_Css = "http://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui.css";
-            Jsdatepick_Full_1_3_Js = "http://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick.full.1.3.js";
             Jsdatepick_Min_1_3_Js = "http://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick.min.1.3.js";
             Jsdatepick_Ltr_Css = "http://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick_ltr.css";
             Jstree_Css = "http://cdn.sobekrepository.org/includes/jstree/3.0.9/themes/default/style.min.css";
@@ -862,9 +860,6 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'jquery-searchbox.css' file ( http://cdn.sobekrepository.org/includes/jquery-searchbox/1.0/jquery-searchbox.css by default)</summary>
         public static string Jquery_Searchbox_Css { get; private set; }
 
-        /// <summary> URL for the default resource 'jquery.timeentry.css' file ( http://cdn.sobekrepository.org/includes/timeentry/1.5.2/jquery.timeentry.css by default)</summary>
-        public static string Jquery_Timeentry_Css { get; private set; }
-
         /// <summary> URL for the default resource 'jquery.timeentry.js' file ( http://cdn.sobekrepository.org/includes/timeentry/1.5.2/jquery.timeentry.min.js by default)</summary>
         public static string Jquery_Timeentry_Js { get; private set; }
 
@@ -906,9 +901,6 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'jquery-ui.css' file ( http://cdn.sobekrepository.org/includes/jquery-ui/1.10.3/jquery-ui.css by default)</summary>
         public static string Jquery_Ui_Css { get; private set; }
-
-        /// <summary> URL for the default resource 'jsdatepick.full.1.3.js' file ( http://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick.full.1.3.js by default)</summary>
-        public static string Jsdatepick_Full_1_3_Js { get; private set; }
 
         /// <summary> URL for the default resource 'jsdatepick.min.1.3.js' file ( http://cdn.sobekrepository.org/includes/datepicker/1.3/jsDatePick.min.1.3.js by default)</summary>
         public static string Jsdatepick_Min_1_3_Js { get; private set; }
@@ -2042,10 +2034,6 @@ namespace SobekCM.Library.Settings
                     Jquery_Qtip_Js = Source;
                     break;
 
-                case "jquery.timeentry.css":
-                    Jquery_Timeentry_Css = Source;
-                    break;
-
                 case "jquery.timeentry.js":
                     Jquery_Timeentry_Js = Source;
                     break;
@@ -2104,10 +2092,6 @@ namespace SobekCM.Library.Settings
 
                 case "jquery-ui.css":
                     Jquery_Ui_Css = Source;
-                    break;
-
-                case "jsdatepick.full.1.3.js":
-                    Jsdatepick_Full_1_3_Js = Source;
                     break;
 
                 case "jsdatepick.min.1.3.js":

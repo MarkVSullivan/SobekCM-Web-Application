@@ -3281,7 +3281,7 @@ namespace SobekCM.Library.HTML
             if (RequestSpecificValues.Current_Mode.Statistics_Type == Statistics_Type_Enum.Item_Count_Arbitrary_View)
             {
                 Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + Static_Resources.Jsdatepick_Ltr_Css + "\" />");
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jsdatepick_Full_1_3_Js + "\"></script>");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jsdatepick_Min_1_3_Js + "\"></script>");
             }
         }
 
