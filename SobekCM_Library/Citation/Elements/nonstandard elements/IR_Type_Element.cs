@@ -213,7 +213,7 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("              </div>");
             Output.WriteLine("          </td>");
             Output.WriteLine("          <td valign=\"bottom\" >");
-            Output.WriteLine("            <a target=\"_" + html_element_name_irtype.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+            Output.WriteLine("            <a target=\"_" + html_element_name_irtype.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
             Output.WriteLine("          </td>");
             Output.WriteLine("        </tr>");
             Output.WriteLine("      </table>");
@@ -259,7 +259,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("      <input name=\"" + id_name + "\" id=\"" + id_name + "\" class=\"" + html_element_name_irtype + "_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(larger_value.Replace("<i>", "").Replace("</i>", "")) + "\" /></div>");
                 Output.WriteLine("    </td>");
                 Output.WriteLine("         <td vstyle=\"vertical-align=:bottom\" >");
-                Output.WriteLine("            <a target=\"_" + html_element_name_irtype.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + Base_URL + HELP_BUTTON_URL + "\" /></a>");
+                Output.WriteLine("            <a target=\"_" + html_element_name_irtype.ToUpper() + "\"  title=\"" + Translator.Get_Translation("Get help.", CurrentLanguage) + "\" href=\"" + Help_URL(Skin_Code, Base_URL) + "\" ><img class=\"help_button\" src=\"" + HELP_BUTTON_URL + "\" /></a>");
                 Output.WriteLine("          </td>");
                 Output.WriteLine("  </tr></table>");
                 Output.WriteLine("  </td>");

@@ -332,7 +332,7 @@ namespace SobekCM.Engine_Library.Navigation
                                 }
 
                                 if (modified_return_url.Length > 0)
-                                    return this_base_url + "my/logout?return=" + HttpUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2c", ",") + urlOptions2;
+                                    return this_base_url + "my/logout?return=" + HttpUtility.UrlEncode(modified_return_url).Replace("%2c", ",") + urlOptions2;
                                 return this_base_url + "my/logout" + urlOptions1;
                             }
                             return this_base_url + "my/logout" + urlOptions1;

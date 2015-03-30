@@ -306,6 +306,8 @@ namespace SobekCM.Library.Settings
             Stumbleupon_Share_H_Gif = "http://cdn.sobekrepository.org/images/misc/stumbleupon_share_h.gif";
             Submitted_Items_Gif = "http://cdn.sobekrepository.org/images/misc/submitted_items.gif";
             Table_Blue_Png = "http://cdn.sobekrepository.org/images/misc/table_blue.png";
+            Thematic_Heading_Gif = "http://cdn.sobekrepository.org/images/misc/thematic_heading.gif";
+            Themaitc_Heading_Png = "http://cdn.sobekrepository.org/images/misc/thematic_heading.png";
             Thumb_Blue_Png = "http://cdn.sobekrepository.org/images/misc/thumb_blue.png";
             Thumbnail_Cursor_Cur = "http://cdn.sobekrepository.org/images/qc/thumbnail_cursor.cur";
             Thumbnail_Large_Gif = "http://cdn.sobekrepository.org/images/misc/thumbnail_large.gif";
@@ -1228,6 +1230,12 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'table_blue.png' file ( http://cdn.sobekrepository.org/images/mapsearch/table_blue.png by default)</summary>
         public static string Table_Blue_Png { get; private set; }
+
+        /// <summary> URL for the default resource 'thematic_heading.gif' file ( http://cdn.sobekrepository.org/images/misc/thematic_heading.gif by default)</summary>
+        public static string Thematic_Heading_Gif { get; private set; }
+
+        /// <summary> URL for the default resource 'thematic_heading.png' file ( http://cdn.sobekrepository.org/images/misc/thematic_heading.png by default)</summary>
+        public static string Themaitc_Heading_Png { get; private set; }
 
         /// <summary> URL for the default resource 'thumb_blue.png' file ( http://cdn.sobekrepository.org/images/mapsearch/thumb_blue.png by default)</summary>
         public static string Thumb_Blue_Png { get; private set; }
@@ -2529,6 +2537,15 @@ namespace SobekCM.Library.Settings
                 case "table_blue.png":
                     Table_Blue_Png = Source;
                     break;
+
+                case "thematic_heading.gif":
+                    Thematic_Heading_Gif = Source;
+                    break;
+
+                case "thematic_heading.png":
+                    Themaitc_Heading_Png = Source;
+                    break;
+
 
                 case "thumb_blue.png":
                     Thumb_Blue_Png = Source;

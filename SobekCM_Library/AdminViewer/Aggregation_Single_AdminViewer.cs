@@ -314,6 +314,12 @@ namespace SobekCM.Library.AdminViewer
 			get { return itemAggregation != null ? "Edit " + itemAggregation.ShortName : "Edit Item Aggregation"; }
 		}
 
+        /// <summary> Gets the URL for the icon related to this administrative task </summary>
+        public override string Viewer_Icon
+        {
+            get { return String.Empty; }
+        }
+
 		/// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
 		/// <param name="Output"> Textwriter to write the HTML for this viewer</param>
 		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -368,8 +374,7 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 
-			Output.WriteLine("  <div class=\"sbkSaav_HomeText\">");
-			Output.WriteLine("    <br />");
+            Output.WriteLine("  <div class=\"sbkAdmin_TitleDiv\">");
 			Output.WriteLine("    <h1>" + itemAggregation.Type + " Administration : " + itemAggregation.Code.ToUpper() + "</h1>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine();
@@ -1334,7 +1339,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <td colspan=\"2\">");
 
                 string current_banner = RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + itemAggregation.Code + "/images/banners/" + last_added_banner;
-                Output.WriteLine("      <div style=\"width:510px; float:right;\"><img id=\"sbkSaav_SelectedBannerImage\" name=\"sbkSaav_SelectedBannerImage\" src=\"" + current_banner + "\" alt=\"Missing\" Title=\"Selected image file\" /></div>");
+                Output.WriteLine("      <div style=\"width:510px; float:right;\"><img id=\"sbkSaav_SelectedBannerImage\" name=\"sbkSaav_SelectedBannerImage\" style=\"border: 1px #888888 solid;\" src=\"" + current_banner + "\" alt=\"Missing\" Title=\"Selected image file\" /></div>");
 
                 Output.WriteLine("      <table class=\"sbkSaav_BannerInnerTable\">");
                 Output.WriteLine("        <tr>");

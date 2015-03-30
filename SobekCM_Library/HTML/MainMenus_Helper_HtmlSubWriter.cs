@@ -1306,7 +1306,7 @@ namespace SobekCM.Library.HTML
 
                     // Edit Thematic Headings
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminThematic\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><div class=\"sbkUsm_TextNoImage\">Thematic Headings</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminThematic\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Thematic_Heading_Gif + "\" /> <div class=\"sbkUsm_TextWithImage\">Thematic Headings</div></a></li>");
 
 
                     Output.WriteLine("      </ul></li>");

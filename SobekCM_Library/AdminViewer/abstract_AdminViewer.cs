@@ -30,6 +30,10 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <remarks> Abstract property must be implemented by all extending classes </remarks>
         public abstract string Web_Title { get; }
+
+        /// <summary> Gets the URL for the icon related to this administrative task </summary>
+        /// <remarks> Abstract property must be implemented by all extending classes </remarks>
+        public abstract string Viewer_Icon { get; }
    
         /// <summary> Property indicates if this mySobek viewer can contain pop-up forms</summary>
         /// <remarks> If the mySobek viewer contains pop-up forms the overall page renders differently, 

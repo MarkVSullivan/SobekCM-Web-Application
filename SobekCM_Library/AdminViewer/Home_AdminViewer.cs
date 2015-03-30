@@ -54,6 +54,13 @@ namespace SobekCM.Library.AdminViewer
 			}
 		}
 
+
+        /// <summary> Gets the URL for the icon related to this administrative task </summary>
+        public override string Viewer_Icon
+        {
+            get { return String.Empty; }
+        }
+
 		/// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
 		/// <param name="Output"> Textwriter to write the HTML for this viewer</param>
 		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -139,7 +146,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Edit Thematic Headings
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Thematic_Headings;
-            Output.WriteLine("      <td style=\"width:35px;\"></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Thematic Headings</a></td>");
+            Output.WriteLine("      <td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Themaitc_Heading_Png + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Thematic Headings</a></td>");
 
 
 		    Output.WriteLine("    </tr>");

@@ -325,6 +325,12 @@ namespace SobekCM.Library.AdminViewer
         {
             get { return "System-Wide Settings"; }
         }
+        
+        /// <summary> Gets the URL for the icon related to this administrative task </summary>
+        public override string Viewer_Icon
+        {
+            get { return Static_Resources.Wrench_Png; }
+        }
 
         private bool validate_update_entered_data( Dictionary<string, string> NewSettings )
         {

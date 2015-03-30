@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
@@ -60,6 +61,10 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <remarks> Abstract property must be implemented by all extending classes </remarks>
         public abstract string Web_Title { get; }
+
+        /// <summary> Gets the URL for the icon related to this mySobek task </summary>
+        /// <remarks> Abstract property must be implemented by all extending classes </remarks>
+        public virtual string Viewer_Icon { get { return String.Empty; }}
 
         /// <summary> Property indicates the standard navigation to be included at the top of the page by the
         /// main MySobek html subwriter. </summary>

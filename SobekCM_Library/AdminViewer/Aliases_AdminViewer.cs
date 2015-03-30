@@ -167,6 +167,12 @@ namespace SobekCM.Library.AdminViewer
         {
             get { return "Aggregation Aliases"; }
         }
+        
+        /// <summary> Gets the URL for the icon related to this administrative task </summary>
+        public override string Viewer_Icon
+        {
+            get { return Static_Resources.Forwarding_Gif; }
+        }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>

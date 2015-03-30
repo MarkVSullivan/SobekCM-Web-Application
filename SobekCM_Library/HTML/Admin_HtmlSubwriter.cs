@@ -277,9 +277,15 @@ namespace SobekCM.Library.HTML
                     // Add the box with the title
                     if ((RequestSpecificValues.Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode != "submitted items"))
                     {
-                        Output.WriteLine("<div class=\"SobekSearchPanel\">");
+                        Output.WriteLine("<div class=\"sbkAdm_TitleDiv sbkAdm_TitleDivBorder\">");
                         if (adminViewer != null)
+                        {
+                            if (adminViewer.Viewer_Icon.Length > 0)
+                            {
+                                Output.WriteLine("  <img id=\"sbkAdm_TitleDivImg\" src=\"" + adminViewer.Viewer_Icon + "\" alt=\"\" />");
+                            }
                             Output.WriteLine("  <h1>" + adminViewer.Web_Title + "</h1>");
+                        }
                         else if (RequestSpecificValues.Current_User != null) Output.WriteLine("  <h1>Welcome back, " + RequestSpecificValues.Current_User.Nickname + "</h1>");
                         Output.WriteLine("</div>");
                         Output.WriteLine();
@@ -351,6 +357,8 @@ namespace SobekCM.Library.HTML
             else
             {
                 Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+              //  Output.WriteLine("<link href=\"http://localhost:52468/default/css/sobekcm-admin/4.9.0/sobekcm_admin.css\" rel=\"stylesheet\" type=\"text/css\" />");
+
             }
 
             // If editing projects, add the mySobek stylesheet as well
@@ -411,6 +419,8 @@ namespace SobekCM.Library.HTML
 						return "sbkSaav_ContainerInner";
 
                     case Admin_Type_Enum.Add_Collection_Wizard:
+                        return "sbkAcw_ContainerInner";
+
                     case Admin_Type_Enum.Aggregations_Mgmt:
                         return "sbkAsav_ContainerInner";
 

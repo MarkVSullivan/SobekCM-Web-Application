@@ -21,6 +21,10 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> Abstract property must be implemented by all extending classes </remarks>
         string Web_Title { get; }
 
+        /// <summary> Gets the URL for the icon related to this administrative task </summary>
+        /// <remarks> Abstract property must be implemented by all extending classes </remarks>
+        string Viewer_Icon { get; }
+
         /// <summary> Property indicates if this mySobek viewer can contain pop-up forms</summary>
         /// <remarks> If the mySobek viewer contains pop-up forms the overall page renders differently, 
         /// allowing for the blanket division and the popup forms near the top of the rendered HTML </remarks>

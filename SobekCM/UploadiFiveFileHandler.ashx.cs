@@ -64,10 +64,15 @@ namespace SobekCM
 				    }
 
 				    // Should this be overriden?
-					if (!String.IsNullOrEmpty(tokenObj.ServerSideFileName))
-						filename = tokenObj.ServerSideFileName;
+				    if (!String.IsNullOrEmpty(tokenObj.ServerSideFileName))
+				    {
+				        if (tokenObj.ServerSideFileName.IndexOf(".") > 0)
+				            filename = tokenObj.ServerSideFileName;
+				        else
+				            filename = tokenObj.ServerSideFileName + extensionCheck;
+				    }
 
-					// Are there file extension restrictions?
+				    // Are there file extension restrictions?
 					if ( !String.IsNullOrEmpty(tokenObj.AllowedFileExtensions))
 					{
 						string extension = Path.GetExtension(postedFile.FileName).ToLower();

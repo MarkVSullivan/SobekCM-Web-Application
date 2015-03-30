@@ -74,5 +74,24 @@ namespace SobekCM.Core.Aggregations
         [ProtoMember(11)]
         public string User { get; set; }
 
+        /// <summary> Indicates if this parent is locked in the user interface </summary>
+        [DataMember(EmitDefaultValue = false, Name = "parentLocked")]
+        [ProtoMember(12)]
+        public bool? ParentLocked { get; set; }
+
+        /// <summary> Indicates if this is a new thematic heading </summary>
+        [DataMember(EmitDefaultValue = false, Name = "newThematicHeading")]
+        [ProtoMember(13)]
+        public bool? NewThematicHeading { get; set; }
+
+        /// <summary> File to use for the banner on this new aggregation </summary>
+        [DataMember(EmitDefaultValue = false, Name = "bannerFile")]
+        [ProtoMember(14)]
+        public string BannerFile { get; set; }
+
+        /// <summary> File to use for the button on this new aggregation </summary>
+        [DataMember(EmitDefaultValue = false, Name = "buttonFile")]
+        [ProtoMember(15)]
+        public string ButtonFile { get; set; }
     }
 }

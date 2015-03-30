@@ -7,6 +7,7 @@ using System.Xml;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Users;
+using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.UI_Library;
 
@@ -19,10 +20,10 @@ namespace SobekCM.Library.Citation.Elements
     public abstract class abstract_Element : iElement
     {
         /// <summary> Constant defines the url for the repeat button image for all metadata element objects </summary>
-        protected const string REPEAT_BUTTON_URL = "default/images/new_element.jpg";
+        protected string REPEAT_BUTTON_URL = Static_Resources.New_Element_Jpg;
 
         /// <summary> Constant defines the url for the repeat button image for all metadata element objects </summary>
-        protected const string HELP_BUTTON_URL = "default/images/help_button.jpg";
+        protected string HELP_BUTTON_URL = Static_Resources.Help_Button_Jpg;
 
         /// <summary> Constant defines the left margin for all metadata element objects </summary>
         /// <value>Current constant value is 15</value>
