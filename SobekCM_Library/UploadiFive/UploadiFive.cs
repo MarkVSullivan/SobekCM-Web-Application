@@ -33,7 +33,7 @@ namespace SobekCM.Library.UploadiFive
 			if ((UploadPath.Length > 0) && (HttpContext.Current != null))
 			{
 				// Create a new security token, save in session, and set token GUID in the form data
-				UploadiFive_Security_Token newToken = new UploadiFive_Security_Token(UploadPath, AllowedFileExtensions, FileObjName, ServerSideFileName);
+				UploadiFive_Security_Token newToken = new UploadiFive_Security_Token(UploadPath, AllowedFileExtensions, FileObjName, ServerSideFileName, ReturnToken);
 				FormData["token"] = newToken.ThisGuid.ToString();
 				HttpContext.Current.Session["#UPLOADIFIVE::" + newToken.ThisGuid.ToString()] = newToken;
 			}
@@ -172,6 +172,13 @@ namespace SobekCM.Library.UploadiFive
 			get { return settings.ServerSideFileName; }
 			set { settings.ServerSideFileName = value; }
 		}
+
+        /// <summary> Return token is used to pass back the information about which file(s) were uploaded </summary>
+        public string ReturnToken
+        {
+            get { return settings.ReturnToken; }
+            set { settings.ReturnToken = value; }
+        }
 
 		#endregion
 

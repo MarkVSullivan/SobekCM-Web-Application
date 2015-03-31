@@ -53,7 +53,9 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Determine the page
-            page = 1;
+            page = 0;
+            if (page_code == "a")
+                page = 1;
             if (page_code == "b")
                 page = 2;
             else if (page_code == "c")
@@ -64,6 +66,14 @@ namespace SobekCM.Library.AdminViewer
                 page = 5;
             else if (page_code == "w")
                 page = 0;
+
+            // If this was set to page 0, but the user has chosen not to see that again,
+            // move straight onto page 1
+            if ((page == 0 ) && ( Convert.ToBoolean(RequestSpecificValues.Current_User.Get_Setting("Add_Collection_AdminViewer:Skip Welcome", "false"))))
+            {
+                page = 1;
+            }
+
 
 
             // Determine the in process directory for this
@@ -150,46 +160,129 @@ namespace SobekCM.Library.AdminViewer
                     // Save the changes to the session
                     HttpContext.Current.Session["Add_Coll_Wizard"] = newAggr;
 
-                    // If there was a save value continue to pull the rest of the data
-                    if (save_value.Length > 0)
+                    // If there was an error message, than do not go on
+                    if (actionMessage.Length > 0)
                     {
-                        // If there was an error message, than do not go on
-                        if (actionMessage.Length > 0)
+                        return;
+                    }
+
+                    // If there was a save value continue to pull the rest of the data
+                    if (action == "save")
+                    {
+                        // Some final validation
+                        // Convert to the integer id for the parent and begin to do checking
+                        List<string> errors = new List<string>();
+                        if (String.IsNullOrEmpty(newAggr.ParentCode))
                         {
-                            return;
+                            errors.Add("You must select a PARENT for this new aggregation");
                         }
 
-                        // Was this to save a new aggregation (from the main page) or edit an existing (from the popup form)?
-                        if (save_value == "save")
+                        // Validate the code
+                        if (newAggr.Code.Length > 20)
                         {
-                            // Try to add this aggregation
-                            ErrorRestMessage msg = SobekEngineClient.Aggregations.Add_New_Aggregation(newAggr);
-
-                            if (msg.ErrorType == ErrorRestType.Successful)
-                            {
-                                // Clear all aggregation information (and thematic heading info) from the cache as well
-                                CachedDataManager.Aggregations.Clear();
-
-                                // Forward to the aggregation
-                                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-                                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                                RequestSpecificValues.Current_Mode.Aggregation = new_aggregation_code;
-
-                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-                                return;
-                            }
-                            else
-                            {
-                                actionMessage = msg.Message;
-                            }
+                            errors.Add("New aggregation code must be twenty characters long or less");
+                        }
+                        else if (newAggr.Code.Length == 0)
+                        {
+                            errors.Add("You must enter a CODE for this item aggregation");
+                        }
+                        else if (UI_ApplicationCache_Gateway.Aggregations[newAggr.Code.ToUpper()] != null)
+                        {
+                            errors.Add("New code must be unique... <i>" + newAggr.Code + "</i> already exists");
+                        }
+                        else if (UI_ApplicationCache_Gateway.Settings.Reserved_Keywords.Contains(newAggr.Code.ToLower()))
+                        {
+                            errors.Add("That code is a system-reserved keyword.  Try a different code.");
                         }
                         else
                         {
-                            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = action;
-                            HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), false);
-                            HttpContext.Current.ApplicationInstance.CompleteRequest();
-                            RequestSpecificValues.Current_Mode.Request_Completed = true;
+                            bool alphaNumericTest = newAggr.Code.All(C => Char.IsLetterOrDigit(C) || C == '_' || C == '-');
+                            if (!alphaNumericTest)
+                            {
+                                errors.Add("New aggregation code must be only letters and numbers");
+                                newAggr.Code = newAggr.Code.Replace("\"", "");
+                            }
                         }
+
+                        // Was there a type and name
+                        if (newAggr.Type.Length == 0)
+                        {
+                            errors.Add("You must select a TYPE for this new aggregation");
+                        }
+                        if (newAggr.Description.Length == 0)
+                        {
+                            errors.Add("You must enter a DESCRIPTION for this new aggregation");
+                        }
+                        if (newAggr.Name.Length == 0)
+                        {
+                            errors.Add("You must enter a NAME for this new aggregation");
+                        }
+                        else
+                        {
+                            if (newAggr.ShortName.Length == 0)
+                                newAggr.ShortName = newAggr.Name;
+                        }
+
+                        // If there were errors copy those over to the action message
+                        if (errors.Count > 0)
+                        {
+                            // Create the error message
+                            actionMessage = "ERROR: Invalid entry for new item aggregation<br />";
+                            foreach (string error in errors)
+                                actionMessage = actionMessage + "<br />" + error;
+                            return;
+                        }
+
+                        // Try to add this aggregation
+                        ErrorRestMessage msg = SobekEngineClient.Aggregations.Add_New_Aggregation(newAggr);
+
+                        if (msg.ErrorType == ErrorRestType.Successful)
+                        {
+                            // Clear all aggregation information (and thematic heading info) from the cache as well
+                            CachedDataManager.Aggregations.Clear();
+
+                            // Delete all the files
+                            if (Directory.Exists(userInProcessDirectory + "\\images\\banners"))
+                            {
+                                string[] banner_files = SobekCM_File_Utilities.GetFiles(userInProcessDirectory + "\\images\\banners", "*.jpg|*.bmp|*.gif|*.png");
+                                foreach (string thisFile in banner_files)
+                                {
+                                    try
+                                    {
+                                        File.Delete(thisFile);
+                                    }
+                                    catch { }
+                                }
+                                string[] button_files = SobekCM_File_Utilities.GetFiles(userInProcessDirectory + "\\images\\buttons", "*.gif");
+                                foreach (string thisFile in button_files)
+                                {
+                                    try
+                                    {
+                                        File.Delete(thisFile);
+                                    }
+                                    catch { }
+                                }
+                            }
+
+                            // Forward to the aggregation
+                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                            RequestSpecificValues.Current_Mode.Aggregation = newAggr.Code;
+
+                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                            return;
+                        }
+                        else
+                        {
+                            actionMessage = msg.Message;
+                        }
+                    }
+                    else
+                    {
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = action;
+                        HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode), false);
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        RequestSpecificValues.Current_Mode.Request_Completed = true;
                     }
                 }
                 catch ( Exception ee )
@@ -392,11 +485,30 @@ namespace SobekCM.Library.AdminViewer
         private void Save_Page_Welcome_Postback(NameValueCollection Form)
         {
             // Do nothing
+            bool do_not_show_flag = (Form["admin_wizard_donotshow"] != null);
+            if (do_not_show_flag)
+            {
+                RequestSpecificValues.Current_User.Add_Setting("Add_Collection_AdminViewer:Skip Welcome", "true");
+                Library.Database.SobekCM_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Add_Collection_AdminViewer:Skip Welcome", "true");
+            }
         }
 
         private void Add_Page_Welcome(TextWriter Output)
         {
-            Output.WriteLine("WELCOME!!");
+            Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
+
+            Output.WriteLine("  <tr class=\"sbkAcw_WelcomeRow\"><td colspan=\"2\">Welcome to the Add New Collection Wizard</td></tr>");
+
+            Output.WriteLine("  <tr class=\"sbkAcw_WelcomeTextRow\">");
+            Output.WriteLine("    <td colspan=\"2\">");
+            Output.WriteLine("      <p>Welcome to the <span style=\"font-style: italic;\">Add New Collection Wizard</span>.  The next four screens will step you through the process of adding a new collection to your digital repository and provide plenty of help along the way.</p>");
+            Output.WriteLine("      <p>Before you get started, you will want to gather some information about your new collection.  During this process, you will be asked for the name of the collection, the identifying code, and some basic descriptive information.  You can also determine where this collection appears within your instance.  It can appear on the home page, on the parent collection, or it can be fairly hidden.</p>");
+            Output.WriteLine("      <p>You may want to create some of the imagery for your new collection before you get started as well.  You can upload the collection button, which is a 50 pixels by 50 pixels GIF file and appears on the home page or parent collection.  You can also upload an aggregation banner, which will appear above the search box and provide some collection branding to the home page and all other related collection pages.  You may want to look at existing banners to decide the dimensions you would like to use.   Banners can be uploaded as a jpeg, gif, png, or bmp file.</p>");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  <tr class=\"sbkAcw_TextRow\">");
+            Output.WriteLine("    <td colspan=\"2\"><p><input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_wizard_donotshow\" id=\"admin_wizard_donotshow\" /> <label for=\"admin_wizard_donotshow\">Do not show again</label></p></td>");
+            Output.WriteLine("  </tr>");
+            Output.WriteLine("</table>");
         }
 
         #endregion
@@ -535,7 +647,7 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
-            Output.WriteLine("  <tr class=\"sbkAcw_TitleRow\"><td colspan=\"3\">Basic Information</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkAcw_TitleRow\"><td colspan=\"3\">Basic Information &nbsp; &nbsp; ( step 1 of 4 )</td></tr>");
 
             // Add the new aggregation code
             Output.WriteLine("  <tr class=\"sbkAcw_SingleRow\">");
@@ -731,7 +843,7 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
-            Output.WriteLine("  <tr class=\"sbkAcw_TitleRow\"><td colspan=\"3\">Visibility for New " + newAggr.Type + "</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkAcw_TitleRow\"><td colspan=\"3\">Visibility for New " + newAggr.Type + " &nbsp; &nbsp; ( step 2 of 4 )</td></tr>");
 
             // Add the active flag
             Output.WriteLine("  <tr class=\"sbkAcw_SingleRow\">");
@@ -833,7 +945,7 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
-            Output.WriteLine("  <tr class=\"sbkAcw_TitleRow2\"><td colspan=\"3\">Collection Banner</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkAcw_TitleRow2\"><td colspan=\"3\">Collection Banner &nbsp; &nbsp; ( step 3 of 4 )</td></tr>");
 
             Output.WriteLine("  <tr class=\"sbkAcw_TextRow\"><td colspan=\"3\"><p>Upload a banner for this new collection.  Banners provide a constant design element present on all the collection pages.  If you do not upload a banner, one will automatically be created for this collection.  You can always replace the banner, or provide language-specific versions, later through the aggregation admin features.</p></td></tr>");
 
@@ -931,7 +1043,7 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
-            Output.WriteLine("  <tr class=\"sbkAcw_TitleRow2\"><td colspan=\"3\">Collection Button</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkAcw_TitleRow2\"><td colspan=\"3\">Collection Button &nbsp; &nbsp; ( step 4 of 4 )</td></tr>");
 
             Output.WriteLine("  <tr class=\"sbkAcw_TextRow\"><td colspan=\"3\"><p>Upload a button for this new collection.  Buttons appear on the home page or parent collection's home page once a collection is active and not hidden.  If you do not upload a button, the system default will be used.  You can always replace the button later through the aggregation admin features.</p></td></tr>");
 

@@ -93,6 +93,19 @@ namespace SobekCM
 					// Save this file locally
 					postedFile.SaveAs(newFileName);
 
+                    // If there was a return token, put this filename in that list
+				    if (!String.IsNullOrEmpty(tokenObj.ReturnToken))
+				    {
+                        if (HttpContext.Current.Session[tokenObj.ReturnToken] != null)
+				        {
+                            HttpContext.Current.Session[tokenObj.ReturnToken] = HttpContext.Current.Session[tokenObj.ReturnToken] + "|" + filename;
+				        }
+				        else
+				        {
+                            HttpContext.Current.Session[tokenObj.ReturnToken] = filename;
+				        }
+				    }
+
 					// Post a successful status
 					Context.Response.Write(filename);
 					Context.Response.StatusCode = 200;

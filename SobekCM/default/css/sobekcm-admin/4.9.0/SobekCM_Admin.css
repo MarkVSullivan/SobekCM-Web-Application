@@ -203,9 +203,13 @@ input.sbkSaav_NewChildCode { width: 155px; margin-top: 2px; margin-bottom: 4px; 
 #sbkAcw_PageContainer { margin-left: 40px;  margin-right: 40px;  text-align:center;  FONT-SIZE: small;width: 970px; }
 .sbkAcw_TextRow td {padding: 10px 50px 10px 80px; line-height: 140%; }
 .sbkAcw_TextRow p { padding: 0 0 10px 0;margin: 0; }
-.sbkAcw_TitleRow { font-size: 1.1em; color: #888888; font-weight: bold; }
+.sbkAcw_WelcomeRow { font-size: 1.3em; color: #888888; font-weight: bold; }
+.sbkAcw_WelcomeRow td { padding-bottom: 15px;padding-top: 15px; }
+.sbkAcw_WelcomeTextRow td {padding: 10px 50px 10px 80px; line-height: 170%;font-size: 1.1em;}
+.sbkAcw_WelcomeTextRow p { padding: 0 0 10px 0;margin: 0; }
+.sbkAcw_TitleRow { font-size: 1.2em; color: #888888; font-weight: bold; }
 .sbkAcw_TitleRow td { padding-bottom: 30px; }
-.sbkAcw_TitleRow2 { font-size: 1.1em; color: #888888; font-weight: bold; }
+.sbkAcw_TitleRow2 { font-size: 1.2em; color: #888888; font-weight: bold; }
 .sbkAcw_TitleRow2 td { padding-bottom: 15px; }
 .sbkAcw_SingleRow { vertical-align:top; text-align: left; padding-bottom: 20px; }
 .sbkAcw_SingleRow td { padding-bottom: 25px; }

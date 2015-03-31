@@ -374,7 +374,7 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 
-            Output.WriteLine("  <div class=\"sbkAdmin_TitleDiv\">");
+            Output.WriteLine("  <div class=\"sbkAdm_TitleDiv\">");
 			Output.WriteLine("    <h1>" + itemAggregation.Type + " Administration : " + itemAggregation.Code.ToUpper() + "</h1>");
 			Output.WriteLine("  </div>");
 			Output.WriteLine();
@@ -600,28 +600,12 @@ namespace SobekCM.Library.AdminViewer
 
 		private void Save_Page_1_Postback(NameValueCollection Form)
 		{
-			// Was a button uploaded?
-			if (HttpContext.Current.Items["Uploaded File"] != null)
-			{
-				string newButton = HttpContext.Current.Items["Uploaded File"].ToString();
-				if (File.Exists(newButton))
-				{
-					string coll_gif = aggregationDirectory + "\\images\\buttons\\coll.gif";
-					string coll_gif_old = aggregationDirectory + "\\images\\buttons\\coll_old.gif";
-					if (File.Exists(coll_gif_old))
-						File.Delete(coll_gif_old);
-					if (File.Exists(coll_gif))
-						File.Move(coll_gif, coll_gif_old);
-
-					File.Move(newButton, coll_gif);
-
-					// Also save this change
-					SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Button changed", RequestSpecificValues.Current_User.Full_Name);
-
-				}
-			}
-			
-
+            // Log any uploaded button
+            if (HttpContext.Current.Session[itemAggregation.Code + "|Button"] != null)
+            {
+                SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Button changed" , RequestSpecificValues.Current_User.Full_Name);
+                HttpContext.Current.Session.Remove(itemAggregation.Code + "|Button");
+            }
 
 			if (Form["admin_aggr_name"] != null) itemAggregation.Name = Form["admin_aggr_name"];
 			if (Form["admin_aggr_shortname"] != null) itemAggregation.ShortName = Form["admin_aggr_shortname"];
@@ -823,6 +807,14 @@ namespace SobekCM.Library.AdminViewer
 
         private void Save_Page_Appearance_Postback(NameValueCollection Form)
         {
+            // Log any uploaded banners
+            if (HttpContext.Current.Session[itemAggregation.Code + "|Banners"] != null)
+            {
+                string files = HttpContext.Current.Session[itemAggregation.Code + "|Banners"].ToString().Replace("|", ", ");
+                SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Added banner file " + files, RequestSpecificValues.Current_User.Full_Name);
+                HttpContext.Current.Session.Remove(itemAggregation.Code + "|Banners");
+            }
+
             // Some interesting custom actions on this page, so get the actions
             // query string first
             string action = Form["admin_aggr_action"];
@@ -3160,13 +3152,26 @@ namespace SobekCM.Library.AdminViewer
 
         private void Save_Page_Uploads_Postback(NameValueCollection Form)
         {
+            if (HttpContext.Current.Session[itemAggregation.Code + "|Uploads"] != null)
+            {
+                string files = HttpContext.Current.Session[itemAggregation.Code + "|Uploads"].ToString().Replace("|", ", ");
+                SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Added upload files " + files, RequestSpecificValues.Current_User.Full_Name);
+                HttpContext.Current.Session.Remove(itemAggregation.Code + "|Uploads");
+            }
             string action = Form["admin_aggr_action"];
             if ((action.Length > 0) && ( action.IndexOf("delete_") == 0))
             {
                 string file = action.Substring(7);
                 string path_file = aggregationDirectory + "\\uploads\\" + file;
                 if (File.Exists(path_file))
-                    File.Delete(path_file);
+                {
+                    try
+                    {
+                        File.Delete(path_file);
+                        SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Deleted upload file " + file, RequestSpecificValues.Current_User.Full_Name);
+                    }
+                    catch { }
+                }
             }
         }
 
@@ -3680,20 +3685,20 @@ namespace SobekCM.Library.AdminViewer
 			switch (page)
 			{
 				case 1:
-					add_upload_controls(MainPlaceHolder, ".gif", aggregationDirectory + "\\images\\buttons", "coll.gif", false, Tracer);
+					add_upload_controls(MainPlaceHolder, ".gif", aggregationDirectory + "\\images\\buttons", "coll.gif", false, itemAggregation.Code + "|Button", Tracer);
 					break;
 
 				case 5:
-					add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg", aggregationDirectory + "\\images\\banners", String.Empty, false, Tracer);
+					add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg", aggregationDirectory + "\\images\\banners", String.Empty, false, itemAggregation.Code + "|Banners", Tracer);
 					break;
 
                 case 9:
-                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg", aggregationDirectory + "\\uploads", String.Empty, true, Tracer);
+                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg", aggregationDirectory + "\\uploads", String.Empty, true, itemAggregation.Code + "|Uploads", Tracer);
                     break;
 			}
 		}
 
-		private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, Custom_Tracer Tracer)
+		private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, string ReturnToken, Custom_Tracer Tracer)
 		{
 			Tracer.Add_Trace("File_Managament_MySobekViewer.add_upload_controls", String.Empty);
 
@@ -3715,6 +3720,7 @@ namespace SobekCM.Library.AdminViewer
 			uploadControl.RemoveCompleted = true;
             uploadControl.Multi = UploadMultiple;
             uploadControl.ServerSideFileName = ServerSideName;
+            uploadControl.ReturnToken = ReturnToken;
 			UploadFilesPlaceHolder.Controls.Add(uploadControl);
 
 			LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());

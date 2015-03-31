@@ -70,6 +70,9 @@ namespace SobekCM.Library.UploadiFive
 		/// <remarks> This can be used to avoid having to manually rename the file after upload </remarks>
 		public string ServerSideFileName { get; set; }
 
+        /// <summary> Return token is used to pass back the information about which file(s) were uploaded </summary>
+        public string ReturnToken { get; set; }
+
 		#endregion
 
 		#region Exposing existing Options from UploadiFive

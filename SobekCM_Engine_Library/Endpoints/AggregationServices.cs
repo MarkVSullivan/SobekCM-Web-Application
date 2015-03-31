@@ -449,57 +449,86 @@ namespace SobekCM.Engine_Library.Endpoints
                     writer.Flush();
                     writer.Close();
 
-                    // Copy the default banner and buttons from images
-                    if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.png"))
-                        File.Copy(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.png", folder + "/images/buttons/coll.png");
-                    if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.gif"))
-                        File.Copy(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.gif", folder + "/images/buttons/coll.gif");
-
-                    // Try to create a new custom banner
-                    bool custom_banner_created = false;
-
-                    // Create the banner with the name of the collection
-                    if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images"))
+                    // Was a button indicated, and does it exist?
+                    if ((!String.IsNullOrEmpty(NewAggregation.ButtonFile)) && (File.Exists(NewAggregation.ButtonFile)))
                     {
-                        try
-                        {
-                            string[] banners = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images", "*.jpg");
-                            if (banners.Length > 0)
-                            {
-                                Random randomizer = new Random();
-                                string banner_to_use = banners[randomizer.Next(0, banners.Length - 1)];
-                                Bitmap bitmap = (Bitmap) (Image.FromFile(banner_to_use));
+                        File.Copy(NewAggregation.ButtonFile, folder + "/images/buttons/" + Path.GetFileName(NewAggregation.ButtonFile));
+                    }
+                    else
+                    {
+                        // Copy the default banner and buttons from images
+                        if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design/aggregations/default_button.png"))
+                            File.Copy(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design/aggregations/default_button.png", folder + "/images/buttons/coll.png");
+                        if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design/aggregations/default_button.gif"))
+                            File.Copy(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design/aggregations/default_button.gif", folder + "/images/buttons/coll.gif");
 
-                                RectangleF rectf = new RectangleF(30, bitmap.Height - 55, bitmap.Width - 40, 40);
-                                Graphics g = Graphics.FromImage(bitmap);
-                                g.SmoothingMode = SmoothingMode.AntiAlias;
-                                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                                g.DrawString(NewAggregation.Name, new Font("Tahoma", 25, FontStyle.Bold), Brushes.Black, rectf);
-                                g.Flush();
-
-                                string new_file = folder + "/images/banners/coll.jpg";
-                                if (!File.Exists(new_file))
-                                {
-                                    bitmap.Save(new_file, ImageFormat.Jpeg);
-                                    custom_banner_created = true;
-                                }
-                            }
-                        }
-                        catch (Exception)
-                        {
-                            // Suppress this Error... 
-                        }
                     }
 
-                    if ((!custom_banner_created) && (!File.Exists(folder + "/images/banners/coll.jpg")))
+                    // Was a banner indicated, and does it exist?
+                    string banner_file = String.Empty;
+                    if ((!String.IsNullOrEmpty(NewAggregation.BannerFile)) && (File.Exists(NewAggregation.BannerFile)))
                     {
-                        if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_banner.jpg"))
-                            File.Copy(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
+                        banner_file = "images/banners/" + Path.GetFileName(NewAggregation.BannerFile);
+                        File.Copy(NewAggregation.BannerFile, folder + "/images/banners/coll.gif", true);
+                    }
+                    else
+                    {
+
+                        // Try to create a new custom banner
+                        bool custom_banner_created = false;
+
+                        // Create the banner with the name of the collection
+                        if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images"))
+                        {
+                            try
+                            {
+                                string[] banners = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images", "*.jpg");
+                                if (banners.Length > 0)
+                                {
+                                    Random randomizer = new Random();
+                                    string banner_to_use = banners[randomizer.Next(0, banners.Length - 1)];
+                                    Bitmap bitmap = (Bitmap) (Image.FromFile(banner_to_use));
+
+                                    RectangleF rectf = new RectangleF(30, bitmap.Height - 55, bitmap.Width - 40, 40);
+                                    Graphics g = Graphics.FromImage(bitmap);
+                                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                                    g.DrawString(NewAggregation.Name, new Font("Tahoma", 25, FontStyle.Bold), Brushes.Black, rectf);
+                                    g.Flush();
+
+                                    string new_file = folder + "/images/banners/coll.jpg";
+                                    if (!File.Exists(new_file))
+                                    {
+                                        bitmap.Save(new_file, ImageFormat.Jpeg);
+                                        custom_banner_created = true;
+                                        banner_file = "images/banners/coll.jpg";
+                                    }
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                // Suppress this Error... 
+                            }
+                        }
+
+                        if ((!custom_banner_created) && (!File.Exists(folder + "/images/banners/coll.jpg")))
+                        {
+                            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design/aggregations/default_banner.jpg"))
+                            {
+                                banner_file = "images/banners/coll.jpg";
+                                File.Copy(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design/aggregations/default_banner.jpg", folder + "/images/banners/coll.jpg", true);
+                            }
+                        }
                     }
 
                     // Now, try to create the item aggregation and write the configuration file
                     Complete_Item_Aggregation itemAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(NewAggregation.Code, null);
+                    if (banner_file.Length > 0)
+                    {
+                        itemAggregation.Banner_Dictionary.Clear();
+                        itemAggregation.Add_Banner_Image(banner_file, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language);
+                    }
                     itemAggregation.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory);
                 }
             }
