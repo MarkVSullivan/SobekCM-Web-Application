@@ -870,6 +870,72 @@ namespace SobekCM.Engine_Library.Database
 
         #endregion
 
+        #region Methods related to the Thematic Heading values
+
+        /// <summary> Saves a new thematic heading or updates an existing thematic heading </summary>
+        /// <param name="ThematicHeadingID"> Primary key for the existing thematic heading, or -1 for a new heading </param>
+        /// <param name="ThemeOrder"> Order of this thematic heading, within the rest of the headings </param>
+        /// <param name="ThemeName"> Display name for this thematic heading</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Thematic heading id, or -1 if there was an error </returns>
+        /// <remarks> This calls the 'SobekCM_Edit_Thematic_Heading' stored procedure </remarks> 
+        public static int Edit_Thematic_Heading(int ThematicHeadingID, int ThemeOrder, string ThemeName, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Edit_Thematic_Heading", String.Empty);
+            }
+
+            try
+            {
+                // Execute this non-query stored procedure
+                SqlParameter[] paramList = new SqlParameter[4];
+                paramList[0] = new SqlParameter("@thematicheadingid", ThematicHeadingID);
+                paramList[1] = new SqlParameter("@themeorder", ThemeOrder);
+                paramList[2] = new SqlParameter("@themename", ThemeName);
+                paramList[3] = new SqlParameter("@newid", -1) { Direction = ParameterDirection.Output };
+
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Edit_Thematic_Heading", paramList);
+
+                return Convert.ToInt32(paramList[3].Value);
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                return -1;
+            }
+        }
+
+        /// <summary> Deletes a thematic heading from the database  </summary>
+        /// <param name="ThematicHeadingID"> Primary key for the thematic heading to delete </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> TRUE if successful, otherwise FALSE</returns>
+        /// <remarks> This calls the 'SobekCM_Delete_Thematic_Heading' stored procedure </remarks> 
+        public static bool Delete_Thematic_Heading(int ThematicHeadingID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Delete_Thematic_Heading", String.Empty);
+            }
+
+            try
+            {
+                // Execute this non-query stored procedure
+                SqlParameter[] paramList = new SqlParameter[1];
+                paramList[0] = new SqlParameter("@thematicheadingid", ThematicHeadingID);
+
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Delete_Thematic_Heading", paramList);
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                return false;
+            }
+        }
+
+        #endregion
+
 
         /// <summary> Gets the dataset with all default metadata and all templates </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>

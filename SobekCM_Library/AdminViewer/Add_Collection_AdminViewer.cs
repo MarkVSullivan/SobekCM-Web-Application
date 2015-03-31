@@ -12,6 +12,7 @@ using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
@@ -261,6 +262,17 @@ namespace SobekCM.Library.AdminViewer
                                         File.Delete(thisFile);
                                     }
                                     catch { }
+                                }
+                            }
+
+                            // If this included a new thematic heading, repopulate that
+                            if ((newAggr.NewThematicHeading.HasValue) && (newAggr.NewThematicHeading.Value))
+                            {
+                                // For thread safety, lock the thematic headings list
+                                lock (UI_ApplicationCache_Gateway.Thematic_Headings)
+                                {
+                                    // Repopulate the thematic headings list
+                                    Engine_Database.Populate_Thematic_Headings(UI_ApplicationCache_Gateway.Thematic_Headings, RequestSpecificValues.Tracer);
                                 }
                             }
 

@@ -316,6 +316,14 @@ namespace SobekCM.Library.AdminViewer
                                 // Try to add this aggregation
                                 ErrorRestMessage msg = SobekEngineClient.Aggregations.Add_New_Aggregation(args);
 
+                                // We are going to save some of the values here anyway, to assist with bulk adds
+                                enteredIsActive = is_active;
+                                enteredIsHidden = is_hidden;
+                                enteredParent = new_parent;
+                                enteredType = new_type;
+                                enteredLink = new_link;
+                                enteredThematicHeading = new_thematic_heading;
+
                                 if (msg.ErrorType == ErrorRestType.Successful)
                                 {
                                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
@@ -330,6 +338,10 @@ namespace SobekCM.Library.AdminViewer
                                 else
                                 {
                                     actionMessage = msg.Message;
+                                    enteredCode = new_aggregation_code;
+                                    enteredShortname = new_shortname;
+                                    enteredName = new_name;
+                                    enteredDescription = new_description;
                                 }
                             }
                         }
@@ -411,7 +423,24 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <h2>New Item Aggregation</h2>");
 
-            Output.WriteLine("  <div class=\"sbkAsav_NewDiv\">");
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+            string wizard_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+
+            Output.WriteLine("  <table>");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td>");
+            Output.WriteLine("        <p>Use the new <a href=\"" + wizard_url + "\">Add New Collection Wizard</a> to add a single new collection.</p>");
+            Output.WriteLine("        <span id=\"oldnewdivprompt\" style=\"display:block;\"><p>Alternatively, you can use the reduced interface below by <a href=\"\" onclick=\"$('#oldnewdiv').css('display', 'block');$('#oldnewdivprompt').css('display', 'none');return false;\">clicking here</a>.</p></span>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("      <td style=\"padding-left: 30px;\">");
+            Output.WriteLine("        <button title=\"Use the wizard to add a new collection\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + wizard_url + "';return false;\"> &nbsp; NEW COLLECTION &nbsp; <br />WIZARD</button>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("  </table>");
+
+            Output.WriteLine("  <div class=\"sbkAsav_NewDiv\" id=\"oldnewdiv\" style=\"display:none;\">");
+            Output.WriteLine("    <br /><br />");
             Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
 
             // Add line for aggregation code and aggregation type

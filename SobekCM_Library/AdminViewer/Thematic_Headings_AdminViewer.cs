@@ -78,7 +78,7 @@ namespace SobekCM.Library.AdminViewer
                                 {
                                     int id = Convert.ToInt32(save_value);
                                     int order = 1 + UI_ApplicationCache_Gateway.Thematic_Headings.TakeWhile(ThisHeading => ThisHeading.ID != id).Count();
-                                    if (SobekCM_Database.Edit_Thematic_Heading(id, order, new_name, RequestSpecificValues.Tracer) < 1)
+                                    if (Engine_Database.Edit_Thematic_Heading(id, order, new_name, RequestSpecificValues.Tracer) < 1)
                                     {
                                         actionMessage = "Unable to edit existing thematic heading";
                                     }
@@ -98,7 +98,7 @@ namespace SobekCM.Library.AdminViewer
 
                             case "delete":
                                 int thematicDeleteId = Convert.ToInt32(save_value);
-                                if (!SobekCM_Database.Delete_Thematic_Heading(thematicDeleteId, RequestSpecificValues.Tracer))
+                                if (!Engine_Database.Delete_Thematic_Heading(thematicDeleteId, RequestSpecificValues.Tracer))
                                 {
                                     // Set action message
                                     actionMessage = "Unable to delete existing thematic heading";
@@ -127,7 +127,7 @@ namespace SobekCM.Library.AdminViewer
 
                             case "new":
                                 int new_order = UI_ApplicationCache_Gateway.Thematic_Headings.Count + 1;
-                                int newid = SobekCM_Database.Edit_Thematic_Heading(-1, new_order, save_value, RequestSpecificValues.Tracer);
+                                int newid = Engine_Database.Edit_Thematic_Heading(-1, new_order, save_value, RequestSpecificValues.Tracer);
 								if ( newid  < 1)
                                     actionMessage = "Unable to save new thematic heading";
                                 else
@@ -164,7 +164,7 @@ namespace SobekCM.Library.AdminViewer
                                             int current_order = 1;
                                             foreach (Thematic_Heading thisTheme in UI_ApplicationCache_Gateway.Thematic_Headings)
                                             {
-                                                SobekCM_Database.Edit_Thematic_Heading(thisTheme.ID, current_order, thisTheme.Text, RequestSpecificValues.Tracer);
+                                                Engine_Database.Edit_Thematic_Heading(thisTheme.ID, current_order, thisTheme.Text, RequestSpecificValues.Tracer);
                                                 current_order++;
                                             }
 
@@ -193,7 +193,7 @@ namespace SobekCM.Library.AdminViewer
                                             int current_order = 1;
                                             foreach (Thematic_Heading thisTheme in UI_ApplicationCache_Gateway.Thematic_Headings)
                                             {
-                                                SobekCM_Database.Edit_Thematic_Heading(thisTheme.ID, current_order, thisTheme.Text, RequestSpecificValues.Tracer);
+                                                Engine_Database.Edit_Thematic_Heading(thisTheme.ID, current_order, thisTheme.Text, RequestSpecificValues.Tracer);
                                                 current_order++;
                                             }
 

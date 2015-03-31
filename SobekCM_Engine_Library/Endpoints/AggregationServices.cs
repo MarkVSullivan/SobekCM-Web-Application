@@ -390,10 +390,21 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
                 }
 
-                // If there was no match, the thematic heading was invalid
+                // If there was no match, the thematic heading was invalid, unless it was new
                 if (thematicHeadingId < 0)
                 {
-                    errors.Add("Invalid thematic heading indicated");
+                    if ((!NewAggregation.NewThematicHeading.HasValue) || ( !NewAggregation.NewThematicHeading.Value ))
+                    {
+                        errors.Add("Invalid thematic heading indicated");
+                    }
+                    else if (errors.Count == 0)
+                    {
+                        // Add the thematic heading first
+                        if ((thematicHeadingId < 0) && (NewAggregation.NewThematicHeading.HasValue) && (NewAggregation.NewThematicHeading.Value))
+                        {
+                            thematicHeadingId = Engine_Database.Edit_Thematic_Heading(-1, 10, NewAggregation.Thematic_Heading, null);
+                        }
+                    }
                 }
             }
 
@@ -407,6 +418,8 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 return new ErrorRestMessage(ErrorRestType.InputError, actionMessage.ToString());
             }
+
+
 
             string language = Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.Default_UI_Language);
 
@@ -452,7 +465,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     // Was a button indicated, and does it exist?
                     if ((!String.IsNullOrEmpty(NewAggregation.ButtonFile)) && (File.Exists(NewAggregation.ButtonFile)))
                     {
-                        File.Copy(NewAggregation.ButtonFile, folder + "/images/buttons/" + Path.GetFileName(NewAggregation.ButtonFile));
+                        File.Copy(NewAggregation.ButtonFile, folder + "/images/buttons/coll.gif");
                     }
                     else
                     {
@@ -469,7 +482,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     if ((!String.IsNullOrEmpty(NewAggregation.BannerFile)) && (File.Exists(NewAggregation.BannerFile)))
                     {
                         banner_file = "images/banners/" + Path.GetFileName(NewAggregation.BannerFile);
-                        File.Copy(NewAggregation.BannerFile, folder + "/images/banners/coll.gif", true);
+                        File.Copy(NewAggregation.BannerFile, folder + "//" + banner_file, true);
                     }
                     else
                     {
