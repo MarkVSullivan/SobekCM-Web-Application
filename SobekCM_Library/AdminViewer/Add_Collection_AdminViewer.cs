@@ -124,6 +124,29 @@ namespace SobekCM.Library.AdminViewer
                         // Clear the add collection wizard info from the sessions
                         HttpContext.Current.Session["Add_Coll_Wizard"] = null;
 
+                        // Delete all the files
+                        if (Directory.Exists(userInProcessDirectory + "\\images\\banners"))
+                        {
+                            string[] banner_files = SobekCM_File_Utilities.GetFiles(userInProcessDirectory + "\\images\\banners", "*.jpg|*.bmp|*.gif|*.png");
+                            foreach (string thisFile in banner_files)
+                            {
+                                try
+                                {
+                                    File.Delete(thisFile);
+                                }
+                                catch { }
+                            }
+                            string[] button_files = SobekCM_File_Utilities.GetFiles(userInProcessDirectory + "\\images\\buttons", "*.gif");
+                            foreach (string thisFile in button_files)
+                            {
+                                try
+                                {
+                                    File.Delete(thisFile);
+                                }
+                                catch { }
+                            }
+                        }
+
                         // Redirect the user to the aggregation mgmt screen
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -1095,6 +1118,22 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      <img src=\"" + url + "\" alt=\"Access Denied\" style=\"border: 1px #888888 solid;\" />");
                 Output.WriteLine("    </td>");
                 Output.WriteLine("  </tr>");
+            }
+            else
+            {
+                string default_button = UI_ApplicationCache_Gateway.Settings.Application_Server_Network + "design\\aggregations\\default_button.gif";
+                if (File.Exists(default_button))
+                {
+                    Output.WriteLine("  <tr class=\"sbkAcw_TallRow\">");
+                    Output.WriteLine("    <td>&nbsp;</td>");
+                    Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_aggr_desc\">Current Button:</label></td>");
+                    Output.WriteLine("    <td>");
+
+                    string url = UI_ApplicationCache_Gateway.Settings.Application_Server_URL + "design/aggregations/default_button.gif";
+                    Output.WriteLine("      <img src=\"" + url + "\" alt=\"Access Denied\" style=\"border: 1px #888888 solid;\" />");
+                    Output.WriteLine("    </td>");
+                    Output.WriteLine("  </tr>"); 
+                }
             }
 
 

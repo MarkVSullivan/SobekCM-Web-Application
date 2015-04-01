@@ -1328,23 +1328,6 @@ namespace SobekCM.Library.HTML
 
                     Output.WriteLine("      </ul></li>");
                     
-                    // Permissions submenu
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminPermissions\"><a href=\"" + current_url + "#permissions\"> <div class=\"sbkUsm_TextWithImage\">Permissions</div></a><ul>");
-
-                    // Edit users
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Icon_Permission_Png + "\" /> <div class=\"sbkUsm_TextWithImage\">User Permissions Reports</div></a></li>");
-
-                    // Edit users
-                    if (RequestSpecificValues.Current_User.Is_System_Admin)
-                    {
-                        // Edit users
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
-                        Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Users_Png + "\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
-                    }
-
-                    Output.WriteLine("      </ul></li>");
-
                     // Settings submenu
                     Output.WriteLine("      <li id=\"sbkUsm_AdminSettings\"><a href=\"" + current_url + "#settings\"> <div class=\"sbkUsm_TextWithImage\">Settings</div></a><ul>");
 
@@ -1362,6 +1345,23 @@ namespace SobekCM.Library.HTML
                     // Reset cache
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Reset;
                     Output.WriteLine("        <li id=\"sbkUsm_AdminReset\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Refresh_Png + "\" /> <div class=\"sbkUsm_TextWithImage\">Reset Cache</div></a></li>");
+
+                    Output.WriteLine("      </ul></li>");
+
+                    // Permissions submenu
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminPermissions\"><a href=\"" + current_url + "#permissions\"> <div class=\"sbkUsm_TextWithImage\">Users and Permissions</div></a><ul>");
+
+                    // Edit users
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminUserReport\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Icon_Permission_Png + "\" /> <div class=\"sbkUsm_TextWithImage\">User Permissions Reports</div></a></li>");
+
+                    // Edit users
+                    if (RequestSpecificValues.Current_User.Is_System_Admin)
+                    {
+                        // Edit users
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                        Output.WriteLine("        <li id=\"sbkUsm_AdminUsers\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Users_Png + "\" /> <div class=\"sbkUsm_TextWithImage\">Users and Groups</div></a></li>");
+                    }
 
                     Output.WriteLine("      </ul></li>");
 

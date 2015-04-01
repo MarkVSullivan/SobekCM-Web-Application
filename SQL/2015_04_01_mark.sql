@@ -180,12 +180,67 @@ begin
 	CLOSE UserCursor;
 	DEALLOCATE UserCursor;
 
+	-- Return the list of users linked to aggregations, either by group or individually
 	select U.UserID, UserName, EmailAddress, FirstName, LastName, Nickname, DateCreated, LastActivity, isActive, T.UserPermissioned, T.GroupPermissioned
 	from #tmpAggrPermissions T, mySobek_User U
 	where T.UserID=U.UserID
 	order by LastName ASC, FirstName ASC;
+
+	-- Get the list of all aggregations that have special links
+	with aggregations_permissioned as
+	(
+		select distinct AggregationID 
+		from mySobek_User_Edit_Aggregation
+		union
+		select distinct AggregationID 
+		from mySobek_User_Group_Edit_Aggregation
+	)
+	select A.Code, A.Name
+	from SobekCM_Item_Aggregation A, aggregations_permissioned P
+	where A.AggregationID = P.AggregationID
+	order by A.Code;
+
 end;
 GO
 
+GRANT EXECUTE ON mySobek_Permissions_Report to sobek_user;
+GO
 
+-- Ensure the stored procedure exists
+IF object_id('mySobek_Permissions_Report_Aggregation') IS NULL EXEC ('create procedure dbo.mySobek_Permissions_Report_Aggregation as select 1;');
+GO
+
+ALTER PROCEDURE mySobek_Permissions_Report_Aggregation
+	@Code varchar(20)
+as
+begin
+
+	-- Get the aggregation id
+	declare @aggrId int;
+	set @aggrId=-1;
+	if ( exists ( select 1 from SobekCM_Item_Aggregation where Code=@Code ))
+	begin
+		set @aggrId = ( select AggregationID from SobekCM_Item_Aggregation where Code=@Code );
+	end;
+
+	-- Can the unioned permissions
+	select GroupDefined='false', GroupName='', U.UserID, UserName, EmailAddress, FirstName, LastName, Nickname, DateCreated, LastActivity, isActive, 
+		   P.CanSelect, P.CanEditItems, P.IsAdmin AS IsAggregationAdmin, P.IsCurator AS IsCollectionManager, P.CanEditMetadata, P.CanEditBehaviors, P.CanPerformQc, P.CanUploadFiles, P.CanChangeVisibility, P.CanDelete
+	from mySobek_User U, mySobek_User_Edit_Aggregation P
+	where ( U.UserID=P.UserID )
+	  and ( P.AggregationID=@aggrId )
+	union
+	select GroupDefined='true', GroupName=G.GroupName, U.UserID, UserName, EmailAddress, FirstName, LastName, Nickname, DateCreated, LastActivity, isActive, 
+		   P.CanSelect, P.CanEditItems, P.IsAdmin AS IsAggregationAdmin, P.IsCurator AS IsCollectionManager, P.CanEditMetadata, P.CanEditBehaviors, P.CanPerformQc, P.CanUploadFiles, P.CanChangeVisibility, P.CanDelete
+	from mySobek_User U, mySobek_User_Group_Link L, mySobek_User_Group G, mySobek_User_Group_Edit_Aggregation P
+	where ( U.UserID=L.UserID )
+	  and ( L.UserGroupID=G.UserGroupID )
+	  and ( G.UserGroupID=P.UserGroupID )
+	  and ( P.AggregationID=@aggrId )
+	order by LastName ASC, FirstName ASC;
+end;
+go
+
+GRANT EXECUTE ON mySobek_Permissions_Report_Aggregation to sobek_user;
+GO
 

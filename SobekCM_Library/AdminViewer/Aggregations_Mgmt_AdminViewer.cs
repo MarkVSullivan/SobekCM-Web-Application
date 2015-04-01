@@ -52,6 +52,7 @@ namespace SobekCM.Library.AdminViewer
         private readonly string enteredShortname;
         private readonly string enteredType;
         private readonly string enteredThematicHeading;
+        private readonly bool addedNewCollection;
 
         /// <summary> Constructor for a new instance of the Aggregations_Mgmt_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -71,6 +72,7 @@ namespace SobekCM.Library.AdminViewer
             enteredThematicHeading = String.Empty;
             enteredIsActive = true;
             enteredIsHidden = false;
+            addedNewCollection = false;
 
             // If the user cannot edit this, go back
             if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
@@ -148,6 +150,7 @@ namespace SobekCM.Library.AdminViewer
                         // Was this to save a new aggregation (from the main page) or edit an existing (from the popup form)?
                         if (save_value == new_aggregation_code)
                         {
+                            addedNewCollection = true;
 
                             // Pull the values from the submitted form
                             string new_type = form["admin_aggr_type"];
@@ -431,7 +434,9 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td>");
             Output.WriteLine("        <p>Use the new <a href=\"" + wizard_url + "\">Add New Collection Wizard</a> to add a single new collection.</p>");
-            Output.WriteLine("        <span id=\"oldnewdivprompt\" style=\"display:block;\"><p>Alternatively, you can use the reduced interface below by <a href=\"\" onclick=\"$('#oldnewdiv').css('display', 'block');$('#oldnewdivprompt').css('display', 'none');return false;\">clicking here</a>.</p></span>");
+            if (!addedNewCollection )
+                Output.WriteLine("        <span id=\"oldnewdivprompt\" style=\"display:block;\"><p>Alternatively, you can use the reduced interface below by <a href=\"\" onclick=\"$('#oldnewdiv').css('display', 'block');$('#oldnewdivprompt').css('display', 'none');return false;\">clicking here</a>.</p></span>");
+
             Output.WriteLine("      </td>");
             Output.WriteLine("      <td style=\"padding-left: 30px;\">");
             Output.WriteLine("        <button title=\"Use the wizard to add a new collection\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + wizard_url + "';return false;\"> &nbsp; NEW COLLECTION &nbsp; <br />WIZARD</button>");
@@ -439,7 +444,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    </tr>");
             Output.WriteLine("  </table>");
 
-            Output.WriteLine("  <div class=\"sbkAsav_NewDiv\" id=\"oldnewdiv\" style=\"display:none;\">");
+            if (addedNewCollection)
+                Output.WriteLine("  <div class=\"sbkAsav_NewDiv\" id=\"oldnewdiv\" style=\"display:block;\">");  
+            else
+                Output.WriteLine("  <div class=\"sbkAsav_NewDiv\" id=\"oldnewdiv\" style=\"display:none;\">");  
+
             Output.WriteLine("    <br /><br />");
             Output.WriteLine("    <table class=\"sbkAdm_PopupTable\">");
 

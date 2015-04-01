@@ -174,28 +174,6 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("    </tr>");
 
-
-		        Output.WriteLine("    <tr><td colspan=\"5\"><h2 name=\"permissions\">Permissions</h2></td></tr>");
-
-                Output.WriteLine("    <tr><td>&nbsp;</td>");
-
-                // View permissions report
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
-                Output.WriteLine("      <td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Icon_Permission_Png + "\" /></a></td><td style=\"width:290px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">User Permissions Reports</a></td>");
-
-		    if (RequestSpecificValues.Current_User.Is_System_Admin)
-		    {
-		        // Edit users
-		        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
-                Output.WriteLine("      <td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Users_Gif + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Users and Groups</a></td>");
-		    }
-		    else
-		    {
-                Output.WriteLine("      <td colspan=\"2\">&nbsp;</td>");
-		    }
-
-		    Output.WriteLine("    </tr>");
-
             Output.WriteLine("    <tr><td colspan=\"5\"><h2 name=\"settings\">Settings</h2></td></tr>");
 
             Output.WriteLine("    <tr><td>&nbsp;</td>");
@@ -216,6 +194,27 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      <td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Refresh_Gif + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Reset Cache</a></td>");
 
             Output.WriteLine("      <td colspan=\"2\">&nbsp;</td>");
+
+            Output.WriteLine("    </tr>");
+
+            Output.WriteLine("    <tr><td colspan=\"5\"><h2 name=\"permissions\">Users and Permissions</h2></td></tr>");
+
+            Output.WriteLine("    <tr><td>&nbsp;</td>");
+
+            // View permissions report
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
+            Output.WriteLine("      <td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Icon_Permission_Png + "\" /></a></td><td style=\"width:290px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">User Permissions Reports</a></td>");
+
+            if (RequestSpecificValues.Current_User.Is_System_Admin)
+            {
+                // Edit users
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                Output.WriteLine("      <td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Users_Gif + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Users and Groups</a></td>");
+            }
+            else
+            {
+                Output.WriteLine("      <td colspan=\"2\">&nbsp;</td>");
+            }
 
             Output.WriteLine("    </tr>");
 
