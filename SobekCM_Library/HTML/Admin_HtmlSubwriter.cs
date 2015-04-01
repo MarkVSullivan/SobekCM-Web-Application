@@ -429,6 +429,9 @@ namespace SobekCM.Library.HTML
                         if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
                             return "sbkUgav_ContainerInnerWide";
                         break;
+
+                    case Admin_Type_Enum.User_Permissions_Reports:
+                        return "sbkUpav_ContainerInner";
 				}
 				return base.Container_CssClass;
 			}

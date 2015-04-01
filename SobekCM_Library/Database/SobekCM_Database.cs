@@ -7028,8 +7028,72 @@ namespace SobekCM.Library.Database
         
         #endregion
 
+        #region Methods to support the top-level user permissions reports
 
+	    public static DataSet Get_Global_User_Permissions(Custom_Tracer Tracer )
+	    {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions", "");
+            }
 
-	}
+            try
+            {
+                // Define a temporary dataset
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report");
+
+                // Return the first table from the returned dataset
+                return tempSet;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+	    }
+
+        public static DataTable Get_Aggregation_User_Permissions(string AggregationCode, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_User_Permissions", "");
+            }
+
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[1];
+                parameters[0] = new SqlParameter("@Code", AggregationCode);
+
+                // Define a temporary dataset
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report_Aggregation", parameters);
+
+                if ((tempSet == null) || (tempSet.Tables.Count == 0))
+                    return null;
+
+                // Return the first table from the returned dataset
+                return tempSet.Tables[0];
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_User_Permissions", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_User_Permissions", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_User_Permissions", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        #endregion
+
+    }
 
 }

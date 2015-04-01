@@ -1349,7 +1349,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("      </ul></li>");
 
                     // Permissions submenu
-                    Output.WriteLine("      <li id=\"sbkUsm_AdminPermissions\"><a href=\"" + current_url + "#permissions\"> <div class=\"sbkUsm_TextWithImage\">Users and Permissions</div></a><ul>");
+                    Output.WriteLine("      <li id=\"sbkUsm_AdminPermissions\"><a href=\"" + current_url + "#permissions\"> <div class=\"sbkUsm_TextWithImage\">Users & Permissions</div></a><ul>");
 
                     // Edit users
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;

@@ -198,7 +198,7 @@ input.sbkSaav_NewChildCode { width: 155px; margin-top: 2px; margin-bottom: 4px; 
 .sbkSaav_UploadThumbnail { width: auto; height: auto; max-width: 200px; max-height: 200px;border: 1px solid #888888; }
 .sbkSaav_UploadTitle { font-weight: bold; }
 
-/** Add new colletion wizard admin viewer ( Add_Collection_AdminViewer */
+/** Add new collection wizard admin viewer ( Add_Collection_AdminViewer ) */
 #sbkAcw_ContainerInner { margin: 0 auto; padding:0; width: 1050px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
 #sbkAcw_PageContainer { margin-left: 40px;  margin-right: 40px;  text-align:center;  FONT-SIZE: small;width: 970px; }
 .sbkAcw_TextRow td {padding: 10px 50px 10px 80px; line-height: 140%; }
@@ -361,6 +361,12 @@ input.sbkThav_input  {  width: 360px; margin-right: 10px; }
 #sbkUgav_ContainerInnerWide { margin: 0 auto; padding:0; width: 1200px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
 .sbkUgav_EditPanel { position: relative; margin-left: auto; margin-right: auto; BORDER: #ccc 2px solid; padding: 10px 5px 5px 5px; FONT-SIZE: small; WIDTH: 1050px;  white-space:nowrap; text-align:left;background-color: #eeeeee; }
 .sbkUgav_TabPage { text-align: left; margin-left: 8px;padding-bottom: 30px;}
+
+/** User_Permissions_AdminViewer **/
+#sbkUpav_ContainerInner { margin: 0 auto; padding:0; width: 1300px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
+#sbkUpav_ListTable { width: 100%; }
+#sbkUpav_ListTable td { vertical-align: top; }
+#sbkUpav_Table th { text-align: left;padding-left: 3px;margin-left:3px; }
 
 /** Wordmarks_AdminViewer **/
 .sbkWav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;text-align: center; } 

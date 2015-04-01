@@ -10,7 +10,7 @@ begin
 	-- Return the top-level permissions (non-aggregation specific)
 	select '' as GroupName, U.UserID, UserName, EmailAddress, FirstName, LastName, Nickname, DateCreated, LastActivity, isActive, 
 		Can_Submit_Items, 
-		case when e.UserID is null then 0 else 1 end as Can_Edit_All_Items,
+		case when e.UserID is null then 'false' else 'true' end as Can_Edit_All_Items,
 		Internal_User, Can_Delete_All_Items, IsPortalAdmin, IsSystemAdmin, IsHostAdmin
 	from mySobek_User as U left outer join
 		 mySobek_User_Editable_Link as E on E.UserID = U.UserID and E.EditableID = 1 
@@ -23,7 +23,7 @@ begin
 	union
 	select G.GroupName, U.UserID, UserName, EmailAddress, FirstName, LastName, Nickname, DateCreated, LastActivity, isActive, 
 		G.Can_Submit_Items, 
-		case when e.UserGroupID is null then 0 else 1 end as Can_Edit_All_Items,
+		case when e.UserGroupID is null then 'false' else 'true' end as Can_Edit_All_Items,
 		G.Internal_User, G.Can_Delete_All_Items, G.IsPortalAdmin, G.IsSystemAdmin, 'false'
 	from mySobek_User as U inner join
 		 mySobek_User_Group_Link as L on U.UserID = L.UserID inner join
