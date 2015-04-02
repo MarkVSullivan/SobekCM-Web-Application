@@ -746,12 +746,12 @@ namespace SobekCM.Library.HTML
                 {
                     if (resultView == Result_Display_Type_Enum.Brief)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Brief_Blue_Png + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Brief_Blue_Img + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
                         RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
-                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + Static_Resources.Brief_Blue_Png + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + Static_Resources.Brief_Blue_Img + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
@@ -1081,12 +1081,12 @@ namespace SobekCM.Library.HTML
                 {
                     if (resultView == Result_Display_Type_Enum.Brief)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Brief_Blue_Png + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Brief_Blue_Img + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
                         RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
-                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + Static_Resources.Brief_Blue_Png + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + Static_Resources.Brief_Blue_Img + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 

@@ -162,7 +162,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				url = UrlWriterHelper.Redirect_URL(CurrentMode);
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Qc_Button_Icon_Png + "\" /></a></td>");
+				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Qc_Button_Img_Large + "\" /></a></td>");
 				Output.WriteLine("\t\t\t\t\t<td>");
 				Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Pages and Divisions (Quality Control)</a>");
 				Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Reorder page images, name pages, assign divisions, and delete and add new page images to this item.</div>");
@@ -177,7 +177,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				url = UrlWriterHelper.Redirect_URL(CurrentMode);
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.View_Work_Log_Icon_Png + "\" /></a></td>");
+				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.View_Work_Log_Img_Large + "\" /></a></td>");
 				Output.WriteLine("\t\t\t\t\t<td>");
 				Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">View Work History</a>");
 				Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">View the history of all work performed on this item.  From this view, you can also see any digitization milestones and digital resource file information.</div>");
@@ -206,7 +206,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				url = UrlWriterHelper.Redirect_URL(CurrentMode);
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Add_Geospatial_Icon_Png + "\" /></a></td>");
+				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Add_Geospatial_Img + "\" /></a></td>");
 				Output.WriteLine("\t\t\t\t\t<td>");
 				Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Geo-Spatial Data (beta)</a>");
 				Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Add geo-spatial information for this item.  This can be as simple as a location for a photograph or can be an overlay for a map.  Points, lines, and polygons of interest can also be drawn.</div>");
@@ -254,7 +254,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				url = UrlWriterHelper.Redirect_URL(CurrentMode);
 				Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Add_Volume_Icon_Png + "\" /></a></td>");
+				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Add_Volume_Img + "\" /></a></td>");
 				Output.WriteLine("\t\t\t\t\t<td>");
 				Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Add New Volume</a>");
 				Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Add a new, related volume to this item group.<br /><br /></div>");
@@ -319,7 +319,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				url = UrlWriterHelper.Redirect_URL(CurrentMode);
                 Output.WriteLine("\t\t\t\t<tr>");
 				Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Add_Volume_Icon_Png + "\" /></a></td>");
+				Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Add_Volume_Img + "\" /></a></td>");
 				Output.WriteLine("\t\t\t\t\t<td>");
 				Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Add New Volume</a>");
 				Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Add a new, related volume to this item group.<br /><br /></div>");

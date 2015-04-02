@@ -577,7 +577,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 				//loading blanket
 				Output.WriteLine("  ");
-				Output.WriteLine(" <div id=\"mapedit_blanket_loading\"><div>Loading...<br/><br/><img src=\"" + Static_Resources.Ajax_Loader_Gif + "\"></div></div> ");
+				Output.WriteLine(" <div id=\"mapedit_blanket_loading\"><div>Loading...<br/><br/><img src=\"" + Static_Resources.Ajax_Loader_Img + "\"></div></div> ");
 				Output.WriteLine("  ");
 
 				//standard css

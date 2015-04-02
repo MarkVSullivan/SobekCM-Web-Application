@@ -329,7 +329,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.Wrench_Png; }
+            get { return Static_Resources.Wrench_Img; }
         }
 
         private bool validate_update_entered_data( Dictionary<string, string> NewSettings )

@@ -555,7 +555,7 @@ namespace SobekCM.Library.MySobekViewer
                 TreeNode rootNode = new TreeNode
                                         {
                                             Text = "&nbsp; <a title=\"Manage my library\" href=\"" + redirect_url.Replace("XXXXXXXXXXXXXXXXXX", String.Empty) + "\">My Library  (Manage my bookshelves)</a>",
-                                            ImageUrl = Static_Resources.Bookshelf_Jpg,
+                                            ImageUrl = Static_Resources.Bookshelf_Img,
                                             SelectAction = TreeNodeSelectAction.None
                                         };
                 treeView1.Nodes.Add(rootNode);
@@ -574,7 +574,7 @@ namespace SobekCM.Library.MySobekViewer
                                                  {
                                                      Text ="&nbsp; <a title=\"View my saved searches\" href=\"" + saved_search_url + "\">My Saved Searches</a>",
                                                      SelectAction = TreeNodeSelectAction.None,
-                                                     ImageUrl = Static_Resources.Saved_Searches_Gif
+                                                     ImageUrl = Static_Resources.Saved_Searches_Img
                                                  };
                 rootNode.ChildNodes.Add(savedSearchesNode);
 

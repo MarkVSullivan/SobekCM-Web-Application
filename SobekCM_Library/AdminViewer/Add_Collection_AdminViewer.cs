@@ -342,7 +342,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.Wizard_Png; }
+            get { return Static_Resources.Wizard_Img; }
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
@@ -421,7 +421,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
 
-            Output.WriteLine("     <img id=\"sbkAdm_TitleDivImg\" src=\"" + Static_Resources.Wizard_Png + "\" alt=\"\" />");
+            Output.WriteLine("     <img id=\"sbkAdm_TitleDivImg\" src=\"" + Static_Resources.Wizard_Img + "\" alt=\"\" />");
             Output.WriteLine("    <h1>Add New Collection Wizard</h1>");
             Output.WriteLine("  </div>");
             Output.WriteLine();

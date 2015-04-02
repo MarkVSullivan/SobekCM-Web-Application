@@ -14,25 +14,22 @@ namespace SobekCM.Library.Settings
             Config_Read_Attempted = false;
 
             // Set the default values, using the CDN
-            Sixteen_Px_Feed_Icon_Svg_Png = "http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png";
-            Add_Geospatial_Icon_Png = "http://cdn.sobekrepository.org/images/misc/add_geospatial_icon.png";
-            Add_Volume_Png = "http://cdn.sobekrepository.org/images/misc/add_volume.png";
-            Add_Volume_Icon_Png = "http://cdn.sobekrepository.org/images/misc/add_volume_icon.png";
-            Admin_View_Png = "http://cdn.sobekrepository.org/images/misc/admin_view.png";
-            Ajax_Loader_Gif = "http://cdn.sobekrepository.org/images/mapedit/ajax-loader.gif";
-            Arw05lt_Gif = "http://cdn.sobekrepository.org/images/qc/ARW05LT.gif";
-            Arw05rt_Gif = "http://cdn.sobekrepository.org/images/qc/ARW05RT.gif";
-            Autofill_Volumes_Png = "http://cdn.sobekrepository.org/images/misc/autofill_volumes.png";
-            Bg1_Png = "http://cdn.sobekrepository.org/images/mapedit/bg1.png";
-            Big_Bookshelf_Gif = "http://cdn.sobekrepository.org/images/misc/big_bookshelf.gif";
-            Blue_Png = "http://cdn.sobekrepository.org/images/mapedit/mapIcons/blue.png";
-            Blue_Pin_Png = "http://cdn.sobekrepository.org/images/mapsearch/blue-pin.png";
-            Bookshelf_Jpg = "http://cdn.sobekrepository.org/images/misc/bookshelf.jpg";
-            Bookshelf_Png = "http://cdn.sobekrepository.org/images/misc/bookshelf.png";
-            Bookturner_Html = "http://cdn.sobekrepository.org/images/misc/bookturner.html";
+            Sixteen_Px_Feed_Img = "http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png";
+            Add_Geospatial_Img = "http://cdn.sobekrepository.org/images/misc/add_geospatial_icon.png";
+            Add_Volume_Img = "http://cdn.sobekrepository.org/images/misc/add_volume_icon.png";
+            Admin_View_Img_Large = "http://cdn.sobekrepository.org/images/misc/admin_view_lg.png";
+            Aggregations_Img_Large = "http://cdn.sobekrepository.org/images/misc/aggregations_lg.png";
+            Ajax_Loader_Img = "http://cdn.sobekrepository.org/images/mapedit/ajax-loader.gif";
+            Arw05lt_Img = "http://cdn.sobekrepository.org/images/qc/ARW05LT.gif";
+            Arw05rt_Img = "http://cdn.sobekrepository.org/images/qc/ARW05RT.gif";
+            Bg1_Img = "http://cdn.sobekrepository.org/images/mapedit/bg1.png";
+            Big_Bookshelf_Img = "http://cdn.sobekrepository.org/images/misc/big_bookshelf.gif";
+            Blue_Img = "http://cdn.sobekrepository.org/images/mapedit/mapIcons/blue.png";
+            Blue_Pin_Img = "http://cdn.sobekrepository.org/images/mapsearch/blue-pin.png";
+            Bookshelf_Img = "http://cdn.sobekrepository.org/images/misc/bookshelf.png";
             Bookturner_Js = "http://cdn.sobekrepository.org/includes/bookturner/1.0.0/bookturner.js";
-            Brief_Blue_Png = "http://cdn.sobekrepository.org/images/misc/brief_blue.png";
-            Building_Gif = "http://cdn.sobekrepository.org/images/misc/building.gif";
+            Brief_Blue_Img = "http://cdn.sobekrepository.org/images/misc/aggregations.png";
+            Aggregations_Img = "http://cdn.sobekrepository.org/images/misc/building.gif";
             Button_Down_Arrow_Png = "http://cdn.sobekrepository.org/images/misc/button_down_arrow.png";
             Button_First_Arrow_Png = "http://cdn.sobekrepository.org/images/misc/button_first_arrow.png";
             Button_Last_Arrow_Png = "http://cdn.sobekrepository.org/images/misc/button_last_arrow.png";
@@ -103,15 +100,15 @@ namespace SobekCM.Library.Settings
             Button_Zoomout_Png = "http://cdn.sobekrepository.org/images/mapedit/button-zoomOut.png";
             Button_Zoomreset_Png = "http://cdn.sobekrepository.org/images/mapedit/button-zoomReset.png";
             Button_Zoomreset2_Png = "http://cdn.sobekrepository.org/images/mapedit/button-zoomReset2.png";
-            Calendar_Button_Png = "http://cdn.sobekrepository.org/images/misc/calendar_button.png";
+            Calendar_Button_Img = "http://cdn.sobekrepository.org/images/misc/calendar_button.png";
             Cancel_Ico = "http://cdn.sobekrepository.org/images/qc/Cancel.ico";
-            Cc_By_Png = "http://cdn.sobekrepository.org/images/misc/cc_by.png";
-            Cc_By_Nc_Png = "http://cdn.sobekrepository.org/images/misc/cc_by_nc.png";
-            Cc_By_Nc_Nd_Png = "http://cdn.sobekrepository.org/images/misc/cc_by_nc_nd.png";
-            Cc_By_Nc_Sa_Png = "http://cdn.sobekrepository.org/images/misc/cc_by_nc_sa.png";
-            Cc_By_Nd_Png = "http://cdn.sobekrepository.org/images/misc/cc_by_nd.png";
-            Cc_By_Sa_Png = "http://cdn.sobekrepository.org/images/misc/cc_by_sa.png";
-            Cc_Zero_Png = "http://cdn.sobekrepository.org/images/misc/cc_zero.png";
+            Cc_By_Img = "http://cdn.sobekrepository.org/images/misc/cc_by.png";
+            Cc_By_Nc_Img = "http://cdn.sobekrepository.org/images/misc/cc_by_nc.png";
+            Cc_By_Nc_Nd_Img = "http://cdn.sobekrepository.org/images/misc/cc_by_nc_nd.png";
+            Cc_By_Nc_Sa_Img = "http://cdn.sobekrepository.org/images/misc/cc_by_nc_sa.png";
+            Cc_By_Nd_Img = "http://cdn.sobekrepository.org/images/misc/cc_by_nd.png";
+            Cc_By_Sa_Img = "http://cdn.sobekrepository.org/images/misc/cc_by_sa.png";
+            Cc_Zero_Img = "http://cdn.sobekrepository.org/images/misc/cc_zero.png";
             Chart_Js = "http://cdn.sobekrepository.org/includes/chartjs/1.0.2/Chart.min.js";
             Chat_Png = "http://cdn.sobekrepository.org/images/misc/chat.png";
             Checkmark_Png = "http://cdn.sobekrepository.org/images/misc/checkmark.png";
@@ -122,22 +119,16 @@ namespace SobekCM.Library.Settings
             Closed_Folder_Public_Big_Jpg = "http://cdn.sobekrepository.org/images/misc/closed_folder_public_big.jpg";
             Contentslider_Js = "http://cdn.sobekrepository.org/includes/contentslider/2.4/contentslider.min.js";
             Dark_Resource_Png = "http://cdn.sobekrepository.org/images/misc/dark_resource.png";
-            Default_Banner_Jpg = "http://cdn.sobekrepository.org/images/misc/default_banner.jpg";
-            Default_Button_Gif = "http://cdn.sobekrepository.org/images/misc/default_button.gif";
-            Default_Button_Png = "http://cdn.sobekrepository.org/images/misc/default_button.png";
             Delete_Cursor_Cur = "http://cdn.sobekrepository.org/images/qc/delete_cursor.cur";
-            Delete_Item_Png = "http://cdn.sobekrepository.org/images/misc/delete_item.png";
             Delete_Item_Icon_Png = "http://cdn.sobekrepository.org/images/misc/delete_item_icon.png";
             Digg_Share_Gif = "http://cdn.sobekrepository.org/images/misc/digg_share.gif";
             Digg_Share_H_Gif = "http://cdn.sobekrepository.org/images/misc/digg_share_h.gif";
             Dloc_Banner_700_Jpg = "http://cdn.sobekrepository.org/images/misc/dloc_banner_700.jpg";
             Drag1pg_Ico = "http://cdn.sobekrepository.org/images/qc/DRAG1PG.ICO";
             Edit_Gif = "http://cdn.sobekrepository.org/images/misc/edit.gif";
-            Edit_Png = "http://cdn.sobekrepository.org/images/mapedit/edit.png";
-            Edit_Behaviors_Png = "http://cdn.sobekrepository.org/images/misc/edit_behaviors.png";
+            Edit_Mapedit_Img = "http://cdn.sobekrepository.org/images/mapedit/edit.png";
             Edit_Behaviors_Icon_Png = "http://cdn.sobekrepository.org/images/misc/edit_behaviors_icon.png";
             Edit_Hierarchy_Png = "http://cdn.sobekrepository.org/images/misc/edit_hierarchy.png";
-            Edit_Metadata_Png = "http://cdn.sobekrepository.org/images/misc/edit_metadata.png";
             Edit_Metadata_Icon_Png = "http://cdn.sobekrepository.org/images/misc/edit_metadata_icon.png";
             Email_Png = "http://cdn.sobekrepository.org/images/misc/email.png";
             Emptypage_Jpg = "http://cdn.sobekrepository.org/images/bookturner/emptypage.jpg";
@@ -146,14 +137,13 @@ namespace SobekCM.Library.Settings
             Facebook_Share_H_Gif = "http://cdn.sobekrepository.org/images/misc/facebook_share_h.gif";
             Favorites_Share_Gif = "http://cdn.sobekrepository.org/images/misc/favorites_share.gif";
             Favorites_Share_H_Gif = "http://cdn.sobekrepository.org/images/misc/favorites_share_h.gif";
-            File_Management_Png = "http://cdn.sobekrepository.org/images/misc/file_management.png";
             File_Management_Icon_Png = "http://cdn.sobekrepository.org/images/misc/file_management_icon.png";
-            Firewall_Gif = "http://cdn.sobekrepository.org/images/misc/firewall.gif";
-            Firewall_Png = "http://cdn.sobekrepository.org/images/misc/firewall.png";
+            Firewall_Img = "http://cdn.sobekrepository.org/images/misc/firewall.gif";
+            Firewall_Img_Small = "http://cdn.sobekrepository.org/images/misc/firewall.png";
             First2_Png = "http://cdn.sobekrepository.org/images/bookturner/first2.png";
-            Forwarding_Gif = "http://cdn.sobekrepository.org/images/misc/forwarding.gif";
-            Forwarding_Png = "http://cdn.sobekrepository.org/images/misc/forwarding.png";
-            Gears_Png = "http://cdn.sobekrepository.org/images/misc/gears.png";
+            Forwarding_Img = "http://cdn.sobekrepository.org/images/misc/forwarding.gif";
+            Forwarding_Img_Small = "http://cdn.sobekrepository.org/images/misc/forwarding.png";
+            Gears_Img = "http://cdn.sobekrepository.org/images/misc/gears.png";
             Geo_Blue_Png = "http://cdn.sobekrepository.org/images/misc/geo_blue.png";
             Get_Adobe_Reader_Png = "http://cdn.sobekrepository.org/images/misc/get_adobe_reader.png";
             Getuserlocation_Png = "http://cdn.sobekrepository.org/images/mapedit/getUserLocation.png";
@@ -171,10 +161,8 @@ namespace SobekCM.Library.Settings
             Home_Button_Gif = "http://cdn.sobekrepository.org/images/misc/home_button.gif";
             Home_Folder_Gif = "http://cdn.sobekrepository.org/images/misc/home_folder.gif";
             Html5shiv_Js = "http://cdn.sobekrepository.org/includes/html5shiv/3.7.3/html5shiv.js";
-            Icon_Permission_Png = "http://cdn.sobekrepository.org/images/misc/icon_permission.png";
+            Item_Count_Img_Large = "http://cdn.sobekrepository.org/images/misc/item_count_lg.png";
             Icons_Os_Png = "http://cdn.sobekrepository.org/images/mapedit/icons-os.png";
-            Index_Html = "http://cdn.sobekrepository.org/images/misc/index.html";
-            Item_Count_Png = "http://cdn.sobekrepository.org/images/misc/item_count.png";
             Jquery_Color_2_1_1_Js = "http://cdn.sobekrepository.org/includes/jquery-color/2.1.1/jquery.color-2.1.1.js";
             Jquery_Datatables_Js = "http://cdn.sobekrepository.org/includes/datatables/1.11.1/js/jquery.dataTables.min.js";
             Jquery_Easing_1_3_Js = "http://cdn.sobekrepository.org/includes/bookturner/1.0.0/jquery.easing.1.3.js";
@@ -211,13 +199,10 @@ namespace SobekCM.Library.Settings
             Legend_Selected_Polygon_Png = "http://cdn.sobekrepository.org/images/misc/legend_selected_polygon.png";
             Main_Information_Ico = "http://cdn.sobekrepository.org/images/qc/Main_Information.ICO";
             Map_Drag_Hand_Gif = "http://cdn.sobekrepository.org/images/misc/map_drag_hand.gif";
-            Map_Point_Gif = "http://cdn.sobekrepository.org/images/misc/map_point.gif";
+            Map_Tack_Img = "http://cdn.sobekrepository.org/images/misc/map_point.gif";
             Map_Point_Png = "http://cdn.sobekrepository.org/images/misc/map_point.png";
             Map_Polygon2_Gif = "http://cdn.sobekrepository.org/images/misc/map_polygon2.gif";
             Map_Rectangle2_Gif = "http://cdn.sobekrepository.org/images/misc/map_rectangle2.gif";
-            Mapedit_Html = "http://cdn.sobekrepository.org/images/misc/mapedit.html";
-            Mapsearch_Html = "http://cdn.sobekrepository.org/images/misc/mapsearch.html";
-            Mass_Update_Png = "http://cdn.sobekrepository.org/images/misc/mass_update.png";
             Mass_Update_Icon_Png = "http://cdn.sobekrepository.org/images/misc/mass_update_icon.png";
             Minussign_Png = "http://cdn.sobekrepository.org/images/misc/minussign.png";
             Missingimage_Jpg = "http://cdn.sobekrepository.org/images/misc/MissingImage.jpg";
@@ -225,7 +210,7 @@ namespace SobekCM.Library.Settings
             New_Element_Jpg = "http://cdn.sobekrepository.org/images/misc/new_element.jpg";
             New_Element_Demo_Jpg = "http://cdn.sobekrepository.org/images/misc/new_element_demo.jpg";
             New_Folder_Jpg = "http://cdn.sobekrepository.org/images/misc/new_folder.jpg";
-            New_Item_Gif = "http://cdn.sobekrepository.org/images/misc/new_item.gif";
+            New_Item_Img = "http://cdn.sobekrepository.org/images/misc/new_item.gif";
             Next_Png = "http://cdn.sobekrepository.org/images/bookturner/next.png";
             Next2_Png = "http://cdn.sobekrepository.org/images/bookturner/next2.png";
             No_Pages_Jpg = "http://cdn.sobekrepository.org/images/qc/no_pages.jpg";
@@ -235,48 +220,44 @@ namespace SobekCM.Library.Settings
             Open_Folder_Public_Jpg = "http://cdn.sobekrepository.org/images/misc/open_folder_public.jpg";
             Pagenumbg_Gif = "http://cdn.sobekrepository.org/images/bookturner/pageNumBg.gif";
             Plussign_Png = "http://cdn.sobekrepository.org/images/misc/plussign.png";
-            Pmets_Gif = "http://cdn.sobekrepository.org/images/misc/pmets.gif";
+            Pmets_Img = "http://cdn.sobekrepository.org/images/misc/pmets.gif";
             Point02_Ico = "http://cdn.sobekrepository.org/images/qc/POINT02.ICO";
             Point04_Ico = "http://cdn.sobekrepository.org/images/qc/POINT04.ICO";
             Point13_Ico = "http://cdn.sobekrepository.org/images/qc/POINT13.ICO";
             Pointer_Blue_Gif = "http://cdn.sobekrepository.org/images/misc/pointer_blue.gif";
-            Portals_Gif = "http://cdn.sobekrepository.org/images/misc/portals.gif";
-            Portals_Png = "http://cdn.sobekrepository.org/images/misc/portals.png";
+            Portals_Img = "http://cdn.sobekrepository.org/images/misc/portals.gif";
+            Portals_Img_Small = "http://cdn.sobekrepository.org/images/misc/portals.png";
             Previous2_Png = "http://cdn.sobekrepository.org/images/bookturner/previous2.png";
             Print_Css = "http://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/print.css";
             Printer_Png = "http://cdn.sobekrepository.org/images/misc/printer.png";
-            Private_Items_Png = "http://cdn.sobekrepository.org/images/misc/private_items.png";
-            Private_Resource_Png = "http://cdn.sobekrepository.org/images/misc/private_resource.png";
-            Private_Resource_Icon_Png = "http://cdn.sobekrepository.org/images/misc/private_resource_icon.png";
-            Public_Resource_Png = "http://cdn.sobekrepository.org/images/misc/public_resource.png";
-            Public_Resource_Icon_Png = "http://cdn.sobekrepository.org/images/misc/public_resource_icon.png";
-            Qc_Html = "http://cdn.sobekrepository.org/images/misc/qc.html";
+            Private_Items_Img_Large = "http://cdn.sobekrepository.org/images/misc/private_items_lg.png";
+            Private_Resource_Img_Jumbo = "http://cdn.sobekrepository.org/images/misc/private_resource_icon.png";
+            Public_Resource_Img_Jumbo = "http://cdn.sobekrepository.org/images/misc/public_resource_icon.png";
             Qc_Addfiles_Png = "http://cdn.sobekrepository.org/images/qc/qc_addfiles.png";
-            Qc_Button_Png = "http://cdn.sobekrepository.org/images/misc/qc_button.png";
-            Qc_Button_Icon_Png = "http://cdn.sobekrepository.org/images/misc/qc_button_icon.png";
+            Qc_Button_Img_Large = "http://cdn.sobekrepository.org/images/misc/qc_button_icon.png";
             Rect_Large_Ico = "http://cdn.sobekrepository.org/images/qc/rect_large.ico";
             Rect_Medium_Ico = "http://cdn.sobekrepository.org/images/qc/rect_medium.ico";
             Rect_Small_Ico = "http://cdn.sobekrepository.org/images/qc/rect_small.ico";
             Red_Pushpin_Png = "http://cdn.sobekrepository.org/images/misc/red-pushpin.png";
-            Refresh_Gif = "http://cdn.sobekrepository.org/images/misc/refresh.gif";
-            Refresh_Png = "http://cdn.sobekrepository.org/images/misc/refresh.png";
+            Refresh_Img = "http://cdn.sobekrepository.org/images/misc/refresh.gif";
+            Refresh_Img_Small = "http://cdn.sobekrepository.org/images/misc/refresh.png";
             Refresh_Folder_Jpg = "http://cdn.sobekrepository.org/images/misc/refresh_folder.jpg";
             Removeicon_Gif = "http://cdn.sobekrepository.org/images/misc/removeIcon.gif";
-            Restricted_Resource_Png = "http://cdn.sobekrepository.org/images/misc/restricted_resource.png";
-            Restricted_Resource_Icon_Png = "http://cdn.sobekrepository.org/images/misc/restricted_resource_icon.png";
-            Return_Gif = "http://cdn.sobekrepository.org/images/misc/return.gif";
-            Return_Png = "http://cdn.sobekrepository.org/images/bookturner/return.png";
+            Restricted_Resource_Img_Large = "http://cdn.sobekrepository.org/images/misc/restricted_resource_lg.png";
+            Restricted_Resource_Img_Jumbo = "http://cdn.sobekrepository.org/images/misc/restricted_resource_icon.png";
+            Return_Img = "http://cdn.sobekrepository.org/images/misc/return.gif";
             Rotation_Clockwise_Png = "http://cdn.sobekrepository.org/images/mapedit/rotation-clockwise.png";
             Rotation_Counterclockwise_Png = "http://cdn.sobekrepository.org/images/mapedit/rotation-counterClockwise.png";
             Rotation_Reset_Png = "http://cdn.sobekrepository.org/images/mapedit/rotation-reset.png";
             Save_Ico = "http://cdn.sobekrepository.org/images/qc/Save.ico";
-            Saved_Searches_Gif = "http://cdn.sobekrepository.org/images/misc/saved_searches.gif";
-            Saved_Searches_Big_Gif = "http://cdn.sobekrepository.org/images/misc/saved_searches_big.gif";
+            Saved_Searches_Img = "http://cdn.sobekrepository.org/images/misc/saved_searches.gif";
+            Saved_Searches_Img_Jumbo = "http://cdn.sobekrepository.org/images/misc/saved_searches_big.gif";
             Search_Png = "http://cdn.sobekrepository.org/images/mapedit/search.png";
-            Settings_Gif = "http://cdn.sobekrepository.org/images/misc/Settings.gif";
+            Settings_Img = "http://cdn.sobekrepository.org/images/misc/Settings.gif";
             Show_Internal_Header_Png = "http://cdn.sobekrepository.org/images/misc/show_internal_header.png";
-            Skins_Gif = "http://cdn.sobekrepository.org/images/misc/skins.gif";
-            Skins_Png = "http://cdn.sobekrepository.org/images/misc/skins.png";
+            Skins_Img = "http://cdn.sobekrepository.org/images/misc/skins.gif";
+            Skins_Img_Small = "http://cdn.sobekrepository.org/images/misc/skins.png";
+            Skins_Img_Large = "http://cdn.sobekrepository.org/images/misc/skins_lg.png";
             Sobekcm_Css = "http://cdn.sobekrepository.org/css/sobekcm/4.8.4/SobekCM.min.css";
             Sobekcm_Admin_Css = "http://cdn.sobekrepository.org/css/sobekcm-admin/4.8.4/SobekCM_Admin.min.css";
             Sobekcm_Admin_Js = "http://cdn.sobekrepository.org/js/sobekcm-admin/4.8.4/sobekcm_admin.js";
@@ -299,15 +280,15 @@ namespace SobekCM.Library.Settings
             Sobekcm_Thumb_Results_Js = "http://cdn.sobekrepository.org/js/sobekcm-thumb-results/4.8.4/sobekcm_thumb_results.js";
             Sobekcm_Track_Item_Js = "http://cdn.sobekrepository.org/js/sobekcm-track-item/4.8.4/sobekcm_track_item.js";
             Sobekcm_Trackingsheet_Css = "http://cdn.sobekrepository.org/css/sobekcm-tracking/4.8.4/SobekCM_TrackingSheet.css";
-            Source_Html = "http://cdn.sobekrepository.org/images/misc/source.html";
             Spinner_Gif = "http://cdn.sobekrepository.org/images/misc/spinner.gif";
             Spinner_Gray_Gif = "http://cdn.sobekrepository.org/images/misc/spinner_gray.gif";
             Stumbleupon_Share_Gif = "http://cdn.sobekrepository.org/images/misc/stumbleupon_share.gif";
             Stumbleupon_Share_H_Gif = "http://cdn.sobekrepository.org/images/misc/stumbleupon_share_h.gif";
             Submitted_Items_Gif = "http://cdn.sobekrepository.org/images/misc/submitted_items.gif";
             Table_Blue_Png = "http://cdn.sobekrepository.org/images/misc/table_blue.png";
-            Thematic_Heading_Gif = "http://cdn.sobekrepository.org/images/misc/thematic_heading.gif";
-            Themaitc_Heading_Png = "http://cdn.sobekrepository.org/images/misc/thematic_heading.png";
+            Thematic_Heading_Img_Small = "http://cdn.sobekrepository.org/images/misc/thematic_heading.gif";
+            Thematic_Heading_Img = "http://cdn.sobekrepository.org/images/misc/thematic_heading.png";
+            Thematic_Heading_Img_Large = "http://cdn.sobekrepository.org/images/misc/thematic_heading_lg.png";
             Thumb_Blue_Png = "http://cdn.sobekrepository.org/images/misc/thumb_blue.png";
             Thumbnail_Cursor_Cur = "http://cdn.sobekrepository.org/images/qc/thumbnail_cursor.cur";
             Thumbnail_Large_Gif = "http://cdn.sobekrepository.org/images/misc/thumbnail_large.gif";
@@ -333,16 +314,19 @@ namespace SobekCM.Library.Settings
             Uploadifive_Css = "http://cdn.sobekrepository.org/includes/uploadifive/1.1.2/uploadifive.css";
             Uploadify_Css = "http://cdn.sobekrepository.org/includes/uploadify/3.2.1/uploadify.css";
             Uploadify_Swf = "http://cdn.sobekrepository.org/includes/uploadify/3.2.1/uploadify.swf";
-            Usage_Png = "http://cdn.sobekrepository.org/images/misc/usage.png";
-            Usage_Statistics_Png = "http://cdn.sobekrepository.org/images/misc/usage_statistics.png";
-            Users_Gif = "http://cdn.sobekrepository.org/images/misc/Users.gif";
-            Users_Png = "http://cdn.sobekrepository.org/images/misc/Users.png";
+            Usage_Img = "http://cdn.sobekrepository.org/images/misc/usage.png";
+            Usage_Img_Large = "http://cdn.sobekrepository.org/images/misc/usage_lg.png";
+            Users_Img = "http://cdn.sobekrepository.org/images/misc/Users.gif";
+            Users_Img_Small = "http://cdn.sobekrepository.org/images/misc/Users.png";
+            Users_Img_Large = "http://cdn.sobekrepository.org/images/misc/Users_lg.png";
+            User_Permission_Img = "http://cdn.sobekrepository.org/images/misc/icon_permission.png";
+            User_Permission_Img_Large = "http://cdn.sobekrepository.org/images/misc/user_permissions_lg.png";
             View_Ico = "http://cdn.sobekrepository.org/images/qc/View.ico";
-            View_Work_Log_Png = "http://cdn.sobekrepository.org/images/misc/view_work_log.png";
-            View_Work_Log_Icon_Png = "http://cdn.sobekrepository.org/images/misc/view_work_log_icon.png";
-            Wizard_Png = "http://cdn.sobekrepository.org/images/misc/wizard.png";
-            Wordmarks_Gif = "http://cdn.sobekrepository.org/images/misc/wordmarks.gif";
-            Wrench_Png = "http://cdn.sobekrepository.org/images/misc/wrench.png";
+            View_Work_Log_Img_Large = "http://cdn.sobekrepository.org/images/misc/view_work_log_icon.png";
+            Wizard_Img = "http://cdn.sobekrepository.org/images/misc/wizard.png";
+            Wizard_Img_Large = "http://cdn.sobekrepository.org/images/misc/wizard_lg.png";
+            Wordmarks_Img = "http://cdn.sobekrepository.org/images/misc/wordmarks.gif";
+            Wrench_Img = "http://cdn.sobekrepository.org/images/misc/wrench.png";
             Yahoo_Share_Gif = "http://cdn.sobekrepository.org/images/misc/yahoo_share.gif";
             Yahoo_Share_H_Gif = "http://cdn.sobekrepository.org/images/misc/yahoo_share_h.gif";
             Yahoobuzz_Share_Gif = "http://cdn.sobekrepository.org/images/misc/yahoobuzz_share.gif";
@@ -356,61 +340,52 @@ namespace SobekCM.Library.Settings
         public static bool Config_Read_Attempted { get; set; }
 
         /// <summary> URL for the default resource '16px-feed-icon.svg.png' file ( http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png by default)</summary>
-        public static string Sixteen_Px_Feed_Icon_Svg_Png { get; private set; }
+        public static string Sixteen_Px_Feed_Img { get; private set; }
 
         /// <summary> URL for the default resource 'add_geospatial_icon.png' file ( http://cdn.sobekrepository.org/images/misc/add_geospatial_icon.png by default)</summary>
-        public static string Add_Geospatial_Icon_Png { get; private set; }
-
-        /// <summary> URL for the default resource 'add_volume.png' file ( http://cdn.sobekrepository.org/images/misc/add_volume.png by default)</summary>
-        public static string Add_Volume_Png { get; private set; }
+        public static string Add_Geospatial_Img { get; private set; }
 
         /// <summary> URL for the default resource 'add_volume_icon.png' file ( http://cdn.sobekrepository.org/images/misc/add_volume_icon.png by default)</summary>
-        public static string Add_Volume_Icon_Png { get; private set; }
+        public static string Add_Volume_Img { get; private set; }
 
-        /// <summary> URL for the default resource 'admin_view.png' file ( http://cdn.sobekrepository.org/images/misc/admin_view.png by default)</summary>
-        public static string Admin_View_Png { get; private set; }
+        /// <summary> URL for the default resource 'admin_view_lg.png' file ( http://cdn.sobekrepository.org/images/misc/admin_view_lg.png by default)</summary>
+        public static string Admin_View_Img_Large { get; private set; }
+
+        /// <summary> URL for the default resource 'aggregations.gif' file ( http://cdn.sobekrepository.org/images/misc/aggregations.gif by default)</summary>
+        public static string Aggregations_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'aggregations_lg.png' file ( http://cdn.sobekrepository.org/images/misc/aggregations_lg.png by default)</summary>
+        public static string Aggregations_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'ajax-loader.gif' file ( http://cdn.sobekrepository.org/images/mapedit/ajax-loader.gif by default)</summary>
-        public static string Ajax_Loader_Gif { get; private set; }
+        public static string Ajax_Loader_Img { get; private set; }
 
         /// <summary> URL for the default resource 'arw05lt.gif' file ( http://cdn.sobekrepository.org/images/qc/ARW05LT.gif by default)</summary>
-        public static string Arw05lt_Gif { get; private set; }
+        public static string Arw05lt_Img { get; private set; }
 
         /// <summary> URL for the default resource 'arw05rt.gif' file ( http://cdn.sobekrepository.org/images/qc/ARW05RT.gif by default)</summary>
-        public static string Arw05rt_Gif { get; private set; }
-
-        /// <summary> URL for the default resource 'autofill_volumes.png' file ( http://cdn.sobekrepository.org/images/misc/autofill_volumes.png by default)</summary>
-        public static string Autofill_Volumes_Png { get; private set; }
+        public static string Arw05rt_Img { get; private set; }
 
         /// <summary> URL for the default resource 'bg1.png' file ( http://cdn.sobekrepository.org/images/mapedit/bg1.png by default)</summary>
-        public static string Bg1_Png { get; private set; }
+        public static string Bg1_Img { get; private set; }
 
         /// <summary> URL for the default resource 'big_bookshelf.gif' file ( http://cdn.sobekrepository.org/images/misc/big_bookshelf.gif by default)</summary>
-        public static string Big_Bookshelf_Gif { get; private set; }
+        public static string Big_Bookshelf_Img { get; private set; }
 
         /// <summary> URL for the default resource 'blue.png' file ( http://cdn.sobekrepository.org/images/mapedit/mapIcons/blue.png by default)</summary>
-        public static string Blue_Png { get; private set; }
+        public static string Blue_Img { get; private set; }
 
         /// <summary> URL for the default resource 'blue-pin.png' file ( http://cdn.sobekrepository.org/images/mapsearch/blue-pin.png by default)</summary>
-        public static string Blue_Pin_Png { get; private set; }
-
-        /// <summary> URL for the default resource 'bookshelf.jpg' file ( http://cdn.sobekrepository.org/images/misc/bookshelf.jpg by default)</summary>
-        public static string Bookshelf_Jpg { get; private set; }
+        public static string Blue_Pin_Img { get; private set; }
 
         /// <summary> URL for the default resource 'bookshelf.png' file ( http://cdn.sobekrepository.org/images/misc/bookshelf.png by default)</summary>
-        public static string Bookshelf_Png { get; private set; }
-
-        /// <summary> URL for the default resource 'bookturner.html' file ( http://cdn.sobekrepository.org/images/misc/bookturner.html by default)</summary>
-        public static string Bookturner_Html { get; private set; }
+        public static string Bookshelf_Img { get; private set; }
 
         /// <summary> URL for the default resource 'bookturner.js' file ( http://cdn.sobekrepository.org/includes/bookturner/1.0.0/bookturner.js by default)</summary>
         public static string Bookturner_Js { get; private set; }
 
         /// <summary> URL for the default resource 'brief_blue.png' file ( http://cdn.sobekrepository.org/images/mapsearch/brief_blue.png by default)</summary>
-        public static string Brief_Blue_Png { get; private set; }
-
-        /// <summary> URL for the default resource 'building.gif' file ( http://cdn.sobekrepository.org/images/misc/building.gif by default)</summary>
-        public static string Building_Gif { get; private set; }
+        public static string Brief_Blue_Img { get; private set; }
 
         /// <summary> URL for the default resource 'button_down_arrow.png' file ( http://cdn.sobekrepository.org/images/misc/button_down_arrow.png by default)</summary>
         public static string Button_Down_Arrow_Png { get; private set; }
@@ -623,31 +598,31 @@ namespace SobekCM.Library.Settings
         public static string Button_Zoomreset2_Png { get; private set; }
 
         /// <summary> URL for the default resource 'calendar_button.png' file ( http://cdn.sobekrepository.org/images/misc/calendar_button.png by default)</summary>
-        public static string Calendar_Button_Png { get; private set; }
+        public static string Calendar_Button_Img { get; private set; }
 
         /// <summary> URL for the default resource 'cancel.ico' file ( http://cdn.sobekrepository.org/images/qc/Cancel.ico by default)</summary>
         public static string Cancel_Ico { get; private set; }
 
         /// <summary> URL for the default resource 'cc_by.png' file ( http://cdn.sobekrepository.org/images/misc/cc_by.png by default)</summary>
-        public static string Cc_By_Png { get; private set; }
+        public static string Cc_By_Img { get; private set; }
 
         /// <summary> URL for the default resource 'cc_by_nc.png' file ( http://cdn.sobekrepository.org/images/misc/cc_by_nc.png by default)</summary>
-        public static string Cc_By_Nc_Png { get; private set; }
+        public static string Cc_By_Nc_Img { get; private set; }
 
         /// <summary> URL for the default resource 'cc_by_nc_nd.png' file ( http://cdn.sobekrepository.org/images/misc/cc_by_nc_nd.png by default)</summary>
-        public static string Cc_By_Nc_Nd_Png { get; private set; }
+        public static string Cc_By_Nc_Nd_Img { get; private set; }
 
         /// <summary> URL for the default resource 'cc_by_nc_sa.png' file ( http://cdn.sobekrepository.org/images/misc/cc_by_nc_sa.png by default)</summary>
-        public static string Cc_By_Nc_Sa_Png { get; private set; }
+        public static string Cc_By_Nc_Sa_Img { get; private set; }
 
         /// <summary> URL for the default resource 'cc_by_nd.png' file ( http://cdn.sobekrepository.org/images/misc/cc_by_nd.png by default)</summary>
-        public static string Cc_By_Nd_Png { get; private set; }
+        public static string Cc_By_Nd_Img { get; private set; }
 
         /// <summary> URL for the default resource 'cc_by_sa.png' file ( http://cdn.sobekrepository.org/images/misc/cc_by_sa.png by default)</summary>
-        public static string Cc_By_Sa_Png { get; private set; }
+        public static string Cc_By_Sa_Img { get; private set; }
 
         /// <summary> URL for the default resource 'cc_zero.png' file ( http://cdn.sobekrepository.org/images/misc/cc_zero.png by default)</summary>
-        public static string Cc_Zero_Png { get; private set; }
+        public static string Cc_Zero_Img { get; private set; }
 
         /// <summary> URL for the default resource 'chart.js' file ( http://cdn.sobekrepository.org/includes/chartjs/1.0.2/Chart.min.js by default)</summary>
         public static string Chart_Js { get; private set; }
@@ -679,20 +654,8 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'dark_resource.png' file ( http://cdn.sobekrepository.org/images/misc/dark_resource.png by default)</summary>
         public static string Dark_Resource_Png { get; private set; }
 
-        /// <summary> URL for the default resource 'default_banner.jpg' file ( http://cdn.sobekrepository.org/images/misc/default_banner.jpg by default)</summary>
-        public static string Default_Banner_Jpg { get; private set; }
-
-        /// <summary> URL for the default resource 'default_button.gif' file ( http://cdn.sobekrepository.org/images/misc/default_button.gif by default)</summary>
-        public static string Default_Button_Gif { get; private set; }
-
-        /// <summary> URL for the default resource 'default_button.png' file ( http://cdn.sobekrepository.org/images/misc/default_button.png by default)</summary>
-        public static string Default_Button_Png { get; private set; }
-
         /// <summary> URL for the default resource 'delete_cursor.cur' file ( http://cdn.sobekrepository.org/images/qc/delete_cursor.cur by default)</summary>
         public static string Delete_Cursor_Cur { get; private set; }
-
-        /// <summary> URL for the default resource 'delete_item.png' file ( http://cdn.sobekrepository.org/images/misc/delete_item.png by default)</summary>
-        public static string Delete_Item_Png { get; private set; }
 
         /// <summary> URL for the default resource 'delete_item_icon.png' file ( http://cdn.sobekrepository.org/images/misc/delete_item_icon.png by default)</summary>
         public static string Delete_Item_Icon_Png { get; private set; }
@@ -713,19 +676,13 @@ namespace SobekCM.Library.Settings
         public static string Edit_Gif { get; private set; }
 
         /// <summary> URL for the default resource 'edit.png' file ( http://cdn.sobekrepository.org/images/mapedit/edit.png by default)</summary>
-        public static string Edit_Png { get; private set; }
-
-        /// <summary> URL for the default resource 'edit_behaviors.png' file ( http://cdn.sobekrepository.org/images/misc/edit_behaviors.png by default)</summary>
-        public static string Edit_Behaviors_Png { get; private set; }
+        public static string Edit_Mapedit_Img { get; private set; }
 
         /// <summary> URL for the default resource 'edit_behaviors_icon.png' file ( http://cdn.sobekrepository.org/images/misc/edit_behaviors_icon.png by default)</summary>
         public static string Edit_Behaviors_Icon_Png { get; private set; }
 
         /// <summary> URL for the default resource 'edit_hierarchy.png' file ( http://cdn.sobekrepository.org/images/misc/edit_hierarchy.png by default)</summary>
         public static string Edit_Hierarchy_Png { get; private set; }
-
-        /// <summary> URL for the default resource 'edit_metadata.png' file ( http://cdn.sobekrepository.org/images/misc/edit_metadata.png by default)</summary>
-        public static string Edit_Metadata_Png { get; private set; }
 
         /// <summary> URL for the default resource 'edit_metadata_icon.png' file ( http://cdn.sobekrepository.org/images/misc/edit_metadata_icon.png by default)</summary>
         public static string Edit_Metadata_Icon_Png { get; private set; }
@@ -751,29 +708,26 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'favorites_share_h.gif' file ( http://cdn.sobekrepository.org/images/misc/favorites_share_h.gif by default)</summary>
         public static string Favorites_Share_H_Gif { get; private set; }
 
-        /// <summary> URL for the default resource 'file_management.png' file ( http://cdn.sobekrepository.org/images/misc/file_management.png by default)</summary>
-        public static string File_Management_Png { get; private set; }
-
         /// <summary> URL for the default resource 'file_management_icon.png' file ( http://cdn.sobekrepository.org/images/misc/file_management_icon.png by default)</summary>
         public static string File_Management_Icon_Png { get; private set; }
 
         /// <summary> URL for the default resource 'firewall.gif' file ( http://cdn.sobekrepository.org/images/misc/firewall.gif by default)</summary>
-        public static string Firewall_Gif { get; private set; }
+        public static string Firewall_Img { get; private set; }
 
         /// <summary> URL for the default resource 'firewall.png' file ( http://cdn.sobekrepository.org/images/misc/firewall.png by default)</summary>
-        public static string Firewall_Png { get; private set; }
+        public static string Firewall_Img_Small { get; private set; }
 
         /// <summary> URL for the default resource 'first2.png' file ( http://cdn.sobekrepository.org/images/bookturner/first2.png by default)</summary>
         public static string First2_Png { get; private set; }
 
         /// <summary> URL for the default resource 'forwarding.gif' file ( http://cdn.sobekrepository.org/images/misc/forwarding.gif by default)</summary>
-        public static string Forwarding_Gif { get; private set; }
+        public static string Forwarding_Img { get; private set; }
 
         /// <summary> URL for the default resource 'forwarding.png' file ( http://cdn.sobekrepository.org/images/misc/forwarding.png by default)</summary>
-        public static string Forwarding_Png { get; private set; }
+        public static string Forwarding_Img_Small { get; private set; }
 
         /// <summary> URL for the default resource 'gears.png' file ( http://cdn.sobekrepository.org/images/misc/gears.png by default)</summary>
-        public static string Gears_Png { get; private set; }
+        public static string Gears_Img { get; private set; }
 
         /// <summary> URL for the default resource 'geo_blue.png' file ( http://cdn.sobekrepository.org/images/mapsearch/geo_blue.png by default)</summary>
         public static string Geo_Blue_Png { get; private set; }
@@ -826,17 +780,11 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'html5shiv.js' file ( http://cdn.sobekrepository.org/includes/html5shiv/3.7.3/html5shiv.js by default)</summary>
         public static string Html5shiv_Js { get; private set; }
 
-        /// <summary> URL for the default resource 'icon_permission.png' file ( http://cdn.sobekrepository.org/images/misc/icon_permission.png by default)</summary>
-        public static string Icon_Permission_Png { get; private set; }
-
         /// <summary> URL for the default resource 'icons-os.png' file ( http://cdn.sobekrepository.org/images/mapedit/icons-os.png by default)</summary>
         public static string Icons_Os_Png { get; private set; }
 
-        /// <summary> URL for the default resource 'index.html' file ( http://cdn.sobekrepository.org/images/misc/index.html by default)</summary>
-        public static string Index_Html { get; private set; }
-
-        /// <summary> URL for the default resource 'item_count.png' file ( http://cdn.sobekrepository.org/images/misc/item_count.png by default)</summary>
-        public static string Item_Count_Png { get; private set; }
+        /// <summary> URL for the default resource 'item_count_lg.png' file ( http://cdn.sobekrepository.org/images/misc/item_count_lg.png by default)</summary>
+        public static string Item_Count_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'jquery.color-2.1.1.js' file ( http://cdn.sobekrepository.org/includes/jquery-color/2.1.1/jquery.color-2.1.1.js by default)</summary>
         public static string Jquery_Color_2_1_1_Js { get; private set; }
@@ -947,7 +895,7 @@ namespace SobekCM.Library.Settings
         public static string Map_Drag_Hand_Gif { get; private set; }
 
         /// <summary> URL for the default resource 'map_point.gif' file ( http://cdn.sobekrepository.org/images/misc/map_point.gif by default)</summary>
-        public static string Map_Point_Gif { get; private set; }
+        public static string Map_Tack_Img { get; private set; }
 
         /// <summary> URL for the default resource 'map_point.png' file ( http://cdn.sobekrepository.org/images/misc/map_point.png by default)</summary>
         public static string Map_Point_Png { get; private set; }
@@ -957,15 +905,6 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'map_rectangle2.gif' file ( http://cdn.sobekrepository.org/images/misc/map_rectangle2.gif by default)</summary>
         public static string Map_Rectangle2_Gif { get; private set; }
-
-        /// <summary> URL for the default resource 'mapedit.html' file ( http://cdn.sobekrepository.org/images/misc/mapedit.html by default)</summary>
-        public static string Mapedit_Html { get; private set; }
-
-        /// <summary> URL for the default resource 'mapsearch.html' file ( http://cdn.sobekrepository.org/images/misc/mapsearch.html by default)</summary>
-        public static string Mapsearch_Html { get; private set; }
-
-        /// <summary> URL for the default resource 'mass_update.png' file ( http://cdn.sobekrepository.org/images/misc/mass_update.png by default)</summary>
-        public static string Mass_Update_Png { get; private set; }
 
         /// <summary> URL for the default resource 'mass_update_icon.png' file ( http://cdn.sobekrepository.org/images/misc/mass_update_icon.png by default)</summary>
         public static string Mass_Update_Icon_Png { get; private set; }
@@ -989,7 +928,7 @@ namespace SobekCM.Library.Settings
         public static string New_Folder_Jpg { get; private set; }
 
         /// <summary> URL for the default resource 'new_item.gif' file ( http://cdn.sobekrepository.org/images/misc/new_item.gif by default)</summary>
-        public static string New_Item_Gif { get; private set; }
+        public static string New_Item_Img { get; private set; }
 
         /// <summary> URL for the default resource 'next.png' file ( http://cdn.sobekrepository.org/images/bookturner/next.png by default)</summary>
         public static string Next_Png { get; private set; }
@@ -1019,7 +958,7 @@ namespace SobekCM.Library.Settings
         public static string Plussign_Png { get; private set; }
 
         /// <summary> URL for the default resource 'pmets.gif' file ( http://cdn.sobekrepository.org/images/misc/pmets.gif by default)</summary>
-        public static string Pmets_Gif { get; private set; }
+        public static string Pmets_Img { get; private set; }
 
         /// <summary> URL for the default resource 'point02.ico' file ( http://cdn.sobekrepository.org/images/qc/POINT02.ICO by default)</summary>
         public static string Point02_Ico { get; private set; }
@@ -1034,10 +973,10 @@ namespace SobekCM.Library.Settings
         public static string Pointer_Blue_Gif { get; private set; }
 
         /// <summary> URL for the default resource 'portals.gif' file ( http://cdn.sobekrepository.org/images/misc/portals.gif by default)</summary>
-        public static string Portals_Gif { get; private set; }
+        public static string Portals_Img { get; private set; }
 
         /// <summary> URL for the default resource 'portals.png' file ( http://cdn.sobekrepository.org/images/misc/portals.png by default)</summary>
-        public static string Portals_Png { get; private set; }
+        public static string Portals_Img_Small { get; private set; }
 
         /// <summary> URL for the default resource 'previous2.png' file ( http://cdn.sobekrepository.org/images/bookturner/previous2.png by default)</summary>
         public static string Previous2_Png { get; private set; }
@@ -1048,32 +987,20 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'printer.png' file ( http://cdn.sobekrepository.org/images/misc/printer.png by default)</summary>
         public static string Printer_Png { get; private set; }
 
-        /// <summary> URL for the default resource 'private_items.png' file ( http://cdn.sobekrepository.org/images/misc/private_items.png by default)</summary>
-        public static string Private_Items_Png { get; private set; }
-
-        /// <summary> URL for the default resource 'private_resource.png' file ( http://cdn.sobekrepository.org/images/misc/private_resource.png by default)</summary>
-        public static string Private_Resource_Png { get; private set; }
+        /// <summary> URL for the default resource 'private_items_lg.png' file ( http://cdn.sobekrepository.org/images/misc/private_items_lg.png by default)</summary>
+        public static string Private_Items_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'private_resource_icon.png' file ( http://cdn.sobekrepository.org/images/misc/private_resource_icon.png by default)</summary>
-        public static string Private_Resource_Icon_Png { get; private set; }
-
-        /// <summary> URL for the default resource 'public_resource.png' file ( http://cdn.sobekrepository.org/images/misc/public_resource.png by default)</summary>
-        public static string Public_Resource_Png { get; private set; }
+        public static string Private_Resource_Img_Jumbo { get; private set; }
 
         /// <summary> URL for the default resource 'public_resource_icon.png' file ( http://cdn.sobekrepository.org/images/misc/public_resource_icon.png by default)</summary>
-        public static string Public_Resource_Icon_Png { get; private set; }
-
-        /// <summary> URL for the default resource 'qc.html' file ( http://cdn.sobekrepository.org/images/misc/qc.html by default)</summary>
-        public static string Qc_Html { get; private set; }
+        public static string Public_Resource_Img_Jumbo { get; private set; }
 
         /// <summary> URL for the default resource 'qc_addfiles.png' file ( http://cdn.sobekrepository.org/images/qc/qc_addfiles.png by default)</summary>
         public static string Qc_Addfiles_Png { get; private set; }
 
-        /// <summary> URL for the default resource 'qc_button.png' file ( http://cdn.sobekrepository.org/images/misc/qc_button.png by default)</summary>
-        public static string Qc_Button_Png { get; private set; }
-
         /// <summary> URL for the default resource 'qc_button_icon.png' file ( http://cdn.sobekrepository.org/images/misc/qc_button_icon.png by default)</summary>
-        public static string Qc_Button_Icon_Png { get; private set; }
+        public static string Qc_Button_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'rect_large.ico' file ( http://cdn.sobekrepository.org/images/qc/rect_large.ico by default)</summary>
         public static string Rect_Large_Ico { get; private set; }
@@ -1088,10 +1015,10 @@ namespace SobekCM.Library.Settings
         public static string Red_Pushpin_Png { get; private set; }
 
         /// <summary> URL for the default resource 'refresh.gif' file ( http://cdn.sobekrepository.org/images/misc/refresh.gif by default)</summary>
-        public static string Refresh_Gif { get; private set; }
+        public static string Refresh_Img { get; private set; }
 
         /// <summary> URL for the default resource 'refresh.png' file ( http://cdn.sobekrepository.org/images/misc/refresh.png by default)</summary>
-        public static string Refresh_Png { get; private set; }
+        public static string Refresh_Img_Small { get; private set; }
 
         /// <summary> URL for the default resource 'refresh_folder.jpg' file ( http://cdn.sobekrepository.org/images/misc/refresh_folder.jpg by default)</summary>
         public static string Refresh_Folder_Jpg { get; private set; }
@@ -1099,17 +1026,14 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'removeicon.gif' file ( http://cdn.sobekrepository.org/images/mapsearch/removeIcon.gif by default)</summary>
         public static string Removeicon_Gif { get; private set; }
 
-        /// <summary> URL for the default resource 'restricted_resource.png' file ( http://cdn.sobekrepository.org/images/misc/restricted_resource.png by default)</summary>
-        public static string Restricted_Resource_Png { get; private set; }
+        /// <summary> URL for the default resource 'restricted_resource_lg.png' file ( http://cdn.sobekrepository.org/images/misc/restricted_resource_lg.png by default)</summary>
+        public static string Restricted_Resource_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'restricted_resource_icon.png' file ( http://cdn.sobekrepository.org/images/misc/restricted_resource_icon.png by default)</summary>
-        public static string Restricted_Resource_Icon_Png { get; private set; }
+        public static string Restricted_Resource_Img_Jumbo { get; private set; }
 
         /// <summary> URL for the default resource 'return.gif' file ( http://cdn.sobekrepository.org/images/misc/return.gif by default)</summary>
-        public static string Return_Gif { get; private set; }
-
-        /// <summary> URL for the default resource 'return.png' file ( http://cdn.sobekrepository.org/images/bookturner/return.png by default)</summary>
-        public static string Return_Png { get; private set; }
+        public static string Return_Img { get; private set; }
 
         /// <summary> URL for the default resource 'rotation-clockwise.png' file ( http://cdn.sobekrepository.org/images/mapedit/rotation-clockwise.png by default)</summary>
         public static string Rotation_Clockwise_Png { get; private set; }
@@ -1124,25 +1048,28 @@ namespace SobekCM.Library.Settings
         public static string Save_Ico { get; private set; }
 
         /// <summary> URL for the default resource 'saved_searches.gif' file ( http://cdn.sobekrepository.org/images/misc/saved_searches.gif by default)</summary>
-        public static string Saved_Searches_Gif { get; private set; }
+        public static string Saved_Searches_Img { get; private set; }
 
         /// <summary> URL for the default resource 'saved_searches_big.gif' file ( http://cdn.sobekrepository.org/images/misc/saved_searches_big.gif by default)</summary>
-        public static string Saved_Searches_Big_Gif { get; private set; }
+        public static string Saved_Searches_Img_Jumbo { get; private set; }
 
         /// <summary> URL for the default resource 'search.png' file ( http://cdn.sobekrepository.org/images/mapedit/search.png by default)</summary>
         public static string Search_Png { get; private set; }
 
         /// <summary> URL for the default resource 'settings.gif' file ( http://cdn.sobekrepository.org/images/misc/Settings.gif by default)</summary>
-        public static string Settings_Gif { get; private set; }
+        public static string Settings_Img { get; private set; }
 
         /// <summary> URL for the default resource 'show_internal_header.png' file ( http://cdn.sobekrepository.org/images/misc/show_internal_header.png by default)</summary>
         public static string Show_Internal_Header_Png { get; private set; }
 
         /// <summary> URL for the default resource 'skins.gif' file ( http://cdn.sobekrepository.org/images/misc/skins.gif by default)</summary>
-        public static string Skins_Gif { get; private set; }
+        public static string Skins_Img { get; private set; }
 
         /// <summary> URL for the default resource 'skins.png' file ( http://cdn.sobekrepository.org/images/misc/skins.png by default)</summary>
-        public static string Skins_Png { get; private set; }
+        public static string Skins_Img_Small { get; private set; }
+
+        /// <summary> URL for the default resource 'skins_lg.png' file ( http://cdn.sobekrepository.org/images/misc/skins_lg.png by default)</summary>
+        public static string Skins_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'sobekcm.css' file ( http://cdn.sobekrepository.org/css/sobekcm/4.8.4/SobekCM.min.css by default)</summary>
         public static string Sobekcm_Css { get; private set; }
@@ -1210,9 +1137,6 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'sobekcm_trackingsheet.css' file ( http://cdn.sobekrepository.org/css/sobekcm-tracking/4.8.4/SobekCM_TrackingSheet.css by default)</summary>
         public static string Sobekcm_Trackingsheet_Css { get; private set; }
 
-        /// <summary> URL for the default resource 'source.html' file ( http://cdn.sobekrepository.org/images/misc/source.html by default)</summary>
-        public static string Source_Html { get; private set; }
-
         /// <summary> URL for the default resource 'spinner.gif' file ( http://cdn.sobekrepository.org/images/misc/spinner.gif by default)</summary>
         public static string Spinner_Gif { get; private set; }
 
@@ -1231,11 +1155,14 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'table_blue.png' file ( http://cdn.sobekrepository.org/images/mapsearch/table_blue.png by default)</summary>
         public static string Table_Blue_Png { get; private set; }
 
-        /// <summary> URL for the default resource 'thematic_heading.gif' file ( http://cdn.sobekrepository.org/images/misc/thematic_heading.gif by default)</summary>
-        public static string Thematic_Heading_Gif { get; private set; }
-
         /// <summary> URL for the default resource 'thematic_heading.png' file ( http://cdn.sobekrepository.org/images/misc/thematic_heading.png by default)</summary>
-        public static string Themaitc_Heading_Png { get; private set; }
+        public static string Thematic_Heading_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'thematic_heading.gif' file ( http://cdn.sobekrepository.org/images/misc/thematic_heading.gif by default)</summary>
+        public static string Thematic_Heading_Img_Small { get; private set; }
+
+        /// <summary> URL for the default resource 'thematic_heading_lg.png' file ( http://cdn.sobekrepository.org/images/misc/thematic_heading_lg.png by default)</summary>
+        public static string Thematic_Heading_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'thumb_blue.png' file ( http://cdn.sobekrepository.org/images/mapsearch/thumb_blue.png by default)</summary>
         public static string Thumb_Blue_Png { get; private set; }
@@ -1313,34 +1240,43 @@ namespace SobekCM.Library.Settings
         public static string Uploadify_Swf { get; private set; }
 
         /// <summary> URL for the default resource 'usage.png' file ( http://cdn.sobekrepository.org/images/misc/usage.png by default)</summary>
-        public static string Usage_Png { get; private set; }
+        public static string Usage_Img { get; private set; }
 
-        /// <summary> URL for the default resource 'usage_statistics.png' file ( http://cdn.sobekrepository.org/images/misc/usage_statistics.png by default)</summary>
-        public static string Usage_Statistics_Png { get; private set; }
+        /// <summary> URL for the default resource 'usage_lg.png' file ( http://cdn.sobekrepository.org/images/misc/usage_lg.png by default)</summary>
+        public static string Usage_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'users.gif' file ( http://cdn.sobekrepository.org/images/misc/Users.gif by default)</summary>
-        public static string Users_Gif { get; private set; }
+        public static string Users_Img { get; private set; }
 
         /// <summary> URL for the default resource 'users.png' file ( http://cdn.sobekrepository.org/images/misc/Users.png by default)</summary>
-        public static string Users_Png { get; private set; }
+        public static string Users_Img_Small { get; private set; }
+
+        /// <summary> URL for the default resource 'users_lg.png' file ( http://cdn.sobekrepository.org/images/misc/Users_lg.png by default)</summary>
+        public static string Users_Img_Large { get; private set; }
+
+        /// <summary> URL for the default resource 'icon_permission.png' file ( http://cdn.sobekrepository.org/images/misc/icon_permission.png by default)</summary>
+        public static string User_Permission_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'user_permissions_lg.png' file ( http://cdn.sobekrepository.org/images/misc/user_permissions_lg.png by default)</summary>
+        public static string User_Permission_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'view.ico' file ( http://cdn.sobekrepository.org/images/qc/View.ico by default)</summary>
         public static string View_Ico { get; private set; }
 
-        /// <summary> URL for the default resource 'view_work_log.png' file ( http://cdn.sobekrepository.org/images/misc/view_work_log.png by default)</summary>
-        public static string View_Work_Log_Png { get; private set; }
-
         /// <summary> URL for the default resource 'view_work_log_icon.png' file ( http://cdn.sobekrepository.org/images/misc/view_work_log_icon.png by default)</summary>
-        public static string View_Work_Log_Icon_Png { get; private set; }
+        public static string View_Work_Log_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'wizard.png' file ( http://cdn.sobekrepository.org/images/misc/wizard.png by default)</summary>
-        public static string Wizard_Png { get; private set; }
+        public static string Wizard_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'wizard_lg.png' file ( http://cdn.sobekrepository.org/images/misc/wizard_lg.png by default)</summary>
+        public static string Wizard_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'wordmarks.gif' file ( http://cdn.sobekrepository.org/images/misc/wordmarks.gif by default)</summary>
-        public static string Wordmarks_Gif { get; private set; }
+        public static string Wordmarks_Img { get; private set; }
 
         /// <summary> URL for the default resource 'wrench.png' file ( http://cdn.sobekrepository.org/images/misc/wrench.png by default)</summary>
-        public static string Wrench_Png { get; private set; }
+        public static string Wrench_Img { get; private set; }
 
         /// <summary> URL for the default resource 'yahoo_share.gif' file ( http://cdn.sobekrepository.org/images/misc/yahoo_share.gif by default)</summary>
         public static string Yahoo_Share_Gif { get; private set; }
@@ -1370,411 +1306,400 @@ namespace SobekCM.Library.Settings
         {
             switch (Key)
             {
-                case "16px-feed-icon.svg.png":
-                    Sixteen_Px_Feed_Icon_Svg_Png = Source;
+                case "16px-feed-icon.svg_img":
+                    Sixteen_Px_Feed_Img = Source;
                     break;
 
-                case "add_geospatial_icon.png":
-                    Add_Geospatial_Icon_Png = Source;
+                case "add_geospatial_icon_img":
+                    Add_Geospatial_Img = Source;
                     break;
 
-                case "add_volume.png":
-                    Add_Volume_Png = Source;
+                case "add_volume_icon_img":
+                    Add_Volume_Img = Source;
+                    break;
+                    
+                case "admin_view_img_large":
+                    Admin_View_Img_Large = Source;
                     break;
 
-                case "add_volume_icon.png":
-                    Add_Volume_Icon_Png = Source;
+                case "aggregations_img":
+                case "building_img":
+                    Aggregations_Img = Source;
                     break;
 
-                case "admin_view.png":
-                    Admin_View_Png = Source;
+                case "aggregations_img_large":
+                    Aggregations_Img_Large = Source;
                     break;
 
-                case "ajax-loader.gif":
-                    Ajax_Loader_Gif = Source;
+                case "ajax-loader_img":
+                    Ajax_Loader_Img = Source;
                     break;
 
-                case "arw05lt.gif":
-                    Arw05lt_Gif = Source;
+                case "arw05lt_img":
+                    Arw05lt_Img = Source;
                     break;
 
-                case "arw05rt.gif":
-                    Arw05rt_Gif = Source;
+                case "arw05rt_img":
+                    Arw05rt_Img = Source;
                     break;
 
-                case "autofill_volumes.png":
-                    Autofill_Volumes_Png = Source;
+                case "bg1_img":
+                    Bg1_Img = Source;
                     break;
 
-                case "bg1.png":
-                    Bg1_Png = Source;
+                case "big_bookshelf_img":
+                    Big_Bookshelf_Img = Source;
                     break;
 
-                case "big_bookshelf.gif":
-                    Big_Bookshelf_Gif = Source;
+                case "blue_img":
+                    Blue_Img = Source;
                     break;
 
-                case "blue.png":
-                    Blue_Png = Source;
+                case "blue-pin_img":
+                    Blue_Pin_Img = Source;
                     break;
 
-                case "blue-pin.png":
-                    Blue_Pin_Png = Source;
-                    break;
-
-                case "bookshelf.jpg":
-                    Bookshelf_Jpg = Source;
-                    break;
-
-                case "bookshelf.png":
-                    Bookshelf_Png = Source;
-                    break;
-
-                case "bookturner.html":
-                    Bookturner_Html = Source;
+                case "bookshelf_img":
+                    Bookshelf_Img = Source;
                     break;
 
                 case "bookturner.js":
                     Bookturner_Js = Source;
                     break;
 
-                case "brief_blue.png":
-                    Brief_Blue_Png = Source;
+                case "brief_blue_img":
+                    Brief_Blue_Img = Source;
                     break;
 
-                case "building.gif":
-                    Building_Gif = Source;
-                    break;
-
-                case "button_down_arrow.png":
+                case "button_down_arrow_img":
                     Button_Down_Arrow_Png = Source;
                     break;
 
-                case "button_first_arrow.png":
+                case "button_first_arrow_img":
                     Button_First_Arrow_Png = Source;
                     break;
 
-                case "button_last_arrow.png":
+                case "button_last_arrow_img":
                     Button_Last_Arrow_Png = Source;
                     break;
 
-                case "button_next_arrow.png":
+                case "button_next_arrow_img":
                     Button_Next_Arrow_Png = Source;
                     break;
 
-                case "button_next_arrow2.png":
+                case "button_next_arrow2_img":
                     Button_Next_Arrow2_Png = Source;
                     break;
 
-                case "button_previous_arrow.png":
+                case "button_previous_arrow_img":
                     Button_Previous_Arrow_Png = Source;
                     break;
 
-                case "button_up_arrow.png":
+                case "button_up_arrow_img":
                     Button_Up_Arrow_Png = Source;
                     break;
 
-                case "button-action1.png":
+                case "button-action1_img":
                     Button_Action1_Png = Source;
                     break;
 
-                case "button-action2.png":
+                case "button-action2_img":
                     Button_Action2_Png = Source;
                     break;
 
-                case "button-action3.png":
+                case "button-action3_img":
                     Button_Action3_Png = Source;
                     break;
 
-                case "button-base.png":
+                case "button-base_img":
                     Button_Base_Png = Source;
                     break;
 
-                case "button-blocklot.png":
+                case "button-blocklot_img":
                     Button_Blocklot_Png = Source;
                     break;
 
-                case "button-cancel.png":
+                case "button-cancel_img":
                     Button_Cancel_Png = Source;
                     break;
 
-                case "button-controls.png":
+                case "button-controls_img":
                     Button_Controls_Png = Source;
                     break;
 
-                case "button-converttooverlay.png":
+                case "button-converttooverlay_img":
                     Button_Converttooverlay_Png = Source;
                     break;
 
-                case "button-drawcircle.png":
+                case "button-drawcircle_img":
                     Button_Drawcircle_Png = Source;
                     break;
 
-                case "button-drawline.png":
+                case "button-drawline_img":
                     Button_Drawline_Png = Source;
                     break;
 
-                case "button-drawmarker.png":
+                case "button-drawmarker_img":
                     Button_Drawmarker_Png = Source;
                     break;
 
-                case "button-drawpolygon.png":
+                case "button-drawpolygon_img":
                     Button_Drawpolygon_Png = Source;
                     break;
 
-                case "button-drawrectangle.png":
+                case "button-drawrectangle_img":
                     Button_Drawrectangle_Png = Source;
                     break;
 
-                case "button-hybrid.png":
+                case "button-hybrid_img":
                     Button_Hybrid_Png = Source;
                     break;
 
-                case "button-itemgetuserlocation.png":
+                case "button-itemgetuserlocation_img":
                     Button_Itemgetuserlocation_Png = Source;
                     break;
 
-                case "button-itemplace.png":
+                case "button-itemplace_img":
                     Button_Itemplace_Png = Source;
                     break;
 
-                case "button-itemreset.png":
+                case "button-itemreset_img":
                     Button_Itemreset_Png = Source;
                     break;
 
-                case "button-layercustom.png":
+                case "button-layercustom_img":
                     Button_Layercustom_Png = Source;
                     break;
 
-                case "button-layerhybrid.png":
+                case "button-layerhybrid_img":
                     Button_Layerhybrid_Png = Source;
                     break;
 
-                case "button-layerreset.png":
+                case "button-layerreset_img":
                     Button_Layerreset_Png = Source;
                     break;
 
-                case "button-layerroadmap.png":
+                case "button-layerroadmap_img":
                     Button_Layerroadmap_Png = Source;
                     break;
 
-                case "button-layersatellite.png":
+                case "button-layersatellite_img":
                     Button_Layersatellite_Png = Source;
                     break;
 
-                case "button-layerterrain.png":
+                case "button-layerterrain_img":
                     Button_Layerterrain_Png = Source;
                     break;
 
-                case "button-manageitem.png":
+                case "button-manageitem_img":
                     Button_Manageitem_Png = Source;
                     break;
 
-                case "button-manageoverlay.png":
+                case "button-manageoverlay_img":
                     Button_Manageoverlay_Png = Source;
                     break;
 
-                case "button-managepoi.png":
+                case "button-managepoi_img":
                     Button_Managepoi_Png = Source;
                     break;
 
-                case "button-overlayedit.png":
+                case "button-overlayedit_img":
                     Button_Overlayedit_Png = Source;
                     break;
 
-                case "button-overlaygetuserlocation.png":
+                case "button-overlaygetuserlocation_img":
                     Button_Overlaygetuserlocation_Png = Source;
                     break;
 
-                case "button-overlayplace.png":
+                case "button-overlayplace_img":
                     Button_Overlayplace_Png = Source;
                     break;
 
-                case "button-overlayreset.png":
+                case "button-overlayreset_img":
                     Button_Overlayreset_Png = Source;
                     break;
 
-                case "button-overlayrotate.png":
+                case "button-overlayrotate_img":
                     Button_Overlayrotate_Png = Source;
                     break;
 
-                case "button-overlaytoggle.png":
+                case "button-overlaytoggle_img":
                     Button_Overlaytoggle_Png = Source;
                     break;
 
-                case "button-overlaytransparency.png":
+                case "button-overlaytransparency_img":
                     Button_Overlaytransparency_Png = Source;
                     break;
 
-                case "button-pandown.png":
+                case "button-pandown_img":
                     Button_Pandown_Png = Source;
                     break;
 
-                case "button-panleft.png":
+                case "button-panleft_img":
                     Button_Panleft_Png = Source;
                     break;
 
-                case "button-panreset.png":
+                case "button-panreset_img":
                     Button_Panreset_Png = Source;
                     break;
 
-                case "button-panright.png":
+                case "button-panright_img":
                     Button_Panright_Png = Source;
                     break;
 
-                case "button-panup.png":
+                case "button-panup_img":
                     Button_Panup_Png = Source;
                     break;
 
-                case "button-poicircle.png":
+                case "button-poicircle_img":
                     Button_Poicircle_Png = Source;
                     break;
 
-                case "button-poiedit.png":
+                case "button-poiedit_img":
                     Button_Poiedit_Png = Source;
                     break;
 
-                case "button-poigetuserlocation.png":
+                case "button-poigetuserlocation_img":
                     Button_Poigetuserlocation_Png = Source;
                     break;
 
-                case "button-poiline.png":
+                case "button-poiline_img":
                     Button_Poiline_Png = Source;
                     break;
 
-                case "button-poimarker.png":
+                case "button-poimarker_img":
                     Button_Poimarker_Png = Source;
                     break;
 
-                case "button-poiplace.png":
+                case "button-poiplace_img":
                     Button_Poiplace_Png = Source;
                     break;
 
-                case "button-poipolygon.png":
+                case "button-poipolygon_img":
                     Button_Poipolygon_Png = Source;
                     break;
 
-                case "button-poirectangle.png":
+                case "button-poirectangle_img":
                     Button_Poirectangle_Png = Source;
                     break;
 
-                case "button-poireset.png":
+                case "button-poireset_img":
                     Button_Poireset_Png = Source;
                     break;
 
-                case "button-poitoggle.png":
+                case "button-poitoggle_img":
                     Button_Poitoggle_Png = Source;
                     break;
 
-                case "button-reset.png":
+                case "button-reset_img":
                     Button_Reset_Png = Source;
                     break;
 
-                case "button-roadmap.png":
+                case "button-roadmap_img":
                     Button_Roadmap_Png = Source;
                     break;
 
-                case "button-satellite.png":
+                case "button-satellite_img":
                     Button_Satellite_Png = Source;
                     break;
 
-                case "button-save.png":
+                case "button-save_img":
                     Button_Save_Png = Source;
                     break;
 
-                case "button-search.png":
+                case "button-search_img":
                     Button_Search_Png = Source;
                     break;
 
-                case "button-terrain.png":
+                case "button-terrain_img":
                     Button_Terrain_Png = Source;
                     break;
 
-                case "button-togglemapcontrols.png":
+                case "button-togglemapcontrols_img":
                     Button_Togglemapcontrols_Png = Source;
                     break;
 
-                case "button-toggletoolbar.png":
+                case "button-toggletoolbar_img":
                     Button_Toggletoolbar_Png = Source;
                     break;
 
-                case "button-toggletoolbox.png":
+                case "button-toggletoolbox_img":
                     Button_Toggletoolbox_Png = Source;
                     break;
 
-                case "button-toolbox.png":
+                case "button-toolbox_img":
                     Button_Toolbox_Png = Source;
                     break;
 
-                case "button-usesearchaslocation.png":
+                case "button-usesearchaslocation_img":
                     Button_Usesearchaslocation_Png = Source;
                     break;
 
-                case "button-zoomin.png":
+                case "button-zoomin_img":
                     Button_Zoomin_Png = Source;
                     break;
 
-                case "button-zoomout.png":
+                case "button-zoomout_img":
                     Button_Zoomout_Png = Source;
                     break;
 
-                case "button-zoomreset.png":
+                case "button-zoomreset_img":
                     Button_Zoomreset_Png = Source;
                     break;
 
-                case "button-zoomreset2.png":
+                case "button-zoomreset2_img":
                     Button_Zoomreset2_Png = Source;
                     break;
 
-                case "calendar_button.png":
-                    Calendar_Button_Png = Source;
+                case "calendar_button_img":
+                    Calendar_Button_Img = Source;
                     break;
 
                 case "cancel.ico":
                     Cancel_Ico = Source;
                     break;
 
-                case "cc_by.png":
-                    Cc_By_Png = Source;
+                case "cc_by_img":
+                    Cc_By_Img = Source;
                     break;
 
-                case "cc_by_nc.png":
-                    Cc_By_Nc_Png = Source;
+                case "cc_by_nc_img":
+                    Cc_By_Nc_Img = Source;
                     break;
 
-                case "cc_by_nc_nd.png":
-                    Cc_By_Nc_Nd_Png = Source;
+                case "cc_by_nc_nd_img":
+                    Cc_By_Nc_Nd_Img = Source;
                     break;
 
-                case "cc_by_nc_sa.png":
-                    Cc_By_Nc_Sa_Png = Source;
+                case "cc_by_nc_sa_img":
+                    Cc_By_Nc_Sa_Img = Source;
                     break;
 
-                case "cc_by_nd.png":
-                    Cc_By_Nd_Png = Source;
+                case "cc_by_nd_img":
+                    Cc_By_Nd_Img = Source;
                     break;
 
-                case "cc_by_sa.png":
-                    Cc_By_Sa_Png = Source;
+                case "cc_by_sa_img":
+                    Cc_By_Sa_Img = Source;
                     break;
 
-                case "cc_zero.png":
-                    Cc_Zero_Png = Source;
+                case "cc_zero_img":
+                    Cc_Zero_Img = Source;
                     break;
 
                 case "chart.js":
                     Chart_Js = Source;
                     break;
 
-                case "chat.png":
+                case "chat_img":
                     Chat_Png = Source;
                     break;
 
-                case "checkmark.png":
+                case "checkmark_img":
                     Checkmark_Png = Source;
                     break;
 
-                case "checkmark2.png":
+                case "checkmark2_img":
                     Checkmark2_Png = Source;
                     break;
 
@@ -1782,15 +1707,15 @@ namespace SobekCM.Library.Settings
                     Ckeditor_Js = Source;
                     break;
 
-                case "closed_folder.jpg":
+                case "closed_folder_img":
                     Closed_Folder_Jpg = Source;
                     break;
 
-                case "closed_folder_public.jpg":
+                case "closed_folder_public_img":
                     Closed_Folder_Public_Jpg = Source;
                     break;
 
-                case "closed_folder_public_big.jpg":
+                case "closed_folder_public_big_img":
                     Closed_Folder_Public_Big_Jpg = Source;
                     break;
 
@@ -1798,43 +1723,27 @@ namespace SobekCM.Library.Settings
                     Contentslider_Js = Source;
                     break;
 
-                case "dark_resource.png":
+                case "dark_resource_img":
                     Dark_Resource_Png = Source;
-                    break;
-
-                case "default_banner.jpg":
-                    Default_Banner_Jpg = Source;
-                    break;
-
-                case "default_button.gif":
-                    Default_Button_Gif = Source;
-                    break;
-
-                case "default_button.png":
-                    Default_Button_Png = Source;
                     break;
 
                 case "delete_cursor.cur":
                     Delete_Cursor_Cur = Source;
                     break;
 
-                case "delete_item.png":
-                    Delete_Item_Png = Source;
-                    break;
-
-                case "delete_item_icon.png":
+                case "delete_item_icon_img":
                     Delete_Item_Icon_Png = Source;
                     break;
 
-                case "digg_share.gif":
+                case "digg_share_img":
                     Digg_Share_Gif = Source;
                     break;
 
-                case "digg_share_h.gif":
+                case "digg_share_h_img":
                     Digg_Share_H_Gif = Source;
                     break;
 
-                case "dloc_banner_700.jpg":
+                case "dloc_banner_700_img":
                     Dloc_Banner_700_Jpg = Source;
                     break;
 
@@ -1842,103 +1751,91 @@ namespace SobekCM.Library.Settings
                     Drag1pg_Ico = Source;
                     break;
 
-                case "edit.gif":
+                case "edit_img":
                     Edit_Gif = Source;
                     break;
 
-                case "edit.png":
-                    Edit_Png = Source;
+                case "edit_mapedit_img":
+                    Edit_Mapedit_Img = Source;
                     break;
 
-                case "edit_behaviors.png":
-                    Edit_Behaviors_Png = Source;
-                    break;
-
-                case "edit_behaviors_icon.png":
+                case "edit_behaviors_icon_img":
                     Edit_Behaviors_Icon_Png = Source;
                     break;
 
-                case "edit_hierarchy.png":
+                case "edit_hierarchy_img":
                     Edit_Hierarchy_Png = Source;
                     break;
 
-                case "edit_metadata.png":
-                    Edit_Metadata_Png = Source;
-                    break;
-
-                case "edit_metadata_icon.png":
+                case "edit_metadata_icon_img":
                     Edit_Metadata_Icon_Png = Source;
                     break;
 
-                case "email.png":
+                case "email_img":
                     Email_Png = Source;
                     break;
 
-                case "emptypage.jpg":
+                case "emptypage_img":
                     Emptypage_Jpg = Source;
                     break;
 
-                case "exit.gif":
+                case "exit_img":
                     Exit_Gif = Source;
                     break;
 
-                case "facebook_share.gif":
+                case "facebook_share_img":
                     Facebook_Share_Gif = Source;
                     break;
 
-                case "facebook_share_h.gif":
+                case "facebook_share_h_img":
                     Facebook_Share_H_Gif = Source;
                     break;
 
-                case "favorites_share.gif":
+                case "favorites_share_img":
                     Favorites_Share_Gif = Source;
                     break;
 
-                case "favorites_share_h.gif":
+                case "favorites_share_h_img":
                     Favorites_Share_H_Gif = Source;
                     break;
 
-                case "file_management.png":
-                    File_Management_Png = Source;
-                    break;
-
-                case "file_management_icon.png":
+                case "file_management_icon_img":
                     File_Management_Icon_Png = Source;
                     break;
 
-                case "firewall.gif":
-                    Firewall_Gif = Source;
+                case "firewall_img":
+                    Firewall_Img = Source;
                     break;
 
-                case "firewall.png":
-                    Firewall_Png = Source;
+                case "firewall_img_small":
+                    Firewall_Img_Small = Source;
                     break;
 
-                case "first2.png":
+                case "first2_img":
                     First2_Png = Source;
                     break;
 
-                case "forwarding.gif":
-                    Forwarding_Gif = Source;
+                case "forwarding_img":
+                    Forwarding_Img = Source;
                     break;
 
-                case "forwarding.png":
-                    Forwarding_Png = Source;
+                case "forwarding_img_small":
+                    Forwarding_Img_Small = Source;
                     break;
 
-                case "gears.png":
-                    Gears_Png = Source;
+                case "gears_img":
+                    Gears_Img = Source;
                     break;
 
-                case "geo_blue.png":
+                case "geo_blue_img":
                     Geo_Blue_Png = Source;
                     break;
 
-                case "get_adobe_reader.png":
+                case "get_adobe_reader_img":
                     Get_Adobe_Reader_Png = Source;
                     break;
 
-                case "getuserlocation.png":
+                case "getuserlocation_img":
                     Getuserlocation_Png = Source;
                     break;
 
@@ -1950,47 +1847,47 @@ namespace SobekCM.Library.Settings
                     Gmaps_MarkerwithLabel_Js = Source;
                     break;
 
-                case "go_button.png":
+                case "go_button_img":
                     Go_Button_Png = Source;
                     break;
 
-                case "go_gray.gif":
+                case "go_gray_img":
                     Go_Gray_Gif = Source;
                     break;
 
-                case "google_share.gif":
+                case "google_share_img":
                     Google_Share_Gif = Source;
                     break;
 
-                case "google_share_h.gif":
+                case "google_share_h_img":
                     Google_Share_H_Gif = Source;
                     break;
 
-                case "help_button.jpg":
+                case "help_button_img":
                     Help_Button_Jpg = Source;
                     break;
 
-                case "help_button_darkgray.jpg":
+                case "help_button_darkgray_img":
                     Help_Button_Darkgray_Jpg = Source;
                     break;
 
-                case "hide_internal_header.png":
+                case "hide_internal_header_img":
                     Hide_Internal_Header_Png = Source;
                     break;
 
-                case "hide_internal_header2.png":
+                case "hide_internal_header2_img":
                     Hide_Internal_Header2_Png = Source;
                     break;
 
-                case "home.png":
+                case "home_img":
                     Home_Png = Source;
                     break;
 
-                case "home_button.gif":
+                case "home_button_img":
                     Home_Button_Gif = Source;
                     break;
 
-                case "home_folder.gif":
+                case "home_folder_img":
                     Home_Folder_Gif = Source;
                     break;
 
@@ -1998,20 +1895,12 @@ namespace SobekCM.Library.Settings
                     Html5shiv_Js = Source;
                     break;
 
-                case "icon_permission.png":
-                    Icon_Permission_Png = Source;
-                    break;
-
-                case "icons-os.png":
+                case "icons-os_img":
                     Icons_Os_Png = Source;
                     break;
 
-                case "index.html":
-                    Index_Html = Source;
-                    break;
-
-                case "item_count.png":
-                    Item_Count_Png = Source;
+                case "item_count_img_large":
+                    Item_Count_Img_Large = Source;
                     break;
 
                 case "jquery.color-2.1.1.js":
@@ -2122,31 +2011,31 @@ namespace SobekCM.Library.Settings
                     Keydragzoom_Packed_Js = Source;
                     break;
 
-                case "last2.png":
+                case "last2_img":
                     Last2_Png = Source;
                     break;
 
-                case "leftarrow.png":
+                case "leftarrow_img":
                     Leftarrow_Png = Source;
                     break;
 
-                case "legend_nonselected_polygon.png":
+                case "legend_nonselected_polygon_img":
                     Legend_Nonselected_Polygon_Png = Source;
                     break;
 
-                case "legend_point_interest.png":
+                case "legend_point_interest_img":
                     Legend_Point_Interest_Png = Source;
                     break;
 
-                case "legend_red_pushpin.png":
+                case "legend_red_pushpin_img":
                     Legend_Red_Pushpin_Png = Source;
                     break;
 
-                case "legend_search_area.png":
+                case "legend_search_area_img":
                     Legend_Search_Area_Png = Source;
                     break;
 
-                case "legend_selected_polygon.png":
+                case "legend_selected_polygon_img":
                     Legend_Selected_Polygon_Png = Source;
                     break;
 
@@ -2154,47 +2043,35 @@ namespace SobekCM.Library.Settings
                     Main_Information_Ico = Source;
                     break;
 
-                case "map_drag_hand.gif":
+                case "map_drag_hand_img":
                     Map_Drag_Hand_Gif = Source;
                     break;
 
-                case "map_point.gif":
-                    Map_Point_Gif = Source;
+                case "map_tack_img":
+                    Map_Tack_Img = Source;
                     break;
 
-                case "map_point.png":
+                case "map_point_img":
                     Map_Point_Png = Source;
                     break;
 
-                case "map_polygon2.gif":
+                case "map_polygon2_img":
                     Map_Polygon2_Gif = Source;
                     break;
 
-                case "map_rectangle2.gif":
+                case "map_rectangle2_img":
                     Map_Rectangle2_Gif = Source;
                     break;
 
-                case "mapedit.html":
-                    Mapedit_Html = Source;
-                    break;
-
-                case "mapsearch.html":
-                    Mapsearch_Html = Source;
-                    break;
-
-                case "mass_update.png":
-                    Mass_Update_Png = Source;
-                    break;
-
-                case "mass_update_icon.png":
+                case "mass_update_icon_img":
                     Mass_Update_Icon_Png = Source;
                     break;
 
-                case "minussign.png":
+                case "minussign_img":
                     Minussign_Png = Source;
                     break;
 
-                case "missingimage.jpg":
+                case "missingimage_img":
                     Missingimage_Jpg = Source;
                     break;
 
@@ -2202,60 +2079,60 @@ namespace SobekCM.Library.Settings
                     Move_Pages_Cursor_Cur = Source;
                     break;
 
-                case "new_element.jpg":
+                case "new_element_img":
                     New_Element_Jpg = Source;
                     break;
 
-                case "new_element_demo.jpg":
+                case "new_element_demo_img":
                     New_Element_Demo_Jpg = Source;
                     break;
 
-                case "new_folder.jpg":
+                case "new_folder_img":
                     New_Folder_Jpg = Source;
                     break;
 
-                case "new_item.gif":
-                    New_Item_Gif = Source;
+                case "new_item_img":
+                    New_Item_Img = Source;
                     break;
 
-                case "next.png":
+                case "next_img":
                     Next_Png = Source;
                     break;
 
-                case "next2.png":
+                case "next2_img":
                     Next2_Png = Source;
                     break;
 
-                case "no_pages.jpg":
+                case "no_pages_img":
                     No_Pages_Jpg = Source;
                     break;
 
-                case "nocheckmark.png":
+                case "nocheckmark_img":
                     Nocheckmark_Png = Source;
                     break;
 
-                case "nothumb.jpg":
+                case "nothumb_img":
                     Nothumb_Jpg = Source;
                     break;
 
-                case "open_folder.jpg":
+                case "open_folder_img":
                     Open_Folder_Jpg = Source;
                     break;
 
-                case "open_folder_public.jpg":
+                case "open_folder_public_img":
                     Open_Folder_Public_Jpg = Source;
                     break;
 
-                case "pagenumbg.gif":
+                case "pagenumbg_img":
                     Pagenumbg_Gif = Source;
                     break;
 
-                case "plussign.png":
+                case "plussign_img":
                     Plussign_Png = Source;
                     break;
 
-                case "pmets.gif":
-                    Pmets_Gif = Source;
+                case "pmets_img":
+                    Pmets_Img = Source;
                     break;
 
                 case "point02.ico":
@@ -2270,19 +2147,19 @@ namespace SobekCM.Library.Settings
                     Point13_Ico = Source;
                     break;
 
-                case "pointer_blue.gif":
+                case "pointer_blue_img":
                     Pointer_Blue_Gif = Source;
                     break;
 
-                case "portals.gif":
-                    Portals_Gif = Source;
+                case "portals_img":
+                    Portals_Img = Source;
                     break;
 
-                case "portals.png":
-                    Portals_Png = Source;
+                case "portals_img_small":
+                    Portals_Img_Small = Source;
                     break;
 
-                case "previous2.png":
+                case "previous2_img":
                     Previous2_Png = Source;
                     break;
 
@@ -2290,44 +2167,28 @@ namespace SobekCM.Library.Settings
                     Print_Css = Source;
                     break;
 
-                case "printer.png":
+                case "printer_img":
                     Printer_Png = Source;
                     break;
 
-                case "private_items.png":
-                    Private_Items_Png = Source;
+                case "private_items_img_large":
+                    Private_Items_Img_Large = Source;
                     break;
 
-                case "private_resource.png":
-                    Private_Resource_Png = Source;
+                case "private_resource_img_jumbo":
+                    Private_Resource_Img_Jumbo = Source;
                     break;
 
-                case "private_resource_icon.png":
-                    Private_Resource_Icon_Png = Source;
+                case "public_resource_img_jumbo":
+                    Public_Resource_Img_Jumbo = Source;
                     break;
 
-                case "public_resource.png":
-                    Public_Resource_Png = Source;
-                    break;
-
-                case "public_resource_icon.png":
-                    Public_Resource_Icon_Png = Source;
-                    break;
-
-                case "qc.html":
-                    Qc_Html = Source;
-                    break;
-
-                case "qc_addfiles.png":
+                case "qc_addfiles_img":
                     Qc_Addfiles_Png = Source;
                     break;
 
-                case "qc_button.png":
-                    Qc_Button_Png = Source;
-                    break;
-
-                case "qc_button_icon.png":
-                    Qc_Button_Icon_Png = Source;
+                case "qc_button_img_large":
+                    Qc_Button_Img_Large = Source;
                     break;
 
                 case "rect_large.ico":
@@ -2342,51 +2203,47 @@ namespace SobekCM.Library.Settings
                     Rect_Small_Ico = Source;
                     break;
 
-                case "red-pushpin.png":
+                case "red-pushpin_img":
                     Red_Pushpin_Png = Source;
                     break;
 
-                case "refresh.gif":
-                    Refresh_Gif = Source;
+                case "refresh_img":
+                    Refresh_Img = Source;
                     break;
 
-                case "refresh.png":
-                    Refresh_Png = Source;
+                case "refresh_img_small":
+                    Refresh_Img_Small = Source;
                     break;
 
-                case "refresh_folder.jpg":
+                case "refresh_folder_img":
                     Refresh_Folder_Jpg = Source;
                     break;
 
-                case "removeicon.gif":
+                case "removeicon_img":
                     Removeicon_Gif = Source;
                     break;
 
-                case "restricted_resource.png":
-                    Restricted_Resource_Png = Source;
+                case "restricted_resource_img_large":
+                    Restricted_Resource_Img_Large = Source;
                     break;
 
-                case "restricted_resource_icon.png":
-                    Restricted_Resource_Icon_Png = Source;
+                case "restricted_resource_img_jumbo":
+                    Restricted_Resource_Img_Jumbo = Source;
                     break;
 
-                case "return.gif":
-                    Return_Gif = Source;
+                case "return_img":
+                    Return_Img = Source;
                     break;
 
-                case "return.png":
-                    Return_Png = Source;
-                    break;
-
-                case "rotation-clockwise.png":
+                case "rotation-clockwise_img":
                     Rotation_Clockwise_Png = Source;
                     break;
 
-                case "rotation-counterclockwise.png":
+                case "rotation-counterclockwise_img":
                     Rotation_Counterclockwise_Png = Source;
                     break;
 
-                case "rotation-reset.png":
+                case "rotation-reset_img":
                     Rotation_Reset_Png = Source;
                     break;
 
@@ -2394,32 +2251,36 @@ namespace SobekCM.Library.Settings
                     Save_Ico = Source;
                     break;
 
-                case "saved_searches.gif":
-                    Saved_Searches_Gif = Source;
+                case "saved_searches_img":
+                    Saved_Searches_Img = Source;
                     break;
 
-                case "saved_searches_big.gif":
-                    Saved_Searches_Big_Gif = Source;
+                case "saved_searches_img_jumbo":
+                    Saved_Searches_Img_Jumbo = Source;
                     break;
 
-                case "search.png":
+                case "search_img":
                     Search_Png = Source;
                     break;
 
-                case "settings.gif":
-                    Settings_Gif = Source;
+                case "settings_img":
+                    Settings_Img = Source;
                     break;
 
-                case "show_internal_header.png":
+                case "show_internal_header_img":
                     Show_Internal_Header_Png = Source;
                     break;
 
-                case "skins.gif":
-                    Skins_Gif = Source;
+                case "skins_img":
+                    Skins_Img = Source;
                     break;
 
-                case "skins.png":
-                    Skins_Png = Source;
+                case "skins_img_small":
+                    Skins_Img_Small = Source;
+                    break;
+
+                case "skins_img_large":
+                    Skins_Img_Large = Source;
                     break;
 
                 case "sobekcm.css":
@@ -2510,44 +2371,43 @@ namespace SobekCM.Library.Settings
                     Sobekcm_Trackingsheet_Css = Source;
                     break;
 
-                case "source.html":
-                    Source_Html = Source;
-                    break;
-
-                case "spinner.gif":
+                case "spinner_img":
                     Spinner_Gif = Source;
                     break;
 
-                case "spinner_gray.gif":
+                case "spinner_gray_img":
                     Spinner_Gray_Gif = Source;
                     break;
 
-                case "stumbleupon_share.gif":
+                case "stumbleupon_share_img":
                     Stumbleupon_Share_Gif = Source;
                     break;
 
-                case "stumbleupon_share_h.gif":
+                case "stumbleupon_share_h_img":
                     Stumbleupon_Share_H_Gif = Source;
                     break;
 
-                case "submitted_items.gif":
+                case "submitted_items_img":
                     Submitted_Items_Gif = Source;
                     break;
 
-                case "table_blue.png":
+                case "table_blue_img":
                     Table_Blue_Png = Source;
                     break;
 
-                case "thematic_heading.gif":
-                    Thematic_Heading_Gif = Source;
+                case "thematic_heading_img":
+                    Thematic_Heading_Img = Source;
                     break;
 
-                case "thematic_heading.png":
-                    Themaitc_Heading_Png = Source;
+                case "thematic_heading_img_small":
+                    Thematic_Heading_Img_Small = Source;
                     break;
 
-
-                case "thumb_blue.png":
+                case "thematic_heading_img_large":
+                    Thematic_Heading_Img_Large = Source;
+                    break;
+                    
+                case "thumb_blue_img":
                     Thumb_Blue_Png = Source;
                     break;
 
@@ -2555,63 +2415,63 @@ namespace SobekCM.Library.Settings
                     Thumbnail_Cursor_Cur = Source;
                     break;
 
-                case "thumbnail_large.gif":
+                case "thumbnail_large_img":
                     Thumbnail_Large_Gif = Source;
                     break;
 
-                case "thumbs1.gif":
+                case "thumbs1_img":
                     Thumbs1_Gif = Source;
                     break;
 
-                case "thumbs1_selected.gif":
+                case "thumbs1_selected_img":
                     Thumbs1_Selected_Gif = Source;
                     break;
 
-                case "thumbs2.gif":
+                case "thumbs2_img":
                     Thumbs2_Gif = Source;
                     break;
 
-                case "thumbs2_selected.gif":
+                case "thumbs2_selected_img":
                     Thumbs2_Selected_Gif = Source;
                     break;
 
-                case "thumbs3.gif":
+                case "thumbs3_img":
                     Thumbs3_Gif = Source;
                     break;
 
-                case "thumbs3_selected.gif":
+                case "thumbs3_selected_img":
                     Thumbs3_Selected_Gif = Source;
                     break;
 
-                case "toolbar-toggle.png":
+                case "toolbar-toggle_img":
                     Toolbar_Toggle_Png = Source;
                     break;
 
-                case "toolbox-close2.png":
+                case "toolbox-close2_img":
                     Toolbox_Close2_Png = Source;
                     break;
 
-                case "toolbox-icon.png":
+                case "toolbox-icon_img":
                     Toolbox_Icon_Png = Source;
                     break;
 
-                case "toolbox-maximize2.png":
+                case "toolbox-maximize2_img":
                     Toolbox_Maximize2_Png = Source;
                     break;
 
-                case "toolbox-minimize2.png":
+                case "toolbox-minimize2_img":
                     Toolbox_Minimize2_Png = Source;
                     break;
 
-                case "top_left.jpg":
+                case "top_left_img":
                     Top_Left_Jpg = Source;
                     break;
 
-                case "top_right.jpg":
+                case "top_right_img":
                     Top_Right_Jpg = Source;
                     break;
 
-                case "track2.gif":
+                case "track2_img":
                     Track2_Gif = Source;
                     break;
 
@@ -2619,19 +2479,19 @@ namespace SobekCM.Library.Settings
                     Trash01_Ico = Source;
                     break;
 
-                case "twitter_share.gif":
+                case "twitter_share_img":
                     Twitter_Share_Gif = Source;
                     break;
 
-                case "twitter_share_h.gif":
+                case "twitter_share_h_img":
                     Twitter_Share_H_Gif = Source;
                     break;
 
-                case "ufdc_banner_700.jpg":
+                case "ufdc_banner_700_img":
                     Ufdc_Banner_700_Jpg = Source;
                     break;
 
-                case "ui-icons_ffffff_256x240.png":
+                case "ui-icons_ffffff_256x240_img":
                     Ui_Icons_Ffffff_256X240_Png = Source;
                     break;
 
@@ -2647,59 +2507,70 @@ namespace SobekCM.Library.Settings
                     Uploadify_Swf = Source;
                     break;
 
-                case "usage.png":
-                    Usage_Png = Source;
+                case "usage_img":
+                    Usage_Img = Source;
                     break;
 
-                case "usage_statistics.png":
-                    Usage_Statistics_Png = Source;
+                case "usage_img_large":
+                    Usage_Img_Large = Source;
                     break;
 
-                case "users.gif":
-                    Users_Gif = Source;
+                case "users_img":
+                    Users_Img = Source;
                     break;
 
-                case "users.png":
-                    Users_Png = Source;
+                case "users_img_small":
+                    Users_Img_Small = Source;
                     break;
+
+                case "users_img_large":
+                    Users_Img_Large = Source;
+                    break;
+
+                case "user_permission_img":
+                case "user_permissions_img":
+                    User_Permission_Img = Source;
+                    break;
+
+                case "user_permission_img_large":
+                case "user_permissions_img_large":
+                    User_Permission_Img_Large = Source;
+                    break;
+
 
                 case "view.ico":
                     View_Ico = Source;
                     break;
 
-                case "view_work_log.png":
-                    View_Work_Log_Png = Source;
+                case "view_work_log_img_large":
+                    View_Work_Log_Img_Large = Source;
                     break;
 
-                case "view_work_log_icon.png":
-                    View_Work_Log_Icon_Png = Source;
+                case "wizard_img":
+                    Wizard_Img = Source;
                     break;
 
-                case "wizard.png":
-                    Wizard_Png = Source;
+                case "wordmarks_img":
+                    Wordmarks_Img = Source;
                     break;
 
-                case "wordmarks.gif":
-                    Wordmarks_Gif = Source;
+                case "wrench_img":
+                    Wrench_Img = Source;
                     break;
 
-                case "wrench.png":
-                    Wrench_Png = Source;
-                    break;
-
-                case "yahoo_share.gif":
+                case "yahoo_share_img":
                     Yahoo_Share_Gif = Source;
                     break;
 
-                case "yahoo_share_h.gif":
+                case "yahoo_share_h_img":
                     Yahoo_Share_H_Gif = Source;
                     break;
 
-                case "yahoobuzz_share.gif":
+                case "yahoobuzz_share_img":
                     Yahoobuzz_Share_Gif = Source;
                     break;
 
-                case "yahoobuzz_share_h.gif":
+                case "yahoobuzz_share_h_img":
                     Yahoobuzz_Share_H_Gif = Source;
                     break;
 
@@ -2707,11 +2578,11 @@ namespace SobekCM.Library.Settings
                     Zoom_Tool_Cur = Source;
                     break;
 
-                case "zoomin.png":
+                case "zoomin_img":
                     Zoomin_Png = Source;
                     break;
 
-                case "zoomout.png":
+                case "zoomout_img":
                     Zoomout_Png = Source;
                     break;
 

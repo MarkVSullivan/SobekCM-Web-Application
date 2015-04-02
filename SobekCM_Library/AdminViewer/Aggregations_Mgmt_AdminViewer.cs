@@ -374,7 +374,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.Building_Gif; }
+            get { return Static_Resources.Aggregations_Img; }
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
