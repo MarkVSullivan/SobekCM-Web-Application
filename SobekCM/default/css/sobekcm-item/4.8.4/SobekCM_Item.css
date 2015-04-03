@@ -45,7 +45,7 @@ textarea { color:Blue;  border-style:solid; border-width: 1px; border-color: #7f
 .private_resource_button { width:102px; background: url(../../../images/misc/private_resource.png) no-repeat; }
 .private_resource_button:hover { background-position: 0 -39px; }
 .private_resource_button_fixed { width:102px; background: url(../../../images/misc/private_resource.png) no-repeat; }
-.view_worklog_button { background: url(../../../images/misc/view_work_log.png) no-repeat; }
+.view_worklog_button { background: url(../../../images/misc/view_work_log_button.png) no-repeat; }
 .view_worklog_button:hover { background-position: 0 -39px; }
 .manage_files_button { background: url(../../../images/misc/file_management.png) no-repeat; }
 .manage_files_button:hover { background-position: 0 -39px; }

@@ -17,6 +17,7 @@ namespace SobekCM.Library.Settings
             Sixteen_Px_Feed_Img = "http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png";
             Add_Geospatial_Img = "http://cdn.sobekrepository.org/images/misc/add_geospatial_icon.png";
             Add_Volume_Img = "http://cdn.sobekrepository.org/images/misc/add_volume_icon.png";
+            Admin_View_Img = "http://cdn.sobekrepository.org/images/misc/admin_view.png";
             Admin_View_Img_Large = "http://cdn.sobekrepository.org/images/misc/admin_view_lg.png";
             Aggregations_Img_Large = "http://cdn.sobekrepository.org/images/misc/aggregations_lg.png";
             Ajax_Loader_Img = "http://cdn.sobekrepository.org/images/mapedit/ajax-loader.gif";
@@ -161,6 +162,7 @@ namespace SobekCM.Library.Settings
             Home_Button_Gif = "http://cdn.sobekrepository.org/images/misc/home_button.gif";
             Home_Folder_Gif = "http://cdn.sobekrepository.org/images/misc/home_folder.gif";
             Html5shiv_Js = "http://cdn.sobekrepository.org/includes/html5shiv/3.7.3/html5shiv.js";
+            Item_Count_Img = "http://cdn.sobekrepository.org/images/misc/item_count.png";
             Item_Count_Img_Large = "http://cdn.sobekrepository.org/images/misc/item_count_lg.png";
             Icons_Os_Png = "http://cdn.sobekrepository.org/images/mapedit/icons-os.png";
             Jquery_Color_2_1_1_Js = "http://cdn.sobekrepository.org/includes/jquery-color/2.1.1/jquery.color-2.1.1.js";
@@ -198,6 +200,7 @@ namespace SobekCM.Library.Settings
             Legend_Search_Area_Png = "http://cdn.sobekrepository.org/images/misc/legend_search_area.png";
             Legend_Selected_Polygon_Png = "http://cdn.sobekrepository.org/images/misc/legend_selected_polygon.png";
             Main_Information_Ico = "http://cdn.sobekrepository.org/images/qc/Main_Information.ICO";
+            Manage_Collection_Img = "http://cdn.sobekrepository.org/images/misc/manage_collection.png";
             Map_Drag_Hand_Gif = "http://cdn.sobekrepository.org/images/misc/map_drag_hand.gif";
             Map_Tack_Img = "http://cdn.sobekrepository.org/images/misc/map_point.gif";
             Map_Point_Png = "http://cdn.sobekrepository.org/images/misc/map_point.png";
@@ -230,6 +233,7 @@ namespace SobekCM.Library.Settings
             Previous2_Png = "http://cdn.sobekrepository.org/images/bookturner/previous2.png";
             Print_Css = "http://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/print.css";
             Printer_Png = "http://cdn.sobekrepository.org/images/misc/printer.png";
+            Private_Items_Img = "http://cdn.sobekrepository.org/images/misc/private_items.png";
             Private_Items_Img_Large = "http://cdn.sobekrepository.org/images/misc/private_items_lg.png";
             Private_Resource_Img_Jumbo = "http://cdn.sobekrepository.org/images/misc/private_resource_icon.png";
             Public_Resource_Img_Jumbo = "http://cdn.sobekrepository.org/images/misc/public_resource_icon.png";
@@ -322,6 +326,7 @@ namespace SobekCM.Library.Settings
             User_Permission_Img = "http://cdn.sobekrepository.org/images/misc/icon_permission.png";
             User_Permission_Img_Large = "http://cdn.sobekrepository.org/images/misc/user_permissions_lg.png";
             View_Ico = "http://cdn.sobekrepository.org/images/qc/View.ico";
+            View_Work_Log_Img = "http://cdn.sobekrepository.org/images/misc/view_work_log.png";
             View_Work_Log_Img_Large = "http://cdn.sobekrepository.org/images/misc/view_work_log_icon.png";
             Wizard_Img = "http://cdn.sobekrepository.org/images/misc/wizard.png";
             Wizard_Img_Large = "http://cdn.sobekrepository.org/images/misc/wizard_lg.png";
@@ -347,6 +352,9 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'add_volume_icon.png' file ( http://cdn.sobekrepository.org/images/misc/add_volume_icon.png by default)</summary>
         public static string Add_Volume_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'admin_view.png' file ( http://cdn.sobekrepository.org/images/misc/admin_view.png by default)</summary>
+        public static string Admin_View_Img { get; private set; }
 
         /// <summary> URL for the default resource 'admin_view_lg.png' file ( http://cdn.sobekrepository.org/images/misc/admin_view_lg.png by default)</summary>
         public static string Admin_View_Img_Large { get; private set; }
@@ -783,6 +791,9 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'icons-os.png' file ( http://cdn.sobekrepository.org/images/mapedit/icons-os.png by default)</summary>
         public static string Icons_Os_Png { get; private set; }
 
+        /// <summary> URL for the default resource 'item_count.png' file ( http://cdn.sobekrepository.org/images/misc/item_count.png by default)</summary>
+        public static string Item_Count_Img { get; private set; }
+
         /// <summary> URL for the default resource 'item_count_lg.png' file ( http://cdn.sobekrepository.org/images/misc/item_count_lg.png by default)</summary>
         public static string Item_Count_Img_Large { get; private set; }
 
@@ -891,6 +902,9 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'main_information.ico' file ( http://cdn.sobekrepository.org/images/qc/Main_Information.ICO by default)</summary>
         public static string Main_Information_Ico { get; private set; }
 
+        /// <summary> URL for the default resource 'manage_collection.png' file ( http://cdn.sobekrepository.org/images/misc/manage_collection.png by default)</summary>
+        public static string Manage_Collection_Img { get; private set; }
+
         /// <summary> URL for the default resource 'map_drag_hand.gif' file ( http://cdn.sobekrepository.org/images/misc/map_drag_hand.gif by default)</summary>
         public static string Map_Drag_Hand_Gif { get; private set; }
 
@@ -986,6 +1000,9 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'printer.png' file ( http://cdn.sobekrepository.org/images/misc/printer.png by default)</summary>
         public static string Printer_Png { get; private set; }
+
+        /// <summary> URL for the default resource 'private_items.png' file ( http://cdn.sobekrepository.org/images/misc/private_items.png by default)</summary>
+        public static string Private_Items_Img { get; private set; }
 
         /// <summary> URL for the default resource 'private_items_lg.png' file ( http://cdn.sobekrepository.org/images/misc/private_items_lg.png by default)</summary>
         public static string Private_Items_Img_Large { get; private set; }
@@ -1263,6 +1280,9 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'view.ico' file ( http://cdn.sobekrepository.org/images/qc/View.ico by default)</summary>
         public static string View_Ico { get; private set; }
 
+        /// <summary> URL for the default resource 'view_work_log.png' file ( http://cdn.sobekrepository.org/images/misc/view_work_log.png by default)</summary>
+        public static string View_Work_Log_Img { get; private set; }
+
         /// <summary> URL for the default resource 'view_work_log_icon.png' file ( http://cdn.sobekrepository.org/images/misc/view_work_log_icon.png by default)</summary>
         public static string View_Work_Log_Img_Large { get; private set; }
 
@@ -1316,6 +1336,10 @@ namespace SobekCM.Library.Settings
 
                 case "add_volume_icon_img":
                     Add_Volume_Img = Source;
+                    break;
+
+                case "admin_view_img":
+                    Admin_View_Img = Source;
                     break;
                     
                 case "admin_view_img_large":
@@ -1899,6 +1923,10 @@ namespace SobekCM.Library.Settings
                     Icons_Os_Png = Source;
                     break;
 
+                case "item_count_img":
+                    Item_Count_Img = Source;
+                    break;
+
                 case "item_count_img_large":
                     Item_Count_Img_Large = Source;
                     break;
@@ -2043,6 +2071,10 @@ namespace SobekCM.Library.Settings
                     Main_Information_Ico = Source;
                     break;
 
+                case "manage_collection_img":
+                    Manage_Collection_Img = Source;
+                    break;
+
                 case "map_drag_hand_img":
                     Map_Drag_Hand_Gif = Source;
                     break;
@@ -2169,6 +2201,10 @@ namespace SobekCM.Library.Settings
 
                 case "printer_img":
                     Printer_Png = Source;
+                    break;
+
+                case "private_items_img":
+                    Private_Items_Img = Source;
                     break;
 
                 case "private_items_img_large":
@@ -2537,9 +2573,12 @@ namespace SobekCM.Library.Settings
                     User_Permission_Img_Large = Source;
                     break;
 
-
                 case "view.ico":
                     View_Ico = Source;
+                    break;
+
+                case "view_work_log_img":
+                    View_Work_Log_Img = Source;
                     break;
 
                 case "view_work_log_img_large":

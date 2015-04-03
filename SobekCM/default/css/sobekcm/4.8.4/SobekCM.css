@@ -741,14 +741,14 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 .show_intheader_button_aggr:hover { background-position: 0 -18px; }
 
 .view_private_items {
-    background: url(../../../images/misc/private_items.png) no-repeat;  
+    background: url(../../../images/misc/private_items_button.png) no-repeat;  
     width:100px; 
 }
 
 .view_private_items:hover { background-position: 0 -39px; }
 
 .show_item_count {
-    background: url(../../../images/misc/item_count.png) no-repeat;   
+    background: url(../../../images/misc/item_count_button.png) no-repeat;   
     width:100px; 
 }
 
@@ -762,7 +762,7 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 .show_usage_statistics:hover { background-position: 0 -39px; }
 
 .admin_view_button {
-    background: url(../../../images/misc/admin_view.png) no-repeat;   
+    background: url(../../../images/misc/admin_view_button.png) no-repeat;   
     width:100px; 
 }
 
