@@ -218,10 +218,6 @@ namespace SobekCM.Library.AdminViewer
                         if (Convert.ToBoolean(thisUser["IsHostAdmin"]))
                         {
                             if (!hostAdmins.Contains(name)) hostAdmins.Add(name);
-                            if (!canDeleteAll.Contains(name)) canDeleteAll.Add(name);
-                            if (!canEditAll.Contains(name)) canEditAll.Add(name);
-                            if (!canSubmitList.Contains(name)) canSubmitList.Add(name);
-                            if (!internalUsers.Contains(name)) internalUsers.Add(name);
                         }
                         else if (Convert.ToBoolean(thisUser["IsSystemAdmin"]))
                         {

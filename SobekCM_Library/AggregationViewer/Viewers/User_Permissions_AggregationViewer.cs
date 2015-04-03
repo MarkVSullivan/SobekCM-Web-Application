@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
+using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
+using SobekCM.UI_Library;
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
@@ -81,7 +84,84 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("User and user permission information will go here");
+            DataTable permissionsTbl = SobekCM_Database.Get_Aggregation_User_Permissions(RequestSpecificValues.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
+
+            if ((permissionsTbl == null) || (permissionsTbl.Rows.Count == 0))
+            {
+                Output.WriteLine("<p>No special user permissions found for this collection.</p>");
+                return;
+            }
+
+            Output.WriteLine("<p style=\"text-align: left; padding:0 20px 0 20px;\">Below is the list of all users that have specialized user permissions for this collection.  These permissions may be assigned individually, or through a user group.</p>");
+
+            // Is this using detailed permissions?
+            bool detailedPermissions = UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions;
+
+            // Dertermine the number of columns
+            int columns = 5;
+            if (detailedPermissions)
+                columns = 10;
+
+            Output.WriteLine("  <table class=\"sbkWhav_Table\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <th style=\"width:180px;\">User</th>");
+            Output.WriteLine("      <th width=\"77px\"><acronym title=\"Can select this aggregation when editing or submitting an item\">Can<br />Select</acronym></th>");
+
+            if (detailedPermissions)
+            {
+                Output.WriteLine("      <th style=\"width:70px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Edit<br />Metadata</acronym></th>");
+                Output.WriteLine("      <th style=\"width:70px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Edit<br />Behaviors</acronym></th>");
+                Output.WriteLine("      <th style=\"width:70px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Perform<br />QC</acronym></th>");
+                Output.WriteLine("      <th style=\"width:70px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Upload<br />Files</acronym></th>");
+                Output.WriteLine("      <th style=\"width:70px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Change<br />Visibility</acronym></th>");
+                Output.WriteLine("      <th style=\"width:70px;\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">Item<br />Can<br />Delete</acronym></th>");
+
+            }
+            else
+            {
+                Output.WriteLine("      <th style=\"width:70px;\"><acronym title=\"Can edit any item in this aggregation\">Can<br />Edit</acronym></th>");
+            }
+
+            Output.WriteLine("      <th style=\"width:70px;\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">Is<br />Curator</acronym></th>");
+            Output.WriteLine("      <th style=\"width:70px;\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">Is<br />Admin</acronym></th>");
+            Output.WriteLine("    </tr>");
+
+            foreach (DataRow thisUser in permissionsTbl.Rows)
+            {
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>" + thisUser["LastName"] + "," + thisUser["FirstName"] + "</td>");
+                Output.WriteLine("      <td>" + flag_to_display(thisUser["CanSelect"]) + "</td>");
+                if (detailedPermissions)
+                {
+                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanEditMetadata"]) + "</td>");
+                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanEditBehaviors"]) + "</td>");
+                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanPerformQc"]) + "</td>");
+                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanUploadFiles"]) + "</td>");
+                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanChangeVisibility"]) + "</td>");
+                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanDelete"]) + "</td>");
+                }
+                else
+                {
+                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanEditMetadata"]) + "</td>");
+                }
+
+
+                Output.WriteLine("      <td>" + flag_to_display(thisUser["IsCollectionManager"]) + "</td>");
+                Output.WriteLine("      <td>" + flag_to_display(thisUser["IsAggregationAdmin"]) + "</td>");
+
+                Output.WriteLine("    </tr>");
+                Output.WriteLine("    <tr class=\"sbkWhav_TableRule\"><td colspan=\"" + columns + "\"></td></tr>");
+            }
+
+            Output.WriteLine("  </table>");
+            Output.WriteLine("  <br /><br />");
+        }
+
+        private string flag_to_display(object ToDisplay)
+        {
+            if ((ToDisplay != DBNull.Value) && ( Convert.ToBoolean(ToDisplay.ToString())))
+                return "Y";
+            return "";
         }
     }
 }
