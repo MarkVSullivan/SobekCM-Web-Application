@@ -161,23 +161,23 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "b") + "';return false;\"> GLOBAL TABLE </li>");
             }
 
-            if (page == 3)
-            {
-                Output.WriteLine("      <li class=\"tabActiveHeader\"> ALL AGGREGATIONS </li>");
-            }
-            else
-            {
-                Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "c") + "';return false;\"> ALL AGGREGATIONS </li>");
-            }
+            //if (page == 3)
+            //{
+            //    Output.WriteLine("      <li class=\"tabActiveHeader\"> ALL AGGREGATIONS </li>");
+            //}
+            //else
+            //{
+            //    Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "c") + "';return false;\"> ALL AGGREGATIONS </li>");
+            //}
 
-            if (page == 4)
-            {
-                Output.WriteLine("      <li class=\"tabActiveHeader\"> SINGLE AGGREGATION </li>");
-            }
-            else
-            {
-                Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "d") + "';return false;\"> SINGLE AGGREGATION </li>");
-            }
+            //if (page == 4)
+            //{
+            //    Output.WriteLine("      <li class=\"tabActiveHeader\"> SINGLE AGGREGATION </li>");
+            //}
+            //else
+            //{
+            //    Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "d") + "';return false;\"> SINGLE AGGREGATION </li>");
+            //}
 
             Output.WriteLine("    </ul>");
             Output.WriteLine("  </div>");
