@@ -7092,6 +7092,40 @@ namespace SobekCM.Library.Database
             }
         }
 
+        public static DataTable Get_Aggregation_Change_Log(string AggregationCode, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Change_Log", "");
+            }
+
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[1];
+                parameters[0] = new SqlParameter("@Code", AggregationCode);
+
+                // Define a temporary dataset
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Aggregation_Change_Log", parameters);
+
+                if ((tempSet == null) || (tempSet.Tables.Count == 0))
+                    return null;
+
+                // Return the first table from the returned dataset
+                return tempSet.Tables[0];
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Change_Log", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Change_Log", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Change_Log", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
         #endregion
 
     }

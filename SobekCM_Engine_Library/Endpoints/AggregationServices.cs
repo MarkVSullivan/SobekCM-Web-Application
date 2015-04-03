@@ -39,7 +39,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 string aggrCode = UrlSegments[0];
 
-                Complete_Item_Aggregation returnValue = get_complete_aggregation(aggrCode, tracer);
+                Complete_Item_Aggregation returnValue = get_complete_aggregation(aggrCode, true, tracer);
 
 
                 if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
@@ -268,7 +268,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 return cacheInst;
 
             // Get the complete aggregation
-            Complete_Item_Aggregation compAggr = get_complete_aggregation(AggregationCode, Tracer);
+            Complete_Item_Aggregation compAggr = get_complete_aggregation(AggregationCode, true, Tracer);
 
             // Get the language-specific version
             Item_Aggregation returnValue = Item_Aggregation_Utilities.Get_Item_Aggregation(compAggr, RequestedLanguage, Tracer);
@@ -285,23 +285,30 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <returns> Fully built language-agnostic aggregation, with all related configurations </returns>
         /// <remarks> This may be public now, but this will be converted into a private helped class with 
         /// the release of SobekCM 5.0 </remarks>
-        public static Complete_Item_Aggregation get_complete_aggregation(string AggregationCode, Custom_Tracer Tracer)
+        public static Complete_Item_Aggregation get_complete_aggregation(string AggregationCode, bool UseCache, Custom_Tracer Tracer)
         {
             // Try to pull this from the cache
-            Complete_Item_Aggregation cacheAggr = CachedDataManager.Aggregations.Retrieve_Complete_Item_Aggregation(AggregationCode, Tracer);
-            if (cacheAggr != null)
-                return cacheAggr;
-
-            // Either use the cache version, or build the complete item aggregation
-            Complete_Item_Aggregation itemAggr = Item_Aggregation_Utilities.Get_Complete_Item_Aggregation(AggregationCode, Tracer);
-
-            // Now, save this to the cache
-            if (itemAggr != null)
+            if (UseCache)
             {
-                CachedDataManager.Aggregations.Store_Complete_Item_Aggregation(AggregationCode, itemAggr, Tracer);
-            }
+                Complete_Item_Aggregation cacheAggr = CachedDataManager.Aggregations.Retrieve_Complete_Item_Aggregation(AggregationCode, Tracer);
+                if (cacheAggr != null)
+                    return cacheAggr;
 
-            return itemAggr;
+                // Either use the cache version, or build the complete item aggregation
+                Complete_Item_Aggregation itemAggr = Item_Aggregation_Utilities.Get_Complete_Item_Aggregation(AggregationCode, Tracer);
+
+                // Now, save this to the cache
+                if (itemAggr != null)
+                {
+                    CachedDataManager.Aggregations.Store_Complete_Item_Aggregation(AggregationCode, itemAggr, Tracer);
+                }
+
+                return itemAggr;
+            }
+            else
+            {
+                return Item_Aggregation_Utilities.Get_Complete_Item_Aggregation(AggregationCode, Tracer);
+            }
         }
 
         #endregion
@@ -536,7 +543,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
 
                     // Now, try to create the item aggregation and write the configuration file
-                    Complete_Item_Aggregation itemAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(NewAggregation.Code, null);
+                    Complete_Item_Aggregation itemAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(NewAggregation.Code, true, null);
                     if (banner_file.Length > 0)
                     {
                         itemAggregation.Banner_Dictionary.Clear();

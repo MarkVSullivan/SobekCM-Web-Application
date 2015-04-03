@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
@@ -16,7 +17,20 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public User_Permissions_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
+            // User must AT LEAST be logged on, return
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            {
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
 
+            // If the user is not an admin of some type, also return
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
+            {
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+            }
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
@@ -43,7 +57,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         public override string Viewer_Title
         {
-            get { return "Aggregation-Specific User Permissions"; }
+            get { return "Collection-Specific User Permissions"; }
         }
 
         /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>

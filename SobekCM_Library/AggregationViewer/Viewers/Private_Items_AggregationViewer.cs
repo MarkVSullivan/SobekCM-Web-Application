@@ -12,6 +12,7 @@ using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 using SobekCM.UI_Library;
 
@@ -123,87 +124,117 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             get { return Item_Aggregation_Views_Searches_Enum.View_Private_Items; }
         }
 
+        /// <summary> Gets flag which indicates whether this is an internal view, which may have a 
+        /// slightly different design feel </summary>
+        /// <remarks> This returns FALSE by default, but can be overriden by individual viewer implementations</remarks>
+        public override bool Is_Internal_View
+        {
+            get { return true; }
+        }
+
+        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
+        public override string Viewer_Title
+        {
+            get { return "Private and Dark Items"; }
+        }
+
+        /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
+        public override string Viewer_Icon
+        {
+            get { return Static_Resources.Private_Items_Img; }
+        }
+
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This adds the title of the into the box </remarks>
+        /// <remarks> This does nothing - as an internal type view, this will not be called </remarks>
         public override void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
+            // Do nothing
+        }
 
+        /// <summary> Add the HTML to be displayed below the search box </summary>
+        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
+        public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
             // Get the URL for the sort options
             short sort = RequestSpecificValues.Current_Mode.Sort;
             RequestSpecificValues.Current_Mode.Sort = 0;
             string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.Sort = sort;
 
-            Output.WriteLine("<span class=\"SobekResultsSort\">");
-            Output.WriteLine("    " + UI_ApplicationCache_Gateway.Translation.Get_Translation("Sort By", RequestSpecificValues.Current_Mode.Language) + ": &nbsp;");
-            Output.WriteLine("    <select name=\"sorter_input\" onchange=\"javascript:sort_private_list('" + url + "')\" id=\"sorter_input\">");
-            if (RequestSpecificValues.Current_Mode.Sort == 0)
+            if (privateItems.TotalItems > 0)
             {
-                Output.WriteLine("      <option value=\"0\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID / VID", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
-            }
-            else
-            {
-                Output.WriteLine("      <option value=\"0\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID / VID", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
-            }
+                Output.WriteLine("<span class=\"SobekResultsSort\">");
+                Output.WriteLine("    " + UI_ApplicationCache_Gateway.Translation.Get_Translation("Sort By", RequestSpecificValues.Current_Mode.Language) + ": &nbsp;");
+                Output.WriteLine("    <select name=\"sorter_input\" onchange=\"javascript:sort_private_list('" + url + "')\" id=\"sorter_input\">");
+                if (RequestSpecificValues.Current_Mode.Sort == 0)
+                {
+                    Output.WriteLine("      <option value=\"0\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID / VID", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
+                else
+                {
+                    Output.WriteLine("      <option value=\"0\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("BibID / VID", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
 
-            if (RequestSpecificValues.Current_Mode.Sort == 1)
-            {
-                Output.WriteLine("      <option value=\"1\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title / VID", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
-            }
-            else
-            {
-                Output.WriteLine("      <option value=\"1\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title / VID", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
-            }
+                if (RequestSpecificValues.Current_Mode.Sort == 1)
+                {
+                    Output.WriteLine("      <option value=\"1\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title / VID", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
+                else
+                {
+                    Output.WriteLine("      <option value=\"1\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Title / VID", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
 
-            if (RequestSpecificValues.Current_Mode.Sort == 2)
-            {
-                Output.WriteLine("      <option value=\"2\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Activity Date (most recent first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
-            }
-            else
-            {
-                Output.WriteLine("      <option value=\"2\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Activity Date (most recent first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
-            }
+                if (RequestSpecificValues.Current_Mode.Sort == 2)
+                {
+                    Output.WriteLine("      <option value=\"2\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Activity Date (most recent first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
+                else
+                {
+                    Output.WriteLine("      <option value=\"2\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Activity Date (most recent first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
 
-            if (RequestSpecificValues.Current_Mode.Sort == 3)
-            {
-                Output.WriteLine("      <option value=\"3\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Milestone Date (most recent first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
-            }
-            else
-            {
-                Output.WriteLine("      <option value=\"3\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Milestone Date (most recent first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
-            }
+                if (RequestSpecificValues.Current_Mode.Sort == 3)
+                {
+                    Output.WriteLine("      <option value=\"3\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Milestone Date (most recent first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
+                else
+                {
+                    Output.WriteLine("      <option value=\"3\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Milestone Date (most recent first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
 
-            if (RequestSpecificValues.Current_Mode.Sort == 4)
-            {
-                Output.WriteLine("      <option value=\"4\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Activity Date (oldest first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
-            }
-            else
-            {
-                Output.WriteLine("      <option value=\"4\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Activity Date (oldest first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
-            }
+                if (RequestSpecificValues.Current_Mode.Sort == 4)
+                {
+                    Output.WriteLine("      <option value=\"4\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Activity Date (oldest first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
+                else
+                {
+                    Output.WriteLine("      <option value=\"4\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Activity Date (oldest first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
 
-            if (RequestSpecificValues.Current_Mode.Sort == 5)
-            {
-                Output.WriteLine("      <option value=\"5\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Milestone Date (oldest first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
-            }
-            else
-            {
-                Output.WriteLine("      <option value=\"5\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Milestone Date (oldest first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine );
-            }
+                if (RequestSpecificValues.Current_Mode.Sort == 5)
+                {
+                    Output.WriteLine("      <option value=\"5\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Milestone Date (oldest first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
+                else
+                {
+                    Output.WriteLine("      <option value=\"5\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Last Milestone Date (oldest first)", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
 
-            if (RequestSpecificValues.Current_Mode.Sort == 6)
-            {
-                Output.WriteLine("      <option value=\"6\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Embargo Date", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                if (RequestSpecificValues.Current_Mode.Sort == 6)
+                {
+                    Output.WriteLine("      <option value=\"6\" selected=\"selected\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Embargo Date", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
+                else
+                {
+                    Output.WriteLine("      <option value=\"6\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Embargo Date", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
+                }
+                Output.WriteLine("    </select>");
+                Output.WriteLine("</span>");
             }
-            else
-            {
-                Output.WriteLine("      <option value=\"6\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Embargo Date", RequestSpecificValues.Current_Mode.Language) + "</option>" + Environment.NewLine);
-            }
-            Output.WriteLine("    </select>");
-            Output.WriteLine("</span>");
-            Output.WriteLine("<h1>Private and Dark Items</h1>");
 
             // Should buttons be added here for additional pages?
             if (privateItems.TotalTitles > RESULTS_PER_PAGE)
@@ -277,14 +308,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             Output.WriteLine("<br />");
-        }
 
-        /// <summary> Add the HTML to be displayed below the search box </summary>
-        /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
-        public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
 
             const string EMBARGO_DATE_STRING = "Embargoed until {0}";
 

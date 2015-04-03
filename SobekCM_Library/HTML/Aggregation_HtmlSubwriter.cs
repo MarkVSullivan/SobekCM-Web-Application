@@ -455,7 +455,7 @@ namespace SobekCM.Library.HTML
 	            editor.Add_To_Stream(Output);
 	        }
 
-			// If this is to edit the home page, add the html editor
+			// If this is to edit the child page page, add the html editor
 			if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit))
 			{
                 // Determine the aggregation upload directory
@@ -488,12 +488,19 @@ namespace SobekCM.Library.HTML
                 editor.Add_To_Stream(Output);
 			}
 
+            // If this is the thumbnails results, add the QTIP script and css
             if ((RequestSpecificValues.Results_Statistics != null ) && 
                 ( RequestSpecificValues.Results_Statistics.Total_Items > 0) &&
                 ( RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Thumbnails ))
             {
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Qtip_Js + "\"></script>");
                 Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Jquery_Qtip_Css + "\" /> ");
+            }
+
+            // If this is an internal (semi-admin) view, add the admin CSS
+            if ((collectionViewer != null) && (collectionViewer.Is_Internal_View))
+            {
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" /> ");
             }
         }
 
@@ -643,8 +650,13 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("          <button title=\"View Usage Statistics\" class=\"intheader_button_aggr show_usage_statistics\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
 
                     // Add admin view is system administrator
-                    if ((Current_User.Is_System_Admin) || (Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
+                    if ((Current_User.Is_System_Admin) || (Current_User.Is_Portal_Admin) || (Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
                     {
+                        // Add button to view manage menu
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                        RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Manage_Menu;
+                        Output.WriteLine("          <button title=\"View All Management Options\" class=\"intheader_button_aggr manage_aggr_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
                         string prevAggrCode = RequestSpecificValues.Current_Mode.Aggregation;
@@ -665,8 +677,14 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("          <button title=\"View Usage Statistics\" class=\"intheader_button_aggr show_usage_statistics\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
 
                     // Add admin view is system administrator
-                    if ((Current_User.Is_System_Admin) || (Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
+                    if ((Current_User.Is_System_Admin) || (Current_User.Is_Portal_Admin) ||  (Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
                     {
+                        // Add button to view manage menu
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                        RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Manage_Menu;
+                        Output.WriteLine("          <button title=\"View All Management Options\" class=\"intheader_button_aggr manage_aggr_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+
+                        // Add the admin button
                         RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                         RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
                         Output.WriteLine("          <button title=\"Edit Administrative Information\" class=\"intheader_button_aggr admin_view_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" ></button>");
@@ -759,7 +777,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine(collectionViewer.Search_Script_Reference);
 
             // Write the search box
-            if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_SearchForm))
+            if ((!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_SearchForm)) && ((collectionViewer == null ) || ( !collectionViewer.Is_Internal_View )))
             {
                 string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
 
@@ -872,11 +890,17 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine();
 
             }
+            else if ((collectionViewer != null) && (collectionViewer.Is_Internal_View))
+            {
+                Output.WriteLine("<div class=\"sbkAdm_TitleDiv sbkAdm_TitleDivBorder\">");
+                Output.WriteLine("  <img id=\"sbkAdm_TitleDivImg\" src=\"" + collectionViewer.Viewer_Icon + "\" alt=\"\" />");
+                Output.WriteLine("  <h1>" + collectionViewer.Viewer_Title + "</h1>");
+                Output.WriteLine("</div>");
+
+            }
             else
             {
                 collectionViewer.Add_Search_Box_HTML(Output, Tracer);
-
-                //Output.WriteLine("</form>");
             }
 
             // Add the secondary HTML ot the home page

@@ -3272,7 +3272,7 @@ namespace SobekCM.Library.HTML
 
 			Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Stats_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
-            Output.WriteLine("    <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_1_10_2_Js + "\"></script>");
+            //Output.WriteLine("    <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_1_10_2_Js + "\"></script>");
             Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Datatables_Js + "\" ></script>");
             Output.WriteLine("   <script type = \"text/javascript\" src=\"" + Static_Resources.Chart_Js + "\"></script>");
             Output.WriteLine("    <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/scripts/sobek_stats_chart.js\"></script>");

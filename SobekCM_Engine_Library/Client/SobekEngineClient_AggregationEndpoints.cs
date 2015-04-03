@@ -22,9 +22,9 @@ namespace SobekCM.Core.Client
         /// <param name="AggregationCode"> Code for the requested aggregation </param>
         /// <param name="Tracer"></param>
         /// <returns> Fully built language-agnostic aggregation, with all related configurations </returns>
-        public Complete_Item_Aggregation Get_Complete_Aggregation(string AggregationCode, Custom_Tracer Tracer)
+        public Complete_Item_Aggregation Get_Complete_Aggregation(string AggregationCode, bool UseCache, Custom_Tracer Tracer)
         {
-            return AggregationServices.get_complete_aggregation(AggregationCode, Tracer);
+            return AggregationServices.get_complete_aggregation(AggregationCode, UseCache, Tracer);
         }
 
         /// <summary> Gets the language-specific item aggregation, by aggregation code and language code </summary>

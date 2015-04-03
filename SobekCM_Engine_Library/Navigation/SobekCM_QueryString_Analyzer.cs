@@ -921,7 +921,9 @@ namespace SobekCM.Engine_Library.Navigation
 							case "resultslike":
 							case "browseby":
 							case "info":
-                            case "manage":
+                            case "aggrmanage":
+                            case "aggrhistory":
+                            case "aggrpermissions":
 								aggregation_querystring_analyze(Navigator, QueryString, Navigator.Default_Aggregation, url_relative_list);
 								break;
 
@@ -1227,14 +1229,17 @@ namespace SobekCM.Engine_Library.Navigation
 						break;
 
                     case "manage":
+                    case "aggrmanage":
                         Navigator.Aggregation_Type = Aggregation_Type_Enum.Manage_Menu;
                         break;
                         
                     case "permissions":
+                    case "aggrpermissions":
                         Navigator.Aggregation_Type = Aggregation_Type_Enum.User_Permissions;
                         break;
 
                     case "history":
+                    case "aggrhistory":
                         Navigator.Aggregation_Type = Aggregation_Type_Enum.Work_History;
                         break;
 

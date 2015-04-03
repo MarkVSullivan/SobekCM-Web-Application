@@ -104,7 +104,7 @@ namespace SobekCM.Library.AdminViewer
 		    }
 		    else
 		    {
-		        itemAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(code, RequestSpecificValues.Tracer);
+		        itemAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(code, false, RequestSpecificValues.Tracer);
 		    }
 
 			// If unable to retrieve this aggregation, send to home
@@ -230,6 +230,9 @@ namespace SobekCM.Library.AdminViewer
 					// Should this be saved to the database?
 					if ((action == "save") || ( action == "save_exit"))
 					{
+                        // Get the current aggrgeation information, for comparison
+                        Complete_Item_Aggregation currentAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(code, true, RequestSpecificValues.Tracer);
+
                         // Backup the old aggregation info
 					    string backup_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory.Replace("/","\\") + "backup\\configs";
 					    if (!Directory.Exists(backup_folder))
@@ -265,6 +268,31 @@ namespace SobekCM.Library.AdminViewer
 						// Forward back to the aggregation home page, if this was successful
 						if (successful_save)
 						{
+                            // Also, update the information that was changed
+						    try
+						    {
+						        List<string> changes = Complete_Item_Aggregation_Comparer.Compare(currentAggregation, itemAggregation);
+						        if ((changes != null) && (changes.Count > 0))
+						        {
+						            StringBuilder builder = new StringBuilder(changes[0]);
+						            for (int i = 1; i < changes.Count; i++)
+						            {
+						                builder.Append("\n" + changes[i]);
+						            }
+						            SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, builder.ToString(), RequestSpecificValues.Current_User.Full_Name);
+
+						        }
+						        else
+						        {
+						            SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Configuration edited", RequestSpecificValues.Current_User.Full_Name);
+						        }
+						    }
+						    catch
+						    {
+                                SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Configuration edited", RequestSpecificValues.Current_User.Full_Name);
+						    }
+
+
 							// Clear the aggregation from the sessions
 							HttpContext.Current.Session["Edit_Aggregation_" + itemAggregation.Code] = null;
 							HttpContext.Current.Session["Item_Aggr_Edit_" + itemAggregation.Code + "_NewLanguages"] = null;
@@ -2940,7 +2968,7 @@ namespace SobekCM.Library.AdminViewer
                             }
 
 							// Now, try to create the item aggregation and write the configuration file
-                            Complete_Item_Aggregation childAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(new_aggregation_code, RequestSpecificValues.Tracer);
+                            Complete_Item_Aggregation childAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(new_aggregation_code, true, RequestSpecificValues.Tracer);
 							childAggregation.Write_Configuration_File(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + childAggregation.ObjDirectory);
 						}
 					}

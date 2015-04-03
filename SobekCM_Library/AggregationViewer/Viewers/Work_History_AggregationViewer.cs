@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Navigation;
 using SobekCM.Library.AggregationViewer.Viewers;
+using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
@@ -17,7 +20,20 @@ namespace SobekCM.Library.AggregationViewer
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Work_History_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
+            // User must AT LEAST be logged on, return
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            {
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
 
+            // If the user is not an admin of some type, also return
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
+            {
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+            }
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
@@ -44,7 +60,7 @@ namespace SobekCM.Library.AggregationViewer
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         public override string Viewer_Title
         {
-            get { return "Aggregation Change Log"; }
+            get { return "Collection Change Log"; }
         }
 
         /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
@@ -68,7 +84,39 @@ namespace SobekCM.Library.AggregationViewer
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("History of changes to the aggregation will go here");
+
+            DataTable historyTbl = SobekCM_Database.Get_Aggregation_Change_Log(RequestSpecificValues.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
+
+            if ((historyTbl == null) || ( historyTbl.Rows.Count == 0 ))
+            {
+                Output.WriteLine("<p>No history found for this collection!</p>");
+
+                Output.WriteLine("<p>This may be due to an error, or this may be a legacy collection which has not been edited in a very long time.</p>");
+
+                return;
+            }
+
+            Output.WriteLine("<p style=\"text-align: left; padding:0 20px 0 20px;\">Below is the change log for this collection and the design files under this collection.  This does not include the history of digital reources loaded into this collection.</p>");
+
+            Output.WriteLine("  <table class=\"sbkWhav_Table\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <th style=\"width:100px;\">Date</th>");
+            Output.WriteLine("      <th style=\"width:180px;\">User</th>");
+            Output.WriteLine("      <th style=\"width:500px;\">Change Description</th>");
+            Output.WriteLine("    </tr>");
+
+            foreach (DataRow thisChange in historyTbl.Rows)
+            {
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>" + Convert.ToDateTime(thisChange[1]).ToShortDateString() + "</td>");
+                Output.WriteLine("      <td>" + thisChange[2] + "</td>");
+                Output.WriteLine("      <td>" + thisChange[0].ToString().Replace("\n","<br />") + "</td>");
+                Output.WriteLine("    </tr>");
+                Output.WriteLine("    <tr class=\"sbkWhav_TableRule\"><td colspan=\"3\"></td></tr>");
+            }
+
+            Output.WriteLine("  </table>");
+            Output.WriteLine("  <br /><br />");
         }
     }
 }

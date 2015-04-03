@@ -626,10 +626,6 @@
       <Project>{A511CE4C-7BD6-4446-BCA8-AB71F7AA8078}</Project>
       <Name>SobekCM_Tools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SobekCM_UI_Library\SobekCM_UI_Library.csproj">
-      <Project>{9eba10c0-170d-420d-888a-b1d180c3ce0c}</Project>
-      <Name>SobekCM_UI_Library</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

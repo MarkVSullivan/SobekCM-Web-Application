@@ -8,6 +8,7 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion
@@ -64,13 +65,33 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             get { return Item_Aggregation_Views_Searches_Enum.Item_Count; }
         }
 
+        /// <summary> Gets flag which indicates whether this is an internal view, which may have a 
+        /// slightly different design feel </summary>
+        /// <remarks> This returns FALSE by default, but can be overriden by individual viewer implementations</remarks>
+        public override bool Is_Internal_View
+        {
+            get { return true; }
+        }
+
+        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
+        public override string Viewer_Title
+        {
+            get { return "Resource Count in Collection"; }
+        }
+
+        /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
+        public override string Viewer_Icon
+        {
+            get { return Static_Resources.Item_Count_Img; }
+        }
+
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This adds the title of the into the box </remarks>
         public override void Add_Search_Box_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("<h1>Resource Count in Aggregation</h1>");
+            // Do nothing
         }
 
         /// <summary> Add the HTML to be displayed below the search box </summary>
@@ -110,8 +131,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("    <td>" + thisRow[0] + "</td>");
                 Output.WriteLine("    <td>" + Int_To_Comma_String( Convert.ToInt32(thisRow[1])) + "</td>");
                 Output.WriteLine("    <td>" + Int_To_Comma_String(Convert.ToInt32(thisRow[2])) + "</td>");
-                Output.WriteLine("    <td>" + Int_To_Comma_String(Convert.ToInt32(thisRow[3])) + "</td>");
-                Output.WriteLine("    <td>" + Int_To_Comma_String(Convert.ToInt32(thisRow[4])) + "</td>");
+                if ( thisRow[3] != DBNull.Value )
+                    Output.WriteLine("    <td>" + Int_To_Comma_String(Convert.ToInt32(thisRow[3])) + "</td>");
+                else
+                    Output.WriteLine("    <td>0</td>");
+                if ( thisRow[4] != DBNull.Value )
+                    Output.WriteLine("    <td>" + Int_To_Comma_String(Convert.ToInt32(thisRow[4])) + "</td>");
+                else
+                    Output.WriteLine("    <td>0</td>");
                 Output.WriteLine("  </tr>");
             }
 

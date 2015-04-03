@@ -991,10 +991,6 @@
       <Project>{a511ce4c-7bd6-4446-bca8-ab71f7aa8078}</Project>
       <Name>SobekCM_Tools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SobekCM_UI_Library\SobekCM_UI_Library.csproj">
-      <Project>{9eba10c0-170d-420d-888a-b1d180c3ce0c}</Project>
-      <Name>SobekCM_UI_Library</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SobekCM_URL_Rewriter\SobekCM_URL_Rewriter.csproj">
       <Project>{1b13c1bb-aa39-4f0e-9e12-e7051def30af}</Project>
       <Name>SobekCM_URL_Rewriter</Name>

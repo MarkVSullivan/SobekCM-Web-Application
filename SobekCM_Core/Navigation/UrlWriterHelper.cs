@@ -923,13 +923,25 @@ namespace SobekCM.Core.Navigation
                             return this_base_url + "geography/" + Current_Mode.Info_Browse_Mode + urlOptions1;
 
                         case Aggregation_Type_Enum.Manage_Menu:
-                            return this_base_url + "manage" + urlOptions1;
+                            if ((!String.IsNullOrEmpty(adjusted_aggregation)) && ( adjusted_aggregation != "all"))
+                            {
+                                return this_base_url + adjusted_aggregation + "/manage" + urlOptions1;
+                            }
+                            return this_base_url + "aggrmanage" + urlOptions1;
 
                         case Aggregation_Type_Enum.Work_History:
-                            return this_base_url + "history" + urlOptions1;
+                            if ((!String.IsNullOrEmpty(adjusted_aggregation)) && ( adjusted_aggregation != "all"))
+                            {
+                                return this_base_url + adjusted_aggregation + "/history" + urlOptions1;
+                            }
+                            return this_base_url + "aggrhistory" + urlOptions1;
 
                         case Aggregation_Type_Enum.User_Permissions:
-                            return this_base_url + "permissions" + urlOptions1;
+                            if ((!String.IsNullOrEmpty(adjusted_aggregation)) && ( adjusted_aggregation != "all"))
+                            {
+                                return this_base_url + adjusted_aggregation + "/permissions" + urlOptions1;
+                            }
+                            return this_base_url + "aggrpermissions" + urlOptions1;
 
                         case Aggregation_Type_Enum.Item_Count:
                             if (!String.IsNullOrEmpty(adjusted_aggregation))
