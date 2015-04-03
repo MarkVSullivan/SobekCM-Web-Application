@@ -110,6 +110,7 @@
     <Compile Include="MicroservicesClient\MicroservicesClientBase.cs" />
     <Compile Include="Navigation\NavigationStateEnums.cs" />
     <Compile Include="Navigation\SobekCM_Navigation_Object.cs" />
+    <Compile Include="Navigation\UrlWriterHelper.cs" />
     <Compile Include="OAI\OAI_Record.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Results\iSearch_Item_Result.cs" />

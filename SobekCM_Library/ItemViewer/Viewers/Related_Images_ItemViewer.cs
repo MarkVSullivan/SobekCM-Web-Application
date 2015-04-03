@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object.Divisions;

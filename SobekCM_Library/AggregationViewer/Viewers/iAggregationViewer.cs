@@ -50,6 +50,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Gets flag which indicates whether the secondary text requires controls </summary>
         bool Secondary_Text_Requires_Controls { get; }
 
+        /// <summary> Gets flag which indicates whether this is an internal view, which may have a 
+        /// slightly different design feel </summary>
+        bool Is_Internal_View { get;  }
+
+        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
+        string Viewer_Title { get; }
+
+        /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
+        string Viewer_Icon { get; }
+
         /// <summary> Gets the collection of special behaviors which this aggregation viewer
         /// requests from the main HTML subwriter. </summary>
         List<HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors { get; }

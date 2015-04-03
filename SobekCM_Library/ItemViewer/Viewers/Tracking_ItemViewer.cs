@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;

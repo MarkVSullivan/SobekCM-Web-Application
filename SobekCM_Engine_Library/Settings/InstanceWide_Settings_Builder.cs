@@ -9,10 +9,12 @@ using System.Reflection;
 using System.Xml;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Database;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Navigation;
 using SobekCM.Resource_Object.OAI.Writer;
 
 #endregion
@@ -51,14 +53,18 @@ namespace SobekCM.Engine_Library.Settings
         {
             InstanceWide_Settings returnValue = new InstanceWide_Settings();
 
-            // Should we read the configuration file?
-
+            // Read the main configuration file, with database and error information
             returnValue.Base_Directory = AppDomain.CurrentDomain.BaseDirectory;
             Read_Configuration_File(returnValue, returnValue.Base_Directory + "\\config\\sobekcm.config");
 
+            // Set the error URL
+            UrlWriterHelper.Unhandled_Error_URL = returnValue.System_Error_URL;
+
+            // Set the connection string to the database
             Engine_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
             Resource_Object.Database.SobekCM_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
 
+            // Get the settings
             DataSet sobekCMSettings = Engine_Database.Get_Settings_Complete(null);
             Refresh(returnValue, sobekCMSettings);
 
@@ -185,7 +191,7 @@ namespace SobekCM.Engine_Library.Settings
                     "contact", "folder", "admin", "preferences", "stats", "statistics", "adminhelp",
                     "partners", "tree", "brief", "personalized", "all", "new", "map", "advanced",
                     "text", "results", "contains", "exact", "resultslike", "browseby", "info", "sobekcm", 
-                    "inprocess", "engine", "register", "xyzzyxyzzy"  };
+                    "inprocess", "engine", "register", "xyzzyxyzzy", "manage"  };
 
             SettingsObject.Page_Image_Extensions = new List<string> { "JPG", "JP2", "JPX", "GIF", "PNG", "BMP", "JPEG" };
             SettingsObject.Backup_Files_Folder_Name = BACKUP_FILES_FOLDER_NAME;

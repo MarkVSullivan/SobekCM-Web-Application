@@ -56,6 +56,10 @@ namespace SobekCM.Core.Aggregations
         /// <summary> View the item count information for this single aggregation from within the collection viewer wrapper </summary>
         Item_Count,
 
+        /// <summary> Menu for aggregation curators and admins gives access to all the
+        /// special aggregation views they can use </summary>
+        Manage_Menu,
+
         /// <summary> View all of the coordinates points present for an item aggregation </summary>
         Map_Browse,
 
@@ -90,8 +94,16 @@ namespace SobekCM.Core.Aggregations
         /// <summary> View the usage statistics for this single aggregation from within the collection viewer wrapper </summary>
         Usage_Statistics,
 
+        /// <summary> Displays all the users with their permissions, either individually assigned 
+        /// or assigned through a group, that have special permissions assigned for this aggregation </summary>
+        User_Permissions,
+
         /// <summary> Views the list of all private items which are in this aggregation from within the collection viewer wrapper </summary>
-        View_Private_Items
+        View_Private_Items,
+
+        /// <summary> List of all changes against the aggregation itself, such as design or
+        /// other administrative changes </summary>
+        Work_History,
     }
 
 

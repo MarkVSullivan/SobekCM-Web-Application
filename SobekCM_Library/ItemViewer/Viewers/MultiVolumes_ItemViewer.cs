@@ -7,6 +7,7 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Items;
+using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Tools;

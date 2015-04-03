@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Navigation;

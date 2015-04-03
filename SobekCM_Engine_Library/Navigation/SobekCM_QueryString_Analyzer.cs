@@ -921,6 +921,7 @@ namespace SobekCM.Engine_Library.Navigation
 							case "resultslike":
 							case "browseby":
 							case "info":
+                            case "manage":
 								aggregation_querystring_analyze(Navigator, QueryString, Navigator.Default_Aggregation, url_relative_list);
 								break;
 
@@ -1180,13 +1181,7 @@ namespace SobekCM.Engine_Library.Navigation
 			{
 				switch (RemainingURLRedirectList[0])
 				{
-					case "usage":
-						Navigator.Aggregation_Type = Aggregation_Type_Enum.Usage_Statistics;
-						if (RemainingURLRedirectList.Count > 1)
-						{
-							Navigator.Info_Browse_Mode = RemainingURLRedirectList[1];
-						}
-						break;
+
 
 					case "edit":
 						Navigator.Aggregation_Type = Aggregation_Type_Enum.Home_Edit;
@@ -1231,6 +1226,30 @@ namespace SobekCM.Engine_Library.Navigation
 							Navigator.Error_Message = QueryString["em"];
 						break;
 
+                    case "manage":
+                        Navigator.Aggregation_Type = Aggregation_Type_Enum.Manage_Menu;
+                        break;
+                        
+                    case "permissions":
+                        Navigator.Aggregation_Type = Aggregation_Type_Enum.User_Permissions;
+                        break;
+
+                    case "history":
+                        Navigator.Aggregation_Type = Aggregation_Type_Enum.Work_History;
+                        break;
+
+                    case "geography":
+                        Navigator.Aggregation_Type = Aggregation_Type_Enum.Browse_Map;
+                        break;
+
+                    case "usage":
+                        Navigator.Aggregation_Type = Aggregation_Type_Enum.Usage_Statistics;
+                        if (RemainingURLRedirectList.Count > 1)
+                        {
+                            Navigator.Info_Browse_Mode = RemainingURLRedirectList[1];
+                        }
+                        break;
+
 					case "map":
 						Navigator.Mode = Display_Mode_Enum.Search;
 						Navigator.Search_Type = Search_Type_Enum.Map;
@@ -1248,6 +1267,8 @@ namespace SobekCM.Engine_Library.Navigation
                             Navigator.Info_Browse_Mode = RemainingURLRedirectList[1];
                         }
                         break;
+
+
 
 					case "advanced":
 						Navigator.Mode = Display_Mode_Enum.Search;
@@ -1284,9 +1305,6 @@ namespace SobekCM.Engine_Library.Navigation
 						}
 						break;
 
-					case "geography":
-						Navigator.Aggregation_Type = Aggregation_Type_Enum.Browse_Map;
-						break;
 
 					case "results":
 					case "resultslike":

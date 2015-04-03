@@ -4,19 +4,16 @@ using System;
 using System.Text;
 using System.Web;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.ApplicationState;
 
 #endregion
 
-namespace SobekCM.Engine_Library.Navigation
+namespace SobekCM.Core.Navigation
 {
     public static class UrlWriterHelper
     {
+        public static string Unhandled_Error_URL { get; set;  }
 
         #region iSobekCM_Navigation_Object Members
-
-
 
         /// <summary> Returns the URL to redirect the user's browser, based on the current
         /// mode and specifics for this mode. </summary>
@@ -82,7 +79,7 @@ namespace SobekCM.Engine_Library.Navigation
                     return this_base_url + "reports" + urlOptions1;
 
                 case Display_Mode_Enum.Error:
-                    return Engine_ApplicationCache_Gateway.Settings.System_Error_URL;
+                    return Unhandled_Error_URL;
 
                 case Display_Mode_Enum.Internal:
                     switch (Current_Mode.Internal_Type)
@@ -924,6 +921,15 @@ namespace SobekCM.Engine_Library.Navigation
                                 return this_base_url + adjusted_aggregation + "/geography/" + Current_Mode.Info_Browse_Mode + urlOptions1;
                             }
                             return this_base_url + "geography/" + Current_Mode.Info_Browse_Mode + urlOptions1;
+
+                        case Aggregation_Type_Enum.Manage_Menu:
+                            return this_base_url + "manage" + urlOptions1;
+
+                        case Aggregation_Type_Enum.Work_History:
+                            return this_base_url + "history" + urlOptions1;
+
+                        case Aggregation_Type_Enum.User_Permissions:
+                            return this_base_url + "permissions" + urlOptions1;
 
                         case Aggregation_Type_Enum.Item_Count:
                             if (!String.IsNullOrEmpty(adjusted_aggregation))

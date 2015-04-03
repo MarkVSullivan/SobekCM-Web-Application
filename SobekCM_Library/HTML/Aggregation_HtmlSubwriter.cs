@@ -298,6 +298,18 @@ namespace SobekCM.Library.HTML
 					case Aggregation_Type_Enum.Private_Items:
                         collectionViewer = new Private_Items_AggregationViewer(RequestSpecificValues);
 						break;
+
+                    case Aggregation_Type_Enum.Manage_Menu:
+				        collectionViewer = new Manage_Menu_AggregationViewer(RequestSpecificValues);
+                        break;
+
+                    case Aggregation_Type_Enum.User_Permissions:
+                        collectionViewer = new User_Permissions_AggregationViewer(RequestSpecificValues);
+                        break;
+
+                    case Aggregation_Type_Enum.Work_History:
+                        collectionViewer = new Work_History_AggregationViewer(RequestSpecificValues);
+                        break;
 				}
 			}
 
@@ -529,12 +541,7 @@ namespace SobekCM.Library.HTML
 							}
 							break;
 
-						case Aggregation_Type_Enum.Browse_By:
-						case Aggregation_Type_Enum.Browse_Map:
-                        case Aggregation_Type_Enum.Browse_Map_Beta:
-						case Aggregation_Type_Enum.Private_Items:
-						case Aggregation_Type_Enum.Item_Count:
-						case Aggregation_Type_Enum.Usage_Statistics:
+						default:
 				            return "{0} - " + RequestSpecificValues.Hierarchy_Object.Name;
 		            }
 	            }

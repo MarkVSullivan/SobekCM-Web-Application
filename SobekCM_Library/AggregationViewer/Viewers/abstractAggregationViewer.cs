@@ -52,7 +52,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
         public abstract Item_Aggregation_Views_Searches_Enum Type { get; }
 
- /// <summary> Flag indicates whether the secondary text requires controls </summary>
+        /// <summary> Flag indicates whether the secondary text requires controls </summary>
         /// <value> This defaults to FALSE but is overwritten by most collection viewers </value>
         public virtual bool Secondary_Text_Requires_Controls
         {
@@ -73,6 +73,29 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             get { return Selection_Panel_Display_Enum.Selectable; }
         }
+
+        /// <summary> Gets flag which indicates whether this is an internal view, which may have a 
+        /// slightly different design feel </summary>
+        /// <remarks> This returns FALSE by default, but can be overriden by individual viewer implementations</remarks>
+        public virtual bool Is_Internal_View
+        {
+            get { return false; }
+        }
+
+        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
+        /// <remarks> This returns NULL by default, but can be override by individual viewer implementations </remarks>
+        public virtual string Viewer_Title
+        {
+            get { return null;  }
+        }
+
+        /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
+        /// <remarks> This returns NULL by default, but can be override by individual viewer implementations </remarks>
+        public virtual string Viewer_Icon
+        {
+            get { return null;  }
+        }
+
 
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>

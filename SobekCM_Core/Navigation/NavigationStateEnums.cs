@@ -450,11 +450,23 @@
         /// <summary> Display the item count information for a single item aggregation  </summary>
         Item_Count,
 
+        /// <summary> Menu for aggregation curators and admins gives access to all the
+        /// special aggregation views they can use </summary>
+        Manage_Menu,
+
         /// <summary> Display the list of private items for a single item aggregation </summary>
         Private_Items,
 
         /// <summary> Display the usage statistics for a single item aggregation </summary>
         Usage_Statistics,
+
+        /// <summary> Displays all the users with their permissions, either individually assigned 
+        /// or assigned through a group, that have special permissions assigned for this aggregation </summary>
+        User_Permissions,
+
+        /// <summary> List of all changes against the aggregation itself, such as design or
+        /// other administrative changes </summary>
+        Work_History,
     }
 
 
