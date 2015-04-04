@@ -126,40 +126,111 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("      <th style=\"width:70px;\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">Is<br />Admin</acronym></th>");
             Output.WriteLine("    </tr>");
 
+            // Users that are attached to user groups may have multiple rows with their name, so collect
+            // all the user information from all rows before displaying
+            int last_userid = -1;
+            string username = String.Empty;
+            bool canSelect = false;
+            bool canEditMetadata = false;
+            bool canEditBehaviors = false;
+            bool canPerformQc = false;
+            bool canUploadFiles = false;
+            bool canChangeVisibility = false;
+            bool canDelete = false;
+            bool isCurator = false;
+            bool isAdmin = false;
             foreach (DataRow thisUser in permissionsTbl.Rows)
             {
-                Output.WriteLine("    <tr>");
-                Output.WriteLine("      <td>" + thisUser["LastName"] + "," + thisUser["FirstName"] + "</td>");
-                Output.WriteLine("      <td>" + flag_to_display(thisUser["CanSelect"]) + "</td>");
-                if (detailedPermissions)
+                // Get the user id for this user row
+                int thisUserId = Convert.ToInt32(thisUser["UserID"].ToString());
+
+                // See if this is a new user, to be displayed
+                if ((last_userid > 0) && (last_userid != thisUserId))
                 {
-                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanEditMetadata"]) + "</td>");
-                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanEditBehaviors"]) + "</td>");
-                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanPerformQc"]) + "</td>");
-                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanUploadFiles"]) + "</td>");
-                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanChangeVisibility"]) + "</td>");
-                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanDelete"]) + "</td>");
+                    // Show the information for this user
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td>" + username + "</td>");
+                    Output.WriteLine("      <td>" + flag_to_display(canSelect) + "</td>");
+                    if (detailedPermissions)
+                    {
+                        Output.WriteLine("      <td>" + flag_to_display(canEditMetadata) + "</td>");
+                        Output.WriteLine("      <td>" + flag_to_display(canEditBehaviors) + "</td>");
+                        Output.WriteLine("      <td>" + flag_to_display(canPerformQc) + "</td>");
+                        Output.WriteLine("      <td>" + flag_to_display(canUploadFiles) + "</td>");
+                        Output.WriteLine("      <td>" + flag_to_display(canChangeVisibility) + "</td>");
+                        Output.WriteLine("      <td>" + flag_to_display(canDelete) + "</td>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("      <td>" + flag_to_display(canEditMetadata) + "</td>");
+                    }
+
+
+                    Output.WriteLine("      <td>" + flag_to_display(isCurator) + "</td>");
+                    Output.WriteLine("      <td>" + flag_to_display(isAdmin) + "</td>");
+
+                    Output.WriteLine("    </tr>");
+                    Output.WriteLine("    <tr class=\"sbkWhav_TableRule\"><td colspan=\"" + columns + "\"></td></tr>");
+
+
+                    // Prepare to collect the information about this user
+                    last_userid = thisUserId;
+                    username = thisUser["LastName"] + "," + thisUser["FirstName"];
+                    canSelect = false;
+                    canEditMetadata = false;
+                    canEditBehaviors = false;
+                    canPerformQc = false;
+                    canUploadFiles = false;
+                    canChangeVisibility = false;
+                    canDelete = false;
+                    isCurator = false;
+                    isAdmin = false;
                 }
-                else
-                {
-                    Output.WriteLine("      <td>" + flag_to_display(thisUser["CanEditMetadata"]) + "</td>");
-                }
 
-
-                Output.WriteLine("      <td>" + flag_to_display(thisUser["IsCollectionManager"]) + "</td>");
-                Output.WriteLine("      <td>" + flag_to_display(thisUser["IsAggregationAdmin"]) + "</td>");
-
-                Output.WriteLine("    </tr>");
-                Output.WriteLine("    <tr class=\"sbkWhav_TableRule\"><td colspan=\"" + columns + "\"></td></tr>");
+                // Collect the flags from this row
+                if ((thisUser["CanSelect"] != DBNull.Value) && (Convert.ToBoolean(thisUser["CanSelect"]))) canSelect = true;
+                if ((thisUser["CanEditMetadata"] != DBNull.Value) && (Convert.ToBoolean(thisUser["CanEditMetadata"]))) canEditMetadata = true;
+                if ((thisUser["CanEditBehaviors"] != DBNull.Value) && (Convert.ToBoolean(thisUser["CanEditBehaviors"]))) canEditBehaviors = true;
+                if ((thisUser["CanPerformQc"] != DBNull.Value) && (Convert.ToBoolean(thisUser["CanPerformQc"]))) canPerformQc = true;
+                if ((thisUser["CanUploadFiles"] != DBNull.Value) && (Convert.ToBoolean(thisUser["CanUploadFiles"]))) canUploadFiles = true;
+                if ((thisUser["CanChangeVisibility"] != DBNull.Value) && (Convert.ToBoolean(thisUser["CanChangeVisibility"]))) canChangeVisibility = true;
+                if ((thisUser["CanDelete"] != DBNull.Value) && (Convert.ToBoolean(thisUser["CanDelete"]))) canDelete = true;
+                if ((thisUser["IsCollectionManager"] != DBNull.Value) && (Convert.ToBoolean(thisUser["IsCollectionManager"]))) isCurator = true;
+                if ((thisUser["IsAggregationAdmin"] != DBNull.Value) && (Convert.ToBoolean(thisUser["IsAggregationAdmin"]))) isAdmin = true;
             }
+
+            // Show the information for the last user
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td>" + username + "</td>");
+            Output.WriteLine("      <td>" + flag_to_display(canSelect) + "</td>");
+            if (detailedPermissions)
+            {
+                Output.WriteLine("      <td>" + flag_to_display(canEditMetadata) + "</td>");
+                Output.WriteLine("      <td>" + flag_to_display(canEditBehaviors) + "</td>");
+                Output.WriteLine("      <td>" + flag_to_display(canPerformQc) + "</td>");
+                Output.WriteLine("      <td>" + flag_to_display(canUploadFiles) + "</td>");
+                Output.WriteLine("      <td>" + flag_to_display(canChangeVisibility) + "</td>");
+                Output.WriteLine("      <td>" + flag_to_display(canDelete) + "</td>");
+            }
+            else
+            {
+                Output.WriteLine("      <td>" + flag_to_display(canEditMetadata) + "</td>");
+            }
+
+
+            Output.WriteLine("      <td>" + flag_to_display(isCurator) + "</td>");
+            Output.WriteLine("      <td>" + flag_to_display(isAdmin) + "</td>");
+
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("    <tr class=\"sbkWhav_TableRule\"><td colspan=\"" + columns + "\"></td></tr>");
 
             Output.WriteLine("  </table>");
             Output.WriteLine("  <br /><br />");
         }
 
-        private string flag_to_display(object ToDisplay)
+        private string flag_to_display(bool ToDisplay)
         {
-            if ((ToDisplay != DBNull.Value) && ( Convert.ToBoolean(ToDisplay.ToString())))
+            if (ToDisplay)
                 return "Y";
             return "";
         }

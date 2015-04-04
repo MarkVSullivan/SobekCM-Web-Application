@@ -248,13 +248,27 @@ namespace SobekCM.Library.AdminViewer
 					    }
 
 						// Save the new configuration file
-						bool successful_save = (itemAggregation.Write_Configuration_File(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory));
+                        string save_error = String.Empty;
+                        bool successful_save = true;
+					    if (!itemAggregation.Write_Configuration_File(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory))
+					    {
+                            successful_save = false;
+					        save_error = "<br /><br />Error saving the configuration file";
+					    }
 
-						// Save to the database
-                        if (!Item_Aggregation_Utilities.Save_To_Database(itemAggregation, RequestSpecificValues.Current_User.Full_Name, null))
-							successful_save = false;
+					    // Save to the database
+					    if (!Item_Aggregation_Utilities.Save_To_Database(itemAggregation, RequestSpecificValues.Current_User.Full_Name, null))
+					    {
+					        successful_save = false;
+                            save_error = "<br /><br />Error saving to the database.";
 
-						// Save the link between this item and the thematic heading
+					        if (Engine_Database.Last_Exception != null)
+					        {
+					            save_error = save_error + "<br /><br />" + Engine_Database.Last_Exception.Message;
+					        }
+					    }
+
+					    // Save the link between this item and the thematic heading
 					    int thematicHeadingId = -1;
                         if (itemAggregation.Thematic_Heading != null)
                             thematicHeadingId = itemAggregation.Thematic_Heading.ID;
@@ -311,7 +325,7 @@ namespace SobekCM.Library.AdminViewer
 						}
 						else
 						{
-							actionMessage = "Error saving aggregation information!";
+                            actionMessage = "Error saving aggregation information!" + save_error;
 						}
 					}
 					else 
@@ -401,11 +415,11 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  </div>");
 			}
 
-
-            Output.WriteLine("  <div class=\"sbkAdm_TitleDiv\">");
-			Output.WriteLine("    <h1>" + itemAggregation.Type + " Administration : " + itemAggregation.Code.ToUpper() + "</h1>");
-			Output.WriteLine("  </div>");
-			Output.WriteLine();
+            Output.WriteLine("  <div class=\"sbkAdm_TitleDiv\" style=\"padding-left:20px\">");
+            Output.WriteLine("    <img id=\"sbkAdm_TitleDivImg\" src=\"" + Static_Resources.Admin_View_Img + "\" alt=\"\" />");
+            Output.WriteLine("    <h1>Collection Administration : " + itemAggregation.Code.ToUpper() + "</h1>");
+            Output.WriteLine("  </div>");
+            Output.WriteLine();
 
 			// Start the outer tab containe
 			Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs\">");
@@ -425,8 +439,6 @@ namespace SobekCM.Library.AdminViewer
 				const string STATIC_PAGES = "Child Pages";
 				const string SUBCOLLECTIONS = "SubCollections";
                 const string UPLOADS = "Uploads";
-                const string PERMISSIONS = "Permissions";
-                const string HISTORY = "History";
 
 				// Draw all the page tabs for this form
 				if (page == 1)
@@ -514,22 +526,6 @@ namespace SobekCM.Library.AdminViewer
                 {
                     Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_aggr_edit_page('i');\">" + UPLOADS + "</li>");
                 }
-                //if (page == 10)
-                //{
-                //    Output.WriteLine("    <li id=\"tabHeader_6\" class=\"tabActiveHeader\">" + PERMISSIONS + "</li>");
-                //}
-                //else
-                //{
-                //    Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_aggr_edit_page('j');\">" + PERMISSIONS + "</li>");
-                //}
-                //if (page == 11)
-                //{
-                //    Output.WriteLine("    <li id=\"tabHeader_6\" class=\"tabActiveHeader\">" + HISTORY + "</li>");
-                //}
-                //else
-                //{
-                //    Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_aggr_edit_page('k');\">" + HISTORY + "</li>");
-                //}
 
 
 			    Output.WriteLine("      </ul>");
@@ -657,14 +653,14 @@ namespace SobekCM.Library.AdminViewer
 		private void Add_Page_1( TextWriter Output )
 		{
 			// Help constants (for now)
-			const string LONG_NAME_HELP = "Long name help place holder";
-			const string SHORT_NAME_HELP = "Short name help place holder";
-			const string LINK_HELP = "Link help place holder";
-			const string DESCRIPTION_HELP = "Description help place holder";
-			const string EMAIL_HELP = "Email help place holder";
-			const string ACTIVE_HELP = "Active checkbox help place holder";
-			const string HIDDEN_HELP = "Hidden checkbox help place holder";
-			const string COLLECTION_BUTTON_HELP = "Collection button help place holder";
+            const string LONG_NAME_HELP = "The full name for this collection. This will be used throughout the system to identify this collection. The only place this will not appear is in the breadcrumbs, where the shorter version below will be used.";
+            const string SHORT_NAME_HELP = "A shorter version of the name to be used in the breadcrumbs. Generally, try to keep this as short as possible, as items may appear in multiple collections.";
+            const string LINK_HELP = "Institutional collections can have an external link added. The link will be displayed in the citation of any digital resources associated with this institution, linked to the source institution or holding location text.";
+            const string DESCRIPTION_HELP = "Brief description of this collection. This description is public and will appear wherever the collection appears, such as under the thematic headings on the home page or as a subcollection under the parent collection(s).";
+			const string EMAIL_HELP = "Email address that will receive messages from the built-in contact forms, when a user is in this collection.  If this is left blank, the system default will be used.";
+			const string ACTIVE_HELP = "Flag indicates if this collection should be active. Active collections appear in breadcrumbs when you view digital resources and generally appear in all public lists of collections. You can add items to inactive collections and build the collection prior to &quot;publishing&quot; it later by making it active.";
+            const string HIDDEN_HELP = "Flag indicates if this collection should appear in the home page of the parent collection. In all other respects, a hidden collection works just like an active collection.";
+            const string COLLECTION_BUTTON_HELP = "Upload a button for this new collection. Buttons appear on the home page or parent collection home page once a collection is active and not hidden.";
 			
 
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
@@ -733,7 +729,7 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Collection Visibility</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The values in this section determine if the collection is currently visible at all, whether it is eligible to appear on the collection list at the bottom of the parent page, and the collection button used in that case.  Thematic headings are used to place this collection on the main home page.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The values in this section determine if the collection is currently visible at all, whether it is eligible to appear on the collection list at the bottom of the parent page, and the collection button used in that case.  Thematic headings are used to place this collection on the main home page.</p></td></tr>");
 
 
 			// Add the behavior lines
@@ -784,7 +780,7 @@ namespace SobekCM.Library.AdminViewer
 
 		private void Finish_Page_1(TextWriter Output)
 		{
-			const string THEMATIC_HELP = "Thematic heading help place holder";
+            const string THEMATIC_HELP = "To make this collection appear on the home page of this repository, you must add it to an existing thematic heading. Thematic headings categorize the collections within your repository.";
 
 			Output.WriteLine("           </td>");
 			Output.WriteLine("         </tr>");
@@ -1006,11 +1002,11 @@ namespace SobekCM.Library.AdminViewer
         private void Add_Page_Appearance(TextWriter Output)
         {
             // Help constants (for now)
-            const string WEB_SKIN_HELP = "Web skin help place holder";
-            const string CSS_HELP = "Aggregation-level CSS help place holder";
-            const string NEW_HOME_PAGE_HELP = "New home page help place holder";
-            const string NEW_BANNER_HELP = "New banner help place holder";
-            const string UPLOAD_BANNER_HELP = "Upload new banner help place holder";
+            const string WEB_SKIN_HELP = "This collection can be forced to only display under a specific web skin by selecting it here.  If there is no default web skin selected, the current web skin (determined by the URL portal) will be used.";
+            const string CSS_HELP = "You can add style definitions to this collection by enabling and editing the collection-level css stylesheet here.";
+            const string NEW_HOME_PAGE_HELP = "Use this option to add special support for a new language to your home page.  For example, if you have just translated your home page text into Spanish, and would like users that have set Spanish as their browser preference to see your translations by default, select Spanish from the drop down.  Choosing a home page to copy from will allow the new home page to not start completely blank.";
+            const string NEW_BANNER_HELP = "Select the language and the already uploaded banner to use and click ADD.  This will allow you to customize the banner image, based on the language preference of your web user.  To change an existing banner, simply select the existing language and the new banner image and press ADD.";
+            const string UPLOAD_BANNER_HELP = "Before you can choose to use a new banner image for a language, you must upload the new banner.  Pressing the large SELECT button in this section allows you to upload this new image, or overwrite an existing banner image.";
 
 
 
@@ -1072,7 +1068,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </tr>");
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Home Page Text</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section controls all the language-specific (and default) text which appears on the home page.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section controls all the language-specific (and default) text which appears on the home page.</p></td></tr>");
 
             // Add all the existing home page information
             Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
@@ -1217,7 +1213,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Banners</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section shows all the existing language-specific banners for this aggregation and allows you upload new banners for this aggregation.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This section shows all the existing language-specific banners for this aggregation and allows you upload new banners for this aggregation.</p></td></tr>");
 
 
             // Add all the EXISTING banner information
@@ -1506,13 +1502,12 @@ namespace SobekCM.Library.AdminViewer
 		private void Add_Page_2(TextWriter Output)
 		{
 			// Help constants (for now)
-			const string BASIC_HELP = "Basic search help place holder";
+            const string BASIC_HELP = "Basic search help place holder.  <img src=\"https://sobekdigital.com/_images/small_logo.png\" />";
 			const string ADVANCED_HELP = "Advanced search help place holder";
 			const string BASIC_YEARS_HELP = "Basic search with year range help place holder";
 			const string ADVANCED_YEARS_HELP = "Advanced search with year range help place holder";
 			const string FULLTEXT_HELP = "Full text saerch help place holder";
 			const string MAP_SEARCH_HELP = "Map search help place holder";
-            const string MAP_SEARCH_BETA_HELP = "This enables the map searcher [beta]";
 			const string DLOC_SEARCH_HELP = "dLOC-Specific search help place holder";
 			const string NEWSPAPER_SEARCH_HELP = "Newspaper search help place holder";
 			const string ALL_ITEMS_HELP = "All and New Item browses help place holder";
@@ -1867,9 +1862,9 @@ namespace SobekCM.Library.AdminViewer
 		private void Add_Page_3( TextWriter Output )
 		{
 			// Help constants (for now)
-			const string FACETS_HELP = "Facets help place holder";
-			const string DEFAULT_VIEW_HELP = "Default results view help place holder";
-			const string RESULTS_VIEWS_HELP = "Results view help place holder";
+			const string FACETS_HELP = "When a user searches or browses a collection, the selected facets appear to the left of the search results and include all the terms in the selected metadata fields that exist in the search results.  This allows the user to easily navigate the entire set of results and narrow their search.\\n\\nYou can select which metadata fields appear in those facets by changing the values here.\\n\\nFacets will only appear if some metadata exists in the selected field in the search or browse results.";
+			const string DEFAULT_VIEW_HELP = "Set the default view that will be used when a user searches or browses the items within this collection.";
+			const string RESULTS_VIEWS_HELP = "Select which result views should be offered to users who search or browse the items within this collection.";
 
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
@@ -2089,10 +2084,10 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 			// Help constants (for now)
-			const string DEFAULT_HELP = "Default browse by help place holder";
-			const string METADATA_BROWSES_HELP = "Metadata browses help place holder";
-			const string OAI_FLAG_HELP = "OAI-PMH Enabled flag help place holder";
-			const string OAI_METADATA_HELP = "OAI-PMH Additional metadata help place holder";
+			const string DEFAULT_HELP = "Use this option to select the default metadata BROWSE BY to display if the user selects the BROWSE BY option on the main collection menu, without selecting the specific metadata browse by to view.";
+			const string METADATA_BROWSES_HELP = "By selecting certain metadata fields to be browseable, users can choose to view all the distinct values within a particular metadata field.  These browses become accessible from the collection main menu.";
+			const string OAI_FLAG_HELP = "Enable or disable OAI-PMH for this collection.  If enabled, this collection becomes a set offered for individual browsing via the OAI-PMH metadata sharing protocol.";
+			const string OAI_METADATA_HELP = "Additional metadata included here will show with this set when a OAI-PMH user lists the sets within this repository.  This has limited usability, as most harvesters probably do not harvest this data.\\n\\nTo use this, your included metadata which describes the entire collection should be included within dublin core tags, such as <dc:subject>World War II</dc:subject>.";
 
 
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
@@ -2155,7 +2150,7 @@ namespace SobekCM.Library.AdminViewer
 
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">OAI-PMH Settings</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can use OAI-PMH to expose all the metadata of the resources within this aggregation for automatic harvesting by other repositories.  Additionally, you can choose to attach metadata to the collection-level OAI-PMH record.  This should be coded as dublin core tags.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can use OAI-PMH to expose all the metadata of the resources within this aggregation for automatic harvesting by other repositories.  Additionally, you can choose to attach metadata to the collection-level OAI-PMH record.  This should be coded as dublin core tags.</p></td></tr>");
 
 
 			// Add the oai-pmh enabled flag
@@ -2253,7 +2248,7 @@ namespace SobekCM.Library.AdminViewer
 
 		private void Save_Page_6_Postback(NameValueCollection Form)
 		{
-
+            // This does not currently save
 		}
 
 		private void Add_Page_6(TextWriter Output)
@@ -2497,10 +2492,10 @@ namespace SobekCM.Library.AdminViewer
 
 		private void Add_Page_7(TextWriter Output)
 		{
-			const string CODE_HELP = "New child page code help placeholder";
-			const string LABEL_HELP = "New child page label help placeholder";
-			const string VISIBILITY_HELP = "New child page visibility help placeholder";
-			const string PARENT_HELP = "New child page parent help place holder";
+			const string CODE_HELP = "Enter the code for the new child page.  This code should be less than 20 characters and be as descriptive of the content of your new page as possible.  This code will appear in the URL for the new child page.";
+			const string LABEL_HELP = "Enter the title for this new child page.  This title should be short, but can include spaces.  This will appear above the child page text.  If this child page appears in the main menu, this will also appear on the menu.  If this child page appears as a browse by, this will appear in the list of possible browse bys as well.";
+			const string VISIBILITY_HELP = "Choose how a link to this child page should appear for the web users.\\n\\nIf you select MAIN MENU, this will appear in the collection main menu system.\\n\\nIf you select BROWSE BY, this will appear with metadata browse bys on the main menu under the BROWSE BY menu item.\\n\\nIf you select NONE, then you will need to add a link to the new child page yourself by editing the text of the home page or an existing linked child page.";
+			const string PARENT_HELP = "If this child page will appear on the main menu, you can select a parent child page already on the main menu.  This will create a drop down menu under, or next to, the parent.";
 
 			if (actionMessage.Length > 0)
 			{
@@ -3207,7 +3202,7 @@ namespace SobekCM.Library.AdminViewer
         private void Add_Page_Uploads(TextWriter Output)
         {
             // Help constants (for now)
-            const string UPLOAD_BANNER_HELP = "Upload new image help place holder";
+            const string UPLOAD_BANNER_HELP = "Press the SELECT FILES button here to upload a new GIF, JPG, PNG, or BMP file.   You will then be able to access it when you are editing the home page text or the text of a child page through the HTML editor.";
 
 
 
@@ -3444,11 +3439,11 @@ namespace SobekCM.Library.AdminViewer
 
 		private void Add_Child_Page(TextWriter Output)
 		{
-			const string VISIBILITY_HELP = "Existing child page visibility help placeholder";
-			const string PARENT_HELP = "Existing child page parent help place holder";
-			const string NEW_VERSION_LANGUAGE_HELP = "New version language help place holder";
-			const string NEW_VERSION_TITLE_HELP = "New version title help place holder";
-			const string NEW_VERSION_COPY_HELP = "New version copy help place holder";
+            const string VISIBILITY_HELP = "Choose how a link to this child page should appear for the web users.\\n\\nIf you select MAIN MENU, this will appear in the collection main menu system.\\n\\nIf you select BROWSE BY, this will appear with metadata browse bys on the main menu under the BROWSE BY menu item.\\n\\nIf you select NONE, then you will need to add a link to the new child page yourself by editing the text of the home page or an existing linked child page.";
+            const string PARENT_HELP = "If this child page will appear on the main menu, you can select a parent child page already on the main menu.  This will create a drop down menu under, or next to, the parent.";
+			const string NEW_VERSION_LANGUAGE_HELP = "To add a translated version, or alternate language version, to an existing child page, select the new language you wish to support.";
+            const string NEW_VERSION_TITLE_HELP = "Enter the translated title for the new language support you are adding to this child page.  This title should be short, but can include spaces.  This will appear above the child page text.  If this child page appears in the main menu, this will also appear on the menu.  If this child page appears as a browse by, this will appear in the list of possible browse bys as well.";
+			const string NEW_VERSION_COPY_HELP = "Choose which existing child page text to copy this new language support page from.  Without copying the text from an existing version, the text for the new version of the child page will begin blank.";
 
 			string code = RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(2);
 			Complete_Item_Aggregation_Child_Page childPage = itemAggregation.Child_Page_By_Code(code);

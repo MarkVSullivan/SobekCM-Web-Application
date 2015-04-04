@@ -3411,6 +3411,8 @@ namespace SobekCM.Engine_Library.Database
         /// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
         public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, Thematic_Heading ThematicHeading, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Search_Beta, int Map_Display, int Map_Display_Beta, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, string LanguageVariants, Custom_Tracer Tracer)
         {
+            lastException = null;
+
             if (Tracer != null)
             {
                 Tracer.Add_Trace("SobekCM_Database.Save_Item_Aggregation", String.Empty);

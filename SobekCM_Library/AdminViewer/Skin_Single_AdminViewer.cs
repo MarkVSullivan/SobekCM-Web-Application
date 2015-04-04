@@ -440,18 +440,18 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<div id=\"sbkSaav_PageContainer\">");
 
             // Add the buttons
-                string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
-                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-                Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-                Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits();\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
-                Output.WriteLine("  </div>");
-                Output.WriteLine();
-                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
+            string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+            Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits();\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("  </div>");
+            Output.WriteLine();
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
 
 
-            Output.WriteLine("  <div class=\"sbkSaav_HomeText\">");
-            Output.WriteLine("    <br />");
+            Output.WriteLine("  <div class=\"sbkAdm_TitleDiv\" style=\"padding-left:20px\">");
+            Output.WriteLine("    <img id=\"sbkAdm_TitleDivImg\" src=\"" + Static_Resources.Skins_Img + "\" alt=\"\" />");
             Output.WriteLine("    <h1>Web Skin Administration : " + webSkin.Skin_Code + "</h1>");
             Output.WriteLine("  </div>");
             Output.WriteLine();
@@ -460,63 +460,63 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs\">");
 
             // Add all the possible tabs 
-                Output.WriteLine("    <div class=\"tabs\">");
-                Output.WriteLine("      <ul>");
+            Output.WriteLine("    <div class=\"tabs\">");
+            Output.WriteLine("      <ul>");
 
-                const string GENERAL = "General";
-                const string STYLESHEET = "CSS Stylesheet";
-                const string HTML = "HTML (Headers/Footers)";
-                const string BANNERS = "Banners";
-                const string UPLOADS = "Uploads";
+            const string GENERAL = "General";
+            const string STYLESHEET = "CSS Stylesheet";
+            const string HTML = "HTML (Headers/Footers)";
+            const string BANNERS = "Banners";
+            const string UPLOADS = "Uploads";
 
-                // Draw all the page tabs for this form
-                if (page == 1)
-                {
-                    Output.WriteLine("    <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + GENERAL + "</li>");
-                }
-                else
-                {
-                    Output.WriteLine("    <li id=\"tabHeader_1\" onclick=\"return new_skin_edit_page('a');\">" + GENERAL + "</li>");
-                }
+            // Draw all the page tabs for this form
+            if (page == 1)
+            {
+                Output.WriteLine("    <li id=\"tabHeader_1\" class=\"tabActiveHeader\">" + GENERAL + "</li>");
+            }
+            else
+            {
+                Output.WriteLine("    <li id=\"tabHeader_1\" onclick=\"return new_skin_edit_page('a');\">" + GENERAL + "</li>");
+            }
 
-                if (page == 2)
-                {
-                    Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + STYLESHEET + "</li>");
-                }
-                else
-                {
-                    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_skin_edit_page('b');\">" + STYLESHEET + "</li>");
-                }
+            if (page == 2)
+            {
+                Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + STYLESHEET + "</li>");
+            }
+            else
+            {
+                Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_skin_edit_page('b');\">" + STYLESHEET + "</li>");
+            }
 
-                if (page == 3)
-                {
-                    Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + HTML + "</li>");
-                }
-                else
-                {
-                    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_skin_edit_page('c');\">" + HTML + "</li>");
-                }
+            if (page == 3)
+            {
+                Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + HTML + "</li>");
+            }
+            else
+            {
+                Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_skin_edit_page('c');\">" + HTML + "</li>");
+            }
 
-                //if (page == 4)
-                //{
-                //    Output.WriteLine("    <li id=\"tabHeader_3\" class=\"tabActiveHeader\">" + BANNERS + "</li>");
-                //}
-                //else
-                //{
-                //    Output.WriteLine("    <li id=\"tabHeader_3\" onclick=\"return new_skin_edit_page('d');\">" + BANNERS + "</li>");
-                //}
+            //if (page == 4)
+            //{
+            //    Output.WriteLine("    <li id=\"tabHeader_3\" class=\"tabActiveHeader\">" + BANNERS + "</li>");
+            //}
+            //else
+            //{
+            //    Output.WriteLine("    <li id=\"tabHeader_3\" onclick=\"return new_skin_edit_page('d');\">" + BANNERS + "</li>");
+            //}
 
-                if (page == 5)
-                {
-                    Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + UPLOADS + "</li>");
-                }
-                else
-                {
-                    Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_skin_edit_page('e');\">" + UPLOADS + "</li>");
-                }
+            if (page == 5)
+            {
+                Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + UPLOADS + "</li>");
+            }
+            else
+            {
+                Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_skin_edit_page('e');\">" + UPLOADS + "</li>");
+            }
 
-                Output.WriteLine("      </ul>");
-                Output.WriteLine("    </div>");
+            Output.WriteLine("      </ul>");
+            Output.WriteLine("    </div>");
 
             // Add the single tab.  When users click on a tab, it goes back to the server (here)
             // to render the correct tab content

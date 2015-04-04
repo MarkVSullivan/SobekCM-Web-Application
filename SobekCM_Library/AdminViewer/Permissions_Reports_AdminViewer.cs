@@ -247,6 +247,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("  <table id=\"sbkUpav_ListTable\">");
                     Output.WriteLine("    <tr>");
 
+
                     // A bunch of code here just to write the admins in up to three columns and 
                     // start the table
                     int column = 1;
@@ -593,8 +594,10 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <tr><td colspan=\"3\"><h3>" + Title + "</h3></td></tr>");
                 Output.WriteLine("    <tr>");
 
+
+
                 // How many rows?
-                int rows = ((UserList.Count - 1)%3) + 1;
+                int rows = ((UserList.Count - 1)/3) + 1;
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <blockquote>");
                 for (int i = 0; i < rows; i++)
