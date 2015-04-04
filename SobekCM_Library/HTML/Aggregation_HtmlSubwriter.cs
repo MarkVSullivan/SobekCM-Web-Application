@@ -2296,6 +2296,13 @@ namespace SobekCM.Library.HTML
 							return "container-facets";
 						}
 						break;
+
+                    case Aggregation_Type_Enum.User_Permissions:
+				        if (UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions)
+				        {
+				            return "container-inner1215";
+				        }
+                        break;
 				}
 
 				return base.Container_CssClass;

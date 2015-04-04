@@ -68,6 +68,8 @@
     <Content Include="default\banner_images\8.jpg" />
     <Content Include="default\css\sobekcm-admin\4.8.4\SobekCM_Admin.css" />
     <Content Include="default\css\sobekcm-admin\4.8.4\SobekCM_Admin.min.css" />
+    <Content Include="default\css\sobekcm-admin\4.8.6\SobekCM_Admin.css" />
+    <Content Include="default\css\sobekcm-admin\4.8.6\SobekCM_Admin.min.css" />
     <Content Include="default\css\sobekcm-admin\4.9.0\SobekCM_Admin.css" />
     <Content Include="default\css\sobekcm-bookturner\4.8.4\SobekCM_BookTurner.css" />
     <Content Include="default\css\sobekcm-datatables\4.8.4\SobekCM_DataTables.css" />
