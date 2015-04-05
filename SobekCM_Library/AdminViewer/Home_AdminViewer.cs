@@ -58,7 +58,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
         public override string Viewer_Icon
         {
-            get { return String.Empty; }
+            get { return Static_Resources.Manage_Collection_Img; }
         }
 
 		/// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
@@ -135,7 +135,7 @@ namespace SobekCM.Library.AdminViewer
 
 			// Edit aggregation aliases
 			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
-            Output.WriteLine("      <td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Forwarding_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Aggregation Aliases</a></td>");
+            Output.WriteLine("      <td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Aliases_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Aggregation Aliases</a></td>");
 
             Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr><td>&nbsp;</td>");
@@ -184,7 +184,7 @@ namespace SobekCM.Library.AdminViewer
 
 			// Edit Settings
 			RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
-            Output.WriteLine("      <td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Wrench_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">System-Wide Settings</a></td>");
+            Output.WriteLine("      <td style=\"width:35px;\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Settings_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">System-Wide Settings</a></td>");
 
             Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr><td>&nbsp;</td>");

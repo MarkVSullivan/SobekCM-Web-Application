@@ -21,6 +21,9 @@ namespace SobekCM.Library.Settings
             Admin_View_Img_Large = "http://cdn.sobekrepository.org/images/misc/admin_view_lg.png";
             Aggregations_Img_Large = "http://cdn.sobekrepository.org/images/misc/aggregations_lg.png";
             Ajax_Loader_Img = "http://cdn.sobekrepository.org/images/mapedit/ajax-loader.gif";
+            Aliases_Img = "http://cdn.sobekrepository.org/images/misc/aliases.png";
+            Aliases_Img_Small = "http://cdn.sobekrepository.org/images/misc/aliases_small.png";
+            Aliases_Img_Large = "http://cdn.sobekrepository.org/images/misc/aliases_large.png";
             Arw05lt_Img = "http://cdn.sobekrepository.org/images/qc/ARW05LT.gif";
             Arw05rt_Img = "http://cdn.sobekrepository.org/images/qc/ARW05RT.gif";
             Bg1_Img = "http://cdn.sobekrepository.org/images/mapedit/bg1.png";
@@ -142,9 +145,9 @@ namespace SobekCM.Library.Settings
             Firewall_Img = "http://cdn.sobekrepository.org/images/misc/firewall.gif";
             Firewall_Img_Small = "http://cdn.sobekrepository.org/images/misc/firewall.png";
             First2_Png = "http://cdn.sobekrepository.org/images/bookturner/first2.png";
-            Forwarding_Img = "http://cdn.sobekrepository.org/images/misc/forwarding.gif";
-            Forwarding_Img_Small = "http://cdn.sobekrepository.org/images/misc/forwarding.png";
             Gears_Img = "http://cdn.sobekrepository.org/images/misc/gears.png";
+            Gears_Img_Small = "http://cdn.sobekrepository.org/images/misc/gears_small.png";
+            Gears_Img_Large = "http://cdn.sobekrepository.org/images/misc/gears_large.png";
             Geo_Blue_Png = "http://cdn.sobekrepository.org/images/misc/geo_blue.png";
             Get_Adobe_Reader_Png = "http://cdn.sobekrepository.org/images/misc/get_adobe_reader.png";
             Getuserlocation_Png = "http://cdn.sobekrepository.org/images/mapedit/getUserLocation.png";
@@ -228,8 +231,9 @@ namespace SobekCM.Library.Settings
             Point04_Ico = "http://cdn.sobekrepository.org/images/qc/POINT04.ICO";
             Point13_Ico = "http://cdn.sobekrepository.org/images/qc/POINT13.ICO";
             Pointer_Blue_Gif = "http://cdn.sobekrepository.org/images/misc/pointer_blue.gif";
-            Portals_Img = "http://cdn.sobekrepository.org/images/misc/portals.gif";
-            Portals_Img_Small = "http://cdn.sobekrepository.org/images/misc/portals.png";
+            Portals_Img = "http://cdn.sobekrepository.org/images/misc/portal.png";
+            Portals_Img_Small = "http://cdn.sobekrepository.org/images/misc/portals_small.png";
+            Portals_Img_Large = "http://cdn.sobekrepository.org/images/misc/portal_large.png";
             Previous2_Png = "http://cdn.sobekrepository.org/images/bookturner/previous2.png";
             Print_Css = "http://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/print.css";
             Printer_Png = "http://cdn.sobekrepository.org/images/misc/printer.png";
@@ -243,8 +247,9 @@ namespace SobekCM.Library.Settings
             Rect_Medium_Ico = "http://cdn.sobekrepository.org/images/qc/rect_medium.ico";
             Rect_Small_Ico = "http://cdn.sobekrepository.org/images/qc/rect_small.ico";
             Red_Pushpin_Png = "http://cdn.sobekrepository.org/images/misc/red-pushpin.png";
-            Refresh_Img = "http://cdn.sobekrepository.org/images/misc/refresh.gif";
-            Refresh_Img_Small = "http://cdn.sobekrepository.org/images/misc/refresh.png";
+            Refresh_Img = "http://cdn.sobekrepository.org/images/misc/refresh.png";
+            Refresh_Img_Small = "http://cdn.sobekrepository.org/images/misc/refresh_small.png";
+            Refresh_Img_Large = "http://cdn.sobekrepository.org/images/misc/refresh_large.png";
             Refresh_Folder_Jpg = "http://cdn.sobekrepository.org/images/misc/refresh_folder.jpg";
             Removeicon_Gif = "http://cdn.sobekrepository.org/images/misc/removeIcon.gif";
             Restricted_Resource_Img_Large = "http://cdn.sobekrepository.org/images/misc/restricted_resource_lg.png";
@@ -267,7 +272,9 @@ namespace SobekCM.Library.Settings
             Search_Full_Text_Exlude_Newspapers_Img = "http://cdn.sobekrepository.org/images/misc/search_fulltext_exclude_newspapers.png";
             Search_Map_Img = "http://cdn.sobekrepository.org/images/misc/search_map.png";
             Search_Newspaper_Img = "http://cdn.sobekrepository.org/images/misc/search_newspaper.png";
-            Settings_Img = "http://cdn.sobekrepository.org/images/misc/Settings.gif";
+            Settings_Img = "http://cdn.sobekrepository.org/images/misc/settings.png";
+            Settings_Img_Small = "http://cdn.sobekrepository.org/images/misc/settings_small.png";
+            Settings_Img_Large = "http://cdn.sobekrepository.org/images/misc/settings_large.png";
             Show_Internal_Header_Png = "http://cdn.sobekrepository.org/images/misc/show_internal_header.png";
             Skins_Img = "http://cdn.sobekrepository.org/images/misc/skins.gif";
             Skins_Img_Small = "http://cdn.sobekrepository.org/images/misc/skins.png";
@@ -340,8 +347,9 @@ namespace SobekCM.Library.Settings
             View_Work_Log_Img_Large = "http://cdn.sobekrepository.org/images/misc/view_work_log_icon.png";
             Wizard_Img = "http://cdn.sobekrepository.org/images/misc/wizard.png";
             Wizard_Img_Large = "http://cdn.sobekrepository.org/images/misc/wizard_lg.png";
-            Wordmarks_Img = "http://cdn.sobekrepository.org/images/misc/wordmarks.gif";
-            Wrench_Img = "http://cdn.sobekrepository.org/images/misc/wrench.png";
+            Wordmarks_Img = "http://cdn.sobekrepository.org/images/misc/wordmarks.png";
+            Wordmarks_Img_Small = "http://cdn.sobekrepository.org/images/misc/wordmarks_small.png";
+            Wordmarks_Img_Large = "http://cdn.sobekrepository.org/images/misc/wordmarks_large.png";
             Yahoo_Share_Gif = "http://cdn.sobekrepository.org/images/misc/yahoo_share.gif";
             Yahoo_Share_H_Gif = "http://cdn.sobekrepository.org/images/misc/yahoo_share_h.gif";
             Yahoobuzz_Share_Gif = "http://cdn.sobekrepository.org/images/misc/yahoobuzz_share.gif";
@@ -377,6 +385,15 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'ajax-loader.gif' file ( http://cdn.sobekrepository.org/images/mapedit/ajax-loader.gif by default)</summary>
         public static string Ajax_Loader_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'aliases.png' file ( http://cdn.sobekrepository.org/images/misc/aliases.png by default)</summary>
+        public static string Aliases_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'aliases_small.png' file ( http://cdn.sobekrepository.org/images/misc/aliases_small.png by default)</summary>
+        public static string Aliases_Img_Small { get; private set; }
+
+        /// <summary> URL for the default resource 'aliases_large.png' file ( http://cdn.sobekrepository.org/images/misc/aliases_large.png by default)</summary>
+        public static string Aliases_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'arw05lt.gif' file ( http://cdn.sobekrepository.org/images/qc/ARW05LT.gif by default)</summary>
         public static string Arw05lt_Img { get; private set; }
@@ -738,14 +755,14 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'first2.png' file ( http://cdn.sobekrepository.org/images/bookturner/first2.png by default)</summary>
         public static string First2_Png { get; private set; }
 
-        /// <summary> URL for the default resource 'forwarding.gif' file ( http://cdn.sobekrepository.org/images/misc/forwarding.gif by default)</summary>
-        public static string Forwarding_Img { get; private set; }
-
-        /// <summary> URL for the default resource 'forwarding.png' file ( http://cdn.sobekrepository.org/images/misc/forwarding.png by default)</summary>
-        public static string Forwarding_Img_Small { get; private set; }
-
         /// <summary> URL for the default resource 'gears.png' file ( http://cdn.sobekrepository.org/images/misc/gears.png by default)</summary>
         public static string Gears_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'gears_small.png' file ( http://cdn.sobekrepository.org/images/misc/gears_small.png by default)</summary>
+        public static string Gears_Img_Small { get; private set; }
+
+        /// <summary> URL for the default resource 'gears_large.png' file ( http://cdn.sobekrepository.org/images/misc/gears_large.png by default)</summary>
+        public static string Gears_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'geo_blue.png' file ( http://cdn.sobekrepository.org/images/mapsearch/geo_blue.png by default)</summary>
         public static string Geo_Blue_Png { get; private set; }
@@ -996,10 +1013,13 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'pointer_blue.gif' file ( http://cdn.sobekrepository.org/images/misc/pointer_blue.gif by default)</summary>
         public static string Pointer_Blue_Gif { get; private set; }
 
-        /// <summary> URL for the default resource 'portals.gif' file ( http://cdn.sobekrepository.org/images/misc/portals.gif by default)</summary>
+        /// <summary> URL for the default resource 'portal_large.png' file ( http://cdn.sobekrepository.org/images/misc/portal_large.png by default)</summary>
+        public static string Portals_Img_Large { get; private set; }
+
+        /// <summary> URL for the default resource 'portal.png' file ( http://cdn.sobekrepository.org/images/misc/portal.png by default)</summary>
         public static string Portals_Img { get; private set; }
 
-        /// <summary> URL for the default resource 'portals.png' file ( http://cdn.sobekrepository.org/images/misc/portals.png by default)</summary>
+        /// <summary> URL for the default resource 'portals_small.png' file ( http://cdn.sobekrepository.org/images/misc/portals.png by default)</summary>
         public static string Portals_Img_Small { get; private set; }
 
         /// <summary> URL for the default resource 'previous2.png' file ( http://cdn.sobekrepository.org/images/bookturner/previous2.png by default)</summary>
@@ -1041,11 +1061,14 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'red-pushpin.png' file ( http://cdn.sobekrepository.org/images/mapedit/mapIcons/red-pushpin.png by default)</summary>
         public static string Red_Pushpin_Png { get; private set; }
 
-        /// <summary> URL for the default resource 'refresh.gif' file ( http://cdn.sobekrepository.org/images/misc/refresh.gif by default)</summary>
+        /// <summary> URL for the default resource 'refresh.png' file ( http://cdn.sobekrepository.org/images/misc/refresh.png by default)</summary>
         public static string Refresh_Img { get; private set; }
 
-        /// <summary> URL for the default resource 'refresh.png' file ( http://cdn.sobekrepository.org/images/misc/refresh.png by default)</summary>
+        /// <summary> URL for the default resource 'refresh_small.png' file ( http://cdn.sobekrepository.org/images/misc/refresh_small.png by default)</summary>
         public static string Refresh_Img_Small { get; private set; }
+
+        /// <summary> URL for the default resource 'refresh_large.png' file ( http://cdn.sobekrepository.org/images/misc/refresh_large.png by default)</summary>
+        public static string Refresh_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'refresh_folder.jpg' file ( http://cdn.sobekrepository.org/images/misc/refresh_folder.jpg by default)</summary>
         public static string Refresh_Folder_Jpg { get; private set; }
@@ -1113,8 +1136,14 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'search_newspaper.png' file ( http://cdn.sobekrepository.org/images/misc/search_newspaper.png by default)</summary>
         public static string Search_Newspaper_Img { get; private set; }
 
-        /// <summary> URL for the default resource 'settings.gif' file ( http://cdn.sobekrepository.org/images/misc/Settings.gif by default)</summary>
+        /// <summary> URL for the default resource 'settings.png' file ( http://cdn.sobekrepository.org/images/misc/settings.png by default)</summary>
         public static string Settings_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'settings_small.png' file ( http://cdn.sobekrepository.org/images/misc/settings_small.png by default)</summary>
+        public static string Settings_Img_Small { get; private set; }
+
+        /// <summary> URL for the default resource 'settings_large.png' file ( http://cdn.sobekrepository.org/images/misc/settings_large.png by default)</summary>
+        public static string Settings_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'show_internal_header.png' file ( http://cdn.sobekrepository.org/images/misc/show_internal_header.png by default)</summary>
         public static string Show_Internal_Header_Png { get; private set; }
@@ -1332,11 +1361,14 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'wizard_lg.png' file ( http://cdn.sobekrepository.org/images/misc/wizard_lg.png by default)</summary>
         public static string Wizard_Img_Large { get; private set; }
 
-        /// <summary> URL for the default resource 'wordmarks.gif' file ( http://cdn.sobekrepository.org/images/misc/wordmarks.gif by default)</summary>
+        /// <summary> URL for the default resource 'wordmarks.png' file ( http://cdn.sobekrepository.org/images/misc/wordmarks.png by default)</summary>
         public static string Wordmarks_Img { get; private set; }
 
-        /// <summary> URL for the default resource 'wrench.png' file ( http://cdn.sobekrepository.org/images/misc/wrench.png by default)</summary>
-        public static string Wrench_Img { get; private set; }
+        /// <summary> URL for the default resource 'wordmarks_small.png' file ( http://cdn.sobekrepository.org/images/misc/wordmarks_small.png by default)</summary>
+        public static string Wordmarks_Img_Small { get; private set; }
+
+        /// <summary> URL for the default resource 'wordmarks_large.png' file ( http://cdn.sobekrepository.org/images/misc/wordmarks_large.png by default)</summary>
+        public static string Wordmarks_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'yahoo_share.gif' file ( http://cdn.sobekrepository.org/images/misc/yahoo_share.gif by default)</summary>
         public static string Yahoo_Share_Gif { get; private set; }
@@ -1397,6 +1429,18 @@ namespace SobekCM.Library.Settings
 
                 case "ajax-loader_img":
                     Ajax_Loader_Img = Source;
+                    break;
+
+                case "aliases_img":
+                    Aliases_Img = Source;
+                    break;
+
+                case "aliases_img_small":
+                    Aliases_Img_Small = Source;
+                    break;
+
+                case "aliases_img_large":
+                    Aliases_Img_Large = Source;
                     break;
 
                 case "arw05lt_img":
@@ -1879,16 +1923,16 @@ namespace SobekCM.Library.Settings
                     First2_Png = Source;
                     break;
 
-                case "forwarding_img":
-                    Forwarding_Img = Source;
-                    break;
-
-                case "forwarding_img_small":
-                    Forwarding_Img_Small = Source;
-                    break;
-
                 case "gears_img":
                     Gears_Img = Source;
+                    break;
+
+                case "gears_img_small":
+                    Gears_Img_Small = Source;
+                    break;
+
+                case "gears_img_large":
+                    Gears_Img_Large = Source;
                     break;
 
                 case "geo_blue_img":
@@ -2223,11 +2267,17 @@ namespace SobekCM.Library.Settings
                     Pointer_Blue_Gif = Source;
                     break;
 
+                case "portal_img_large":
+                    Portals_Img_Large = Source;
+                    break;
+
                 case "portals_img":
+                case "portal_img":
                     Portals_Img = Source;
                     break;
 
                 case "portals_img_small":
+                case "portal_img_small":
                     Portals_Img_Small = Source;
                     break;
 
@@ -2289,6 +2339,10 @@ namespace SobekCM.Library.Settings
 
                 case "refresh_img_small":
                     Refresh_Img_Small = Source;
+                    break;
+                    
+                case "refresh_img_large":
+                    Refresh_Img_Large = Source;
                     break;
 
                 case "refresh_folder_img":
@@ -2381,6 +2435,14 @@ namespace SobekCM.Library.Settings
 
                 case "settings_img":
                     Settings_Img = Source;
+                    break;
+
+                case "settings_img_small":
+                    Settings_Img_Small = Source;
+                    break;
+
+                case "settings_img_large":
+                    Settings_Img_Large = Source;
                     break;
 
                 case "show_internal_header_img":
@@ -2673,8 +2735,12 @@ namespace SobekCM.Library.Settings
                     Wordmarks_Img = Source;
                     break;
 
-                case "wrench_img":
-                    Wrench_Img = Source;
+                case "wordmarks_img_small":
+                    Wordmarks_Img_Small = Source;
+                    break;
+
+                case "wordmarks_img_large":
+                    Wordmarks_Img_Large = Source;
                     break;
 
                 case "yahoo_share_img":

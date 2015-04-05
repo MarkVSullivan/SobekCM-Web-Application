@@ -1298,7 +1298,7 @@ namespace SobekCM.Library.HTML
 
                     // Edit forwarding
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminForwarding\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Forwarding_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Aliases</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminForwarding\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Aliases_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Aggregation Aliases</div></a></li>");
 
                     // Edit item aggregationPermissions
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
@@ -1320,11 +1320,11 @@ namespace SobekCM.Library.HTML
 
                     // Edit wordmarks
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Wordmarks;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminWordmarks\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Wordmarks_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Wordmarks / Icons</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminWordmarks\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Wordmarks_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Wordmarks / Icons</div></a></li>");
 
                     // View and set SobekCM Builder Status
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminStatus\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Gears_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Builder Status</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminStatus\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Gears_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Builder Status</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
                     
@@ -1339,7 +1339,7 @@ namespace SobekCM.Library.HTML
 
                     // Edit Settings
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Settings;
-                    Output.WriteLine("        <li id=\"sbkUsm_AdminSettings\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Wrench_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">System-Wide Settings</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_AdminSettings\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">System-Wide Settings</div></a></li>");
 
                     
                     // Reset cache
