@@ -15,6 +15,13 @@ namespace SobekCM.Core.Aggregations
             Hidden = false;
         }
 
+        /// <summary> Constructor for a new instance of the New_Aggregation_Arguments class </summary>
+        /// <param name="ParentCode"> Code for the aggregation selected as the parent</param>
+        public New_Aggregation_Arguments(string ParentCode )
+        {
+            this.ParentCode = ParentCode;
+        }
+
         /// <summary> Code for this item aggregation object </summary>
         [DataMember(Name = "code")]
         [ProtoMember(1)]

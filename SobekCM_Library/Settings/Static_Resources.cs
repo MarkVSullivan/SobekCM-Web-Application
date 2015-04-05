@@ -257,6 +257,16 @@ namespace SobekCM.Library.Settings
             Saved_Searches_Img = "http://cdn.sobekrepository.org/images/misc/saved_searches.gif";
             Saved_Searches_Img_Jumbo = "http://cdn.sobekrepository.org/images/misc/saved_searches_big.gif";
             Search_Png = "http://cdn.sobekrepository.org/images/mapedit/search.png";
+            Search_Advanced_Img = "http://cdn.sobekrepository.org/images/misc/search_advanced.png";
+            Search_Advanced_MimeType_Img = "http://cdn.sobekrepository.org/images/misc/search_advanced_mimetype.png";
+            Search_Advanced_Year_Range_Img = "http://cdn.sobekrepository.org/images/misc/search_advanced_year_range.png";
+            Search_Basic_Img = "http://cdn.sobekrepository.org/images/misc/search_basic.png";
+            Search_Basic_MimeType_Img = "http://cdn.sobekrepository.org/images/misc/search_basic_mimetype.png";
+            Search_Basic_Year_Range_Img = "http://cdn.sobekrepository.org/images/misc/search_basic_year_range.png";
+            Search_Full_Text_Img = "http://cdn.sobekrepository.org/images/misc/search_full_text.png";
+            Search_Full_Text_Exlude_Newspapers_Img = "http://cdn.sobekrepository.org/images/misc/search_fulltext_exclude_newspapers.png";
+            Search_Map_Img = "http://cdn.sobekrepository.org/images/misc/search_map.png";
+            Search_Newspaper_Img = "http://cdn.sobekrepository.org/images/misc/search_newspaper.png";
             Settings_Img = "http://cdn.sobekrepository.org/images/misc/Settings.gif";
             Show_Internal_Header_Png = "http://cdn.sobekrepository.org/images/misc/show_internal_header.png";
             Skins_Img = "http://cdn.sobekrepository.org/images/misc/skins.gif";
@@ -1072,6 +1082,36 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'search.png' file ( http://cdn.sobekrepository.org/images/mapedit/search.png by default)</summary>
         public static string Search_Png { get; private set; }
+
+        /// <summary> URL for the default resource 'search_advanced.png' file ( http://cdn.sobekrepository.org/images/misc/search_advanced.png by default)</summary>
+        public static string Search_Advanced_Img { get; private set;  }
+
+        /// <summary> URL for the default resource 'search_advanced_mimetype.png' file ( http://cdn.sobekrepository.org/images/misc/search_advanced_mimetype.png by default)</summary>
+        public static string Search_Advanced_MimeType_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'search_advanced_year_range.png' file ( http://cdn.sobekrepository.org/images/misc/search_advanced_year_range.png by default)</summary>
+        public static string Search_Advanced_Year_Range_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'search_basic.png' file ( http://cdn.sobekrepository.org/images/misc/search_basic.png by default)</summary>
+        public static string Search_Basic_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'search_basic_mimetype.png' file ( http://cdn.sobekrepository.org/images/misc/search_basic_mimetype.png by default)</summary>
+        public static string Search_Basic_MimeType_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'search_basic_year_range.png' file ( http://cdn.sobekrepository.org/images/misc/search_basic_year_range.png by default)</summary>
+        public static string Search_Basic_Year_Range_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'search_full_text.png' file ( http://cdn.sobekrepository.org/images/misc/search_full_text.png by default)</summary>
+        public static string Search_Full_Text_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'search_fulltext_exclude_newspapers.png' file ( http://cdn.sobekrepository.org/images/misc/search_fulltext_exclude_newspapers.png by default)</summary>
+        public static string Search_Full_Text_Exlude_Newspapers_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'search_map.png' file ( http://cdn.sobekrepository.org/images/misc/search_map.png by default)</summary>
+        public static string Search_Map_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'search_newspaper.png' file ( http://cdn.sobekrepository.org/images/misc/search_newspaper.png by default)</summary>
+        public static string Search_Newspaper_Img { get; private set; }
 
         /// <summary> URL for the default resource 'settings.gif' file ( http://cdn.sobekrepository.org/images/misc/Settings.gif by default)</summary>
         public static string Settings_Img { get; private set; }
@@ -2297,6 +2337,46 @@ namespace SobekCM.Library.Settings
 
                 case "search_img":
                     Search_Png = Source;
+                    break;
+
+                case "search_advanced_img":
+                    Search_Advanced_Img = Source;
+                    break;
+
+                case "search_advanced_mimetype_img":
+                    Search_Advanced_MimeType_Img = Source;
+                    break;
+
+                case "search_advanced_year_range_img":
+                    Search_Advanced_Year_Range_Img = Source;
+                    break;
+
+                case "search_basic_img":
+                    Search_Basic_Img = Source;
+                    break;
+
+                case "search_basic_mimetype_img":
+                    Search_Basic_MimeType_Img = Source;
+                    break;
+
+                case "search_basic_year_range_img":
+                    Search_Basic_Year_Range_Img = Source;
+                    break;
+
+                case "search_full_text_img":
+                    Search_Full_Text_Img = Source;
+                    break;
+
+                case "search_full_text_exlude_newspapers_img":
+                    Search_Full_Text_Exlude_Newspapers_Img = Source;
+                    break;
+
+                case "search_map_img":
+                    Search_Map_Img = Source;
+                    break;
+
+                case "search_newspaper_img":
+                    Search_Newspaper_Img = Source;
                     break;
 
                 case "settings_img":

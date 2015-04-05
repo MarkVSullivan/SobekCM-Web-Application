@@ -617,12 +617,12 @@ namespace SobekCM.Library.AdminViewer
         private void Add_Page_1(TextWriter Output)
         {
             // Help constants (for now)
-            const string BASE_CODE_HELP = "Base code help place holder";
-            const string BANNER_LINK_HELP = "Banner link help place holder";
-            const string NOTES_HELP = "Notes help place holder";
-            const string BANNER_OVERRIDE_HELP = "Banner override help place holder";
-            const string BUILD_ON_LAUNCH_HELP = "Build on launch override help place holder";
-            const string SUPPRESS_TOP_NAV_HELP = "Suppress top navigation help place holder";
+            const string BASE_CODE_HELP = "Advanced option - used to not replicate some of the basic design elements associated with a web skin.  Using the base code will make the child skins reference the default design elements in the base skin.  This reduces duplication and allows one skin to exert control and changes on many other subordinate skins.";
+            const string BANNER_LINK_HELP = "Advanced option - if this web skin is set to override the aggregation banner, than this will be the link that is used when users select the banner.";
+            const string NOTES_HELP = "Private notes associated with this web skin";
+            const string BANNER_OVERRIDE_HELP = "Advanced option - use to override the aggregation banners and always show a web skin banner when viewing aggregations under this web skin.";
+            const string BUILD_ON_LAUNCH_HELP = "Advanced option - for memory management purposes most web skins are only built when needed and only retained for a short period.\\n\\nSelecting this option will build the web skin on start-up and retain it in memory indefinitely.  This is useful for the main web skin.";
+            const string SUPPRESS_TOP_NAV_HELP = "Flag suppresses the top main menu on most aggregation views.  The basic navigation will then need to be provided in the header most likely.";
 
 
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
@@ -849,12 +849,12 @@ namespace SobekCM.Library.AdminViewer
                 current_language = current_language_code.ToLower() == "def" ? Web_Language_Enum.DEFAULT : Web_Language_Enum_Converter.Code_To_Enum(current_language_code);
             }
 
-            string HEADER_HELP = String.Empty;
-            string FOOTER_HELP = String.Empty;
-            string HEADER_ITEM_HELP = String.Empty;
-            string FOOTER_ITEM_HELP = String.Empty;
-            string EXISTING_LANGUAGE_HELP = String.Empty;
-            string NEW_LANGUAGE_HELP = String.Empty;
+            string HEADER_HELP = "Basic header is placed at the top of all non-item web pages throughout the system.";
+            string FOOTER_HELP = "Basic footer is placed at the bottom of all non-item web pages throughout the system.";
+            string HEADER_ITEM_HELP = "Header is placed at the top of all individual items (i.e., digital resources) views throughout the system.  Generally, this header is either the same as the header above, or a reduced height header to allow the digital resources to take over more of the screen.";
+            string FOOTER_ITEM_HELP = "Footer is placed at the bottom of all individual items (i.e., digital resources) views throughout the system.  Generally, this footer is either the same as the footer above, or a reduced height footer to allow the digital resources to take over more of the screen.";
+            string EXISTING_LANGUAGE_HELP = "Pick an existing language from this selection box to view and edit the headers and footers used for that language.";
+            string NEW_LANGUAGE_HELP = "To add support for translations or versions of the headers and footers for a new language, select the language from the selection box and press ADD.\\n\\nSelect a current language to copy from, otherwise all the headers and footers will start blank.";
 
 
 
@@ -1169,8 +1169,7 @@ namespace SobekCM.Library.AdminViewer
         private void Add_Page_Uploads(TextWriter Output)
         {
             // Help constants (for now)
-            const string UPLOAD_BANNER_HELP = "Upload new banner help place holder";
-
+            const string UPLOAD_BANNER_HELP = "Press the SELECT FILES button here to upload a new GIF, JPG, PNG, or BMP file.   You will then be able to access it when you are editing the headers or footers within this web skin.";
 
 
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");

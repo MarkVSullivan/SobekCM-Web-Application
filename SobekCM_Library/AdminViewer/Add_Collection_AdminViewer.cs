@@ -93,7 +93,7 @@ namespace SobekCM.Library.AdminViewer
             // Load the new aggregation, either currenlty from the session (if already into this wizard )
             // or by building the new aggregation arguments
             New_Aggregation_Arguments cachedInstance = HttpContext.Current.Session["Add_Coll_Wizard"] as New_Aggregation_Arguments;
-            newAggr = cachedInstance ?? new New_Aggregation_Arguments();
+            newAggr = cachedInstance ?? new New_Aggregation_Arguments("ALL");
 
 
 

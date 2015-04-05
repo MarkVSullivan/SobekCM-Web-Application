@@ -1502,19 +1502,9 @@ namespace SobekCM.Library.AdminViewer
 		private void Add_Page_2(TextWriter Output)
 		{
 			// Help constants (for now)
-            const string BASIC_HELP = "Basic search help place holder.  <img src=\"https://sobekdigital.com/_images/small_logo.png\" />";
-			const string ADVANCED_HELP = "Advanced search help place holder";
-			const string BASIC_YEARS_HELP = "Basic search with year range help place holder";
-			const string ADVANCED_YEARS_HELP = "Advanced search with year range help place holder";
-			const string FULLTEXT_HELP = "Full text saerch help place holder";
-			const string MAP_SEARCH_HELP = "Map search help place holder";
-			const string DLOC_SEARCH_HELP = "dLOC-Specific search help place holder";
-			const string NEWSPAPER_SEARCH_HELP = "Newspaper search help place holder";
-			const string ALL_ITEMS_HELP = "All and New Item browses help place holder";
-			const string MAP_BROWSE_HELP = "Map browse help place holder";
-			const string MAP_SEARCH_BOUNDING_HELP = "Map search starting bounding box help place holder";
-            const string BASIC_MIMETYPE_SEARCH_HELP = "Basic search which enables you to filter out or include items that have digital resources.";
-		    const string ADVANCED_MIMETYPE_HELP = "Advanced search which enables you to filter out or include items that have digital resources.";
+			const string ALL_ITEMS_HELP = "Include, or exclude, the special button to allow users to browse all items, or all new items.  Users can always browse all items by running an empty search.";
+			const string MAP_BROWSE_HELP = "Include the map browse feature on this collection, allowing users to see where all the items in this collection appear, on a map.";
+			const string MAP_SEARCH_BOUNDING_HELP = "Default map search location.";
 
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
@@ -1522,143 +1512,123 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>These options control how searching works within this aggregation, such as which search options are made publicly available.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 			// Add line for basic search type
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
 			Output.WriteLine("    <td style=\"width:50px;\">&nbsp;</td>");
-			Output.WriteLine("    <td  style=\"width:175px\" class=\"sbkSaav_TableLabel\">Search Types:</label></td>");
+			Output.WriteLine("    <td  style=\"width:175px; vertical-align:top;\" class=\"sbkSaav_TableLabel\">Search Types:</label></td>");
 			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-			Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_basicsearch\" id=\"admin_aggr_basicsearch\"");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_basicsearch\" id=\"admin_aggr_basicsearch\"");
 			if (( itemAggregation.Display_Options.IndexOf("B") >= 0 ) || (itemAggregation.Display_Options.IndexOf("D") >= 0 ))
 				Output.Write(" checked=\"checked\"");
-			Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch\">Basic Search</label>");
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + BASIC_HELP + "');\"  title=\"" + BASIC_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
+            Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch\">Basic Search</label></div>");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Basic_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+			Output.WriteLine("    </td>");
 			Output.WriteLine("  </tr>");
 
 			// Add line for basic search with year range
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
 			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-			Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_basicsearch_years\" id=\"admin_aggr_basicsearch_years\"");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_basicsearch_years\" id=\"admin_aggr_basicsearch_years\"");
 			if (itemAggregation.Display_Options.IndexOf("Y") >= 0)
 				Output.Write(" checked=\"checked\"");
-			Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch_years\">Basic Search (with Year Range)</label>");
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + BASIC_YEARS_HELP + "');\"  title=\"" + BASIC_YEARS_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
+            Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch_years\">Basic Search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with Year Range)</label></div>");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Basic_Year_Range_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
 
             // Add line for basic search ( with mime-type exclusion )
-            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
             Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-            Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_basicsearch_mimetype\" id=\"admin_aggr_basicsearch_mimetype\"");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_basicsearch_mimetype\" id=\"admin_aggr_basicsearch_mimetype\"");
             if (itemAggregation.Display_Options.IndexOf("W") >= 0)
                 Output.Write(" checked=\"checked\"");
-            Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch_mimetype\">Basic search (with mime-type filter)</label>");
-            Output.WriteLine("        </td>");
-            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + BASIC_MIMETYPE_SEARCH_HELP + "');\"  title=\"" + BASIC_MIMETYPE_SEARCH_HELP + "\" /></td></tr></table>");
-            Output.WriteLine("     </td>");
+            Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch_mimetype\">Basic search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with mime-type filter)</label></div>");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Basic_MimeType_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
 			// Add line for advanced search type
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
 			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-			Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_advsearch\" id=\"admin_aggr_advsearch\"");
+			Output.Write(    "      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_advsearch\" id=\"admin_aggr_advsearch\"");
 			if (itemAggregation.Display_Options.IndexOf("A") >= 0)
 				Output.Write(" checked=\"checked\"");
-			Output.WriteLine(" /> <label for=\"admin_aggr_advsearch\">Advanced Search</label>");
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + ADVANCED_HELP + "');\"  title=\"" + ADVANCED_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
+            Output.WriteLine(" /> <label for=\"admin_aggr_advsearch\">Advanced Search</label></div></div>");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Advanced_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
 
 			// Add line for advanced search with year range
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
 			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-			Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_advsearch_years\" id=\"admin_aggr_advsearch_years\"");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_advsearch_years\" id=\"admin_aggr_advsearch_years\"");
 			if (itemAggregation.Display_Options.IndexOf("Z") >= 0)
 				Output.Write(" checked=\"checked\"");
-			Output.WriteLine(" /> <label for=\"admin_aggr_advsearch_years\">Advanced Search (with Year Range)</label>");
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + ADVANCED_YEARS_HELP + "');\"  title=\"" + ADVANCED_YEARS_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
+            Output.WriteLine(" /> <label for=\"admin_aggr_advsearch_years\">Advanced Search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with Year Range)</label></div>");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Advanced_Year_Range_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
 
             // Add line for advanced search with MIME-TYPE exclusion type
-            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
             Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-            Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_advsearch_mimetype\" id=\"admin_aggr_advsearch_mimetype\"");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_advsearch_mimetype\" id=\"admin_aggr_advsearch_mimetype\"");
             if (itemAggregation.Display_Options.IndexOf("X") >= 0)
                 Output.Write(" checked=\"checked\"");
-            Output.WriteLine(" /> <label for=\"admin_aggr_advsearch\">Advanced Search (with mime-type filter)</label>");
-            Output.WriteLine("        </td>");
-            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + ADVANCED_HELP + "');\"  title=\"" + ADVANCED_MIMETYPE_HELP + "\" /></td></tr></table>");
-            Output.WriteLine("     </td>");
+            Output.WriteLine(" /> <label for=\"admin_aggr_advsearch\">Advanced Search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with mime-type filter)</label></div>");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Advanced_MimeType_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
 			// Add line for full text search
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
 			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-			Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_textsearch\" id=\"admin_aggr_textsearch\"");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_textsearch\" id=\"admin_aggr_textsearch\"");
 			if (itemAggregation.Display_Options.IndexOf("F") >= 0)
 				Output.Write(" checked=\"checked\"");
-			Output.WriteLine(" /> <label for=\"admin_aggr_textsearch\">Full Text Search</label>");
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + FULLTEXT_HELP + "');\"  title=\"" + FULLTEXT_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
+            Output.WriteLine(" /> <label for=\"admin_aggr_textsearch\">Full Text Search</label></div>");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Full_Text_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
+
+            // Add line for dLOC full text saerch
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
+            Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
+            Output.WriteLine("    <td>");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_dloctextsearch\" id=\"admin_aggr_dloctextsearch\"");
+            if (itemAggregation.Display_Options.IndexOf("C") >= 0)
+                Output.Write(" checked=\"checked\"");
+            Output.WriteLine(" /> <label for=\"admin_aggr_dloctextsearch\">Full Text Search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (w/ newspaper exclusion option)</label></div>");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Full_Text_Exlude_Newspapers_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
 
 			// Add line for newspaper search
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
 			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-			Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_newspsearch\" id=\"admin_aggr_newspsearch\"");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_newspsearch\" id=\"admin_aggr_newspsearch\"");
 			if (itemAggregation.Display_Options.IndexOf("N") >= 0)
 				Output.Write(" checked=\"checked\"");
-			Output.WriteLine(" /> <label for=\"admin_aggr_newspsearch\">Newspaper Search</label>");
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + NEWSPAPER_SEARCH_HELP + "');\"  title=\"" + NEWSPAPER_SEARCH_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
-
-			// Add line for dLOC full text saerch
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
-			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-			Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_dloctextsearch\" id=\"admin_aggr_dloctextsearch\"");
-			if (itemAggregation.Display_Options.IndexOf("C") >= 0)
-				Output.Write(" checked=\"checked\"");
-			Output.WriteLine(" /> <label for=\"admin_aggr_dloctextsearch\">dLOC Full Text Search</label>");
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + DLOC_SEARCH_HELP + "');\"  title=\"" + DLOC_SEARCH_HELP + "\" /></td></tr></table>");
-			Output.WriteLine("     </td>");
-			Output.WriteLine("  </tr>");
+            Output.WriteLine(" /> <label for=\"admin_aggr_newspsearch\">Newspaper Search</label></div>");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Newspaper_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
 
 			// Add line for Map saerch
-			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
 			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    <td>");
-			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
-			Output.Write("          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_mapsearch\" id=\"admin_aggr_mapsearch\"");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_mapsearch\" id=\"admin_aggr_mapsearch\"");
 			if (itemAggregation.Display_Options.IndexOf("M") >= 0)
 				Output.Write(" checked=\"checked\"");
-			Output.WriteLine(" /> <label for=\"admin_aggr_mapsearch\">Map Search (Legacy)</label>");
-			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + MAP_SEARCH_HELP + "');\"  title=\"" + MAP_SEARCH_HELP + "\" /></td></tr></table>");
+			Output.WriteLine(" /> <label for=\"admin_aggr_mapsearch\">Map Search</label></div>");
+            Output.WriteLine("       <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Map_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
