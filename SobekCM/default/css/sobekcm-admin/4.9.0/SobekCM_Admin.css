@@ -111,7 +111,7 @@ input.sbkAsav_checkbox { padding-top: 3px;border: 0; }
 .sbkSaav_HomeText  { padding-left: 50px; padding-bottom: 5px;text-align: left;}
 .sbkSaav_HomeText a:link { color:#000080; }
 .sbkSaav_HomeText a:hover { color:Blue; text-decoration:underline; }
-.sbkSaav_ButtonsDiv { float: right;padding-top: 30px;padding-right: 45px;width: 500px;text-align: right; }
+.sbkSaav_ButtonsDiv { float: right;padding-top: 10px;padding-right: 45px;width: 400px;text-align: right; }
 .sbkSaav_TitleRow { font-size: 1.1em; color: #888888; font-weight: bold;}
 .sbkSaav_TitleRow2 { font-size: 1.1em; color: #888888; font-weight: bold; }
 .sbkSaav_TitleRow2 td { padding-top: 40px; }
@@ -197,6 +197,15 @@ input.sbkSaav_NewChildCode { width: 155px; margin-top: 2px; margin-bottom: 4px; 
 #sbkSaav_UploadTable td { width: 230px; padding-bottom: 30px;  }
 .sbkSaav_UploadThumbnail { width: auto; height: auto; max-width: 200px; max-height: 200px;border: 1px solid #888888; }
 .sbkSaav_UploadTitle { font-weight: bold; }
+.sbkSaav_SearchCheckRow td { padding-bottom: 20px; }
+.sbkSaav_SearchImg {
+    width: 315px;
+    cursor: default;
+    cursor: hand;
+    cursor: url(http://cdn.sobekrepository.org/images/misc/zoom_tool.cur), -moz-zoom-in;
+    border: 1px #666666 solid;margin-left: 25px;display: inline;
+}
+.sbkSaav_SearchCheckDiv { vertical-align: top;width: 210px;display: inline-block;}
 
 /** Add new collection wizard admin viewer ( Add_Collection_AdminViewer ) */
 #sbkAcw_ContainerInner { margin: 0 auto; padding:0; width: 1050px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
@@ -245,13 +254,21 @@ select.sbkAav_input  { margin-right: 10px; margin-top: 6px; }
 select.sbkBav_select { width: 210px; margin-bottom: 1px; margin-right: 20px; }
 
 /** Home_AdminViewer **/
-.sbkHav_MainText { text-align: justify; padding-bottom: 25px;padding-left: 60px;padding-top: 30px; font-size: larger; }
+.sbkHav_MainText { text-align: justify; padding-bottom: 0;padding-left: 60px;padding-top: 0; font-size: larger; }
 .sbkHav_MainText a:link { color:#000080; }
 .sbkHav_MainText A:hover { color:Blue; text-decoration:underline; }
+.sbkHav_MainText h1 { color:Black; font-weight: normal; font-size: 1.1em; line-height:25px; }
 .sbkHav_MainText h2 { color:Gray; font-weight: bold; font-size: 1.1em; line-height:25px; }
 .sbkHav_MainText p { font-size: smaller;padding-left: 60px; }
 #sbkHav_OptionsTable { padding: 20px 0 20px 0px; }
 #sbkHav_OptionsTable tr {height: 50px;vertical-align: middle; }
+#sbkHav_OptionsTable2 { padding: 20px 0 20px 140px; }
+#sbkHav_OptionsTable2 tr {height: 50px;vertical-align: middle; }
+#sbkHav_OptionsTable3 { padding: 0 0 20px 0px; }
+#sbkHav_OptionsTable3 td { padding-bottom: 15px; }
+.sbkHav_ViewPrerence { float: right;width: 350px; }
+#sbkHav_OptionsTable4 { padding: 20px 0 20px 50px; }
+#sbkHav_OptionsTable4 tr {height: 65px;vertical-align: middle; }
 
 /** IP_Restrictions_AdminViewer **/
 .sbkIpav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small; } 
@@ -367,6 +384,8 @@ input.sbkThav_input  {  width: 360px; margin-right: 10px; }
 #sbkUpav_ListTable { width: 100%; }
 #sbkUpav_ListTable td { vertical-align: top; }
 #sbkUpav_Table th { text-align: left;padding-left: 3px;margin-left:3px; }
+.sbkUpav_SelectableRow { cursor: pointer; cursor: hand; }
+.sbkUpav_SelectableRow:hover { background-color: #aaaaaa; }
 
 /** Wordmarks_AdminViewer **/
 .sbkWav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;text-align: center; } 

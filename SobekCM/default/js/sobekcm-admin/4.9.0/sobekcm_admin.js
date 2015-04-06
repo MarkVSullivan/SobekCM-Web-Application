@@ -849,6 +849,13 @@ function change_custom_home_flag(language, code, initial_check) {
     return false;
 }
 
+function expand_contract_search_img(image) {
+    if (image.style.width == "630px")
+        image.style.width = "315px";
+    else
+        image.style.width = "630px";
+}
+
 function save_css_edits() {
 	var hiddenfield = document.getElementById('admin_aggr_save');
 	hiddenfield.value = 'e';

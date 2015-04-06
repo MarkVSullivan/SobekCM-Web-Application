@@ -348,7 +348,6 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <remarks> This class does nothing, since the interface list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Add_Collection_AdminViewer.Write_HTML", "Do nothing");
