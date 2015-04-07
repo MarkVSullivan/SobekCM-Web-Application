@@ -384,7 +384,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("</form>");
 
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
-			Output.WriteLine("  <h2>Upload New Image File</h2>");
+            //Output.WriteLine("  <h2>Upload New Image File</h2>");
 			Output.WriteLine("  <blockquote>");
 			Output.WriteLine("  Browse to a new wordmark image file below and then select Upload to add the new wordmark image file.  The image should be a jpeg, gif, bmp, or png file.<br /><br />");
         }

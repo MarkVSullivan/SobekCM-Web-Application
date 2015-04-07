@@ -273,9 +273,9 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + alias_url + "\"><img src=\"" + Static_Resources.Aggregations_Img_Large + "\" /></a></td>");
+            Output.WriteLine("      <td><a href=\"" + aggr_url + "\"><img src=\"" + Static_Resources.Aggregations_Img_Large + "\" /></a></td>");
             Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + alias_url + "\">Aggregation Management</a>");
+            Output.WriteLine("        <a href=\"" + aggr_url + "\">Aggregation Management</a>");
             Output.WriteLine("        <div class=\"sbkMmav_Desc\">View the private and dark items which are a part of this collection, along with the last milestone information for each item.</div>");
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
@@ -286,9 +286,9 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + alias_url + "\"><img src=\"" + Static_Resources.Thematic_Heading_Img_Large + "\" /></a></td>");
+            Output.WriteLine("      <td><a href=\"" + thematic_url + "\"><img src=\"" + Static_Resources.Thematic_Heading_Img_Large + "\" /></a></td>");
             Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + alias_url + "\">Thematic Headings</a>");
+            Output.WriteLine("        <a href=\"" + thematic_url + "\">Thematic Headings</a>");
             Output.WriteLine("        <div class=\"sbkMmav_Desc\">View the private and dark items which are a part of this collection, along with the last milestone information for each item.</div>");
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");

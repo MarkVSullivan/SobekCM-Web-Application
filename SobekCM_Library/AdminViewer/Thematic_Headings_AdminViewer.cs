@@ -9,6 +9,7 @@ using System.Linq;
 using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
@@ -85,11 +86,7 @@ namespace SobekCM.Library.AdminViewer
                                     else
                                     {
                                         // For thread safety, lock the thematic headings list
-                                        lock (UI_ApplicationCache_Gateway.Thematic_Headings)
-                                        {
-                                            // Repopulate the thematic headings list
-                                            Engine_Database.Populate_Thematic_Headings(UI_ApplicationCache_Gateway.Thematic_Headings, RequestSpecificValues.Tracer);
-                                        }
+                                        Engine_ApplicationCache_Gateway.RefreshThematicHeadings();
 
                                         actionMessage = "Thematic heading edits saved";
                                     }

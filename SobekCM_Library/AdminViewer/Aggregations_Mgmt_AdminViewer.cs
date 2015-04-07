@@ -500,13 +500,20 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("            <option value=\"\" selected=\"selected\" ></option>");
             foreach (Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
             {
+                // For aggregations, this retains the initial i as lower case (easier to recognize)
+                string aggrCode = thisAggr.Code;
+                if ((aggrCode[0] == 'I') && (thisAggr.Type.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0))
+                {
+                    aggrCode = "i" + aggrCode.Substring(1);
+                }
+
                 if (enteredParent == thisAggr.Code)
                 {
-                    Output.WriteLine("            <option value=\"" + thisAggr.Code + "\" selected=\"selected\" >" + thisAggr.Code + " - " + thisAggr.Name + "</option>");
+                    Output.WriteLine("            <option value=\"" + thisAggr.Code + "\" selected=\"selected\" >" + aggrCode + " - " + thisAggr.Name + "</option>");
                 }
                 else
                 {
-                    Output.WriteLine("            <option value=\"" + thisAggr.Code + "\" >" + thisAggr.Code + " - " + thisAggr.Name + "</option>");
+                    Output.WriteLine("            <option value=\"" + thisAggr.Code + "\" >" + aggrCode + " - " + thisAggr.Name + "</option>");
                 }
             }
             Output.WriteLine("          </select>");

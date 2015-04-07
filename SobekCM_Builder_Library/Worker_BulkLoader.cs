@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Windows.Forms;
 using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
@@ -24,7 +23,7 @@ using SobekCM.Builder_Library;
 
 #endregion
 
-namespace SobekCM.Builder
+namespace SobekCM.Builder_Library
 {
     /// <summary> Class is the worker thread for the main bulk loader processor </summary>
     public class Worker_BulkLoader
@@ -35,6 +34,7 @@ namespace SobekCM.Builder
         private DataTable itemTable;
 
         private readonly LogFileXHTML logger;
+        private readonly string logFileDirectory;
         
 	    private readonly bool canAbort;
         private bool aborted;
@@ -58,7 +58,7 @@ namespace SobekCM.Builder
         /// <param name="Verbose"> Flag indicates if the builder is in verbose mode, where it should log alot more information </param>
         /// <param name="DbInstance"> This database instance </param>
         /// <param name="MultiInstanceBuilder"></param>
-        public Worker_BulkLoader(LogFileXHTML Logger, bool Verbose, Database_Instance_Configuration DbInstance, bool MultiInstanceBuilder )
+        public Worker_BulkLoader(LogFileXHTML Logger, bool Verbose, Database_Instance_Configuration DbInstance, bool MultiInstanceBuilder, string LogFileDirectory )
         {
             // Save the log file and verbose flag
             logger = Logger;
@@ -67,6 +67,7 @@ namespace SobekCM.Builder
 		    canAbort = DbInstance.Can_Abort;
 	        multiInstanceBuilder = MultiInstanceBuilder;
 	        dbInstance = DbInstance;
+            logFileDirectory = LogFileDirectory;
 
 	        if (multiInstanceBuilder)
 	            new_item_limit = 100;
@@ -561,7 +562,7 @@ namespace SobekCM.Builder
             }
             catch (Exception ee)
             {
-                StreamWriter errorWriter = new StreamWriter(Application.StartupPath + "\\Logs\\error.log", true);
+                StreamWriter errorWriter = new StreamWriter(logFileDirectory + "\\error.log", true);
                 errorWriter.WriteLine("Message: " + ee.Message);
                 errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
                 errorWriter.Flush();
@@ -623,7 +624,7 @@ namespace SobekCM.Builder
             }
             catch (Exception ee)
             {
-                StreamWriter errorWriter = new StreamWriter(Application.StartupPath + "\\Logs\\error.log", true);
+                StreamWriter errorWriter = new StreamWriter(logFileDirectory + "\\error.log", true);
                 errorWriter.WriteLine("Message: " + ee.Message);
                 errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
                 errorWriter.Flush();

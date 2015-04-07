@@ -1192,8 +1192,8 @@ namespace SobekCM.Library.AdminViewer
                     string code = newAggr.Code;
                     string new_file = code;
                     int next_decimal = 65;
-                    if (!Directory.Exists(userInProcessDirectory + "\\images\banners"))
-                        Directory.CreateDirectory(userInProcessDirectory + "\\images\banners");
+                    if (!Directory.Exists(userInProcessDirectory + "\\images\\banners"))
+                        Directory.CreateDirectory(userInProcessDirectory + "\\images\\banners");
                     while (Directory.GetFiles(userInProcessDirectory + "\\images\\banners\\", new_file + ".*").Length > 0 )
                     {
                         new_file = code + "_" + Convert.ToChar(next_decimal++);
@@ -1205,8 +1205,8 @@ namespace SobekCM.Library.AdminViewer
                     string code2 = newAggr.Code;
                     string new_file2 = code2;
                     int next_decimal2 = 65;
-                    if (!Directory.Exists(userInProcessDirectory + "\\images\buttons"))
-                        Directory.CreateDirectory(userInProcessDirectory + "\\images\buttons");
+                    if (!Directory.Exists(userInProcessDirectory + "\\images\\buttons"))
+                        Directory.CreateDirectory(userInProcessDirectory + "\\images\\buttons");
                     while (Directory.GetFiles(userInProcessDirectory + "\\images\\buttons\\", new_file2 + ".*").Length > 0 )
                     {
                         new_file2 = code2 + "_" + Convert.ToChar(next_decimal2++);

@@ -117,7 +117,7 @@ namespace SobekCM.Library.Settings
             Chat_Png = "http://cdn.sobekrepository.org/images/misc/chat.png";
             Checkmark_Png = "http://cdn.sobekrepository.org/images/misc/checkmark.png";
             Checkmark2_Png = "http://cdn.sobekrepository.org/images/misc/checkmark2.png";
-            Ckeditor_Js = "http://cdn.sobekrepository.org/includes/ckeditor/4.4.7/ckeditor.js";
+            //Ckeditor_Js = "http://cdn.sobekrepository.org/includes/ckeditor/4.4.7/ckeditor.js";
             Closed_Folder_Jpg = "http://cdn.sobekrepository.org/images/misc/closed_folder.jpg";
             Closed_Folder_Public_Jpg = "http://cdn.sobekrepository.org/images/misc/closed_folder_public.jpg";
             Closed_Folder_Public_Big_Jpg = "http://cdn.sobekrepository.org/images/misc/closed_folder_public_big.jpg";
@@ -142,6 +142,16 @@ namespace SobekCM.Library.Settings
             Favorites_Share_Gif = "http://cdn.sobekrepository.org/images/misc/favorites_share.gif";
             Favorites_Share_H_Gif = "http://cdn.sobekrepository.org/images/misc/favorites_share_h.gif";
             File_Management_Icon_Png = "http://cdn.sobekrepository.org/images/misc/file_management_icon.png";
+            File_AI_Img = "http://cdn.sobekrepository.org/images/misc/file_ai.png";
+            File_EPS_Img = "http://cdn.sobekrepository.org/images/misc/file_eps.png";
+            File_Excel_Img = "http://cdn.sobekrepository.org/images/misc/file_excel.png";
+            File_PDF_Img  = "http://cdn.sobekrepository.org/images/misc/file_pdf.png";
+            File_PSD_Img = "http://cdn.sobekrepository.org/images/misc/file_psd.png";
+            File_PUB_Img = "http://cdn.sobekrepository.org/images/misc/file_pub.png";
+            File_TXT_Img = "http://cdn.sobekrepository.org/images/misc/file_txt.png";
+            File_Word_Img = "http://cdn.sobekrepository.org/images/misc/file_word.png";
+            File_VSD_Img = "http://cdn.sobekrepository.org/images/misc/file_vsd.png";
+            File_ZIP_Img = "http://cdn.sobekrepository.org/images/misc/file_zip.png";
             Firewall_Img = "http://cdn.sobekrepository.org/images/misc/firewall.gif";
             Firewall_Img_Small = "http://cdn.sobekrepository.org/images/misc/firewall.png";
             First2_Png = "http://cdn.sobekrepository.org/images/bookturner/first2.png";
@@ -671,8 +681,8 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'checkmark2.png' file ( http://cdn.sobekrepository.org/images/misc/checkmark2.png by default)</summary>
         public static string Checkmark2_Png { get; private set; }
 
-        /// <summary> URL for the default resource 'ckeditor.js' file ( http://cdn.sobekrepository.org/includes/ckeditor/4.4.7/ckeditor.js by default)</summary>
-        public static string Ckeditor_Js { get; private set; }
+        ///// <summary> URL for the default resource 'ckeditor.js' file ( http://cdn.sobekrepository.org/includes/ckeditor/4.4.7/ckeditor.js by default)</summary>
+        //public static string Ckeditor_Js { get; private set; }
 
         /// <summary> URL for the default resource 'closed_folder.jpg' file ( http://cdn.sobekrepository.org/images/misc/closed_folder.jpg by default)</summary>
         public static string Closed_Folder_Jpg { get; private set; }
@@ -742,6 +752,36 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'favorites_share_h.gif' file ( http://cdn.sobekrepository.org/images/misc/favorites_share_h.gif by default)</summary>
         public static string Favorites_Share_H_Gif { get; private set; }
+
+        /// <summary> URL for the default resource 'file_ai.png' file ( http://cdn.sobekrepository.org/images/misc/file_ai.png by default)</summary>
+        public static string File_AI_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'file_eps.png' file ( http://cdn.sobekrepository.org/images/misc/file_eps.png by default)</summary>
+        public static string File_EPS_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'file_excel.png' file ( http://cdn.sobekrepository.org/images/misc/file_excel.png by default)</summary>
+        public static string File_Excel_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'file_pdf.png' file ( http://cdn.sobekrepository.org/images/misc/file_pdf.png by default)</summary>
+        public static string File_PDF_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'file_psd.png' file ( http://cdn.sobekrepository.org/images/misc/file_psd.png by default)</summary>
+        public static string File_PSD_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'file_pub.png' file ( http://cdn.sobekrepository.org/images/misc/file_pub.png by default)</summary>
+        public static string File_PUB_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'file_txt.png' file ( http://cdn.sobekrepository.org/images/misc/file_txt.png by default)</summary>
+        public static string File_TXT_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'file_word.png' file ( http://cdn.sobekrepository.org/images/misc/file_word.png by default)</summary>
+        public static string File_Word_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'file_vsd.png' file ( http://cdn.sobekrepository.org/images/misc/file_vsd.png by default)</summary>
+        public static string File_VSD_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'file_zip.png' file ( http://cdn.sobekrepository.org/images/misc/file_zip.png by default)</summary>
+        public static string File_ZIP_Img { get; private set; }
 
         /// <summary> URL for the default resource 'file_management_icon.png' file ( http://cdn.sobekrepository.org/images/misc/file_management_icon.png by default)</summary>
         public static string File_Management_Icon_Png { get; private set; }
@@ -1811,9 +1851,9 @@ namespace SobekCM.Library.Settings
                     Checkmark2_Png = Source;
                     break;
 
-                case "ckeditor.js":
-                    Ckeditor_Js = Source;
-                    break;
+                //case "ckeditor.js":
+                //    Ckeditor_Js = Source;
+                //    break;
 
                 case "closed_folder_img":
                     Closed_Folder_Jpg = Source;
@@ -1909,6 +1949,46 @@ namespace SobekCM.Library.Settings
 
                 case "file_management_icon_img":
                     File_Management_Icon_Png = Source;
+                    break;
+
+                case "file_ai_img":
+                    File_AI_Img = Source;
+                    break;
+
+                case "file_eps_img":
+                    File_EPS_Img = Source;
+                    break;
+
+                case "file_excel_img":
+                    File_Excel_Img = Source;
+                    break;
+
+                case "file_pdf_img":
+                    File_PDF_Img = Source;
+                    break;
+
+                case "file_psd_img":
+                    File_PSD_Img = Source;
+                    break;
+
+                case "file_pub_img":
+                    File_PUB_Img = Source;
+                    break;
+
+                case "file_txt_img":
+                    File_TXT_Img = Source;
+                    break;
+
+                case "file_word_img":
+                    File_Word_Img = Source;
+                    break;
+
+                case "file_vsd_img":
+                    File_VSD_Img = Source;
+                    break;
+
+                case "file_zip_img":
+                    File_ZIP_Img = Source;
                     break;
 
                 case "firewall_img":

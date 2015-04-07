@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 #endregion
 
-namespace SobekCM.Builder_Library
+namespace SobekCM.Builder_Library.Tools
 {
     /// <summary> Class is used to clean incoming text files and remove offending additional spaces 
     /// or stand-alone punctuation </summary>

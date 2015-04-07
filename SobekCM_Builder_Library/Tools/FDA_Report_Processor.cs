@@ -8,7 +8,7 @@ using SobekCM.Tools.FDA;
 #endregion
 
 
-namespace SobekCM.Builder_Library
+namespace SobekCM.Builder_Library.Tools
 {
     /// <summary> Processor class steps through and processes all the <a href="http://fclaweb.fcla.edu/FDA_landing_page">Florida Digital Archive</a> reports under a given directory, 
     /// reading the FDA reports and saving the pertinent information into the SobekCM database </summary>

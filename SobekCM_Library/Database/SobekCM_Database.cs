@@ -172,8 +172,9 @@ namespace SobekCM.Library.Database
 				newConnection.Close();
 				return true;
 			}
-			catch
+			catch ( Exception ee )
 			{
+			    lastException = ee;
 				return false;
 			}
 		}

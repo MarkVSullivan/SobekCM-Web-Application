@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading;
-using System.Windows.Forms;
 using Microsoft.Win32;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Builder_Library.Tools;
 using SobekCM.Core.Configuration;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
@@ -18,7 +18,7 @@ using SobekCM.Builder_Library;
 
 #endregion
 
-namespace SobekCM.Builder
+namespace SobekCM.Builder_Library
 {
     /// <summary> Class controls the execution of all tasks, whether being immediately executed
     /// or running continuously in a background thread </summary>
@@ -32,14 +32,16 @@ namespace SobekCM.Builder
 
         private readonly List<Database_Instance_Configuration> instances;
         private List<Worker_BulkLoader> loaders;
+        private readonly string logFileDirectory;
 
         /// <summary> Constructor for a new instance of the Worker_Controller class </summary>
         /// <param name="Verbose"> Flag indicates if this should be verbose in the log file and console </param>
-        public Worker_Controller( bool Verbose )
+        public Worker_Controller( bool Verbose, string LogFileDirectory )
         {
             verbose = Verbose;
             controllerStarted = DateTime.Now;
             aborted = false;
+            logFileDirectory = LogFileDirectory;
 
             // Assign the database connection strings
             SobekCM_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
@@ -53,7 +55,7 @@ namespace SobekCM.Builder
             }
 
             // Pull the values from the database and assign other setting values
-            Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory = Application.StartupPath + "\\Logs\\";
+            Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory = logFileDirectory;
             DataSet settings = Engine_Database.Get_Settings_Complete(null);
             if (settings == null)
             {
@@ -121,7 +123,7 @@ namespace SobekCM.Builder
             string local_log_name = Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + "\\" + log_name;
             if (String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory))
             {
-                local_log_name = Application.StartupPath + "\\Logs\\" + log_name;
+                local_log_name = logFileDirectory + "\\" + log_name;
             }
 
             // Create the new log file
@@ -243,7 +245,7 @@ namespace SobekCM.Builder
 					preloader_logger.AddNonError(dbConfig.Name + " - Preparing to begin polling");
 					Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
 
-					Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1 ) );
+                    Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1), logFileDirectory);
 					loaders.Add(newLoader);
 				}
 			}
@@ -525,7 +527,7 @@ namespace SobekCM.Builder
 			        {
 				        SobekCM.Resource_Object.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 			            SobekCM.Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
-                        Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1));
+                        Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1), logFileDirectory);
 						newLoader.Perform_BulkLoader(Verbose);
 
 						// Save information about this last run
@@ -566,7 +568,7 @@ namespace SobekCM.Builder
             if (CompleteStaticRebuild)
             {
 				Console.WriteLine("Beginning static rebuild");
-                LogFileXHTML staticRebuildLog = new LogFileXHTML(Application.StartupPath + "/Logs/static_rebuild.html");
+                LogFileXHTML staticRebuildLog = new LogFileXHTML( logFileDirectory  + "\\static_rebuild.html");
 				Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Application_Server_Network);
                 builder.Rebuild_All_Static_Pages(staticRebuildLog, true, Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory, String.Empty, -1);
             }

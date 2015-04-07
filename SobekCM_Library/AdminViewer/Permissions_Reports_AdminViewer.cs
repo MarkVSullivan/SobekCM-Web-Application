@@ -371,8 +371,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("  <table id=\"sbkUpav_Table\">");
                     Output.WriteLine("    <thead>");
                     Output.WriteLine("      <tr>");
-                    Output.WriteLine("        <th>First Name</th>");
-                    Output.WriteLine("        <th>Last Name</th>");
+                    Output.WriteLine("        <th>Name</th>");
                     Output.WriteLine("        <th>Created</th>");
                     Output.WriteLine("        <th>Last Activity</th>");
                     Output.WriteLine("        <th style=\"text-align:center\">Can Submit<br />Items</th>");
@@ -388,8 +387,7 @@ namespace SobekCM.Library.AdminViewer
 
                     Output.WriteLine("    <tfoot>");
                     Output.WriteLine("      <tr>");
-                    Output.WriteLine("        <th><input id=\"reportFirstNameSearch\"  type=\"text\" placeholder=\"Search First Name\" /></th>");
-                    Output.WriteLine("        <th><input id=\"reportLastNameSearch\"  type=\"text\" placeholder=\"Search Last Name\" /></th>");
+                    Output.WriteLine("        <th><input id=\"reportNameSearch\"  type=\"text\" placeholder=\"Search Name\" /></th>");
                     Output.WriteLine("        <th>Created</th>");
                     Output.WriteLine("        <th>Last Activity</th>");
                     Output.WriteLine("        <th style=\"text-align:center\"></th>");
@@ -426,8 +424,7 @@ namespace SobekCM.Library.AdminViewer
                         {
                             // Add this row
                             Output.WriteLine("      <tr>");
-                            Output.WriteLine("        <td>" + firstName + "</td>");
-                            Output.WriteLine("        <td>" + lastName + "</td>");
+                            Output.WriteLine("        <td>" + lastName + ", " + firstName + "</td>");
                             Output.WriteLine("        <td>" + dateCreated + "</td>");
                             Output.WriteLine("        <td>" + lastActvity + "</td>");
                             Output.WriteLine("        <td style=\"text-align:center\">" + bool_to_char(canSubmit) + "</td>");
@@ -473,8 +470,7 @@ namespace SobekCM.Library.AdminViewer
 
                     // Add the last row
                     Output.WriteLine("      <tr>");
-                    Output.WriteLine("        <td>" + firstName + "</td>");
-                    Output.WriteLine("        <td>" + lastName + "</td>");
+                    Output.WriteLine("        <td>" + lastName + ", " + firstName + "</td>");
                     Output.WriteLine("        <td>" + dateCreated + "</td>");
                     Output.WriteLine("        <td>" + lastActvity + "</td>");
                     Output.WriteLine("        <td style=\"text-align:center\">" + bool_to_char(canSubmit) + "</td>");
@@ -513,7 +509,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("                var api = this.api();");
 
                     Output.WriteLine("                api.columns().indexes().flatten().each( function ( i ) {");
-                    Output.WriteLine("                    if (( i > 3 )) {");
+                    Output.WriteLine("                    if (( i > 2 )) {");
                     Output.WriteLine("                        var column = api.column( i );");
                     Output.WriteLine("                        var select = $('<select><option value=\"\"></option></select>')");
                     Output.WriteLine("                                 .appendTo( $(column.footer()).empty() )");
@@ -529,8 +525,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("               }");
                     Output.WriteLine("         });");
 
-                    Output.WriteLine("         $('#reportFirstNameSearch').on( 'keyup change', function () { table.column( 0 ).search( this.value ).draw(); } );");
-                    Output.WriteLine("         $('#reportLastNameSearch').on( 'keyup change', function () { table.column( 1 ).search( this.value ).draw(); } );");
+                    Output.WriteLine("         $('#reportNameSearch').on( 'keyup change', function () { table.column( 0 ).search( this.value ).draw(); } );");
                     Output.WriteLine("    } );");
 
                     Output.WriteLine("</script>");

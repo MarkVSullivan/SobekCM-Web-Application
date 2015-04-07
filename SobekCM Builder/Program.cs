@@ -353,7 +353,7 @@ namespace SobekCM.Builder
             //}
 
             // Two ways to run this... constantly in background or once
-            Worker_Controller controller = new Worker_Controller(verbose);
+            Worker_Controller controller = new Worker_Controller(verbose, Application.StartupPath + "\\Logs\\");
             if (!run_background)
                 controller.Execute_Immediately(build_production_marcxml_feed, build_test_marcxml_feed, run_preloader, complete_static_rebuild, marc_rebuild );
             else

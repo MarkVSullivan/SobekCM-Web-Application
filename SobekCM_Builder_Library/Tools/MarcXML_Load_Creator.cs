@@ -9,7 +9,7 @@ using System.Xml.Schema;
 
 #endregion
 
-namespace SobekCM.Builder_Library
+namespace SobekCM.Builder_Library.Tools
 {
     /// <summary> Class is used to create the MarcXML feed of all digital resources
     /// in this SobekCM library </summary>

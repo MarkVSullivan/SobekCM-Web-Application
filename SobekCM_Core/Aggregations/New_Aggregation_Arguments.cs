@@ -20,6 +20,8 @@ namespace SobekCM.Core.Aggregations
         public New_Aggregation_Arguments(string ParentCode )
         {
             this.ParentCode = ParentCode;
+            Active = true;
+            Hidden = false;
         }
 
         /// <summary> Code for this item aggregation object </summary>

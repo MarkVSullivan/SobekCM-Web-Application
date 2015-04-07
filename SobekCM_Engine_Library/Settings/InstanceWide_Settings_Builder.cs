@@ -51,11 +51,20 @@ namespace SobekCM.Engine_Library.Settings
         /// <returns> A fully builder instance-wide setting object </returns>
         public static InstanceWide_Settings Build_Settings()
         {
+            string configFile = AppDomain.CurrentDomain.BaseDirectory + "\\config\\sobekcm.config";
+            return Build_Settings(configFile);
+
+        }
+
+        /// <summary> Refreshes the values from the database settings </summary>
+        /// <returns> A fully builder instance-wide setting object </returns>
+        public static InstanceWide_Settings Build_Settings( string ConfigFileLocation )
+        {
             InstanceWide_Settings returnValue = new InstanceWide_Settings();
 
             // Read the main configuration file, with database and error information
-            returnValue.Base_Directory = AppDomain.CurrentDomain.BaseDirectory;
-            Read_Configuration_File(returnValue, returnValue.Base_Directory + "\\config\\sobekcm.config");
+           // returnValue.Base_Directory = AppDomain.CurrentDomain.BaseDirectory;
+            Read_Configuration_File(returnValue, ConfigFileLocation);
 
             // Set the error URL
             UrlWriterHelper.Unhandled_Error_URL = returnValue.System_Error_URL;

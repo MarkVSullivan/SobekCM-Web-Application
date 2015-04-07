@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -372,6 +373,43 @@ namespace SobekCM.Library.MySobekViewer
 
 				if (validationErrors.Count == 0)
 				{
+                    // Ensure the last name and first name are capitalized somewhat
+                    bool all_caps = true;
+				    bool all_lower = true;
+				    foreach (char thisChar in family_name)
+				    {
+                        if (Char.IsUpper(thisChar))
+                            all_lower = false;
+                        if (Char.IsLower(thisChar))
+                            all_caps = false;
+
+                        if ((!all_caps) && (!all_lower))
+                            break;
+				    }
+				    if ((all_caps) || (all_lower))
+				    {
+                        TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+                        family_name = textInfo.ToTitleCase(family_name.ToLower()); //War And Peace
+				    }
+                    all_lower = true;
+                    all_caps = true;
+                    foreach (char thisChar in given_name)
+                    {
+                        if (Char.IsUpper(thisChar))
+                            all_lower = false;
+                        if (Char.IsLower(thisChar))
+                            all_caps = false;
+
+                        if ((!all_caps) && (!all_lower))
+                            break;
+                    }
+                    if ((all_caps) || (all_lower))
+                    {
+                        TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+                        given_name = textInfo.ToTitleCase(given_name.ToLower()); //War And Peace
+                    }
+
+                    // Now, add this information to the user, so the new user can be saved
 					user.College = college.Trim();
 					user.Department = department.Trim();
 					user.Email = email.Trim();

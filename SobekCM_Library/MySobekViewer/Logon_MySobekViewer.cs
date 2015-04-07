@@ -187,7 +187,7 @@ namespace SobekCM.Library.MySobekViewer
 			}
 
 			RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
-			Output.Write("    <li><span style=\"font-weight:bold\">Not registered yet?</span> <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Register now</a> or ");
+			Output.Write("    <li><span style=\"font-weight:bold\">Not registered yet?</span> <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "register\">Register now</a> or ");
 
 			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
 			Output.WriteLine(" <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Contact Us</a></li>");

@@ -45,7 +45,7 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
                         display_code = 'i' + display_code.Substring(1);
 
                     // Get this item aggregations
-                    Complete_Item_Aggregation aggregationCompleteObj = Engine_Database.Get_Item_Aggregation(thisAggrCode, false, false, null);
+                    Complete_Item_Aggregation aggregationCompleteObj = Engine_Database.Get_Item_Aggregation(thisAggrCode, false, null);
                     Item_Aggregation aggregationObj = Item_Aggregation_Utilities.Get_Item_Aggregation( aggregationCompleteObj, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, null);
 
                     // Get the list of items for this aggregation

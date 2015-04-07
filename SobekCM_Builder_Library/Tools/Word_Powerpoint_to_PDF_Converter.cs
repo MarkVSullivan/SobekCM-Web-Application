@@ -1,4 +1,4 @@
-﻿namespace SobekCM.Builder_Library
+﻿namespace SobekCM.Builder_Library.Tools
 {
     /// <summary> Class is used to convert Word and Powerpoint files to PDF </summary>
     public static class Word_Powerpoint_to_PDF_Converter

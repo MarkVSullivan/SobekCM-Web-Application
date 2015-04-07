@@ -152,6 +152,12 @@ namespace SobekCM.Library.ResultsViewer
                 for (int i = 0; i < RequestSpecificValues.Results_Statistics.Metadata_Labels.Count; i++)
 				{
                     string field = RequestSpecificValues.Results_Statistics.Metadata_Labels[i];
+
+                    // Somehow the metadata for this item did not fully save in the database.  Break out, rather than
+                    // throw the exception
+                    if ((titleResult.Metadata_Display_Values == null) || (titleResult.Metadata_Display_Values.Length <= i))
+                        break;
+
 					string value = titleResult.Metadata_Display_Values[i];
 					Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
 					string display_field = string.Empty;

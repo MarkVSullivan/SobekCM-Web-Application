@@ -8,7 +8,7 @@ using iTextSharp.text.pdf;
 
 #endregion
 
-namespace SobekCM.Builder_Library
+namespace SobekCM.Builder_Library.Tools
 {
     /// <summary> Class contains some basic methods for preparing PDF files for loading into a SobekCM library </summary>
     /// <remarks> Portions of the PDF text extraction algorithm originally from Zoller (http://www.codeproject.com/KB/cs/PDFToText.aspx) </remarks>

@@ -6,7 +6,7 @@ using System.Text;
 
 #endregion
 
-namespace SobekCM.Builder_Library
+namespace SobekCM.Builder_Library.Tools
 {
     public static class HTML_XML_Text_Extractor
     {

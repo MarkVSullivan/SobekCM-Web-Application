@@ -37,7 +37,7 @@ namespace SobekCM.Library.HTML
         private string leftButtons;
         private string rightButtons;
         private const int RESULTS_PER_PAGE = 20;
-        private bool thematicHeadingsAdded;
+        private bool children_icons_added;
 
         /// <summary> Constructor creates a new instance of the Aggregation_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -45,7 +45,7 @@ namespace SobekCM.Library.HTML
         {
             leftButtons = String.Empty;
             rightButtons = String.Empty;
-            thematicHeadingsAdded = false;
+            children_icons_added = false;
 
 			// Check to see if the user should be able to edit the home page
 			if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
@@ -1048,7 +1048,7 @@ namespace SobekCM.Library.HTML
 					Output.WriteLine("<div id=\"sbkAghsw_HomeEditButtons\">");
 					RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
 					Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-					Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                    Output.WriteLine("  <button title=\"Save changes to this aggregation home page text\" class=\"roundbutton\" type=\"submit\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); }\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
 					Output.WriteLine("</div>");
 					Output.WriteLine("</form>");
 					Output.WriteLine("<br /><br /><br />");
@@ -1127,6 +1127,7 @@ namespace SobekCM.Library.HTML
 	                int aggreCount = -1;
 		            foreach (Item_Aggregation_Related_Aggregations childAggr in RequestSpecificValues.Hierarchy_Object.Children)
 		            {
+                        children_icons_added = true;
 		                aggreCount++;
 			            Item_Aggregation_Related_Aggregations latest = UI_ApplicationCache_Gateway.Aggregations[childAggr.Code];
 						if ((latest != null ) && (!latest.Hidden) && (latest.Active))
@@ -1782,7 +1783,7 @@ namespace SobekCM.Library.HTML
                     // Write this theme
 					if (first)
 					{
-                        thematicHeadingsAdded = true;
+                        children_icons_added = true;
 						Output.WriteLine("<h2 style=\"margin-top:0;\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(thisTheme.Text, RequestSpecificValues.Current_Mode.Language) + "</h2>");
 						first = false;
 					}
@@ -1849,6 +1850,7 @@ namespace SobekCM.Library.HTML
             if(RequestSpecificValues.Current_User.PermissionedAggregations !=null )
               foreach (User_Permissioned_Aggregation thisAggregation in RequestSpecificValues.Current_User.PermissionedAggregations.Where(ThisAggregation => ThisAggregation.OnHomePage))
               {
+                  children_icons_added = true;
                 RequestSpecificValues.Current_Mode.Aggregation = thisAggregation.Code.ToLower();
                 string image_url = RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/" + thisAggregation.Code + "/images/buttons/coll.gif";
 
@@ -1927,6 +1929,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
             foreach (User_Folder thisFolder in RequestSpecificValues.Current_User.All_Folders.Where(ThisFolder => ThisFolder.IsPublic))
             {
+                children_icons_added = true;
                 RequestSpecificValues.Current_Mode.FolderID = thisFolder.Folder_ID;
                 if ((thisFolder.Folder_Name.IndexOf("The ") == 0) && (thisFolder.Folder_Name.Length > 4))
                 {
@@ -1982,6 +1985,7 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("<table id=\"sbkAghsw_MyLinksTbl\">");
             Output.WriteLine("  <tr>");
 
+            children_icons_added = true;
             RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
@@ -2179,7 +2183,7 @@ namespace SobekCM.Library.HTML
 
                 // NOTE: The jquery.hovercard.min.js file included below has been modified for SobekCM, and also includes a bug fix. DO NOT REPLACE with another version
 
-                if (thematicHeadingsAdded)
+                if (children_icons_added)
                 {
                     Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Hovercard_Js + "\"></script>");
                     Output.WriteLine("<script type=\"text/javascript\">");
