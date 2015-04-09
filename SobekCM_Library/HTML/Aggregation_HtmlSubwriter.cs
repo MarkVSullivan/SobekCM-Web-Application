@@ -502,6 +502,12 @@ namespace SobekCM.Library.HTML
             {
                 Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" /> ");
             }
+
+            if ((collectionViewer != null) && (collectionViewer.AggregationViewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables)))
+            {
+                Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Datatables_Js + "\" ></script>");
+            }
         }
 
 

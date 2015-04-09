@@ -36,6 +36,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
         }
 
+        public override List<HTML.HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors
+        {
+            get { return new List<HTML.HtmlSubwriter_Behaviors_Enum> {HTML.HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables}; }
+        }
+
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
         public override Item_Aggregation_Views_Searches_Enum Type
         {
@@ -85,6 +90,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             DataTable permissionsTbl = SobekCM_Database.Get_Aggregation_User_Permissions(RequestSpecificValues.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
+
 
             // Is this a system administrator?
             bool isSysAdmin = ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Host_Admin));
@@ -142,7 +148,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (detailedPermissions)
                 columns = 10;
 
-            Output.WriteLine("  <table class=\"sbkWhav_Table\">");
+            Output.WriteLine("  <table id=\"sbkPrav_DetailedUsers\">");
+            Output.WriteLine("  <thead>");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th style=\"width:180px;\">User</th>");
             Output.WriteLine("      <th style=\"width:90px;\"><acronym title=\"Can select this aggregation when editing or submitting an item\">Can<br />Select</acronym></th>");
@@ -165,6 +172,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">Is<br />Curator</acronym></th>");
             Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">Is<br />Admin</acronym></th>");
             Output.WriteLine("    </tr>");
+            Output.WriteLine("  </thead>");
+            Output.WriteLine("  <tbody>");
 
             // Collect the relevant user group rows, if some permissions were assined by user group
             SortedDictionary<string, DataRow> userGroupRows = new SortedDictionary<string, DataRow>();
@@ -292,10 +301,19 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("      <td>" + flag_to_display(isAdmin) + "</td>");
 
             Output.WriteLine("    </tr>");
-            Output.WriteLine("    <tr class=\"sbkWhav_TableRule\"><td colspan=\"" + columns + "\"></td></tr>");
-
+            // Output.WriteLine("    <tr class=\"sbkWhav_TableRule\"><td colspan=\"" + columns + "\"></td></tr>");
+            Output.WriteLine("  <tbody>");
             Output.WriteLine("  </table>");
             Output.WriteLine("  <br /><br />");
+
+            Output.WriteLine("<script type=\"text/javascript\">");
+            Output.WriteLine("    $(document).ready(function() { ");
+            Output.WriteLine("        var table = $('#sbkPrav_DetailedUsers').DataTable({ ");
+            Output.WriteLine("            \"paging\":   false, ");
+            Output.WriteLine("            \"filter\":   false, ");
+            Output.WriteLine("            \"info\":   false });");
+            Output.WriteLine("    } );");
+            Output.WriteLine("</script>");
 
 
             // If there were user groups, add them now also.
@@ -304,7 +322,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("<p style=\"text-align: left; padding:0 20px 0 20px;\">Some of the permissions above are assigned to the users through user groups.  These user groups and their permissions appear below:</p>");
 
 
-                Output.WriteLine("  <table class=\"sbkWhav_Table\">");
+                Output.WriteLine("  <table id=\"sbkPrav_DetailedUserGroups\">");
+                Output.WriteLine("  <thead>");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <th style=\"width:180px;\">User Group</th>");
                 Output.WriteLine("      <th style=\"width:90px;\"><acronym title=\"Can select this aggregation when editing or submitting an item\">Can<br />Select</acronym></th>");
@@ -327,8 +346,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">Is<br />Curator</acronym></th>");
                 Output.WriteLine("      <th style=\"width:85px;\"><acronym title=\"Can perform curatorial or collection manager tasks on this aggregation\">Is<br />Admin</acronym></th>");
                 Output.WriteLine("    </tr>");
+                Output.WriteLine("  </thead>");
+                Output.WriteLine("  <tbody>");
 
-                foreach (KeyValuePair<string, DataRow> userGroupRow in userGroupRows )
+
+                foreach (KeyValuePair<string, DataRow> userGroupRow in userGroupRows)
                 {
                     DataRow thisUser = userGroupRow.Value;
                     int userGroupId = Convert.ToInt32(thisUser["UserGroupID"]);
@@ -362,26 +384,35 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     Output.WriteLine("      <td>" + flag_to_display(thisUser["IsAggregationAdmin"]) + "</td>");
 
                     Output.WriteLine("    </tr>");
-                    Output.WriteLine("    <tr class=\"sbkWhav_TableRule\"><td colspan=\"" + columns + "\"></td></tr>");
+                    //Output.WriteLine("    <tr class=\"sbkWhav_TableRule\"><td colspan=\"" + columns + "\"></td></tr>");
                 }
 
+                Output.WriteLine("  </tbody>");
                 Output.WriteLine("  </table>");
                 Output.WriteLine("  <br /><br />");
 
-                if (isSysAdmin)
-                {
-                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
-
-                    Output.WriteLine("  <p style=\"text-align: left; padding:0 20px 0 20px;\">Use the <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">administrative Users &amp; Groups</a> to assign any new collection-specific user permissions.");
-                    Output.WriteLine("  <br /><br />");
-                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-                }
-
+                Output.WriteLine("<script type=\"text/javascript\">");
+                Output.WriteLine("    $(document).ready(function() { ");
+                Output.WriteLine("        var table2 = $('#sbkPrav_DetailedUserGroups').DataTable({ ");
+                Output.WriteLine("            \"paging\":   false, ");
+                Output.WriteLine("            \"filter\":   false, ");
+                Output.WriteLine("            \"info\":   false });");
+                Output.WriteLine("    } );");
+                Output.WriteLine("</script>");
             }
 
+            if (isSysAdmin)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 
+                Output.WriteLine("  <p style=\"text-align: left; padding:0 20px 0 20px;\">Use the <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">administrative Users &amp; Groups</a> to assign any new collection-specific user permissions.");
+                Output.WriteLine("  <br /><br />");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+            }
         }
+
 
         private string flag_to_display(bool ToDisplay)
         {

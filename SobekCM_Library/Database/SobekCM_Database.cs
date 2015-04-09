@@ -7031,7 +7031,11 @@ namespace SobekCM.Library.Database
 
         #region Methods to support the top-level user permissions reports
 
-	    public static DataSet Get_Global_User_Permissions(Custom_Tracer Tracer )
+        /// <summary> Get the list of users that have top-level permissions, such as editing all items, 
+        /// being an admin, deleting all items, or a power user  </summary>
+        /// <param name="Tracer"></param>
+        /// <returns></returns>
+	    public static DataTable Get_Global_User_Permissions(Custom_Tracer Tracer )
 	    {
             if (Tracer != null)
             {
@@ -7044,7 +7048,7 @@ namespace SobekCM.Library.Database
                 DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report");
 
                 // Return the first table from the returned dataset
-                return tempSet;
+                return tempSet.Tables[0];
             }
             catch (Exception ee)
             {
@@ -7058,6 +7062,102 @@ namespace SobekCM.Library.Database
                 return null;
             }
 	    }
+
+        /// <summary> Get the list of users and for each user the list of aggregations they 
+        /// have special rights over (wither by user or through user group ) </summary>
+        /// <param name="Tracer"></param>
+        /// <returns></returns>
+        public static DataTable Get_Global_User_Permissions_Aggregations_Links(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links", "");
+            }
+
+            try
+            {
+                // Define a temporary dataset
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report_Aggregation_Links");
+
+                // Return the first table from the returned dataset
+                return tempSet.Tables[0];
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Aggregations_Links", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Get the list of aggregations that have special rights given to some users </summary>
+        /// <param name="Tracer"></param>
+        /// <returns></returns>
+        public static DataTable Get_Global_User_Permissions_Linked_Aggregations(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations", "");
+            }
+
+            try
+            {
+                // Define a temporary dataset
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report_Linked_Aggregations");
+
+                // Return the first table from the returned dataset
+                return tempSet.Tables[0];
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Linked_Aggregations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Get the list of users, with informaiton about the templates and default metadata, 
+        /// that can submit material to this instance  </summary>
+        /// <param name="Tracer"></param>
+        /// <returns></returns>
+        public static DataTable Get_Global_User_Permissions_Submission_Rights(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Submission_Rights", "");
+            }
+
+            try
+            {
+                // Define a temporary dataset
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report_Submission_Rights");
+
+                // Return the first table from the returned dataset
+                return tempSet.Tables[0];
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Submission_Rights", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Submission_Rights", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Get_Global_User_Permissions_Submission_Rights", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
 
         public static DataTable Get_Aggregation_User_Permissions(string AggregationCode, Custom_Tracer Tracer)
         {
