@@ -277,6 +277,7 @@ namespace SobekCM.Library.HTML
                     // Add the box with the title
                     if ((RequestSpecificValues.Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode != "submitted items"))
                     {
+                        // Add the title
                         Output.WriteLine("<div class=\"sbkAdm_TitleDiv sbkAdm_TitleDivBorder\">");
                         if (adminViewer != null)
                         {
@@ -289,6 +290,49 @@ namespace SobekCM.Library.HTML
                         else if (RequestSpecificValues.Current_User != null) Output.WriteLine("  <h1>Welcome back, " + RequestSpecificValues.Current_User.Nickname + "</h1>");
                         Output.WriteLine("</div>");
                         Output.WriteLine();
+
+                        // Add some administrative breadcrumbs here
+                        if (adminViewer != null)
+                        {
+                            // Keep the current values
+                            Admin_Type_Enum adminType = RequestSpecificValues.Current_Mode.Admin_Type;
+                            ushort page = RequestSpecificValues.Current_Mode.Page;
+                            string browse_code = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
+                            string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
+                            string mySobekMode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+
+                            // Get the URL for the home page
+                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                            RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
+                            string home_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                            if (adminViewer is Home_AdminViewer)
+                            {
+                                // Render the breadcrumbns
+                                Output.WriteLine("<div class=\"sbkAdm_Breadcrumbs\">");
+                                Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home</a> > ");
+                                Output.WriteLine("  System Administrative Tasks");
+                                Output.WriteLine("</div>"); 
+                            }
+                            else
+                            {
+                                // Get the URL for the system admin menu
+                                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
+                                string menu_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                                // Restor everything
+                                RequestSpecificValues.Current_Mode.Admin_Type = adminType;
+
+                                // Render the breadcrumbns
+                                Output.WriteLine("<div class=\"sbkAdm_Breadcrumbs\">");
+                                Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home</a> > ");
+                                Output.WriteLine("  <a href=\"" + menu_url + "\">System Administrative Tasks</a> > ");
+                                Output.WriteLine("  " + adminViewer.Web_Title);
+                                Output.WriteLine("</div>"); 
+                            }
+                        }
                     }
                 }
             }

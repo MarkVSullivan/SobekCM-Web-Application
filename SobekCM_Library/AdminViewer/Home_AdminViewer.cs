@@ -37,21 +37,21 @@ namespace SobekCM.Library.AdminViewer
 	    private SortedList<string, string> icons = new SortedList<String, String>();
 
         // Constants for the brief explanations
-        private const string ADD_COLLECTION_WIZARD_BRIEF = "Add collection wizard does XXXX";
-		private const string EDIT_CURR_SKIN_BRIEF = "Edit the current web skin by XXXX";
-		private const string USERS_AND_GROUPS_BRIEF = "View and edit the users and user groups by XXXX";
-		private const string URL_PORTALS_BRIEF = "Url portals control the way stuff looks by XXXX";
-		private const string WEB_SKINS_BRIEF = "Edit and view all the different web skins and do stuff by XXXX";
-		private const string ALIASES_BRIEF = "Edit and view all the aggregation aliases by XXXX";
-		private const string AGGR_MGMT_BRIEF = "Manage all the aggregations that are a part of this instance by XXXX";
-		private const string THEMATIC_HEADING_BRIEF = "Edit and add new thematic headings by XXXX";
-		private const string DEFAULT_METADATA_BRIEF = "Edit the default metadata by XXXX";
-		private const string WORDMARKS_BRIEF = "Wordmarks and icons are little images that do XXXX";
-		private const string BUILDER_STATUS_BRIEF = "Builder status can be helpful for XXXX";
-		private const string RESTRICTIONS_BRIEF = "IP Restriction ranges can be used for XXXX";
-		private const string SETTINGS_BRIEF = "System-wide settings can be used to XXXX";
-		private const string RESET_CACHE_BRIEF = "Reset the system-wide cache, which includes settings, aggregations, skins, etc..";
-		private const string PERMISSIONS_BRIEF = "User permissions reports are helpful for XXXX";
+        private const string ADD_COLLECTION_WIZARD_BRIEF = "Add a new collection (or any other type of aggregation) using the wizard.  This will guide you the process of adding a new collection and uploading the banner and button.";
+		private const string EDIT_CURR_SKIN_BRIEF = "Edit the web skin currently in use.  This allows editing of headers and footers, implementing general style changes via CSS, and uploading web-skin related images and documents.";
+		private const string USERS_AND_GROUPS_BRIEF = "Edit users and user groups and assign new permissions either directly to users or through the user group membership.";
+		private const string URL_PORTALS_BRIEF = "URL portals define the different web skins and default aggregations to be displayed for different incoming base URLs.";
+		private const string WEB_SKINS_BRIEF = "View, edit, and create web skins to modify the overall look and feel of the site by editing headers, footers, and the CSS stylesheets.";
+		private const string ALIASES_BRIEF = "Manage the various aggregation aliases which allow different URLs to point to the same aggregation.";
+		private const string AGGR_MGMT_BRIEF = "Manage all the aggregations ( collections, institutions, exhibits, etc.. ) by adding new aggregations, deleting existing aggregations, and other administrative tasks.";
+		private const string THEMATIC_HEADING_BRIEF = "Manage the thematic headings, which allow collections within this instance to be added to and categorized on the main repository home page.";
+		private const string DEFAULT_METADATA_BRIEF = "Manage the default metadata sets which can be assigned to users to provide some standard metadata for all items added through the online templates.";
+		private const string WORDMARKS_BRIEF = "Manage the wordmarks that can be associated with digital reousrces to appear when viewing the item.  These are often used to attribute contributors and granting agencies.";
+		private const string BUILDER_STATUS_BRIEF = "Check the current builder status and view recent logs and errors that the builder may have encountered.";
+		private const string RESTRICTIONS_BRIEF = "Edit the IP ranges which may be used to restrict access to digital resources to certain institutions or sets of computers, rather than allowing open, public access.";
+		private const string SETTINGS_BRIEF = "These settings control the basic operation and behavior of the entire repository.";
+        private const string RESET_CACHE_BRIEF = "This resets the cache and many of the application values and forces the web application to pull all the data fresh from the design folders and from the database.";
+		private const string PERMISSIONS_BRIEF = "View reports on the different top-level permissions that have been provided to users, either directly or through user group membership.";
 
 
 	    /// <summary> Constructor for a new instance of the Home_AdminViewer class </summary>
@@ -337,7 +337,7 @@ namespace SobekCM.Library.AdminViewer
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td style=\"width:70px\">&nbsp;</td>");
+            Output.WriteLine("      <td style=\"width:30px\">&nbsp;</td>");
             Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + edit_curr_skin_url + "\"><img src=\"" + Static_Resources.Skins_Img_Large + "\" /></a></td>");
             Output.WriteLine("      <td>");
             Output.WriteLine("        <a href=\"" + edit_curr_skin_url + "\">Edit Current Web Skin</a>");
