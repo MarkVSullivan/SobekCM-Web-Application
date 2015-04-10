@@ -100,7 +100,7 @@ namespace SobekCM
 
 
                 // (TEMPORARY FOR UF)
-			    if ( UI_ApplicationCache_Gateway.Settings.System_Abbreviation.IndexOf("UFDC") == 0)
+			    if (( !String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System_Abbreviation)) && ( UI_ApplicationCache_Gateway.Settings.System_Abbreviation.IndexOf("UFDC") == 0))
 			    {
                     string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
                     UI_ApplicationCache_Gateway.Settings.Base_Directory = baseDir;
@@ -969,10 +969,14 @@ namespace SobekCM
 				// Check if a differente skin should be used if this is a collection display
 				if ((hierarchyObject != null) && ( hierarchyObject.Web_Skins != null ) && (hierarchyObject.Web_Skins.Count > 0))
 				{
-					if (!hierarchyObject.Web_Skins.Contains(current_skin_code.ToLower()))
-					{
-						current_skin_code = hierarchyObject.Web_Skins[0];
-					}
+                    // Do NOT do this replacement if the web skin is in the URL and this is admin mode
+				    if ((!currentMode.Skin_In_URL) || (currentMode.Mode != Display_Mode_Enum.Administrative))
+				    {
+				        if (!hierarchyObject.Web_Skins.Contains(current_skin_code.ToLower()))
+				        {
+				            current_skin_code = hierarchyObject.Web_Skins[0];
+				        }
+				    }
 				}
 
 				SobekCM_Assistant assistant = new SobekCM_Assistant();

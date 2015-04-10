@@ -18,11 +18,6 @@ namespace SobekCM.Core.Skins
     [Serializable, DataContract, ProtoContract]
 	public class Web_Skin_Collection
 	{
-        /// <summary> Collection of all the default web skins to be permanently cached 
-        /// in this object (versus placed on the cache temporarily </summary>
-        [IgnoreDataMember]
-        public Dictionary<string, Web_Skin_Object> DefaultSkins { get; set;  }
-
         [DataMember(Name = "orderedCodes")]
         [ProtoMember(1)]
         public List<string> Ordered_Skin_Codes { get; set; }
@@ -30,7 +25,6 @@ namespace SobekCM.Core.Skins
 	    /// <summary> Constructor for a new instance of the Web_Skin_Collection class  </summary>
 		public Web_Skin_Collection()
 		{
-            DefaultSkins = new Dictionary<string, Web_Skin_Object>();
 	        Ordered_Skin_Codes = new List<string>();
 		}
 
@@ -40,7 +34,6 @@ namespace SobekCM.Core.Skins
         /// the <see cref="Engine_Database.Get_All_Web_Skins"/> method</remarks>
         public Web_Skin_Collection(DataTable Interface_Table)
         {
-            DefaultSkins = new Dictionary<string, Web_Skin_Object>();
             Ordered_Skin_Codes = new List<string>();
 
             Skin_Table = Interface_Table;
@@ -64,29 +57,11 @@ namespace SobekCM.Core.Skins
 	    [DataMember]
 	    public DataTable Skin_Table { get; set; }
 
-	    /// <summary> Get the number of default skins already constructed in this collection </summary>
-        public int Count
-        {
-            get { return DefaultSkins.Count; }
-        }
-
-	    /// <summary> Address a single skin from this Collection, by skin code </summary>
-        /// <param name="Skin_Language_Code"> Code to retrieve this skin ( [SKIN CODE] + '|' + [LANGUAGE CODE] , i.e., 'sobek', 'dloc_fr', etc.. )</param>
-        /// <returns> Existing HTML skin, or NULL </returns>
-		public Web_Skin_Object this[string Skin_Language_Code ]
-		{
-			get {
-			    return DefaultSkins.ContainsKey(Skin_Language_Code.ToLower()) ? DefaultSkins[Skin_Language_Code.ToLower()] : null;
-			}
-		}
-
 	    /// <summary> Clears all the default interfaces </summary>
 	    public void Clear()
 	    {
-	        DefaultSkins.Clear();
             Skin_Table = null;
 	    }
-
 
 	    /// <summary> Datarow matching the provided skin code </summary>
 	    /// <param name="Skin_Code"> Code for the HTML skin information to retrieve </param>
@@ -99,72 +74,5 @@ namespace SobekCM.Core.Skins
 	        DataRow[] selectedRows = Skin_Table.Select("WebSkinCode = '" + Skin_Code + "'");
 	        return selectedRows.Length > 0 ? selectedRows[0] : null;
 	    }
-
-	    /// <summary> Add a new HTML skin to this collection, to be retained as long as the application is active </summary>
-		/// <param name="NewSkin"> New HTML skin to retain in this collection </param>
-        public void Add(Web_Skin_Object NewSkin)
-		{
-			// Add to the hashtable
-            if ( String.IsNullOrEmpty(NewSkin.Language_Code))
-            {
-                DefaultSkins[NewSkin.Skin_Code.ToLower()] = NewSkin;
-            }
-            else
-            {
-                DefaultSkins[NewSkin.Skin_Code.ToLower() + "|" + NewSkin.Language_Code.ToLower()] = NewSkin;
-            }
-		}
-
-        ///// <summary> Add a new HTML skin to this collection, to be retained as long as the application is active </summary>
-        ///// <param name="Skin_Code"> Code for this new HTML skin</param>
-        ///// <param name="Base_Skin_Code"> Code for the base HTML skin which this new skin derives from</param>
-        ///// <param name="CSS_Style"> Additional CSS Stylesheet to be included for this new HTML skin</param>
-        ///// <returns> Newly constructed <see cref="Web_Skin_Object"/> object </returns>
-        //public Web_Skin_Object Add(string Skin_Code, string Base_Skin_Code, string CSS_Style)
-        //{
-        //    // Create the new skin object
-        //    Web_Skin_Object newSkin = new Web_Skin_Object(Skin_Code, Base_Skin_Code, CSS_Style);
-
-        //    // Add to the hashtable
-        //    DefaultSkins[Skin_Code.ToLower()] = newSkin;
-
-        //    // Return the new, built skin object
-        //    return newSkin;
-        //}
-
-        ///// <summary> Add a new HTML skin to this collection, to be retained as long as the application is active </summary>
-        ///// <param name="Skin_Code"> Code for this new HTML skin</param>
-        ///// <param name="Base_Skin_Code"> Code for the base HTML skin which this new skin derives from</param>
-        ///// <param name="CSS_Style"> Additional CSS Stylesheet to be included for this new HTML skin</param>
-        ///// <param name="Banner_HTML"> Code for the banner to use, if this is set to override the banner</param>
-        ///// <returns> Newly constructed <see cref="Web_Skin_Object"/> object </returns>
-        //public Web_Skin_Object Add(string Skin_Code, string Base_Skin_Code, string CSS_Style, string Banner_HTML)
-        //{
-        //    // Create the new skin object
-        //    Web_Skin_Object newSkin = new Web_Skin_Object(Skin_Code, Base_Skin_Code, CSS_Style, Banner_HTML);
-
-        //    // Add to the hashtable
-        //    DefaultSkins[Skin_Code.ToLower()] =  newSkin;
-
-        //    // Return the new, built skin object
-        //    return newSkin;
-        //}
-
-        /// <summary> Removes a HTML skin from this collection </summary>
-        /// <param name="Skin_Code"> Code the HTML skin to remove </param>
-        /// <returns> TRUE if the skin was found and removed, otherwise FALSE </returns>
-        public bool Remove(string Skin_Code)
-        {
-            // GEt the list of keys that start with this skin code
-            List<string> deleteKeys = DefaultSkins.Keys.Where(ThisKey => ThisKey.IndexOf(Skin_Code.ToLower()) == 0).ToList();
-
-            // Nothing to remove?  return false
-            if ( deleteKeys.Count == 0 ) return false;
-
-            // Remoave all matches
-            foreach( string thisKey in deleteKeys )
-                DefaultSkins.Remove(thisKey);
-            return true;
-        }
 	}
 }

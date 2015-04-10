@@ -161,7 +161,7 @@ namespace SobekCM.Library.AdminViewer
                     if (action == "save")
                     {
                         // Save this existing interface
-                        bool successful_save = SobekCM_Database.Save_Web_Skin(webSkin.Skin_Code, webSkin.Base_Skin_Code, webSkin.Override_Banner, true, webSkin.Banner_Link, webSkin.Notes, webSkin.Build_On_Launch, webSkin.Suppress_Top_Navigation, RequestSpecificValues.Tracer);
+                        bool successful_save = SobekCM_Database.Save_Web_Skin(webSkin.Skin_Code, webSkin.Base_Skin_Code, webSkin.Override_Banner, true, webSkin.Banner_Link, webSkin.Notes, webSkin.Suppress_Top_Navigation, RequestSpecificValues.Tracer);
 
                         // Prepare the backup folders
                         string backup_folder =  skinDirectory + "\\backup\\html";
@@ -444,7 +444,16 @@ namespace SobekCM.Library.AdminViewer
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
             Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
             Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-            Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits();\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+
+            // If this page has CKEDITOR fields, ensure they are all committed before saving
+            if (page == 3)
+            {
+                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return save_skin_edits();\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            }
+            else
+            {
+                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits();\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            }
             Output.WriteLine("  </div>");
             Output.WriteLine();
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
@@ -584,19 +593,12 @@ namespace SobekCM.Library.AdminViewer
             string edit_notes = Form["webskin_notes"].Trim();
 
             bool override_banner = false;
-            bool build_on_launch = false;
             bool suppress_top_nav = false;
 
             object temp_object = Form["webskin_banner_override"];
             if (temp_object != null)
             {
                 override_banner = true;
-            }
-
-            temp_object = Form["webskin_buildlaunch"];
-            if (temp_object != null)
-            {
-                build_on_launch = true;
             }
 
             temp_object = Form["webskin_suppress_top_nav"];
@@ -610,8 +612,6 @@ namespace SobekCM.Library.AdminViewer
             webSkin.Notes = edit_notes;
             webSkin.Override_Banner = override_banner;
             webSkin.Suppress_Top_Navigation = suppress_top_nav;
-            webSkin.Build_On_Launch = build_on_launch;
-
         }
 
         private void Add_Page_1(TextWriter Output)
@@ -621,7 +621,6 @@ namespace SobekCM.Library.AdminViewer
             const string BANNER_LINK_HELP = "Advanced option - if this web skin is set to override the aggregation banner, than this will be the link that is used when users select the banner.";
             const string NOTES_HELP = "Private notes associated with this web skin";
             const string BANNER_OVERRIDE_HELP = "Advanced option - use to override the aggregation banners and always show a web skin banner when viewing aggregations under this web skin.";
-            const string BUILD_ON_LAUNCH_HELP = "Advanced option - for memory management purposes most web skins are only built when needed and only retained for a short period.\\n\\nSelecting this option will build the web skin on start-up and retain it in memory indefinitely.  This is useful for the main web skin.";
             const string SUPPRESS_TOP_NAV_HELP = "Flag suppresses the top main menu on most aggregation views.  The basic navigation will then need to be provided in the header most likely.";
 
 
@@ -707,19 +706,6 @@ namespace SobekCM.Library.AdminViewer
                 Output.Write("checked=\"checked\" ");
             Output.WriteLine("/> <label for=\"webskin_suppress_top_nav\">Suppress main menu?</label></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + SUPPRESS_TOP_NAV_HELP + "');\"  title=\"" + SUPPRESS_TOP_NAV_HELP + "\" /></td></tr></table>");
-            Output.WriteLine("     </td>");
-            Output.WriteLine("  </tr>");
-
-            // Add checkboxes for building on launch
-            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-            Output.WriteLine("    <td>&nbsp;</td>");
-            Output.WriteLine("    <td></td>");
-            Output.WriteLine("    <td>");
-            Output.Write("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"webskin_buildlaunch\" id=\"webskin_buildlaunch\" ");
-            if (webSkin.Build_On_Launch)
-                Output.Write("checked=\"checked\" ");
-            Output.WriteLine("/> <label for=\"webskin_buildlaunch\">Build on launch?</label></td>");
-            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + BUILD_ON_LAUNCH_HELP + "');\"  title=\"" + BUILD_ON_LAUNCH_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
 

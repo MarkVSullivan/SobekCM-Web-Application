@@ -123,6 +123,8 @@ namespace SobekCM.Library.HTML
                                     message_from = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + "<" + entered_message_from + ">";
                                 }
 
+                                emailBuilder.Append("Email:\t\t" + entered_message_from + "\n");
+
                             }
                             else if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.TextArea)
                             {

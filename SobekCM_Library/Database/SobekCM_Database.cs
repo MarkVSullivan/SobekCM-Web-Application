@@ -3456,12 +3456,11 @@ namespace SobekCM.Library.Database
 		/// <param name="OverrideHeaderFooter"> Flag indicates this skin overrides the default header/footer</param>
 		/// <param name="Banner_Link"> Link to which the banner sends the user </param>
 		/// <param name="Notes"> Notes on this skin ( name, use, etc...) </param>
-		/// <param name="Build_On_Launch"> Flag indicates if this skin should be built upon launch ( i.e., is this a heavily used web skin? )</param>
 		/// <param name="Suppress_Top_Navigation"> Flag indicates if the top-level aggregation navigation should be suppressed for this web skin ( i.e., is the top-level navigation embedded into the header file already? )</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Add_Web_Skin' stored procedure </remarks> 
-		public static bool Save_Web_Skin(string Skin_Code, string Base_Skin_Code, bool OverrideBanner, bool OverrideHeaderFooter, string Banner_Link, string Notes, bool Build_On_Launch, bool Suppress_Top_Navigation, Custom_Tracer Tracer)
+		public static bool Save_Web_Skin(string Skin_Code, string Base_Skin_Code, bool OverrideBanner, bool OverrideHeaderFooter, string Banner_Link, string Notes, bool Suppress_Top_Navigation, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -3478,7 +3477,7 @@ namespace SobekCM.Library.Database
 				paramList[3] = new SqlParameter("@overrideheaderfooter", OverrideHeaderFooter);
 				paramList[4] = new SqlParameter("@bannerlink", Banner_Link);
 				paramList[5] = new SqlParameter("@notes", Notes);
-				paramList[6] = new SqlParameter("@build_on_launch", Build_On_Launch);
+				paramList[6] = new SqlParameter("@build_on_launch", false);
 				paramList[7] = new SqlParameter("@suppress_top_nav", Suppress_Top_Navigation  );
 
 				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Add_Web_Skin", paramList);

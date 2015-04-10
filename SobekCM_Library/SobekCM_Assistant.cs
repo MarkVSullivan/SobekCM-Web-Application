@@ -1813,16 +1813,6 @@ namespace SobekCM.Library
             string webskin_code_language = Web_Skin_Code;
             if ( Current_Mode.Language_Code.Length > 0 )
                 webskin_code_language = webskin_code_language + "|" + Current_Mode.Language_Code;
-            if (Skin_Collection[webskin_code_language] != null)
-            {
-                htmlSkin = Skin_Collection[webskin_code_language];
-                Current_Mode.Base_Skin = htmlSkin.Base_Skin_Code;
-	            if (Tracer != null)
-	            {
-		            Tracer.Add_Trace("SobekCM_Assistant.Get_HTML_Skin", "Web Skin '" + Web_Skin_Code + "' found in global values");
-	            }
-	            return htmlSkin;
-            }
 
             // If no interface yet, look in the cache
             if (( Web_Skin_Code != "new") && ( Cache_On_Build ))
@@ -1853,12 +1843,7 @@ namespace SobekCM.Library
                 // Look in the web skin row and see if it should be kept around, rather than momentarily cached
                 if (new_skin != null)
                 {
-                    if ((skin_row.Table.Columns.Contains("Build_On_Launch")) && (Convert.ToBoolean(skin_row["Build_On_Launch"])))
-                    {
-                        // Save this semi-permanently in memory
-                        Skin_Collection.Add(new_skin);
-                    }
-                    else if ( Cache_On_Build )
+                    if ( Cache_On_Build )
                     {
                         // Momentarily cache this web skin object
                         CachedDataManager.WebSkins.Store_Skin(Web_Skin_Code, Current_Mode.Language_Code, new_skin, Tracer);

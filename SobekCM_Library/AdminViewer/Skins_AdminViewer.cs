@@ -79,66 +79,58 @@ namespace SobekCM.Library.AdminViewer
                     {
                         RequestSpecificValues.Tracer.Add_Trace("Skins_AdminViewer.Constructor", "Reset html skin '" + reset_value + "'");
 
-                        if (UI_ApplicationCache_Gateway.Web_Skin_Collection.Remove(reset_value))
+                        int values_cleared = CachedDataManager.WebSkins.Remove_Skin(reset_value, RequestSpecificValues.Tracer);
+
+                        if (values_cleared == 0)
                         {
-                            actionMessage = "Removed skin <i>" + reset_value.ToUpper() + "</i> from the semi-permanent skin collection";
+                            actionMessage = "Html skin <i>" + reset_value.ToUpper() + "</i> was not in the application cache";
                         }
                         else
                         {
-                            int values_cleared = CachedDataManager.WebSkins.Remove_Skin(reset_value, RequestSpecificValues.Tracer);
-
-                            if (values_cleared == 0)
-                            {
-                                actionMessage = "Html skin <i>" + reset_value.ToUpper() + "</i> was not in the application cache";
-                            }
-                            else
-                            {
-                                actionMessage = "Removed " + values_cleared + " values from the cache for <i>" + reset_value.ToUpper() + "</i>";
-                            }
+                            actionMessage = "Removed " + values_cleared + " values from the cache for <i>" + reset_value.ToUpper() + "</i>";
                         }
-
                     }
-					else if (delete_value.Length > 0)
-					{
-					    if (RequestSpecificValues.Current_User.Is_System_Admin)
-					    {
-					        RequestSpecificValues.Tracer.Add_Trace("Skins_AdminViewer.Constructor", "Delete skin '" + delete_value + "' from the database");
+                    else if (delete_value.Length > 0)
+                    {
+                        if (RequestSpecificValues.Current_User.Is_System_Admin)
+                        {
+                            RequestSpecificValues.Tracer.Add_Trace("Skins_AdminViewer.Constructor", "Delete skin '" + delete_value + "' from the database");
 
 
-					        // Delete from the database
-					        if (SobekCM_Database.Delete_Web_Skin(delete_value, false, RequestSpecificValues.Tracer))
-					        {
-					            // Set the deleted wordmark message
-					            actionMessage = "Deleted web skin <i>" + delete_value + "</i>";
+                            // Delete from the database
+                            if (SobekCM_Database.Delete_Web_Skin(delete_value, false, RequestSpecificValues.Tracer))
+                            {
+                                // Set the deleted wordmark message
+                                actionMessage = "Deleted web skin <i>" + delete_value + "</i>";
 
-					            // Remove this web skin from the collection
-					            Web_Skin_Utilities.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
+                                // Remove this web skin from the collection
+                                Web_Skin_Utilities.Populate_Default_Skins(UI_ApplicationCache_Gateway.Web_Skin_Collection, RequestSpecificValues.Tracer);
 
                                 // If this was your current web skin, forward
-					            if (String.Compare(delete_value, RequestSpecificValues.HTML_Skin.Skin_Code, StringComparison.InvariantCultureIgnoreCase) == 0)
-					            {
+                                if (String.Compare(delete_value, RequestSpecificValues.HTML_Skin.Skin_Code, StringComparison.InvariantCultureIgnoreCase) == 0)
+                                {
                                     RequestSpecificValues.Current_Mode.Skin_In_URL = false;
                                     RequestSpecificValues.Current_Mode.Skin = null;
                                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                                     return;
-					            }
+                                }
 
-					        }
-					        else
-					        {
-					            // Report the error
-					            if (SobekCM_Database.Last_Exception == null)
-					            {
-					                actionMessage = "Error: Unable to delete web skin <i>" + delete_value + "</i> since it is linked to an item, aggregation, or portal";
-					            }
-					            else
-					            {
-					                actionMessage = "Unknown error while deleting web skin <i>" + delete_value + "</i>";
-					            }
-					        }
-					    }
-					}
-					else
+                            }
+                            else
+                            {
+                                // Report the error
+                                if (SobekCM_Database.Last_Exception == null)
+                                {
+                                    actionMessage = "Error: Unable to delete web skin <i>" + delete_value + "</i> since it is linked to an item, aggregation, or portal";
+                                }
+                                else
+                                {
+                                    actionMessage = "Unknown error while deleting web skin <i>" + delete_value + "</i>";
+                                }
+                            }
+                        }
+                    }
+                    else
                     {
                         // Or.. was this a save request
                         if (save_value.Length > 0)
@@ -167,12 +159,6 @@ namespace SobekCM.Library.AdminViewer
 
                                 override_header = true;
 
-                                temp_object = form["admin_interface_buildlaunch"];
-                                if (temp_object != null)
-                                {
-                                    build_on_launch = true;
-                                }
-
                                 temp_object = form["admin_interface_top_nav"];
                                 if (temp_object != null)
                                 {
@@ -189,7 +175,7 @@ namespace SobekCM.Library.AdminViewer
                                 bool result = save_value.All(C => Char.IsLetterOrDigit(C) || C == '_');
                                 bool existing_already = UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes.Any(thisSkinCode => String.Equals(thisSkinCode, save_value, StringComparison.CurrentCultureIgnoreCase));
 
-                                if ((!result) || ( existing_already ))
+                                if ((!result) || (existing_already))
                                 {
                                     if (!result)
                                     {
@@ -205,7 +191,7 @@ namespace SobekCM.Library.AdminViewer
                                 {
 
                                     // Save this new interface
-                                    if (SobekCM_Database.Save_Web_Skin(save_value, new_base_code, override_banner, override_header, new_banner_link, new_notes, build_on_launch, suppress_top_nav, RequestSpecificValues.Tracer))
+                                    if (SobekCM_Database.Save_Web_Skin(save_value, new_base_code, override_banner, override_header, new_banner_link, new_notes, suppress_top_nav, RequestSpecificValues.Tracer))
                                     {
                                         // Ensure a folder exists for this, otherwise create one
                                         try
@@ -427,12 +413,6 @@ namespace SobekCM.Library.AdminViewer
                                     override_header = true;
                                 }
 
-                                temp_object = form["form_interface_buildlaunch"];
-                                if (temp_object != null)
-                                {
-                                    build_on_launch = true;
-                                }
-
                                 temp_object = form["form_interface_top_nav"];
                                 if (temp_object != null)
                                 {
@@ -440,7 +420,7 @@ namespace SobekCM.Library.AdminViewer
                                 }
 
                                 // Save this existing interface
-                                if (SobekCM_Database.Save_Web_Skin(save_value, edit_base_code, override_banner, override_header, edit_banner_link, edit_notes, build_on_launch, suppress_top_nav, RequestSpecificValues.Tracer))
+                                if (SobekCM_Database.Save_Web_Skin(save_value, edit_base_code, override_banner, override_header, edit_banner_link, edit_notes, suppress_top_nav, RequestSpecificValues.Tracer))
                                 {
                                     lock (UI_ApplicationCache_Gateway.Web_Skin_Collection)
                                     {
@@ -585,7 +565,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Add checkboxes for overriding the header/footer and overriding banner
             Output.WriteLine("      <tr style=\"height:15px;\"><td>Flags:</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_banner_override\" id=\"admin_interface_banner_override\" onchange=\"return skins_display_banner_link(this);\" /> <label for=\"admin_interface_banner_override\" >Override banner?</label></td><td></td></tr>");
-			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_top_nav\" id=\"admin_interface_top_nav\" /> <label for=\"admin_interface_top_nav\">Suppress main menu?</label></td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_buildlaunch\" id=\"admin_interface_buildlaunch\" /> <label for=\"admin_interface_buildlaunch\">Build on launch?</label></td></tr>");
+			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_top_nav\" id=\"admin_interface_top_nav\" /> <label for=\"admin_interface_top_nav\">Suppress main menu?</label></td><td></td></tr>");
 			Output.WriteLine("      <tr style=\"height:15px;\"><td>&nbsp;</td><td colspan=\"2\"><input class=\"sbkSav_checkbox\" type=\"checkbox\" name=\"admin_interface_copycurrent\" id=\"admin_interface_copycurrent\" checked=\"checked\" /> <label for=\"admin_interface_copycurrent\">Copy current files for this new web skin if folder does not exist?</label></td></tr>");
 
 			// Add the SAVE button

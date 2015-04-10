@@ -374,7 +374,7 @@ namespace SobekCM.Library
 	        currentMode.Skin = defaultSkin;
 
 			// Get the default web skin
-			Web_Skin_Object defaultSkinObject = Engine_ApplicationCache_Gateway.Web_Skin_Collection[defaultSkin] ?? assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
+			Web_Skin_Object defaultSkinObject = assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
 
 	        // Get the list of all collections
             DataTable allCollections = SobekCM_Database.Get_Codes_Item_Aggregations( null);
@@ -688,12 +688,7 @@ namespace SobekCM.Library
 		        currentMode.Skin = Aggregation.Web_Skins[0];
 
 			// Get the skin object
-            Web_Skin_Object skinObject = Engine_ApplicationCache_Gateway.Web_Skin_Collection[currentMode.Skin];
-			if (skinObject == null)
-			{
-                skinObject = assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
-                Engine_ApplicationCache_Gateway.Web_Skin_Collection.Add(skinObject);
-			}
+            Web_Skin_Object skinObject = assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
 
 			StreamWriter writer = new StreamWriter(staticSobekcmDataLocation + Aggregation.Code.ToLower() + "_all.html", false);
 			writer.WriteLine("<!DOCTYPE html>");
