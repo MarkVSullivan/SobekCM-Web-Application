@@ -550,6 +550,17 @@ namespace SobekCM.Engine_Library.Endpoints
                         itemAggregation.Add_Banner_Image(banner_file, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language);
                     }
                     itemAggregation.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory);
+
+                    // If an email shoudl be sent, do that now
+                    if (String.Compare(Engine_ApplicationCache_Gateway.Settings.Send_Email_On_Added_Aggregation, "always", true) == 0)
+                    {
+                        string user = String.Empty;
+                        if (!String.IsNullOrEmpty(NewAggregation.User))
+                            user = NewAggregation.User;
+
+                        string body = "New aggregation added to this system:\n\n\tType:\t" + itemAggregation.Code + "\n\tName:\t" + itemAggregation.Name + "\n\tShort:\t" + itemAggregation.ShortName + "\n\tUser:\t" + user + "\n\n" + Engine_ApplicationCache_Gateway.Settings.Application_Server_URL + "/" + itemAggregation.Code;
+                        Email.Email_Helper.SendEmail(Engine_ApplicationCache_Gateway.Settings.System_Email, "New " + itemAggregation.Type + " - " + itemAggregation.ShortName, body, false, Engine_ApplicationCache_Gateway.Settings.System_Name);
+                    }
                 }
             }
             catch

@@ -40,17 +40,91 @@ namespace SobekCM.Library.AdminViewer
 
             // Set some defaults
             actionMessage = String.Empty;
-
-
             string page_code = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 
-            // If the user cannot edit this, go back
-            if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
+            // If the user is not logged in, they shouldn't be here
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn ))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
+            }
+            
+            // Was there a parent indicated?
+            string parent_locked = String.Empty;
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["parent"]))
+            {
+                parent_locked = HttpContext.Current.Request.QueryString["parent"];
+
+                // Ensure that aggregation exists
+                if (UI_ApplicationCache_Gateway.Aggregations[parent_locked.ToUpper()] == null)
+                {
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    return;
+                }
+            }
+
+            // Load the new aggregation, either currenlty from the session (if already into this wizard )
+            // or by building the new aggregation arguments
+            New_Aggregation_Arguments cachedInstance = HttpContext.Current.Session["Add_Coll_Wizard"] as New_Aggregation_Arguments;
+            newAggr = cachedInstance ?? new New_Aggregation_Arguments("ALL");
+
+            // Lock the parent?
+            if (parent_locked.Length > 0)
+            {
+                // If not already locked, use ths as the parent
+                if ((!newAggr.ParentLocked.HasValue) || ( !newAggr.ParentLocked.Value ))
+                {
+                    newAggr.ParentLocked = true;
+                    newAggr.ParentCode = parent_locked;
+
+                    // Also, determine the initial type based on this
+                    // Get the type abbreviation
+                    Item_Aggregation_Related_Aggregations parentAggr = UI_ApplicationCache_Gateway.Aggregations[newAggr.ParentCode.ToUpper()];
+                    newAggr.Type = "Collection";
+                    if (parentAggr.Type.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                    {
+                        newAggr.Type = "Institutional Division";
+                    }
+                    else if (parentAggr.Code.ToLower() == "all")
+                    {
+                        newAggr.Type = "Collection Group";
+                    }
+                    else if (parentAggr.Type.ToLower() == "collection")
+                    {
+                        newAggr.Type = "SubCollection";
+                    }
+                    else if (parentAggr.Type.ToLower() == "collection")
+                    {
+                        newAggr.Type = "SubCollection";
+                    }
+                }
+            }
+
+            // Check for permissions (if not sys or portal admin)
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin))
+            {
+                // If the parent was locked, this could just be a collection curator/admin
+                if ((newAggr.ParentLocked.HasValue) && (!newAggr.ParentLocked.Value))
+                {
+                    if (!RequestSpecificValues.Current_User.Is_Aggregation_Curator(newAggr.ParentCode))
+                    {
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        return;
+                    }
+                }
+                else
+                {
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    return;
+                }
             }
 
             // Determine the page
@@ -75,8 +149,6 @@ namespace SobekCM.Library.AdminViewer
                 page = 1;
             }
 
-
-
             // Determine the in process directory for this
             if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_User.ShibbID)) && ( RequestSpecificValues.Current_User.ShibbID.Trim().Length > 0 ))
             {
@@ -88,14 +160,6 @@ namespace SobekCM.Library.AdminViewer
                 userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location, RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\addcoll");
                 userInProcessUrl = Path.Combine(UI_ApplicationCache_Gateway.Settings.Application_Server_URL, "mySobek/InProcess", RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", ""), "addcoll").Replace("\\", "/"); 
             }
-
-
-            // Load the new aggregation, either currenlty from the session (if already into this wizard )
-            // or by building the new aggregation arguments
-            New_Aggregation_Arguments cachedInstance = HttpContext.Current.Session["Add_Coll_Wizard"] as New_Aggregation_Arguments;
-            newAggr = cachedInstance ?? new New_Aggregation_Arguments("ALL");
-
-
 
             // If this is a postback, handle any events first
             if (RequestSpecificValues.Current_Mode.isPostBack)
@@ -147,8 +211,19 @@ namespace SobekCM.Library.AdminViewer
                             }
                         }
 
-                        // Redirect the user to the aggregation mgmt screen
-                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                        // Redirect the user to the aggregation mgmt screen or parent collection
+                        if ((newAggr.ParentLocked.HasValue) && (newAggr.ParentLocked.Value) && (!String.IsNullOrEmpty(newAggr.ParentCode)))
+                        {
+                            // This was from a parent collection, so go back to that
+                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+                            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = newAggr.ParentCode + "/h";
+                        }
+                        else
+                        {
+                            // Send to the main aggregation admin screen
+                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+                            
+                        }
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
                     }
@@ -299,10 +374,20 @@ namespace SobekCM.Library.AdminViewer
                                 }
                             }
 
-                            // Forward to the aggregation
-                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-                            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
-                            RequestSpecificValues.Current_Mode.Aggregation = newAggr.Code;
+                            // Redirect the user to the new aggregation or parent collection admin
+                            if ((newAggr.ParentLocked.HasValue) && (newAggr.ParentLocked.Value) && (!String.IsNullOrEmpty(newAggr.ParentCode)))
+                            {
+                                // This was from a parent collection, so go back to that
+                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregation_Single;
+                                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = newAggr.ParentCode + "/h";
+                            }
+                            else
+                            {
+                                // Forward to the aggregation
+                                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                                RequestSpecificValues.Current_Mode.Aggregation = newAggr.Code;
+                            }
 
                             UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                             return;
@@ -554,7 +639,8 @@ namespace SobekCM.Library.AdminViewer
             // Pull the values from the submitted form
             string new_aggregation_code = form["admin_aggr_code"];
             string new_type = form["admin_aggr_type"];
-            string new_parent = form["admin_aggr_parent"].Trim();
+            string new_parent = String.Empty;
+            bool parent_locked = true;
             string new_name = form["admin_aggr_name"].Trim();
             string new_shortname = form["admin_aggr_shortname"].Trim();
             string new_description = form["admin_aggr_desc"].Trim();
@@ -563,9 +649,16 @@ namespace SobekCM.Library.AdminViewer
 
             // Convert to the integer id for the parent and begin to do checking
             List<string> errors = new List<string>();
-            if (String.IsNullOrEmpty(new_parent))
+
+
+            if ((!newAggr.ParentLocked.HasValue) || (!newAggr.ParentLocked.Value))
             {
-                errors.Add("You must select a PARENT for this new aggregation");
+                new_parent = form["admin_aggr_parent"].Trim();
+                parent_locked = false;
+                if (String.IsNullOrEmpty(new_parent))
+                {
+                    errors.Add("You must select a PARENT for this new aggregation");
+                }
             }
 
             // Validate the code
@@ -661,8 +754,11 @@ namespace SobekCM.Library.AdminViewer
             newAggr.Description = new_description;
             newAggr.External_Link = new_link;
             newAggr.Name = new_name;
-            if ( new_parent.Length > 1 )
-                newAggr.ParentCode = new_parent.Substring(new_parent.IndexOf("|") + 1);
+            if (!parent_locked)
+            {
+                if (new_parent.Length > 1)
+                    newAggr.ParentCode = new_parent.Substring(new_parent.IndexOf("|") + 1);
+            }
             newAggr.ShortName = new_shortname;
             newAggr.Type = correct_type;
             newAggr.User = RequestSpecificValues.Current_User.Full_Name;
@@ -728,45 +824,68 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_parent\">Parent:</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <select class=\"sbkAcw_select_large\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\" onchange=\"if ( this.value.length > 0 ) { $('#admin_aggr_type').val(this.value.substr(0, this.value.indexOf('|'))); if ( this.value.indexOf('subinst') == 0 ) $('#external_link_row').css('display', 'table-row'); else $('#external_link_row').css('display', 'none'); }\">");
-            if (newAggr.ParentCode == String.Empty)
-                Output.WriteLine("        <option value=\"\" selected=\"selected\" ></option>");
-            foreach (Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
+            if ((newAggr.ParentLocked.HasValue) && (newAggr.ParentLocked.Value) && (!String.IsNullOrEmpty(newAggr.ParentCode)))
             {
-                // Get the type abbreviation
-                string typeAbbrev = "coll";
-                if (thisAggr.Type.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0)
-                {
-                    typeAbbrev = "subinst";
-                }
-                else if ( thisAggr.Code.ToLower() == "all")
-                {
-                    typeAbbrev = "group";
-                }
-                else if (thisAggr.Type.ToLower() == "collection")
-                {
-                    typeAbbrev = "coll";
-                }
+                Item_Aggregation_Related_Aggregations parentAggr = UI_ApplicationCache_Gateway.Aggregations[newAggr.ParentCode.ToUpper()];
 
-                // For aggregations, this retains the initial i as lower case (easier to recognize)
-                string aggrCode = thisAggr.Code;
-                if ((aggrCode[0] == 'I') && (thisAggr.Type.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0))
+                // For institutions, this retains the initial i as lower case (easier to recognize)
+                string aggrCode = parentAggr.Code;
+                if ((aggrCode[0] == 'I') && (parentAggr.Type.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0))
                 {
                     aggrCode = "i" + aggrCode.Substring(1);
                 }
 
-                // Add this option
-                if (newAggr.ParentCode == thisAggr.Code)
-                {
-                    Output.WriteLine("        <option value=\"" + typeAbbrev + "|" + thisAggr.Code + "\" selected=\"selected\" >" + aggrCode + " - " + thisAggr.Name + "</option>");
-                }
-                else
-                {
-                    Output.WriteLine("        <option value=\"" + typeAbbrev + "|" + thisAggr.Code + "\" >" + aggrCode + " - " + thisAggr.Name + "</option>");
-                }
+                Output.WriteLine("      <span class=\"sbkAcw_CheckText\">" + aggrCode + " - " + parentAggr.Name + "</span>");
+
+                Output.WriteLine("      <div class=\"sbkAcw_InlineHelp\">This is the parent collection to this new aggregation.</div>");
+
             }
-            Output.WriteLine("      </select>");
-            Output.WriteLine("      <div class=\"sbkAcw_InlineHelp\">Select the parent collection.  If this should be a top-level collection, select the ALL collection.</div>");
+            else
+            {
+                Output.WriteLine("      <select class=\"sbkAcw_select_large\" name=\"admin_aggr_parent\" id=\"admin_aggr_parent\" onchange=\"if ( this.value.length > 0 ) { $('#admin_aggr_type').val(this.value.substr(0, this.value.indexOf('|'))); if ( this.value.indexOf('subinst') == 0 ) $('#external_link_row').css('display', 'table-row'); else $('#external_link_row').css('display', 'none'); }\">");
+                if (newAggr.ParentCode == String.Empty)
+                    Output.WriteLine("        <option value=\"\" selected=\"selected\" ></option>");
+                foreach (Item_Aggregation_Related_Aggregations thisAggr in UI_ApplicationCache_Gateway.Aggregations.All_Aggregations)
+                {
+                    // Get the type abbreviation
+                    string typeAbbrev = "coll";
+                    if (thisAggr.Type.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                    {
+                        typeAbbrev = "subinst";
+                    }
+                    else if (thisAggr.Code.ToLower() == "all")
+                    {
+                        typeAbbrev = "group";
+                    }
+                    else if (thisAggr.Type.ToLower() == "collection")
+                    {
+                        typeAbbrev = "subcoll";
+                    }
+                    else if (thisAggr.Type.ToLower() == "subcollection")
+                    {
+                        typeAbbrev = "subcoll";
+                    }
+
+                    // For institutions, this retains the initial i as lower case (easier to recognize)
+                    string aggrCode = thisAggr.Code;
+                    if ((aggrCode[0] == 'I') && (thisAggr.Type.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0))
+                    {
+                        aggrCode = "i" + aggrCode.Substring(1);
+                    }
+
+                    // Add this option
+                    if (newAggr.ParentCode == thisAggr.Code)
+                    {
+                        Output.WriteLine("        <option value=\"" + typeAbbrev + "|" + thisAggr.Code + "\" selected=\"selected\" >" + aggrCode + " - " + thisAggr.Name + "</option>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("        <option value=\"" + typeAbbrev + "|" + thisAggr.Code + "\" >" + aggrCode + " - " + thisAggr.Name + "</option>");
+                    }
+                }
+                Output.WriteLine("      </select>");
+                Output.WriteLine("      <div class=\"sbkAcw_InlineHelp\">Select the parent collection.  If this should be a top-level collection, select the ALL collection.</div>");
+            }
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 

@@ -29,10 +29,10 @@ namespace SobekCM.Engine_Library.Settings
         private const string BACKUP_FILES_FOLDER_NAME = "sobek_files";
 
         /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
-        private const string CURRENT_WEB_VERSION = "4.8.6";
+        private const string CURRENT_WEB_VERSION = "4.8.7";
 
         /// <summary> Current version number associated with this SobekCM builder application </summary>
-        private const string CURRENT_BUILDER_VERSION = "4.8.6"; 
+        private const string CURRENT_BUILDER_VERSION = "4.8.7"; 
 
         /// <summary> Number of ticks that a complete package must age before being processed </summary>
         /// <value> This is currently set to 15 minutes (in ticks) </value>
@@ -271,6 +271,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "PostArchive Files To Delete", SettingsObject, X => X.PostArchive_Files_To_Delete, String.Empty);
                 Get_String_Value(settingsDictionary, "PreArchive Files To Delete", SettingsObject, X => X.PreArchive_Files_To_Delete, String.Empty);
                 Get_String_Value(settingsDictionary, "Privacy Email Address", SettingsObject, X => X.Privacy_Email_Address, String.Empty);
+                Get_String_Value(settingsDictionary, "Send Email On Added Aggregation", SettingsObject, X => X.Send_Email_On_Added_Aggregation, "Always");
                 Get_Boolean_Value(settingsDictionary, "Show Florida SUS Settings", SettingsObject, X => X.Show_Florida_SUS_Settings, ref error, false);
                 Get_String_Value(settingsDictionary, "SobekCM Image Server", SettingsObject, X => X.SobekCM_ImageServer, String.Empty);
                 Get_String_Value(settingsDictionary, "SobekCM Web Server IP", SettingsObject, X => X.SobekCM_Web_Server_IP, String.Empty);

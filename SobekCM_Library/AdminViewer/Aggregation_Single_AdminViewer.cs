@@ -229,7 +229,7 @@ namespace SobekCM.Library.AdminViewer
 					}
 
 					// Should this be saved to the database?
-					if ((action == "save") || ( action == "save_exit"))
+                    if ((action == "save") || (action == "save_exit") || (action == "save_wizard"))
 					{
                         // Get the current aggrgeation information, for comparison
                         Complete_Item_Aggregation currentAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(code, true, RequestSpecificValues.Tracer);
@@ -323,10 +323,27 @@ namespace SobekCM.Library.AdminViewer
 						        RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
 						        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
 						    }
-						    else
-						    {
+                            else if (action == "save_wizard")
+                            {
+
+                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                                string wizard_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
+
+                                if (wizard_url.IndexOf("?") < 0)
+                                    wizard_url = wizard_url + "?parent=" + itemAggregation.Code;
+                                else
+                                    wizard_url = wizard_url + "&parent=" + itemAggregation.Code;
+
+                                RequestSpecificValues.Current_Mode.Request_Completed = true;
+                                HttpContext.Current.Response.Redirect(wizard_url, false);
+                                HttpContext.Current.ApplicationInstance.CompleteRequest();
+
+                            }
+                            else
+                            {
                                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-						    }
+                            }
 						}
 						else
 						{
@@ -408,7 +425,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
 				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('z');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
                 Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(false);\"> SAVE </button> &nbsp; &nbsp; ");
-				Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+				Output.WriteLine("    <button title=\"Save changes to this item Aggregation and exit the admin screens\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 				Output.WriteLine("  </div>");
 				Output.WriteLine();
 				RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
@@ -2821,7 +2838,7 @@ namespace SobekCM.Library.AdminViewer
 				if (errorCode <= 0)
 				{
 					string delete_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + code_to_delete;
-					if (SobekCM_File_Utilities.Delete_Folders_Recursively(delete_folder))
+					if (!SobekCM_File_Utilities.Delete_Folders_Recursively(delete_folder))
 						actionMessage = "Deleted '" + code_to_delete + "' subcollection<br /><br />Unable to remove subcollection directory<br /><br />Some of the files may be in use";
 					else
 						actionMessage = "Deleted '" + code_to_delete + "' subcollection";
@@ -2843,233 +2860,6 @@ namespace SobekCM.Library.AdminViewer
 				}
 
 				return;
-			}
-
-
-			// If there was a save value continue to pull the rest of the data
-
-
-			bool is_active = false;
-			bool is_hidden = true;
-
-
-			// Pull the values from the submitted form
-			string new_type = Form["admin_aggr_type"];
-			string new_name = Form["admin_aggr_name"].Trim();
-			string new_shortname = Form["admin_aggr_shortname"].Trim();
-			string new_description = Form["admin_aggr_desc"].Trim();
-
-			object temp_object = Form["admin_aggr_isactive"];
-			if (temp_object != null)
-			{
-				is_active = true;
-			}
-
-			temp_object = Form["admin_aggr_ishidden"];
-			if (temp_object != null)
-			{
-				is_hidden = false;
-			}
-
-			// Convert to the integer id for the parent and begin to do checking
-			List<string> errors = new List<string>();
-
-			// Validate the code
-			if (new_aggregation_code.Length > 20)
-			{
-				errors.Add("New aggregation code must be twenty characters long or less");
-			}
-			else if (new_aggregation_code.Length == 0)
-			{
-				errors.Add("You must enter a CODE for this item aggregation");
-
-			}
-            else if (UI_ApplicationCache_Gateway.Aggregations[new_aggregation_code.ToUpper()] != null)
-			{
-				errors.Add("New code must be unique... <i>" + new_aggregation_code + "</i> already exists");
-			}
-			else if (UI_ApplicationCache_Gateway.Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
-			{
-				errors.Add("That code is a system-reserved keyword.  Try a different code.");
-			}
-
-			// Was there a type and name
-			if (new_type.Length == 0)
-			{
-				errors.Add("You must select a TYPE for this new aggregation");
-			}
-			if (new_description.Length == 0)
-			{
-				errors.Add("You must enter a DESCRIPTION for this new aggregation");
-			}
-			if (new_name.Length == 0)
-			{
-				errors.Add("You must enter a NAME for this new aggregation");
-			}
-			else
-			{
-				if (new_shortname.Length == 0)
-					new_shortname = new_name;
-			}
-
-			if (errors.Count > 0)
-			{
-				// Create the error message
-				actionMessage = "ERROR: Invalid entry for new item aggregation<br />";
-				foreach (string error in errors)
-					actionMessage = actionMessage + "<br />" + error;
-
-				// Save all the values that were entered
-				enteredCode = new_aggregation_code;
-				enteredDescription = new_description;
-				enteredIsActive = is_active;
-				enteredIsHidden = is_hidden;
-				enteredName = new_name;
-				enteredShortname = new_shortname;
-				enteredType = new_type;
-			}
-			else
-			{
-				// Get the correct type
-				string correct_type = "Collection";
-				switch (new_type)
-				{
-					case "coll":
-						correct_type = "Collection";
-						break;
-
-					case "group":
-						correct_type = "Collection Group";
-						break;
-
-					case "subcoll":
-						correct_type = "SubCollection";
-						break;
-
-					case "inst":
-						correct_type = "Institution";
-						break;
-
-					case "exhibit":
-						correct_type = "Exhibit";
-						break;
-
-					case "subinst":
-						correct_type = "Institutional Division";
-						break;
-				}
-
-				// Make sure inst and subinst start with 'i'
-				if (new_type.IndexOf("inst") >= 0)
-				{
-					if (new_aggregation_code[0] == 'I')
-						new_aggregation_code = "i" + new_aggregation_code.Substring(1);
-					if (new_aggregation_code[0] != 'i')
-						new_aggregation_code = "i" + new_aggregation_code;
-				}
-
-                string language = Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.Default_UI_Language);
-
-				// Try to save the new item aggregation
-                if (Engine_Database.Save_Item_Aggregation(new_aggregation_code, new_name, new_shortname, new_description, -1, correct_type, is_active, is_hidden, String.Empty, itemAggregation.ID, RequestSpecificValues.Current_User.Full_Name, language, null))
-				{
-					// Ensure a folder exists for this, otherwise create one
-					try
-					{
-						string folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + new_aggregation_code.ToLower();
-						if (!Directory.Exists(folder))
-						{
-							// Create this directory and all the subdirectories
-                            Directory.CreateDirectory(folder);
-                            Directory.CreateDirectory(folder + "/html");
-                            Directory.CreateDirectory(folder + "/images");
-                            Directory.CreateDirectory(folder + "/html/home");
-                            Directory.CreateDirectory(folder + "/html/custom/home");
-                            Directory.CreateDirectory(folder + "/images/buttons");
-                            Directory.CreateDirectory(folder + "/images/banners");
-                            Directory.CreateDirectory(folder + "/uploads");
-
-                            // Get the parent name
-                            string link_to_parent = "<br />" + Environment.NewLine + " ← Back to <a href=\"<%BASEURL%>" + itemAggregation.Code + "\" alt=\"Return to parent collection\">" + itemAggregation.Name + "</a>" + Environment.NewLine;
-
-                            // Create a default home text file
-                            StreamWriter writer = new StreamWriter(folder + "/html/home/text.html");
-                            writer.WriteLine(link_to_parent + "<br />" + Environment.NewLine + "<h3>About " + new_name + "</h3>" + Environment.NewLine + "<p>" + new_description + "</p>" + Environment.NewLine + "<p>To edit this, log on as the aggregation admin and hover over this text to edit it.</p>" + Environment.NewLine + "<br />");
-
-                            writer.Flush();
-                            writer.Close();
-
-							// Copy the default banner and buttons from images
-							if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.png"))
-								File.Copy(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.png", folder + "/images/buttons/coll.png");
-							if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.gif"))
-								File.Copy(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_button.gif", folder + "/images/buttons/coll.gif");
-
-                            // Try to create a new custom banner
-                            bool custom_banner_created = false;
-
-                            // Create the banner with the name of the collection
-                            if (Directory.Exists(UI_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images"))
-                            {
-                                try
-                                {
-                                    string[] banners = Directory.GetFiles(UI_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images", "*.jpg");
-                                    if (banners.Length > 0)
-                                    {
-                                        Random randomizer = new Random();
-                                        string banner_to_use = banners[randomizer.Next(0, banners.Length - 1)];
-                                        Bitmap bitmap = (Bitmap)(Bitmap.FromFile(banner_to_use));
-
-                                        RectangleF rectf = new RectangleF(30, bitmap.Height - 55, bitmap.Width - 40, 40);
-                                        Graphics g = Graphics.FromImage(bitmap);
-                                        g.SmoothingMode = SmoothingMode.AntiAlias;
-                                        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                                        g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                                        g.DrawString(new_name, new Font("Tahoma", 25, FontStyle.Bold), Brushes.Black, rectf);
-                                        g.Flush();
-
-                                        string new_file = folder + "/images/banners/coll.jpg";
-                                        if (!File.Exists(new_file))
-                                        {
-                                            bitmap.Save(new_file, ImageFormat.Jpeg);
-                                            custom_banner_created = true;
-                                        }
-                                    }
-                                }
-                                catch (Exception ee)
-                                {
-                                    // Suppress this Error... 
-                                }
-                            }
-
-                            if ((!custom_banner_created) && (!File.Exists(folder + "/images/banners/coll.jpg")))
-                            {
-                                if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_banner.jpg"))
-                                    File.Copy(UI_ApplicationCache_Gateway.Settings.Base_Directory + "default/images/default_banner.jpg", folder + "/images/banners/coll.jpg");
-                            }
-
-							// Now, try to create the item aggregation and write the configuration file
-                            Complete_Item_Aggregation childAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(new_aggregation_code, true, RequestSpecificValues.Tracer);
-							childAggregation.Write_Configuration_File(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + childAggregation.ObjDirectory);
-						}
-					}
-					catch
-					{
-						actionMessage = "ERROR saving the new item aggregation to the database";
-					}
-
-					// Reload the list of all codes, to include this new one and the new hierarchy
-                    lock (UI_ApplicationCache_Gateway.Aggregations)
-					{
-                        Engine_Database.Populate_Code_Manager(UI_ApplicationCache_Gateway.Aggregations, null);
-					}
-					if (!String.IsNullOrEmpty(actionMessage))
-						actionMessage = "New item aggregation <i>" + new_aggregation_code + "</i> saved successfully";
-				}
-				else
-				{
-					actionMessage = "ERROR saving the new item aggregation to the database";
-				}
 			}
 		}
 
@@ -3175,81 +2965,20 @@ namespace SobekCM.Library.AdminViewer
 	        Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
 	        Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\" style=\"width:145px\">New Subcollection:</td>");
 	        Output.WriteLine("    <td>");
-	        Output.WriteLine("      <table class=\"sbkSaav_SubInnerTable\">");
-	        // Add line for aggregation code and aggregation type
-	        Output.WriteLine("      <tr>");
-	        Output.WriteLine("        <td style=\"width:120px;\"><label for=\"admin_aggr_code\">Code:</label></td>");
-	        Output.WriteLine("        <td><input class=\"sbkAsav_small_input sbkAdmin_Focusable\" name=\"admin_aggr_code\" id=\"admin_aggr_code\" type=\"text\" value=\"" + enteredCode + "\" /></td>");
-	        Output.WriteLine("        <td style=\"text-align:right;\">");
-	        Output.WriteLine("          <label for=\"admin_aggr_type\">Type:</label> &nbsp; ");
-	        Output.WriteLine("          <select class=\"sbkSaav_SubTypeSelect\" name=\"admin_aggr_type\" id=\"admin_aggr_type\">");
-	        if (enteredType == String.Empty)
-	            Output.WriteLine("            <option value=\"\" selected=\"selected\" ></option>");
-
-	        if ((itemAggregation.Type.IndexOf("Institution") < 0) && (itemAggregation.Type.IndexOf("Group") > 0))
-	        {
-	            Output.WriteLine(enteredType == "coll"
-	                ? "            <option value=\"coll\" selected=\"selected\" >Collection</option>"
-	                : "            <option value=\"coll\">Collection</option>");
-	        }
-
-	        Output.WriteLine(enteredType == "exhibit"
-	            ? "            <option value=\"exhibit\" selected=\"selected\" >Exhibit</option>"
-	            : "            <option value=\"exhibit\">Exhibit</option>");
-
-	        if (itemAggregation.Type.IndexOf("Institution") == 0)
-	        {
-	            Output.WriteLine(enteredType == "subinst"
-	                ? "            <option value=\"subinst\" selected=\"selected\" >Institutional Division</option>"
-	                : "            <option value=\"subinst\">Institutional Division</option>");
-	        }
-
-	        if (itemAggregation.Type.IndexOf("Institution") < 0)
-	        {
-	            Output.WriteLine(enteredType == "subcoll"
-	                ? "            <option value=\"subcoll\" selected=\"selected\" >SubCollection</option>"
-	                : "            <option value=\"subcoll\">SubCollection</option>");
-	        }
-
-	        Output.WriteLine("          </select>");
-	        Output.WriteLine("        </td>");
-	        Output.WriteLine("      </tr>");
-
-	        // Add the full name line
-	        Output.WriteLine("      <tr><td><label for=\"admin_aggr_name\">Name (full):</label></td><td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_aggr_name\" id=\"admin_aggr_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredName) + "\" /></td></tr>");
-
-	        // Add the short name line
-	        Output.WriteLine("      <tr><td><label for=\"admin_aggr_shortname\">Name (short):</label></td><td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_aggr_shortname\" id=\"admin_aggr_shortname\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(enteredShortname) + "\" /></td></tr>");
-
-	        // Add the description box
-	        Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_aggr_desc\">Description:</label></td><td colspan=\"2\"><textarea rows=\"6\" name=\"admin_aggr_desc\" id=\"admin_aggr_desc\" class=\"sbkSaav_SubInput sbkAdmin_Focusable\">" + HttpUtility.HtmlEncode(enteredDescription) + "</textarea></td></tr>");
-
-	        // Add checkboxes for is active and is hidden
-	        Output.WriteLine("      <tr style=\"vertical-align:top\"><td><label for=\"admin_aggr_desc\">Behaviors:</label></td>");
-	        Output.WriteLine("        <td colspan=\"2\">");
-
-	        Output.WriteLine("        <div style=\"float:right\"><button title=\"Save new subcollection\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_child_aggr();\">ADD</button></div>");
+            Output.WriteLine("  <table>");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td>");
+            Output.WriteLine("        Use the new Add New Collection Wizard to add a single new subcollection.");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("      <td style=\"padding-left: 30px;\">");
+            Output.WriteLine("        <button title=\"Use the wizard to add a new collection\" class=\"sbkAdm_RoundButton\" onclick=\"return save_wizard();\"> &nbsp; NEW COLLECTION &nbsp; <br />WIZARD</button>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("  </table>");
 
 
-	        Output.WriteLine(enteredIsActive
-	            ? "        <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" checked=\"checked\" /> <label for=\"admin_aggr_isactive\">Active?</label><br />"
-	            : "        <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" /> <label for=\"admin_aggr_isactive\">Active?</label><br />");
-
-
-	        Output.WriteLine(!enteredIsHidden
-	            ? "          <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" checked=\"checked\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label>"
-	            : "          <input class=\"sbkAsav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label>");
-
-
-	        Output.WriteLine("        </td>");
-	        Output.WriteLine("      </tr>");
-
-	        // Add the SAVE button
-	        Output.WriteLine("    </table>");
 	        Output.WriteLine("    </td>");
 	        Output.WriteLine("  </tr>");
-	        //Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_SUBCOLLECTION_HELP + "');\"  title=\"" + NEW_SUBCOLLECTION_HELP + "\" /></td>");
-
 
 	        Output.WriteLine("</table>");
 	    }

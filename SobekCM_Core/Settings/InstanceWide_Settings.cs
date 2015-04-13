@@ -76,6 +76,7 @@ namespace SobekCM.Core.Settings
                 Can_Remove_Single_Term = true;
                 isHosted = false;
                 Static_Resources_Config_File = "CDN";
+                Send_Email_On_Added_Aggregation = "Always";
 
                 MarcGeneration = new Marc21_Settings();
 
@@ -442,6 +443,10 @@ namespace SobekCM.Core.Settings
         /// <remarks> These are all lower case </remarks>
         [DataMember]
         public List<string> Reserved_Keywords { get; set; }
+
+        /// <summary> Flag indicates when emails should be sent on aggrgeations being added </summary>
+        [DataMember]
+        public string Send_Email_On_Added_Aggregation { get; set; }
 
         /// <summary> Flag indicates if the florida SUS settings should be included </summary>
         [DataMember]

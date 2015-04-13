@@ -331,6 +331,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             // Edit item aggregationPermissions
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Single;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.Skin;
             string edit_curr_skin_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
