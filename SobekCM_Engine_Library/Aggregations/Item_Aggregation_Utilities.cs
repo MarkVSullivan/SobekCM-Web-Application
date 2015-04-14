@@ -511,7 +511,7 @@ namespace SobekCM.Engine_Library.Aggregations
             returnValue.HomePageSource = String.Empty;
             HTML_Based_Content homeHtml = Get_Home_HTML(CompAggr, RequestedLanguage, null);
             returnValue.HomePageHtml = homeHtml;
-	        returnValue.Custom_Home_Page = CompAggr.Home_Page_File(RequestedLanguage).isCustomHome;
+	        returnValue.Custom_Home_Page = (CompAggr.Home_Page_File(RequestedLanguage)==null) ? false : (CompAggr.Home_Page_File(RequestedLanguage).isCustomHome);
 
             return returnValue;
 	    }
@@ -529,8 +529,10 @@ namespace SobekCM.Engine_Library.Aggregations
                 Tracer.Add_Trace("Item_Aggregation.Get_Home_HTML", "Reading home text source file");
             }
 
+            string homeFileSource = "";
             // Get the home file source
-            string homeFileSource = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, CompAggr.ObjDirectory, CompAggr.Home_Page_File(Language).Source);
+            if(!(CompAggr.Home_Page_File(Language)==null))
+               homeFileSource = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, CompAggr.ObjDirectory, CompAggr.Home_Page_File(Language).Source);
 
             // If no home file source even found, return a message to that affect
             if (homeFileSource.Length == 0)
