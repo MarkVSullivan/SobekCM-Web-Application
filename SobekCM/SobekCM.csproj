@@ -962,7 +962,9 @@
     <Content Include="config\default\sobekcm_static_resources_cdn.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="config\default\sobekcm_static_resources_local.config" />
+    <Content Include="config\default\sobekcm_static_resources_local.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="config\user\sobekcm_shibboleth_example.config" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
