@@ -289,9 +289,9 @@ namespace SobekCM.Library.Settings
             Skins_Img = "http://cdn.sobekrepository.org/images/misc/skins.gif";
             Skins_Img_Small = "http://cdn.sobekrepository.org/images/misc/skins.png";
             Skins_Img_Large = "http://cdn.sobekrepository.org/images/misc/skins_lg.png";
-            Sobekcm_Css = "http://cdn.sobekrepository.org/css/sobekcm/4.8.4/SobekCM.min.css";
-            Sobekcm_Admin_Css = "http://cdn.sobekrepository.org/css/sobekcm-admin/4.8.4/SobekCM_Admin.min.css";
-            Sobekcm_Admin_Js = "http://cdn.sobekrepository.org/js/sobekcm-admin/4.8.4/sobekcm_admin.js";
+            Sobekcm_Css = "http://cdn.sobekrepository.org/css/sobekcm/4.8.7/SobekCM.min.css";
+            Sobekcm_Admin_Css = "http://cdn.sobekrepository.org/css/sobekcm-admin/4.8.7/SobekCM_Admin.min.css";
+            Sobekcm_Admin_Js = "http://cdn.sobekrepository.org/js/sobekcm-admin/4.8.7/sobekcm_admin.js";
             Sobekcm_Bookturner_Css = "http://cdn.sobekrepository.org/css/sobekcm-bookturner/4.8.4/SobekCM_BookTurner.css";
             Sobekcm_Datatables_Css = "http://cdn.sobekrepository.org/css/sobekcm-datatables/4.8.4/SobekCM_DataTables.css";
             Sobekcm_Full_Js = "http://cdn.sobekrepository.org/js/sobekcm-full/4.8.4/sobekcm_full.min.js";
