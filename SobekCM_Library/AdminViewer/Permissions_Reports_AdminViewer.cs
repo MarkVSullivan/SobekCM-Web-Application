@@ -871,8 +871,6 @@ namespace SobekCM.Library.AdminViewer
                                     Output.WriteLine("      <td>" + flag_to_display(isAdmin) + "</td>");
 
                                     Output.WriteLine("    </tr>");
-                                    Output.WriteLine("    <tr class=\"sbkWhav_TableRule\"><td colspan=\"" + columns + "\"></td></tr>");
-
 
                                     // Prepare to collect the information about this user
                                     last_userid = thisUserId;
@@ -935,7 +933,6 @@ namespace SobekCM.Library.AdminViewer
                             Output.WriteLine("      <td>" + flag_to_display(isAdmin) + "</td>");
 
                             Output.WriteLine("    </tr>");
-                           // Output.WriteLine("    <tr class=\"sbkWhav_TableRule\"><td colspan=\"" + columns + "\"></td></tr>");
                             Output.WriteLine("  <tbody>");
                             Output.WriteLine("  </table>");
                             Output.WriteLine("  <br /><br />");

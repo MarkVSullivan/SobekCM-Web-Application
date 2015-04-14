@@ -702,7 +702,7 @@ namespace SobekCM.Library
 			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + "default/scripts/jquery/jquery-1.10.2.min.js\"></script>");
 			writer.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + "default/scripts/sobekcm_full.min.js\"></script>");
 	        writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\" />");
-			if (skinObject.CSS_Style.Length > 0)
+			if ( !String.IsNullOrEmpty(skinObject.CSS_Style))
 			{
 				writer.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + skinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}
