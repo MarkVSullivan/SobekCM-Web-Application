@@ -17,7 +17,7 @@ namespace SobekCM.Rest_API.BriefItem
         /// <summary> URI references related to this single value </summary>
         [DataMember(EmitDefaultValue = false, Name = "uris")]
         [ProtoMember(2)]
-        private List<string> URIs { get; set; }
+        public List<string> URIs { get; set; }
 
         /// <summary> Authority which may be linked to this value (optional) </summary>
         [DataMember(EmitDefaultValue = false, Name = "authority")]
