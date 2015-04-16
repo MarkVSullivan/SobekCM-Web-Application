@@ -25,7 +25,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 if (Original.Bib_Info.Main_Entity_Name.Name_Type == Name_Info_Type_Enum.conference)
                 {
                     if (!String.IsNullOrWhiteSpace(Original.Bib_Info.Main_Entity_Name.Full_Name))
-                        New.Add_Citation("Conference", Original.Bib_Info.Main_Entity_Name.ToString());
+                        New.Add_Description("Conference", Original.Bib_Info.Main_Entity_Name.ToString());
                 }
                 else
                 {
@@ -64,9 +64,9 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                     // Add with the sub-roles as well
                     string roles = thisName.Role_String;
                     if (!String.IsNullOrWhiteSpace(roles))
-                        New.Add_Citation("Creator", nameBuilder.ToString()).SubTerm = roles;
+                        New.Add_Description("Creator", nameBuilder.ToString()).SubTerm = roles;
                     else
-                        New.Add_Citation("Creator", nameBuilder.ToString());
+                        New.Add_Description("Creator", nameBuilder.ToString());
                 }
             }
 
@@ -79,7 +79,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                     if (thisName.Name_Type == Name_Info_Type_Enum.conference)
                     {
                         if (!String.IsNullOrWhiteSpace(thisName.Full_Name))
-                            New.Add_Citation("Conference", thisName.ToString());
+                            New.Add_Description("Conference", thisName.ToString());
                     }
                     else
                     {
@@ -117,9 +117,9 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                         // Add with the sub-roles as well
                         string roles = thisName.Role_String;
                         if (!String.IsNullOrWhiteSpace(roles))
-                            New.Add_Citation("Creator", nameBuilder.ToString()).SubTerm = roles;
+                            New.Add_Description("Creator", nameBuilder.ToString()).SubTerm = roles;
                         else
-                            New.Add_Citation("Creator", nameBuilder.ToString());
+                            New.Add_Description("Creator", nameBuilder.ToString());
                     }
                 }
             }

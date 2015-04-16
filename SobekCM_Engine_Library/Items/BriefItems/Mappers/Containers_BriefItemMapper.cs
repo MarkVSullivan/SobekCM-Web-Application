@@ -25,7 +25,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
             {
                 foreach (Finding_Guide_Container thisContainer in Original.Bib_Info.Containers)
                 {
-                    New.Add_Citation("Physical Location", thisContainer.Name).SubTerm = thisContainer.Type;
+                    New.Add_Description("Physical Location", thisContainer.Name).SubTerm = thisContainer.Type;
                 }
             }
 

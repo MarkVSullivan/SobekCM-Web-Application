@@ -1,12 +1,12 @@
 ﻿using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Rest_API.BriefItem;
 
-namespace SobekCM.Engine_Library.Items.BriefItems
+namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {
-    /// <summary> Maps all the Rights MD specific metadata from the METS-based SobekCM_Item object
+    /// <summary> Maps all the user description tags from the METS-based SobekCM_Item object
     /// to the BriefItem, used for most the public functions of the front-end </summary>
-    public class Rights_MD_BriefItemMapper : IBriefItemMapper
+    public class User_Tags_BriefItemMapper : IBriefItemMapper
     {
         /// <summary> Map one or more data elements from the original METS-based object to the
         /// BriefItem object </summary>
@@ -15,13 +15,13 @@ namespace SobekCM.Engine_Library.Items.BriefItems
         /// <returns> TRUE if successful, FALSE if an exception is encountered </returns>
         public bool MapToBriefItem(SobekCM_Item Original, BriefItemInfo New)
         {
-            // Try to get the rights information from the object 
-            RightsMD_Info rightsInfo = Original.Get_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY) as RightsMD_Info;
-
-            // Add eembargo date, if there is one
-            if ((rightsInfo != null) && (rightsInfo.Has_Embargo_End))
+            // Add the desciption user tags
+            if (Original.Behaviors.User_Tags_Count > 0)
             {
-                New.Add_Citation("Embargo Date", rightsInfo.Embargo_End.ToShortDateString());
+                foreach (Descriptive_Tag tag in Original.Behaviors.User_Tags)
+                {
+                    New.Add_Description("User Description", tag.Description_Tag).Authority = tag.UserName + "|" + tag.Date_Added.ToShortDateString();
+                }
             }
 
             return true;

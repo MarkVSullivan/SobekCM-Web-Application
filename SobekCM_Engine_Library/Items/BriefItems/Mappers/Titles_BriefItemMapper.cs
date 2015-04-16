@@ -17,7 +17,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
         public bool MapToBriefItem(SobekCM_Item Original, BriefItemInfo New)
         {
             // Add the main title
-            New.Add_Citation("Title", (Original.Bib_Info.Main_Title.NonSort + " " + Original.Bib_Info.Main_Title.Title + " " + Original.Bib_Info.Main_Title.Subtitle).Trim());
+            New.Add_Description("Title", (Original.Bib_Info.Main_Title.NonSort + " " + Original.Bib_Info.Main_Title.Title + " " + Original.Bib_Info.Main_Title.Subtitle).Trim());
 
             // Add all the "other titles"
             if (Original.Bib_Info.Other_Titles_Count > 0)
@@ -30,21 +30,21 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                         case Title_Type_Enum.alternative:
                             string titleType = thisTitle.Display_Label;
                             if ((!String.IsNullOrWhiteSpace(titleType)) && ( String.Compare(titleType, "OTHER TITLE", StringComparison.InvariantCultureIgnoreCase ) != 0 ))
-                                New.Add_Citation("Alternative Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim()).SubTerm = titleType;
+                                New.Add_Description("Alternative Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim()).SubTerm = titleType;
                             else
-                                New.Add_Citation("Alternative Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
+                                New.Add_Description("Alternative Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
                             break;
 
                         case Title_Type_Enum.uniform:
-                            New.Add_Citation("Uniform Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
+                            New.Add_Description("Uniform Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
                             break;
 
                         case Title_Type_Enum.translated:
-                            New.Add_Citation("Translated Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim()).Language = thisTitle.Language;
+                            New.Add_Description("Translated Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim()).Language = thisTitle.Language;
                             break;
 
                         case Title_Type_Enum.abbreviated:
-                            New.Add_Citation("Abbreviated Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
+                            New.Add_Description("Abbreviated Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
                             break;
                     }
                 }
@@ -52,7 +52,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
 
             // Add the series title
             if (Original.Bib_Info.hasSeriesTitle)
-                New.Add_Citation("Series Title", (Original.Bib_Info.SeriesTitle.NonSort + " " + Original.Bib_Info.SeriesTitle.Title + " " + Original.Bib_Info.SeriesTitle.Subtitle).Trim());
+                New.Add_Description("Series Title", (Original.Bib_Info.SeriesTitle.NonSort + " " + Original.Bib_Info.SeriesTitle.Title + " " + Original.Bib_Info.SeriesTitle.Subtitle).Trim());
 
             return true;
         }

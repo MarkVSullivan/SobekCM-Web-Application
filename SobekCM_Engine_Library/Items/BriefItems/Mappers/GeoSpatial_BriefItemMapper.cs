@@ -29,11 +29,11 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 {
                     if ( !String.IsNullOrEmpty(geoInfo.Points[i].Label))
                     {
-                        New.Add_Citation("Coordinates", geoInfo.Points[i].Latitude + " x " + geoInfo.Points[i].Longitude + " ( " + geoInfo.Points[i].Label + " )");
+                        New.Add_Description("Coordinates", geoInfo.Points[i].Latitude + " x " + geoInfo.Points[i].Longitude + " ( " + geoInfo.Points[i].Label + " )");
                     }
                     else
                     {
-                        New.Add_Citation("Coordinates", geoInfo.Points[i].Latitude + " x " + geoInfo.Points[i].Longitude );
+                        New.Add_Description("Coordinates", geoInfo.Points[i].Latitude + " x " + geoInfo.Points[i].Longitude );
                     }
                 }
 
@@ -62,7 +62,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                         }
                         if (polygonBuilder.ToString().Trim().Length > 0)
                         {
-                            New.Add_Citation("Polygon", polygonBuilder.ToString());
+                            New.Add_Description("Polygon", polygonBuilder.ToString());
                         }
                     }
                 }

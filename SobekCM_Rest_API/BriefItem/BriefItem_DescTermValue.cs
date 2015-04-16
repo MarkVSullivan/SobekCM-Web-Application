@@ -7,7 +7,7 @@ namespace SobekCM.Rest_API.BriefItem
 {
     /// <summary> A single value for a metadata term, which may also have a collection of URIs referenced </summary>
     [Serializable, DataContract, ProtoContract]
-    public class BriefItem_CitationElementValue
+    public class BriefItem_DescTermValue
     {
         /// <summary> String version of this single value for a metadata term/type </summary>
         [DataMember(Name = "value")]
@@ -34,15 +34,15 @@ namespace SobekCM.Rest_API.BriefItem
         [ProtoMember(5)]
         public string Language { get; set; }
 
-        /// <summary> Constructor for a new instance of the BriefItem_CitationElementValue class </summary>
-        public BriefItem_CitationElementValue()
+        /// <summary> Constructor for a new instance of the BriefItem_DescTermValue class </summary>
+        public BriefItem_DescTermValue()
         {
             // Does nothing - used for deserialization
         }
 
-        /// <summary> Constructor for a new instance of the BriefItem_CitationElementValue class </summary>
+        /// <summary> Constructor for a new instance of the BriefItem_DescTermValue class </summary>
         /// <param name="Value"> String version of this single value for a metadata term/typeString version of this single value for a metadata term/type </param>
-        public BriefItem_CitationElementValue( string Value )
+        public BriefItem_DescTermValue( string Value )
         {
             this.Value = Value;
         }

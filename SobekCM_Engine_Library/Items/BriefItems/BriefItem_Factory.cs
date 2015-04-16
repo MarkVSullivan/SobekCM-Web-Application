@@ -23,7 +23,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
             mappers.Add(new Names_BriefItemMapper());
             mappers.Add(new Rights_MD_BriefItemMapper());
             mappers.Add(new Subjects_BriefItemMapper());
-            mappers.Add(new TEMP_Citation_BriefItemMapper());
+         //   mappers.Add(new TEMP_Citation_BriefItemMapper());
             mappers.Add(new Thesis_Dissertation_Info_BriefInfoMapper());
             mappers.Add(new Titles_BriefItemMapper());
             mappers.Add(new VRACore_BriefInfoMapper());

@@ -21,16 +21,16 @@ namespace SobekCM.Engine_Library.Items.BriefItems
             // Add the taxonomic data if it exists
             if ((taxonInfo != null) && (taxonInfo.hasData))
             {
-                New.Add_Citation("Scientific Name", taxonInfo.Scientific_Name);
-                New.Add_Citation("Kingdom", taxonInfo.Kingdom);
-                New.Add_Citation("Phylum", taxonInfo.Phylum);
-                New.Add_Citation("Class", taxonInfo.Class);
-                New.Add_Citation("Order", taxonInfo.Order);
-                New.Add_Citation("Family", taxonInfo.Family);
-                New.Add_Citation("Genus", taxonInfo.Genus);
-                New.Add_Citation("Species", taxonInfo.Specific_Epithet);
-                New.Add_Citation("Taxonomic Rank", taxonInfo.Taxonomic_Rank);
-                New.Add_Citation("Common Name", taxonInfo.Common_Name);
+                New.Add_Description("Scientific Name", taxonInfo.Scientific_Name);
+                New.Add_Description("Kingdom", taxonInfo.Kingdom);
+                New.Add_Description("Phylum", taxonInfo.Phylum);
+                New.Add_Description("Class", taxonInfo.Class);
+                New.Add_Description("Order", taxonInfo.Order);
+                New.Add_Description("Family", taxonInfo.Family);
+                New.Add_Description("Genus", taxonInfo.Genus);
+                New.Add_Description("Species", taxonInfo.Specific_Epithet);
+                New.Add_Description("Taxonomic Rank", taxonInfo.Taxonomic_Rank);
+                New.Add_Description("Common Name", taxonInfo.Common_Name);
             }
 
             return true;

@@ -30,25 +30,25 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                         switch (thesisInfo.Degree_Level)
                         {
                             case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors:
-                                New.Add_Citation("Degree", "Bachelor's ( " + thesisInfo.Degree + ")");
+                                New.Add_Description("Degree", "Bachelor's ( " + thesisInfo.Degree + ")");
                                 break;
 
                             case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters:
-                                New.Add_Citation("Degree", "Master's ( " + thesisInfo.Degree + ")");
+                                New.Add_Description("Degree", "Master's ( " + thesisInfo.Degree + ")");
                                 break;
 
                             case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate:
-                                New.Add_Citation("Degree", "Doctorate ( " + thesisInfo.Degree + ")");
+                                New.Add_Description("Degree", "Doctorate ( " + thesisInfo.Degree + ")");
                                 break;
 
                             case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.PostDoctorate:
-                                New.Add_Citation("Degree", "Post-Doctorate ( " + thesisInfo.Degree + ")");
+                                New.Add_Description("Degree", "Post-Doctorate ( " + thesisInfo.Degree + ")");
                                 break;
                         }
                     }
                     else
                     {
-                        New.Add_Citation("Degree", thesisInfo.Degree);
+                        New.Add_Description("Degree", thesisInfo.Degree);
                     }
                 }
                 else if (thesisInfo.Degree_Level != Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Unknown)
@@ -56,33 +56,33 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                     switch (thesisInfo.Degree_Level)
                     {
                         case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors:
-                            New.Add_Citation("Degree", "Bachelor's");
+                            New.Add_Description("Degree", "Bachelor's");
                             break;
 
                         case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters:
-                            New.Add_Citation("Degree", "Master's");
+                            New.Add_Description("Degree", "Master's");
                             break;
 
                         case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate:
-                            New.Add_Citation("Degree", "Doctorate");
+                            New.Add_Description("Degree", "Doctorate");
                             break;
 
                         case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.PostDoctorate:
-                            New.Add_Citation("Degree", "Post-Doctorate");
+                            New.Add_Description("Degree", "Post-Doctorate");
                             break;
                     }
                 }
 
                 // Add the degree grantor
                 if ( !String.IsNullOrEmpty(thesisInfo.Degree_Grantor))
-                    New.Add_Citation("Degree Grantor", thesisInfo.Degree_Grantor);
+                    New.Add_Description("Degree Grantor", thesisInfo.Degree_Grantor);
 
                 // Add the degree divisions
                 if (thesisInfo.Degree_Divisions_Count > 0)
                 {
                     foreach (string thisDivision in thesisInfo.Degree_Divisions)
                     {
-                        New.Add_Citation("Degree Divisions", thisDivision);
+                        New.Add_Description("Degree Divisions", thisDivision);
                     }
                 }
 
@@ -91,24 +91,24 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 {
                     foreach (string thisDiscipline in thesisInfo.Degree_Disciplines)
                     {
-                        New.Add_Citation("Degree Disciplines", thisDiscipline);
+                        New.Add_Description("Degree Disciplines", thisDiscipline);
                     }
                 }
 
                 // Add the committee chair
                 if ( !String.IsNullOrEmpty(thesisInfo.Committee_Chair))
-                    New.Add_Citation("Committee Chair", thesisInfo.Committee_Chair);
+                    New.Add_Description("Committee Chair", thesisInfo.Committee_Chair);
 
                 // Add the committee co-chair
                 if (!String.IsNullOrEmpty(thesisInfo.Committee_Co_Chair))
-                    New.Add_Citation("Committee Co-Chair", thesisInfo.Committee_Co_Chair);
+                    New.Add_Description("Committee Co-Chair", thesisInfo.Committee_Co_Chair);
 
                 // Add all the committee members
                 if (thesisInfo.Committee_Members_Count > 0)
                 {
                     foreach (string thisMember in thesisInfo.Committee_Members)
                     {
-                        New.Add_Citation("Committee Members", thisMember);
+                        New.Add_Description("Committee Members", thisMember);
                     }
                 }
             }

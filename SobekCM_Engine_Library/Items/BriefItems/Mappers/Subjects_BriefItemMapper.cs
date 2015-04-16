@@ -84,7 +84,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                         //    break;
 
                         case Subject_Info_Type.Cartographics:
-                            New.Add_Citation("Scale", ((Subject_Info_Cartographics) thisSubject).Scale);
+                            New.Add_Description("Scale", ((Subject_Info_Cartographics) thisSubject).Scale);
                             break;
 
                         case Subject_Info_Type.Standard:
@@ -97,11 +97,11 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                                 {
                                     if ( !String.IsNullOrWhiteSpace( baseSubject.Authority ))
                                     {
-                                        New.Add_Citation("Genre", thisGenre).Authority = baseSubject.Authority;
+                                        New.Add_Description("Genre", thisGenre).Authority = baseSubject.Authority;
                                     }
                                     else
                                     {
-                                        New.Add_Citation("Genre", thisGenre);
+                                        New.Add_Description("Genre", thisGenre);
                                     }
                                 }
                             }
@@ -109,11 +109,11 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                             {
                                 if (( !String.IsNullOrWhiteSpace(thisSubject.Authority)) && ( String.Compare(thisSubject.Authority, "NONE", StringComparison.InvariantCultureIgnoreCase) != 0 ))
                                 {
-                                    New.Add_Citation("Subjects / Keywords", thisSubject.ToString(false)).Authority = thisSubject.Authority;
+                                    New.Add_Description("Subjects / Keywords", thisSubject.ToString(false)).Authority = thisSubject.Authority;
                                 }
                                 else
                                 {
-                                    New.Add_Citation("Subjects / Keywords", thisSubject.ToString(false));
+                                    New.Add_Description("Subjects / Keywords", thisSubject.ToString(false));
                                 }
                             }
                             break;

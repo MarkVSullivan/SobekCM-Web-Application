@@ -11,23 +11,23 @@ namespace SobekCM.Rest_API.BriefItem
     [Serializable, DataContract, ProtoContract]
     public class BriefItemInfo
     {
-        private Dictionary<string, BriefItem_CitationElement> citationElementLookup;
+        private readonly Dictionary<string, BriefItem_DescriptiveTerm> descriptionTermLookup;
 
             /// <summary> Namespace definition used within the brief item (generally within the citation)  </summary>
         [DataMember(EmitDefaultValue = false, Name = "namespaces")]
         [ProtoMember(1)]
         public List<BriefItem_Namespace> Namespaces { private get; set; }
 
-        /// <summary> Citation elements for this item </summary>
-        [DataMember(Name = "citation")]
+        /// <summary> Description/Citation elements for this item </summary>
+        [DataMember(Name = "description")]
         [ProtoMember(2)]
-        public List<BriefItem_CitationElement> Citation { private get; set; }
+        public List<BriefItem_DescriptiveTerm> Description { private get; set; }
 
         /// <summary> Constructor for a new instance of the BriefItemInfo class </summary>
         public BriefItemInfo()
         {
-            citationElementLookup = new Dictionary<string, BriefItem_CitationElement>(StringComparer.OrdinalIgnoreCase);
-            Citation = new List<BriefItem_CitationElement>();
+            descriptionTermLookup = new Dictionary<string, BriefItem_DescriptiveTerm>(StringComparer.OrdinalIgnoreCase);
+            Description = new List<BriefItem_DescriptiveTerm>();
         }
 
         /// <summary> Add a new namespace definition to this object </summary>
@@ -41,54 +41,54 @@ namespace SobekCM.Rest_API.BriefItem
             Namespaces.Add(new BriefItem_Namespace(Prefix, URI));
         }
 
-        /// <summary> Add a single citation, by term </summary>
+        /// <summary> Add a single descriptive element, by term </summary>
         /// <param name="Term"> Normalized term for this metadata element, as employed by the SobekCM system </param>
         /// <param name="Value"> String version of this single value for a metadata term/type </param>
-        public BriefItem_CitationElementValue Add_Citation(string Term, string Value)
+        public BriefItem_DescTermValue Add_Description(string Term, string Value)
         {
             // If the value is NULL or empty, do nothing
             if (String.IsNullOrWhiteSpace(Value))
                 return null;
 
             // Was a value, so look to add it
-            BriefItem_CitationElement currentList;
-            if ( citationElementLookup.TryGetValue(Term, out currentList))
+            BriefItem_DescriptiveTerm currentList;
+            if (descriptionTermLookup.TryGetValue(Term, out currentList))
             {
                 return currentList.Add_Value(Value);
             }
             else
             {
-                BriefItem_CitationElement newElement = new BriefItem_CitationElement(Term);
-                citationElementLookup.Add(Term, newElement);
-                Citation.Add(newElement);
+                BriefItem_DescriptiveTerm newElement = new BriefItem_DescriptiveTerm(Term);
+                descriptionTermLookup.Add(Term, newElement);
+                Description.Add(newElement);
                 return newElement.Add_Value(Value);
                 
             }
         }
 
-        /// <summary> Add a single citation, by term </summary>
+        /// <summary> Add a single descriptive element, by term </summary>
         /// <param name="Term"> Normalized term for this metadata element, as employed by the SobekCM system </param>
         /// <param name="Value"> String version of this single value for a metadata term/type </param>
-        public void Add_Citation(string Term, ReadOnlyCollection<string> Value)
+        public void Add_Description(string Term, ReadOnlyCollection<string> Value)
         {
             // If the value is NULL or empty, do nothing
             if (( Value == null ) || ( Value.Count == 0 ))
                 return;
 
             // Was a value, so look to add it
-            BriefItem_CitationElement currentList;
-            if (citationElementLookup.TryGetValue(Term, out currentList))
+            BriefItem_DescriptiveTerm currentList;
+            if (descriptionTermLookup.TryGetValue(Term, out currentList))
             {
                 foreach( string thisValue in Value )
                     currentList.Add_Value(thisValue);
             }
             else
             {
-                BriefItem_CitationElement newElement = new BriefItem_CitationElement(Term);
+                BriefItem_DescriptiveTerm newElement = new BriefItem_DescriptiveTerm(Term);
                 foreach (string thisValue in Value)
                     newElement.Add_Value(thisValue);
-                Citation.Add(newElement);
-                citationElementLookup.Add(Term, newElement);
+                Description.Add(newElement);
+                descriptionTermLookup.Add(Term, newElement);
             }
         }
     }

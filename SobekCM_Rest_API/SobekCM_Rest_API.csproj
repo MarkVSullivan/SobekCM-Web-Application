@@ -44,8 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BriefItem\BriefItemInfo.cs" />
-    <Compile Include="BriefItem\BriefItem_CitationElement.cs" />
-    <Compile Include="BriefItem\BriefItem_CitationElementValue.cs" />
+    <Compile Include="BriefItem\BriefItem_DescriptiveTerm.cs" />
+    <Compile Include="BriefItem\BriefItem_DescTermValue.cs" />
     <Compile Include="BriefItem\BriefItem_Namespace.cs" />
     <Compile Include="DisplayItem\DisplayItem_Affiliation.cs" />
     <Compile Include="DisplayItem\DisplayItem_Abstract.cs" />

@@ -25,7 +25,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 // Collect the state/edition information
                 if (vraInfo.State_Edition_Count > 0)
                 {
-                    New.Add_Citation("State / Edition", vraInfo.State_Editions);
+                    New.Add_Description("State / Edition", vraInfo.State_Editions);
                 }
 
                 // Collect and display all the material information
@@ -33,7 +33,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 {
                     foreach (VRACore_Materials_Info materials in vraInfo.Materials)
                     {
-                        New.Add_Citation("Materials", materials.Materials);
+                        New.Add_Description("Materials", materials.Materials);
                     }
                 }
 
@@ -42,32 +42,32 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 {
                     foreach (VRACore_Measurement_Info measurement in vraInfo.Measurements)
                     {
-                        New.Add_Citation("Measurements", measurement.Measurements);
+                        New.Add_Description("Measurements", measurement.Measurements);
                     }
                 }
 
                 // Display all cultural context information
                 if (vraInfo.Cultural_Context_Count > 0)
                 {
-                    New.Add_Citation("Cultural Context", vraInfo.Cultural_Contexts );
+                    New.Add_Description("Cultural Context", vraInfo.Cultural_Contexts );
                 }
 
                 // Display all style/period information
                 if (vraInfo.Style_Period_Count > 0)
                 {
-                    New.Add_Citation("Style/Period", vraInfo.Style_Periods);
+                    New.Add_Description("Style/Period", vraInfo.Style_Periods);
                 }
 
                 // Display all technique information
                 if (vraInfo.Technique_Count > 0)
                 {
-                    New.Add_Citation("Technique", vraInfo.Techniques);
+                    New.Add_Description("Technique", vraInfo.Techniques);
                 }
 
                 // Add the inscriptions 
                 if (vraInfo.Inscription_Count > 0)
                 {
-                    New.Add_Citation("Inscription", vraInfo.Inscriptions);
+                    New.Add_Description("Inscription", vraInfo.Inscriptions);
                 }
             }
 

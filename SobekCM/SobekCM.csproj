@@ -966,6 +966,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="config\user\sobekcm_shibboleth_example.config" />
+    <Content Include="config\default\sobekcm_brief_item_mapping.config" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

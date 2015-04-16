@@ -46,7 +46,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                             break;
                     }
 
-                    New.Add_Citation("Aggregation Level", lom_temp);
+                    New.Add_Description("Aggregation Level", lom_temp);
                 }
 
 
@@ -55,7 +55,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 {
                     foreach (LOM_VocabularyState thisState in lomInfo.LearningResourceTypes)
                     {
-                        New.Add_Citation("Learning Resource Type", thisState.Value );
+                        New.Add_Description("Learning Resource Type", thisState.Value );
                     }
                 }
 
@@ -82,7 +82,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                             break;
                     }
 
-                    New.Add_Citation("Status", lom_temp);
+                    New.Add_Description("Status", lom_temp);
                 }
 
                 // Add the LOM Interactivity Type
@@ -104,7 +104,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                             break;
                     }
 
-                    New.Add_Citation("Interactivity Type", lom_temp );
+                    New.Add_Description("Interactivity Type", lom_temp );
                 }
 
                 // Add the LOM Interactivity Level
@@ -134,7 +134,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                             break;
                     }
 
-                    New.Add_Citation("Interactivity Level", lom_temp);
+                    New.Add_Description("Interactivity Level", lom_temp);
                 }
 
                 // Add the LOM Difficulty Level
@@ -164,7 +164,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                             break;
                     }
 
-                    New.Add_Citation("Difficulty Level", lom_temp);
+                    New.Add_Description("Difficulty Level", lom_temp);
                 }
 
 
@@ -176,19 +176,19 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                         switch (thisUser)
                         {
                             case IntendedEndUserRoleEnum.teacher:
-                                New.Add_Citation("Intended User Roles", "Teacher");
+                                New.Add_Description("Intended User Roles", "Teacher");
                                 break;
 
                             case IntendedEndUserRoleEnum.learner:
-                                New.Add_Citation("Intended User Roles", "Learner");
+                                New.Add_Description("Intended User Roles", "Learner");
                                 break;
 
                             case IntendedEndUserRoleEnum.author:
-                                New.Add_Citation("Intended User Roles", "Author");
+                                New.Add_Description("Intended User Roles", "Author");
                                 break;
 
                             case IntendedEndUserRoleEnum.manager:
-                                New.Add_Citation("Intended User Roles", "Manager");
+                                New.Add_Description("Intended User Roles", "Manager");
                                 break;
 
                         }
@@ -201,9 +201,9 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                     foreach (LOM_VocabularyState thisContext in lomInfo.Contexts)
                     {
                         if (thisContext.Source.Length > 0)
-                            New.Add_Citation("Context",thisContext.Source + " " + thisContext.Value);
+                            New.Add_Description("Context",thisContext.Source + " " + thisContext.Value);
                         else
-                            New.Add_Citation("Context",thisContext.Value);
+                            New.Add_Description("Context",thisContext.Value);
                     }
                 }
 
@@ -213,12 +213,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 {
                     foreach (LOM_LanguageString languageString in lomInfo.TypicalAgeRanges)
                     {
-                        New.Add_Citation("Typical Age Range", languageString.Value);
+                        New.Add_Description("Typical Age Range", languageString.Value);
                     }
                 }
 
                 // Add the typical learning time
-                New.Add_Citation("Typical Learning Time", lomInfo.TypicalLearningTime);
+                New.Add_Description("Typical Learning Time", lomInfo.TypicalLearningTime);
 
                 // Add the system requirements
                 if (lomInfo.SystemRequirements.Count > 0)
@@ -250,22 +250,22 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                         {
                             if (thisContext.MaximumVersion.Length > 0)
                             {
-                                New.Add_Citation("System Requirements", start + " ( - " + thisContext.MaximumVersion + " )");
+                                New.Add_Description("System Requirements", start + " ( - " + thisContext.MaximumVersion + " )");
                             }
                             else
                             {
-                                New.Add_Citation("System Requirements", start);
+                                New.Add_Description("System Requirements", start);
                             }
                         }
                         else
                         {
                             if (thisContext.MaximumVersion.Length > 0)
                             {
-                                New.Add_Citation("System Requirements", start + " ( " + thisContext.MinimumVersion + " - " + thisContext.MaximumVersion + " )");
+                                New.Add_Description("System Requirements", start + " ( " + thisContext.MinimumVersion + " - " + thisContext.MaximumVersion + " )");
                             }
                             else
                             {
-                                New.Add_Citation("System Requirements", start + " ( " + thisContext.MinimumVersion + " - )");
+                                New.Add_Description("System Requirements", start + " ( " + thisContext.MinimumVersion + " - )");
                             }
                         }
                     }
