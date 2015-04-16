@@ -398,6 +398,7 @@ namespace SobekCM.Engine_Library.Items
 
 		private void Finish_Building_Item(SobekCM_Item Package_To_Finalize, DataSet DatabaseInfo, bool Multiple, List<string> Item_Viewer_Priority, Custom_Tracer Tracer )
 		{
+           
 			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load the data from the database into the resource object");
 
 			if ((DatabaseInfo == null) || (DatabaseInfo.Tables[2] == null) || (DatabaseInfo.Tables[2].Rows.Count == 0))

@@ -73,10 +73,25 @@
     <Compile Include="Configuration\Shibboleth_Configuration_Reader.cs" />
     <Compile Include="Email\Email_Helper.cs" />
     <Compile Include="Endpoints\AggregationServices.cs" />
+    <Compile Include="Endpoints\ItemServices.cs" />
     <Compile Include="Endpoints\WebSkinServices.cs" />
     <Compile Include="IpRangeUtilities\ComparableIpAddress.cs" />
     <Compile Include="IpRangeUtilities\IpRangeSetV4.cs" />
     <Compile Include="IpRangeUtilities\SingleIpRangeV4.cs" />
+    <Compile Include="Items\BriefItems\BriefItem_Factory.cs" />
+    <Compile Include="Items\BriefItems\Containers_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\First_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\GeoSpatial_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\IBriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\LearningObjectMetadata_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Names_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Rights_MD_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Subjects_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\TEMP_Citation_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Thesis_Dissertation_Info_BriefInfoMapper.cs" />
+    <Compile Include="Items\BriefItems\Titles_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\VRACore_BriefInfoMapper.cs" />
+    <Compile Include="Items\BriefItems\Zoological_Taxonomy_Info_BriefInfoMapper.cs" />
     <Compile Include="Items\SobekCM_Item_Updater.cs" />
     <Compile Include="Database\Database_Item_Result.cs" />
     <Compile Include="Database\Database_Title_Result.cs" />
@@ -120,6 +135,10 @@
     <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
       <Project>{395c2621-ce19-41e0-aa1a-abdb37f6e815}</Project>
       <Name>SobekCM_Resource_Object</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SobekCM_Rest_API\SobekCM_Rest_API.csproj">
+      <Project>{fbc16c4a-c543-4a74-9172-abfe6fc0f96c}</Project>
+      <Name>SobekCM_Rest_API</Name>
     </ProjectReference>
     <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj">
       <Project>{a511ce4c-7bd6-4446-bca8-ab71f7aa8078}</Project>

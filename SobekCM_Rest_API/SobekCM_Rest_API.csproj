@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="protobuf-net">
+      <HintPath>..\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -40,6 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BriefItem\BriefItemInfo.cs" />
+    <Compile Include="BriefItem\BriefItem_CitationElement.cs" />
+    <Compile Include="BriefItem\BriefItem_CitationElementValue.cs" />
+    <Compile Include="BriefItem\BriefItem_Namespace.cs" />
     <Compile Include="DisplayItem\DisplayItem_Affiliation.cs" />
     <Compile Include="DisplayItem\DisplayItem_Abstract.cs" />
     <Compile Include="DisplayItem\DisplayItem_AccessCondition.cs" />
