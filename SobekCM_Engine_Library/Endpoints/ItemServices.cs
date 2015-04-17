@@ -13,7 +13,7 @@ using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Microservices;
 using SobekCM.Resource_Object;
-using SobekCM.Rest_API.BriefItem;
+using SobekCM.Core.BriefItem;
 using SobekCM.Tools;
 
 namespace SobekCM.Engine_Library.Endpoints

@@ -1,12 +1,12 @@
 ﻿using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Rest_API.BriefItem;
+using SobekCM.Core.BriefItem;
 
 namespace SobekCM.Engine_Library.Items.BriefItems
 {
     /// <summary> Maps all the zoological taxonomic specific metadata from the METS-based SobekCM_Item object
     /// to the BriefItem, used for most the public functions of the front-end </summary>
-    public class Zoological_Taxonomy_Info_BriefInfoMapper: IBriefItemMapper
+    public class Zoological_Taxonomy_BriefItemMapper: IBriefItemMapper
     {
         /// <summary> Map one or more data elements from the original METS-based object to the
         /// BriefItem object </summary>

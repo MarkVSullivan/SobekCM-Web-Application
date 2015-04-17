@@ -3,7 +3,7 @@ using System.Text;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
-using SobekCM.Rest_API.BriefItem;
+using SobekCM.Core.BriefItem;
 
 namespace SobekCM.Engine_Library.Items.BriefItems
 {

@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using ProtoBuf;
 
-namespace SobekCM.Rest_API.BriefItem
+namespace SobekCM.Core.BriefItem
 {
     /// <summary> Namespace definition used within the brief item (generally within the citation)  </summary>
     [Serializable, DataContract, ProtoContract]

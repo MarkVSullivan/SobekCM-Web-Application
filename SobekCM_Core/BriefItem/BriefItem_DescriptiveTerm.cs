@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ProtoBuf;
 
-namespace SobekCM.Rest_API.BriefItem
+namespace SobekCM.Core.BriefItem
 {
     /// <summary> Single value for a descriptive term/type within a brief item, ususally used for the citation </summary>
     [Serializable, DataContract, ProtoContract]

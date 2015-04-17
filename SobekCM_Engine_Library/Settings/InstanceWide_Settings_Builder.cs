@@ -14,6 +14,7 @@ using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Resource_Object.OAI.Writer;
 
@@ -95,6 +96,16 @@ namespace SobekCM.Engine_Library.Settings
             else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_contactform.config"))
             {
                 returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_contactform.config");
+            }
+
+            // Try to read the BRIEF ITEM MAPPING configuration file
+            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_brief_item_mapping.config"))
+            {
+                BriefItem_Factory.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_brief_item_mapping.config");
+            }
+            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_brief_item_mapping.config"))
+            {
+                BriefItem_Factory.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_brief_item_mapping.config");
             }
 
             // Try to read the OAI-PMH configuration file

@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using ProtoBuf;
 
-namespace SobekCM.Rest_API.BriefItem
+namespace SobekCM.Core.BriefItem
 {
     /// <summary> Brief item object used throughout the UI library to display 
     /// item information, item documents, pages, etc.. </summary>
@@ -13,15 +13,40 @@ namespace SobekCM.Rest_API.BriefItem
     {
         private readonly Dictionary<string, BriefItem_DescriptiveTerm> descriptionTermLookup;
 
-            /// <summary> Namespace definition used within the brief item (generally within the citation)  </summary>
+        /// <summary> Namespace definition used within the brief item (generally within the citation)  </summary>
         [DataMember(EmitDefaultValue = false, Name = "namespaces")]
         [ProtoMember(1)]
-        public List<BriefItem_Namespace> Namespaces { private get; set; }
+        public List<BriefItem_Namespace> Namespaces { get; set; }
 
         /// <summary> Description/Citation elements for this item </summary>
-        [DataMember(Name = "description")]
+        [DataMember(EmitDefaultValue = false, Name = "description")]
         [ProtoMember(2)]
-        public List<BriefItem_DescriptiveTerm> Description { private get; set; }
+        public List<BriefItem_DescriptiveTerm> Description { get; set; }
+
+        /// <summary> Collection of all the image file groupings ( i.e., "pages" of images of different 
+        /// types, such as thumbnails, jpegs, and jpeg2000s ) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "images")]
+        [ProtoMember(3)]
+        public List<BriefItem_FileGrouping> Images { get; set; }
+
+        /// <summary> Collection of all the download file groupings (generally all the downloads
+        /// of the same file, including all the different file formats ) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "downloads")]
+        [ProtoMember(4)]
+        public List<BriefItem_FileGrouping> Downloads { get; set; }
+
+        /// <summary> Images table of contents, if present </summary>
+        [DataMember(EmitDefaultValue = false, Name = "images_toc")]
+        [ProtoMember(5)]
+        public List<BriefItem_TocElement> Images_TOC { get; set; }
+
+        /// <summary> Downloads table of contents, if present </summary>
+        [DataMember(EmitDefaultValue = false, Name = "downloads_toc")]
+        [ProtoMember(6)]
+        public List<BriefItem_TocElement> Downloads_TOC { get; set; }
+
+
+        // behaviors
 
         /// <summary> Constructor for a new instance of the BriefItemInfo class </summary>
         public BriefItemInfo()

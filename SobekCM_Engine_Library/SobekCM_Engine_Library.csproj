@@ -110,11 +110,11 @@
     <Compile Include="Items\BriefItems\Mappers\Subjects_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Target_Audience_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Temporal_Coverage_BriefItemMapper.cs" />
-    <Compile Include="Items\BriefItems\Mappers\Thesis_Dissertation_Info_BriefInfoMapper.cs" />
+    <Compile Include="Items\BriefItems\Mappers\Thesis_Dissertation_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Titles_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\User_Tags_BriefItemMapper.cs" />
-    <Compile Include="Items\BriefItems\Mappers\VRACore_BriefInfoMapper.cs" />
-    <Compile Include="Items\BriefItems\Mappers\Zoological_Taxonomy_Info_BriefInfoMapper.cs" />
+    <Compile Include="Items\BriefItems\Mappers\VRACore_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Mappers\Zoological_Taxonomy_BriefItemMapper.cs" />
     <Compile Include="Items\SobekCM_Item_Updater.cs" />
     <Compile Include="Database\Database_Item_Result.cs" />
     <Compile Include="Database\Database_Title_Result.cs" />

@@ -2,7 +2,7 @@
 using SobekCM.Core.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object;
-using SobekCM.Rest_API.BriefItem;
+using SobekCM.Core.BriefItem;
 
 namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {

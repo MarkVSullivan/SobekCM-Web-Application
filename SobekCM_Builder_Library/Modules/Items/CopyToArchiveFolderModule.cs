@@ -77,7 +77,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                             string[] archive_files = Directory.GetFiles(ResourcePackage.Resource_Folder);
                             foreach (string thisFile in archive_files)
                             {
-                                File.Copy(thisFile, archiveDirectory + "\\" + (new FileInfo(thisFile)).Name, true);
+                                string filename = Path.GetFileName(thisFile);
+                                if ( String.Compare(filename, "thumbs.db", StringComparison.OrdinalIgnoreCase) != 0 )
+                                    File.Copy(thisFile, archiveDirectory + "\\" + (new FileInfo(thisFile)).Name, true);
                             }
                         }
                         else

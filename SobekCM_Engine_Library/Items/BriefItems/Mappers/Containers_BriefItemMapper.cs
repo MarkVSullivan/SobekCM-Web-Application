@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Rest_API.BriefItem;
+using SobekCM.Core.BriefItem;
 
 namespace SobekCM.Engine_Library.Items.BriefItems
 {

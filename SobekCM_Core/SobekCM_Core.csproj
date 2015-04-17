@@ -80,6 +80,13 @@
     <Compile Include="ApplicationState\Statistics_Dates.cs" />
     <Compile Include="ApplicationState\Template.cs" />
     <Compile Include="ApplicationState\Wordmark_Icon.cs" />
+    <Compile Include="BriefItem\BriefItemInfo.cs" />
+    <Compile Include="BriefItem\BriefItem_DescriptiveTerm.cs" />
+    <Compile Include="BriefItem\BriefItem_DescTermValue.cs" />
+    <Compile Include="BriefItem\BriefItem_File.cs" />
+    <Compile Include="BriefItem\BriefItem_FileGrouping.cs" />
+    <Compile Include="BriefItem\BriefItem_Namespace.cs" />
+    <Compile Include="BriefItem\BriefItem_TocElement.cs" />
     <Compile Include="Configuration\ContactForm_Configuration.cs" />
     <Compile Include="Configuration\Database_Instance_Configuration.cs" />
     <Compile Include="Configuration\MapEditor_Configuration.cs" />
