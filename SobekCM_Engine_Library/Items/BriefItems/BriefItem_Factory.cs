@@ -42,8 +42,15 @@ namespace SobekCM.Engine_Library.Items.BriefItems
             if ((String.IsNullOrEmpty(mappingSet)) || (!mappingSets.ContainsKey(mappingSet)))
                 return null;
 
+            // Create the mostly empty new brief item
+            BriefItemInfo newItem = new BriefItemInfo
+            {
+                BibID = Original.BibID, 
+                VID = Original.VID, 
+                Title = Original.Bib_Info.Main_Title.Title
+            };
+
             // Build the new item using the selected mapping set
-            BriefItemInfo newItem = new BriefItemInfo();
             List<IBriefItemMapper> mappers = mappingSets[mappingSet];
             foreach (IBriefItemMapper thisMapper in mappers)
             {
@@ -77,8 +84,15 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                     return null;
             }
 
+            // Create the mostly empty new brief item
+            BriefItemInfo newItem = new BriefItemInfo
+            {
+                BibID = Original.BibID,
+                VID = Original.VID,
+                Title = Original.Bib_Info.Main_Title.Title
+            };
+
             // Build the new item using the selected mapping set
-            BriefItemInfo newItem = new BriefItemInfo();
             List<IBriefItemMapper> mappers = mappingSets[MappingSetId];
             foreach (IBriefItemMapper thisMapper in mappers)
             {
@@ -271,6 +285,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems
 
                     case "SobekCM.Engine_Library.Items.BriefItems.Mappers.Edition_BriefItemMapper":
                         thisModule = new Edition_BriefItemMapper();
+                        break;
+
+                    case "SobekCM.Engine_Library.Items.BriefItems.Mappers.Files_BriefItemMapper":
+                        thisModule = new Files_BriefItemMapper();
                         break;
 
                     case "SobekCM.Engine_Library.Items.BriefItems.Mappers.Frequency_BriefItemMapper":

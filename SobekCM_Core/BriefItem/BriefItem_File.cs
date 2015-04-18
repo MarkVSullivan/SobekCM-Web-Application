@@ -18,23 +18,30 @@ namespace SobekCM.Core.BriefItem
         /// <remarks> This could be the actual width, or the preferred viewing width </remarks>
         [DataMember(EmitDefaultValue = false, Name = "width")]
         [ProtoMember(2)]
-        private int? Width { get; set; }
+        public int? Width { get; set; }
 
         /// <summary> Height of the file (in pixels), if relevant and available </summary>
         /// <remarks> This could be the actual height, or the preferred viewing height </remarks>
         [DataMember(EmitDefaultValue = false, Name = "height")]
         [ProtoMember(3)]
-        private int? Height { get; set; }
+        public int? Height { get; set; }
 
         /// <summary> Other attributes associated with this file, that may be needed for display purposes </summary>
         [DataMember(EmitDefaultValue = false, Name = "attributes")]
         [ProtoMember(4)]
-        private string Attributes { get; set; }
+        public string Attributes { get; set; }
         
         /// <summary> Constructor for a new instance of the BriefItem_File class </summary>
         public BriefItem_File()
         {
             // Does nothing - needed for deserialization
+        }
+
+        /// <summary> Constructor for a new instance of the BriefItem_File class </summary>
+        /// <param name="Name"> Name for this file </param>
+        public BriefItem_File( string Name )
+        {
+            this.Name = Name;
         }
     }
 }

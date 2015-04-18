@@ -13,36 +13,51 @@ namespace SobekCM.Core.BriefItem
     {
         private readonly Dictionary<string, BriefItem_DescriptiveTerm> descriptionTermLookup;
 
+        /// <summary> Bibliographic identifier for this item </summary>
+        [DataMember(EmitDefaultValue = false, Name = "bibid")]
+        [ProtoMember(1)]
+        public string BibID { get; set;  }
+
+        /// <summary> Volume identifier for this item </summary>
+        [DataMember(EmitDefaultValue = false, Name = "vid")]
+        [ProtoMember(2)]
+        public string VID { get; set; }
+
+        /// <summary> Title for this item </summary>
+        [DataMember(EmitDefaultValue = false, Name = "title")]
+        [ProtoMember(3)]
+        public string Title { get; set;  }
+
         /// <summary> Namespace definition used within the brief item (generally within the citation)  </summary>
         [DataMember(EmitDefaultValue = false, Name = "namespaces")]
-        [ProtoMember(1)]
+        [ProtoMember(4)]
         public List<BriefItem_Namespace> Namespaces { get; set; }
 
         /// <summary> Description/Citation elements for this item </summary>
         [DataMember(EmitDefaultValue = false, Name = "description")]
-        [ProtoMember(2)]
+        [ProtoMember(5)]
         public List<BriefItem_DescriptiveTerm> Description { get; set; }
 
         /// <summary> Collection of all the image file groupings ( i.e., "pages" of images of different 
         /// types, such as thumbnails, jpegs, and jpeg2000s ) </summary>
         [DataMember(EmitDefaultValue = false, Name = "images")]
-        [ProtoMember(3)]
+        [ProtoMember(6)]
         public List<BriefItem_FileGrouping> Images { get; set; }
 
         /// <summary> Collection of all the download file groupings (generally all the downloads
         /// of the same file, including all the different file formats ) </summary>
         [DataMember(EmitDefaultValue = false, Name = "downloads")]
-        [ProtoMember(4)]
+        [ProtoMember(7)]
         public List<BriefItem_FileGrouping> Downloads { get; set; }
 
         /// <summary> Images table of contents, if present </summary>
         [DataMember(EmitDefaultValue = false, Name = "images_toc")]
-        [ProtoMember(5)]
+        [ProtoMember(8)]
         public List<BriefItem_TocElement> Images_TOC { get; set; }
 
         /// <summary> Downloads table of contents, if present </summary>
         [DataMember(EmitDefaultValue = false, Name = "downloads_toc")]
-        [ProtoMember(6)]
+        [ProtoMember(9)]
         public List<BriefItem_TocElement> Downloads_TOC { get; set; }
 
 

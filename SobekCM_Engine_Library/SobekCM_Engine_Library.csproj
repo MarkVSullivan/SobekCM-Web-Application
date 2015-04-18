@@ -87,6 +87,7 @@
     <Compile Include="Items\BriefItems\Mappers\Dates_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Donor_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Edition_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Mappers\Files_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Frequency_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Genres_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\GeoSpatial_BriefItemMapper.cs" />

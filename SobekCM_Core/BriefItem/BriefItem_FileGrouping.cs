@@ -23,7 +23,15 @@ namespace SobekCM.Core.BriefItem
         /// <summary> Constructor for a new instance of the BriefItem_FileGrouping class </summary>
         public BriefItem_FileGrouping()
         {
-            // Does nothing - needed for deserialization
+            Files = new List<BriefItem_File>();
+        }
+
+        /// <summary> Constructor for a new instance of the BriefItem_FileGrouping class </summary>
+        /// <param name="Label"> Label for this file grouping </param>
+        public BriefItem_FileGrouping(string Label)
+        {
+            this.Label = Label;
+            Files = new List<BriefItem_File>();
         }
     }
 }

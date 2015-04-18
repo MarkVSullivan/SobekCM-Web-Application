@@ -3670,5 +3670,32 @@ namespace SobekCM.Engine_Library.Database
                 return false;
             }
         }
+
+        /// <summary> Gets the simple list of items for a single item aggregation, or the list of all items in the library </summary>
+        /// <param name="Aggregation_Code"> Code for the item aggregation of interest, or an empty string</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Dataset with the simple list of items, including BibID, VID, Title, CreateDate, and Resource Link </returns>
+        /// <remarks> This calls the 'SobekCM_Simple_Item_List' stored procedure </remarks> 
+        public static Tuple<string,string> Get_Random_Item(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Get_Random_Item", "Get random item");
+            }
+
+            // Define a temporary dataset
+            DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Random_Item");
+
+            if ((tempSet != null) && (tempSet.Tables.Count > 0) && (tempSet.Tables[0].Rows.Count > 0))
+            {
+                string bibid = tempSet.Tables[0].Rows[0]["BibID"].ToString();
+                string vid = tempSet.Tables[0].Rows[0]["VID"].ToString();
+
+                return new Tuple<string, string>(bibid, vid);
+            }
+
+            return null;
+
+        }
     }
 }
