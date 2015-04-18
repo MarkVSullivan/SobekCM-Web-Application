@@ -61,8 +61,12 @@ namespace SobekCM.Engine_Library
                     // Set the protocoal
                     if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
                         context.Response.ContentType = "application/json";
+                    if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P)
+                        context.Response.ContentType = "application/javascript";
                     if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.PROTOBUF)
                         context.Response.ContentType = "application/octet-stream";
+                    if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.XML)
+                        context.Response.ContentType = "text/xml";
 
                     try
                     {

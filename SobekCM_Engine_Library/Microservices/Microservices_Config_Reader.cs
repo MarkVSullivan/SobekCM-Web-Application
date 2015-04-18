@@ -170,10 +170,32 @@ namespace SobekCM.Engine_Library.Microservices
                                 restrictionid = readerXml.Value.Trim();
                             if (readerXml.MoveToAttribute("Protocol"))
                             {
-                                if (String.Compare(readerXml.Value.Trim(), "PROTOBUF", true) == 0)
-                                    endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.PROTOBUF;
-                                else
-                                    endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.JSON;
+                                switch (readerXml.Value.Trim().ToUpper())
+                                {
+                                    case "JSON":
+                                        endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.JSON;
+                                        break;
+
+                                    case "JSON-P":
+                                        endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.JSON_P;
+                                        break;
+
+                                    case "PROTOBOF":
+                                        endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.PROTOBUF;
+                                        break;
+
+                                    case "SOAP":
+                                        endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.SOAP;
+                                        break;
+
+                                    case "XML":
+                                        endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.XML;
+                                        break;
+
+                                    default:
+                                        endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.JSON;
+                                        break;
+                                }
                             }
                             if (readerXml.MoveToAttribute("RequestType"))
                             {

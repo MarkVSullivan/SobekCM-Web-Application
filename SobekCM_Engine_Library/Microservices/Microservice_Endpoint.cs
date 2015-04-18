@@ -35,6 +35,12 @@ namespace SobekCM.Engine_Library.Microservices
 
         /// <summary> Output of this endpoint is Protocol Buffer octet-stream </summary>
         PROTOBUF,
+
+        /// <summary> Serve the object, via SOAP </summary>
+        SOAP,
+
+        /// <summary> Output in XML format </summary>
+        XML
     }
 
     /// <summary> Class defines an microservice endpoint within a collection of path or URI segments </summary>
