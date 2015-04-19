@@ -22,18 +22,6 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Will Add Another Instance Of The Element If The Element Is Repeatable":
-                    WillAddAnotherInstanceOfTheElementIfTheElementIsRepeatable = Value;
-                    break;
-
-                case "Click":
-                    Click = Value;
-                    break;
-
-                case "Clicking On The Green Plus Button":
-                    ClickingOnTheGreenPlusButton = Value;
-                    break;
-
                 case "Edit Item Behaviors":
                     EditItemBehaviors = Value;
                     break;
@@ -43,7 +31,19 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Enter The Data For This Item Below And Press The SAVE Button When All Your Edits Are Complete":
-                    EnterTheDataForThisItemBelowAndPressTheSAVEButtonWhenAllYourEditsAreComplete = Value;
+                    EnterTheDataForThisItemBelowAndPressTheS = Value;
+                    break;
+
+                case "Clicking On The Green Plus Button":
+                    ClickingOnTheGreenPlusButton = Value;
+                    break;
+
+                case "Will Add Another Instance Of The Element If The Element Is Repeatable":
+                    WillAddAnotherInstanceOfTheElementIfTheEl = Value;
+                    break;
+
+                case "Click":
+                    Click = Value;
                     break;
 
                 case "Here For Detailed Instructions":
@@ -56,15 +56,6 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> '") will add another instance of the element, if the element is repeatable."' localization string </remarks>
-        public string WillAddAnotherInstanceOfTheElementIfTheElementIsRepeatable { get; private set; }
-
-        /// <remarks> 'Click' localization string </remarks>
-        public string Click { get; private set; }
-
-        /// <remarks> 'Clicking on the green plus button ( ' localization string </remarks>
-        public string ClickingOnTheGreenPlusButton { get; private set; }
-
         /// <remarks> 'Edit Item Behaviors' localization string </remarks>
         public string EditItemBehaviors { get; private set; }
 
@@ -72,7 +63,16 @@ namespace SobekCM.Library.Localization.Classes
         public string EditThisItemsBehaviorsWithinThisLibrary { get; private set; }
 
         /// <remarks> 'Enter the data for this item below and press the SAVE button when all your edits are complete.' localization string </remarks>
-        public string EnterTheDataForThisItemBelowAndPressTheSAVEButtonWhenAllYourEditsAreComplete { get; private set; }
+        public string EnterTheDataForThisItemBelowAndPressTheS { get; private set; }
+
+        /// <remarks> 'Clicking on the green plus button ( ' localization string </remarks>
+        public string ClickingOnTheGreenPlusButton { get; private set; }
+
+        /// <remarks> '") will add another instance of the element, if the element is repeatable."' localization string </remarks>
+        public string WillAddAnotherInstanceOfTheElementIfTheEl { get; private set; }
+
+        /// <remarks> 'Click' localization string </remarks>
+        public string Click { get; private set; }
 
         /// <remarks> 'here for detailed instructions' localization string </remarks>
         public string HereForDetailedInstructions { get; private set; }

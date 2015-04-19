@@ -26,24 +26,24 @@ namespace SobekCM.Library.Localization.Classes
                     DeprecatedURLDetected = Value;
                     break;
 
+                case "The URL You Entered Is A Legacy URL Support For This URL Will End Shortly":
+                    TheURLYouEnteredIsALegacyURLSupportForTh = Value;
+                    break;
+
                 case "Please Update Your Records To The New URL Below":
                     PleaseUpdateYourRecordsToTheNewURLBelow = Value;
                     break;
 
-                case "The URL You Entered Is A Legacy URL Support For This URL Will End Shortly":
-                    TheURLYouEnteredIsALegacyURLSupportForThisURLWillEndShortly = Value;
-                    break;
-
             }
         }
-        /// <remarks> Used if an old-style URL is used with ?i=#### in the URL </remarks>
+        /// <remarks> 'Deprecated URL detected' localization string </remarks>
         public string DeprecatedURLDetected { get; private set; }
 
-        /// <remarks> Used if an old-style URL is used with ?i=#### in the URL </remarks>
-        public string PleaseUpdateYourRecordsToTheNewURLBelow { get; private set; }
+        /// <remarks> 'The URL you entered is a legacy URL.  Support for this URL will end shortly.' localization string </remarks>
+        public string TheURLYouEnteredIsALegacyURLSupportForTh { get; private set; }
 
-        /// <remarks> Used if an old-style URL is used with ?i=#### in the URL </remarks>
-        public string TheURLYouEnteredIsALegacyURLSupportForThisURLWillEndShortly { get; private set; }
+        /// <remarks> 'Please update your records to the new URL below:' localization string </remarks>
+        public string PleaseUpdateYourRecordsToTheNewURLBelow { get; private set; }
 
     }
 }

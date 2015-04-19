@@ -22,21 +22,21 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Include Nonpublic Items":
-                    IncludeNonpublicItems = Value;
-                    break;
-
                 case "Search Collection":
                     SearchCollection = Value;
                     break;
 
+                case "Include Nonpublic Items":
+                    IncludeNonpublicItems = Value;
+                    break;
+
             }
         }
-        /// <remarks> Used for admins to be able to search private or dark items </remarks>
-        public string IncludeNonpublicItems { get; private set; }
-
-        /// <remarks> Used for the basic search usually on the home page </remarks>
+        /// <remarks> 'Search Collection' localization string </remarks>
         public string SearchCollection { get; private set; }
+
+        /// <remarks> 'Include non-public items' localization string </remarks>
+        public string IncludeNonpublicItems { get; private set; }
 
     }
 }

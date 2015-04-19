@@ -22,24 +22,16 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Add A New File For This Package":
-                    AddANewFileForThisPackage = Value;
-                    break;
-
-                case "Click Here To Upload Page Images Instead":
-                    ClickHereToUploadPageImagesInstead = Value;
-                    break;
-
                 case "ERROR CAUGHT WHILE SAVING DIGITAL RESOURCE":
                     ERRORCAUGHTWHILESAVINGDIGITALRESOURCE = Value;
                     break;
 
-                case "Error During File Management For XXX":
-                    ErrorDuringFileManagementForXXX = Value;
-                    break;
-
                 case "ERROR ENCOUNTERED DURING ONLINE FILE MANAGEMENT":
                     ERRORENCOUNTEREDDURINGONLINEFILEMANAGEMENT = Value;
+                    break;
+
+                case "Error During File Management For XXX":
+                    ErrorDuringFileManagementForXXX = Value;
                     break;
 
                 case "Manage Downloads":
@@ -47,31 +39,39 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Upload The Download Files For Your Item You Can Also Provide Labels For Each File Once They Are Uploaded":
-                    UploadTheDownloadFilesForYourItemYouCanAlsoProvideLabelsForEachFileOnceTheyAreUploaded = Value;
+                    UploadTheDownloadFilesForYourItemYouCanAl = Value;
+                    break;
+
+                case "Click Here To Upload Page Images Instead":
+                    ClickHereToUploadPageImagesInstead = Value;
+                    break;
+
+                case "Add A New File For This Package":
+                    AddANewFileForThisPackage = Value;
                     break;
 
             }
         }
-        /// <remarks> 'Add a new file for this package' localization string </remarks>
-        public string AddANewFileForThisPackage { get; private set; }
-
-        /// <remarks> 'Click here to upload page images instead.' localization string </remarks>
-        public string ClickHereToUploadPageImagesInstead { get; private set; }
-
         /// <remarks> 'ERROR CAUGHT WHILE SAVING DIGITAL RESOURCE' localization string </remarks>
         public string ERRORCAUGHTWHILESAVINGDIGITALRESOURCE { get; private set; }
 
-        /// <remarks> 'Error during file management for %1' localization string </remarks>
-        public string ErrorDuringFileManagementForXXX { get; private set; }
-
         /// <remarks> 'ERROR ENCOUNTERED DURING ONLINE FILE MANAGEMENT' localization string </remarks>
         public string ERRORENCOUNTEREDDURINGONLINEFILEMANAGEMENT { get; private set; }
+
+        /// <remarks> 'Error during file management for %1' localization string </remarks>
+        public string ErrorDuringFileManagementForXXX { get; private set; }
 
         /// <remarks> 'Manage Downloads' localization string </remarks>
         public string ManageDownloads { get; private set; }
 
         /// <remarks> '"Upload the download files for your item.  You can also provide labels for each file, once they are uploaded."' localization string </remarks>
-        public string UploadTheDownloadFilesForYourItemYouCanAlsoProvideLabelsForEachFileOnceTheyAreUploaded { get; private set; }
+        public string UploadTheDownloadFilesForYourItemYouCanAl { get; private set; }
+
+        /// <remarks> 'Click here to upload page images instead.' localization string </remarks>
+        public string ClickHereToUploadPageImagesInstead { get; private set; }
+
+        /// <remarks> 'Add a new file for this package' localization string </remarks>
+        public string AddANewFileForThisPackage { get; private set; }
 
     }
 }

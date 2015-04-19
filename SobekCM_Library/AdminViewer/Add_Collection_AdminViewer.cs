@@ -389,6 +389,9 @@ namespace SobekCM.Library.AdminViewer
                                 RequestSpecificValues.Current_Mode.Aggregation = newAggr.Code;
                             }
 
+                            // Clear the add collection wizard info from the sessions
+                            HttpContext.Current.Session["Add_Coll_Wizard"] = null;
+
                             UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                             return;
                         }

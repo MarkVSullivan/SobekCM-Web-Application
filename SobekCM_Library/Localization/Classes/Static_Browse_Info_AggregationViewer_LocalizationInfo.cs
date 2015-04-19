@@ -22,6 +22,18 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
+                case "Show Header Data Advanced":
+                    ShowHeaderDataAdvanced = Value;
+                    break;
+
+                case "The Data Below Describes The Content Of This Static Child Page And Is Used By Some Search Engine Indexing Algorithms By Default It Will Not Show In Text Of The Page But Will Be Included In The Head Tag Of The Page":
+                    TheDataBelowDescribesTheContentOfThisStati = Value;
+                    break;
+
+                case "Title":
+                    Title = Value;
+                    break;
+
                 case "Author":
                     Author = Value;
                     break;
@@ -34,36 +46,33 @@ namespace SobekCM.Library.Localization.Classes
                     Description = Value;
                     break;
 
-                case "Edit Content":
-                    EditContent = Value;
-                    break;
-
-                case "Edit This Home Text":
-                    EditThisHomeText = Value;
+                case "Keywords":
+                    Keywords = Value;
                     break;
 
                 case "HTML Head Info":
                     HTMLHeadInfo = Value;
                     break;
 
-                case "Keywords":
-                    Keywords = Value;
+                case "Edit This Home Text":
+                    EditThisHomeText = Value;
                     break;
 
-                case "Show Header Data Advanced":
-                    ShowHeaderDataAdvanced = Value;
-                    break;
-
-                case "The Data Below Describes The Content Of This Static Child Page And Is Used By Some Search Engine Indexing Algorithms By Default It Will Not Show In Text Of The Page But Will Be Included In The Head Tag Of The Page":
-                    TheDataBelowDescribesTheContentOfThisStaticChildPageAndIsUsedBySomeSearchEngineIndexingAlgorithmsByDefaultItWillNotShowInTextOfThePageButWillBeIncludedInTheHeadTagOfThePage = Value;
-                    break;
-
-                case "Title":
-                    Title = Value;
+                case "Edit Content":
+                    EditContent = Value;
                     break;
 
             }
         }
+        /// <remarks> 'show header data (advanced)' localization string </remarks>
+        public string ShowHeaderDataAdvanced { get; private set; }
+
+        /// <remarks> '"The data below describes the content of this static child page and is used by some search engine indexing algorithms.  By default, it will not show in text of the page, but will be included in the head tag of the page."' localization string </remarks>
+        public string TheDataBelowDescribesTheContentOfThisStati { get; private set; }
+
+        /// <remarks> 'Title:' localization string </remarks>
+        public string Title { get; private set; }
+
         /// <remarks> 'Author:' localization string </remarks>
         public string Author { get; private set; }
 
@@ -73,26 +82,17 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Description:' localization string </remarks>
         public string Description { get; private set; }
 
-        /// <remarks> 'edit content' localization string </remarks>
-        public string EditContent { get; private set; }
-
-        /// <remarks> 'Edit this home text' localization string </remarks>
-        public string EditThisHomeText { get; private set; }
+        /// <remarks> 'Keywords:' localization string </remarks>
+        public string Keywords { get; private set; }
 
         /// <remarks> 'HTML Head Info:' localization string </remarks>
         public string HTMLHeadInfo { get; private set; }
 
-        /// <remarks> 'Keywords:' localization string </remarks>
-        public string Keywords { get; private set; }
+        /// <remarks> 'Edit this home text' localization string </remarks>
+        public string EditThisHomeText { get; private set; }
 
-        /// <remarks> 'show header data (advanced)' localization string </remarks>
-        public string ShowHeaderDataAdvanced { get; private set; }
-
-        /// <remarks> '"The data below describes the content of this static child page and is used by some search engine indexing algorithms.  By default, it will not show in text of the page, but will be included in the head tag of the page."' localization string </remarks>
-        public string TheDataBelowDescribesTheContentOfThisStaticChildPageAndIsUsedBySomeSearchEngineIndexingAlgorithmsByDefaultItWillNotShowInTextOfThePageButWillBeIncludedInTheHeadTagOfThePage { get; private set; }
-
-        /// <remarks> 'Title:' localization string </remarks>
-        public string Title { get; private set; }
+        /// <remarks> 'edit content' localization string </remarks>
+        public string EditContent { get; private set; }
 
     }
 }

@@ -10,11 +10,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SobekCM.Library")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Part of the SobekCM open-source digital repository solution")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("University of Florida Libraries")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SobekCM.Library")]
-[assembly: AssemblyCopyright("Copyright ©  2006-2011")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -35,6 +35,6 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("3.2.0.0")]
-[assembly: AssemblyFileVersion("3.2.0.0")]
+[assembly: AssemblyVersion("4.8.7.0")]
+[assembly: AssemblyFileVersion("4.8.7.0")]
 [assembly: NeutralResourcesLanguage("en-US")]

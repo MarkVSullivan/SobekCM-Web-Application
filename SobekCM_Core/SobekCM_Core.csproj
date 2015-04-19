@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\SobekCM_Core.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -100,6 +101,7 @@
     <Compile Include="Configuration\Web_Language_Translation_Value.cs" />
     <Compile Include="Database\SobekCM_Database_Type_Enum.cs" />
     <Compile Include="EmailInfo.cs" />
+    <Compile Include="iPostSerialization.cs" />
     <Compile Include="Items\SobekCM_Items_In_Title.cs" />
     <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetFastSerializerSurrogate.cs" />
     <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetHelper.cs" />

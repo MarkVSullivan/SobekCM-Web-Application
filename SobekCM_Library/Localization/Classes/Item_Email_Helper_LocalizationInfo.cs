@@ -22,28 +22,44 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "XXX Wanted You To See This Item On XXX And Included The Following Comments":
-                    XXXWantedYouToSeeThisItemOnXXXAndIncludedTheFollowingComments = Value;
-                    break;
-
                 case "XXX Wanted You To See This Item On XXX":
                     XXXWantedYouToSeeThisItemOnXXX = Value;
                     break;
 
-                case "Abbreviated Title XXX":
-                    AbbreviatedTitleXXX = Value;
+                case "XXX Wanted You To See This Item On XXX And Included The Following Comments":
+                    XXXWantedYouToSeeThisItemOnXXXAndInclude = Value;
                     break;
 
-                case "Alternate Title XXX":
-                    AlternateTitleXXX = Value;
+                case "ITEM INFORMATION":
+                    ITEMINFORMATION = Value;
                     break;
 
                 case "BLOCKED THUMBNAIL IMAGE":
                     BLOCKEDTHUMBNAILIMAGE = Value;
                     break;
 
+                case "Uniform Title XXX":
+                    UniformTitleXXX = Value;
+                    break;
+
+                case "Alternate Title XXX":
+                    AlternateTitleXXX = Value;
+                    break;
+
+                case "Translated Title XXX":
+                    TranslatedTitleXXX = Value;
+                    break;
+
+                case "Abbreviated Title XXX":
+                    AbbreviatedTitleXXX = Value;
+                    break;
+
                 case "Creator XXX":
                     CreatorXXX = Value;
+                    break;
+
+                case "Publisher XXX":
+                    PublisherXXX = Value;
                     break;
 
                 case "Date XXX":
@@ -54,16 +70,16 @@ namespace SobekCM.Library.Localization.Classes
                     DescriptionXXX = Value;
                     break;
 
+                case "Subject XXX":
+                    SubjectXXX = Value;
+                    break;
+
                 case "Genre XXX":
                     GenreXXX = Value;
                     break;
 
-                case "ITEM INFORMATION":
-                    ITEMINFORMATION = Value;
-                    break;
-
-                case "Publisher XXX":
-                    PublisherXXX = Value;
+                case "Spatial Coverage XXX":
+                    SpatialCoverageXXX = Value;
                     break;
 
                 case "Rights XXX":
@@ -74,41 +90,37 @@ namespace SobekCM.Library.Localization.Classes
                     SeriesTitleXXX = Value;
                     break;
 
-                case "Spatial Coverage XXX":
-                    SpatialCoverageXXX = Value;
-                    break;
-
-                case "Subject XXX":
-                    SubjectXXX = Value;
-                    break;
-
-                case "Translated Title XXX":
-                    TranslatedTitleXXX = Value;
-                    break;
-
-                case "Uniform Title XXX":
-                    UniformTitleXXX = Value;
-                    break;
-
             }
         }
-        /// <remarks> "%1=username, %2=SobekCM instance abbreviation (like UFDC, dLOC). When someone emails an item from the system" </remarks>
-        public string XXXWantedYouToSeeThisItemOnXXXAndIncludedTheFollowingComments { get; private set; }
-
-        /// <remarks> "%1=username, %2=SobekCM instance abbreviation (like UFDC, dLOC). When someone emails an item from the system" </remarks>
+        /// <remarks> '%1 wanted you to see this item on %2.' localization string </remarks>
         public string XXXWantedYouToSeeThisItemOnXXX { get; private set; }
 
-        /// <remarks> 'Abbreviated Title: %1' localization string </remarks>
-        public string AbbreviatedTitleXXX { get; private set; }
+        /// <remarks> '%1 wanted you to see this item on %2 and included the following comments.' localization string </remarks>
+        public string XXXWantedYouToSeeThisItemOnXXXAndInclude { get; private set; }
 
-        /// <remarks> 'Alternate Title: %1' localization string </remarks>
-        public string AlternateTitleXXX { get; private set; }
+        /// <remarks> 'ITEM INFORMATION' localization string </remarks>
+        public string ITEMINFORMATION { get; private set; }
 
         /// <remarks> 'BLOCKED THUMBNAIL IMAGE' localization string </remarks>
         public string BLOCKEDTHUMBNAILIMAGE { get; private set; }
 
+        /// <remarks> 'Uniform Title: %1' localization string </remarks>
+        public string UniformTitleXXX { get; private set; }
+
+        /// <remarks> 'Alternate Title: %1' localization string </remarks>
+        public string AlternateTitleXXX { get; private set; }
+
+        /// <remarks> 'Translated Title: %1' localization string </remarks>
+        public string TranslatedTitleXXX { get; private set; }
+
+        /// <remarks> 'Abbreviated Title: %1' localization string </remarks>
+        public string AbbreviatedTitleXXX { get; private set; }
+
         /// <remarks> 'Creator: %1' localization string </remarks>
         public string CreatorXXX { get; private set; }
+
+        /// <remarks> 'Publisher: %1' localization string </remarks>
+        public string PublisherXXX { get; private set; }
 
         /// <remarks> 'Date: %1' localization string </remarks>
         public string DateXXX { get; private set; }
@@ -116,32 +128,20 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Description: %1' localization string </remarks>
         public string DescriptionXXX { get; private set; }
 
+        /// <remarks> 'Subject: %1' localization string </remarks>
+        public string SubjectXXX { get; private set; }
+
         /// <remarks> 'Genre: %1' localization string </remarks>
         public string GenreXXX { get; private set; }
 
-        /// <remarks> 'ITEM INFORMATION' localization string </remarks>
-        public string ITEMINFORMATION { get; private set; }
-
-        /// <remarks> 'Publisher: %1' localization string </remarks>
-        public string PublisherXXX { get; private set; }
+        /// <remarks> 'Spatial Coverage: %1' localization string </remarks>
+        public string SpatialCoverageXXX { get; private set; }
 
         /// <remarks> 'Rights: %1' localization string </remarks>
         public string RightsXXX { get; private set; }
 
         /// <remarks> 'Series Title: %1' localization string </remarks>
         public string SeriesTitleXXX { get; private set; }
-
-        /// <remarks> 'Spatial Coverage: %1' localization string </remarks>
-        public string SpatialCoverageXXX { get; private set; }
-
-        /// <remarks> 'Subject: %1' localization string </remarks>
-        public string SubjectXXX { get; private set; }
-
-        /// <remarks> 'Translated Title: %1' localization string </remarks>
-        public string TranslatedTitleXXX { get; private set; }
-
-        /// <remarks> 'Uniform Title: %1' localization string </remarks>
-        public string UniformTitleXXX { get; private set; }
 
     }
 }

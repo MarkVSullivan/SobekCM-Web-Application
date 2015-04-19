@@ -26,45 +26,45 @@ namespace SobekCM.Library.Localization.Classes
                     Varies = Value;
                     break;
 
-                case "The Following XXX Matches Have No Coordinate Information":
-                    TheFollowingXXXMatchesHaveNoCoordinateInformation = Value;
-                    break;
-
                 case "The Following XXX Matches In XXX Sets Share The Same Coordinate Information":
-                    TheFollowingXXXMatchesInXXXSetsShareTheSameCoordinateInformation = Value;
+                    TheFollowingXXXMatchesInXXXSetsShareTheSa = Value;
                     break;
 
                 case "The Following XXX Matches Share The Same Coordinate Information":
-                    TheFollowingXXXMatchesShareTheSameCoordinateInformation = Value;
-                    break;
-
-                case "The Following XXX Titles Have The Same Coordinate Point":
-                    TheFollowingXXXTitlesHaveTheSameCoordinatePoint = Value;
+                    TheFollowingXXXMatchesShareTheSameCoordinat = Value;
                     break;
 
                 case "The Followingxxx Matches In XXX Sets Have No Coordinate Information":
-                    TheFollowingxxxMatchesInXXXSetsHaveNoCoordinateInformation = Value;
+                    TheFollowingxxxMatchesInXXXSetsHaveNoCoord = Value;
+                    break;
+
+                case "The Following XXX Matches Have No Coordinate Information":
+                    TheFollowingXXXMatchesHaveNoCoordinateInfor = Value;
+                    break;
+
+                case "The Following XXX Titles Have The Same Coordinate Point":
+                    TheFollowingXXXTitlesHaveTheSameCoordinate = Value;
                     break;
 
             }
         }
-        /// <remarks> "Text used when displaying a result field which is not the same for all the items within the same title.  (i.e., two different publishers over time )" </remarks>
+        /// <remarks> '( varies )' localization string </remarks>
         public string Varies { get; private set; }
 
-        /// <remarks> "Results displayed as a map, but without coordinate information" </remarks>
-        public string TheFollowingXXXMatchesHaveNoCoordinateInformation { get; private set; }
+        /// <remarks> 'The following {0} matches in {1} sets share the same coordinate information' localization string </remarks>
+        public string TheFollowingXXXMatchesInXXXSetsShareTheSa { get; private set; }
 
-        /// <remarks> Results text for a single map when displaying results as a map </remarks>
-        public string TheFollowingXXXMatchesInXXXSetsShareTheSameCoordinateInformation { get; private set; }
+        /// <remarks> 'The following {0} matches share the same coordinate information' localization string </remarks>
+        public string TheFollowingXXXMatchesShareTheSameCoordinat { get; private set; }
 
-        /// <remarks> Results text for a single map when displaying results as a map </remarks>
-        public string TheFollowingXXXMatchesShareTheSameCoordinateInformation { get; private set; }
+        /// <remarks> 'The following{0} matches in {1} sets have no coordinate information' localization string </remarks>
+        public string TheFollowingxxxMatchesInXXXSetsHaveNoCoord { get; private set; }
 
-        /// <remarks> Single point shared by multiple titles </remarks>
-        public string TheFollowingXXXTitlesHaveTheSameCoordinatePoint { get; private set; }
+        /// <remarks> 'The following {0} matches have no coordinate information' localization string </remarks>
+        public string TheFollowingXXXMatchesHaveNoCoordinateInfor { get; private set; }
 
-        /// <remarks> "Results displayed as a map, but without coordinate information" </remarks>
-        public string TheFollowingxxxMatchesInXXXSetsHaveNoCoordinateInformation { get; private set; }
+        /// <remarks> 'The following {0} titles have the same coordinate point' localization string </remarks>
+        public string TheFollowingXXXTitlesHaveTheSameCoordinate { get; private set; }
 
     }
 }

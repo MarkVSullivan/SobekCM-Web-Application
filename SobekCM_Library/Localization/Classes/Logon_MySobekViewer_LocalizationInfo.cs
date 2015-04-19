@@ -22,84 +22,84 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "If You Have A Valid XXX Logon Xxxsign On With XXX Authentication Herexxx":
-                    IfYouHaveAValidXXXLogonXxxsignOnWithXXXAuthenticationHerexxx = Value;
-                    break;
-
-                case "Not Registered Yet Xxxregister Nowxxx Or Xxxcontact Usxxx":
-                    NotRegisteredYetXxxregisterNowxxxOrXxxcontactUsxxx = Value;
-                    break;
-
-                case "Forgot Your Username Or Password Please Xxxcontact Usxxx":
-                    ForgotYourUsernameOrPasswordPleaseXxxcontactUsxxx = Value;
-                    break;
-
-                case "LOG IN":
-                    LOGIN = Value;
-                    break;
-
                 case "Logon To XXX":
                     LogonToXXX = Value;
                     break;
 
-                case "Not Registered Yet Xxxregister Nowxxx":
-                    NotRegisteredYetXxxregisterNowxxx = Value;
-                    break;
-
-                case "Password":
-                    Password = Value;
+                case "The Feature You Are Trying To Access Requires A Valid Logon":
+                    TheFeatureYouAreTryingToAccessRequiresAVa = Value;
                     break;
 
                 case "Please Choose The Appropriate Logon Directly Below":
                     PleaseChooseTheAppropriateLogonDirectlyBelow = Value;
                     break;
 
-                case "Remember Me":
-                    RememberMe = Value;
+                case "If You Have A Valid XXX Logon Xxxsign On With XXX Authentication Herexxx":
+                    IfYouHaveAValidXXXLogonXxxsignOnWithXXX = Value;
                     break;
 
-                case "The Feature You Are Trying To Access Requires A Valid Logon":
-                    TheFeatureYouAreTryingToAccessRequiresAValidLogon = Value;
+                case "Not Registered Yet Xxxregister Nowxxx Or Xxxcontact Usxxx":
+                    NotRegisteredYetXxxregisterNowxxxOrXxxcontac = Value;
+                    break;
+
+                case "LOG IN":
+                    LOGIN = Value;
                     break;
 
                 case "Username Or Email":
                     UsernameOrEmail = Value;
                     break;
 
+                case "Password":
+                    Password = Value;
+                    break;
+
+                case "Remember Me":
+                    RememberMe = Value;
+                    break;
+
+                case "Not Registered Yet Xxxregister Nowxxx":
+                    NotRegisteredYetXxxregisterNowxxx = Value;
+                    break;
+
+                case "Forgot Your Username Or Password Please Xxxcontact Usxxx":
+                    ForgotYourUsernameOrPasswordPleaseXxxcontact = Value;
+                    break;
+
             }
         }
-        /// <remarks> Line for user to logon with current system authentication ( {1} and {2} are replaced with link-enabling HTML) </remarks>
-        public string IfYouHaveAValidXXXLogonXxxsignOnWithXXXAuthenticationHerexxx { get; private set; }
-
-        /// <remarks> "Line for users to either register or send an email (in case of problems).  {0}, {1}, {2} are all replaced with link-enabling HTML" </remarks>
-        public string NotRegisteredYetXxxregisterNowxxxOrXxxcontactUsxxx { get; private set; }
-
-        /// <remarks> Shorter version of not-registered help used in the pop-up login form </remarks>
-        public string ForgotYourUsernameOrPasswordPleaseXxxcontactUsxxx { get; private set; }
-
-        /// <remarks> Title for pop-up login form </remarks>
-        public string LOGIN { get; private set; }
-
-        /// <remarks> Title when the user opts to log onto the system </remarks>
+        /// <remarks> 'Logon to {0}' localization string </remarks>
         public string LogonToXXX { get; private set; }
 
-        /// <remarks> Shorter version of not-registered help used in the pop-up login form </remarks>
-        public string NotRegisteredYetXxxregisterNowxxx { get; private set; }
-
-        /// <remarks> Used in the pop-up login form </remarks>
-        public string Password { get; private set; }
+        /// <remarks> 'The feature you are trying to access requires a valid logon.' localization string </remarks>
+        public string TheFeatureYouAreTryingToAccessRequiresAVa { get; private set; }
 
         /// <remarks> 'Please choose the appropriate logon directly below.' localization string </remarks>
         public string PleaseChooseTheAppropriateLogonDirectlyBelow { get; private set; }
 
-        /// <remarks> Checkbox text used in the pop-up login form to use cookies to retain user informatio </remarks>
+        /// <remarks> '"<b>If you have a valid {0} logon</b>, {1}Sign on with {0} authentication here{2}."' localization string </remarks>
+        public string IfYouHaveAValidXXXLogonXxxsignOnWithXXX { get; private set; }
+
+        /// <remarks> '<b>Not registered yet?</b> {0}Register now{1} or {2}Contact Us{1}.' localization string </remarks>
+        public string NotRegisteredYetXxxregisterNowxxxOrXxxcontac { get; private set; }
+
+        /// <remarks> 'LOG IN' localization string </remarks>
+        public string LOGIN { get; private set; }
+
+        /// <remarks> 'Username or email:' localization string </remarks>
+        public string UsernameOrEmail { get; private set; }
+
+        /// <remarks> 'Password:' localization string </remarks>
+        public string Password { get; private set; }
+
+        /// <remarks> 'Remember me' localization string </remarks>
         public string RememberMe { get; private set; }
 
-        /// <remarks> Prompt for the user to logon to access the system features </remarks>
-        public string TheFeatureYouAreTryingToAccessRequiresAValidLogon { get; private set; }
+        /// <remarks> 'Not registered yet?  {0}Register now{1}' localization string </remarks>
+        public string NotRegisteredYetXxxregisterNowxxx { get; private set; }
 
-        /// <remarks> Used in the pop-up login form </remarks>
-        public string UsernameOrEmail { get; private set; }
+        /// <remarks> 'Forgot your username or password?  Please {0}contact us{1}.' localization string </remarks>
+        public string ForgotYourUsernameOrPasswordPleaseXxxcontact { get; private set; }
 
     }
 }

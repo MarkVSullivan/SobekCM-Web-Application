@@ -22,6 +22,14 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
+                case "Search For":
+                    SearchFor = Value;
+                    break;
+
+                case "In":
+                    In = Value;
+                    break;
+
                 case "Full Citation":
                     FullCitation = Value;
                     break;
@@ -30,48 +38,40 @@ namespace SobekCM.Library.Localization.Classes
                     FullText = Value;
                     break;
 
-                case "Go":
-                    Go = Value;
-                    break;
-
-                case "In":
-                    In = Value;
+                case "Newspaper Title":
+                    NewspaperTitle = Value;
                     break;
 
                 case "Location":
                     Location = Value;
                     break;
 
-                case "Newspaper Title":
-                    NewspaperTitle = Value;
-                    break;
-
-                case "Search For":
-                    SearchFor = Value;
+                case "Go":
+                    Go = Value;
                     break;
 
             }
         }
-        /// <remarks> Used in search box for newspaper-specific searches </remarks>
+        /// <remarks> 'Search for:' localization string </remarks>
+        public string SearchFor { get; private set; }
+
+        /// <remarks> 'in' localization string </remarks>
+        public string In { get; private set; }
+
+        /// <remarks> 'Full Citation' localization string </remarks>
         public string FullCitation { get; private set; }
 
-        /// <remarks> Used in search box for newspaper-specific searches </remarks>
+        /// <remarks> 'Full Text' localization string </remarks>
         public string FullText { get; private set; }
+
+        /// <remarks> 'Newspaper Title' localization string </remarks>
+        public string NewspaperTitle { get; private set; }
+
+        /// <remarks> 'Location' localization string </remarks>
+        public string Location { get; private set; }
 
         /// <remarks> 'Go' localization string </remarks>
         public string Go { get; private set; }
-
-        /// <remarks> Used in search box for newspaper-specific searches </remarks>
-        public string In { get; private set; }
-
-        /// <remarks> Used in search box for newspaper-specific searches </remarks>
-        public string Location { get; private set; }
-
-        /// <remarks> Used in search box for newspaper-specific searches </remarks>
-        public string NewspaperTitle { get; private set; }
-
-        /// <remarks> Used in search box for newspaper-specific searches </remarks>
-        public string SearchFor { get; private set; }
 
     }
 }

@@ -22,24 +22,56 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Comments Or Recommendations Please Xxxcontact Usxxx":
-                    CommentsOrRecommendationsPleaseXxxcontactUsxxx = Value;
+                case "Welcome To XXX XXX":
+                    WelcomeToXXXXXX = Value;
+                    break;
+
+                case "Welcome Back XXX":
+                    WelcomeBackXXX = Value;
+                    break;
+
+                case "Welcome To XXX This Feature Allows You To Add Items To Your Bookshelves Organize Your Bookshelves And Email Your Bookshelves To Friends":
+                    WelcomeToXXXThisFeatureAllowsYouToAddItem = Value;
+                    break;
+
+                case "What Would You Like To Do Today":
+                    WhatWouldYouLikeToDoToday = Value;
+                    break;
+
+                case "Start A New Item":
+                    StartANewItem = Value;
+                    break;
+
+                case "Online Submittals Are Temporarily Disabled":
+                    OnlineSubmittalsAreTemporarilyDisabled = Value;
+                    break;
+
+                case "View All My Submitted Items":
+                    ViewAllMySubmittedItems = Value;
+                    break;
+
+                case "View Usage For My Items":
+                    ViewUsageForMyItems = Value;
+                    break;
+
+                case "View My Descriptive Tags":
+                    ViewMyDescriptiveTags = Value;
+                    break;
+
+                case "View And Organize My Bookshelves":
+                    ViewAndOrganizeMyBookshelves = Value;
+                    break;
+
+                case "View My Saved Searches":
+                    ViewMySavedSearches = Value;
                     break;
 
                 case "Edit My Account Preferences":
                     EditMyAccountPreferences = Value;
                     break;
 
-                case "If You Would Like To Contribute Materials Through The Online System Please Xxxcontact Usxxx As Well":
-                    IfYouWouldLikeToContributeMaterialsThroughTheOnlineSystemPleaseXxxcontactUsxxxAsWell = Value;
-                    break;
-
-                case "Log Out":
-                    LogOut = Value;
-                    break;
-
-                case "Online Submittals Are Temporarily Disabled":
-                    OnlineSubmittalsAreTemporarilyDisabled = Value;
+                case "Track Item Scanningprocessing":
+                    TrackItemScanningprocessing = Value;
                     break;
 
                 case "Return To XXX":
@@ -50,105 +82,73 @@ namespace SobekCM.Library.Localization.Classes
                     ReturnToPreviousXXXPage = Value;
                     break;
 
-                case "Start A New Item":
-                    StartANewItem = Value;
+                case "Log Out":
+                    LogOut = Value;
                     break;
 
-                case "Track Item Scanningprocessing":
-                    TrackItemScanningprocessing = Value;
+                case "Comments Or Recommendations Please Xxxcontact Usxxx":
+                    CommentsOrRecommendationsPleaseXxxcontactUsxx = Value;
                     break;
 
-                case "View All My Submitted Items":
-                    ViewAllMySubmittedItems = Value;
-                    break;
-
-                case "View And Organize My Bookshelves":
-                    ViewAndOrganizeMyBookshelves = Value;
-                    break;
-
-                case "View My Descriptive Tags":
-                    ViewMyDescriptiveTags = Value;
-                    break;
-
-                case "View My Saved Searches":
-                    ViewMySavedSearches = Value;
-                    break;
-
-                case "View Usage For My Items":
-                    ViewUsageForMyItems = Value;
-                    break;
-
-                case "Welcome Back XXX":
-                    WelcomeBackXXX = Value;
-                    break;
-
-                case "Welcome To XXX XXX":
-                    WelcomeToXXXXXX = Value;
-                    break;
-
-                case "Welcome To XXX This Feature Allows You To Add Items To Your Bookshelves Organize Your Bookshelves And Email Your Bookshelves To Friends":
-                    WelcomeToXXXThisFeatureAllowsYouToAddItemsToYourBookshelvesOrganizeYourBookshelvesAndEmailYourBookshelvesToFriends = Value;
-                    break;
-
-                case "What Would You Like To Do Today":
-                    WhatWouldYouLikeToDoToday = Value;
+                case "If You Would Like To Contribute Materials Through The Online System Please Xxxcontact Usxxx As Well":
+                    IfYouWouldLikeToContributeMaterialsThrough = Value;
                     break;
 
             }
         }
-        /// <remarks> Prompt at the bottom of the home page to provide assistance.  ( {0} and {1} are replaced with link-enabling HTML) </remarks>
-        public string CommentsOrRecommendationsPleaseXxxcontactUsxxx { get; private set; }
+        /// <remarks> '"Welcome to {0}, {1}"' localization string </remarks>
+        public string WelcomeToXXXXXX { get; private set; }
 
-        /// <remarks> Menu item within the mySobek home page </remarks>
-        public string EditMyAccountPreferences { get; private set; }
+        /// <remarks> '"Welcome back, {0}"' localization string </remarks>
+        public string WelcomeBackXXX { get; private set; }
 
-        /// <remarks> Optional prompt if the user does not have rights to submit items online.  ( {0} and {1} are replaced with link-enabling HTML) </remarks>
-        public string IfYouWouldLikeToContributeMaterialsThroughTheOnlineSystemPleaseXxxcontactUsxxxAsWell { get; private set; }
+        /// <remarks> '"Welcome to {0}.  This feature allows you to add items to your bookshelves, organize your bookshelves, and email your bookshelves to friends."' localization string </remarks>
+        public string WelcomeToXXXThisFeatureAllowsYouToAddItem { get; private set; }
 
-        /// <remarks> Menu item within the mySobek home page </remarks>
-        public string LogOut { get; private set; }
+        /// <remarks> 'What would you like to do today?' localization string </remarks>
+        public string WhatWouldYouLikeToDoToday { get; private set; }
 
-        /// <remarks> Menu item within the mySobek home page if online submittals are disabled </remarks>
+        /// <remarks> 'Start a new item' localization string </remarks>
+        public string StartANewItem { get; private set; }
+
+        /// <remarks> 'Online submittals are temporarily disabled' localization string </remarks>
         public string OnlineSubmittalsAreTemporarilyDisabled { get; private set; }
 
-        /// <remarks> "If they were forwarded from a spot in the system to logon, this returns them to that spot" </remarks>
+        /// <remarks> 'View all my submitted items' localization string </remarks>
+        public string ViewAllMySubmittedItems { get; private set; }
+
+        /// <remarks> 'View usage for my items' localization string </remarks>
+        public string ViewUsageForMyItems { get; private set; }
+
+        /// <remarks> 'View my descriptive tags' localization string </remarks>
+        public string ViewMyDescriptiveTags { get; private set; }
+
+        /// <remarks> 'View and organize my bookshelves' localization string </remarks>
+        public string ViewAndOrganizeMyBookshelves { get; private set; }
+
+        /// <remarks> 'View my saved searches' localization string </remarks>
+        public string ViewMySavedSearches { get; private set; }
+
+        /// <remarks> 'Edit my account preferences' localization string </remarks>
+        public string EditMyAccountPreferences { get; private set; }
+
+        /// <remarks> 'Track Item Scanning/Processing' localization string </remarks>
+        public string TrackItemScanningprocessing { get; private set; }
+
+        /// <remarks> 'Return to {0}' localization string </remarks>
         public string ReturnToXXX { get; private set; }
 
         /// <remarks> 'Return to previous %1 page' localization string </remarks>
         public string ReturnToPreviousXXXPage { get; private set; }
 
-        /// <remarks> Menu item within the mySobek home page </remarks>
-        public string StartANewItem { get; private set; }
+        /// <remarks> 'Log Out' localization string </remarks>
+        public string LogOut { get; private set; }
 
-        /// <remarks> 'Track Item Scanning/Processing' localization string </remarks>
-        public string TrackItemScanningprocessing { get; private set; }
+        /// <remarks> 'Comments or recommendations?  Please {0}contact us{1}.' localization string </remarks>
+        public string CommentsOrRecommendationsPleaseXxxcontactUsxx { get; private set; }
 
-        /// <remarks> Menu item within the mySobek home page </remarks>
-        public string ViewAllMySubmittedItems { get; private set; }
-
-        /// <remarks> Menu item within the mySobek home page </remarks>
-        public string ViewAndOrganizeMyBookshelves { get; private set; }
-
-        /// <remarks> Menu item within the mySobek home page </remarks>
-        public string ViewMyDescriptiveTags { get; private set; }
-
-        /// <remarks> Menu item within the mySobek home page </remarks>
-        public string ViewMySavedSearches { get; private set; }
-
-        /// <remarks> Menu item within the mySobek home page </remarks>
-        public string ViewUsageForMyItems { get; private set; }
-
-        /// <remarks> "Message to welcome back a user by name ( Welcome back, Mark )" </remarks>
-        public string WelcomeBackXXX { get; private set; }
-
-        /// <remarks> "Message to welcome a newly registered user ( Welcome to dLOC, Mark )" </remarks>
-        public string WelcomeToXXXXXX { get; private set; }
-
-        /// <remarks> Longer welcome message and explanation for the mySobek home page </remarks>
-        public string WelcomeToXXXThisFeatureAllowsYouToAddItemsToYourBookshelvesOrganizeYourBookshelvesAndEmailYourBookshelvesToFriends { get; private set; }
-
-        /// <remarks> Prompt for user to select an action from the mySobek menu </remarks>
-        public string WhatWouldYouLikeToDoToday { get; private set; }
+        /// <remarks> '"If you would like to contribute materials through the online system, please {0}contact us{1} as well."' localization string </remarks>
+        public string IfYouWouldLikeToContributeMaterialsThrough { get; private set; }
 
     }
 }

@@ -22,10 +22,6 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Date":
-                    Date = Value;
-                    break;
-
                 case "No":
                     No = Value;
                     break;
@@ -34,16 +30,20 @@ namespace SobekCM.Library.Localization.Classes
                     Title = Value;
                     break;
 
+                case "Date":
+                    Date = Value;
+                    break;
+
             }
         }
-        /// <remarks> 'Date' localization string </remarks>
-        public string Date { get; private set; }
-
-        /// <remarks> "Short for number, which is the first column of the results when shown as a table.  Number is just the result number, starting with 1." </remarks>
+        /// <remarks> 'No. ' localization string </remarks>
         public string No { get; private set; }
 
         /// <remarks> 'Title' localization string </remarks>
         public string Title { get; private set; }
+
+        /// <remarks> 'Date' localization string </remarks>
+        public string Date { get; private set; }
 
     }
 }

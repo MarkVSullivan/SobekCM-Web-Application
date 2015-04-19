@@ -22,21 +22,21 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Go":
-                    Go = Value;
-                    break;
-
                 case "Search Full Text":
                     SearchFullText = Value;
                     break;
 
+                case "Go":
+                    Go = Value;
+                    break;
+
             }
         }
+        /// <remarks> 'Search full text' localization string </remarks>
+        public string SearchFullText { get; private set; }
+
         /// <remarks> 'Go' localization string </remarks>
         public string Go { get; private set; }
-
-        /// <remarks> Standard full text search interface </remarks>
-        public string SearchFullText { get; private set; }
 
     }
 }

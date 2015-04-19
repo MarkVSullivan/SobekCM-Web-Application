@@ -22,35 +22,35 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Commaseperated Value Text File CSV":
-                    CommaseperatedValueTextFileCSV = Value;
-                    break;
-
-                case "Excel Spreadsheet File XLS":
-                    ExcelSpreadsheetFileXLS = Value;
+                case "This Option Allows You To Export The List Of Results Which Match Your Search Or Browse To An Excel Document Or CSV File For Download":
+                    ThisOptionAllowsYouToExportTheListOfResul = Value;
                     break;
 
                 case "Select The File Type Below To Create The Report":
                     SelectTheFileTypeBelowToCreateTheReport = Value;
                     break;
 
-                case "This Option Allows You To Export The List Of Results Which Match Your Search Or Browse To An Excel Document Or CSV File For Download":
-                    ThisOptionAllowsYouToExportTheListOfResultsWhichMatchYourSearchOrBrowseToAnExcelDocumentOrCSVFileForDownload = Value;
+                case "Excel Spreadsheet File XLS":
+                    ExcelSpreadsheetFileXLS = Value;
+                    break;
+
+                case "Commaseperated Value Text File CSV":
+                    CommaseperatedValueTextFileCSV = Value;
                     break;
 
             }
         }
-        /// <remarks> CSV file as export format </remarks>
-        public string CommaseperatedValueTextFileCSV { get; private set; }
+        /// <remarks> 'This option allows you to export the list of results which match your search or browse to an excel document or CSV file for download.' localization string </remarks>
+        public string ThisOptionAllowsYouToExportTheListOfResul { get; private set; }
 
-        /// <remarks> Excel file as export format </remarks>
-        public string ExcelSpreadsheetFileXLS { get; private set; }
-
-        /// <remarks> Prompt for user to select type of export file </remarks>
+        /// <remarks> 'Select the file type below to create the report:' localization string </remarks>
         public string SelectTheFileTypeBelowToCreateTheReport { get; private set; }
 
-        /// <remarks> Text explaining options when exporting search results </remarks>
-        public string ThisOptionAllowsYouToExportTheListOfResultsWhichMatchYourSearchOrBrowseToAnExcelDocumentOrCSVFileForDownload { get; private set; }
+        /// <remarks> 'Excel Spreadsheet file (XLS)' localization string </remarks>
+        public string ExcelSpreadsheetFileXLS { get; private set; }
+
+        /// <remarks> 'Comma-seperated value text file (CSV)' localization string </remarks>
+        public string CommaseperatedValueTextFileCSV { get; private set; }
 
     }
 }

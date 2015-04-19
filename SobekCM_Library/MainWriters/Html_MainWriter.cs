@@ -667,10 +667,7 @@ namespace SobekCM.Library.MainWriters
             if (subwriter == null) return;
 
             // Start with the basic html at the beginning of the page
-            if (!subwriter.Subwriter_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
-            {
-                Display_Header(Output, Tracer);
-            }
+            Display_Header(Output, Tracer);
 
             try
             {
@@ -752,9 +749,9 @@ namespace SobekCM.Library.MainWriters
 			// Get the list of behaviors here
 	        List<HtmlSubwriter_Behaviors_Enum> behaviors = subwriter.Subwriter_Behaviors;
 
-            // If no header should be added, just return
-	        if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
-		        return;
+            //// If no header should be added, just return
+            //if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
+            //    return;
 
             // Should the internal header be added?
             if ((subwriter != null) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative) && (RequestSpecificValues.Current_User != null))
@@ -820,7 +817,8 @@ namespace SobekCM.Library.MainWriters
                 }
             }
 
-            HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, subwriter.Container_CssClass, behaviors);
+            if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
+                HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, subwriter.Container_CssClass, behaviors);
 
             Output.WriteLine(String.Empty);
         }

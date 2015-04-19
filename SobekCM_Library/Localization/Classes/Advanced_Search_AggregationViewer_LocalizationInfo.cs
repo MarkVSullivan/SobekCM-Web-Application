@@ -22,84 +22,84 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "And":
-                    And = Value;
-                    break;
-
-                case "And Not":
-                    AndNot = Value;
-                    break;
-
-                case "Contains Any Form Of The Search Terms":
-                    ContainsAnyFormOfTheSearchTerms = Value;
-                    break;
-
-                case "Contains Exactly The Search Terms":
-                    ContainsExactlyTheSearchTerms = Value;
-                    break;
-
-                case "Contains The Search Term Or Terms Of Similar Meaning":
-                    ContainsTheSearchTermOrTermsOfSimilarMeaning = Value;
+                case "Search For":
+                    SearchFor = Value;
                     break;
 
                 case "In":
                     In = Value;
                     break;
 
-                case "Or":
-                    Or = Value;
-                    break;
-
-                case "Precision":
-                    Precision = Value;
-                    break;
-
                 case "Search":
                     Search = Value;
-                    break;
-
-                case "Search For":
-                    SearchFor = Value;
                     break;
 
                 case "Search Options":
                     SearchOptions = Value;
                     break;
 
+                case "Precision":
+                    Precision = Value;
+                    break;
+
+                case "Contains Exactly The Search Terms":
+                    ContainsExactlyTheSearchTerms = Value;
+                    break;
+
+                case "Contains Any Form Of The Search Terms":
+                    ContainsAnyFormOfTheSearchTerms = Value;
+                    break;
+
+                case "Contains The Search Term Or Terms Of Similar Meaning":
+                    ContainsTheSearchTermOrTermsOfSimilarMeani = Value;
+                    break;
+
+                case "And":
+                    And = Value;
+                    break;
+
+                case "Or":
+                    Or = Value;
+                    break;
+
+                case "And Not":
+                    AndNot = Value;
+                    break;
+
             }
         }
-        /// <remarks> Drop down selections for advanced search </remarks>
-        public string And { get; private set; }
+        /// <remarks> 'Search for:' localization string </remarks>
+        public string SearchFor { get; private set; }
 
-        /// <remarks> Drop down selections for advanced search </remarks>
-        public string AndNot { get; private set; }
-
-        /// <remarks> Text for within the advanced search box </remarks>
-        public string ContainsAnyFormOfTheSearchTerms { get; private set; }
-
-        /// <remarks> Text for within the advanced search box </remarks>
-        public string ContainsExactlyTheSearchTerms { get; private set; }
-
-        /// <remarks> Text for within the advanced search box </remarks>
-        public string ContainsTheSearchTermOrTermsOfSimilarMeaning { get; private set; }
-
-        /// <remarks> Text for within the advanced search box </remarks>
+        /// <remarks> 'in' localization string </remarks>
         public string In { get; private set; }
-
-        /// <remarks> Drop down selections for advanced search </remarks>
-        public string Or { get; private set; }
-
-        /// <remarks> Text for within the advanced search box </remarks>
-        public string Precision { get; private set; }
 
         /// <remarks> 'Search' localization string </remarks>
         public string Search { get; private set; }
 
-        /// <remarks> Text for within the advanced search box </remarks>
-        public string SearchFor { get; private set; }
-
-        /// <remarks> Text for within the advanced search box </remarks>
+        /// <remarks> 'Search Options' localization string </remarks>
         public string SearchOptions { get; private set; }
+
+        /// <remarks> 'Precision' localization string </remarks>
+        public string Precision { get; private set; }
+
+        /// <remarks> 'Contains exactly the search terms' localization string </remarks>
+        public string ContainsExactlyTheSearchTerms { get; private set; }
+
+        /// <remarks> 'Contains any form of the search terms' localization string </remarks>
+        public string ContainsAnyFormOfTheSearchTerms { get; private set; }
+
+        /// <remarks> 'Contains the search term or terms of similar meaning' localization string </remarks>
+        public string ContainsTheSearchTermOrTermsOfSimilarMeani { get; private set; }
+
+        /// <remarks> 'and' localization string </remarks>
+        public string And { get; private set; }
+
+        /// <remarks> 'or' localization string </remarks>
+        public string Or { get; private set; }
+
+        /// <remarks> 'and not' localization string </remarks>
+        public string AndNot { get; private set; }
 
     }
 }

@@ -22,6 +22,10 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
+                case "Error Saving Aggregation Information":
+                    ErrorSavingAggregationInformation = Value;
+                    break;
+
                 case "NO DEFAULT":
                     NODEFAULT = Value;
                     break;
@@ -55,7 +59,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Additional Dublin Core Metadata To Include In OAIPMH Set List":
-                    AdditionalDublinCoreMetadataToIncludeInOAIPMHSetList = Value;
+                    AdditionalDublinCoreMetadataToIncludeInOAIP = Value;
                     break;
 
                 case "Advanced Search":
@@ -131,7 +135,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Child Pages Are Pages Related To The Aggregation And Allow Additional Information To Be Presented Within The Same Aggregational Branding These Can Appear In The Aggregation Main Menu With Any Metadata Browses Pulled From The Database Or You Can Set Them To For No Automatic Visibility In Which Case They Are Only Accessible By Links In The Home Page Or Other Child Pages":
-                    ChildPagesArePagesRelatedToTheAggregationAndAllowAdditionalInformationToBePresentedWithinTheSameAggregationalBrandingTheseCanAppearInTheAggregationMainMenuWithAnyMetadataBrowsesPulledFromTheDatabaseOrYouCanSetThemToForNoAutomaticVisibilityInWhichCaseTheyAreOnlyAccessibleByLinksInTheHomePageOrOtherChildPages = Value;
+                    ChildPagesArePagesRelatedToTheAggregationA = Value;
                     break;
 
                 case "Click Here To View The Help Page":
@@ -143,7 +147,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Close This Child Page Details And Return To Main Admin Pages":
-                    CloseThisChildPageDetailsAndReturnToMainAdminPages = Value;
+                    CloseThisChildPageDetailsAndReturnToMainA = Value;
                     break;
 
                 case "CODE":
@@ -278,12 +282,8 @@ namespace SobekCM.Library.Localization.Classes
                     ErrorAddingNewVersionToThisChildPage = Value;
                     break;
 
-                case "Error Saving Aggregation Information":
-                    ErrorSavingAggregationInformation = Value;
-                    break;
-
                 case "ERROR Saving The New Item Aggregation To The Database":
-                    ERRORSavingTheNewItemAggregationToTheDatabase = Value;
+                    ERRORSavingTheNewItemAggregationToTheDatab = Value;
                     break;
 
                 case "ERROR Invalid Entry For New Item Aggregation":
@@ -331,7 +331,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "For More Information About The Settings On This Tab":
-                    ForMoreInformationAboutTheSettingsOnThisTab = Value;
+                    ForMoreInformationAboutTheSettingsOnThisTa = Value;
                     break;
 
                 case "Full Text Search":
@@ -443,7 +443,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "New Aggregation Code Must Be Twenty Characters Long Or Less":
-                    NewAggregationCodeMustBeTwentyCharactersLongOrLess = Value;
+                    NewAggregationCodeMustBeTwentyCharactersLon = Value;
                     break;
 
                 case "New Banner":
@@ -451,7 +451,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "New Child Page Code Must Be Twenty Characters Long Or Less":
-                    NewChildPageCodeMustBeTwentyCharactersLongOrLess = Value;
+                    NewChildPageCodeMustBeTwentyCharactersLong = Value;
                     break;
 
                 case "New Child Page":
@@ -499,7 +499,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "NOTE You May Need To Refresh Your Browser For Your Changes To Take Affect":
-                    NOTEYouMayNeedToRefreshYourBrowserForYourChangesToTakeAffect = Value;
+                    NOTEYouMayNeedToRefreshYourBrowserForYour = Value;
                     break;
 
                 case "OAIPMH Settings":
@@ -607,7 +607,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "That Code Is A Systemreserved Keyword Try A Different Code":
-                    ThatCodeIsASystemreservedKeywordTryADifferentCode = Value;
+                    ThatCodeIsASystemreservedKeywordTryADiffer = Value;
                     break;
 
                 case "The Code For This Browse Is XXX":
@@ -615,19 +615,19 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "The Information In This Section Controls How Search Results Or Item Browses Appears The Facet Options Control Which Metadata Values Appear To The Left Of The Results To Allow Users To Narrow Their Results The Search Results Values Determine Which Options Are Available For Viewing The Results And What Are The Aggregation Defaults Finally The Result Fields Determines Which Values Are Displayed With Each Individual Result In The Result Set":
-                    TheInformationInThisSectionControlsHowSearchResultsOrItemBrowsesAppearsTheFacetOptionsControlWhichMetadataValuesAppearToTheLeftOfTheResultsToAllowUsersToNarrowTheirResultsTheSearchResultsValuesDetermineWhichOptionsAreAvailableForViewingTheResultsAndWhatAreTheAggregationDefaultsFinallyTheResultFieldsDeterminesWhichValuesAreDisplayedWithEachIndividualResultInTheResultSet = Value;
+                    TheInformationInThisSectionControlsHowSearc = Value;
                     break;
 
                 case "The Information In This Section Is The Basic Information About The Aggregation Such As The Full Name The Shortened Name Used For Breadcrumbs The Description And The Email Contact":
-                    TheInformationInThisSectionIsTheBasicInformationAboutTheAggregationSuchAsTheFullNameTheShortenedNameUsedForBreadcrumbsTheDescriptionAndTheEmailContact = Value;
+                    TheInformationInThisSectionIsTheBasicInfor = Value;
                     break;
 
                 case "The Metadata Browses Can Be Used To Expose All The Metadata Of The Resources Within This Aggregation For Public Browsing Select The Metadata Fields You Would Like Have Available Below":
-                    TheMetadataBrowsesCanBeUsedToExposeAllTheMetadataOfTheResourcesWithinThisAggregationForPublicBrowsingSelectTheMetadataFieldsYouWouldLikeHaveAvailableBelow = Value;
+                    TheMetadataBrowsesCanBeUsedToExposeAllThe = Value;
                     break;
 
                 case "The Values In This Section Determine If The Collection Is Currently Visible At All Whether It Is Eligible To Appear On The Collection List At The Bottom Of The Parent Page And The Collection Button Used In That Case Thematic Headings Are Used To Place This Collection On The Main Home Page":
-                    TheValuesInThisSectionDetermineIfTheCollectionIsCurrentlyVisibleAtAllWhetherItIsEligibleToAppearOnTheCollectionListAtTheBottomOfTheParentPageAndTheCollectionButtonUsedInThatCaseThematicHeadingsAreUsedToPlaceThisCollectionOnTheMainHomePage = Value;
+                    TheValuesInThisSectionDetermineIfTheCollec = Value;
                     break;
 
                 case "Thematic Heading":
@@ -635,11 +635,11 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "These Options Control How Searching Works Within This Aggregation Such As Which Search Options Are Made Publicly Available":
-                    TheseOptionsControlHowSearchingWorksWithinThisAggregationSuchAsWhichSearchOptionsAreMadePubliclyAvailable = Value;
+                    TheseOptionsControlHowSearchingWorksWithinT = Value;
                     break;
 
                 case "These Three Settings Have The Most Profound Affects On The Appearance Of This Aggregation By Forcing It To Appear Under A Particular Web Skin Allowing A Custom Aggregationlevel Stylesheet Or Completely Overriding The Systemgenerated Home Page For A Custom Home Page HTML Source File":
-                    TheseThreeSettingsHaveTheMostProfoundAffectsOnTheAppearanceOfThisAggregationByForcingItToAppearUnderAParticularWebSkinAllowingACustomAggregationlevelStylesheetOrCompletelyOverridingTheSystemgeneratedHomePageForACustomHomePageHTMLSourceFile = Value;
+                    TheseThreeSettingsHaveTheMostProfoundAffect = Value;
                     break;
 
                 case "This Aggregation Currently Has No Child Pages":
@@ -655,15 +655,15 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "This Page Allows You To Edit The Basic Information About A Single Child Page And Add The Ability To Display This Child Page In Alternate Languages":
-                    ThisPageAllowsYouToEditTheBasicInformationAboutASingleChildPageAndAddTheAbilityToDisplayThisChildPageInAlternateLanguages = Value;
+                    ThisPageAllowsYouToEditTheBasicInformation = Value;
                     break;
 
                 case "This Section Controls All The Languagespecific And Default Text Which Appears On The Home Page":
-                    ThisSectionControlsAllTheLanguagespecificAndDefaultTextWhichAppearsOnTheHomePage = Value;
+                    ThisSectionControlsAllTheLanguagespecificAnd = Value;
                     break;
 
                 case "This Section Shows All The Existing Languagespecific Banners For This Aggregation And Allows You Upload New Banners For This Aggregation":
-                    ThisSectionShowsAllTheExistingLanguagespecificBannersForThisAggregationAndAllowsYouUploadNewBannersForThisAggregation = Value;
+                    ThisSectionShowsAllTheExistingLanguagespecif = Value;
                     break;
 
                 case "Thumbnail View":
@@ -679,15 +679,15 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "To Change Browse To A 50X50 Pixel GIF File And Then Select UPLOAD":
-                    ToChangeBrowseToA50X50PixelGIFFileAndThenSelectUPLOAD = Value;
+                    ToChangeBrowseToA50X50PixelGIFFileAndThe = Value;
                     break;
 
                 case "To Edit This Log On As The Aggregation Admin And Hover Over This Text To Edit It":
-                    ToEditThisLogOnAsTheAggregationAdminAndHoverOverThisTextToEditIt = Value;
+                    ToEditThisLogOnAsTheAggregationAdminAndH = Value;
                     break;
 
                 case "To Upload Browse To A GIF PNG JPEG Or BMP File And Then Select UPLOAD":
-                    ToUploadBrowseToAGIFPNGJPEGOrBMPFileAndThenSelectUPLOAD = Value;
+                    ToUploadBrowseToAGIFPNGJPEGOrBMPFileAnd = Value;
                     break;
 
                 case "Tooltip":
@@ -763,15 +763,15 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "You Can Edit The Contents Of The Aggregationlevel Custom Stylesheet Css File Here Click SAVE When Complete To Return To The Main Aggregation Administration Screen":
-                    YouCanEditTheContentsOfTheAggregationlevelCustomStylesheetCssFileHereClickSAVEWhenCompleteToReturnToTheMainAggregationAdministrationScreen = Value;
+                    YouCanEditTheContentsOfTheAggregationlevel = Value;
                     break;
 
                 case "You Can Use OAIPMH To Expose All The Metadata Of The Resources Within This Aggregation For Automatic Harvesting By Other Repositories Additionally You Can Choose To Attach Metadata To The Collectionlevel OAIPMH Record This Should Be Coded As Dublin Core Tags":
-                    YouCanUseOAIPMHToExposeAllTheMetadataOfTheResourcesWithinThisAggregationForAutomaticHarvestingByOtherRepositoriesAdditionallyYouCanChooseToAttachMetadataToTheCollectionlevelOAIPMHRecordThisShouldBeCodedAsDublinCoreTags = Value;
+                    YouCanUseOAIPMHToExposeAllTheMetadataOfT = Value;
                     break;
 
                 case "You Can View Existing Subcollections Or Add New Subcollections To This Aggregation From This Tab You Will Have Full Curatorial Rights Over Any New Subcollections You Add Currently Only System Administrators Can DELETE Subcollections":
-                    YouCanViewExistingSubcollectionsOrAddNewSubcollectionsToThisAggregationFromThisTabYouWillHaveFullCuratorialRightsOverAnyNewSubcollectionsYouAddCurrentlyOnlySystemAdministratorsCanDELETESubcollections = Value;
+                    YouCanViewExistingSubcollectionsOrAddNewSu = Value;
                     break;
 
                 case "You Must Enter A CODE For This Child Page":
@@ -783,7 +783,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "You Must Enter A DESCRIPTION For This New Aggregation":
-                    YouMustEnterADESCRIPTIONForThisNewAggregation = Value;
+                    YouMustEnterADESCRIPTIONForThisNewAggregat = Value;
                     break;
 
                 case "You Must Enter A LABEL For This Child Page":
@@ -795,11 +795,11 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "You Must SAVE Your Changes Before You Can View Or Edit Newly Added Child Page Versions":
-                    YouMustSAVEYourChangesBeforeYouCanViewOrEditNewlyAddedChildPageVersions = Value;
+                    YouMustSAVEYourChangesBeforeYouCanViewOr = Value;
                     break;
 
                 case "You Must SAVE Your Changes Before You Can View Or Edit Newly Added Home Pages":
-                    YouMustSAVEYourChangesBeforeYouCanViewOrEditNewlyAddedHomePages = Value;
+                    YouMustSAVEYourChangesBeforeYouCanViewOr = Value;
                     break;
 
                 case "You Must Select A TYPE For This New Aggregation":
@@ -812,6 +812,9 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
+        /// <remarks> 'Error saving aggregation information!' localization string </remarks>
+        public string ErrorSavingAggregationInformation { get; private set; }
+
         /// <remarks> '( NO DEFAULT)' localization string </remarks>
         public string NODEFAULT { get; private set; }
 
@@ -821,10 +824,10 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'ACTION' localization string </remarks>
         public string ACTION { get; private set; }
 
-        /// <remarks> Table headers </remarks>
+        /// <remarks> 'ACTIONS' localization string </remarks>
         public string ACTIONS { get; private set; }
 
-        /// <remarks> Checkbox label for : Is aggregation admin? </remarks>
+        /// <remarks> 'Active?' localization string </remarks>
         public string Active { get; private set; }
 
         /// <remarks> 'Add' localization string </remarks>
@@ -837,7 +840,7 @@ namespace SobekCM.Library.Localization.Classes
         public string AddNewHomePage { get; private set; }
 
         /// <remarks> 'Additional dublin core metadata to include in OAI-PMH set list:' localization string </remarks>
-        public string AdditionalDublinCoreMetadataToIncludeInOAIPMHSetList { get; private set; }
+        public string AdditionalDublinCoreMetadataToIncludeInOAIP { get; private set; }
 
         /// <remarks> 'Advanced Search' localization string </remarks>
         public string AdvancedSearch { get; private set; }
@@ -845,22 +848,22 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Advanced Search (with Year Range)' localization string </remarks>
         public string AdvancedSearchWithYearRange { get; private set; }
 
-        /// <remarks> One of the geographic search location options for map searching </remarks>
+        /// <remarks> 'Africa' localization string </remarks>
         public string Africa { get; private set; }
 
         /// <remarks> 'Aggregation-level Custom Stylesheet (CSS)' localization string </remarks>
         public string AggregationlevelCustomStylesheetCSS { get; private set; }
 
-        /// <remarks> Tab header </remarks>
+        /// <remarks> 'Appearance' localization string </remarks>
         public string Appearance { get; private set; }
 
         /// <remarks> 'Appearance Options' localization string </remarks>
         public string AppearanceOptions { get; private set; }
 
-        /// <remarks> One of the geographic search location options for map searching </remarks>
+        /// <remarks> 'Asia' localization string </remarks>
         public string Asia { get; private set; }
 
-        /// <remarks> Button text </remarks>
+        /// <remarks> 'BACK' localization string </remarks>
         public string BACK { get; private set; }
 
         /// <remarks> 'Banner Type:' localization string </remarks>
@@ -869,7 +872,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Banners' localization string </remarks>
         public string Banners { get; private set; }
 
-        /// <remarks> Section Heading for collecting basic information about the user </remarks>
+        /// <remarks> 'Basic Information' localization string </remarks>
         public string BasicInformation { get; private set; }
 
         /// <remarks> 'Basic Search (with Year Range)' localization string </remarks>
@@ -884,17 +887,17 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Browse By' localization string </remarks>
         public string BrowseBy { get; private set; }
 
-        /// <remarks> Button text </remarks>
+        /// <remarks> 'CANCEL' localization string </remarks>
         public string CANCEL { get; private set; }
 
-        /// <remarks> One of the geographic search location options for map searching </remarks>
+        /// <remarks> 'Caribbean' localization string </remarks>
         public string Caribbean { get; private set; }
 
-        /// <remarks> Tab header </remarks>
+        /// <remarks> 'Child Pages' localization string </remarks>
         public string ChildPages { get; private set; }
 
         /// <remarks> '"Child pages are pages related to the aggregation and allow additional information to be presented within the same aggregational branding.  These can appear in the aggregation main menu, with any metadata browses pulled from the database, or you can set them to for no automatic visibility, in which case they are only accessible by links in the home page or other child pages."' localization string </remarks>
-        public string ChildPagesArePagesRelatedToTheAggregationAndAllowAdditionalInformationToBePresentedWithinTheSameAggregationalBrandingTheseCanAppearInTheAggregationMainMenuWithAnyMetadataBrowsesPulledFromTheDatabaseOrYouCanSetThemToForNoAutomaticVisibilityInWhichCaseTheyAreOnlyAccessibleByLinksInTheHomePageOrOtherChildPages { get; private set; }
+        public string ChildPagesArePagesRelatedToTheAggregationA { get; private set; }
 
         /// <remarks> 'click here to view the help page' localization string </remarks>
         public string ClickHereToViewTheHelpPage { get; private set; }
@@ -903,7 +906,7 @@ namespace SobekCM.Library.Localization.Classes
         public string ClickToDeleteThisSubcollection { get; private set; }
 
         /// <remarks> 'Close this child page details and return to main admin pages' localization string </remarks>
-        public string CloseThisChildPageDetailsAndReturnToMainAdminPages { get; private set; }
+        public string CloseThisChildPageDetailsAndReturnToMainA { get; private set; }
 
         /// <remarks> 'CODE' localization string </remarks>
         public string CODE { get; private set; }
@@ -941,7 +944,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Default Result View:' localization string </remarks>
         public string DefaultResultView { get; private set; }
 
-        /// <remarks> Button text </remarks>
+        /// <remarks> 'delete' localization string </remarks>
         public string Delete { get; private set; }
 
         /// <remarks> 'Delete this %1 version' localization string </remarks>
@@ -959,22 +962,22 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Description:' localization string </remarks>
         public string Description { get; private set; }
 
-        /// <remarks> Button hover-over text </remarks>
+        /// <remarks> 'Disable this aggregation-level stylesheet' localization string </remarks>
         public string DisableThisAggregationlevelStylesheet { get; private set; }
 
         /// <remarks> 'dLOC Full Text Search' localization string </remarks>
         public string DlocFullTextSearch { get; private set; }
 
-        /// <remarks> Message explaining cancel button on hover </remarks>
+        /// <remarks> 'Do not apply changes' localization string </remarks>
         public string DoNotApplyChanges { get; private set; }
 
-        /// <remarks> Button text </remarks>
+        /// <remarks> 'Edit' localization string </remarks>
         public string Edit { get; private set; }
 
         /// <remarks> 'Edit Child Page Detail' localization string </remarks>
         public string EditChildPageDetail { get; private set; }
 
-        /// <remarks> Button hover-over text </remarks>
+        /// <remarks> 'Edit this aggregation-level stylesheet' localization string </remarks>
         public string EditThisAggregationlevelStylesheet { get; private set; }
 
         /// <remarks> 'Edit this child page' localization string </remarks>
@@ -992,23 +995,20 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Edit this subcollection' localization string </remarks>
         public string EditThisSubcollection { get; private set; }
 
-        /// <remarks> Button text to enable the new style-sheet </remarks>
+        /// <remarks> 'ENABLE' localization string </remarks>
         public string ENABLE { get; private set; }
 
         /// <remarks> 'Enable an aggregation-level stylesheet' localization string </remarks>
         public string EnableAnAggregationlevelStylesheet { get; private set; }
 
-        /// <remarks> Label for checkbox indicating if the flag is set </remarks>
+        /// <remarks> 'Enabled Flag:' localization string </remarks>
         public string EnabledFlag { get; private set; }
 
         /// <remarks> 'Error adding new version to this child page' localization string </remarks>
         public string ErrorAddingNewVersionToThisChildPage { get; private set; }
 
-        /// <remarks> Error message displayed on the screen on encountering a save error </remarks>
-        public string ErrorSavingAggregationInformation { get; private set; }
-
         /// <remarks> 'ERROR saving the new item aggregation to the database' localization string </remarks>
-        public string ERRORSavingTheNewItemAggregationToTheDatabase { get; private set; }
+        public string ERRORSavingTheNewItemAggregationToTheDatab { get; private set; }
 
         /// <remarks> 'ERROR: Invalid entry for new item aggregation' localization string </remarks>
         public string ERRORInvalidEntryForNewItemAggregation { get; private set; }
@@ -1016,7 +1016,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'ERROR: Invalid entry for new item child page' localization string </remarks>
         public string ERRORInvalidEntryForNewItemChildPage { get; private set; }
 
-        /// <remarks> One of the geographic search location options for map searching </remarks>
+        /// <remarks> 'Europe' localization string </remarks>
         public string Europe { get; private set; }
 
         /// <remarks> 'Exhibit' localization string </remarks>
@@ -1040,11 +1040,11 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'External Link:' localization string </remarks>
         public string ExternalLink { get; private set; }
 
-        /// <remarks> One of the geographic search location options for map searching </remarks>
+        /// <remarks> 'Florida' localization string </remarks>
         public string Florida { get; private set; }
 
         /// <remarks> '"For more information about the settings on this tab,"' localization string </remarks>
-        public string ForMoreInformationAboutTheSettingsOnThisTab { get; private set; }
+        public string ForMoreInformationAboutTheSettingsOnThisTa { get; private set; }
 
         /// <remarks> 'Full Text Search' localization string </remarks>
         public string FullTextSearch { get; private set; }
@@ -1052,10 +1052,10 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Full View' localization string </remarks>
         public string FullView { get; private set; }
 
-        /// <remarks> Tab header </remarks>
+        /// <remarks> 'General' localization string </remarks>
         public string General { get; private set; }
 
-        /// <remarks> Tab header </remarks>
+        /// <remarks> 'Highlights' localization string </remarks>
         public string Highlights { get; private set; }
 
         /// <remarks> 'Highlights Type:' localization string </remarks>
@@ -1112,13 +1112,13 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Map Search Default Area:' localization string </remarks>
         public string MapSearchDefaultArea { get; private set; }
 
-        /// <remarks> Tab header </remarks>
+        /// <remarks> 'Metadata' localization string </remarks>
         public string Metadata { get; private set; }
 
         /// <remarks> 'Metadata Browses' localization string </remarks>
         public string MetadataBrowses { get; private set; }
 
-        /// <remarks> One of the geographic search location options for map searching </remarks>
+        /// <remarks> 'Middle East' localization string </remarks>
         public string MiddleEast { get; private set; }
 
         /// <remarks> 'Name (full)' localization string </remarks>
@@ -1128,13 +1128,13 @@ namespace SobekCM.Library.Localization.Classes
         public string NameShort { get; private set; }
 
         /// <remarks> 'New aggregation code must be twenty characters long or less' localization string </remarks>
-        public string NewAggregationCodeMustBeTwentyCharactersLongOrLess { get; private set; }
+        public string NewAggregationCodeMustBeTwentyCharactersLon { get; private set; }
 
         /// <remarks> 'New Banner:' localization string </remarks>
         public string NewBanner { get; private set; }
 
-        /// <remarks> Error message </remarks>
-        public string NewChildPageCodeMustBeTwentyCharactersLongOrLess { get; private set; }
+        /// <remarks> 'New child page code must be twenty characters long or less' localization string </remarks>
+        public string NewChildPageCodeMustBeTwentyCharactersLong { get; private set; }
 
         /// <remarks> 'New Child Page:' localization string </remarks>
         public string NewChildPage { get; private set; }
@@ -1163,14 +1163,14 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'No html source files' localization string </remarks>
         public string NoHtmlSourceFiles { get; private set; }
 
-        /// <remarks> Alt text for No image available </remarks>
+        /// <remarks> 'NONE' localization string </remarks>
         public string NONE { get; private set; }
 
-        /// <remarks> One of the geographic search location options for map searching </remarks>
+        /// <remarks> 'North America' localization string </remarks>
         public string NorthAmerica { get; private set; }
 
         /// <remarks> 'NOTE: You may need to refresh your browser for your changes to take affect.' localization string </remarks>
-        public string NOTEYouMayNeedToRefreshYourBrowserForYourChangesToTakeAffect { get; private set; }
+        public string NOTEYouMayNeedToRefreshYourBrowserForYour { get; private set; }
 
         /// <remarks> 'OAI-PMH Settings' localization string </remarks>
         public string OAIPMHSettings { get; private set; }
@@ -1190,16 +1190,16 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Result Views:' localization string </remarks>
         public string ResultViews { get; private set; }
 
-        /// <remarks> Tab header </remarks>
+        /// <remarks> 'Results' localization string </remarks>
         public string Results { get; private set; }
 
-        /// <remarks> Facets header </remarks>
+        /// <remarks> 'Results Options' localization string </remarks>
         public string ResultsOptions { get; private set; }
 
         /// <remarks> 'Rotating' localization string </remarks>
         public string Rotating { get; private set; }
 
-        /// <remarks> Button text </remarks>
+        /// <remarks> 'SAVE' localization string </remarks>
         public string SAVE { get; private set; }
 
         /// <remarks> 'Save changes to this item Aggregation' localization string </remarks>
@@ -1211,16 +1211,16 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Save new version of this child page' localization string </remarks>
         public string SaveNewVersionOfThisChildPage { get; private set; }
 
-        /// <remarks> Tab header </remarks>
+        /// <remarks> 'Search' localization string </remarks>
         public string Search { get; private set; }
 
         /// <remarks> 'Search Options' localization string </remarks>
         public string SearchOptions { get; private set; }
 
-        /// <remarks> Heading label text </remarks>
+        /// <remarks> 'Search Types:' localization string </remarks>
         public string SearchTypes { get; private set; }
 
-        /// <remarks> Text displayed when hovering over a selected image </remarks>
+        /// <remarks> 'Selected image file' localization string </remarks>
         public string SelectedImageFile { get; private set; }
 
         /// <remarks> 'Show in parent collection home page?' localization string </remarks>
@@ -1229,19 +1229,19 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Some of the files may be in use' localization string </remarks>
         public string SomeOfTheFilesMayBeInUse { get; private set; }
 
-        /// <remarks> Table headers </remarks>
+        /// <remarks> 'SOURCE FILE' localization string </remarks>
         public string SOURCEFILE { get; private set; }
 
-        /// <remarks> One of the geographic search location options for map searching </remarks>
+        /// <remarks> 'South America' localization string </remarks>
         public string SouthAmerica { get; private set; }
 
-        /// <remarks> Title for Standard aggregationPermissions table </remarks>
+        /// <remarks> 'Standard' localization string </remarks>
         public string Standard { get; private set; }
 
         /// <remarks> 'Static' localization string </remarks>
         public string Static { get; private set; }
 
-        /// <remarks> Tab header </remarks>
+        /// <remarks> 'SubCollections' localization string </remarks>
         public string Subcollections { get; private set; }
 
         /// <remarks> 'Table View' localization string </remarks>
@@ -1251,31 +1251,31 @@ namespace SobekCM.Library.Localization.Classes
         public string Text { get; private set; }
 
         /// <remarks> 'That code is a system-reserved keyword.  Try a different code.' localization string </remarks>
-        public string ThatCodeIsASystemreservedKeywordTryADifferentCode { get; private set; }
+        public string ThatCodeIsASystemreservedKeywordTryADiffer { get; private set; }
 
         /// <remarks> 'The code for this browse is: %1' localization string </remarks>
         public string TheCodeForThisBrowseIsXXX { get; private set; }
 
         /// <remarks> '"The information in this section controls how search results or item browses appears.  The facet options control which metadata values appear to the left of the results, to allow users to narrow their results.  The search results values determine which options are available for viewing the results and what are the aggregation defaults.  Finally, the result fields determines which values are displayed with each individual result in the result set."' localization string </remarks>
-        public string TheInformationInThisSectionControlsHowSearchResultsOrItemBrowsesAppearsTheFacetOptionsControlWhichMetadataValuesAppearToTheLeftOfTheResultsToAllowUsersToNarrowTheirResultsTheSearchResultsValuesDetermineWhichOptionsAreAvailableForViewingTheResultsAndWhatAreTheAggregationDefaultsFinallyTheResultFieldsDeterminesWhichValuesAreDisplayedWithEachIndividualResultInTheResultSet { get; private set; }
+        public string TheInformationInThisSectionControlsHowSearc { get; private set; }
 
         /// <remarks> '"The information in this section is the basic information about the aggregation, such as the full name, the shortened name used for breadcrumbs, the description, and the email contact. "' localization string </remarks>
-        public string TheInformationInThisSectionIsTheBasicInformationAboutTheAggregationSuchAsTheFullNameTheShortenedNameUsedForBreadcrumbsTheDescriptionAndTheEmailContact { get; private set; }
+        public string TheInformationInThisSectionIsTheBasicInfor { get; private set; }
 
         /// <remarks> 'The metadata browses can be used to expose all the metadata of the resources within this aggregation for public browsing.  Select the metadata fields you would like have available below.' localization string </remarks>
-        public string TheMetadataBrowsesCanBeUsedToExposeAllTheMetadataOfTheResourcesWithinThisAggregationForPublicBrowsingSelectTheMetadataFieldsYouWouldLikeHaveAvailableBelow { get; private set; }
+        public string TheMetadataBrowsesCanBeUsedToExposeAllThe { get; private set; }
 
         /// <remarks> '"The values in this section determine if the collection is currently visible at all, whether it is eligible to appear on the collection list at the bottom of the parent page, and the collection button used in that case.  Thematic headings are used to place this collection on the main home page."' localization string </remarks>
-        public string TheValuesInThisSectionDetermineIfTheCollectionIsCurrentlyVisibleAtAllWhetherItIsEligibleToAppearOnTheCollectionListAtTheBottomOfTheParentPageAndTheCollectionButtonUsedInThatCaseThematicHeadingsAreUsedToPlaceThisCollectionOnTheMainHomePage { get; private set; }
+        public string TheValuesInThisSectionDetermineIfTheCollec { get; private set; }
 
-        /// <remarks> Heading label text </remarks>
+        /// <remarks> 'Thematic Heading:' localization string </remarks>
         public string ThematicHeading { get; private set; }
 
         /// <remarks> '"These options control how searching works within this aggregation, such as which search options are made publicly available."' localization string </remarks>
-        public string TheseOptionsControlHowSearchingWorksWithinThisAggregationSuchAsWhichSearchOptionsAreMadePubliclyAvailable { get; private set; }
+        public string TheseOptionsControlHowSearchingWorksWithinT { get; private set; }
 
         /// <remarks> '"These three settings have the most profound affects on the appearance of this aggregation, by forcing it to appear under a particular web skin, allowing a custom aggregation-level stylesheet, or completely overriding the system-generated home page for a custom home page HTML source file."' localization string </remarks>
-        public string TheseThreeSettingsHaveTheMostProfoundAffectsOnTheAppearanceOfThisAggregationByForcingItToAppearUnderAParticularWebSkinAllowingACustomAggregationlevelStylesheetOrCompletelyOverridingTheSystemgeneratedHomePageForACustomHomePageHTMLSourceFile { get; private set; }
+        public string TheseThreeSettingsHaveTheMostProfoundAffect { get; private set; }
 
         /// <remarks> 'This aggregation currently has no child pages' localization string </remarks>
         public string ThisAggregationCurrentlyHasNoChildPages { get; private set; }
@@ -1283,17 +1283,17 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'This aggregation currently has no subcollections' localization string </remarks>
         public string ThisAggregationCurrentlyHasNoSubcollections { get; private set; }
 
-        /// <remarks> Alt text for a missing image </remarks>
+        /// <remarks> 'THIS BANNER IMAGE IS MISSING' localization string </remarks>
         public string THISBANNERIMAGEISMISSING { get; private set; }
 
         /// <remarks> 'This page allows you to edit the basic information about a single child page and add the ability to display this child page in alternate languages.' localization string </remarks>
-        public string ThisPageAllowsYouToEditTheBasicInformationAboutASingleChildPageAndAddTheAbilityToDisplayThisChildPageInAlternateLanguages { get; private set; }
+        public string ThisPageAllowsYouToEditTheBasicInformation { get; private set; }
 
         /// <remarks> 'This section controls all the language-specific (and default) text which appears on the home page.' localization string </remarks>
-        public string ThisSectionControlsAllTheLanguagespecificAndDefaultTextWhichAppearsOnTheHomePage { get; private set; }
+        public string ThisSectionControlsAllTheLanguagespecificAnd { get; private set; }
 
         /// <remarks> 'This section shows all the existing language-specific banners for this aggregation and allows you upload new banners for this aggregation.' localization string </remarks>
-        public string ThisSectionShowsAllTheExistingLanguagespecificBannersForThisAggregationAndAllowsYouUploadNewBannersForThisAggregation { get; private set; }
+        public string ThisSectionShowsAllTheExistingLanguagespecif { get; private set; }
 
         /// <remarks> 'Thumbnail View' localization string </remarks>
         public string ThumbnailView { get; private set; }
@@ -1304,14 +1304,14 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Title (default):' localization string </remarks>
         public string TitleDefault { get; private set; }
 
-        /// <remarks> Upload instructions </remarks>
-        public string ToChangeBrowseToA50X50PixelGIFFileAndThenSelectUPLOAD { get; private set; }
+        /// <remarks> '"To change, browse to a 50x50 pixel GIF file, and then select UPLOAD"' localization string </remarks>
+        public string ToChangeBrowseToA50X50PixelGIFFileAndThe { get; private set; }
 
         /// <remarks> '"To edit this, log on as the aggregation admin and hover over this text to edit it."' localization string </remarks>
-        public string ToEditThisLogOnAsTheAggregationAdminAndHoverOverThisTextToEditIt { get; private set; }
+        public string ToEditThisLogOnAsTheAggregationAdminAndH { get; private set; }
 
         /// <remarks> '"To upload, browse to a GIF, PNG, JPEG, or BMP file, and then select UPLOAD"' localization string </remarks>
-        public string ToUploadBrowseToAGIFPNGJPEGOrBMPFileAndThenSelectUPLOAD { get; private set; }
+        public string ToUploadBrowseToAGIFPNGJPEGOrBMPFileAnd { get; private set; }
 
         /// <remarks> 'Tooltip:' localization string </remarks>
         public string Tooltip { get; private set; }
@@ -1322,19 +1322,19 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Unable to remove subcollection directory' localization string </remarks>
         public string UnableToRemoveSubcollectionDirectory { get; private set; }
 
-        /// <remarks> One of the geographic search location options for map searching </remarks>
+        /// <remarks> 'United States' localization string </remarks>
         public string UnitedStates { get; private set; }
 
         /// <remarks> 'Upload New Banner Image:' localization string </remarks>
         public string UploadNewBannerImage { get; private set; }
 
-        /// <remarks> Button text </remarks>
+        /// <remarks> 'View' localization string </remarks>
         public string View { get; private set; }
 
         /// <remarks> 'View banner image file' localization string </remarks>
         public string ViewBannerImageFile { get; private set; }
 
-        /// <remarks> Button hover-over text </remarks>
+        /// <remarks> 'View CSS file' localization string </remarks>
         public string ViewCSSFile { get; private set; }
 
         /// <remarks> 'View source file' localization string </remarks>
@@ -1364,17 +1364,17 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Web Skin:' localization string </remarks>
         public string WebSkin { get; private set; }
 
-        /// <remarks> One of the geographic search location options for map searching </remarks>
+        /// <remarks> 'World' localization string </remarks>
         public string World { get; private set; }
 
         /// <remarks> 'You can edit the contents of the aggregation-level custom stylesheet (css) file here.  Click SAVE when complete to return to the main aggregation administration screen.' localization string </remarks>
-        public string YouCanEditTheContentsOfTheAggregationlevelCustomStylesheetCssFileHereClickSAVEWhenCompleteToReturnToTheMainAggregationAdministrationScreen { get; private set; }
+        public string YouCanEditTheContentsOfTheAggregationlevel { get; private set; }
 
         /// <remarks> '"You can use OAI-PMH to expose all the metadata of the resources within this aggregation for automatic harvesting by other repositories.  Additionally, you can choose to attach metadata to the collection-level OAI-PMH record.  This should be coded as dublin core tags."' localization string </remarks>
-        public string YouCanUseOAIPMHToExposeAllTheMetadataOfTheResourcesWithinThisAggregationForAutomaticHarvestingByOtherRepositoriesAdditionallyYouCanChooseToAttachMetadataToTheCollectionlevelOAIPMHRecordThisShouldBeCodedAsDublinCoreTags { get; private set; }
+        public string YouCanUseOAIPMHToExposeAllTheMetadataOfT { get; private set; }
 
         /// <remarks> '"You can view existing subcollections or add new subcollections to this aggregation from this tab.  You will have full curatorial rights over any new subcollections you add.  Currently, only system administrators can DELETE subcollections."' localization string </remarks>
-        public string YouCanViewExistingSubcollectionsOrAddNewSubcollectionsToThisAggregationFromThisTabYouWillHaveFullCuratorialRightsOverAnyNewSubcollectionsYouAddCurrentlyOnlySystemAdministratorsCanDELETESubcollections { get; private set; }
+        public string YouCanViewExistingSubcollectionsOrAddNewSu { get; private set; }
 
         /// <remarks> 'You must enter a CODE for this child page' localization string </remarks>
         public string YouMustEnterACODEForThisChildPage { get; private set; }
@@ -1383,7 +1383,7 @@ namespace SobekCM.Library.Localization.Classes
         public string YouMustEnterACODEForThisItemAggregation { get; private set; }
 
         /// <remarks> 'You must enter a DESCRIPTION for this new aggregation' localization string </remarks>
-        public string YouMustEnterADESCRIPTIONForThisNewAggregation { get; private set; }
+        public string YouMustEnterADESCRIPTIONForThisNewAggregat { get; private set; }
 
         /// <remarks> 'You must enter a LABEL for this child page' localization string </remarks>
         public string YouMustEnterALABELForThisChildPage { get; private set; }
@@ -1392,10 +1392,10 @@ namespace SobekCM.Library.Localization.Classes
         public string YouMustEnterANAMEForThisNewAggregation { get; private set; }
 
         /// <remarks> 'You must SAVE your changes before you can view or edit newly added child page versions' localization string </remarks>
-        public string YouMustSAVEYourChangesBeforeYouCanViewOrEditNewlyAddedChildPageVersions { get; private set; }
+        public string YouMustSAVEYourChangesBeforeYouCanViewOr { get; private set; }
 
         /// <remarks> 'You must SAVE your changes before you can view or edit newly added home pages.' localization string </remarks>
-        public string YouMustSAVEYourChangesBeforeYouCanViewOrEditNewlyAddedHomePages { get; private set; }
+        public string YouMustSAVEYourChangesBeforeYouCanViewOr2 { get; private set; }
 
         /// <remarks> 'You must select a TYPE for this new aggregation' localization string </remarks>
         public string YouMustSelectATYPEForThisNewAggregation { get; private set; }

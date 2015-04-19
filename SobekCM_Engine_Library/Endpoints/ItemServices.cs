@@ -46,7 +46,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     switch (Protocol)
                     {
                         case Microservice_Endpoint_Protocol_Enum.JSON:
-                            JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
+                            JSON.Serialize(new { bibid = returnValue.BibID, vid = returnValue.VID, description = returnValue.Description, title = returnValue.Title }, Response.Output, Options.ISO8601ExcludeNulls);
                             break;
 
                         case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
@@ -55,7 +55,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         case Microservice_Endpoint_Protocol_Enum.JSON_P:
                             Response.Output.Write("parseItemCitation(");
-                            JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                            JSON.Serialize(new { bibid = returnValue.BibID, vid = returnValue.VID, description = returnValue.Description, title = returnValue.Title }, Response.Output, Options.ISO8601ExcludeNullsJSONP);
                             Response.Output.Write(");");
                             break;
                     }
@@ -160,13 +160,21 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         public void GetRandomItem(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
         {
-            if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON) || ( Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P ))
             {
                 Tuple<string, string> result = Engine_Database.Get_Random_Item(null);
 
                 if (result != null)
                 {
-                    JSON.Serialize(new { bibid = result.Item1, vid = result.Item2 }, Response.Output, Options.ISO8601ExcludeNulls);
+                    if ( Protocol == Microservice_Endpoint_Protocol_Enum.JSON )
+                        JSON.Serialize(new { bibid = result.Item1, vid = result.Item2 }, Response.Output, Options.ISO8601ExcludeNulls);
+                    if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P)
+                    {
+                        Response.Output.Write("parseRandomItem(");
+                        JSON.Serialize(new {bibid = result.Item1, vid = result.Item2}, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                        Response.Output.Write(");");
+                    }
+
                 }
             }
         }

@@ -23,19 +23,15 @@ namespace SobekCM.Library.Localization.Classes
             switch (Key)
             {
                 case "Below Is A List Of Items Associated With Your Account Including Usage Statistics Total Views And Visits Represents The Total Amount Of Usage Since The Item Was Added To The Library And The Monthly Views And Visits Is The Usage In The Selected Month":
-                    BelowIsAListOfItemsAssociatedWithYourAccountIncludingUsageStatisticsTotalViewsAndVisitsRepresentsTheTotalAmountOfUsageSinceTheItemWasAddedToTheLibraryAndTheMonthlyViewsAndVisitsIsTheUsageInTheSelectedMonth = Value;
-                    break;
-
-                case "Definitions On The Main Statistics Page":
-                    DefinitionsOnTheMainStatisticsPage = Value;
+                    BelowIsAListOfItemsAssociatedWithYourAcco = Value;
                     break;
 
                 case "For More Information About These Terms See The":
                     ForMoreInformationAboutTheseTermsSeeThe = Value;
                     break;
 
-                case "MONTHLY VIEWS":
-                    MONTHLYVIEWS = Value;
+                case "Definitions On The Main Statistics Page":
+                    DefinitionsOnTheMainStatisticsPage = Value;
                     break;
 
                 case "Select Any Column To Resort This Data":
@@ -54,19 +50,20 @@ namespace SobekCM.Library.Localization.Classes
                     TOTALVISITS = Value;
                     break;
 
+                case "MONTHLY VIEWS":
+                    MONTHLYVIEWS = Value;
+                    break;
+
             }
         }
         /// <remarks> 'Below is a list of items associated with your account including usage statistics.  Total views and visits represents the total amount of usage since the item was added to the library and the monthly views and visits is the usage in the selected month.' localization string </remarks>
-        public string BelowIsAListOfItemsAssociatedWithYourAccountIncludingUsageStatisticsTotalViewsAndVisitsRepresentsTheTotalAmountOfUsageSinceTheItemWasAddedToTheLibraryAndTheMonthlyViewsAndVisitsIsTheUsageInTheSelectedMonth { get; private set; }
-
-        /// <remarks> 'definitions on the main statistics page' localization string </remarks>
-        public string DefinitionsOnTheMainStatisticsPage { get; private set; }
+        public string BelowIsAListOfItemsAssociatedWithYourAcco { get; private set; }
 
         /// <remarks> '"For more information about these terms, see the"' localization string </remarks>
         public string ForMoreInformationAboutTheseTermsSeeThe { get; private set; }
 
-        /// <remarks> 'MONTHLY VIEWS' localization string </remarks>
-        public string MONTHLYVIEWS { get; private set; }
+        /// <remarks> 'definitions on the main statistics page' localization string </remarks>
+        public string DefinitionsOnTheMainStatisticsPage { get; private set; }
 
         /// <remarks> 'Select any column to re-sort this data' localization string </remarks>
         public string SelectAnyColumnToResortThisData { get; private set; }
@@ -79,6 +76,9 @@ namespace SobekCM.Library.Localization.Classes
 
         /// <remarks> 'TOTAL VISITS' localization string </remarks>
         public string TOTALVISITS { get; private set; }
+
+        /// <remarks> 'MONTHLY VIEWS' localization string </remarks>
+        public string MONTHLYVIEWS { get; private set; }
 
     }
 }

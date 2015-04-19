@@ -22,10 +22,6 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Site":
-                    Site = Value;
-                    break;
-
                 case "Title":
                     Title = Value;
                     break;
@@ -34,16 +30,20 @@ namespace SobekCM.Library.Localization.Classes
                     URL = Value;
                     break;
 
+                case "Site":
+                    Site = Value;
+                    break;
+
             }
         }
-        /// <remarks> "(i.e., label for name of site, as in Site: Digital Library of the Carribea)  Creates a simpler page for printing purposes when printing an item" </remarks>
-        public string Site { get; private set; }
-
-        /// <remarks> Creates a simpler page for printing purposes when printing an item </remarks>
+        /// <remarks> 'Title:' localization string </remarks>
         public string Title { get; private set; }
 
-        /// <remarks> Creates a simpler page for printing purposes when printing an item </remarks>
+        /// <remarks> 'URL:' localization string </remarks>
         public string URL { get; private set; }
+
+        /// <remarks> 'Site:' localization string </remarks>
+        public string Site { get; private set; }
 
     }
 }

@@ -22,8 +22,8 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "To Report This Issue":
-                    ToReportThisIssue = Value;
+                case "UNABLE TO LOAD STREETS FROM DATABASE":
+                    UNABLETOLOADSTREETSFROMDATABASE = Value;
                     break;
 
                 case "Click":
@@ -34,18 +34,18 @@ namespace SobekCM.Library.Localization.Classes
                     Here = Value;
                     break;
 
+                case "To Report This Issue":
+                    ToReportThisIssue = Value;
+                    break;
+
                 case "Index Of Streets":
                     IndexOfStreets = Value;
                     break;
 
-                case "UNABLE TO LOAD STREETS FROM DATABASE":
-                    UNABLETOLOADSTREETSFROMDATABASE = Value;
-                    break;
-
             }
         }
-        /// <remarks> ' to report this issue.' localization string </remarks>
-        public string ToReportThisIssue { get; private set; }
+        /// <remarks> 'UNABLE TO LOAD STREETS FROM DATABASE' localization string </remarks>
+        public string UNABLETOLOADSTREETSFROMDATABASE { get; private set; }
 
         /// <remarks> 'Click' localization string </remarks>
         public string Click { get; private set; }
@@ -53,11 +53,11 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'here' localization string </remarks>
         public string Here { get; private set; }
 
+        /// <remarks> ' to report this issue.' localization string </remarks>
+        public string ToReportThisIssue { get; private set; }
+
         /// <remarks> 'Index of Streets' localization string </remarks>
         public string IndexOfStreets { get; private set; }
-
-        /// <remarks> 'UNABLE TO LOAD STREETS FROM DATABASE' localization string </remarks>
-        public string UNABLETOLOADSTREETSFROMDATABASE { get; private set; }
 
     }
 }

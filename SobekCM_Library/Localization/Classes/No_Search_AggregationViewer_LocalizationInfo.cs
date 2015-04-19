@@ -28,7 +28,7 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> %1=collection name.  Used in rare case that no search is selected for the collection home </remarks>
+        /// <remarks> '%1 Home' localization string </remarks>
         public string XXXHome { get; private set; }
 
     }

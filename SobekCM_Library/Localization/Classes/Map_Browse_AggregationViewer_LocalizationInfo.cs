@@ -30,41 +30,41 @@ namespace SobekCM.Library.Localization.Classes
                     XXXVolumes = Value;
                     break;
 
-                case "Click Here For More Information About These XXX Titles":
-                    ClickHereForMoreInformationAboutTheseXXXTitles = Value;
-                    break;
-
                 case "Click Here For More Information About This Title":
                     ClickHereForMoreInformationAboutThisTitle = Value;
                     break;
 
-                case "Press The SHIFT Button And Then Drag A Box On The Map To Zoom In":
-                    PressTheSHIFTButtonAndThenDragABoxOnTheMapToZoomIn = Value;
+                case "Click Here For More Information About These XXX Titles":
+                    ClickHereForMoreInformationAboutTheseXXXTi = Value;
                     break;
 
                 case "Select A Point Below To View The Items From Or About That Location":
-                    SelectAPointBelowToViewTheItemsFromOrAboutThatLocation = Value;
+                    SelectAPointBelowToViewTheItemsFromOrAbo = Value;
+                    break;
+
+                case "Press The SHIFT Button And Then Drag A Box On The Map To Zoom In":
+                    PressTheSHIFTButtonAndThenDragABoxOnThe = Value;
                     break;
 
             }
         }
-        /// <remarks> "i.e., ( 12 issues ). Used when the content type is newspaper Used in the popup window when you select a point in a map browse" </remarks>
+        /// <remarks> '( %1 issues )' localization string </remarks>
         public string XXXIssues { get; private set; }
 
-        /// <remarks> "i.2., ( 12 volumes ). Used when not newspapers.  Used in the popup window when you select a point in a map browse" </remarks>
+        /// <remarks> '( %1 volumes )' localization string </remarks>
         public string XXXVolumes { get; private set; }
 
-        /// <remarks> %1 = number of titles.  Used in the popup window when you select a point in a map browse </remarks>
-        public string ClickHereForMoreInformationAboutTheseXXXTitles { get; private set; }
-
-        /// <remarks> Used in the popup window when you select a point in a map browse </remarks>
+        /// <remarks> 'Click here for more information about this title' localization string </remarks>
         public string ClickHereForMoreInformationAboutThisTitle { get; private set; }
 
-        /// <remarks> Appears in the search box during geographic browse </remarks>
-        public string PressTheSHIFTButtonAndThenDragABoxOnTheMapToZoomIn { get; private set; }
+        /// <remarks> 'Click here for more information about these %1 titles' localization string </remarks>
+        public string ClickHereForMoreInformationAboutTheseXXXTi { get; private set; }
 
-        /// <remarks> Appears in the search box during geographic browse </remarks>
-        public string SelectAPointBelowToViewTheItemsFromOrAboutThatLocation { get; private set; }
+        /// <remarks> 'Select a point below to view the items from or about that location.' localization string </remarks>
+        public string SelectAPointBelowToViewTheItemsFromOrAbo { get; private set; }
+
+        /// <remarks> '"Press the SHIFT button, and then drag a box on the map to zoom in."' localization string </remarks>
+        public string PressTheSHIFTButtonAndThenDragABoxOnThe { get; private set; }
 
     }
 }

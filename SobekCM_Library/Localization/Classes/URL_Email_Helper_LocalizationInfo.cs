@@ -22,44 +22,44 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "XXX Wanted You To See These Search Results On XXX And Included The Following Comments":
-                    XXXWantedYouToSeeTheseSearchResultsOnXXXAndIncludedTheFollowingComments = Value;
-                    break;
-
                 case "XXX Wanted You To See These Search Results On XXX":
                     XXXWantedYouToSeeTheseSearchResultsOnXXX = Value;
                     break;
 
-                case "XXX Wanted You To See This XXX On XXX And Included The Following Comments":
-                    XXXWantedYouToSeeThisXXXOnXXXAndIncludedTheFollowingComments = Value;
-                    break;
-
-                case "XXX Wanted You To See This On XXX":
-                    XXXWantedYouToSeeThisOnXXX = Value;
-                    break;
-
-                case "XXX Wanted You To See This Page On XXX And Included The Following Comments":
-                    XXXWantedYouToSeeThisPageOnXXXAndIncludedTheFollowingComments = Value;
+                case "XXX Wanted You To See These Search Results On XXX And Included The Following Comments":
+                    XXXWantedYouToSeeTheseSearchResultsOnXXX = Value;
                     break;
 
                 case "XXX Wanted You To See This Page On XXX":
                     XXXWantedYouToSeeThisPageOnXXX = Value;
                     break;
 
-                case "XXX XXX From XXX":
-                    XXXXXXFromXXX = Value;
+                case "XXX Wanted You To See This Page On XXX And Included The Following Comments":
+                    XXXWantedYouToSeeThisPageOnXXXAndInclude = Value;
                     break;
 
                 case "Item From XXX":
                     ItemFromXXX = Value;
                     break;
 
+                case "Search Results From XXX":
+                    SearchResultsFromXXX = Value;
+                    break;
+
                 case "Page From XXX":
                     PageFromXXX = Value;
                     break;
 
-                case "Search Results From XXX":
-                    SearchResultsFromXXX = Value;
+                case "XXX XXX From XXX":
+                    XXXXXXFromXXX = Value;
+                    break;
+
+                case "XXX Wanted You To See This XXX On XXX And Included The Following Comments":
+                    XXXWantedYouToSeeThisXXXOnXXXAndIncluded = Value;
+                    break;
+
+                case "XXX Wanted You To See This On XXX":
+                    XXXWantedYouToSeeThisOnXXX = Value;
                     break;
 
                 case "Title XXX":
@@ -68,35 +68,35 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> When someone emails any search result page from the system and includes comments </remarks>
-        public string XXXWantedYouToSeeTheseSearchResultsOnXXXAndIncludedTheFollowingComments { get; private set; }
-
-        /// <remarks> "%1=username, %2=SobekCM instance abbreviation (like UFDC, dLOC). When someone emails any search result page from the system" </remarks>
+        /// <remarks> '%1 wanted you to see these search results on %2.' localization string </remarks>
         public string XXXWantedYouToSeeTheseSearchResultsOnXXX { get; private set; }
 
-        /// <remarks> '%1 wanted you to see this %2 on %3 and included the following comments' localization string </remarks>
-        public string XXXWantedYouToSeeThisXXXOnXXXAndIncludedTheFollowingComments { get; private set; }
+        /// <remarks> '%1 wanted you to see these search results on %2 and included the following comments.' localization string </remarks>
+        public string XXXWantedYouToSeeTheseSearchResultsOnXXX2 { get; private set; }
 
-        /// <remarks> '%1 wanted you to see this on %2' localization string </remarks>
-        public string XXXWantedYouToSeeThisOnXXX { get; private set; }
-
-        /// <remarks> When someone emails any other web page from the system and includes comments </remarks>
-        public string XXXWantedYouToSeeThisPageOnXXXAndIncludedTheFollowingComments { get; private set; }
-
-        /// <remarks> When someone emails any other web page from the system </remarks>
+        /// <remarks> '%1 wanted you to see this page on %2.' localization string </remarks>
         public string XXXWantedYouToSeeThisPageOnXXX { get; private set; }
+
+        /// <remarks> '%1 wanted you to see this page on %2 and included the following comments.' localization string </remarks>
+        public string XXXWantedYouToSeeThisPageOnXXXAndInclude { get; private set; }
+
+        /// <remarks> 'Item from %1' localization string </remarks>
+        public string ItemFromXXX { get; private set; }
+
+        /// <remarks> 'Search results from %1' localization string </remarks>
+        public string SearchResultsFromXXX { get; private set; }
+
+        /// <remarks> 'Page from %1' localization string </remarks>
+        public string PageFromXXX { get; private set; }
 
         /// <remarks> '"%1,%2 from %3"' localization string </remarks>
         public string XXXXXXFromXXX { get; private set; }
 
-        /// <remarks> "Used as the subject line of that email.  ""Item from dLOC""" </remarks>
-        public string ItemFromXXX { get; private set; }
+        /// <remarks> '%1 wanted you to see this %2 on %3 and included the following comments' localization string </remarks>
+        public string XXXWantedYouToSeeThisXXXOnXXXAndIncluded { get; private set; }
 
-        /// <remarks> "Used as the subject line of that email.  ""Page from dLOC""" </remarks>
-        public string PageFromXXX { get; private set; }
-
-        /// <remarks> "Used as the subject line of that email. ""Search results from dLOC""" </remarks>
-        public string SearchResultsFromXXX { get; private set; }
+        /// <remarks> '%1 wanted you to see this on %2' localization string </remarks>
+        public string XXXWantedYouToSeeThisOnXXX { get; private set; }
 
         /// <remarks> 'Title: %1' localization string </remarks>
         public string TitleXXX { get; private set; }

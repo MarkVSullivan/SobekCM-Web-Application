@@ -22,28 +22,44 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Added By XXX On XXX":
-                    AddedByXXXOnXXX = Value;
+                case "As A Digital Collection Manager Or Administrator You Can Use This Screen To View Descriptive Tags Added To Collections Of Interest As Well As View The Descriptive Tags You Have Added To Items":
+                    AsADigitalCollectionManagerOrAdministratorY = Value;
                     break;
 
-                case "Added By You On XXX":
-                    AddedByYouOnXXX = Value;
+                case "Tags By Aggregation":
+                    TagsByAggregation = Value;
+                    break;
+
+                case "Choose An Aggregation Below To View All Tags For That Aggregation":
+                    ChooseAnAggregationBelowToViewAllTagsForT = Value;
                     break;
 
                 case "All Aggregations":
                     AllAggregations = Value;
                     break;
 
-                case "As A Digital Collection Manager Or Administrator You Can Use This Screen To View Descriptive Tags Added To Collections Of Interest As Well As View The Descriptive Tags You Have Added To Items":
-                    AsADigitalCollectionManagerOrAdministratorYouCanUseThisScreenToViewDescriptiveTagsAddedToCollectionsOfInterestAsWellAsViewTheDescriptiveTagsYouHaveAddedToItems = Value;
+                case "Your Descriptive Tags":
+                    YourDescriptiveTags = Value;
                     break;
 
-                case "Choose An Aggregation Below To View All Tags For That Aggregation":
-                    ChooseAnAggregationBelowToViewAllTagsForThatAggregation = Value;
+                case "You Have Not Added Any Descriptive Tags To Any Items":
+                    YouHaveNotAddedAnyDescriptiveTagsToAnyIte = Value;
                     break;
 
-                case "Tags By Aggregation":
-                    TagsByAggregation = Value;
+                case "You Have Added The Following XXX Descriptive Tags":
+                    YouHaveAddedTheFollowingXXXDescriptiveTags = Value;
+                    break;
+
+                case "Added By You On XXX":
+                    AddedByYouOnXXX = Value;
+                    break;
+
+                case "View All By This User":
+                    ViewAllByThisUser = Value;
+                    break;
+
+                case "Added By XXX On XXX":
+                    AddedByXXXOnXXX = Value;
                     break;
 
                 case "Tags By User":
@@ -51,62 +67,46 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "This User Has Not Added Any Descriptive Tags To Any Items Or It Is Not A Valid Userid":
-                    ThisUserHasNotAddedAnyDescriptiveTagsToAnyItemsOrItIsNotAValidUserid = Value;
-                    break;
-
-                case "View All By This User":
-                    ViewAllByThisUser = Value;
-                    break;
-
-                case "You Have Added The Following XXX Descriptive Tags":
-                    YouHaveAddedTheFollowingXXXDescriptiveTags = Value;
-                    break;
-
-                case "You Have Not Added Any Descriptive Tags To Any Items":
-                    YouHaveNotAddedAnyDescriptiveTagsToAnyItems = Value;
-                    break;
-
-                case "Your Descriptive Tags":
-                    YourDescriptiveTags = Value;
+                    ThisUserHasNotAddedAnyDescriptiveTagsToAn = Value;
                     break;
 
             }
         }
-        /// <remarks> 'Added by %1 on %2' localization string </remarks>
-        public string AddedByXXXOnXXX { get; private set; }
+        /// <remarks> '"As a digital collection manager or administrator, you can use this screen to view descriptive tags added to collections of interest, as well as view the descriptive tags you have added to items."' localization string </remarks>
+        public string AsADigitalCollectionManagerOrAdministratorY { get; private set; }
 
-        /// <remarks> 'Added by you on %1' localization string </remarks>
-        public string AddedByYouOnXXX { get; private set; }
+        /// <remarks> 'Tags By Aggregation' localization string </remarks>
+        public string TagsByAggregation { get; private set; }
+
+        /// <remarks> 'Choose an aggregation below to view all tags for that aggregation:' localization string </remarks>
+        public string ChooseAnAggregationBelowToViewAllTagsForT { get; private set; }
 
         /// <remarks> 'All Aggregations' localization string </remarks>
         public string AllAggregations { get; private set; }
 
-        /// <remarks> '"As a digital collection manager or administrator, you can use this screen to view descriptive tags added to collections of interest, as well as view the descriptive tags you have added to items."' localization string </remarks>
-        public string AsADigitalCollectionManagerOrAdministratorYouCanUseThisScreenToViewDescriptiveTagsAddedToCollectionsOfInterestAsWellAsViewTheDescriptiveTagsYouHaveAddedToItems { get; private set; }
+        /// <remarks> 'Your Descriptive Tags' localization string </remarks>
+        public string YourDescriptiveTags { get; private set; }
 
-        /// <remarks> 'Choose an aggregation below to view all tags for that aggregation:' localization string </remarks>
-        public string ChooseAnAggregationBelowToViewAllTagsForThatAggregation { get; private set; }
+        /// <remarks> 'You have not added any descriptive tags to any items' localization string </remarks>
+        public string YouHaveNotAddedAnyDescriptiveTagsToAnyIte { get; private set; }
 
-        /// <remarks> 'Tags By Aggregation' localization string </remarks>
-        public string TagsByAggregation { get; private set; }
+        /// <remarks> 'You have added the following %1 descriptive tags' localization string </remarks>
+        public string YouHaveAddedTheFollowingXXXDescriptiveTags { get; private set; }
+
+        /// <remarks> 'Added by you on %1' localization string </remarks>
+        public string AddedByYouOnXXX { get; private set; }
+
+        /// <remarks> 'view all by this user' localization string </remarks>
+        public string ViewAllByThisUser { get; private set; }
+
+        /// <remarks> 'Added by %1 on %2' localization string </remarks>
+        public string AddedByXXXOnXXX { get; private set; }
 
         /// <remarks> 'Tags By User' localization string </remarks>
         public string TagsByUser { get; private set; }
 
         /// <remarks> 'This user has not added any descriptive tags to any items or it is not a valid userid.' localization string </remarks>
-        public string ThisUserHasNotAddedAnyDescriptiveTagsToAnyItemsOrItIsNotAValidUserid { get; private set; }
-
-        /// <remarks> 'view all by this user' localization string </remarks>
-        public string ViewAllByThisUser { get; private set; }
-
-        /// <remarks> 'You have added the following %1 descriptive tags' localization string </remarks>
-        public string YouHaveAddedTheFollowingXXXDescriptiveTags { get; private set; }
-
-        /// <remarks> 'You have not added any descriptive tags to any items' localization string </remarks>
-        public string YouHaveNotAddedAnyDescriptiveTagsToAnyItems { get; private set; }
-
-        /// <remarks> 'Your Descriptive Tags' localization string </remarks>
-        public string YourDescriptiveTags { get; private set; }
+        public string ThisUserHasNotAddedAnyDescriptiveTagsToAn { get; private set; }
 
     }
 }

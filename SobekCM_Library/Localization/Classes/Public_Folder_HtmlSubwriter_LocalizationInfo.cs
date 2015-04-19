@@ -22,21 +22,21 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "XXX Home":
-                    XXXHome = Value;
-                    break;
-
                 case "Public Bookshelf":
                     PublicBookshelf = Value;
                     break;
 
+                case "XXX Home":
+                    XXXHome = Value;
+                    break;
+
             }
         }
+        /// <remarks> 'Public Bookshelf' localization string </remarks>
+        public string PublicBookshelf { get; private set; }
+
         /// <remarks> '%1 Home' localization string </remarks>
         public string XXXHome { get; private set; }
-
-        /// <remarks> "If a user makes their bookshelf public, this is used to display it" </remarks>
-        public string PublicBookshelf { get; private set; }
 
     }
 }

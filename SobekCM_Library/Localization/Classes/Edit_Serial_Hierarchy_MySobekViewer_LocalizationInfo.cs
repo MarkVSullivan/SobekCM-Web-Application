@@ -27,7 +27,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Implementation For This Feature Is Currently Pending":
-                    ImplementationForThisFeatureIsCurrentlyPending = Value;
+                    ImplementationForThisFeatureIsCurrentlyPendi = Value;
                     break;
 
             }
@@ -36,7 +36,7 @@ namespace SobekCM.Library.Localization.Classes
         public string EDITSERIALHIERARCHY { get; private set; }
 
         /// <remarks> 'Implementation for this feature is currently pending.' localization string </remarks>
-        public string ImplementationForThisFeatureIsCurrentlyPending { get; private set; }
+        public string ImplementationForThisFeatureIsCurrentlyPendi { get; private set; }
 
     }
 }

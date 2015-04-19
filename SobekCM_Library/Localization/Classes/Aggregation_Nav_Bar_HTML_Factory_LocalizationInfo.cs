@@ -30,10 +30,6 @@ namespace SobekCM.Library.Localization.Classes
                     BasicSearch = Value;
                     break;
 
-                case "Display Text":
-                    DisplayText = Value;
-                    break;
-
                 case "Map Search":
                     MapSearch = Value;
                     break;
@@ -46,25 +42,29 @@ namespace SobekCM.Library.Localization.Classes
                     TextSearch = Value;
                     break;
 
+                case "Display Text":
+                    DisplayText = Value;
+                    break;
+
             }
         }
-        /// <remarks> Tabs on aggregation home page - based on search types available </remarks>
+        /// <remarks> 'Advanced Search' localization string </remarks>
         public string AdvancedSearch { get; private set; }
 
-        /// <remarks> Tabs on aggregation home page - based on search types available </remarks>
+        /// <remarks> 'Basic Search' localization string </remarks>
         public string BasicSearch { get; private set; }
+
+        /// <remarks> 'Map Search' localization string </remarks>
+        public string MapSearch { get; private set; }
+
+        /// <remarks> 'Newspaper Search' localization string </remarks>
+        public string NewspaperSearch { get; private set; }
+
+        /// <remarks> 'Text Search' localization string </remarks>
+        public string TextSearch { get; private set; }
 
         /// <remarks> 'Display Text' localization string </remarks>
         public string DisplayText { get; private set; }
-
-        /// <remarks> Tabs on aggregation home page - based on search types available </remarks>
-        public string MapSearch { get; private set; }
-
-        /// <remarks> Tabs on aggregation home page - based on search types available </remarks>
-        public string NewspaperSearch { get; private set; }
-
-        /// <remarks> Tabs on aggregation home page - based on search types available </remarks>
-        public string TextSearch { get; private set; }
 
     }
 }

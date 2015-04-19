@@ -22,35 +22,35 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Click Here To Report The Problem":
-                    ClickHereToReportTheProblem = Value;
-                    break;
-
                 case "Unable To Pull Html View For Item":
                     UnableToPullHtmlViewForItem = Value;
-                    break;
-
-                case "Unable To Pull Html View For Item XXX":
-                    UnableToPullHtmlViewForItemXXX = Value;
                     break;
 
                 case "We Apologize For The Inconvenience":
                     WeApologizeForTheInconvenience = Value;
                     break;
 
+                case "Click Here To Report The Problem":
+                    ClickHereToReportTheProblem = Value;
+                    break;
+
+                case "Unable To Pull Html View For Item XXX":
+                    UnableToPullHtmlViewForItemXXX = Value;
+                    break;
+
             }
         }
-        /// <remarks> 'Click here to report the problem.' localization string </remarks>
-        public string ClickHereToReportTheProblem { get; private set; }
-
         /// <remarks> 'Unable to pull html view for item' localization string </remarks>
         public string UnableToPullHtmlViewForItem { get; private set; }
 
-        /// <remarks> 'Unable to pull html view for item %1' localization string </remarks>
-        public string UnableToPullHtmlViewForItemXXX { get; private set; }
-
         /// <remarks> 'We apologize for the inconvenience.' localization string </remarks>
         public string WeApologizeForTheInconvenience { get; private set; }
+
+        /// <remarks> 'Click here to report the problem.' localization string </remarks>
+        public string ClickHereToReportTheProblem { get; private set; }
+
+        /// <remarks> 'Unable to pull html view for item %1' localization string </remarks>
+        public string UnableToPullHtmlViewForItemXXX { get; private set; }
 
     }
 }

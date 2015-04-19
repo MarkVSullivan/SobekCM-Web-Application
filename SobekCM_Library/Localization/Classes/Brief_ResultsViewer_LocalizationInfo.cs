@@ -32,7 +32,7 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> Text used when displaying an access-restricted item in the results list </remarks>
+        /// <remarks> 'Access Restricted' localization string </remarks>
         public string AccessRestricted { get; private set; }
 
         /// <remarks> 'MISSING THUMBNAIL' localization string </remarks>

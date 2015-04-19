@@ -22,28 +22,12 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "XXX Contact Sent":
-                    XXXContactSent = Value;
-                    break;
-
-                case "XXX Contact Us":
-                    XXXContactUs = Value;
-                    break;
-
-                case "XXX Error":
-                    XXXError = Value;
-                    break;
-
-                case "XXX Home":
-                    XXXHome = Value;
-                    break;
-
                 case "XXX Item":
                     XXXItem = Value;
                     break;
 
-                case "XXX Preferences":
-                    XXXPreferences = Value;
+                case "XXX Home":
+                    XXXHome = Value;
                     break;
 
                 case "XXX Search":
@@ -54,45 +38,61 @@ namespace SobekCM.Library.Localization.Classes
                     XXXSearchResults = Value;
                     break;
 
-                case "Xxxs XXX":
-                    XxxsXXX = Value;
+                case "XXX Preferences":
+                    XXXPreferences = Value;
+                    break;
+
+                case "XXX Contact Us":
+                    XXXContactUs = Value;
+                    break;
+
+                case "XXX Contact Sent":
+                    XXXContactSent = Value;
+                    break;
+
+                case "XXX Error":
+                    XXXError = Value;
                     break;
 
                 case "Log Out":
                     LogOut = Value;
                     break;
 
+                case "Xxxs XXX":
+                    XxxsXXX = Value;
+                    break;
+
             }
         }
-        /// <remarks> "Used for title of web page (i.e., ""dLOC - Contact Sent"" )" </remarks>
-        public string XXXContactSent { get; private set; }
-
-        /// <remarks> "Used for title of web page (i.e., ""dLOC - Contact Us"" )" </remarks>
-        public string XXXContactUs { get; private set; }
-
-        /// <remarks> "Used for title of web page (i.e., ""dLOC Error )" </remarks>
-        public string XXXError { get; private set; }
-
-        /// <remarks> "Used for title of web page (i.e.,  ""dLOC - Home"" )" </remarks>
-        public string XXXHome { get; private set; }
-
-        /// <remarks> "Very rarely used for the title of the web page ( i.e., ""dLOC Item"" )" </remarks>
+        /// <remarks> '%1 Item' localization string </remarks>
         public string XXXItem { get; private set; }
 
-        /// <remarks> "Used for title of web page (i.e., ""dLOC - Preferences )" </remarks>
-        public string XXXPreferences { get; private set; }
+        /// <remarks> '%1 Home' localization string </remarks>
+        public string XXXHome { get; private set; }
 
-        /// <remarks> "Used for title of web page (i.e., ""dLOC - Search"" )" </remarks>
+        /// <remarks> '%1 Search' localization string </remarks>
         public string XXXSearch { get; private set; }
 
-        /// <remarks> "Used for title of web page (i.e., ""dLOC - Search Results"" )" </remarks>
+        /// <remarks> '%1 Search Results' localization string </remarks>
         public string XXXSearchResults { get; private set; }
 
-        /// <remarks> '%1's %2 ' localization string </remarks>
-        public string XxxsXXX { get; private set; }
+        /// <remarks> '%1 Preferences' localization string </remarks>
+        public string XXXPreferences { get; private set; }
+
+        /// <remarks> '%1 Contact Us' localization string </remarks>
+        public string XXXContactUs { get; private set; }
+
+        /// <remarks> '%1 Contact Sent' localization string </remarks>
+        public string XXXContactSent { get; private set; }
+
+        /// <remarks> '%1 Error' localization string </remarks>
+        public string XXXError { get; private set; }
 
         /// <remarks> 'Log Out' localization string </remarks>
         public string LogOut { get; private set; }
+
+        /// <remarks> '%1's %2 ' localization string </remarks>
+        public string XxxsXXX { get; private set; }
 
     }
 }

@@ -30,41 +30,41 @@ namespace SobekCM.Library.Localization.Classes
                     BrowseBy = Value;
                     break;
 
+                case "Public Browses":
+                    PublicBrowses = Value;
+                    break;
+
                 case "Internal Browses":
                     InternalBrowses = Value;
+                    break;
+
+                case "Select A Metadata Field To Browse By From The List On The Left":
+                    SelectAMetadataFieldToBrowseByFromTheList = Value;
                     break;
 
                 case "NO MATCHING VALUES":
                     NOMATCHINGVALUES = Value;
                     break;
 
-                case "Public Browses":
-                    PublicBrowses = Value;
-                    break;
-
-                case "Select A Metadata Field To Browse By From The List On The Left":
-                    SelectAMetadataFieldToBrowseByFromTheListOnTheLeft = Value;
-                    break;
-
             }
         }
-        /// <remarks> "i.e., Browse by Title.  When metadata browsing, appears in gray box at top" </remarks>
+        /// <remarks> 'Browse by %1' localization string </remarks>
         public string BrowseByXXX { get; private set; }
 
-        /// <remarks> Text on the facet box to the left </remarks>
+        /// <remarks> 'Browse By:' localization string </remarks>
         public string BrowseBy { get; private set; }
 
-        /// <remarks> Only shows up if logged on as internal user </remarks>
-        public string InternalBrowses { get; private set; }
-
-        /// <remarks> Displays if there no metadata values returned in the browse </remarks>
-        public string NOMATCHINGVALUES { get; private set; }
-
-        /// <remarks> Then all public browses are lists </remarks>
+        /// <remarks> 'Public Browses' localization string </remarks>
         public string PublicBrowses { get; private set; }
 
-        /// <remarks> Instructions appears sometimes </remarks>
-        public string SelectAMetadataFieldToBrowseByFromTheListOnTheLeft { get; private set; }
+        /// <remarks> 'Internal Browses' localization string </remarks>
+        public string InternalBrowses { get; private set; }
+
+        /// <remarks> 'Select a metadata field to browse by from the list on the left' localization string </remarks>
+        public string SelectAMetadataFieldToBrowseByFromTheList { get; private set; }
+
+        /// <remarks> 'NO MATCHING VALUES' localization string </remarks>
+        public string NOMATCHINGVALUES { get; private set; }
 
     }
 }

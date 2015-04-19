@@ -23,13 +23,13 @@ namespace SobekCM.Library.Localization.Classes
             switch (Key)
             {
                 case "The Item You Have Requested Contains Copyright Material And Is Reserved For Singleuse Br Br Someone Has Currently Checked Out This Digital Copy For Viewing Br Br Please Try Again In Several Minutes":
-                    TheItemYouHaveRequestedContainsCopyrightMaterialAndIsReservedForSingleuseBrBrSomeoneHasCurrentlyCheckedOutThisDigitalCopyForViewingBrBrPleaseTryAgainInSeveralMinutes = Value;
+                    TheItemYouHaveRequestedContainsCopyrightMat = Value;
                     break;
 
             }
         }
-        /// <remarks> If an item is marked for single use and someone else is already using the item </remarks>
-        public string TheItemYouHaveRequestedContainsCopyrightMaterialAndIsReservedForSingleuseBrBrSomeoneHasCurrentlyCheckedOutThisDigitalCopyForViewingBrBrPleaseTryAgainInSeveralMinutes { get; private set; }
+        /// <remarks> 'The item you have requested contains copyright material and is reserved for single-use.  <br /><br />Someone has currently checked out this digital copy for viewing.  <br /><br />Please try again in several minutes.' localization string </remarks>
+        public string TheItemYouHaveRequestedContainsCopyrightMat { get; private set; }
 
     }
 }

@@ -22,32 +22,24 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Confirm Delete Of This Item":
-                    ConfirmDeleteOfThisItem = Value;
-                    break;
-
-                case "DELETE FAILED":
-                    DELETEFAILED = Value;
-                    break;
-
                 case "Delete Item":
                     DeleteItem = Value;
                     break;
 
-                case "DELETE PARTIALLY SUCCESSFUL":
-                    DELETEPARTIALLYSUCCESSFUL = Value;
+                case "Enter DELETE In The Textbox Below And Select GO To Complete This Deletion":
+                    EnterDELETEInTheTextboxBelowAndSelectGOTo = Value;
+                    break;
+
+                case "Confirm Delete Of This Item":
+                    ConfirmDeleteOfThisItem = Value;
                     break;
 
                 case "DELETE SUCCESSFUL":
                     DELETESUCCESSFUL = Value;
                     break;
 
-                case "Enter DELETE In The Textbox Below And Select GO To Complete This Deletion":
-                    EnterDELETEInTheTextboxBelowAndSelectGOToCompleteThisDeletion = Value;
-                    break;
-
-                case "Error While Performing Delete In Database":
-                    ErrorWhilePerformingDeleteInDatabase = Value;
+                case "DELETE FAILED":
+                    DELETEFAILED = Value;
                     break;
 
                 case "Insufficient User Permissions To Perform Delete":
@@ -58,38 +50,46 @@ namespace SobekCM.Library.Localization.Classes
                     ItemIndicatedDoesNotExists = Value;
                     break;
 
+                case "Error While Performing Delete In Database":
+                    ErrorWhilePerformingDeleteInDatabase = Value;
+                    break;
+
+                case "DELETE PARTIALLY SUCCESSFUL":
+                    DELETEPARTIALLYSUCCESSFUL = Value;
+                    break;
+
                 case "Unable To Move All Files To The RECYCLE BIN Folder":
                     UnableToMoveAllFilesToTheRECYCLEBINFolder = Value;
                     break;
 
             }
         }
-        /// <remarks> 'Confirm delete of this item' localization string </remarks>
-        public string ConfirmDeleteOfThisItem { get; private set; }
-
-        /// <remarks> 'DELETE FAILED' localization string </remarks>
-        public string DELETEFAILED { get; private set; }
-
         /// <remarks> 'Delete Item' localization string </remarks>
         public string DeleteItem { get; private set; }
 
-        /// <remarks> 'DELETE PARTIALLY SUCCESSFUL' localization string </remarks>
-        public string DELETEPARTIALLYSUCCESSFUL { get; private set; }
+        /// <remarks> 'Enter DELETE in the textbox below and select GO to complete this deletion.' localization string </remarks>
+        public string EnterDELETEInTheTextboxBelowAndSelectGOTo { get; private set; }
+
+        /// <remarks> 'Confirm delete of this item' localization string </remarks>
+        public string ConfirmDeleteOfThisItem { get; private set; }
 
         /// <remarks> 'DELETE SUCCESSFUL' localization string </remarks>
         public string DELETESUCCESSFUL { get; private set; }
 
-        /// <remarks> 'Enter DELETE in the textbox below and select GO to complete this deletion.' localization string </remarks>
-        public string EnterDELETEInTheTextboxBelowAndSelectGOToCompleteThisDeletion { get; private set; }
-
-        /// <remarks> 'Error while performing delete in database' localization string </remarks>
-        public string ErrorWhilePerformingDeleteInDatabase { get; private set; }
+        /// <remarks> 'DELETE FAILED' localization string </remarks>
+        public string DELETEFAILED { get; private set; }
 
         /// <remarks> 'Insufficient user permissions to perform delete' localization string </remarks>
         public string InsufficientUserPermissionsToPerformDelete { get; private set; }
 
         /// <remarks> 'Item indicated does not exists' localization string </remarks>
         public string ItemIndicatedDoesNotExists { get; private set; }
+
+        /// <remarks> 'Error while performing delete in database' localization string </remarks>
+        public string ErrorWhilePerformingDeleteInDatabase { get; private set; }
+
+        /// <remarks> 'DELETE PARTIALLY SUCCESSFUL' localization string </remarks>
+        public string DELETEPARTIALLYSUCCESSFUL { get; private set; }
 
         /// <remarks> 'Unable to move all files to the RECYCLE BIN folder' localization string </remarks>
         public string UnableToMoveAllFilesToTheRECYCLEBINFolder { get; private set; }

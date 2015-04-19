@@ -22,42 +22,42 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Default Sort":
-                    DefaultSort = Value;
-                    break;
-
-                case "Default View":
-                    DefaultView = Value;
+                case "Preferences":
+                    Preferences = Value;
                     break;
 
                 case "Language":
                     Language = Value;
                     break;
 
-                case "Preferences":
-                    Preferences = Value;
-                    break;
-
                 case "Return":
                     Return = Value;
                     break;
 
+                case "Default View":
+                    DefaultView = Value;
+                    break;
+
+                case "Default Sort":
+                    DefaultSort = Value;
+                    break;
+
             }
         }
-        /// <remarks> Allows user to enter their preferences for some display options </remarks>
-        public string DefaultSort { get; private set; }
-
-        /// <remarks> Allows user to enter their preferences for some display options </remarks>
-        public string DefaultView { get; private set; }
-
-        /// <remarks> Allows user to enter their preferences for some display options </remarks>
-        public string Language { get; private set; }
-
-        /// <remarks> Allows user to enter their preferences for some display options </remarks>
+        /// <remarks> 'Preferences' localization string </remarks>
         public string Preferences { get; private set; }
 
-        /// <remarks> Allows user to enter their preferences for some display options </remarks>
+        /// <remarks> 'Language:' localization string </remarks>
+        public string Language { get; private set; }
+
+        /// <remarks> 'Return' localization string </remarks>
         public string Return { get; private set; }
+
+        /// <remarks> 'Default View:' localization string </remarks>
+        public string DefaultView { get; private set; }
+
+        /// <remarks> 'Default Sort:' localization string </remarks>
+        public string DefaultSort { get; private set; }
 
     }
 }

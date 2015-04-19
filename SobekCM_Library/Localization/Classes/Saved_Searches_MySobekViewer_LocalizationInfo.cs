@@ -22,8 +22,16 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "ACTIONS":
-                    ACTIONS = Value;
+                case "My Saved Searches":
+                    MySavedSearches = Value;
+                    break;
+
+                case "You Do Not Have Any Saved Searches Or Browses Br Br To Add A Search Or Browse Use The ADD Button While Viewing The Results Of Your Search Or Browse":
+                    YouDoNotHaveAnySavedSearchesOrBrowsesBrB = Value;
+                    break;
+
+                case "SAVED SEARCH":
+                    SAVEDSEARCH = Value;
                     break;
 
                 case "Click To Delete This Saved Search":
@@ -34,44 +42,36 @@ namespace SobekCM.Library.Localization.Classes
                     ClickToViewThisSearch = Value;
                     break;
 
+                case "ACTIONS":
+                    ACTIONS = Value;
+                    break;
+
                 case "Delete":
                     Delete = Value;
                     break;
 
-                case "My Saved Searches":
-                    MySavedSearches = Value;
-                    break;
-
-                case "SAVED SEARCH":
-                    SAVEDSEARCH = Value;
-                    break;
-
-                case "You Do Not Have Any Saved Searches Or Browses Br Br To Add A Search Or Browse Use The ADD Button While Viewing The Results Of Your Search Or Browse":
-                    YouDoNotHaveAnySavedSearchesOrBrowsesBrBrToAddASearchOrBrowseUseTheADDButtonWhileViewingTheResultsOfYourSearchOrBrowse = Value;
-                    break;
-
             }
         }
+        /// <remarks> 'My Saved Searches' localization string </remarks>
+        public string MySavedSearches { get; private set; }
+
+        /// <remarks> '"You do not have any saved searches or browses.<br /><br />To add a search or browse, use the ADD button while viewing the results of your search or browse."' localization string </remarks>
+        public string YouDoNotHaveAnySavedSearchesOrBrowsesBrB { get; private set; }
+
+        /// <remarks> 'SAVED SEARCH' localization string </remarks>
+        public string SAVEDSEARCH { get; private set; }
+
+        /// <remarks> 'Click to delete this saved search' localization string </remarks>
+        public string ClickToDeleteThisSavedSearch { get; private set; }
+
+        /// <remarks> 'Click to view this search' localization string </remarks>
+        public string ClickToViewThisSearch { get; private set; }
+
         /// <remarks> 'ACTIONS' localization string </remarks>
         public string ACTIONS { get; private set; }
 
-        /// <remarks> Hover over text for the delete action to remove an existing saved search </remarks>
-        public string ClickToDeleteThisSavedSearch { get; private set; }
-
-        /// <remarks> Hover over text for the view action to see the saved search </remarks>
-        public string ClickToViewThisSearch { get; private set; }
-
         /// <remarks> 'delete' localization string </remarks>
         public string Delete { get; private set; }
-
-        /// <remarks> Title for the saved searches viewer </remarks>
-        public string MySavedSearches { get; private set; }
-
-        /// <remarks> Header for the table which lists all the saved searches </remarks>
-        public string SAVEDSEARCH { get; private set; }
-
-        /// <remarks> Prompt provided if the user does not have any saved searches </remarks>
-        public string YouDoNotHaveAnySavedSearchesOrBrowsesBrBrToAddASearchOrBrowseUseTheADDButtonWhileViewingTheResultsOfYourSearchOrBrowse { get; private set; }
 
     }
 }

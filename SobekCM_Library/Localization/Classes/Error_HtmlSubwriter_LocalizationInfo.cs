@@ -22,20 +22,12 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Click Here To Report An Error":
-                    ClickHereToReportAnError = Value;
-                    break;
-
-                case "Click Here To Report The Problem":
-                    ClickHereToReportTheProblem = Value;
-                    break;
-
-                case "Click Here To Return To The Library":
-                    ClickHereToReturnToTheLibrary = Value;
-                    break;
-
                 case "The Item Indicated Was Not Valid":
                     TheItemIndicatedWasNotValid = Value;
+                    break;
+
+                case "Click Here To Report An Error":
+                    ClickHereToReportAnError = Value;
                     break;
 
                 case "Unknown Error Occurred":
@@ -46,25 +38,33 @@ namespace SobekCM.Library.Localization.Classes
                     WeApologizeForTheInconvenience = Value;
                     break;
 
+                case "Click Here To Return To The Library":
+                    ClickHereToReturnToTheLibrary = Value;
+                    break;
+
+                case "Click Here To Report The Problem":
+                    ClickHereToReportTheProblem = Value;
+                    break;
+
             }
         }
-        /// <remarks> "Used when an item was indicated, but not valid" </remarks>
-        public string ClickHereToReportAnError { get; private set; }
-
-        /// <remarks> Used for an unexpected error being encountered </remarks>
-        public string ClickHereToReportTheProblem { get; private set; }
-
-        /// <remarks> Used for an unexpected error being encountered </remarks>
-        public string ClickHereToReturnToTheLibrary { get; private set; }
-
-        /// <remarks> "Used when an item was indicated, but not valid" </remarks>
+        /// <remarks> 'The item indicated was not valid.' localization string </remarks>
         public string TheItemIndicatedWasNotValid { get; private set; }
 
-        /// <remarks> Used for an unexpected error being encountered </remarks>
+        /// <remarks> 'Click here to report an error.' localization string </remarks>
+        public string ClickHereToReportAnError { get; private set; }
+
+        /// <remarks> 'Unknown error occurred.' localization string </remarks>
         public string UnknownErrorOccurred { get; private set; }
 
-        /// <remarks> Used for an unexpected error being encountered </remarks>
+        /// <remarks> 'We apologize for the inconvenience.' localization string </remarks>
         public string WeApologizeForTheInconvenience { get; private set; }
+
+        /// <remarks> 'Click here to return to the library.' localization string </remarks>
+        public string ClickHereToReturnToTheLibrary { get; private set; }
+
+        /// <remarks> 'Click here to report the problem.' localization string </remarks>
+        public string ClickHereToReportTheProblem { get; private set; }
 
     }
 }

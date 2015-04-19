@@ -22,6 +22,10 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
+                case "Unknown Error While Retrieving Text":
+                    UnknownErrorWhileRetrievingText = Value;
+                    break;
+
                 case "No Text File Exists For This Page":
                     NoTextFileExistsForThisPage = Value;
                     break;
@@ -30,20 +34,16 @@ namespace SobekCM.Library.Localization.Classes
                     NoTextIsRecordedForThisPage = Value;
                     break;
 
-                case "Unknown Error While Retrieving Text":
-                    UnknownErrorWhileRetrievingText = Value;
-                    break;
-
             }
         }
+        /// <remarks> 'Unknown error while retrieving text' localization string </remarks>
+        public string UnknownErrorWhileRetrievingText { get; private set; }
+
         /// <remarks> 'No text file exists for this page' localization string </remarks>
         public string NoTextFileExistsForThisPage { get; private set; }
 
         /// <remarks> 'No text is recorded for this page' localization string </remarks>
         public string NoTextIsRecordedForThisPage { get; private set; }
-
-        /// <remarks> 'Unknown error while retrieving text' localization string </remarks>
-        public string UnknownErrorWhileRetrievingText { get; private set; }
 
     }
 }

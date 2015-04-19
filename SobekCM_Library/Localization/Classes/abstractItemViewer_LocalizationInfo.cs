@@ -22,21 +22,21 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Page":
-                    Page = Value;
-                    break;
-
                 case "Unnumbered":
                     Unnumbered = Value;
                     break;
 
+                case "Page":
+                    Page = Value;
+                    break;
+
             }
         }
-        /// <remarks> Used to name pages in the Go to: dropdown </remarks>
-        public string Page { get; private set; }
-
-        /// <remarks> Used to name pages in the Go to: dropdown </remarks>
+        /// <remarks> 'Unnumbered ' localization string </remarks>
         public string Unnumbered { get; private set; }
+
+        /// <remarks> 'Page ' localization string </remarks>
+        public string Page { get; private set; }
 
     }
 }

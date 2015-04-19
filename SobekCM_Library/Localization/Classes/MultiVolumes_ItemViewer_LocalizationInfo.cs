@@ -22,20 +22,40 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Access":
-                    Access = Value;
-                    break;
-
                 case "All Issues":
                     AllIssues = Value;
+                    break;
+
+                case "Related Maps":
+                    RelatedMaps = Value;
+                    break;
+
+                case "MISSING THUMBNAIL":
+                    MISSINGTHUMBNAIL = Value;
+                    break;
+
+                case "Related Map Sets":
+                    RelatedMapSets = Value;
+                    break;
+
+                case "Related Flights":
+                    RelatedFlights = Value;
                     break;
 
                 case "All Volumes":
                     AllVolumes = Value;
                     break;
 
-                case "Dark":
-                    Dark = Value;
+                case "Tree View":
+                    TreeView = Value;
+                    break;
+
+                case "Thumbnails":
+                    Thumbnails = Value;
+                    break;
+
+                case "List View":
+                    ListView = Value;
                     break;
 
                 case "Level 1":
@@ -50,98 +70,78 @@ namespace SobekCM.Library.Localization.Classes
                     Level3 = Value;
                     break;
 
-                case "List View":
-                    ListView = Value;
-                    break;
-
-                case "MISSING THUMBNAIL":
-                    MISSINGTHUMBNAIL = Value;
-                    break;
-
-                case "Private":
-                    Private = Value;
+                case "Access":
+                    Access = Value;
                     break;
 
                 case "Public":
                     Public = Value;
                     break;
 
-                case "Related Flights":
-                    RelatedFlights = Value;
-                    break;
-
-                case "Related Map Sets":
-                    RelatedMapSets = Value;
-                    break;
-
-                case "Related Maps":
-                    RelatedMaps = Value;
+                case "Private":
+                    Private = Value;
                     break;
 
                 case "Restricted":
                     Restricted = Value;
                     break;
 
-                case "Thumbnails":
-                    Thumbnails = Value;
-                    break;
-
-                case "Tree View":
-                    TreeView = Value;
+                case "Dark":
+                    Dark = Value;
                     break;
 
             }
         }
-        /// <remarks> "Access restrictions ( private, public, restricted, etc ..)" </remarks>
-        public string Access { get; private set; }
-
-        /// <remarks> For item-level nav menu  </remarks>
+        /// <remarks> 'All Issues' localization string </remarks>
         public string AllIssues { get; private set; }
 
-        /// <remarks> For item-level nav menu  </remarks>
-        public string AllVolumes { get; private set; }
-
-        /// <remarks> 'dark' localization string </remarks>
-        public string Dark { get; private set; }
-
-        /// <remarks> First level of the serial hierarchy </remarks>
-        public string Level1 { get; private set; }
-
-        /// <remarks> Second level of the serial hierarchy </remarks>
-        public string Level2 { get; private set; }
-
-        /// <remarks> Third level of the serial hierarchy </remarks>
-        public string Level3 { get; private set; }
-
-        /// <remarks> Sub-option under the all volumes on the item-level nav menu </remarks>
-        public string ListView { get; private set; }
+        /// <remarks> 'Related Maps' localization string </remarks>
+        public string RelatedMaps { get; private set; }
 
         /// <remarks> 'MISSING THUMBNAIL' localization string </remarks>
         public string MISSINGTHUMBNAIL { get; private set; }
 
-        /// <remarks> 'private' localization string </remarks>
-        public string Private { get; private set; }
+        /// <remarks> 'Related Map sets' localization string </remarks>
+        public string RelatedMapSets { get; private set; }
+
+        /// <remarks> 'Related Flights' localization string </remarks>
+        public string RelatedFlights { get; private set; }
+
+        /// <remarks> 'All Volumes' localization string </remarks>
+        public string AllVolumes { get; private set; }
+
+        /// <remarks> 'Tree View' localization string </remarks>
+        public string TreeView { get; private set; }
+
+        /// <remarks> 'Thumbnails' localization string </remarks>
+        public string Thumbnails { get; private set; }
+
+        /// <remarks> 'List View' localization string </remarks>
+        public string ListView { get; private set; }
+
+        /// <remarks> 'Level 1' localization string </remarks>
+        public string Level1 { get; private set; }
+
+        /// <remarks> 'Level 2' localization string </remarks>
+        public string Level2 { get; private set; }
+
+        /// <remarks> 'Level 3' localization string </remarks>
+        public string Level3 { get; private set; }
+
+        /// <remarks> 'Access' localization string </remarks>
+        public string Access { get; private set; }
 
         /// <remarks> 'public' localization string </remarks>
         public string Public { get; private set; }
 
-        /// <remarks> For item-level nav menu  </remarks>
-        public string RelatedFlights { get; private set; }
-
-        /// <remarks> 'Related Map sets' localization string </remarks>
-        public string RelatedMapSets { get; private set; }
-
-        /// <remarks> For item-level nav menu  </remarks>
-        public string RelatedMaps { get; private set; }
+        /// <remarks> 'private' localization string </remarks>
+        public string Private { get; private set; }
 
         /// <remarks> 'restricted' localization string </remarks>
         public string Restricted { get; private set; }
 
-        /// <remarks> Sub-option under the all volumes on the item-level nav menu </remarks>
-        public string Thumbnails { get; private set; }
-
-        /// <remarks> Sub-option under the all volumes on the item-level nav menu </remarks>
-        public string TreeView { get; private set; }
+        /// <remarks> 'dark' localization string </remarks>
+        public string Dark { get; private set; }
 
     }
 }

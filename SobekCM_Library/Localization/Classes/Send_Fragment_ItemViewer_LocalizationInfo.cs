@@ -22,20 +22,20 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Cancel":
-                    Cancel = Value;
-                    break;
-
-                case "Close":
-                    Close = Value;
-                    break;
-
-                case "Comments":
-                    Comments = Value;
+                case "Send This Item To A Friend":
+                    SendThisItemToAFriend = Value;
                     break;
 
                 case "Enter The Email Information Below":
                     EnterTheEmailInformationBelow = Value;
+                    break;
+
+                case "To":
+                    To = Value;
+                    break;
+
+                case "Comments":
+                    Comments = Value;
                     break;
 
                 case "Format":
@@ -46,81 +46,81 @@ namespace SobekCM.Library.Localization.Classes
                     HTML = Value;
                     break;
 
-                case "Plain Text":
-                    PlainText = Value;
+                case "Text":
+                    Text = Value;
                     break;
 
                 case "Send":
                     Send = Value;
                     break;
 
-                case "Send This Item To A Friend":
-                    SendThisItemToAFriend = Value;
-                    break;
-
-                case "Text":
-                    Text = Value;
-                    break;
-
-                case "To":
-                    To = Value;
+                case "You Must Wait XXX Seconds Between Sending Emails":
+                    YouMustWaitXXXSecondsBetweenSendingEmails = Value;
                     break;
 
                 case "You Cannot Send To More Than XXX Email Addresses Simultaneously":
-                    YouCannotSendToMoreThanXXXEmailAddressesSimultaneously = Value;
+                    YouCannotSendToMoreThanXXXEmailAddressesS = Value;
                     break;
 
                 case "You Have Reached Your Daily Quota For Emails":
                     YouHaveReachedYourDailyQuotaForEmails = Value;
                     break;
 
-                case "You Must Wait XXX Seconds Between Sending Emails":
-                    YouMustWaitXXXSecondsBetweenSendingEmails = Value;
+                case "Close":
+                    Close = Value;
+                    break;
+
+                case "Plain Text":
+                    PlainText = Value;
+                    break;
+
+                case "Cancel":
+                    Cancel = Value;
                     break;
 
             }
         }
-        /// <remarks> 'Cancel' localization string </remarks>
-        public string Cancel { get; private set; }
-
-        /// <remarks> 'Close' localization string </remarks>
-        public string Close { get; private set; }
-
-        /// <remarks> Pop-up form for emailing an item </remarks>
-        public string Comments { get; private set; }
-
-        /// <remarks> Pop-up form for emailing an item </remarks>
-        public string EnterTheEmailInformationBelow { get; private set; }
-
-        /// <remarks> Pop-up form for emailing an item </remarks>
-        public string Format { get; private set; }
-
-        /// <remarks> Send the email as HTML format </remarks>
-        public string HTML { get; private set; }
-
-        /// <remarks> 'Plain Text' localization string </remarks>
-        public string PlainText { get; private set; }
-
-        /// <remarks> Title for the send button </remarks>
-        public string Send { get; private set; }
-
-        /// <remarks> Title for the pop-up form for emailing an item </remarks>
+        /// <remarks> 'Send this Item to a Friend' localization string </remarks>
         public string SendThisItemToAFriend { get; private set; }
 
-        /// <remarks> Send the email plain text format </remarks>
-        public string Text { get; private set; }
+        /// <remarks> 'Enter the email information below' localization string </remarks>
+        public string EnterTheEmailInformationBelow { get; private set; }
 
-        /// <remarks> Pop-up form for emailing an item </remarks>
+        /// <remarks> 'To:' localization string </remarks>
         public string To { get; private set; }
 
+        /// <remarks> 'Comments:' localization string </remarks>
+        public string Comments { get; private set; }
+
+        /// <remarks> 'Format:' localization string </remarks>
+        public string Format { get; private set; }
+
+        /// <remarks> 'HTML:' localization string </remarks>
+        public string HTML { get; private set; }
+
+        /// <remarks> 'Text:' localization string </remarks>
+        public string Text { get; private set; }
+
+        /// <remarks> 'Send' localization string </remarks>
+        public string Send { get; private set; }
+
+        /// <remarks> 'You must wait %1 seconds between sending emails.' localization string </remarks>
+        public string YouMustWaitXXXSecondsBetweenSendingEmails { get; private set; }
+
         /// <remarks> 'You cannot send to more than %1 email addresses simultaneously.' localization string </remarks>
-        public string YouCannotSendToMoreThanXXXEmailAddressesSimultaneously { get; private set; }
+        public string YouCannotSendToMoreThanXXXEmailAddressesS { get; private set; }
 
         /// <remarks> 'You have reached your daily quota for emails.' localization string </remarks>
         public string YouHaveReachedYourDailyQuotaForEmails { get; private set; }
 
-        /// <remarks> 'You must wait %1 seconds between sending emails.' localization string </remarks>
-        public string YouMustWaitXXXSecondsBetweenSendingEmails { get; private set; }
+        /// <remarks> 'Close' localization string </remarks>
+        public string Close { get; private set; }
+
+        /// <remarks> 'Plain Text' localization string </remarks>
+        public string PlainText { get; private set; }
+
+        /// <remarks> 'Cancel' localization string </remarks>
+        public string Cancel { get; private set; }
 
     }
 }

@@ -22,42 +22,42 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "The Following XXX Matches In XXX Sets Have No Coordinate Information":
-                    TheFollowingXXXMatchesInXXXSetsHaveNoCoordinateInformation = Value;
-                    break;
-
-                case "The Following XXX Matches Have No Coordinate Information":
-                    TheFollowingXXXMatchesHaveNoCoordinateInformation = Value;
+                case "The Following XXX Matches In XXX Sets Share The Same Coordinate Information":
+                    TheFollowingXXXMatchesInXXXSetsShareTheSa = Value;
                     break;
 
                 case "The Following XXX Matches Share The Same Coordinate Information":
-                    TheFollowingXXXMatchesShareTheSameCoordinateInformation = Value;
+                    TheFollowingXXXMatchesShareTheSameCoordinat = Value;
                     break;
 
-                case "The Following XXX Matches In XXX Sets Share The Same Coordinate Information":
-                    TheFollowingXXXMatchesInXXXSetsShareTheSameCoordinateInformation = Value;
+                case "The Following XXX Matches In XXX Sets Have No Coordinate Information":
+                    TheFollowingXXXMatchesInXXXSetsHaveNoCoor = Value;
+                    break;
+
+                case "The Following XXX Matches Have No Coordinate Information":
+                    TheFollowingXXXMatchesHaveNoCoordinateInfor = Value;
                     break;
 
                 case "The Following XXX Titles Have The Same Coordinate Point":
-                    TheFollowingXXXTitlesHaveTheSameCoordinatePoint = Value;
+                    TheFollowingXXXTitlesHaveTheSameCoordinate = Value;
                     break;
 
             }
         }
-        /// <remarks> 'The following  %1 matches  in %2  sets have no coordinate information' localization string </remarks>
-        public string TheFollowingXXXMatchesInXXXSetsHaveNoCoordinateInformation { get; private set; }
-
-        /// <remarks> 'The following %1  matches have no coordinate information' localization string </remarks>
-        public string TheFollowingXXXMatchesHaveNoCoordinateInformation { get; private set; }
+        /// <remarks> 'The following %1 matches in  %2 sets share the same coordinate information' localization string </remarks>
+        public string TheFollowingXXXMatchesInXXXSetsShareTheSa { get; private set; }
 
         /// <remarks> 'The following %1  matches share the same coordinate information' localization string </remarks>
-        public string TheFollowingXXXMatchesShareTheSameCoordinateInformation { get; private set; }
+        public string TheFollowingXXXMatchesShareTheSameCoordinat { get; private set; }
 
-        /// <remarks> 'The following %1 matches in  %2 sets share the same coordinate information' localization string </remarks>
-        public string TheFollowingXXXMatchesInXXXSetsShareTheSameCoordinateInformation { get; private set; }
+        /// <remarks> 'The following  %1 matches  in %2  sets have no coordinate information' localization string </remarks>
+        public string TheFollowingXXXMatchesInXXXSetsHaveNoCoor { get; private set; }
+
+        /// <remarks> 'The following %1  matches have no coordinate information' localization string </remarks>
+        public string TheFollowingXXXMatchesHaveNoCoordinateInfor { get; private set; }
 
         /// <remarks> 'The following %1 titles have the same coordinate point' localization string </remarks>
-        public string TheFollowingXXXTitlesHaveTheSameCoordinatePoint { get; private set; }
+        public string TheFollowingXXXTitlesHaveTheSameCoordinate { get; private set; }
 
     }
 }

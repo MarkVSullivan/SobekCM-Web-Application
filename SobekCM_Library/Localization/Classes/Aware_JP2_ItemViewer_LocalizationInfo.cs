@@ -22,28 +22,32 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Click On Thumbnail To Recenter Image":
-                    ClickOnThumbnailToRecenterImage = Value;
+                case "Zoom Out":
+                    ZoomOut = Value;
+                    break;
+
+                case "Zoom To Level":
+                    ZoomToLevel = Value;
                     break;
 
                 case "Current Zoom":
                     CurrentZoom = Value;
                     break;
 
-                case "JPEG2000 IMAGE NOT FOUND IN DATABASE":
-                    JPEG2000IMAGENOTFOUNDINDATABASE = Value;
+                case "Zoom In":
+                    ZoomIn = Value;
                     break;
 
-                case "Large Size View":
-                    LargeSizeView = Value;
+                case "Rotate Clockwise":
+                    RotateClockwise = Value;
                     break;
 
-                case "Medium Size View":
-                    MediumSizeView = Value;
+                case "Rotate Counter Clockwise":
+                    RotateCounterClockwise = Value;
                     break;
 
-                case "Mediumlarge Size View":
-                    MediumlargeSizeView = Value;
+                case "Pan Up":
+                    PanUp = Value;
                     break;
 
                 case "Pan Down":
@@ -58,55 +62,78 @@ namespace SobekCM.Library.Localization.Classes
                     PanRight = Value;
                     break;
 
-                case "Pan Up":
-                    PanUp = Value;
-                    break;
-
-                case "Rotate Clockwise":
-                    RotateClockwise = Value;
-                    break;
-
-                case "Rotate Counter Clockwise":
-                    RotateCounterClockwise = Value;
-                    break;
-
-                case "Small Size View":
-                    SmallSizeView = Value;
+                case "Click On Thumbnail To Recenter Image":
+                    ClickOnThumbnailToRecenterImage = Value;
                     break;
 
                 case "THUMBNAIL":
                     THUMBNAIL = Value;
                     break;
 
+                case "Small Size View":
+                    SmallSizeView = Value;
+                    break;
+
+                case "Medium Size View":
+                    MediumSizeView = Value;
+                    break;
+
+                case "Mediumlarge Size View":
+                    MediumlargeSizeView = Value;
+                    break;
+
+                case "Large Size View":
+                    LargeSizeView = Value;
+                    break;
+
                 case "To Download Right Click Here Select Save Target As And Save The JPEG2000 To Your Local Computer":
-                    ToDownloadRightClickHereSelectSaveTargetAsAndSaveTheJPEG2000ToYourLocalComputer = Value;
+                    ToDownloadRightClickHereSelectSaveTargetAs = Value;
                     break;
 
-                case "Zoom In":
-                    ZoomIn = Value;
-                    break;
-
-                case "Zoom Out":
-                    ZoomOut = Value;
-                    break;
-
-                case "Zoom To Level":
-                    ZoomToLevel = Value;
+                case "JPEG2000 IMAGE NOT FOUND IN DATABASE":
+                    JPEG2000IMAGENOTFOUNDINDATABASE = Value;
                     break;
 
             }
         }
-        /// <remarks> Text under the thumbnail in the nav menu </remarks>
-        public string ClickOnThumbnailToRecenterImage { get; private set; }
+        /// <remarks> 'Zoom Out' localization string </remarks>
+        public string ZoomOut { get; private set; }
 
-        /// <remarks> Buttons used when zooming in and out on an image in the Aware JP2 server </remarks>
+        /// <remarks> 'Zoom to Level' localization string </remarks>
+        public string ZoomToLevel { get; private set; }
+
+        /// <remarks> 'Current Zoom' localization string </remarks>
         public string CurrentZoom { get; private set; }
 
-        /// <remarks> 'JPEG2000 IMAGE NOT FOUND IN DATABASE!' localization string </remarks>
-        public string JPEG2000IMAGENOTFOUNDINDATABASE { get; private set; }
+        /// <remarks> 'Zoom In' localization string </remarks>
+        public string ZoomIn { get; private set; }
 
-        /// <remarks> 'Large size view' localization string </remarks>
-        public string LargeSizeView { get; private set; }
+        /// <remarks> 'Rotate Clockwise' localization string </remarks>
+        public string RotateClockwise { get; private set; }
+
+        /// <remarks> 'Rotate Counter Clockwise' localization string </remarks>
+        public string RotateCounterClockwise { get; private set; }
+
+        /// <remarks> 'Pan Up' localization string </remarks>
+        public string PanUp { get; private set; }
+
+        /// <remarks> 'Pan Down' localization string </remarks>
+        public string PanDown { get; private set; }
+
+        /// <remarks> 'Pan Left' localization string </remarks>
+        public string PanLeft { get; private set; }
+
+        /// <remarks> 'Pan Right' localization string </remarks>
+        public string PanRight { get; private set; }
+
+        /// <remarks> 'Click on Thumbnail to Recenter Image' localization string </remarks>
+        public string ClickOnThumbnailToRecenterImage { get; private set; }
+
+        /// <remarks> 'THUMBNAIL' localization string </remarks>
+        public string THUMBNAIL { get; private set; }
+
+        /// <remarks> 'Small size view' localization string </remarks>
+        public string SmallSizeView { get; private set; }
 
         /// <remarks> 'Medium size view' localization string </remarks>
         public string MediumSizeView { get; private set; }
@@ -114,41 +141,14 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Medium-large size view' localization string </remarks>
         public string MediumlargeSizeView { get; private set; }
 
-        /// <remarks> Buttons used when zooming in and out on an image in the Aware JP2 server </remarks>
-        public string PanDown { get; private set; }
-
-        /// <remarks> Buttons used when zooming in and out on an image in the Aware JP2 server </remarks>
-        public string PanLeft { get; private set; }
-
-        /// <remarks> Buttons used when zooming in and out on an image in the Aware JP2 server </remarks>
-        public string PanRight { get; private set; }
-
-        /// <remarks> Buttons used when zooming in and out on an image in the Aware JP2 server </remarks>
-        public string PanUp { get; private set; }
-
-        /// <remarks> Buttons used when zooming in and out on an image in the Aware JP2 server </remarks>
-        public string RotateClockwise { get; private set; }
-
-        /// <remarks> Buttons used when zooming in and out on an image in the Aware JP2 server </remarks>
-        public string RotateCounterClockwise { get; private set; }
-
-        /// <remarks> 'Small size view' localization string </remarks>
-        public string SmallSizeView { get; private set; }
-
-        /// <remarks> Title for the thumbnail in the nav menu </remarks>
-        public string THUMBNAIL { get; private set; }
+        /// <remarks> 'Large size view' localization string </remarks>
+        public string LargeSizeView { get; private set; }
 
         /// <remarks> '"To download, right click here, select 'Save Target As...' and save the JPEG2000 to your local computer."' localization string </remarks>
-        public string ToDownloadRightClickHereSelectSaveTargetAsAndSaveTheJPEG2000ToYourLocalComputer { get; private set; }
+        public string ToDownloadRightClickHereSelectSaveTargetAs { get; private set; }
 
-        /// <remarks> Buttons used when zooming in and out on an image in the Aware JP2 server </remarks>
-        public string ZoomIn { get; private set; }
-
-        /// <remarks> Buttons used when zooming in and out on an image in the Aware JP2 server </remarks>
-        public string ZoomOut { get; private set; }
-
-        /// <remarks> Buttons used when zooming in and out on an image in the Aware JP2 server </remarks>
-        public string ZoomToLevel { get; private set; }
+        /// <remarks> 'JPEG2000 IMAGE NOT FOUND IN DATABASE!' localization string </remarks>
+        public string JPEG2000IMAGENOTFOUNDINDATABASE { get; private set; }
 
     }
 }

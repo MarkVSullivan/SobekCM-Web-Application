@@ -22,63 +22,63 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Will Add Another Instance Of The Element If The Element Is Repeatable":
-                    WillAddAnotherInstanceOfTheElementIfTheElementIsRepeatable = Value;
-                    break;
-
                 case "Change The Behavior Of All Items Belonging To This Group":
-                    ChangeTheBehaviorOfAllItemsBelongingToThisGroup = Value;
+                    ChangeTheBehaviorOfAllItemsBelongingToThis = Value;
                     break;
 
-                case "Click":
-                    Click = Value;
+                case "Enter Any Behaviors You Would Like To Have Propogate Through All The Items Within This Item Groupand Press The SAVE Button When Complete":
+                    EnterAnyBehaviorsYouWouldLikeToHavePropoga = Value;
                     break;
 
                 case "Clicking On The Green Plus Button":
                     ClickingOnTheGreenPlusButton = Value;
                     break;
 
-                case "Enter Any Behaviors You Would Like To Have Propogate Through All The Items Within This Item Groupand Press The SAVE Button When Complete":
-                    EnterAnyBehaviorsYouWouldLikeToHavePropogateThroughAllTheItemsWithinThisItemGroupandPressTheSAVEButtonWhenComplete = Value;
+                case "Will Add Another Instance Of The Element If The Element Is Repeatable":
+                    WillAddAnotherInstanceOfTheElementIfTheEl = Value;
+                    break;
+
+                case "Click":
+                    Click = Value;
                     break;
 
                 case "Here For Detailed Instructions":
                     HereForDetailedInstructions = Value;
                     break;
 
-                case "MASS UPDATE":
-                    MASSUPDATE = Value;
-                    break;
-
                 case "On Mass Updating Behaviors Online":
                     OnMassUpdatingBehaviorsOnline = Value;
                     break;
 
+                case "MASS UPDATE":
+                    MASSUPDATE = Value;
+                    break;
+
             }
         }
-        /// <remarks> '" ) will add another instance of the element, if the element is repeatable."' localization string </remarks>
-        public string WillAddAnotherInstanceOfTheElementIfTheElementIsRepeatable { get; private set; }
-
         /// <remarks> 'Change the behavior of all items belonging to this group' localization string </remarks>
-        public string ChangeTheBehaviorOfAllItemsBelongingToThisGroup { get; private set; }
+        public string ChangeTheBehaviorOfAllItemsBelongingToThis { get; private set; }
 
-        /// <remarks> 'Click' localization string </remarks>
-        public string Click { get; private set; }
+        /// <remarks> 'Enter any behaviors you would like to have propogate through all the items within this item group.and press the SAVE button when complete.' localization string </remarks>
+        public string EnterAnyBehaviorsYouWouldLikeToHavePropoga { get; private set; }
 
         /// <remarks> 'Clicking on the green plus button ( ' localization string </remarks>
         public string ClickingOnTheGreenPlusButton { get; private set; }
 
-        /// <remarks> 'Enter any behaviors you would like to have propogate through all the items within this item group.and press the SAVE button when complete.' localization string </remarks>
-        public string EnterAnyBehaviorsYouWouldLikeToHavePropogateThroughAllTheItemsWithinThisItemGroupandPressTheSAVEButtonWhenComplete { get; private set; }
+        /// <remarks> '" ) will add another instance of the element, if the element is repeatable."' localization string </remarks>
+        public string WillAddAnotherInstanceOfTheElementIfTheEl { get; private set; }
+
+        /// <remarks> 'Click' localization string </remarks>
+        public string Click { get; private set; }
 
         /// <remarks> 'here for detailed instructions' localization string </remarks>
         public string HereForDetailedInstructions { get; private set; }
 
-        /// <remarks> 'MASS UPDATE' localization string </remarks>
-        public string MASSUPDATE { get; private set; }
-
         /// <remarks> 'on mass updating behaviors online.' localization string </remarks>
         public string OnMassUpdatingBehaviorsOnline { get; private set; }
+
+        /// <remarks> 'MASS UPDATE' localization string </remarks>
+        public string MASSUPDATE { get; private set; }
 
     }
 }

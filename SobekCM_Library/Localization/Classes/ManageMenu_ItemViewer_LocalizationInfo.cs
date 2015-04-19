@@ -22,6 +22,10 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
+                case "Manage This Item":
+                    ManageThisItem = Value;
+                    break;
+
                 case "Beta":
                     Beta = Value;
                     break;
@@ -31,7 +35,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Add Geospatial Information For This Item This Can Be As Simple As A Location For A Photograph Or Can Be An Overlay For A Map Points Lines And Polygons Of Interest Can Also Be Drawn":
-                    AddGeospatialInformationForThisItemThisCanBeAsSimpleAsALocationForAPhotographOrCanBeAnOverlayForAMapPointsLinesAndPolygonsOfInterestCanAlsoBeDrawn = Value;
+                    AddGeospatialInformationForThisItemThisCan = Value;
                     break;
 
                 case "Add New Volume":
@@ -39,7 +43,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Change The Way This Item Behaves In This Library Including Which Aggregations It Appears Under The Wordmarks To The Left And Which Viewer Types Are Publicly Accessible":
-                    ChangeTheWayThisItemBehavesInThisLibraryIncludingWhichAggregationsItAppearsUnderTheWordmarksToTheLeftAndWhichViewerTypesArePubliclyAccessible = Value;
+                    ChangeTheWayThisItemBehavesInThisLibraryI = Value;
                     break;
 
                 case "Edit Item Behaviors":
@@ -55,7 +59,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Edit The Information About This Item Which Appears In The Citationdescription This Is Basic Information About The Original Item And This Digital Manifestation":
-                    EditTheInformationAboutThisItemWhichAppearsInTheCitationdescriptionThisIsBasicInformationAboutTheOriginalItemAndThisDigitalManifestation = Value;
+                    EditTheInformationAboutThisItemWhichAppears = Value;
                     break;
 
                 case "How Would You Like To Manage This Item Group Today":
@@ -67,7 +71,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "In Addition The Following Changes Can Be Made At The Item Group Level":
-                    InAdditionTheFollowingChangesCanBeMadeAtTheItemGroupLevel = Value;
+                    InAdditionTheFollowingChangesCanBeMadeAtT = Value;
                     break;
 
                 case "Manage Download Files":
@@ -82,10 +86,6 @@ namespace SobekCM.Library.Localization.Classes
                     ManagePagesAndDivisionsQualityControl = Value;
                     break;
 
-                case "Manage This Item":
-                    ManageThisItem = Value;
-                    break;
-
                 case "Manage This Item Group":
                     ManageThisItemGroup = Value;
                     break;
@@ -95,27 +95,27 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Reorder Page Images Name Pages Assign Divisions And Delete And Add New Page Images To This Item":
-                    ReorderPageImagesNamePagesAssignDivisionsAndDeleteAndAddNewPageImagesToThisItem = Value;
+                    ReorderPageImagesNamePagesAssignDivisionsAn = Value;
                     break;
 
                 case "Set The Title Under Which All Of These Items Appear In Search Results And Set The Web Skins Under Which All These Items Should Appear":
-                    SetTheTitleUnderWhichAllOfTheseItemsAppearInSearchResultsAndSetTheWebSkinsUnderWhichAllTheseItemsShouldAppear = Value;
+                    SetTheTitleUnderWhichAllOfTheseItemsAppea = Value;
                     break;
 
                 case "This Allows Itemlevel Behaviors To Be Set For All Items Within This Item Group Including Which Aggregations It Appears Under The Wordmarks To The Left And Which Viewer Types Are Publicly Accessible":
-                    ThisAllowsItemlevelBehaviorsToBeSetForAllItemsWithinThisItemGroupIncludingWhichAggregationsItAppearsUnderTheWordmarksToTheLeftAndWhichViewerTypesArePubliclyAccessible = Value;
+                    ThisAllowsItemlevelBehaviorsToBeSetForAll = Value;
                     break;
 
                 case "This Can Be Used For Printing The Tracking Sheet For This Item Which Can Be Used As Part Of The Builtin Digitization Workflow":
-                    ThisCanBeUsedForPrintingTheTrackingSheetForThisItemWhichCanBeUsedAsPartOfTheBuiltinDigitizationWorkflow = Value;
+                    ThisCanBeUsedForPrintingTheTrackingSheetF = Value;
                     break;
 
                 case "Upload New Files For Download Or Remove Existing Files That Are Attached To This Item For Download This Generally Includes Everything Except For The Page Images":
-                    UploadNewFilesForDownloadOrRemoveExistingFilesThatAreAttachedToThisItemForDownloadThisGenerallyIncludesEverythingExceptForThePageImages = Value;
+                    UploadNewFilesForDownloadOrRemoveExistingF = Value;
                     break;
 
                 case "View The History Of All Work Performed On This Item From This View You Can Also See Any Digitization Milestones And Digital Resource File Information":
-                    ViewTheHistoryOfAllWorkPerformedOnThisItemFromThisViewYouCanAlsoSeeAnyDigitizationMilestonesAndDigitalResourceFileInformation = Value;
+                    ViewTheHistoryOfAllWorkPerformedOnThisIte = Value;
                     break;
 
                 case "View Tracking Sheet":
@@ -128,6 +128,9 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
+        /// <remarks> 'Manage this Item' localization string </remarks>
+        public string ManageThisItem { get; private set; }
+
         /// <remarks> '(beta)' localization string </remarks>
         public string Beta { get; private set; }
 
@@ -135,13 +138,13 @@ namespace SobekCM.Library.Localization.Classes
         public string AddANewRelatedVolumeToThisItemGroup { get; private set; }
 
         /// <remarks> '"Add geo-spatial information for this item.  This can be as simple as a location for a photograph or can be an overlay for a map.  Points, lines, and polygons of interest can also be drawn."' localization string </remarks>
-        public string AddGeospatialInformationForThisItemThisCanBeAsSimpleAsALocationForAPhotographOrCanBeAnOverlayForAMapPointsLinesAndPolygonsOfInterestCanAlsoBeDrawn { get; private set; }
+        public string AddGeospatialInformationForThisItemThisCan { get; private set; }
 
         /// <remarks> 'Add New Volume' localization string </remarks>
         public string AddNewVolume { get; private set; }
 
-        /// <remarks> '"Change the way this item behaves in this library, including which aggregationPermissions it appears under, the wordmarks to the left, and which viewer types are publicly accessible."' localization string </remarks>
-        public string ChangeTheWayThisItemBehavesInThisLibraryIncludingWhichAggregationsItAppearsUnderTheWordmarksToTheLeftAndWhichViewerTypesArePubliclyAccessible { get; private set; }
+        /// <remarks> '"Change the way this item behaves in this library, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible."' localization string </remarks>
+        public string ChangeTheWayThisItemBehavesInThisLibraryI { get; private set; }
 
         /// <remarks> 'Edit Item Behaviors' localization string </remarks>
         public string EditItemBehaviors { get; private set; }
@@ -153,7 +156,7 @@ namespace SobekCM.Library.Localization.Classes
         public string EditItemMetadata { get; private set; }
 
         /// <remarks> 'Edit the information about this item which appears in the citation/description.  This is basic information about the original item and this digital manifestation.' localization string </remarks>
-        public string EditTheInformationAboutThisItemWhichAppearsInTheCitationdescriptionThisIsBasicInformationAboutTheOriginalItemAndThisDigitalManifestation { get; private set; }
+        public string EditTheInformationAboutThisItemWhichAppears { get; private set; }
 
         /// <remarks> 'How would you like to manage this item group today?' localization string </remarks>
         public string HowWouldYouLikeToManageThisItemGroupToday { get; private set; }
@@ -162,7 +165,7 @@ namespace SobekCM.Library.Localization.Classes
         public string HowWouldYouLikeToManageThisItemToday { get; private set; }
 
         /// <remarks> '"In addition, the following changes can be made at the item group level:"' localization string </remarks>
-        public string InAdditionTheFollowingChangesCanBeMadeAtTheItemGroupLevel { get; private set; }
+        public string InAdditionTheFollowingChangesCanBeMadeAtT { get; private set; }
 
         /// <remarks> 'Manage Download Files' localization string </remarks>
         public string ManageDownloadFiles { get; private set; }
@@ -173,9 +176,6 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Manage Pages and Divisions (Quality Control)' localization string </remarks>
         public string ManagePagesAndDivisionsQualityControl { get; private set; }
 
-        /// <remarks> 'Manage this Item' localization string </remarks>
-        public string ManageThisItem { get; private set; }
-
         /// <remarks> 'Manage this Item Group' localization string </remarks>
         public string ManageThisItemGroup { get; private set; }
 
@@ -183,22 +183,22 @@ namespace SobekCM.Library.Localization.Classes
         public string MassUpdateItemBehaviors { get; private set; }
 
         /// <remarks> '"Reorder page images, name pages, assign divisions, and delete and add new page images to this item."' localization string </remarks>
-        public string ReorderPageImagesNamePagesAssignDivisionsAndDeleteAndAddNewPageImagesToThisItem { get; private set; }
+        public string ReorderPageImagesNamePagesAssignDivisionsAn { get; private set; }
 
         /// <remarks> 'Set the title under which all of these items appear in search results and set the web skins under which all these items should appear.' localization string </remarks>
-        public string SetTheTitleUnderWhichAllOfTheseItemsAppearInSearchResultsAndSetTheWebSkinsUnderWhichAllTheseItemsShouldAppear { get; private set; }
+        public string SetTheTitleUnderWhichAllOfTheseItemsAppea { get; private set; }
 
-        /// <remarks> '"This allows item-level behaviors to be set for all items within this item group, including which aggregationPermissions it appears under, the wordmarks to the left, and which viewer types are publicly accessible."' localization string </remarks>
-        public string ThisAllowsItemlevelBehaviorsToBeSetForAllItemsWithinThisItemGroupIncludingWhichAggregationsItAppearsUnderTheWordmarksToTheLeftAndWhichViewerTypesArePubliclyAccessible { get; private set; }
+        /// <remarks> '"This allows item-level behaviors to be set for all items within this item group, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible."' localization string </remarks>
+        public string ThisAllowsItemlevelBehaviorsToBeSetForAll { get; private set; }
 
         /// <remarks> '"This can be used for printing the tracking sheet for this item, which can be used as part of the built-in digitization workflow."' localization string </remarks>
-        public string ThisCanBeUsedForPrintingTheTrackingSheetForThisItemWhichCanBeUsedAsPartOfTheBuiltinDigitizationWorkflow { get; private set; }
+        public string ThisCanBeUsedForPrintingTheTrackingSheetF { get; private set; }
 
         /// <remarks> 'Upload new files for download or remove existing files that are attached to this item for download.  This generally includes everything except for the page images.' localization string </remarks>
-        public string UploadNewFilesForDownloadOrRemoveExistingFilesThatAreAttachedToThisItemForDownloadThisGenerallyIncludesEverythingExceptForThePageImages { get; private set; }
+        public string UploadNewFilesForDownloadOrRemoveExistingF { get; private set; }
 
         /// <remarks> '"View the history of all work performed on this item.  From this view, you can also see any digitization milestones and digital resource file information."' localization string </remarks>
-        public string ViewTheHistoryOfAllWorkPerformedOnThisItemFromThisViewYouCanAlsoSeeAnyDigitizationMilestonesAndDigitalResourceFileInformation { get; private set; }
+        public string ViewTheHistoryOfAllWorkPerformedOnThisIte { get; private set; }
 
         /// <remarks> 'View Tracking Sheet' localization string </remarks>
         public string ViewTrackingSheet { get; private set; }

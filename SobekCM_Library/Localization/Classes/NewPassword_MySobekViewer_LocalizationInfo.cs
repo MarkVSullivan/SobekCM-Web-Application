@@ -26,16 +26,8 @@ namespace SobekCM.Library.Localization.Classes
                     ChangeYourPassword = Value;
                     break;
 
-                case "Confirm New Password":
-                    ConfirmNewPassword = Value;
-                    break;
-
-                case "Existing Password":
-                    ExistingPassword = Value;
-                    break;
-
-                case "New Password":
-                    NewPassword = Value;
+                case "Select And Confirm A New Password":
+                    SelectAndConfirmANewPassword = Value;
                     break;
 
                 case "New Passwords Do Not Match":
@@ -44,18 +36,6 @@ namespace SobekCM.Library.Localization.Classes
 
                 case "Password Must Be At Least Eight Digits":
                     PasswordMustBeAtLeastEightDigits = Value;
-                    break;
-
-                case "Please Enter Your Existing Password And Your New Password":
-                    PleaseEnterYourExistingPasswordAndYourNewPassword = Value;
-                    break;
-
-                case "Select And Confirm A New Password":
-                    SelectAndConfirmANewPassword = Value;
-                    break;
-
-                case "The Following Errors Were Detected":
-                    TheFollowingErrorsWereDetected = Value;
                     break;
 
                 case "The New Password Cannot Match The Old Password":
@@ -67,46 +47,66 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "You Are Required To Change Your Password To Continue":
-                    YouAreRequiredToChangeYourPasswordToContinue = Value;
+                    YouAreRequiredToChangeYourPasswordToContin = Value;
+                    break;
+
+                case "Please Enter Your Existing Password And Your New Password":
+                    PleaseEnterYourExistingPasswordAndYourNewP = Value;
+                    break;
+
+                case "Existing Password":
+                    ExistingPassword = Value;
+                    break;
+
+                case "New Password":
+                    NewPassword = Value;
+                    break;
+
+                case "Confirm New Password":
+                    ConfirmNewPassword = Value;
+                    break;
+
+                case "The Following Errors Were Detected":
+                    TheFollowingErrorsWereDetected = Value;
                     break;
 
             }
         }
-        /// <remarks> Title displayed when changing password </remarks>
+        /// <remarks> 'Change your password' localization string </remarks>
         public string ChangeYourPassword { get; private set; }
 
-        /// <remarks> Used when a user changes their password </remarks>
-        public string ConfirmNewPassword { get; private set; }
+        /// <remarks> 'Select and confirm a new password' localization string </remarks>
+        public string SelectAndConfirmANewPassword { get; private set; }
 
-        /// <remarks> Used when a user changes their password </remarks>
-        public string ExistingPassword { get; private set; }
-
-        /// <remarks> Used when a user changes their password </remarks>
-        public string NewPassword { get; private set; }
-
-        /// <remarks> Error message if passwords don't match while changing </remarks>
+        /// <remarks> 'New passwords do not match' localization string </remarks>
         public string NewPasswordsDoNotMatch { get; private set; }
 
-        /// <remarks> Error message if password is too short </remarks>
+        /// <remarks> 'Password must be at least eight digits' localization string </remarks>
         public string PasswordMustBeAtLeastEightDigits { get; private set; }
 
-        /// <remarks> Prompt when a user opts to change their password </remarks>
-        public string PleaseEnterYourExistingPasswordAndYourNewPassword { get; private set; }
+        /// <remarks> 'The new password cannot match the old password' localization string </remarks>
+        public string TheNewPasswordCannotMatchTheOldPassword { get; private set; }
 
-        /// <remarks> Prompt for changing password </remarks>
-        public string SelectAndConfirmANewPassword { get; private set; }
+        /// <remarks> 'Unable to change password.  Verify current password.' localization string </remarks>
+        public string UnableToChangePasswordVerifyCurrentPassword { get; private set; }
+
+        /// <remarks> 'You are required to change your password to continue.' localization string </remarks>
+        public string YouAreRequiredToChangeYourPasswordToContin { get; private set; }
+
+        /// <remarks> 'Please enter your existing password and your new password.' localization string </remarks>
+        public string PleaseEnterYourExistingPasswordAndYourNewP { get; private set; }
+
+        /// <remarks> 'Existing Password:' localization string </remarks>
+        public string ExistingPassword { get; private set; }
+
+        /// <remarks> 'New Password:' localization string </remarks>
+        public string NewPassword { get; private set; }
+
+        /// <remarks> 'Confirm New Password:' localization string </remarks>
+        public string ConfirmNewPassword { get; private set; }
 
         /// <remarks> 'The following errors were detected:' localization string </remarks>
         public string TheFollowingErrorsWereDetected { get; private set; }
-
-        /// <remarks> Error message if the user tries to change their password to their existing password </remarks>
-        public string TheNewPasswordCannotMatchTheOldPassword { get; private set; }
-
-        /// <remarks> Error message if the current password is incorrect </remarks>
-        public string UnableToChangePasswordVerifyCurrentPassword { get; private set; }
-
-        /// <remarks> Prompt when a user has a temporary password </remarks>
-        public string YouAreRequiredToChangeYourPasswordToContinue { get; private set; }
 
     }
 }

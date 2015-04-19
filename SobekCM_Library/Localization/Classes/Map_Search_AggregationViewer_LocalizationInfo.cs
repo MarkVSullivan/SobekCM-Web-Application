@@ -23,11 +23,11 @@ namespace SobekCM.Library.Localization.Classes
             switch (Key)
             {
                 case "Use The I Select Area I Button And Click To Select Opposite Corners To Draw A Search Box On The Map":
-                    UseTheSelectAreaButtonAndClickToSelectOppositeCornersToDrawASearchBoxOnTheMap = Value;
+                    UseTheSelectAreaButtonAndClickToSelectOpp = Value;
                     break;
 
                 case "Use One Of The Methods Below To Define Your Geographic Search":
-                    UseOneOfTheMethodsBelowToDefineYourGeographicSearch = Value;
+                    UseOneOfTheMethodsBelowToDefineYourGeogra = Value;
                     break;
 
                 case "Press The I Search I Button To See Results":
@@ -35,7 +35,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "A Enter An Address And Press I Find Address I To Locate I Or I":
-                    AEnterAnAddressAndPressFindAddressToLocateOr = Value;
+                    AEnterAnAddressAndPressFindAddressToLocat = Value;
                     break;
 
                 case "Actions":
@@ -47,7 +47,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Address This Is The Nearest Address Of The Point You Selected":
-                    AddressThisIsTheNearestAddressOfThePointYouSelected = Value;
+                    AddressThisIsTheNearestAddressOfThePointY = Value;
                     break;
 
                 case "Applied":
@@ -63,7 +63,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "B Press The I Select Area I Button And Click To Select Two Opposite Corners I Or I":
-                    BPressTheSelectAreaButtonAndClickToSelectTwoOppositeCornersOr = Value;
+                    BPressTheSelectAreaButtonAndClickToSelect = Value;
                     break;
 
                 case "Blocklot Toggle Blocklot Map Layer":
@@ -71,7 +71,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "C Press The I Select Point I Button And Click To Select A Single Point":
-                    CPressTheSelectPointButtonAndClickToSelectASinglePoint = Value;
+                    CPressTheSelectPointButtonAndClickToSelec = Value;
                     break;
 
                 case "Cancel Editing":
@@ -115,7 +115,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Click Here To View Instructions For This Search Interface":
-                    ClickHereToViewInstructionsForThisSearchInterface = Value;
+                    ClickHereToViewInstructionsForThisSearchIn = Value;
                     break;
 
                 case "Clockwise":
@@ -167,11 +167,11 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Coordinates This Is The Selected Latitude And Longitude Of The Point You Selected":
-                    CoordinatesThisIsTheSelectedLatitudeAndLongitudeOfThePointYouSelected = Value;
+                    CoordinatesThisIsTheSelectedLatitudeAndLong = Value;
                     break;
 
                 case "Could Not Find Location Either The Format You Entered Is Invalid Or The Location Is Outside Of The Map Bounds":
-                    CouldNotFindLocationEitherTheFormatYouEnteredIsInvalidOrTheLocationIsOutsideOfTheMapBounds = Value;
+                    CouldNotFindLocationEitherTheFormatYouEnte = Value;
                     break;
 
                 case "Could Not Find Within Bounds":
@@ -251,7 +251,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Enter Address Ie 12 Main Street Gainesville Florida":
-                    EnterAddressIe12MainStreetGainesvilleFlorida = Value;
+                    EnterAddressIe12MainStreetGainesvilleFlorid = Value;
                     break;
 
                 case "Error Addign Other Listeners":
@@ -707,11 +707,11 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Tenth Degree Left Click To Rotate A Tenth Degree Counterclockwise":
-                    TenthDegreeLeftClickToRotateATenthDegreeCounterclockwise = Value;
+                    TenthDegreeLeftClickToRotateATenthDegreeC = Value;
                     break;
 
                 case "Tenth Degree Right Click To Rotate A Tenth Degree Clockwise":
-                    TenthDegreeRightClickToRotateATenthDegreeClockwise = Value;
+                    TenthDegreeRightClickToRotateATenthDegree = Value;
                     break;
 
                 case "Terrain":
@@ -727,11 +727,11 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "This Will Delete The Geogarphic Coodinate Data For This Item Are You Sure":
-                    ThisWillDeleteTheGeogarphicCoodinateDataForThisItemAreYouSure = Value;
+                    ThisWillDeleteTheGeogarphicCoodinateDataFor = Value;
                     break;
 
                 case "This Will Delete The Geographic Coordinate Data For This Overlay Are You Sure":
-                    ThisWillDeleteTheGeographicCoordinateDataForThisOverlayAreYouSure = Value;
+                    ThisWillDeleteTheGeographicCoordinateDataFo = Value;
                     break;
 
                 case "Toggle All Map Overlays":
@@ -795,7 +795,7 @@ namespace SobekCM.Library.Localization.Classes
                     break;
 
                 case "Warning This Will Erase Any Changes You Have Made Do You Still Want To Proceed":
-                    WarningThisWillEraseAnyChangesYouHaveMadeDoYouStillWantToProceed = Value;
+                    WarningThisWillEraseAnyChangesYouHaveMade = Value;
                     break;
 
                 case "Working":
@@ -816,26 +816,26 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> Instructions for map searching when only SELECT AREA is available </remarks>
-        public string UseTheSelectAreaButtonAndClickToSelectOppositeCornersToDrawASearchBoxOnTheMap { get; private set; }
+        /// <remarks> ' 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map ' localization string </remarks>
+        public string UseTheSelectAreaButtonAndClickToSelectOpp { get; private set; }
 
-        /// <remarks> Instructions for map searching with area and point searching </remarks>
-        public string UseOneOfTheMethodsBelowToDefineYourGeographicSearch { get; private set; }
+        /// <remarks> '1. Use one of the methods below to define your geographic search:' localization string </remarks>
+        public string UseOneOfTheMethodsBelowToDefineYourGeogra { get; private set; }
 
-        /// <remarks> Instructions for map searching when only SELECT AREA is available </remarks>
+        /// <remarks> '2. Press the <i>Search</i> button to see results' localization string </remarks>
         public string PressTheSearchButtonToSeeResults { get; private set; }
 
-        /// <remarks> Instructions for map searching with area and point searching </remarks>
-        public string AEnterAnAddressAndPressFindAddressToLocateOr { get; private set; }
+        /// <remarks> '"a. Enter an address and press <i>Find Address</i> to locate, <i>or</i>"' localization string </remarks>
+        public string AEnterAnAddressAndPressFindAddressToLocat { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Actions' localization string </remarks>
         public string Actions { get; private set; }
 
-        /// <remarks> For map searching </remarks>
+        /// <remarks> 'Address' localization string </remarks>
         public string Address { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
-        public string AddressThisIsTheNearestAddressOfThePointYouSelected { get; private set; }
+        /// <remarks> 'Address: This is the nearest address of the point you selected.' localization string </remarks>
+        public string AddressThisIsTheNearestAddressOfThePointY { get; private set; }
 
         /// <remarks> 'Applied' localization string </remarks>
         public string Applied { get; private set; }
@@ -846,16 +846,16 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Apply Changes (Make Changes Public)' localization string </remarks>
         public string ApplyChangesMakeChangesPublic { get; private set; }
 
-        /// <remarks> Instructions for map searching with area and point searching </remarks>
-        public string BPressTheSelectAreaButtonAndClickToSelectTwoOppositeCornersOr { get; private set; }
+        /// <remarks> '"b. Press the <i>Select Area</i> button and click to select two opposite corners, <i>or</i>"' localization string </remarks>
+        public string BPressTheSelectAreaButtonAndClickToSelect { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Block/Lot: Toggle Block/Lot Map Layer' localization string </remarks>
         public string BlocklotToggleBlocklotMapLayer { get; private set; }
 
-        /// <remarks> Instructions for map searching with area and point searching </remarks>
-        public string CPressTheSelectPointButtonAndClickToSelectASinglePoint { get; private set; }
+        /// <remarks> 'c. Press the <i>Select Point</i> button and click to select a single point' localization string </remarks>
+        public string CPressTheSelectPointButtonAndClickToSelec { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Cancel Editing' localization string </remarks>
         public string CancelEditing { get; private set; }
 
         /// <remarks> 'Canceling...' localization string </remarks>
@@ -870,43 +870,43 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Cannot Zoom out Further' localization string </remarks>
         public string CannotZoomOutFurther { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Center on Current Location' localization string </remarks>
         public string CenterOnCurrentLocation { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Center On Your Current Position' localization string </remarks>
         public string CenterOnYourCurrentPosition { get; private set; }
 
         /// <remarks> 'Circle' localization string </remarks>
         public string Circle { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Circle: Place a Circle' localization string </remarks>
         public string CirclePlaceACircle { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Clear Point Of Interest Set' localization string </remarks>
         public string ClearPointOfInterestSet { get; private set; }
 
-        /// <remarks> Reveals instructions for map searching </remarks>
-        public string ClickHereToViewInstructionsForThisSearchInterface { get; private set; }
+        /// <remarks> 'Click here to view instructions for this search interface' localization string </remarks>
+        public string ClickHereToViewInstructionsForThisSearchIn { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Clockwise' localization string </remarks>
         public string Clockwise { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Complete Editing' localization string </remarks>
         public string CompleteEditing { get; private set; }
 
         /// <remarks> 'Completed' localization string </remarks>
         public string Completed { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Controls' localization string </remarks>
         public string Controls { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Controls: Toggle Map Controls' localization string </remarks>
         public string ControlsToggleMapControls { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Convert This To a Map Overlay' localization string </remarks>
         public string ConvertThisToAMapOverlay { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Convert to Overlay' localization string </remarks>
         public string ConvertToOverlay { get; private set; }
 
         /// <remarks> 'Converted Item to Overlay' localization string </remarks>
@@ -924,31 +924,31 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Coordinates Viewer Unfrozen' localization string </remarks>
         public string CoordinatesViewerUnfrozen { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
-        public string CoordinatesThisIsTheSelectedLatitudeAndLongitudeOfThePointYouSelected { get; private set; }
+        /// <remarks> 'Coordinates: This is the selected Latitude and Longitude of the point you selected.' localization string </remarks>
+        public string CoordinatesThisIsTheSelectedLatitudeAndLong { get; private set; }
 
         /// <remarks> 'Could not find location. Either the format you entered is invalid or the location is outside of the map bounds.' localization string </remarks>
-        public string CouldNotFindLocationEitherTheFormatYouEnteredIsInvalidOrTheLocationIsOutsideOfTheMapBounds { get; private set; }
+        public string CouldNotFindLocationEitherTheFormatYouEnte { get; private set; }
 
         /// <remarks> 'Could not find within bounds' localization string </remarks>
         public string CouldNotFindWithinBounds { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Counter-Clockwise' localization string </remarks>
         public string Counterclockwise { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Custom' localization string </remarks>
         public string Custom { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Default: Pan Map To Default' localization string </remarks>
         public string DefaultPanMapToDefault { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Delete' localization string </remarks>
         public string Delete { get; private set; }
 
         /// <remarks> 'Delete Coordinate Data for Overlay' localization string </remarks>
         public string DeleteCoordinateDataForOverlay { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Delete Geographic Location' localization string </remarks>
         public string DeleteGeographicLocation { get; private set; }
 
         /// <remarks> 'Delete POI' localization string </remarks>
@@ -966,13 +966,13 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Did not Reset Page' localization string </remarks>
         public string DidNotResetPage { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Documentation' localization string </remarks>
         public string Documentation { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Down: Pan Map Down' localization string </remarks>
         public string DownPanMapDown { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Edit Location' localization string </remarks>
         public string EditLocation { get; private set; }
 
         /// <remarks> 'Edit Location By Dragging Existing Marker' localization string </remarks>
@@ -987,8 +987,8 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Editing' localization string </remarks>
         public string Editing { get; private set; }
 
-        /// <remarks> Prompt for finding by address. </remarks>
-        public string EnterAddressIe12MainStreetGainesvilleFlorida { get; private set; }
+        /// <remarks> '"Enter address ( i.e., 12 Main Street, Gainesville Florida )"' localization string </remarks>
+        public string EnterAddressIe12MainStreetGainesvilleFlorid { get; private set; }
 
         /// <remarks> 'Error Addign other Listeners' localization string </remarks>
         public string ErrorAddignOtherListeners { get; private set; }
@@ -1005,16 +1005,16 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Error: Overlay image source cannot contain a ~ or |' localization string </remarks>
         public string ErrorOverlayImageSourceCannotContainAOr { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'File' localization string </remarks>
         public string File { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Find a Location' localization string </remarks>
         public string FindALocation { get; private set; }
 
-        /// <remarks> For map searching </remarks>
+        /// <remarks> 'Find Address' localization string </remarks>
         public string FindAddress { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Find Location' localization string </remarks>
         public string FindLocation { get; private set; }
 
         /// <remarks> 'Finding your location' localization string </remarks>
@@ -1026,7 +1026,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Geolocation Service Failed.' localization string </remarks>
         public string GeolocationServiceFailed { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Help' localization string </remarks>
         public string Help { get; private set; }
 
         /// <remarks> 'Hide Coordinates' localization string </remarks>
@@ -1041,13 +1041,13 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Hiding POIs' localization string </remarks>
         public string HidingPois { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Hybrid' localization string </remarks>
         public string Hybrid { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Hybrid: Toggle Hybrid Map Layer' localization string </remarks>
         public string HybridToggleHybridMapLayer { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'In: Zoom Map In' localization string </remarks>
         public string InZoomMapIn { get; private set; }
 
         /// <remarks> 'Item Geographic Location Deleted' localization string </remarks>
@@ -1065,64 +1065,64 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Latitude' localization string </remarks>
         public string Latitude { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Layers' localization string </remarks>
         public string Layers { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Left: Pan Map Left' localization string </remarks>
         public string LeftPanMapLeft { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Line' localization string </remarks>
         public string Line { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Line: Place a Line' localization string </remarks>
         public string LinePlaceALine { get; private set; }
 
-        /// <remarks> For map searching </remarks>
+        /// <remarks> 'Locate' localization string </remarks>
         public string Locate { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Locate: Find A Location On The Map' localization string </remarks>
         public string LocateFindALocationOnTheMap { get; private set; }
 
         /// <remarks> 'Longitude' localization string </remarks>
         public string Longitude { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Manage Location' localization string </remarks>
         public string ManageLocation { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Manage Location Details' localization string </remarks>
         public string ManageLocationDetails { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Manage Map Coverage' localization string </remarks>
         public string ManageMapCoverage { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Manage Overlay' localization string </remarks>
         public string ManageOverlay { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Manage Overlays' localization string </remarks>
         public string ManageOverlays { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Manage POI' localization string </remarks>
         public string ManagePOI { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Manage Points of Interest' localization string </remarks>
         public string ManagePointsOfInterest { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Manage POIs' localization string </remarks>
         public string ManagePois { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Map Controls' localization string </remarks>
         public string MapControls { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Marker' localization string </remarks>
         public string Marker { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Marker: Place a Point' localization string </remarks>
         public string MarkerPlaceAPoint { get; private set; }
 
-        /// <remarks> For more instructions </remarks>
+        /// <remarks> 'more help' localization string </remarks>
         public string MoreHelp { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Nearest Address' localization string </remarks>
         public string NearestAddress { get; private set; }
 
         /// <remarks> 'Not Cleared' localization string </remarks>
@@ -1149,7 +1149,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Nothing to Toggle' localization string </remarks>
         public string NothingToToggle { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Out: Zoom Map Out' localization string </remarks>
         public string OutZoomMapOut { get; private set; }
 
         /// <remarks> 'Overall Geographic Data Deleted' localization string </remarks>
@@ -1167,10 +1167,10 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Overlays Reset!' localization string </remarks>
         public string OverlaysReset { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Pan' localization string </remarks>
         public string Pan { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Place' localization string </remarks>
         public string Place { get; private set; }
 
         /// <remarks> 'POI Set Cleared!' localization string </remarks>
@@ -1185,61 +1185,61 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Point 2' localization string </remarks>
         public string Point2 { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Polygon' localization string </remarks>
         public string Polygon { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Polygon: Place a Polygon' localization string </remarks>
         public string PolygonPlaceAPolygon { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Rectangle' localization string </remarks>
         public string Rectangle { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'rectangle: Place a rectangle' localization string </remarks>
         public string RectanglePlaceARectangle { get; private set; }
 
         /// <remarks> 'Removed' localization string </remarks>
         public string Removed { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Report a Problem' localization string </remarks>
         public string ReportAProblem { get; private set; }
 
         /// <remarks> 'Report a Sobek Error' localization string </remarks>
         public string ReportASobekError { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Reset' localization string </remarks>
         public string Reset { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Reset All Changes' localization string </remarks>
         public string ResetAllChanges { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Reset All Overlay Changes' localization string </remarks>
         public string ResetAllOverlayChanges { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Reset Location' localization string </remarks>
         public string ResetLocation { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Reset Location Changes' localization string </remarks>
         public string ResetLocationChanges { get; private set; }
 
         /// <remarks> 'Reset Me' localization string </remarks>
         public string ResetMe { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Reset Overlays' localization string </remarks>
         public string ResetOverlays { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Reset POIs' localization string </remarks>
         public string ResetPois { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Reset: Click to Reset Rotation' localization string </remarks>
         public string ResetClickToResetRotation { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Reset: Reset Map To Defaults' localization string </remarks>
         public string ResetResetMapToDefaults { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Reset: Reset Map Type' localization string </remarks>
         public string ResetResetMapType { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Reset: Reset Zoom Level' localization string </remarks>
         public string ResetResetZoomLevel { get; private set; }
 
         /// <remarks> 'Reseting Page' localization string </remarks>
@@ -1254,25 +1254,25 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Returned to Bounds!' localization string </remarks>
         public string ReturnedToBounds { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Right: Pan Map Right' localization string </remarks>
         public string RightPanMapRight { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Roadmap' localization string </remarks>
         public string Roadmap { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Roadmap: Toggle Road Map Layer' localization string </remarks>
         public string RoadmapToggleRoadMapLayer { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Rotate' localization string </remarks>
         public string Rotate { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Rotate: Edit the rotation value' localization string </remarks>
         public string RotateEditTheRotationValue { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Satellite' localization string </remarks>
         public string Satellite { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Satellite: Toggle Satellite Map Layer' localization string </remarks>
         public string SatelliteToggleSatelliteMapLayer { get; private set; }
 
         /// <remarks> 'Save' localization string </remarks>
@@ -1281,13 +1281,13 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Save description' localization string </remarks>
         public string SaveDescription { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Save Location Changes' localization string </remarks>
         public string SaveLocationChanges { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Save Overlay Changes' localization string </remarks>
         public string SaveOverlayChanges { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Save Point Of Interest Set' localization string </remarks>
         public string SavePointOfInterestSet { get; private set; }
 
         /// <remarks> 'save this Description' localization string </remarks>
@@ -1302,19 +1302,19 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Saving...' localization string </remarks>
         public string Saving { get; private set; }
 
-        /// <remarks> When user has selected to show the coordinates selected </remarks>
+        /// <remarks> 'Search Coordinates' localization string </remarks>
         public string SearchCoordinates { get; private set; }
 
-        /// <remarks> For map searching </remarks>
+        /// <remarks> 'Select Area' localization string </remarks>
         public string SelectArea { get; private set; }
 
-        /// <remarks> For map searching </remarks>
+        /// <remarks> 'Select Point' localization string </remarks>
         public string SelectPoint { get; private set; }
 
         /// <remarks> 'Select the area to Draw the Overlay' localization string </remarks>
         public string SelectTheAreaToDrawTheOverlay { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Selected Lat/Long' localization string </remarks>
         public string SelectedLatlong { get; private set; }
 
         /// <remarks> 'Show Coordinates' localization string </remarks>
@@ -1329,85 +1329,85 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Showing POIs' localization string </remarks>
         public string ShowingPois { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
-        public string TenthDegreeLeftClickToRotateATenthDegreeCounterclockwise { get; private set; }
+        /// <remarks> 'Tenth Degree Left: Click to Rotate a Tenth Degree Counter-Clockwise' localization string </remarks>
+        public string TenthDegreeLeftClickToRotateATenthDegreeC { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
-        public string TenthDegreeRightClickToRotateATenthDegreeClockwise { get; private set; }
+        /// <remarks> 'Tenth Degree Right: Click to Rotate a Tenth Degree Clockwise' localization string </remarks>
+        public string TenthDegreeRightClickToRotateATenthDegree { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Terrain' localization string </remarks>
         public string Terrain { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Terrain: Toggle Terrain Map Layer' localization string </remarks>
         public string TerrainToggleTerrainMapLayer { get; private set; }
 
         /// <remarks> '"This will delete all of the POIs, are you sure?"' localization string </remarks>
         public string ThisWillDeleteAllOfThePoisAreYouSure { get; private set; }
 
         /// <remarks> '"This will delete the geogarphic coodinate data for this item, are you sure?"' localization string </remarks>
-        public string ThisWillDeleteTheGeogarphicCoodinateDataForThisItemAreYouSure { get; private set; }
+        public string ThisWillDeleteTheGeogarphicCoodinateDataFor { get; private set; }
 
         /// <remarks> '"This will delete the geographic coordinate data for this overlay, are you sure?"' localization string </remarks>
-        public string ThisWillDeleteTheGeographicCoordinateDataForThisOverlayAreYouSure { get; private set; }
+        public string ThisWillDeleteTheGeographicCoordinateDataFo { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Toggle All Map Overlays' localization string </remarks>
         public string ToggleAllMapOverlays { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Toggle All Overlays On Map' localization string </remarks>
         public string ToggleAllOverlaysOnMap { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Toggle All POIs On Map' localization string </remarks>
         public string ToggleAllPoisOnMap { get; private set; }
 
         /// <remarks> 'Toggle on Map' localization string </remarks>
         public string ToggleOnMap { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Toggle POIs on Map' localization string </remarks>
         public string TogglePoisOnMap { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Toolbar' localization string </remarks>
         public string Toolbar { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Toolbar: Toggle the Toolbar' localization string </remarks>
         public string ToolbarToggleTheToolbar { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Toolbox' localization string </remarks>
         public string Toolbox { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Toolbox: Toggle Toolbox' localization string </remarks>
         public string ToolboxToggleToolbox { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Transparency' localization string </remarks>
         public string Transparency { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Transparency: Set the transparency of this Overlay' localization string </remarks>
         public string TransparencySetTheTransparencyOfThisOverlay { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Up: Pan Map Up' localization string </remarks>
         public string UpPanMapUp { get; private set; }
 
-        /// <remarks> Tooltips set from the sobekcm_map_editor.js file </remarks>
+        /// <remarks> 'Use Search Result As Location' localization string </remarks>
         public string UseSearchResultAsLocation { get; private set; }
 
         /// <remarks> 'Using Search Results as Location' localization string </remarks>
         public string UsingSearchResultsAsLocation { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'View' localization string </remarks>
         public string View { get; private set; }
 
         /// <remarks> 'Warning! This will erase any changes you have made. Do you still want to proceed?' localization string </remarks>
-        public string WarningThisWillEraseAnyChangesYouHaveMadeDoYouStillWantToProceed { get; private set; }
+        public string WarningThisWillEraseAnyChangesYouHaveMade { get; private set; }
 
         /// <remarks> 'Working...' localization string </remarks>
         public string Working { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Zoom' localization string </remarks>
         public string Zoom { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Zoom In' localization string </remarks>
         public string ZoomIn { get; private set; }
 
-        /// <remarks> Content menubar innerHTML added from the JS file </remarks>
+        /// <remarks> 'Zoom Out' localization string </remarks>
         public string ZoomOut { get; private set; }
 
     }

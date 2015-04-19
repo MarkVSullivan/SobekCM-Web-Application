@@ -22,21 +22,21 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "XXX Home":
-                    XXXHome = Value;
-                    break;
-
                 case "Welcome Back XXX":
                     WelcomeBackXXX = Value;
                     break;
 
+                case "XXX Home":
+                    XXXHome = Value;
+                    break;
+
             }
         }
+        /// <remarks> '"Welcome back, {0}"' localization string </remarks>
+        public string WelcomeBackXXX { get; private set; }
+
         /// <remarks> '%1 Home' localization string </remarks>
         public string XXXHome { get; private set; }
-
-        /// <remarks> Message to welcome back a user by name </remarks>
-        public string WelcomeBackXXX { get; private set; }
 
     }
 }

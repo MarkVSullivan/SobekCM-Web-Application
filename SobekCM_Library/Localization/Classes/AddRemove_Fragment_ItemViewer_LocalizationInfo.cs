@@ -26,16 +26,12 @@ namespace SobekCM.Library.Localization.Classes
                     AddThisItemToYourBookshelf = Value;
                     break;
 
-                case "Bookshelf":
-                    Bookshelf = Value;
-                    break;
-
-                case "Cancel":
-                    Cancel = Value;
-                    break;
-
                 case "Enter Notes For This Item In Your Bookshelf":
                     EnterNotesForThisItemInYourBookshelf = Value;
+                    break;
+
+                case "Bookshelf":
+                    Bookshelf = Value;
                     break;
 
                 case "My Bookshelf":
@@ -50,6 +46,10 @@ namespace SobekCM.Library.Localization.Classes
                     OpenBookshelfInNewWindow = Value;
                     break;
 
+                case "Cancel":
+                    Cancel = Value;
+                    break;
+
                 case "Save":
                     Save = Value;
                     break;
@@ -60,26 +60,26 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> Title for the pop-up form for adding an item to a bookshelf </remarks>
+        /// <remarks> 'Add this Item to your Bookshelf' localization string </remarks>
         public string AddThisItemToYourBookshelf { get; private set; }
 
-        /// <remarks> Pop-up form for adding an item to a bookshelf </remarks>
-        public string Bookshelf { get; private set; }
-
-        /// <remarks> 'Cancel' localization string </remarks>
-        public string Cancel { get; private set; }
-
-        /// <remarks> Pop-up form for adding an item to a bookshelf </remarks>
+        /// <remarks> 'Enter notes for this item in your bookshelf' localization string </remarks>
         public string EnterNotesForThisItemInYourBookshelf { get; private set; }
 
-        /// <remarks> Pop-up form for adding an item to a bookshelf </remarks>
+        /// <remarks> 'Bookshelf:' localization string </remarks>
+        public string Bookshelf { get; private set; }
+
+        /// <remarks> 'My Bookshelf' localization string </remarks>
         public string MyBookshelf { get; private set; }
 
-        /// <remarks> Pop-up form for adding an item to a bookshelf </remarks>
+        /// <remarks> 'Notes:' localization string </remarks>
         public string Notes { get; private set; }
 
         /// <remarks> 'Open bookshelf in new window' localization string </remarks>
         public string OpenBookshelfInNewWindow { get; private set; }
+
+        /// <remarks> 'Cancel' localization string </remarks>
+        public string Cancel { get; private set; }
 
         /// <remarks> 'Save' localization string </remarks>
         public string Save { get; private set; }

@@ -28,7 +28,7 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> Title for the stream video viewer </remarks>
+        /// <remarks> 'Streaming Video' localization string </remarks>
         public string StreamingVideo { get; private set; }
 
     }

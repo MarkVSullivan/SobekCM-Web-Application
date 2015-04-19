@@ -22,64 +22,36 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
+                case "Search This Document":
+                    SearchThisDocument = Value;
+                    break;
+
+                case "Your Search Within This Document For":
+                    YourSearchWithinThisDocumentFor = Value;
+                    break;
+
                 case "AND":
                     AND = Value;
-                    break;
-
-                case "AND NOT":
-                    ANDNOT = Value;
-                    break;
-
-                case "First":
-                    First = Value;
-                    break;
-
-                case "First Page":
-                    FirstPage = Value;
-                    break;
-
-                case "Last":
-                    Last = Value;
-                    break;
-
-                case "Last Page":
-                    LastPage = Value;
-                    break;
-
-                case "Matching Pages":
-                    MatchingPages = Value;
-                    break;
-
-                case "Next":
-                    Next = Value;
-                    break;
-
-                case "Next Page":
-                    NextPage = Value;
-                    break;
-
-                case "No Matching Pages":
-                    NoMatchingPages = Value;
                     break;
 
                 case "OR":
                     OR = Value;
                     break;
 
-                case "Previous":
-                    Previous = Value;
-                    break;
-
-                case "Previous Page":
-                    PreviousPage = Value;
+                case "AND NOT":
+                    ANDNOT = Value;
                     break;
 
                 case "Resulted In":
                     ResultedIn = Value;
                     break;
 
-                case "Search This Document":
-                    SearchThisDocument = Value;
+                case "Matching Pages":
+                    MatchingPages = Value;
+                    break;
+
+                case "No Matching Pages":
+                    NoMatchingPages = Value;
                     break;
 
                 case "You Can Expand Your Results By Searching For":
@@ -90,65 +62,93 @@ namespace SobekCM.Library.Localization.Classes
                     YouCanRestrictYourResultsBySearchingFor = Value;
                     break;
 
-                case "Your Search Within This Document For":
-                    YourSearchWithinThisDocumentFor = Value;
+                case "First Page":
+                    FirstPage = Value;
+                    break;
+
+                case "Previous Page":
+                    PreviousPage = Value;
+                    break;
+
+                case "Next Page":
+                    NextPage = Value;
+                    break;
+
+                case "Last Page":
+                    LastPage = Value;
+                    break;
+
+                case "First":
+                    First = Value;
+                    break;
+
+                case "Previous":
+                    Previous = Value;
+                    break;
+
+                case "Next":
+                    Next = Value;
+                    break;
+
+                case "Last":
+                    Last = Value;
                     break;
 
             }
         }
-        /// <remarks> Searching for full text within a single document </remarks>
+        /// <remarks> 'Search this document' localization string </remarks>
+        public string SearchThisDocument { get; private set; }
+
+        /// <remarks> 'Your search within this document for ' localization string </remarks>
+        public string YourSearchWithinThisDocumentFor { get; private set; }
+
+        /// <remarks> 'AND' localization string </remarks>
         public string AND { get; private set; }
 
-        /// <remarks> Searching for full text within a single document </remarks>
+        /// <remarks> 'OR ' localization string </remarks>
+        public string OR { get; private set; }
+
+        /// <remarks> 'AND NOT' localization string </remarks>
         public string ANDNOT { get; private set; }
 
-        /// <remarks> 'First' localization string </remarks>
-        public string First { get; private set; }
+        /// <remarks> 'resulted in' localization string </remarks>
+        public string ResultedIn { get; private set; }
+
+        /// <remarks> 'matching pages' localization string </remarks>
+        public string MatchingPages { get; private set; }
+
+        /// <remarks> 'no matching pages' localization string </remarks>
+        public string NoMatchingPages { get; private set; }
+
+        /// <remarks> 'You can expand your results by searching for' localization string </remarks>
+        public string YouCanExpandYourResultsBySearchingFor { get; private set; }
+
+        /// <remarks> 'You can restrict your results by searching for' localization string </remarks>
+        public string YouCanRestrictYourResultsBySearchingFor { get; private set; }
 
         /// <remarks> 'First Page' localization string </remarks>
         public string FirstPage { get; private set; }
 
-        /// <remarks> 'Last' localization string </remarks>
-        public string Last { get; private set; }
-
-        /// <remarks> 'Last Page' localization string </remarks>
-        public string LastPage { get; private set; }
-
-        /// <remarks> Searching for full text within a single document </remarks>
-        public string MatchingPages { get; private set; }
-
-        /// <remarks> 'Next' localization string </remarks>
-        public string Next { get; private set; }
+        /// <remarks> 'Previous Page' localization string </remarks>
+        public string PreviousPage { get; private set; }
 
         /// <remarks> 'Next Page' localization string </remarks>
         public string NextPage { get; private set; }
 
-        /// <remarks> Searching for full text within a single document </remarks>
-        public string NoMatchingPages { get; private set; }
+        /// <remarks> 'Last Page' localization string </remarks>
+        public string LastPage { get; private set; }
 
-        /// <remarks> Searching for full text within a single document </remarks>
-        public string OR { get; private set; }
+        /// <remarks> 'First' localization string </remarks>
+        public string First { get; private set; }
 
         /// <remarks> 'Previous' localization string </remarks>
         public string Previous { get; private set; }
 
-        /// <remarks> 'Previous Page' localization string </remarks>
-        public string PreviousPage { get; private set; }
+        /// <remarks> 'Next' localization string </remarks>
+        public string Next { get; private set; }
 
-        /// <remarks> Searching for full text within a single document </remarks>
-        public string ResultedIn { get; private set; }
-
-        /// <remarks> Searching for full text within a single document </remarks>
-        public string SearchThisDocument { get; private set; }
-
-        /// <remarks> Searching for full text within a single document </remarks>
-        public string YouCanExpandYourResultsBySearchingFor { get; private set; }
-
-        /// <remarks> Searching for full text within a single document </remarks>
-        public string YouCanRestrictYourResultsBySearchingFor { get; private set; }
-
-        /// <remarks> Searching for full text within a single document </remarks>
-        public string YourSearchWithinThisDocumentFor { get; private set; }
+        /// <remarks> 'Last' localization string </remarks>
+        public string Last { get; private set; }
 
     }
 }

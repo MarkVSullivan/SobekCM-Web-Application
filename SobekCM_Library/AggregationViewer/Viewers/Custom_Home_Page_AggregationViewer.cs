@@ -81,7 +81,72 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Advanced_Search_AggregationViewer.Add_Secondary_HTML", "Adding simple search tips");
             }
 
-            Output.Write(RequestSpecificValues.Hierarchy_Object.HomePageHtml.Content);
+            // Do all the replacements
+            string text = RequestSpecificValues.Hierarchy_Object.HomePageHtml.Content; //.Content;
+            StringBuilder textToDisplay = new StringBuilder(text);
+           
+            // Determine if certain (more costly) replacements are even needed
+            bool header_replacement_needed = false;
+            bool footer_replacement_needed = false;
+            if (text.IndexOf("%HEADER%") > 0) header_replacement_needed = true;
+            if (text.IndexOf("%FOOTER%") > 0) footer_replacement_needed = true;
+
+            // If necessary, replace those
+            if (header_replacement_needed)
+            {
+                StringBuilder headerBuilder = new StringBuilder();
+                StringWriter headerWriter = new StringWriter(headerBuilder);
+                HeaderFooter_Helper_HtmlSubWriter.Add_Header(headerWriter, RequestSpecificValues, "container-inner-custom", null);
+                string header = headerBuilder.ToString();
+                textToDisplay = textToDisplay.Replace("<%HEADER%>", header).Replace("[%HEADER%]", header);
+            }
+            if (footer_replacement_needed)
+            {
+                StringBuilder footerBuilder = new StringBuilder();
+                StringWriter footerWriter = new StringWriter(footerBuilder);
+                HeaderFooter_Helper_HtmlSubWriter.Add_Footer(footerWriter, RequestSpecificValues, null);
+                string footer = footerBuilder.ToString();
+                textToDisplay = textToDisplay.Replace("<%FOOTER%>", footer).Replace("[%FOOTER%]", footer);
+            }
+
+            // Determine the different counts as strings
+            string page_count = "0";
+            string item_count = "0";
+            string title_count = "0";
+            if (RequestSpecificValues.Hierarchy_Object.Statistics != null)
+            {
+                page_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Statistics.Page_Count);
+                item_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Statistics.Item_Count);
+                title_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Statistics.Title_Count);
+            }
+
+            string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
+            string urlOptions1 = String.Empty;
+            string urlOptions2 = String.Empty;
+            if (url_options.Length > 0)
+            {
+                urlOptions1 = "?" + url_options;
+                urlOptions2 = "&" + url_options;
+            }
+
+            string home_text = textToDisplay.ToString().Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%INTERFACE%>", RequestSpecificValues.Current_Mode.Base_Skin).Replace("<%WEBSKIN%>", RequestSpecificValues.Current_Mode.Base_Skin).Replace("<%PAGES%>", page_count).Replace("<%ITEMS%>", item_count).Replace("<%TITLES%>", title_count);
+
+
+            Output.Write(home_text);
+        }
+
+        private string Int_To_Comma_String(int Value)
+        {
+            if (Value < 1000)
+                return Value.ToString();
+
+            string value_string = Value.ToString();
+            if ((Value >= 1000) && (Value < 1000000))
+            {
+                return value_string.Substring(0, value_string.Length - 3) + "," + value_string.Substring(value_string.Length - 3);
+            }
+
+            return value_string.Substring(0, value_string.Length - 6) + "," + value_string.Substring(value_string.Length - 6, 3) + "," + value_string.Substring(value_string.Length - 3);
         }
 
     }

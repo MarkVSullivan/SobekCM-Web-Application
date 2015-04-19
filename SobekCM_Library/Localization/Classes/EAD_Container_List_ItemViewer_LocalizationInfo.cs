@@ -28,7 +28,7 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> Title for the list of all containers in this finding guide / EAD </remarks>
+        /// <remarks> 'Container List' localization string </remarks>
         public string ContainerList { get; private set; }
 
     }

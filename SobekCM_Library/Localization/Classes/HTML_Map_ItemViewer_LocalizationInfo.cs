@@ -28,7 +28,7 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> Used to display a map which is clickable to get to each subsequent page </remarks>
+        /// <remarks> 'Click on a sheet in the map to view a sheet' localization string </remarks>
         public string ClickOnASheetInTheMapToViewASheet { get; private set; }
 
     }

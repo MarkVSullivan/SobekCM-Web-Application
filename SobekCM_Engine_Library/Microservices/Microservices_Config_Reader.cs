@@ -180,7 +180,7 @@ namespace SobekCM.Engine_Library.Microservices
                                         endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.JSON_P;
                                         break;
 
-                                    case "PROTOBOF":
+                                    case "PROTOBUF":
                                         endpoint.Protocol = Microservice_Endpoint_Protocol_Enum.PROTOBUF;
                                         break;
 

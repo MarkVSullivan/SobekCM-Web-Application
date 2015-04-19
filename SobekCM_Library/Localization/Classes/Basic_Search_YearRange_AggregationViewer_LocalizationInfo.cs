@@ -22,21 +22,21 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Limit By Year":
-                    LimitByYear = Value;
-                    break;
-
                 case "Search Collection":
                     SearchCollection = Value;
                     break;
 
+                case "Limit By Year":
+                    LimitByYear = Value;
+                    break;
+
             }
         }
-        /// <remarks> 'Limit by Year' localization string </remarks>
-        public string LimitByYear { get; private set; }
-
         /// <remarks> 'Search Collection' localization string </remarks>
         public string SearchCollection { get; private set; }
+
+        /// <remarks> 'Limit by Year' localization string </remarks>
+        public string LimitByYear { get; private set; }
 
     }
 }

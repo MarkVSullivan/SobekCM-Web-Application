@@ -28,7 +28,7 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> Hover over for adding the current URL to your favorites in your browser </remarks>
+        /// <remarks> 'Add to favorites' localization string </remarks>
         public string AddToFavorites { get; private set; }
 
     }

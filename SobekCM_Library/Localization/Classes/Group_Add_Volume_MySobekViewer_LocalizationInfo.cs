@@ -22,16 +22,28 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Add A New Volume To This Existing Titleitem Group":
-                    AddANewVolumeToThisExistingTitleitemGroup = Value;
-                    break;
-
-                case "Click":
-                    Click = Value;
+                case "No Base Volume Selected":
+                    NoBaseVolumeSelected = Value;
                     break;
 
                 case "EXCEPTION CAUGHT":
                     EXCEPTIONCAUGHT = Value;
+                    break;
+
+                case "NEW VOLUME":
+                    NEWVOLUME = Value;
+                    break;
+
+                case "Add A New Volume To This Existing Titleitem Group":
+                    AddANewVolumeToThisExistingTitleitemGroup = Value;
+                    break;
+
+                case "Only Enter Data That You Wish To Override The Data In The Existing Base Volume":
+                    OnlyEnterDataThatYouWishToOverrideTheData = Value;
+                    break;
+
+                case "Click":
+                    Click = Value;
                     break;
 
                 case "Here For Detailed Instructions":
@@ -42,40 +54,37 @@ namespace SobekCM.Library.Localization.Classes
                     InAdditionTheFollowingActionsAreAvailable = Value;
                     break;
 
-                case "NEW VOLUME":
-                    NEWVOLUME = Value;
-                    break;
-
-                case "No Base Volume Selected":
-                    NoBaseVolumeSelected = Value;
-                    break;
-
-                case "Only Enter Data That You Wish To Override The Data In The Existing Base Volume":
-                    OnlyEnterDataThatYouWishToOverrideTheDataInTheExistingBaseVolume = Value;
-                    break;
-
-                case "SAVE ADD ANOTHER":
-                    SAVEADDANOTHER = Value;
+                case "SAVE EDIT ITEM":
+                    SAVEEDITITEM = Value;
                     break;
 
                 case "SAVE ADD FILES":
                     SAVEADDFILES = Value;
                     break;
 
-                case "SAVE EDIT ITEM":
-                    SAVEEDITITEM = Value;
+                case "SAVE ADD ANOTHER":
+                    SAVEADDANOTHER = Value;
                     break;
 
             }
         }
-        /// <remarks> 'Add a new volume to this existing title/item group' localization string </remarks>
-        public string AddANewVolumeToThisExistingTitleitemGroup { get; private set; }
-
-        /// <remarks> 'Click' localization string </remarks>
-        public string Click { get; private set; }
+        /// <remarks> 'No base volume selected!' localization string </remarks>
+        public string NoBaseVolumeSelected { get; private set; }
 
         /// <remarks> 'EXCEPTION CAUGHT!' localization string </remarks>
         public string EXCEPTIONCAUGHT { get; private set; }
+
+        /// <remarks> 'NEW VOLUME' localization string </remarks>
+        public string NEWVOLUME { get; private set; }
+
+        /// <remarks> 'Add a new volume to this existing title/item group' localization string </remarks>
+        public string AddANewVolumeToThisExistingTitleitemGroup { get; private set; }
+
+        /// <remarks> 'Only enter data that you wish to override the data in the existing base volume.' localization string </remarks>
+        public string OnlyEnterDataThatYouWishToOverrideTheData { get; private set; }
+
+        /// <remarks> 'Click' localization string </remarks>
+        public string Click { get; private set; }
 
         /// <remarks> 'here for detailed instructions' localization string </remarks>
         public string HereForDetailedInstructions { get; private set; }
@@ -83,23 +92,14 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> '"In addition, the following actions are available:"' localization string </remarks>
         public string InAdditionTheFollowingActionsAreAvailable { get; private set; }
 
-        /// <remarks> 'NEW VOLUME' localization string </remarks>
-        public string NEWVOLUME { get; private set; }
-
-        /// <remarks> 'No base volume selected!' localization string </remarks>
-        public string NoBaseVolumeSelected { get; private set; }
-
-        /// <remarks> 'Only enter data that you wish to override the data in the existing base volume.' localization string </remarks>
-        public string OnlyEnterDataThatYouWishToOverrideTheDataInTheExistingBaseVolume { get; private set; }
-
-        /// <remarks> 'SAVE & ADD ANOTHER' localization string </remarks>
-        public string SAVEADDANOTHER { get; private set; }
+        /// <remarks> 'SAVE & EDIT ITEM' localization string </remarks>
+        public string SAVEEDITITEM { get; private set; }
 
         /// <remarks> 'SAVE & ADD FILES' localization string </remarks>
         public string SAVEADDFILES { get; private set; }
 
-        /// <remarks> 'SAVE & EDIT ITEM' localization string </remarks>
-        public string SAVEEDITITEM { get; private set; }
+        /// <remarks> 'SAVE & ADD ANOTHER' localization string </remarks>
+        public string SAVEADDANOTHER { get; private set; }
 
     }
 }

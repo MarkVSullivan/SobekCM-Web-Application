@@ -26,10 +26,6 @@ namespace SobekCM.Library.Localization.Classes
                     AddItemDescription = Value;
                     break;
 
-                case "Close":
-                    Close = Value;
-                    break;
-
                 case "Enter A Description Or Notes To Add To This Item":
                     EnterADescriptionOrNotesToAddToThisItem = Value;
                     break;
@@ -38,19 +34,23 @@ namespace SobekCM.Library.Localization.Classes
                     Notes = Value;
                     break;
 
+                case "Close":
+                    Close = Value;
+                    break;
+
             }
         }
-        /// <remarks> Title for the pop-up form for adding a description to an item </remarks>
+        /// <remarks> 'Add Item Description' localization string </remarks>
         public string AddItemDescription { get; private set; }
+
+        /// <remarks> 'Enter a description or notes to add to this item' localization string </remarks>
+        public string EnterADescriptionOrNotesToAddToThisItem { get; private set; }
+
+        /// <remarks> 'Notes:' localization string </remarks>
+        public string Notes { get; private set; }
 
         /// <remarks> 'Close' localization string </remarks>
         public string Close { get; private set; }
-
-        /// <remarks> Pop-up form for adding a description to an item </remarks>
-        public string EnterADescriptionOrNotesToAddToThisItem { get; private set; }
-
-        /// <remarks> Pop-up form for adding a description to an item </remarks>
-        public string Notes { get; private set; }
 
     }
 }

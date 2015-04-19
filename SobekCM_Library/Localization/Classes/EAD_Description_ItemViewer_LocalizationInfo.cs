@@ -28,7 +28,7 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> Title for the archival description viewer </remarks>
+        /// <remarks> 'Archival Description' localization string </remarks>
         public string ArchivalDescription { get; private set; }
 
     }

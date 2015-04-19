@@ -32,10 +32,10 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> Used as main tabs when viewing search results </remarks>
+        /// <remarks> 'Modify your search' localization string </remarks>
         public string ModifyYourSearch { get; private set; }
 
-        /// <remarks> Used as main tabs when viewing search results </remarks>
+        /// <remarks> 'New Search' localization string </remarks>
         public string NewSearch { get; private set; }
 
     }

@@ -22,10 +22,6 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Book Turner Presentations Require A Javascriptenabled Browser":
-                    BookTurnerPresentationsRequireAJavascriptenabledBrowser = Value;
-                    break;
-
                 case "Return To Item":
                     ReturnToItem = Value;
                     break;
@@ -34,16 +30,20 @@ namespace SobekCM.Library.Localization.Classes
                     Zoom = Value;
                     break;
 
+                case "Book Turner Presentations Require A Javascriptenabled Browser":
+                    BookTurnerPresentationsRequireAJavascriptenab = Value;
+                    break;
+
             }
         }
-        /// <remarks> 'Book Turner presentations require a Javascript-enabled browser.' localization string </remarks>
-        public string BookTurnerPresentationsRequireAJavascriptenabledBrowser { get; private set; }
-
         /// <remarks> 'Return to Item' localization string </remarks>
         public string ReturnToItem { get; private set; }
 
         /// <remarks> 'Zoom' localization string </remarks>
         public string Zoom { get; private set; }
+
+        /// <remarks> 'Book Turner presentations require a Javascript-enabled browser.' localization string </remarks>
+        public string BookTurnerPresentationsRequireAJavascriptenab { get; private set; }
 
     }
 }

@@ -28,7 +28,7 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
-        /// <remarks> On the special rotating image search box on home pages </remarks>
+        /// <remarks> 'Search Collection:' localization string </remarks>
         public string SearchCollection { get; private set; }
 
     }

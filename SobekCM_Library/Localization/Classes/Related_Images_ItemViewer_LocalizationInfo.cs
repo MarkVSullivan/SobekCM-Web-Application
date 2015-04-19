@@ -34,93 +34,93 @@ namespace SobekCM.Library.Localization.Classes
                     GoToThumbnail = Value;
                     break;
 
-                case "Large":
-                    Large = Value;
-                    break;
-
-                case "Large Thumbnails":
-                    LargeThumbnails = Value;
-                    break;
-
-                case "Medium":
-                    Medium = Value;
-                    break;
-
-                case "Medium Thumbnails":
-                    MediumThumbnails = Value;
-                    break;
-
-                case "MISSING THUMBNAIL":
-                    MISSINGTHUMBNAIL = Value;
-                    break;
-
                 case "Page":
                     Page = Value;
-                    break;
-
-                case "Small":
-                    Small = Value;
                     break;
 
                 case "Small Thumbnails":
                     SmallThumbnails = Value;
                     break;
 
-                case "Switch To Large Thumbnails":
-                    SwitchToLargeThumbnails = Value;
+                case "Medium Thumbnails":
+                    MediumThumbnails = Value;
                     break;
 
-                case "Switch To Medium Thumbnails":
-                    SwitchToMediumThumbnails = Value;
+                case "Large Thumbnails":
+                    LargeThumbnails = Value;
                     break;
 
                 case "Switch To Small Thumbnails":
                     SwitchToSmallThumbnails = Value;
                     break;
 
+                case "Switch To Medium Thumbnails":
+                    SwitchToMediumThumbnails = Value;
+                    break;
+
+                case "Switch To Large Thumbnails":
+                    SwitchToLargeThumbnails = Value;
+                    break;
+
+                case "Small":
+                    Small = Value;
+                    break;
+
+                case "Medium":
+                    Medium = Value;
+                    break;
+
+                case "Large":
+                    Large = Value;
+                    break;
+
+                case "MISSING THUMBNAIL":
+                    MISSINGTHUMBNAIL = Value;
+                    break;
+
             }
         }
-        /// <remarks> Number of thumbnails to show per page </remarks>
+        /// <remarks> '% Thumbnails per page' localization string </remarks>
         public string ThumbnailsPerPage { get; private set; }
 
-        /// <remarks> Show all thumbnails on one page </remarks>
+        /// <remarks> 'All Thumbnails' localization string </remarks>
         public string AllThumbnails { get; private set; }
 
         /// <remarks> 'Go to thumbnail:' localization string </remarks>
         public string GoToThumbnail { get; private set; }
 
-        /// <remarks> 'Large' localization string </remarks>
-        public string Large { get; private set; }
-
-        /// <remarks> Used for hover over for thumbnail sizes </remarks>
-        public string LargeThumbnails { get; private set; }
-
-        /// <remarks> 'Medium' localization string </remarks>
-        public string Medium { get; private set; }
-
-        /// <remarks> Used for hover over for thumbnail sizes </remarks>
-        public string MediumThumbnails { get; private set; }
-
-        /// <remarks> 'MISSING THUMBNAIL' localization string </remarks>
-        public string MISSINGTHUMBNAIL { get; private set; }
-
-        /// <remarks> Default term used for drop-down to go to a thumbnail (if no page label) </remarks>
+        /// <remarks> 'Page' localization string </remarks>
         public string Page { get; private set; }
 
-        /// <remarks> 'Small' localization string </remarks>
-        public string Small { get; private set; }
-
-        /// <remarks> Used for hover over for thumbnail sizes </remarks>
+        /// <remarks> 'Small thumbnails' localization string </remarks>
         public string SmallThumbnails { get; private set; }
 
-        /// <remarks> 'Switch to large thumbnails' localization string </remarks>
-        public string SwitchToLargeThumbnails { get; private set; }
+        /// <remarks> 'Medium thumbnails' localization string </remarks>
+        public string MediumThumbnails { get; private set; }
+
+        /// <remarks> 'Large thumbnails' localization string </remarks>
+        public string LargeThumbnails { get; private set; }
+
+        /// <remarks> 'Switch to small thumbnails' localization string </remarks>
+        public string SwitchToSmallThumbnails { get; private set; }
 
         /// <remarks> 'Switch to medium thumbnails' localization string </remarks>
         public string SwitchToMediumThumbnails { get; private set; }
 
-        /// <remarks> 'Switch to small thumbnails' localization string </remarks>
-        public string SwitchToSmallThumbnails { get; private set; }
+        /// <remarks> 'Switch to large thumbnails' localization string </remarks>
+        public string SwitchToLargeThumbnails { get; private set; }
+
+        /// <remarks> 'Small' localization string </remarks>
+        public string Small { get; private set; }
+
+        /// <remarks> 'Medium' localization string </remarks>
+        public string Medium { get; private set; }
+
+        /// <remarks> 'Large' localization string </remarks>
+        public string Large { get; private set; }
+
+        /// <remarks> 'MISSING THUMBNAIL' localization string </remarks>
+        public string MISSINGTHUMBNAIL { get; private set; }
 
     }
 }

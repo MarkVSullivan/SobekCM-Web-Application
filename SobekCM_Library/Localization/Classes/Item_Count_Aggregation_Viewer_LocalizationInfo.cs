@@ -22,56 +22,56 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
+                case "Resource Count In Aggregation":
+                    ResourceCountInAggregation = Value;
+                    break;
+
                 case "Below Is The Number Of Titles And Items For All Items Within This Aggregation Including Currently Online Items As Well As Items In Process":
-                    BelowIsTheNumberOfTitlesAndItemsForAllItemsWithinThisAggregationIncludingCurrentlyOnlineItemsAsWellAsItemsInProcess = Value;
-                    break;
-
-                case "FILE COUNT":
-                    FILECOUNT = Value;
-                    break;
-
-                case "ITEM COUNT":
-                    ITEMCOUNT = Value;
+                    BelowIsTheNumberOfTitlesAndItemsForAllIt = Value;
                     break;
 
                 case "LAST MILESTONE":
                     LASTMILESTONE = Value;
                     break;
 
-                case "PAGE COUNT":
-                    PAGECOUNT = Value;
-                    break;
-
-                case "Resource Count In Aggregation":
-                    ResourceCountInAggregation = Value;
-                    break;
-
                 case "TITLE COUNT":
                     TITLECOUNT = Value;
                     break;
 
+                case "ITEM COUNT":
+                    ITEMCOUNT = Value;
+                    break;
+
+                case "PAGE COUNT":
+                    PAGECOUNT = Value;
+                    break;
+
+                case "FILE COUNT":
+                    FILECOUNT = Value;
+                    break;
+
             }
         }
+        /// <remarks> 'Resource Count in Aggregation' localization string </remarks>
+        public string ResourceCountInAggregation { get; private set; }
+
         /// <remarks> '"Below is the number of titles and items for all items within this aggregation, including currently online items as well as items in process."' localization string </remarks>
-        public string BelowIsTheNumberOfTitlesAndItemsForAllItemsWithinThisAggregationIncludingCurrentlyOnlineItemsAsWellAsItemsInProcess { get; private set; }
-
-        /// <remarks> 'FILE COUNT' localization string </remarks>
-        public string FILECOUNT { get; private set; }
-
-        /// <remarks> 'ITEM COUNT' localization string </remarks>
-        public string ITEMCOUNT { get; private set; }
+        public string BelowIsTheNumberOfTitlesAndItemsForAllIt { get; private set; }
 
         /// <remarks> 'LAST MILESTONE' localization string </remarks>
         public string LASTMILESTONE { get; private set; }
 
+        /// <remarks> 'TITLE COUNT' localization string </remarks>
+        public string TITLECOUNT { get; private set; }
+
+        /// <remarks> 'ITEM COUNT' localization string </remarks>
+        public string ITEMCOUNT { get; private set; }
+
         /// <remarks> 'PAGE COUNT' localization string </remarks>
         public string PAGECOUNT { get; private set; }
 
-        /// <remarks> 'Resource Count in Aggregation' localization string </remarks>
-        public string ResourceCountInAggregation { get; private set; }
-
-        /// <remarks> 'TITLE COUNT' localization string </remarks>
-        public string TITLECOUNT { get; private set; }
+        /// <remarks> 'FILE COUNT' localization string </remarks>
+        public string FILECOUNT { get; private set; }
 
     }
 }

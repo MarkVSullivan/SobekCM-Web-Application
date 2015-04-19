@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("URL_Rewriter")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("SobekCM_URL_Rewriter")]
+[assembly: AssemblyDescription("Part of the SobekCM open-source digital repository solution")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("UF")]
-[assembly: AssemblyProduct("URL_Rewriter")]
-[assembly: AssemblyCopyright("Copyright © UF 2010")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("SobekCM_URL_Rewriter")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.9.9")]
-[assembly: AssemblyFileVersion("2.9.9")]
+[assembly: AssemblyVersion("4.8.7")]
+[assembly: AssemblyFileVersion("4.8.7")]

@@ -22,126 +22,126 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "XXX Submission":
-                    XXXSubmission = Value;
-                    break;
-
-                case "Cancel":
-                    Cancel = Value;
-                    break;
-
-                case "Click Here To Close This Tab In Your Browser":
-                    ClickHereToCloseThisTabInYourBrowser = Value;
-                    break;
-
-                case "Click Here To Return To The Digital Collection Home":
-                    ClickHereToReturnToTheDigitalCollectionHome = Value;
-                    break;
-
-                case "Contact Us":
-                    ContactUs = Value;
-                    break;
-
-                case "Describe Your Question Or Problem Here":
-                    DescribeYourQuestionOrProblemHere = Value;
-                    break;
-
-                case "Email":
-                    Email = Value;
-                    break;
-
-                case "Enter A Subject Here":
-                    EnterASubjectHere = Value;
-                    break;
-
-                case "Enter Your Email Address Here":
-                    EnterYourEmailAddressHere = Value;
-                    break;
-
-                case "Enter Your Name Here":
-                    EnterYourNameHere = Value;
-                    break;
-
-                case "May We Contact You If So Please Provide The Following Information":
-                    MayWeContactYouIfSoPleaseProvideTheFollowingInformation = Value;
-                    break;
-
-                case "Name":
-                    Name = Value;
+                case "The Following Information Is Collected To Allow Us Better Serve Your Needs":
+                    TheFollowingInformationIsCollectedToAllowUs = Value;
                     break;
 
                 case "PERSONAL INFORMATION":
                     PERSONALINFORMATION = Value;
                     break;
 
-                case "Please Complete The Following Required Fields":
-                    PleaseCompleteTheFollowingRequiredFields = Value;
+                case "Name":
+                    Name = Value;
+                    break;
+
+                case "Email":
+                    Email = Value;
+                    break;
+
+                case "XXX Submission":
+                    XXXSubmission = Value;
                     break;
 
                 case "Submit":
                     Submit = Value;
                     break;
 
-                case "The Following Information Is Collected To Allow Us Better Serve Your Needs":
-                    TheFollowingInformationIsCollectedToAllowUsBetterServeYourNeeds = Value;
+                case "Cancel":
+                    Cancel = Value;
                     break;
 
                 case "Your Email Has Been Sent":
                     YourEmailHasBeenSent = Value;
                     break;
 
+                case "Click Here To Return To The Digital Collection Home":
+                    ClickHereToReturnToTheDigitalCollectionHom = Value;
+                    break;
+
+                case "Click Here To Close This Tab In Your Browser":
+                    ClickHereToCloseThisTabInYourBrowser = Value;
+                    break;
+
+                case "Contact Us":
+                    ContactUs = Value;
+                    break;
+
+                case "Please Complete The Following Required Fields":
+                    PleaseCompleteTheFollowingRequiredFields = Value;
+                    break;
+
+                case "Enter A Subject Here":
+                    EnterASubjectHere = Value;
+                    break;
+
+                case "Describe Your Question Or Problem Here":
+                    DescribeYourQuestionOrProblemHere = Value;
+                    break;
+
+                case "May We Contact You If So Please Provide The Following Information":
+                    MayWeContactYouIfSoPleaseProvideTheFollow = Value;
+                    break;
+
+                case "Enter Your Name Here":
+                    EnterYourNameHere = Value;
+                    break;
+
+                case "Enter Your Email Address Here":
+                    EnterYourEmailAddressHere = Value;
+                    break;
+
             }
         }
-        /// <remarks> "Included at the end of the subject line for emails sent ( i.e., ""[ dLOC Submission ]"")" </remarks>
-        public string XXXSubmission { get; private set; }
-
-        /// <remarks> 'Cancel' localization string </remarks>
-        public string Cancel { get; private set; }
-
-        /// <remarks> Prompts for the automatic contact us form in the system </remarks>
-        public string ClickHereToCloseThisTabInYourBrowser { get; private set; }
-
-        /// <remarks> Prompts for the automatic contact us form in the system </remarks>
-        public string ClickHereToReturnToTheDigitalCollectionHome { get; private set; }
-
-        /// <remarks> Prompts for the automatic contact us form in the system </remarks>
-        public string ContactUs { get; private set; }
-
-        /// <remarks> Prompts for the automatic contact us form in the system </remarks>
-        public string DescribeYourQuestionOrProblemHere { get; private set; }
-
-        /// <remarks> 'Email:' localization string </remarks>
-        public string Email { get; private set; }
-
-        /// <remarks> Prompts for the automatic contact us form in the system </remarks>
-        public string EnterASubjectHere { get; private set; }
-
-        /// <remarks> Prompts for the automatic contact us form in the system </remarks>
-        public string EnterYourEmailAddressHere { get; private set; }
-
-        /// <remarks> Prompts for the automatic contact us form in the system </remarks>
-        public string EnterYourNameHere { get; private set; }
-
-        /// <remarks> Prompts for the automatic contact us form in the system </remarks>
-        public string MayWeContactYouIfSoPleaseProvideTheFollowingInformation { get; private set; }
-
-        /// <remarks> 'Name:' localization string </remarks>
-        public string Name { get; private set; }
+        /// <remarks> 'The following information is collected to allow us better serve your needs.' localization string </remarks>
+        public string TheFollowingInformationIsCollectedToAllowUs { get; private set; }
 
         /// <remarks> 'PERSONAL INFORMATION' localization string </remarks>
         public string PERSONALINFORMATION { get; private set; }
 
-        /// <remarks> Prompts for the automatic contact us form in the system </remarks>
-        public string PleaseCompleteTheFollowingRequiredFields { get; private set; }
+        /// <remarks> 'Name:' localization string </remarks>
+        public string Name { get; private set; }
+
+        /// <remarks> 'Email:' localization string </remarks>
+        public string Email { get; private set; }
+
+        /// <remarks> '[ %1 Submission ]' localization string </remarks>
+        public string XXXSubmission { get; private set; }
 
         /// <remarks> 'Submit' localization string </remarks>
         public string Submit { get; private set; }
 
-        /// <remarks> Included in emails sent from the system via the 'Contact Us' feature </remarks>
-        public string TheFollowingInformationIsCollectedToAllowUsBetterServeYourNeeds { get; private set; }
+        /// <remarks> 'Cancel' localization string </remarks>
+        public string Cancel { get; private set; }
 
-        /// <remarks> Prompts for the automatic contact us form in the system </remarks>
+        /// <remarks> 'Your email has been sent.' localization string </remarks>
         public string YourEmailHasBeenSent { get; private set; }
+
+        /// <remarks> 'Click here to return to the digital collection home' localization string </remarks>
+        public string ClickHereToReturnToTheDigitalCollectionHom { get; private set; }
+
+        /// <remarks> 'Click here to close this tab in your browser' localization string </remarks>
+        public string ClickHereToCloseThisTabInYourBrowser { get; private set; }
+
+        /// <remarks> 'Contact Us' localization string </remarks>
+        public string ContactUs { get; private set; }
+
+        /// <remarks> 'Please complete the following required fields:' localization string </remarks>
+        public string PleaseCompleteTheFollowingRequiredFields { get; private set; }
+
+        /// <remarks> 'Enter a subject here:' localization string </remarks>
+        public string EnterASubjectHere { get; private set; }
+
+        /// <remarks> 'Describe your question or problem here:' localization string </remarks>
+        public string DescribeYourQuestionOrProblemHere { get; private set; }
+
+        /// <remarks> '"May we contact you?  If so, please provide the following information:"' localization string </remarks>
+        public string MayWeContactYouIfSoPleaseProvideTheFollow { get; private set; }
+
+        /// <remarks> 'Enter your name here:' localization string </remarks>
+        public string EnterYourNameHere { get; private set; }
+
+        /// <remarks> 'Enter your e-mail address here:' localization string </remarks>
+        public string EnterYourEmailAddressHere { get; private set; }
 
     }
 }

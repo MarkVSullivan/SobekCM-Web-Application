@@ -22,10 +22,6 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Access Restricted":
-                    AccessRestricted = Value;
-                    break;
-
                 case "Issue":
                     Issue = Value;
                     break;
@@ -42,22 +38,26 @@ namespace SobekCM.Library.Localization.Classes
                     Volumes = Value;
                     break;
 
+                case "Access Restricted":
+                    AccessRestricted = Value;
+                    break;
+
             }
         }
-        /// <remarks> 'Access Restricted' localization string </remarks>
-        public string AccessRestricted { get; private set; }
-
-        /// <remarks> Displayed under a newspaper thumbnail like '1 issue' </remarks>
+        /// <remarks> 'issue' localization string </remarks>
         public string Issue { get; private set; }
 
-        /// <remarks> Displayed under a newspaper thumbnail like '2 issues' </remarks>
+        /// <remarks> 'issues' localization string </remarks>
         public string Issues { get; private set; }
 
-        /// <remarks> Displayed under a non-newspaper thumbnail like '1 volume' </remarks>
+        /// <remarks> 'volume' localization string </remarks>
         public string Volume { get; private set; }
 
-        /// <remarks> Displayed under a non-newspaper thumbnail like '2 volumes' </remarks>
+        /// <remarks> 'volumes' localization string </remarks>
         public string Volumes { get; private set; }
+
+        /// <remarks> 'Access Restricted' localization string </remarks>
+        public string AccessRestricted { get; private set; }
 
     }
 }

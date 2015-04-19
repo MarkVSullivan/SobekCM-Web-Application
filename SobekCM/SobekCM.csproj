@@ -928,7 +928,9 @@
     <Content Include="config\default\sobekcm_qc.config" />
     <Content Include="config\default\sobekcm_qc_errors.config" />
     <Content Include="HtmlEditFileHandler.ashx" />
-    <Content Include="config\default\sobekcm_engine.config" />
+    <Content Include="config\default\sobekcm_engine.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="config\default\sobekcm_contactform.config" />
     <Content Include="config\default\sobekcm_microservices.config" />
     <Content Include="config\default\sobekcm_oaipmh.config" />

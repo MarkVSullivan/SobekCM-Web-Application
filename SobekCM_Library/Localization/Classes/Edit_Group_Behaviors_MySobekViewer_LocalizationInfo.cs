@@ -22,56 +22,56 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Will Add Another Instance Of The Element If The Element Is Repeatable":
-                    WillAddAnotherInstanceOfTheElementIfTheElementIsRepeatable = Value;
+                case "Edit The Behaviors Associated With This Item Group Within This Library":
+                    EditTheBehaviorsAssociatedWithThisItemGroup = Value;
                     break;
 
-                case "On Editing Behaviors Online":
-                    OnEditingBehaviorsOnline = Value;
-                    break;
-
-                case "Click":
-                    Click = Value;
+                case "Enter The Data For This Item Group Below And Press The SAVE Button When All Your Edits Are Complete":
+                    EnterTheDataForThisItemGroupBelowAndPress = Value;
                     break;
 
                 case "Clicking On The Green Plus Button":
                     ClickingOnTheGreenPlusButton = Value;
                     break;
 
-                case "Edit The Behaviors Associated With This Item Group Within This Library":
-                    EditTheBehaviorsAssociatedWithThisItemGroupWithinThisLibrary = Value;
+                case "Will Add Another Instance Of The Element If The Element Is Repeatable":
+                    WillAddAnotherInstanceOfTheElementIfTheEl = Value;
                     break;
 
-                case "Enter The Data For This Item Group Below And Press The SAVE Button When All Your Edits Are Complete":
-                    EnterTheDataForThisItemGroupBelowAndPressTheSAVEButtonWhenAllYourEditsAreComplete = Value;
+                case "Click":
+                    Click = Value;
                     break;
 
                 case "Here For Detailed Instructions":
                     HereForDetailedInstructions = Value;
                     break;
 
+                case "On Editing Behaviors Online":
+                    OnEditingBehaviorsOnline = Value;
+                    break;
+
             }
         }
-        /// <remarks> '" ) will add another instance of the element, if the element is repeatable."' localization string </remarks>
-        public string WillAddAnotherInstanceOfTheElementIfTheElementIsRepeatable { get; private set; }
+        /// <remarks> 'Edit the behaviors associated with this item group within this library' localization string </remarks>
+        public string EditTheBehaviorsAssociatedWithThisItemGroup { get; private set; }
 
-        /// <remarks> ' on editing behaviors online.' localization string </remarks>
-        public string OnEditingBehaviorsOnline { get; private set; }
-
-        /// <remarks> 'Click' localization string </remarks>
-        public string Click { get; private set; }
+        /// <remarks> 'Enter the data for this item group below and press the SAVE button when all your edits are complete.' localization string </remarks>
+        public string EnterTheDataForThisItemGroupBelowAndPress { get; private set; }
 
         /// <remarks> 'Clicking on the green plus button ( ' localization string </remarks>
         public string ClickingOnTheGreenPlusButton { get; private set; }
 
-        /// <remarks> 'Edit the behaviors associated with this item group within this library' localization string </remarks>
-        public string EditTheBehaviorsAssociatedWithThisItemGroupWithinThisLibrary { get; private set; }
+        /// <remarks> '" ) will add another instance of the element, if the element is repeatable."' localization string </remarks>
+        public string WillAddAnotherInstanceOfTheElementIfTheEl { get; private set; }
 
-        /// <remarks> 'Enter the data for this item group below and press the SAVE button when all your edits are complete.' localization string </remarks>
-        public string EnterTheDataForThisItemGroupBelowAndPressTheSAVEButtonWhenAllYourEditsAreComplete { get; private set; }
+        /// <remarks> 'Click' localization string </remarks>
+        public string Click { get; private set; }
 
         /// <remarks> 'here for detailed instructions' localization string </remarks>
         public string HereForDetailedInstructions { get; private set; }
+
+        /// <remarks> ' on editing behaviors online.' localization string </remarks>
+        public string OnEditingBehaviorsOnline { get; private set; }
 
     }
 }

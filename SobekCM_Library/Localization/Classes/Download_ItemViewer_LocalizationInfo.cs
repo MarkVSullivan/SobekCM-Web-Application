@@ -22,42 +22,42 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "The Following Tiles Are Available For Download":
-                    TheFollowingTilesAreAvailableForDownload = Value;
-                    break;
-
                 case "This Item Has The Following Downloads":
                     ThisItemHasTheFollowingDownloads = Value;
                     break;
 
                 case "This Item Is Only Available As The Following Downloads":
-                    ThisItemIsOnlyAvailableAsTheFollowingDownloads = Value;
+                    ThisItemIsOnlyAvailableAsTheFollowingDownl = Value;
                     break;
 
                 case "To Download Right Click On The Tile Name Below Select Save Link As And Save The JPEG2000 To Your Local Computer":
-                    ToDownloadRightClickOnTheTileNameBelowSelectSaveLinkAsAndSaveTheJPEG2000ToYourLocalComputer = Value;
+                    ToDownloadRightClickOnTheTileNameBelowSel = Value;
                     break;
 
                 case "To Download Right Click On The Tile Name Below Select Save Target As And Save The JPEG2000 To Your Local Computer":
-                    ToDownloadRightClickOnTheTileNameBelowSelectSaveTargetAsAndSaveTheJPEG2000ToYourLocalComputer = Value;
+                    ToDownloadRightClickOnTheTileNameBelowSel = Value;
+                    break;
+
+                case "The Following Tiles Are Available For Download":
+                    TheFollowingTilesAreAvailableForDownload = Value;
                     break;
 
             }
         }
-        /// <remarks> 'The following tiles are available for download:' localization string </remarks>
-        public string TheFollowingTilesAreAvailableForDownload { get; private set; }
-
-        /// <remarks> If there are pages and also downloads </remarks>
+        /// <remarks> 'This item has the following downloads:' localization string </remarks>
         public string ThisItemHasTheFollowingDownloads { get; private set; }
 
-        /// <remarks> If there are only downloads for this item (no pages) </remarks>
-        public string ThisItemIsOnlyAvailableAsTheFollowingDownloads { get; private set; }
+        /// <remarks> 'This item is only available as the following downloads:' localization string </remarks>
+        public string ThisItemIsOnlyAvailableAsTheFollowingDownl { get; private set; }
 
         /// <remarks> '"To download, right click on the tile name below, select 'Save Link As...' and save the JPEG2000 to your local computer."' localization string </remarks>
-        public string ToDownloadRightClickOnTheTileNameBelowSelectSaveLinkAsAndSaveTheJPEG2000ToYourLocalComputer { get; private set; }
+        public string ToDownloadRightClickOnTheTileNameBelowSel { get; private set; }
 
         /// <remarks> '"To download, right click on the tile name below, select 'Save Target As...' and save the JPEG2000 to your local computer. "' localization string </remarks>
-        public string ToDownloadRightClickOnTheTileNameBelowSelectSaveTargetAsAndSaveTheJPEG2000ToYourLocalComputer { get; private set; }
+        public string ToDownloadRightClickOnTheTileNameBelowSel2 { get; private set; }
+
+        /// <remarks> 'The following tiles are available for download:' localization string </remarks>
+        public string TheFollowingTilesAreAvailableForDownload { get; private set; }
 
     }
 }

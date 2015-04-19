@@ -22,28 +22,28 @@ namespace SobekCM.Library.Localization.Classes
             // Assign to custom properties depending on the key
             switch (Key)
             {
-                case "Go":
-                    Go = Value;
+                case "Search Full Text":
+                    SearchFullText = Value;
                     break;
 
                 case "Include Newspapers":
                     IncludeNewspapers = Value;
                     break;
 
-                case "Search Full Text":
-                    SearchFullText = Value;
+                case "Go":
+                    Go = Value;
                     break;
 
             }
         }
-        /// <remarks> 'Go' localization string </remarks>
-        public string Go { get; private set; }
+        /// <remarks> 'Search full text' localization string </remarks>
+        public string SearchFullText { get; private set; }
 
-        /// <remarks> "Used for searching full text in dLOC, excludes newspaper text" </remarks>
+        /// <remarks> 'Include newspapers?' localization string </remarks>
         public string IncludeNewspapers { get; private set; }
 
-        /// <remarks> "Used for searching full text in dLOC, excludes newspaper text" </remarks>
-        public string SearchFullText { get; private set; }
+        /// <remarks> 'Go' localization string </remarks>
+        public string Go { get; private set; }
 
     }
 }
