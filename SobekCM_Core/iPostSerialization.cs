@@ -1,4 +1,4 @@
-﻿namespace SobekCM.Rest_API
+﻿namespace SobekCM.Core
 {
     /// <summary> Interface is implemented for classes that require some additional configuration to occur around serialization events </summary>
     public interface iSerializationEvents

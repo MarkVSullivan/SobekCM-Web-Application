@@ -7,12 +7,11 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
-using SobekCM.EngineLibrary.ApplicationState;
 using SobekCM.Engine_Library.ApplicationState;
 
 #endregion
 
-namespace SobekCM.UI_Library
+namespace SobekCM.Library.UI
 {
     public static class UI_ApplicationCache_Gateway
     {

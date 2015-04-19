@@ -10,7 +10,7 @@ using SobekCM.Tools;
 
 #endregion
 
-namespace SobekCM.EngineLibrary.ApplicationState
+namespace SobekCM.Engine_Library.ApplicationState
 {
     /// <summary> Allows individual items to be retrieved by various methods as <see cref="Single_Item"/> objects. </summary>
     public class Item_Lookup_Object 

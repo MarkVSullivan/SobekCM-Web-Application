@@ -18,8 +18,8 @@ using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.ResultsViewer;
 using SobekCM.Library.Settings;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
-using SobekCM.UI_Library;
 
 #endregion
 

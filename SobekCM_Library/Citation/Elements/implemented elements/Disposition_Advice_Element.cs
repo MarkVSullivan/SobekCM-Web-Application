@@ -10,8 +10,8 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
-using SobekCM.UI_Library;
 
 #endregion
 

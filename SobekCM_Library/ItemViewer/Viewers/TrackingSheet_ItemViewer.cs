@@ -9,9 +9,9 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
-using SobekCM.UI_Library;
 using Zen.Barcode;
 
 #endregion

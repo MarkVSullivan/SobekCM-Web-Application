@@ -16,6 +16,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
@@ -26,7 +27,6 @@ using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
 using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 using SobekCM.Tools;
-using SobekCM.UI_Library;
 
 #endregion
 

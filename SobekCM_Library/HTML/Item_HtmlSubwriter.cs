@@ -21,6 +21,7 @@ using SobekCM.Library.ItemViewer;
 using SobekCM.Library.ItemViewer.Fragments;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.Settings;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
@@ -28,7 +29,6 @@ using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.EAD;
 using SobekCM.Tools;
-using SobekCM.UI_Library;
 
 #endregion
 

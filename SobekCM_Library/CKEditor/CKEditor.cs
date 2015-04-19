@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Library.Settings;
-using SobekCM.UI_Library;
+using SobekCM.Library.UI;
 
 
 namespace SobekCM.Library.CKEditor

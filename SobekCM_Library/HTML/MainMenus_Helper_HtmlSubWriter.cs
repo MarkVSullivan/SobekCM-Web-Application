@@ -13,7 +13,7 @@ using SobekCM.Core.Search;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.AggregationViewer;
 using SobekCM.Library.Settings;
-using SobekCM.UI_Library;
+using SobekCM.Library.UI;
 
 #endregion
 

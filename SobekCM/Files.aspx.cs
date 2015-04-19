@@ -11,8 +11,8 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Library.Database;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
-using SobekCM.UI_Library;
 
 #endregion
 

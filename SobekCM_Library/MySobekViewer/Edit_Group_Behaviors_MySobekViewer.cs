@@ -12,9 +12,9 @@ using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Settings;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Tools;
-using SobekCM.UI_Library;
 
 #endregion
 

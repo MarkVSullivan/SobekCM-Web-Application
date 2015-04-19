@@ -5,7 +5,7 @@ using System.Text;
 using SobekCM.Core;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.Database;
-using SobekCM.UI_Library;
+using SobekCM.Library.UI;
 
 #endregion
 

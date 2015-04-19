@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using SobekCM.Core.Configuration;
 using SobekCM.Library.HTML;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
-using SobekCM.UI_Library;
 
 #endregion
 
