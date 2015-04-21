@@ -276,7 +276,7 @@ namespace SobekCM.Library.HTML
                 // If this is a robot, just draw the links
                 if (RequestSpecificValues.Current_Mode.Is_Robot)
                 {
-                    Output.WriteLine("<div class=\"SobekSiteMapTreeView\">");
+                    Output.WriteLine("<div class=\"sbkWchs_SiteMapTree\">");
                     foreach (SobekCM_SiteMap_Node rootNode in RequestSpecificValues.Site_Map.RootNodes)
                     {
                         recursively_draw_sitemap_for_robots(Output, rootNode, String.Empty);
@@ -298,7 +298,7 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                Output.WriteLine(Indent + "<span Title='" + Node.Description + "' class='SobekSiteMapNoLink' >" + Node.Title + "</span><br />");
+                Output.WriteLine(Indent + "<span Title='" + Node.Description + "' class='sbkWchs_SiteMapNoLink' >" + Node.Title + "</span><br />");
             }
 
             // Add all the children
@@ -324,8 +324,11 @@ namespace SobekCM.Library.HTML
             if (RequestSpecificValues.Site_Map != null)
             {
                 Output.WriteLine("</td>");
-                Output.WriteLine("<td valign=\"top\">");
+                Output.WriteLine("<td id=\"sbkWchs_MainTd\">");
             }
+
+            // Start this panel
+            Output.WriteLine("<div id=\"sbkWchs_Panel\">");
 
             // Save the current mode and browse
             Display_Mode_Enum thisMode = RequestSpecificValues.Current_Mode.Mode;
@@ -355,11 +358,10 @@ namespace SobekCM.Library.HTML
             // Add the breadcrumbs
             if (!String.IsNullOrEmpty(breadcrumbs))
             {
-                Output.WriteLine( "<span class=\"breadcrumbs\">" + breadcrumbs + "</span><br />");
+                Output.WriteLine("<div class=\"sbkWchs_Breadcrumbs\">" + breadcrumbs + "</div>");
             }
 
             // Add the secondary HTML ot the home page
-            Output.WriteLine("<div class=\"SobekResultsPanel\">");
             Output.WriteLine(RequestSpecificValues.Static_Web_Content.Content);
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
