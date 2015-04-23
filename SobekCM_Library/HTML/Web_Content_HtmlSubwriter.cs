@@ -345,15 +345,83 @@ namespace SobekCM.Library.HTML
                     {
                         if (RequestSpecificValues.Hierarchy_Object != null)
                         {
-                            Output.WriteLine("<img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Hierarchy_Object.Get_Banner_Image( RequestSpecificValues.HTML_Skin) + "\" alt=\"MISSING BANNER\" /><br />");
+                            Output.WriteLine("<img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Hierarchy_Object.Get_Banner_Image( RequestSpecificValues.HTML_Skin) + "\" alt=\"MISSING BANNER\" />");
                         }
                     }
                 }
                 else
                 {
-                    Output.WriteLine("<img id=\"mainBanner\" src=\"" + RequestSpecificValues.Static_Web_Content.Banner.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL) + "\" alt=\"MISSING BANNER\" /><br />");
+                    Output.WriteLine("<img id=\"mainBanner\" src=\"" + RequestSpecificValues.Static_Web_Content.Banner.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL) + "\" alt=\"MISSING BANNER\" />");
                 }
             }
+
+            // Should a menu be included, from the sitemaps?
+            if ((RequestSpecificValues.Site_Map != null) && (RequestSpecificValues.Static_Web_Content.IncludeMenu.HasValue) && (RequestSpecificValues.Static_Web_Content.IncludeMenu.Value))
+            {
+                // Determine the base URL
+                string base_url = RequestSpecificValues.Current_Mode.Base_URL;
+                if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
+                {
+                    base_url = base_url + "l/";
+                }
+
+                // Start the menu
+                Output.WriteLine("<!-- Add the top-level static page menu -->");
+                Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\">");
+                Output.WriteLine("  <ul class=\"sf-menu\" id=\"sbkAgm_Menu\">");
+
+                // Step through each of the root nodes and add it
+                int counter = 1;
+                foreach (SobekCM_SiteMap_Node rootSiteMapNode in RequestSpecificValues.Site_Map.RootNodes)
+                {
+                    if (rootSiteMapNode.Child_Nodes_Count == 0)
+                    {
+                        Output.WriteLine("    <li id=\"sbkAgm_TopMenu{0}\"><a href=\"{1}{2}\">{3}</a></li>", counter, base_url, rootSiteMapNode.URL, rootSiteMapNode.Title);
+                    }
+                    else
+                    {
+                        Output.Write("    <li id=\"sbkAgm_TopMenu{0}\"><a href=\"{1}{2}\">{3}</a><ul id=\"sbkAgm_SubMenu{0}\">", counter, base_url, rootSiteMapNode.URL, rootSiteMapNode.Title);
+                        int middle_counter = 1;
+                        foreach (SobekCM_SiteMap_Node childNode in rootSiteMapNode.Child_Nodes)
+                        {
+                            Output.Write("<li id=\"sbkAgm_MiddleMenu{0}\"><a href=\"{1}{2}\">{3}</a></li>", counter + "_" + middle_counter, base_url, childNode.URL, childNode.Title);
+                            middle_counter ++;
+                        }
+
+                        Output.WriteLine("</ul></li>");
+                    }
+                    counter++;
+                }
+
+                Output.WriteLine("  </ul>");
+                Output.WriteLine("</nav>");
+                Output.WriteLine();
+
+                Output.WriteLine("<!-- Initialize the main user menu -->");
+                Output.WriteLine("<script>");
+                Output.WriteLine("  jQuery(document).ready(function () {");
+                Output.WriteLine("     jQuery('ul.sf-menu').superfish({");
+
+                Output.WriteLine("          onBeforeShow: function() { ");
+                Output.WriteLine("               if ( $(this).attr('id') == 'sbkAgm_FinalMenu')");
+                Output.WriteLine("               {");
+                Output.WriteLine("                 var thisWidth = $(this).width();");
+                Output.WriteLine("                 var parent = $('#sbkAgm_Final');");
+                Output.WriteLine("                 var offset = $('#sbkAgm_Final').offset();");
+                Output.WriteLine("                 if ( $(window).width() < offset.left + thisWidth )");
+                Output.WriteLine("                 {");
+                Output.WriteLine("                   var newleft = thisWidth - parent.width();");
+                Output.WriteLine("                   $(this).css('left', '-' + newleft + 'px');");
+                Output.WriteLine("                 }");
+                Output.WriteLine("               }");
+                Output.WriteLine("          }");
+
+                Output.WriteLine("    });");
+                Output.WriteLine("  });");
+                Output.WriteLine("</script>");
+                Output.WriteLine();
+            }
+
 
             // Add the breadcrumbs
             if (!String.IsNullOrEmpty(breadcrumbs))

@@ -97,6 +97,7 @@ namespace SobekCM.Core.WebContent
             string date = String.Empty;
             string sitemap = String.Empty;
             string webskin = String.Empty;
+            bool includeMenu = false;
 
             // StringBuilder keeps track of any other information in the head that should be retained
             StringBuilder headBuilder = new StringBuilder();
@@ -194,6 +195,11 @@ namespace SobekCM.Core.WebContent
                                         case "WEBSKIN":
                                             webskin = content_type;
                                             break;
+
+                                        case "MENU":
+                                            if (String.Compare(content_type, "true", StringComparison.OrdinalIgnoreCase) == 0)
+                                                includeMenu = true;
+                                            break;
                                     }
                                 }
                                 break;
@@ -256,6 +262,8 @@ namespace SobekCM.Core.WebContent
                     returnValue.Web_Skin = webskin;
                 if (headBuilder.Length > 0)
                     returnValue.Extra_Head_Info = headBuilder.ToString();
+                if (includeMenu)
+                    returnValue.IncludeMenu = true;
             }
 
             // Should the actual display text be retained?

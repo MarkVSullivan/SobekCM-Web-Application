@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SobekCM.Resource_Object.OAI.Writer
+namespace SobekCM.Resource_Object.OAI
 {
     /// <summary> Interface defines an OAI-PMH metadata type writer, used to create complete OAI-PMH records to
     /// store in the database and serve to harvesters </summary>

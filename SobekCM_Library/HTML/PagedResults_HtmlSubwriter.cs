@@ -2234,7 +2234,7 @@ namespace SobekCM.Library.HTML
 				SortedList<string, string> order_facets = new SortedList<string, string>();
 				while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
 				{
-					order_facets[Collection[facet_count].Facet.ToUpper()] = "<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />";
+                    order_facets[Collection[facet_count].Facet.ToUpper()] = "<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;").Replace("&amp;amp;", "&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />";
 					facet_count++;
 				}
 				foreach (string html in order_facets.Values)
@@ -2246,7 +2246,7 @@ namespace SobekCM.Library.HTML
 			{
 				while ((facet_count < total_facets_to_show) && (facet_count < Collection.Count))
 				{
-					Builder.AppendLine("<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;" ) + "</a> ( " + Collection[facet_count].Frequency + " ) <br />");
+					Builder.AppendLine("<a href=\"\" onclick=\"return add_facet('" + SearchCode + "','" + HttpUtility.HtmlEncode(Collection[facet_count].Facet.Replace("&", "")).Replace("'", "\\'").Replace(",", "").Replace("&", "") + "');\">" + Collection[facet_count].Facet.Replace("&", "&amp;" ).Replace("&amp;amp;","&amp;") + "</a> ( " + Collection[facet_count].Frequency + " ) <br />");
 					facet_count++;
 				}
 			}

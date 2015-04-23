@@ -127,6 +127,10 @@ namespace SobekCM.Core.WebContent
         [DataMember(EmitDefaultValue = false, Name = "content"), ProtoMember(12)]
         public string Content { get; set; }
 
+        /// <summary> Text to display in the primary display region </summary>
+        [DataMember(EmitDefaultValue = false, Name = "includeMenu"), ProtoMember(13)]
+        public bool? IncludeMenu { get; set; }
+
         /// <summary> Static text included as the body of the static HTML file if item aggregation custom directives
         /// appears in the content source (otherwise NULL) </summary>
         [IgnoreDataMember]
@@ -218,6 +222,8 @@ namespace SobekCM.Core.WebContent
 					writer.WriteLine("    <meta name=\"sitemap\" content=\"" + HttpUtility.HtmlEncode(SiteMap) + "\" />");
 				if (!String.IsNullOrEmpty(Web_Skin))
 					writer.WriteLine("    <meta name=\"code\" content=\"" + HttpUtility.HtmlEncode(Web_Skin) + "\" />");
+                if ((IncludeMenu.HasValue) && (IncludeMenu.Value))
+                    writer.WriteLine("    <meta name=\"menu\" content=\"true\" />");
 
 				if ( !String.IsNullOrEmpty(Extra_Head_Info))
 					writer.WriteLine(Extra_Head_Info);

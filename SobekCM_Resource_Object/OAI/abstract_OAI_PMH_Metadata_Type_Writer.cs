@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using SobekCM.Resource_Object.OAI.Writer;
 
 
-namespace SobekCM.Resource_Object.OAI.Writer
+namespace SobekCM.Resource_Object.OAI
 {
+    /// <summary> Abstract class is implemented by all OAI-PMH metadata writers </summary>
     public abstract class abstract_OAI_PMH_Metadata_Type_Writer : iOAI_PMH_Metadata_Type_Writer
     {
         /// <summary> Returns the OAI-PMH metadata of a particular metadata format for this item </summary>

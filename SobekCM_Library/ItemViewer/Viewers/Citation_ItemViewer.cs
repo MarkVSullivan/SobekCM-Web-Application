@@ -1257,7 +1257,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							    nameBuilder.Append(thisName.Given_Name.Length > 0 ? Convert_String_To_XML_Safe(thisName.Given_Name) : "unknown");
 							}
 						}
-						string name_linked = search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(thisName.ToString(false)).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "AU") + "<span itemprop=\"creator\">" + nameBuilder + "</span>" + search_link_end;
+                        string name_linked = search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(thisName.ToString(false)).Replace(",", "").Replace("&amp;", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "AU") + "<span itemprop=\"creator\">" + nameBuilder + "</span>" + search_link_end;
 						if (nameBuilder.ToString() == "unknown")
 							name_linked = "unknown";
 						if (thisName.Display_Form.Length > 0)

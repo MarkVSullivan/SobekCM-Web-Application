@@ -167,7 +167,7 @@
     <Compile Include="METS_Sec_ReaderWriters\ETD_SobekCM_METS_dmdSec_ReaderWriter.cs" />
     <Compile Include="OAI\abstract_OAI_PMH_Metadata_Type_Writer.cs" />
     <Compile Include="OAI\Writer\DC_OAI_Metadata_Type_Writer.cs" />
-    <Compile Include="OAI\Writer\iOAI_PMH_Metadata_Type_Writer.cs" />
+    <Compile Include="OAI\iOAI_PMH_Metadata_Type_Writer.cs" />
     <Compile Include="OAI\Writer\MarcXML_OAI_PMH_Metadata_Type_Writer.cs" />
     <Compile Include="OAI\Writer\OAI_PMH_Metadata_Writers.cs" />
     <Compile Include="Utilities\Image_Derivative_Creation_Processor.cs" />
