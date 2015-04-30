@@ -3463,9 +3463,9 @@ namespace SobekCM.Library.AdminViewer
 					continue;
 
 				if (String.Compare(childPage.Parent_Code, childPage2.Code, StringComparison.OrdinalIgnoreCase) == 0)
-					Output.Write("<option value=\"" + childPage2.Code + "\" selected=\"selected\">" + childPage.Code + "</option>");
+					Output.Write("<option value=\"" + childPage2.Code + "\" selected=\"selected\">" + childPage2.Code + "</option>");
 				else
-					Output.Write("<option value=\"" + childPage2.Code + "\">" + childPage.Code + "</option>");
+					Output.Write("<option value=\"" + childPage2.Code + "\">" + childPage2.Code + "</option>");
 
 			}
 			Output.WriteLine("</select>");

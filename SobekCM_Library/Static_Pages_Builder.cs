@@ -684,7 +684,8 @@ namespace SobekCM.Library
 
            // Get the skin object
             Web_Skin_Object skinObject = assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
-
+            if (skinObject == null)
+                return true;
   
 			StreamWriter writer = new StreamWriter(staticSobekcmDataLocation + Aggregation.Code.ToLower() + "_all.html", false);
 			writer.WriteLine("<!DOCTYPE html>");

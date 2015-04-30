@@ -129,7 +129,7 @@ namespace SobekCM.Library.MySobekViewer
             if (RequestSpecificValues.Current_User.Get_Setting("Track_Item_MySobekViewer:Equipment") != null && !String.IsNullOrEmpty(RequestSpecificValues.Current_User.Get_Setting("Track_Item_MySobekViewer:Equipment").ToString()))
                 equipment = RequestSpecificValues.Current_User.Get_Setting("Track_Item_MySobekViewer:Equipment").ToString();
 
-            else
+            else if ( scanners_list.Count > 0 )
             {
                 equipment = scanners_list[0];
                 RequestSpecificValues.Current_User.Add_Setting("Track_Item_MySobekViewer:Equipment", equipment);
