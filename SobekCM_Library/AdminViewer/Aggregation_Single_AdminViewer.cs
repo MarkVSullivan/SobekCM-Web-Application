@@ -3368,12 +3368,32 @@ namespace SobekCM.Library.AdminViewer
 				}
 
 			}
-			else if ((action.IndexOf("delete_") == 0) && ( action.Length > 7 ))
-			{
-				string delete_code = action.Substring(7);
-				childPage.Remove_Language(Web_Language_Enum_Converter.Code_To_Enum(delete_code));
+            else if ((action.IndexOf("delete_") == 0) && (action.Length > 7))
+            {
+                string delete_code = action.Substring(7);
+                childPage.Remove_Language(Web_Language_Enum_Converter.Code_To_Enum(delete_code));
 
-			}
+            }
+            else
+            {
+                childPageVisibility = Form["admin_aggr_visibility"];
+                childPage.Parent_Code = Form["admin_aggr_parent"];
+
+                switch (childPageVisibility)
+                {
+                    case "none":
+                        childPage.Browse_Type = Item_Aggregation_Child_Visibility_Enum.None;
+                        break;
+
+                    case "browse":
+                        childPage.Browse_Type = Item_Aggregation_Child_Visibility_Enum.Main_Menu;
+                        break;
+
+                    case "browseby":
+                        childPage.Browse_Type = Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By;
+                        break;
+                }
+            }
 		}
 
 		private void Add_Child_Page(TextWriter Output)
