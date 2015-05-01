@@ -164,8 +164,9 @@ namespace SobekCM.Resource_Object.Bib_Info
         public override string ToString(bool Include_Scheme)
         {
             StringBuilder builder = new StringBuilder();
-            if (nameInfo.Full_Name.Length > 0)
-                builder.Append(nameInfo.ToString());
+            string nameInfoString = nameInfo.ToString(false);
+            if (nameInfoString.Length > 0)
+                builder.Append(nameInfoString);
 
             builder.Append(base.To_Base_String());
 
@@ -200,6 +201,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             MARC_Field returnValue = nameInfo.to_MARC_HTML(true);
 
             // Set the tag
+            returnValue.Tag = 600;
             switch (nameInfo.Name_Type)
             {
                 case Name_Info_Type_Enum.personal:

@@ -135,14 +135,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
                             // Is the extension already a part of the label?
-                            string label_upper = downloadGroup.Label.ToUpper();
-                            if (label_upper.IndexOf(download.File_Extension) > 0)
+                            string label = downloadGroup.Label;
+                            if (label.Length == 0)
                             {
-                                Output.WriteLine("                  <a href=\"" + file_link + "\" target=\"_blank\">" + downloadGroup.Label + "</a><br /><br />");
+                                label = download.System_Name;
+                            }
+                            if (label.IndexOf(download.File_Extension, System.StringComparison.OrdinalIgnoreCase) > 0)
+                            {
+                                Output.WriteLine("                  <a href=\"" + file_link + "\" target=\"_blank\">" + label + "</a><br /><br />");
                             }
                             else
                             {
-                                Output.WriteLine("                  <a href=\"" + file_link + "\" target=\"_blank\">" + downloadGroup.Label + " ( " + download.File_Extension + " )</a><br /><br />");
+                                Output.WriteLine("                  <a href=\"" + file_link + "\" target=\"_blank\">" + label + " ( " + download.File_Extension + " )</a><br /><br />");
                             }
                         }
                     }

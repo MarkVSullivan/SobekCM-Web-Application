@@ -313,7 +313,7 @@ namespace SobekCM.Library.Citation.Elements
                                                    "local government publication",
                                                    "government publication",
                                                    "government publication (autonomous or semiautonomous component)",
-                                                   "government publication (state, provincial, terriorial, dependent)",
+                                                   "government publication (state, provincial, territorial, dependent)",
                                                    "multilocal government publication",
                                                    "multistate government publication"
                                                };
@@ -800,7 +800,7 @@ namespace SobekCM.Library.Citation.Elements
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in government_list)
                 {
-                    if (govt == thisString)
+                    if (govt.Replace("terriorial", "territorial") == thisString)
                     {
                         PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
@@ -945,7 +945,7 @@ namespace SobekCM.Library.Citation.Elements
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in government_list)
                 {
-                    if (govt == thisString)
+                    if (govt.Replace("terriorial", "territorial") == thisString)
                     {
                         PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
@@ -1002,7 +1002,7 @@ namespace SobekCM.Library.Citation.Elements
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in government_list)
                 {
-                    if (govt == thisString)
+                    if (govt.Replace("terriorial", "territorial") == thisString)
                     {
                         PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
@@ -1210,7 +1210,7 @@ namespace SobekCM.Library.Citation.Elements
                                               : "<option value=\"\"></option>");
                 foreach (string thisString in government_list)
                 {
-                    if (govt == thisString)
+                    if (govt.Replace("terriorial", "territorial") == thisString)
                     {
                         PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
                     }
@@ -1289,7 +1289,7 @@ namespace SobekCM.Library.Citation.Elements
 											  : "<option value=\"\"></option>");
 				foreach (string thisString in government_list)
 				{
-					if (govt == thisString)
+                    if (govt.Replace("terriorial", "territorial") == thisString)
 					{
 						PopupFormBuilder.Append("<option value=\"" + thisString + "\" selected=\"selected\">" + thisString + "</option>");
 					}
