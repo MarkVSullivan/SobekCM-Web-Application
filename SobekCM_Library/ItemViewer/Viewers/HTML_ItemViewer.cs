@@ -94,16 +94,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t\t<!-- HTML VIEWER OUTPUT -->" );
             Output.WriteLine("\t\t<td style=\"align:left;\">");
 
-
-            // Determine the string for the item URL
+            // Determine some replacement strings here
             string itemURL = UI_ApplicationCache_Gateway.Settings.Image_URL + CurrentItem.Web.File_Root + "/";
-
-			// Try to get the HTML for this
-            string map = Get_Html_Page(CurrentItem.Web.Source_URL + "/" + htmlFile, Tracer);
-
-            // Get the link for this item
             string itemLink = CurrentMode.Base_URL + "/" + CurrentItem.BibID + "/" + CurrentItem.VID;
 
+            // Determine the source string
+            string sourceString = CurrentItem.Web.Source_URL + "/" + htmlFile;
+            if ((htmlFile.IndexOf("http://") == 0) || (htmlFile.IndexOf("https://") == 0) || (htmlFile.IndexOf("[%BASEURL%]") == 0) || (htmlFile.IndexOf("<%BASEURL%>") == 0))
+            {
+                sourceString = htmlFile.Replace("[%BASEURL%]", CurrentMode.Base_URL).Replace("<%BASEURL%>", CurrentMode.Base_URL);
+            }
+
+			// Try to get the HTML for this
+            string map = Get_Html_Page(sourceString, Tracer);
+
+            // Write the HTML 
             string url_options = UrlWriterHelper.URL_Options(CurrentMode);
             string urlOptions1 = String.Empty;
             string urlOptions2 = String.Empty;
@@ -150,9 +155,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 StringBuilder builder = new StringBuilder();
                 builder.AppendLine("<div style=\"background-color: White; color: black;text-align:center; width:630px;\">");
                 builder.AppendLine("  <br /><br />");
-                builder.AppendLine("  <span style=\"font-weight:bold;font-size:1.4em\">Unable to pull html view for item</span><br /><br />");
+                builder.AppendLine("  <span style=\"font-weight:bold;font-size:1.4em\">Unable to pull html view for item ( <a href=\"" + strURL + "\">source</a> )</span><br /><br />");
                 builder.AppendLine("  <span style=\"font-size:1.2em\">We apologize for the inconvenience.</span><br /><br />");
-                string error_message = "Unable to pull html view for item " + CurrentItem.Web.ItemID;
+                //string error_message = "Unable to pull html view for item " + CurrentItem.Web.ItemID;
+    
                 string returnurl = CurrentMode.Base_URL + "/contact";
                 builder.AppendLine("  <span style=\"font-size:1.2em\">Click <a href=\"" + returnurl + "\">here</a> to report the problem.</span>");
                 builder.AppendLine("  <br /><br />");
