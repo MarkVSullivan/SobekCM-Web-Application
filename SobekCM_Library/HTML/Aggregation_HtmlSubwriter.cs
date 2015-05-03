@@ -473,6 +473,14 @@ namespace SobekCM.Library.HTML
                     UploadURL = aggregation_upload_url
                 };
 
+                // Should this start as SOURCE?  
+                // Start in source mode, if this has a script or input reference
+			    if ((RequestSpecificValues.Static_Web_Content != null) && (!String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.Content)))
+			    {
+                    if ((RequestSpecificValues.Static_Web_Content.Content.IndexOf("<script", StringComparison.OrdinalIgnoreCase) >= 0) || (RequestSpecificValues.Static_Web_Content.Content.IndexOf("<input", StringComparison.OrdinalIgnoreCase) >= 0))
+                        editor.Start_In_Source_Mode = true;
+			    }
+
                 // If there are existing files, add a reference to the URL for the image browser
                 if ((Directory.Exists(aggregation_upload_dir)) && (Directory.GetFiles(aggregation_upload_dir).Length > 0))
                 {
