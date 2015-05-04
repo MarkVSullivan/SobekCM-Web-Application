@@ -277,7 +277,7 @@ A:visited { COLOR: #00a; TEXT-DECORATION: none; }
 A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 
 
-
+/** DEPRECATE THIS CSS */
 .SobekSiteMapTreeView
 {
     FONT-WEIGHT: bold; FONT-SIZE: 11px; COLOR: Blue;  WIDTH: 100%; FONT-FAMILY: Arial, Helvetica, sans-serif; BACKGROUND-COLOR: #ffffff; text-decoration:none; text-align: left;
@@ -294,6 +294,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 .SobekSiteMapNoLink { color:#555; }
 
 .SobekSiteMapTreeView td div {height: 20px !important }
+/** END DEPRECATE **/
 
 .SobekTocTreeView {
     FONT-WEIGHT: bold; FONT-SIZE: 11px; COLOR: Blue;  
@@ -471,6 +472,22 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
 {
     float: right; height: 25px;
 }
+
+/** Used for top-level static pages     */
+#sbkWchs_Panel A:link {	color: Blue; }
+#sbkWchs_Panel A:hover { color: Blue; text-decoration:underline; }
+#sbkWchs_Panel A:visited { 	color: Purple; }
+#sbkWchs_Panel { WIDTH: 900px; TEXT-ALIGN: left; font-size: small; }
+#sbkWchs_MainTd { vertical-align:top;text-align: center; }
+.sbkWchs_Breadcrumbs {color:#888888;font-size:0.8em;}
+.sbkWchs_Breadcrumbs a {color:#888888; text-decoration:none;}
+.sbkWchs_Breadcrumbs a:visited {color:#888888; text-decoration:none; }
+.sbkWchs_Breadcrumbs a:hover {color:Purple; text-decoration:underline;}
+.sbkWchs_SiteMapTree { FONT-WEIGHT: bold; FONT-SIZE: 11px; COLOR: Blue;  WIDTH: 100%; FONT-FAMILY: Arial, Helvetica, sans-serif; BACKGROUND-COLOR: #ffffff; text-decoration:none; text-align: left; }
+.sbkWchs_SiteMapTree A:link { TEXT-DECORATION: none; color:#555;  }
+.sbkWchs_SiteMapTree A:visited { TEXT-DECORATION: none; color:#555;  }
+.sbkWchs_SiteMapNoLink { color:#555; } 
+.sbkWchs_SiteMapTree td div {height: 20px !important }
 
 
 /* This allows visited links to appear visited in the results panel, but not the sort text */

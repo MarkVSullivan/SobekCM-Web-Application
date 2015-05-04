@@ -1,8 +1,5 @@
-﻿
-
-
-
-.sbkMenu_Bar { padding-bottom: 1px !important; }
+﻿.sbkMenu_Bar { padding-bottom: 1px !important; }
 #sbkAgm_Home a { height: 21px !important }
 .sbkMenu_Home a { padding: 4px 30px 2px 12px !important; height: 21px !important }
 #selected-sf-menu-item-link,.selected-sf-menu-item-link { height: 27px;}
+.submenu-item-selected { height:35px; }

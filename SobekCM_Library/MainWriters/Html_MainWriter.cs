@@ -553,7 +553,7 @@ namespace SobekCM.Library.MainWriters
 			}
 
 			// Special code for the menus, if this is not IE
-			if (HttpContext.Current.Request.Browser.Browser.ToUpper() != "IE")
+			if (HttpContext.Current.Request.Browser.Browser.IndexOf("IE",StringComparison.OrdinalIgnoreCase) < 0 )
 			{
 				string non_ie_hack = HttpContext.Current.Application["NonIE_Hack_CSS"] as string;
 				if (!String.IsNullOrEmpty(non_ie_hack))

@@ -459,7 +459,7 @@ namespace SobekCM.Library.HTML
                             RequestSpecificValues.Current_Mode.Info_Browse_Mode = middlePages.Code;
                             if (browse_code == middlePages.Code)
                             {
-                                Output.Write("    <li id=\"sbkAgm_" + middlePages.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", middlePages.Code) + "\">" + middlePages.Label + "</a>");
+                                Output.Write("    <li id=\"sbkAgm_" + middlePages.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link submenu-item-selected\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", middlePages.Code) + "\">" + middlePages.Label + "</a>");
                             }
                             else
                             {
@@ -474,7 +474,7 @@ namespace SobekCM.Library.HTML
                                     RequestSpecificValues.Current_Mode.Info_Browse_Mode = bottomPages.Code;
                                     if (browse_code == bottomPages.Code)
                                     {
-                                        Output.Write("    <li id=\"sbkAgm_" + bottomPages.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", bottomPages.Code) + "\">" + bottomPages.Label + "</a></li>");
+                                        Output.Write("    <li id=\"sbkAgm_" + bottomPages.Code.Replace(" ", "") + "Browse\" class=\"selected-sf-menu-item-link submenu-item-selected\"><a href=\"" + redirect_url.Replace("XYXYXYXYXY", bottomPages.Code) + "\">" + bottomPages.Label + "</a></li>");
                                     }
                                     else
                                     {
@@ -1372,6 +1372,7 @@ namespace SobekCM.Library.HTML
 
 
             // Add link to my libary (repeat of option in mySobek menu)
+            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
             RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Bookshelf;

@@ -158,13 +158,13 @@ namespace SobekCM.Library.AdminViewer
                     }
 
                     // Should this be saved to the database?
-                    if (action == "save")
+                    if ((action == "save") || (action == "save_exit"))
                     {
                         // Save this existing interface
                         bool successful_save = SobekCM_Database.Save_Web_Skin(webSkin.Skin_Code, webSkin.Base_Skin_Code, webSkin.Override_Banner, true, webSkin.Banner_Link, webSkin.Notes, webSkin.Suppress_Top_Navigation, RequestSpecificValues.Tracer);
 
                         // Prepare the backup folders
-                        string backup_folder =  skinDirectory + "\\backup\\html";
+                        string backup_folder = skinDirectory + "\\backup\\html";
                         if (!Directory.Exists(backup_folder))
                             Directory.CreateDirectory(backup_folder);
                         string css_backup_folder = skinDirectory + "\\backup\\css";
@@ -185,7 +185,7 @@ namespace SobekCM.Library.AdminViewer
                                         {
                                             // Use the last modified date as the name of the backup
                                             DateTime lastModifiedDate = (new FileInfo(filename)).LastWriteTime;
-                                            string backup_name = Path.GetFileName(filename).Replace(Path.GetExtension(filename),"") + lastModifiedDate.Year + lastModifiedDate.Month.ToString().PadLeft(2, '0') + lastModifiedDate.Day.ToString().PadLeft(2, '0') + lastModifiedDate.Hour.ToString().PadLeft(2, '0') + lastModifiedDate.Minute.ToString().PadLeft(2, '0') + Path.GetExtension(filename);
+                                            string backup_name = Path.GetFileName(filename).Replace(Path.GetExtension(filename), "") + lastModifiedDate.Year + lastModifiedDate.Month.ToString().PadLeft(2, '0') + lastModifiedDate.Day.ToString().PadLeft(2, '0') + lastModifiedDate.Hour.ToString().PadLeft(2, '0') + lastModifiedDate.Minute.ToString().PadLeft(2, '0') + Path.GetExtension(filename);
                                             if (!File.Exists(backup_folder + "\\" + backup_name))
                                                 File.Copy(filename, backup_folder + "\\" + backup_name, false);
 
@@ -259,7 +259,7 @@ namespace SobekCM.Library.AdminViewer
                             }
                             catch
                             {
-                                
+
                             }
                         }
 
@@ -272,13 +272,16 @@ namespace SobekCM.Library.AdminViewer
 
                         if (successful_save)
                         {
-                            // Clear the aggregedit web skin info from the sessions
-                            HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code + "|object"] = null;
-                            HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code + "|files"] = null;
+                            if (action == "save_exit")
+                            {
+                                // Clear the aggregedit web skin info from the sessions
+                                HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code + "|object"] = null;
+                                HttpContext.Current.Session["Edit_Skin_" + webSkin.Skin_Code + "|files"] = null;
 
-                            // Redirect the user to the skins mgmt screen
-                            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
-                            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                                // Redirect the user to the skins mgmt screen
+                                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Skins_Mgmt;
+                                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                            }
                         }
                         else
                         {
@@ -445,14 +448,19 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
             Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
 
+
             // If this page has CKEDITOR fields, ensure they are all committed before saving
             if (page == 3)
             {
-                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return save_skin_edits();\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+
             }
             else
             {
-                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits();\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+
             }
             Output.WriteLine("  </div>");
             Output.WriteLine();
@@ -997,6 +1005,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("     </td>");
                 Output.WriteLine("  </tr>");
 
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td><tr>");
                 Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
                 Output.WriteLine("    <td>&nbsp;</td>");
                 Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"webskin_footer_source\">Standard Footer:</label></td>");
@@ -1011,16 +1020,20 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td><tr>");
                 Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
                 Output.WriteLine("    <td>&nbsp;</td>");
-                Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"webskin_header_item_source\">Item Header:</label></td>");
+                Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_header_item_source\">Item Header:</label></td>");
                 Output.WriteLine("    <td>");
+                Output.WriteLine("      <a title=\"Copy the HTML for the standard header down to this item header\" href=\"\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return copy_skin_header_html();\">Copy from the standard header</a> <br />");
                 Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_header_item_source\" id=\"webskin_header_item_source\">" + HttpUtility.HtmlEncode(header_item_source) + "</textarea></td>");
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + HEADER_ITEM_HELP + "');\"  title=\"" + HEADER_ITEM_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");
                 Output.WriteLine("  </tr>");
+
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td><tr>");
                 Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
                 Output.WriteLine("    <td>&nbsp;</td>");
-                Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"webskin_footer_item_source\">Item Footer:</label></td>");
+                Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"webskin_footer_item_source\">Item Footer:</label></td>");
                 Output.WriteLine("    <td>");
+                Output.WriteLine("      <a title=\"Copy the HTML for the standard footer down to this item footer\" href=\"\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return copy_skin_footer_html();\">Copy from the standard footer</a> <br />");
                 Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSsav_html_textbox sbkAdmin_Focusable\" rows=\"30\" name=\"webskin_footer_item_source\" id=\"webskin_footer_item_source\">" + HttpUtility.HtmlEncode(footer_item_source) + "</textarea></td>");
                 Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + FOOTER_ITEM_HELP + "');\"  title=\"" + FOOTER_ITEM_HELP + "\" /></td></tr></table>");
                 Output.WriteLine("     </td>");

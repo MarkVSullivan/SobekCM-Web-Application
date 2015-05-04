@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -118,7 +119,9 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf( html_element_name ) == 0)
                 {
-                    Bib.Bib_Info.Add_Named_Entity(new Name_Info(HttpContext.Current.Request.Form[thisKey], ""));
+                    string name = HttpContext.Current.Request.Form[thisKey];
+                    if ( !String.IsNullOrWhiteSpace(name))
+                        Bib.Bib_Info.Add_Named_Entity(new Name_Info(name, ""));
                 }
             }  
         }

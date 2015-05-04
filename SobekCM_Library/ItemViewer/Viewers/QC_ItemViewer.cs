@@ -897,6 +897,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             catch (Exception e)
             {
+                string error_folder = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath + "\\sobek_files";
+                if (!Directory.Exists(error_folder))
+                    Directory.CreateDirectory(error_folder);
+                string error_message_file = "qc_error_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Hour.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Minute.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Second.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Millisecond + ".txt";
+                StreamWriter writer = new StreamWriter(error_message_file, true);
+                writer.WriteLine("EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD");
+                writer.WriteLine();
+                writer.WriteLine(e.Message);
+                writer.WriteLine();
+                writer.WriteLine(e.StackTrace);
+                writer.WriteLine();
+                try
+                {
+                    writer.WriteLine(qc_item.Divisions.Physical_Tree.Pages_PreOrder.Count + " PAGES");
+                }
+                catch
+                {
+                    writer.WriteLine("ERROR GETTING PAGE COUNT");
+                }
+                writer.Flush();
+                writer.Close();
                 throw new ApplicationException(e.Message);
             }
 	    }
@@ -1263,9 +1284,30 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				double size = all_files_final.Aggregate<string, double>(0, (current, thisFile) => current + (((new FileInfo(thisFile)).Length)/1024));
 				qc_item.DiskSize_KB = size;
 			}
-			catch (Exception ee)
+			catch (Exception e)
 			{
-				returnValue = false;
+                string error_folder = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath + "\\sobek_files";
+                if (!Directory.Exists(error_folder))
+                    Directory.CreateDirectory(error_folder);
+                string error_message_file = "qc_error_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Hour.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Minute.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Second.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Millisecond + ".txt";
+                StreamWriter writer = new StreamWriter(error_message_file, true);
+                writer.WriteLine("EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD (2nd spot)");
+                writer.WriteLine();
+                writer.WriteLine(e.Message);
+                writer.WriteLine();
+                writer.WriteLine(e.StackTrace);
+                writer.WriteLine();
+                try
+                {
+                    writer.WriteLine(qc_item.Divisions.Physical_Tree.Pages_PreOrder.Count + " PAGES");
+                }
+                catch
+                {
+                    writer.WriteLine("ERROR GETTING PAGE COUNT");
+                }
+                writer.Flush();
+                writer.Close();
+                throw new ApplicationException(e.Message);
             }
 
 			// Return the flag indicating success
@@ -2066,10 +2108,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			//	javascriptBuilder.AppendLine("\t\t");
 			//}
 
-            Output.WriteLine("<script type=\"text/javascript\">var qc_image_folder; var thumbnailImageDictionary={};</script>");
+            Output.WriteLine("<script type=\"text/javascript\">var thumbnailImageDictionary={};</script>");
 
             //Save the global image folder location
-           // Output.WriteLine("<script type=\"text/javascript\">Save_Image_Folder('" + CurrentMode.Default_Images_URL + "');</script>");
+            Output.WriteLine("<script type=\"text/javascript\">Set_Default_Images('" + Static_Resources.No_Pages_Jpg + "', '" + Static_Resources.Nothumb_Jpg + "');</script>");
             
             //Save all the thumbnail image locations in the JavaScript global image dictionary
             List<string> image_by_pageindex = new List<string>();

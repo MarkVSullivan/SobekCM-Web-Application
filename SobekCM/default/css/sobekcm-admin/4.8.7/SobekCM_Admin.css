@@ -272,7 +272,7 @@ select.sbkBav_select { width: 210px; margin-bottom: 1px; margin-right: 20px; }
 #sbkHav_OptionsTable4 { padding: 20px 0 20px 50px; }
 #sbkHav_OptionsTable4 tr {height: 65px;vertical-align: middle; }
 #sbkHav_ButtonOuterDiv { padding-left: 10px;text-align: left;padding-top: 20px;}
-.sbkHav_ButtonDiv { width: 200px;display: inline-block;margin: 2px 5px 8px 15px; padding: 8px 0 7px 15px; -moz-border-radius: 5px;border-radius: 5px; }
+.sbkHav_ButtonDiv { width: 175px;display: inline-block;margin: 2px 5px 8px 15px; padding: 8px 0 7px 15px; -moz-border-radius: 5px;border-radius: 5px; }
 .sbkHav_ButtonDiv:hover { background-color: #dddddd;}
 .sbkHav_ButtonDiv2 { width: 250px;display: inline-block;margin: 2px 5px 2px 215px; padding: 8px 0 5px 15px; -moz-border-radius: 5px;border-radius: 5px; }
 .sbkHav_ButtonDiv2:hover { background-color: #dddddd;}

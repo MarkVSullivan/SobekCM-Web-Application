@@ -402,8 +402,13 @@ namespace SobekCM.Library.MySobekViewer
                         StreamWriter writer = new StreamWriter(agreement_file, false);
                         writer.WriteLine("Permissions Agreement");
                         writer.WriteLine();
-                        writer.WriteLine("User: " + RequestSpecificValues.Current_User.Full_Name + " ( " + RequestSpecificValues.Current_User.ShibbID + " )");
+                        if ( !String.IsNullOrWhiteSpace(RequestSpecificValues.Current_User.ShibbID))
+                            writer.WriteLine("User: " + RequestSpecificValues.Current_User.Full_Name + " ( " + RequestSpecificValues.Current_User.ShibbID + " )");
+                        else
+                            writer.WriteLine("User: " + RequestSpecificValues.Current_User.Full_Name);
+  
                         writer.WriteLine("Date: " + agreement_date.ToString());
+                        writer.WriteLine("IP Address: " + HttpContext.Current.Request.UserHostAddress);
                         writer.WriteLine();
                         writer.WriteLine(completeTemplate.Permissions_Agreement);
                         writer.Flush();

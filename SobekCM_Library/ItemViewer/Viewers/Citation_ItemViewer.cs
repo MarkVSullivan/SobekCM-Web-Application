@@ -1976,22 +1976,38 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						}
 					}
 
+
 					if (CurrentItem.Bib_Info.Notes_Count > 0)
 					{
+                        Note_Info statementOfResponsibility = null;
 						foreach (Note_Info thisNote in CurrentItem.Bib_Info.Notes)
 						{
 							if (thisNote.Note_Type != Note_Type_Enum.NONE)
 							{
-								if ((thisNote.Note_Type != Note_Type_Enum.internal_comments) || (CurrentMode.Internal_User))
-								{
-									result.Append(Single_Citation_HTML_Row(thisNote.Note_Type_Display_String, "<span itemprop=\"notes\">" + Convert_String_To_XML_Safe(thisNote.Note) + "</span>", INDENT));
-								}
+                                // Statement of responsibilty will be printed at the very end
+							    if (thisNote.Note_Type == Note_Type_Enum.statement_of_responsibility)
+							    {
+                                    statementOfResponsibility = thisNote;
+							    }
+							    else
+							    {
+							        if ((thisNote.Note_Type != Note_Type_Enum.internal_comments) || (CurrentMode.Internal_User))
+							        {
+							            result.Append(Single_Citation_HTML_Row(thisNote.Note_Type_Display_String, "<span itemprop=\"notes\">" + Convert_String_To_XML_Safe(thisNote.Note) + "</span>", INDENT));
+							        }
+							    }
 							}
 							else
 							{
 								result.Append(Single_Citation_HTML_Row("General Note", "<span itemprop=\"notes\">" + Convert_String_To_XML_Safe(thisNote.Note) + "</span>", INDENT));
 							}
 						}
+
+                        // If there was a statement of responsibility, add it now
+                        if (statementOfResponsibility != null)
+                        {
+                            result.Append(Single_Citation_HTML_Row(statementOfResponsibility.Note_Type_Display_String, "<span itemprop=\"notes\">" + Convert_String_To_XML_Safe(statementOfResponsibility.Note) + "</span>", INDENT));
+                        }
 					}
 
 					if (( vraInfo != null ) && ( vraInfo.Inscription_Count > 0))

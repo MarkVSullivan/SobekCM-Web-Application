@@ -19,19 +19,34 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             // Add the notes
             if (Original.Bib_Info.Notes_Count > 0)
             {
+                Note_Info statementOfResponsibility = null;
                 foreach (Note_Info thisNote in Original.Bib_Info.Notes)
                 {
                     if (thisNote.Note_Type != Note_Type_Enum.NONE)
                     {
-                        if (thisNote.Note_Type != Note_Type_Enum.internal_comments)
+                        // Statement of responsibilty will be printed at the very end
+                        if (thisNote.Note_Type == Note_Type_Enum.statement_of_responsibility)
                         {
-                            New.Add_Description("Note", thisNote.Note).SubTerm = thisNote.Note_Type_Display_String;
+                            statementOfResponsibility = thisNote;
+                        }
+                        else
+                        {
+                            if (thisNote.Note_Type != Note_Type_Enum.internal_comments)
+                            {
+                                New.Add_Description("Note", thisNote.Note).SubTerm = thisNote.Note_Type_Display_String;
+                            }
                         }
                     }
                     else
                     {
                         New.Add_Description("Note", thisNote.Note);
                     }
+                }
+
+                // If there was a statement of responsibility, add it now
+                if (statementOfResponsibility != null )
+                {
+                    New.Add_Description("Note", statementOfResponsibility.Note).SubTerm = statementOfResponsibility.Note_Type_Display_String;
                 }
             }
 

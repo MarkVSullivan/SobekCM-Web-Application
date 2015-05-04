@@ -726,10 +726,39 @@ function link_blurred( divname )
 }
 
 // Save the single web skin updates
-function save_skin_edits() {
+function save_skin_edits(complete) {
     var hiddenfield = document.getElementById('admin_skin_save');
-    hiddenfield.value = 'save';
+    if (complete == true)
+        hiddenfield.value = 'save_exit';
+    else
+        hiddenfield.value = 'save';
     document.itemNavForm.submit();
+    return false;
+}
+
+// Copy the header HTML from standard to the item
+function copy_skin_header_html() {
+
+    // Ensure we have the latest edits
+    for (var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); }
+
+    // Copy the standard footer to the item footer
+    var standard_source = $('#webskin_header_source').val();
+    CKEDITOR.instances.webskin_header_item_source.setData(standard_source);
+
+    return false;
+}
+
+// Copy the footer HTML from standard to the item
+function copy_skin_footer_html() {
+
+    // Ensure we have the latest edits
+    for (var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); }
+
+    // Copy the standard footer to the item footer
+    var standard_source = $('#webskin_footer_source').val();
+    CKEDITOR.instances.webskin_footer_item_source.setData(standard_source);
+
     return false;
 }
 

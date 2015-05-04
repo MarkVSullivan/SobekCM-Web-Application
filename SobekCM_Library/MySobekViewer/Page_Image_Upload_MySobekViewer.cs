@@ -245,40 +245,32 @@ namespace SobekCM.Library.MySobekViewer
                     SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
 
                     // Copy this file
-                    if (File.Exists(final_destination + "\\" + fileInfo.Name))
+                    File.Copy(thisFile, final_destination + "\\" + fileInfo.Name, true);
+                    RequestSpecificValues.Current_Item.Divisions.Physical_Tree.Add_File(newFile, "New Page");
+
+                    // Seperate code for JP2 and JPEG type files
+                    string extension = fileInfo.Extension.ToUpper();
+                    if (extension.IndexOf("JP2") >= 0)
                     {
-                        File.Copy(thisFile, final_destination + "\\" + fileInfo.Name, true);
+                        if (!error_reading_file_occurred)
+                        {
+                            if (!newFile.Compute_Jpeg2000_Attributes(RequestSpecificValues.Current_Item.Source_Directory))
+                                error_reading_file_occurred = true;
+                        }
+                        jp2_added = true;
                     }
-                    else
+                    else if (extension.IndexOf("JPG") >= 0)
                     {
-                        File.Copy(thisFile, final_destination + "\\" + fileInfo.Name, true);
-                        RequestSpecificValues.Current_Item.Divisions.Physical_Tree.Add_File(newFile, "New Page");
-
-
-                        // Seperate code for JP2 and JPEG type files
-                        string extension = fileInfo.Extension.ToUpper();
-                        if (extension.IndexOf("JP2") >= 0)
+                        if (!error_reading_file_occurred)
                         {
-                            if (!error_reading_file_occurred)
-                            {
-                                if (!newFile.Compute_Jpeg2000_Attributes(RequestSpecificValues.Current_Item.Source_Directory))
-                                    error_reading_file_occurred = true;
-                            }
-                            jp2_added = true;
+                            if (!newFile.Compute_Jpeg_Attributes(RequestSpecificValues.Current_Item.Source_Directory))
+                                error_reading_file_occurred = true;
                         }
-                        else if (extension.IndexOf("JPG") >= 0)
-                        {
-                            if (!error_reading_file_occurred)
-                            {
-                                if (!newFile.Compute_Jpeg_Attributes(RequestSpecificValues.Current_Item.Source_Directory))
-                                    error_reading_file_occurred = true;
-                            }
-                            jpeg_added = true;
-                        }
+                        jpeg_added = true;
                     }
                 }
 
-				// Add the JPEG2000 and JPEG-specific viewers
+                // Add the JPEG2000 and JPEG-specific viewers
 				//RequestSpecificValues.Current_Item.Behaviors.Clear_Views();
 				if (jpeg_added) 
 				{
