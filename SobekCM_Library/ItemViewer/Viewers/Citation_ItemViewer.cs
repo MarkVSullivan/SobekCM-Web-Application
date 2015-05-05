@@ -1181,7 +1181,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			List<string> creators = new List<string>();
 			List<string> conferences = new List<string>();
-			if ((CurrentItem.Bib_Info.hasMainEntityName) && (CurrentItem.Bib_Info.Main_Entity_Name.Full_Name.Length > 0))
+			if (CurrentItem.Bib_Info.hasMainEntityName) 
 			{
 				if (CurrentItem.Bib_Info.Main_Entity_Name.Name_Type == Name_Info_Type_Enum.conference)
 				{

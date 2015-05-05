@@ -1508,7 +1508,7 @@ namespace SobekCM.Resource_Object
             tags.Add_Field(new MARC_Field(7, "  ", bldr007.ToString()));
 
             // ADD THE MAIN ENTITY NAME
-            if ((Bib_Info.hasMainEntityName) && (Bib_Info.Main_Entity_Name.Full_Name.Length > 0))
+            if (Bib_Info.hasMainEntityName) 
             {
                 MARC_Field main_entity_marc = Bib_Info.Main_Entity_Name.to_MARC_HTML(false);
 

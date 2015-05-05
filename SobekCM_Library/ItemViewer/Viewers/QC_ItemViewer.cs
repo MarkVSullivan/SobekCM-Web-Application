@@ -1322,9 +1322,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// and clear the temporary files/cache so it can be rebuilt from production if needed  </summary>
 	    private void Move_Temp_Changes_To_Production()
 	    {
+            string resource_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
+
 	        if (File.Exists(metsInProcessFile))
 	        {
-	            string resource_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
                 string backup_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name;
 
 	            // Ensure the backup directory exists
@@ -1385,8 +1386,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            }
 	        }
 
+            // Determine the total size of the package before saving
+            double size = 1;
+            int files_count = 1;
+            int pages_count = qc_item.Divisions.Physical_Tree.Pages_PreOrder.Count;
+            try
+            {
+                string[] all_files_final = Directory.GetFiles(resource_directory);
+                size = all_files_final.Aggregate<string, double>(0, (Current, ThisFile) => Current + (((new FileInfo(ThisFile)).Length) / 1024));
+                files_count = all_files_final.Length;
+            }
+            catch { }
+
+
             //Save changes to the DB
-            SobekCM_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, hidden_main_thumbnail + "thm.jpg", hidden_main_thumbnail + ".jpg", 1, 1, 1, notes);
+            SobekCM_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, hidden_main_thumbnail + "thm.jpg", hidden_main_thumbnail + ".jpg", pages_count, files_count, size, notes);
 
 	        // Clear the updated item from the session
 	        HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = null;
