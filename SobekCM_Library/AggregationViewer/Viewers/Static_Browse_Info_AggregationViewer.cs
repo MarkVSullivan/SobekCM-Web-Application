@@ -155,6 +155,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
 			// Get the adjusted text for this user's session
+            if (RequestSpecificValues.Static_Web_Content == null)
+                return;
+
             string static_browse_info_text = RequestSpecificValues.Static_Web_Content.Apply_Settings_To_Static_Text(RequestSpecificValues.Static_Web_Content.Content, RequestSpecificValues.Hierarchy_Object, RequestSpecificValues.HTML_Skin.Skin_Code, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode.Base_URL, UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode), Tracer);
 			bool isAdmin = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Aggregation_Admin(RequestSpecificValues.Hierarchy_Object.Code));
 
@@ -231,7 +234,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				if ( RequestSpecificValues.Browse_Object.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By )
 					RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
 				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-				Output.WriteLine("    <button title=\"Save changes to this child page text\" class=\"roundbutton\" type=\"submit\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this child page text\" class=\"roundbutton\" type=\"submit\" onclick=\"CKEDITOR.instances.sbkSbia_ChildTextEdit.updateElement();\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
 				Output.WriteLine("  </div>");
 				Output.WriteLine("</form>");
 				Output.WriteLine("<br /><br />");

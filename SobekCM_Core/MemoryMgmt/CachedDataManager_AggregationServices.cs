@@ -221,6 +221,10 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Entering Store_Item_Aggregation method");
             }
 
+            // Don't store nulls
+            if (StoreObject == null)
+                return;
+
             // If the cache is disabled, just return before even tracing
             if (settings.Disabled)
             {

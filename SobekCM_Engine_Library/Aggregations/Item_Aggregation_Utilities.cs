@@ -349,6 +349,11 @@ namespace SobekCM.Engine_Library.Aggregations
 
 	    public static Item_Aggregation Get_Item_Aggregation(Complete_Item_Aggregation CompAggr, Web_Language_Enum RequestedLanguage, Custom_Tracer Tracer)
 	    {
+            // If the complete aggregation was null, return null
+            if (CompAggr == null)
+                return null;
+
+            // Build the item aggregation
             Item_Aggregation returnValue = new Item_Aggregation(RequestedLanguage, CompAggr.ID, CompAggr.Code)
             {
                 Active = CompAggr.Active,

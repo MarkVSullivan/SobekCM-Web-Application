@@ -1086,6 +1086,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 									thisInfo.Division_Label = thisInfo.Division_Type;
 									thisInfo.Division_Type = divInfo.BaseTypeName;
 								}
+                                else if (!divInfo.isNameable)
+                                {
+                                    thisInfo.Division_Label = String.Empty;
+                                }
 							}
 						}
 						else

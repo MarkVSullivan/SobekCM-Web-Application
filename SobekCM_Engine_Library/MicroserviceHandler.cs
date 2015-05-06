@@ -38,7 +38,11 @@ namespace SobekCM.Engine_Library
                     splitter = queryString.Split("/".ToCharArray());
                 List<string> paths = splitter.ToList();
 
-            //    DmsDatabaseGateway.DbConnectionString = "Server=DMS;Database=USYellow;Integrated Security=true;Connection Timeout=120";
+                // Set the encoding
+                context.Response.Charset = Encoding.UTF8.WebName;
+
+                // Set this to allow us to have our own error messages, without IIS jumping into it
+                context.Response.TrySkipIisCustomErrors = true;
 
                 // Get any matching endpoint configuration
                 Microservice_Endpoint endpoint = microserviceConfig.Get_Endpoint(paths);
@@ -46,6 +50,7 @@ namespace SobekCM.Engine_Library
                 {
                     context.Response.StatusCode = 501;
                     context.Response.Write("No endpoint found");
+                    
                 }
                 else
                 {
@@ -82,6 +87,7 @@ namespace SobekCM.Engine_Library
             }
             else
             {
+
                 context.Response.StatusCode = 400;
                 context.Response.Write("Invalid URI - No endpoint requested");
             }

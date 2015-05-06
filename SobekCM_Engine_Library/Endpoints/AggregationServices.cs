@@ -126,7 +126,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         if ( String.IsNullOrEmpty(foldername))
                             foldername = aggregation;
 
-                        string[] files = Directory.GetFiles(design_folder);
+                        string[] files = SobekCM_File_Utilities.GetFiles(design_folder, "*.jpg|*.bmp|*.gif|*.png");
                         foreach (string thisFile in files)
                         {
                             string filename = Path.GetFileName(thisFile);

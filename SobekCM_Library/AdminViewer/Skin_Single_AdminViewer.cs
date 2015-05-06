@@ -1168,13 +1168,13 @@ namespace SobekCM.Library.AdminViewer
         private void Add_Page_Uploads(TextWriter Output)
         {
             // Help constants (for now)
-            const string UPLOAD_BANNER_HELP = "Press the SELECT FILES button here to upload new images or documents to associated with this web skin.   You will be able to access the image files when you are editing the headers and footers through the HTML editor.\\n\\nThe following image types can be uploaded: bmp, gif, jpg, png.  The following other documents can also be uploaded: ai, doc, docx, eps, pdf, psd, pub, vsd, vsdx, xls, xlsx, zip.";
+            const string UPLOAD_BANNER_HELP = "Press the SELECT FILES button here to upload new images or documents to associated with this web skin.   You will be able to access the image files when you are editing the headers and footers through the HTML editor.\\n\\nThe following image types can be uploaded: bmp, gif, jpg, png.  The following other documents can also be uploaded: ai, doc, docx, eps, pdf, psd, pub, txt, vsd, vsdx, xls, xlsx, zip.";
 
 
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Upload Images and Documents</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your uploaded images which can be included in your web skin (either in the CSS or in the headers/footers) or other document types which can be uploaded and associated with this aggregation.</p><p>The following image types can be uploaded: bmp, gif, jpg, png.  The following other documents can also be uploaded: ai, doc, docx, eps, pdf, psd, pub, vsd, vsdx, xls, xlsx, zip.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your uploaded images which can be included in your web skin (either in the CSS or in the headers/footers) or other document types which can be uploaded and associated with this aggregation.</p><p>The following image types can be uploaded: bmp, gif, jpg, png.  The following other documents can also be uploaded: ai, doc, docx, eps, pdf, psd, pub, txt, vsd, vsdx, xls, xlsx, zip.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
@@ -1272,7 +1272,7 @@ namespace SobekCM.Library.AdminViewer
                 }
 
                 // Add existing DOCUMENTS
-                string[] documents_files = SobekCM_File_Utilities.GetFiles(uploads_dir, "*.ai|*.doc|*.eps|*.pdf|*.psd|*.pub|*.vsd|*.xls|*.zip");
+                string[] documents_files = SobekCM_File_Utilities.GetFiles(uploads_dir, "*.ai|*.doc|*.docx|*.eps|*.pdf|*.psd|*.pub|*.txt|*.vsd|*.vsdx|*.xls|*.xlsx|*.zip");
                 if (documents_files.Length > 0)
                 {
                     Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Existing Documents</td></tr>");
@@ -1318,6 +1318,10 @@ namespace SobekCM.Library.AdminViewer
 
                             case "PUB":
                                 thisDocFileImage = Static_Resources.File_PUB_Img;
+                                break;
+
+                            case "TXT":
+                                thisDocFileImage = Static_Resources.File_TXT_Img;
                                 break;
 
                             case "VSD":
@@ -1408,7 +1412,7 @@ namespace SobekCM.Library.AdminViewer
                     break;
 
                 case 5:
-                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.pdf,.psd,.pub,.vsd,.vsdx,.xls,.xlsx,.zip", skinDirectory + "\\uploads", String.Empty, true, Tracer);
+                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.zip", skinDirectory + "\\uploads", String.Empty, true, Tracer);
                     break;
             }
         }
