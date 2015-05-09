@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Builder_Configurati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Resource_Object", "SobekCM_Resource_Object\SobekCM_Resource_Object.csproj", "{395C2621-CE19-41E0-AA1A-ABDB37F6E815}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample_PlugIn_Library", "Sample_PlugIn_Library\Sample_PlugIn_Library.csproj", "{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Core", "SobekCM_Core\SobekCM_Core.csproj", "{849C78A5-C60B-4FAF-9EFB-943753F64E56}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Builder_Library", "SobekCM_Builder_Library\SobekCM_Builder_Library.csproj", "{211C5D6B-F983-4CFF-AB58-302A6ECFE14F}"
@@ -101,18 +99,6 @@ Global
 		{395C2621-CE19-41E0-AA1A-ABDB37F6E815}.Release|x64.ActiveCfg = Release|x64
 		{395C2621-CE19-41E0-AA1A-ABDB37F6E815}.Release|x64.Build.0 = Release|x64
 		{395C2621-CE19-41E0-AA1A-ABDB37F6E815}.Release|x86.ActiveCfg = Release|Any CPU
-		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|x64.ActiveCfg = Release|Any CPU
-		{9C7055BD-D26B-4C04-B726-D0DCFAE182C6}.Release|x86.ActiveCfg = Release|Any CPU
 		{849C78A5-C60B-4FAF-9EFB-943753F64E56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{849C78A5-C60B-4FAF-9EFB-943753F64E56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{849C78A5-C60B-4FAF-9EFB-943753F64E56}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

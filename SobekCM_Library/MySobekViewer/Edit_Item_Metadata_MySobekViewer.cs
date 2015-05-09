@@ -78,32 +78,60 @@ namespace SobekCM.Library.MySobekViewer
 	        string template_code = RequestSpecificValues.Current_User.Edit_Template_Code_Simple;
             if ((isProject) || (item.Contains_Complex_Content) || (item.Using_Complex_Template))
             {
-                template_code = RequestSpecificValues.Current_User.Edit_Template_Code_Complex;
-            }
-            completeTemplate = Template_MemoryMgmt_Utility.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
-            if (completeTemplate != null)
-            {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Found template in cache");
+                template_code = "standard_project";
+                completeTemplate = Template_MemoryMgmt_Utility.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
+                if (completeTemplate != null)
+                {
+                    RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Found project-specific template in cache");
+                }
+                else
+                {
+                    RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Reading project-specific template file");
+
+                    // Look in the user-defined portion
+                    string user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\user\\standard\\project.xml";
+                    if (!File.Exists(user_template))
+                        user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\default\\standard\\project.xml";
+
+                    // Read this CompleteTemplate
+                    Template_XML_Reader reader = new Template_XML_Reader();
+                    completeTemplate = new CompleteTemplate();
+                    reader.Read_XML(user_template, completeTemplate, true);
+
+                    // Add the current codes to this template
+                    completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
+
+                    // Save this into the cache
+                    Template_MemoryMgmt_Utility.Store_Template(template_code, completeTemplate, RequestSpecificValues.Tracer);
+                }
             }
             else
             {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Reading template file");
+                completeTemplate = Template_MemoryMgmt_Utility.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
+                if (completeTemplate != null)
+                {
+                    RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Found template in cache");
+                }
+                else
+                {
+                    RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Reading template file");
 
-                // Look in the user-defined portion
-                string user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\user\\edit\\" + template_code + ".xml";
-                if ( !File.Exists(user_template))
-                    user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\default\\edit\\" + template_code + ".xml";
+                    // Look in the user-defined portion
+                    string user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\user\\edit\\" + template_code + ".xml";
+                    if (!File.Exists(user_template))
+                        user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\default\\edit\\" + template_code + ".xml";
 
-                // Read this CompleteTemplate
-                Template_XML_Reader reader = new Template_XML_Reader();
-                completeTemplate = new CompleteTemplate();
-                reader.Read_XML(user_template, completeTemplate, true);
+                    // Read this CompleteTemplate
+                    Template_XML_Reader reader = new Template_XML_Reader();
+                    completeTemplate = new CompleteTemplate();
+                    reader.Read_XML(user_template, completeTemplate, true);
 
-                // Add the current codes to this CompleteTemplate
-                completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
+                    // Add the current codes to this template
+                    completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
 
-                // Save this into the cache
-                Template_MemoryMgmt_Utility.Store_Template(template_code, completeTemplate, RequestSpecificValues.Tracer);
+                    // Save this into the cache
+                    Template_MemoryMgmt_Utility.Store_Template(template_code, completeTemplate, RequestSpecificValues.Tracer);
+                }
             }
 
             // Get the current page number, or default to 1
@@ -318,9 +346,8 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("  <b>Edit this project</b>");
 				Output.WriteLine("    <ul>");
 				Output.WriteLine("      <li>Enter the default data for this project below and press the SAVE button when all your edits are complete.</li>");
-				Output.WriteLine("      <li>Clicking on the blue plus signs ( <img class=\"repeat_button\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/new_element_demo.jpg\" /> ) will add another instance of the element, if the element is repeatable.</li>");
+				Output.WriteLine("      <li>Clicking on the blue plus signs ( <img class=\"repeat_button\" src=\"" + Static_Resources.New_Element_Demo_Jpg + "\" /> ) will add another instance of the element, if the element is repeatable.</li>");
 				Output.WriteLine("      <li>Click on the element names for detailed information inluding definitions, best practices, and technical information.</li>");
-				Output.WriteLine("      <li>You are using the full editing form because you are editing a project.</li>");
 			}
 
 			Output.WriteLine("     </ul>");

@@ -356,6 +356,10 @@ namespace SobekCM.Builder_Library.Settings
                         thisModule = new AddNewImagesAndViewsModule();
                         break;
 
+                    case "SobekCM.Builder_Library.Modules.Items.AttachImagesAllModule":
+                        thisModule = new AttachImagesAllModule();
+                        break;
+
                     case "SobekCM.Builder_Library.Modules.Items.EnsureMainThumbnailModule":
                         thisModule = new EnsureMainThumbnailModule();
                         break;
