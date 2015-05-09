@@ -99,6 +99,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.User_Permissions;
             string permissions_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
+            string browseby_url = RequestSpecificValues.Current_Mode.Base_URL + "/l/" + RequestSpecificValues.Hierarchy_Object.Code + "/browseby";
+
             // Special links if this is the ALL collection
             if (isAll)
             {
@@ -155,9 +157,25 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr class=\"sbkMmav_SpacerRow\"><td colspan=\"3\"></td></tr>");
 
+            // Add the metadata browse option
+            if (!isAll)
+            {
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
+                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + browseby_url + "\"><img src=\"" + Static_Resources.Metadata_Browse_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + browseby_url + "\">View Metadata Browses</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">View public and/or administrative metadata browses with the complete list of all metadata in the searchable metadata fields for this collection.</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+                Output.WriteLine("    <tr class=\"sbkMmav_SpacerRow\"><td colspan=\"3\"></td></tr>");
+            }
+
+
             // Add the link for aggregation management
             if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
             {
+
                 // Add the link for the work log history
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");

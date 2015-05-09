@@ -145,11 +145,13 @@ namespace SobekCM.Library.Settings
             File_AI_Img = "http://cdn.sobekrepository.org/images/misc/file_ai.png";
             File_EPS_Img = "http://cdn.sobekrepository.org/images/misc/file_eps.png";
             File_Excel_Img = "http://cdn.sobekrepository.org/images/misc/file_excel.png";
+            File_KML_Img = "http://cdn.sobekrepository.org/images/misc/file_kml.png";
             File_PDF_Img  = "http://cdn.sobekrepository.org/images/misc/file_pdf.png";
             File_PSD_Img = "http://cdn.sobekrepository.org/images/misc/file_psd.png";
             File_PUB_Img = "http://cdn.sobekrepository.org/images/misc/file_pub.png";
             File_TXT_Img = "http://cdn.sobekrepository.org/images/misc/file_txt.png";
             File_Word_Img = "http://cdn.sobekrepository.org/images/misc/file_word.png";
+            File_XML_Img = "http://cdn.sobekrepository.org/images/misc/file_xml.png";
             File_VSD_Img = "http://cdn.sobekrepository.org/images/misc/file_vsd.png";
             File_ZIP_Img = "http://cdn.sobekrepository.org/images/misc/file_zip.png";
             Firewall_Img = "http://cdn.sobekrepository.org/images/misc/firewall.gif";
@@ -220,6 +222,8 @@ namespace SobekCM.Library.Settings
             Map_Polygon2_Gif = "http://cdn.sobekrepository.org/images/misc/map_polygon2.gif";
             Map_Rectangle2_Gif = "http://cdn.sobekrepository.org/images/misc/map_rectangle2.gif";
             Mass_Update_Icon_Png = "http://cdn.sobekrepository.org/images/misc/mass_update_icon.png";
+            Metadata_Browse_Img_Large = "http://cdn.sobekrepository.org/images/misc/metadata_browse_large.png";
+            Metadata_Browse_Img = "http://cdn.sobekrepository.org/images/misc/metadata_browse.png";
             Minussign_Png = "http://cdn.sobekrepository.org/images/misc/minussign.png";
             Missingimage_Jpg = "http://cdn.sobekrepository.org/images/misc/MissingImage.jpg";
             Move_Pages_Cursor_Cur = "http://cdn.sobekrepository.org/images/qc/move_pages_cursor.cur";
@@ -762,6 +766,9 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'file_excel.png' file ( http://cdn.sobekrepository.org/images/misc/file_excel.png by default)</summary>
         public static string File_Excel_Img { get; private set; }
 
+        /// <summary> URL for the default resource 'file_kml.png' file ( http://cdn.sobekrepository.org/images/misc/file_kml.png by default)</summary>
+        public static string File_KML_Img { get; private set; }
+
         /// <summary> URL for the default resource 'file_pdf.png' file ( http://cdn.sobekrepository.org/images/misc/file_pdf.png by default)</summary>
         public static string File_PDF_Img { get; private set; }
 
@@ -776,6 +783,9 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'file_word.png' file ( http://cdn.sobekrepository.org/images/misc/file_word.png by default)</summary>
         public static string File_Word_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'file_xml.png' file ( http://cdn.sobekrepository.org/images/misc/file_xml.png by default)</summary>
+        public static string File_XML_Img { get; private set; }
 
         /// <summary> URL for the default resource 'file_vsd.png' file ( http://cdn.sobekrepository.org/images/misc/file_vsd.png by default)</summary>
         public static string File_VSD_Img { get; private set; }
@@ -989,6 +999,12 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'mass_update_icon.png' file ( http://cdn.sobekrepository.org/images/misc/mass_update_icon.png by default)</summary>
         public static string Mass_Update_Icon_Png { get; private set; }
+
+        /// <summary> URL for the default resource 'metadata_browse_large.png' file ( http://cdn.sobekrepository.org/images/misc/metadata_browse_large.png by default)</summary>
+        public static string Metadata_Browse_Img_Large { get; private set; }
+
+        /// <summary> URL for the default resource 'metadata_browse.png' file ( http://cdn.sobekrepository.org/images/misc/metadata_browse.png by default)</summary>
+        public static string Metadata_Browse_Img { get; private set; }
 
         /// <summary> URL for the default resource 'minussign.png' file ( http://cdn.sobekrepository.org/images/misc/minussign.png by default)</summary>
         public static string Minussign_Png { get; private set; }
@@ -1963,6 +1979,10 @@ namespace SobekCM.Library.Settings
                     File_Excel_Img = Source;
                     break;
 
+                case "file_kml_img":
+                    File_KML_Img = Source;
+                    break;
+
                 case "file_pdf_img":
                     File_PDF_Img = Source;
                     break;
@@ -1981,6 +2001,10 @@ namespace SobekCM.Library.Settings
 
                 case "file_word_img":
                     File_Word_Img = Source;
+                    break;
+
+                case "file_xml_img":
+                    File_XML_Img = Source;
                     break;
 
                 case "file_vsd_img":
@@ -2261,6 +2285,14 @@ namespace SobekCM.Library.Settings
 
                 case "mass_update_icon_img":
                     Mass_Update_Icon_Png = Source;
+                    break;
+
+                case "metadata_browse_img_large":
+                    Metadata_Browse_Img_Large = Source;
+                    break;
+
+                case "metadata_browse_img":
+                    Metadata_Browse_Img = Source;
                     break;
 
                 case "minussign_img":

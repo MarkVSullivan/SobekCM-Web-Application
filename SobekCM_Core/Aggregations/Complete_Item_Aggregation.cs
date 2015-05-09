@@ -992,11 +992,26 @@ namespace SobekCM.Core.Aggregations
 		{
 			if (childPagesHash.ContainsKey(Browse_Page_Code.ToUpper()))
 			{
+                // Get the child page
 				Complete_Item_Aggregation_Child_Page childPage = childPagesHash[Browse_Page_Code.ToUpper()];
 
+                // Get the parent of the child page to delete
+                string parent = childPage.Parent_Code;
+
+                // remove this from the hash
 				childPagesHash.Remove(Browse_Page_Code.ToUpper());
 
+                // Also remove the complete list
 				Child_Pages.Remove(childPage);
+
+                // Any pages that were children of this one, move up to this parent
+			    foreach (Complete_Item_Aggregation_Child_Page thisChildPage in Child_Pages)
+			    {
+			        if (String.Compare(thisChildPage.Parent_Code, Browse_Page_Code, StringComparison.OrdinalIgnoreCase) == 0)
+			        {
+                        thisChildPage.Parent_Code = parent;
+			        }
+			    }
 			}
 		}
 

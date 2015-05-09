@@ -2558,6 +2558,7 @@ namespace SobekCM.Library.AdminViewer
 						{
 							case "none":
                                 newPage.Browse_Type = Item_Aggregation_Child_Visibility_Enum.None;
+                                newPage.Parent_Code = String.Empty;
 								break;
 
 							case "browse":
@@ -2566,6 +2567,7 @@ namespace SobekCM.Library.AdminViewer
 
 							case "browseby":
 								newPage.Browse_Type = Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By;
+                                newPage.Parent_Code = String.Empty;
 								break;
 						}
 						string html_source_dir = aggregationDirectory + "\\html\\browse";
@@ -2668,7 +2670,7 @@ namespace SobekCM.Library.AdminViewer
 					RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
 					RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "g_" + childPage.Code;
 					Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this child page\" >edit</a> | ");
-					Output.WriteLine("<a title=\"Click to delete this subcollection\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return edit_aggr_delete_child_page('" + childPage.Code + "');\">delete</a> )</td>");
+					Output.WriteLine("<a title=\"Click to delete this child page\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return edit_aggr_delete_child_page('" + childPage.Code + "');\">delete</a> )</td>");
 
 					Output.WriteLine("          <td>" + childPage.Code + "</td>");
 					Output.WriteLine("          <td>" + childPage.Get_Label(UI_ApplicationCache_Gateway.Settings.Default_UI_Language) + "</td>");
@@ -3024,7 +3026,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Uploaded Images and Documents</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your uploaded images which can be included in your home page or static child pages or other document types which can be uploaded and associated with this aggregation.</p><p>The following image types can be uploaded: bmp, gif, jpg, png.  The following other documents can also be uploaded: ai, doc, docx, eps, pdf, psd, pub, txt, vsd, vsdx, xls, xlsx, zip.</p><p>These files are not associated with any digital resources, but are loosely retained with this collection.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your uploaded images which can be included in your home page or static child pages or other document types which can be uploaded and associated with this aggregation.</p><p>The following image types can be uploaded: bmp, gif, jpg, png.  The following other documents can also be uploaded: ai, doc, docx, eps, kml, pdf, psd, pub, txt, vsd, vsdx, xls, xlsx, xml, zip.</p><p>These files are not associated with any digital resources, but are loosely retained with this collection.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
@@ -3123,7 +3125,7 @@ namespace SobekCM.Library.AdminViewer
                 }
 
                 // Add existing DOCUMENTS
-                string[] documents_files = SobekCM_File_Utilities.GetFiles(uploads_dir, "*.ai|*.doc|*.docx|*.eps|*.pdf|*.psd|*.pub|*.txt|*.vsd|*.vsdx|*.xls|*.xlsx|*.zip");
+                string[] documents_files = SobekCM_File_Utilities.GetFiles(uploads_dir, "*.ai|*.doc|*.docx|*.eps|*.kml|*.pdf|*.psd|*.pub|*.txt|*.vsd|*.vsdx|*.xls|*.xlsx|*.xml|*.zip");
                 if (documents_files.Length > 0)
                 {
                     Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Existing Documents</td></tr>");
@@ -3159,6 +3161,10 @@ namespace SobekCM.Library.AdminViewer
                                 thisDocFileImage = Static_Resources.File_EPS_Img;
                                 break;
 
+                            case "KML":
+                                thisDocFileImage = Static_Resources.File_KML_Img;
+                                break;
+
                             case "PDF":
                                 thisDocFileImage = Static_Resources.File_PDF_Img;
                                 break;
@@ -3183,6 +3189,10 @@ namespace SobekCM.Library.AdminViewer
                             case "XLS":
                             case "XLSX":
                                 thisDocFileImage = Static_Resources.File_Excel_Img;
+                                break;
+
+                            case "XML":
+                                thisDocFileImage = Static_Resources.File_XML_Img;
                                 break;
 
                             case "ZIP":
@@ -3461,6 +3471,27 @@ namespace SobekCM.Library.AdminViewer
 		        }
 		    }
 
+            // Get all the children of this code
+		    List<string> childCodes = new List<string>();
+		    foreach (Complete_Item_Aggregation_Child_Page childPage2 in sortedChildren.Values)
+		    {
+		        if (!String.IsNullOrEmpty(childPage2.Parent_Code))
+		        {
+		            if (String.Compare(childPage2.Parent_Code, childPage.Code, StringComparison.OrdinalIgnoreCase) == 0)
+		            {
+		                childCodes.Add(childPage2.Code.ToLower());
+		            }
+		        }
+		    }
+            foreach (Complete_Item_Aggregation_Child_Page childPage2 in sortedChildren.Values)
+            {
+                if (!String.IsNullOrEmpty(childPage2.Parent_Code))
+                {
+                    if (childCodes.Contains(childPage2.Parent_Code.ToLower()))
+                        childCodes.Add(childPage2.Code);
+                }
+            }
+
 		    // Add line for parent code
 			if (childPage.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Main_Menu)
 			{
@@ -3481,6 +3512,10 @@ namespace SobekCM.Library.AdminViewer
 				// Don't show itself in the possible parent list
 				if (String.Compare(childPage.Code, childPage2.Code, StringComparison.OrdinalIgnoreCase) == 0)
 					continue;
+
+                // Don't show any child ones
+                if (childCodes.Contains(childPage2.Code.ToLower()))
+                    continue;
 
 				// Only show main menu stuff
 				if (childPage2.Browse_Type != Item_Aggregation_Child_Visibility_Enum.Main_Menu)
@@ -3679,7 +3714,7 @@ namespace SobekCM.Library.AdminViewer
 					break;
 
                 case 9:
-                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.zip", aggregationDirectory + "\\uploads", String.Empty, true, itemAggregation.Code + "|Uploads", Tracer);
+                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.kml,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.xml,.zip", aggregationDirectory + "\\uploads", String.Empty, true, itemAggregation.Code + "|Uploads", Tracer);
                     break;
 			}
 		}

@@ -1538,7 +1538,7 @@ namespace SobekCM.Resource_Object
             {
                 foreach (Name_Info name in Bib_Info.Names)
                 {
-                    if (name.Full_Name.Length > 0)
+                    if ((!String.IsNullOrEmpty(name.Full_Name)) || (!String.IsNullOrEmpty(name.Given_Name)) || (!String.IsNullOrEmpty(name.Family_Name)))
                     {
                         MARC_Field name_marc = name.to_MARC_HTML(false);
 

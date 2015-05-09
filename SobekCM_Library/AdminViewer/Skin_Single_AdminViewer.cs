@@ -1174,7 +1174,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Upload Images and Documents</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your uploaded images which can be included in your web skin (either in the CSS or in the headers/footers) or other document types which can be uploaded and associated with this aggregation.</p><p>The following image types can be uploaded: bmp, gif, jpg, png.  The following other documents can also be uploaded: ai, doc, docx, eps, pdf, psd, pub, txt, vsd, vsdx, xls, xlsx, zip.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your uploaded images which can be included in your web skin (either in the CSS or in the headers/footers) or other document types which can be uploaded and associated with this aggregation.</p><p>The following image types can be uploaded: bmp, gif, jpg, png.  The following other documents can also be uploaded: ai, doc, docx, eps, kml, pdf, psd, pub, txt, vsd, vsdx, xls, xlsx, xml, zip.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
@@ -1272,7 +1272,7 @@ namespace SobekCM.Library.AdminViewer
                 }
 
                 // Add existing DOCUMENTS
-                string[] documents_files = SobekCM_File_Utilities.GetFiles(uploads_dir, "*.ai|*.doc|*.docx|*.eps|*.pdf|*.psd|*.pub|*.txt|*.vsd|*.vsdx|*.xls|*.xlsx|*.zip");
+                string[] documents_files = SobekCM_File_Utilities.GetFiles(uploads_dir, "*.ai|*.doc|*.docx|*.eps|*.kml|*.pdf|*.psd|*.pub|*.txt|*.vsd|*.vsdx|*.xls|*.xlsx|*.xml|*.zip");
                 if (documents_files.Length > 0)
                 {
                     Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Existing Documents</td></tr>");
@@ -1308,6 +1308,10 @@ namespace SobekCM.Library.AdminViewer
                                 thisDocFileImage = Static_Resources.File_EPS_Img;
                                 break;
 
+                            case "KML":
+                                thisDocFileImage = Static_Resources.File_KML_Img;
+                                break;
+
                             case "PDF":
                                 thisDocFileImage = Static_Resources.File_PDF_Img;
                                 break;
@@ -1332,6 +1336,10 @@ namespace SobekCM.Library.AdminViewer
                             case "XLS":
                             case "XLSX":
                                 thisDocFileImage = Static_Resources.File_Excel_Img;
+                                break;
+
+                            case "XML":
+                                thisDocFileImage = Static_Resources.File_XML_Img;
                                 break;
 
                             case "ZIP":
@@ -1412,7 +1420,7 @@ namespace SobekCM.Library.AdminViewer
                     break;
 
                 case 5:
-                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.zip", skinDirectory + "\\uploads", String.Empty, true, Tracer);
+                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.kml,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.xml,.zip", skinDirectory + "\\uploads", String.Empty, true, Tracer);
                     break;
             }
         }
