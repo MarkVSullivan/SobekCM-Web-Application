@@ -76,191 +76,197 @@ namespace SobekCM.Engine_Library.Skins
 
             // Look for source files
 	        string html_soure_directory = Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html";
-	        string[] possible_header_files = Directory.GetFiles(html_soure_directory, "*.htm*");
-	        foreach (string thisHeaderFile in possible_header_files)
-	        {
-                // Get the filename
-	            string fileName = Path.GetFileName(thisHeaderFile);
+            if (Directory.Exists(html_soure_directory))
+            {
+                string[] possible_header_files = Directory.GetFiles(html_soure_directory, "*.htm*");
+                foreach (string thisHeaderFile in possible_header_files)
+                {
+                    // Get the filename
+                    string fileName = Path.GetFileName(thisHeaderFile);
 
-                // Was this an item header file?
-	            if (fileName.IndexOf("header_item", StringComparison.InvariantCultureIgnoreCase) == 0)
-	            {
-                    // If this is default (with no language specified) add as DEFAULT
-	                if (fileName.ToLower().Contains("header_item.htm"))
-	                {
-	                    if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-	                        completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Header_Item_Source_File = "html\\" + fileName;
-	                    else
-	                    {
-                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Item_Source_File = "html\\" + fileName };
-	                        completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
-	                    }
-	                }
-	                else
-	                {
-                        // Look for and parse the language code in the file
-	                    string[] parsed = fileName.Split("_-.".ToCharArray());
-	                    if (parsed.Length == 4)
-	                    {
-	                        Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[2]);
-	                        if (languageEnum != Web_Language_Enum.UNDEFINED)
-	                        {
-                                if (completeSkin.SourceFiles.ContainsKey(languageEnum))
-                                    completeSkin.SourceFiles[languageEnum].Header_Item_Source_File = "html\\" + fileName;
-                                else
-                                {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Item_Source_File = "html\\" + fileName };
-                                    completeSkin.SourceFiles[languageEnum] = sourceFiles;
-                                }
-	                        }
-	                    }
-	                }
-	            }
-                // Was this a non-item header file?
-	            else if ( fileName.IndexOf("header", StringComparison.InvariantCultureIgnoreCase) == 0 )
-	            {
-                    // If this is default (with no language specified) add as DEFAULT
-                    if (fileName.ToLower().Contains("header.htm"))
+                    // Was this an item header file?
+                    if (fileName.IndexOf("header_item", StringComparison.InvariantCultureIgnoreCase) == 0)
                     {
-                        if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Header_Source_File = "html\\" + fileName;
+                        // If this is default (with no language specified) add as DEFAULT
+                        if (fileName.ToLower().Contains("header_item.htm"))
+                        {
+                            if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
+                                completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Header_Item_Source_File = "html\\" + fileName;
+                            else
+                            {
+                                Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files {Header_Item_Source_File = "html\\" + fileName};
+                                completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
+                            }
+                        }
                         else
                         {
-                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Source_File = "html\\" + fileName };
-                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
-                        }
-                    }
-                    else
-                    {
-                        // Look for and parse the language code in the file
-                        string[] parsed = fileName.Split("_-.".ToCharArray());
-                        if (parsed.Length == 3)
-                        {
-                            Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[1]);
-                            if (languageEnum != Web_Language_Enum.UNDEFINED)
+                            // Look for and parse the language code in the file
+                            string[] parsed = fileName.Split("_-.".ToCharArray());
+                            if (parsed.Length == 4)
                             {
-                                if (completeSkin.SourceFiles.ContainsKey(languageEnum))
-                                    completeSkin.SourceFiles[languageEnum].Header_Source_File = "html\\" + fileName;
-                                else
+                                Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[2]);
+                                if (languageEnum != Web_Language_Enum.UNDEFINED)
                                 {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Header_Source_File = "html\\" + fileName };
-                                    completeSkin.SourceFiles[languageEnum] = sourceFiles;
+                                    if (completeSkin.SourceFiles.ContainsKey(languageEnum))
+                                        completeSkin.SourceFiles[languageEnum].Header_Item_Source_File = "html\\" + fileName;
+                                    else
+                                    {
+                                        Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files {Header_Item_Source_File = "html\\" + fileName};
+                                        completeSkin.SourceFiles[languageEnum] = sourceFiles;
+                                    }
                                 }
                             }
                         }
                     }
-	            }
-                // Was this a item footer file?
-                else if (fileName.IndexOf("footer_item", StringComparison.InvariantCultureIgnoreCase) == 0)
-                {
-                    // If this is default (with no language specified) add as DEFAULT
-                    if (fileName.ToLower().Contains("footer_item.htm"))
+                        // Was this a non-item header file?
+                    else if (fileName.IndexOf("header", StringComparison.InvariantCultureIgnoreCase) == 0)
                     {
-                        if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Footer_Item_Source_File = "html\\" + fileName;
+                        // If this is default (with no language specified) add as DEFAULT
+                        if (fileName.ToLower().Contains("header.htm"))
+                        {
+                            if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
+                                completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Header_Source_File = "html\\" + fileName;
+                            else
+                            {
+                                Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files {Header_Source_File = "html\\" + fileName};
+                                completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
+                            }
+                        }
                         else
                         {
-                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Item_Source_File = "html\\" + fileName };
-                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
+                            // Look for and parse the language code in the file
+                            string[] parsed = fileName.Split("_-.".ToCharArray());
+                            if (parsed.Length == 3)
+                            {
+                                Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[1]);
+                                if (languageEnum != Web_Language_Enum.UNDEFINED)
+                                {
+                                    if (completeSkin.SourceFiles.ContainsKey(languageEnum))
+                                        completeSkin.SourceFiles[languageEnum].Header_Source_File = "html\\" + fileName;
+                                    else
+                                    {
+                                        Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files {Header_Source_File = "html\\" + fileName};
+                                        completeSkin.SourceFiles[languageEnum] = sourceFiles;
+                                    }
+                                }
+                            }
                         }
                     }
-                    else
+                        // Was this a item footer file?
+                    else if (fileName.IndexOf("footer_item", StringComparison.InvariantCultureIgnoreCase) == 0)
                     {
-                        // Look for and parse the language code in the file
-                        string[] parsed = fileName.Split("_-.".ToCharArray());
-                        if (parsed.Length == 4)
+                        // If this is default (with no language specified) add as DEFAULT
+                        if (fileName.ToLower().Contains("footer_item.htm"))
                         {
-                            Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[2]);
-                            if (languageEnum != Web_Language_Enum.UNDEFINED)
+                            if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
+                                completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Footer_Item_Source_File = "html\\" + fileName;
+                            else
                             {
-                                if (completeSkin.SourceFiles.ContainsKey(languageEnum))
-                                    completeSkin.SourceFiles[languageEnum].Footer_Item_Source_File = "html\\" + fileName;
-                                else
+                                Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files {Footer_Item_Source_File = "html\\" + fileName};
+                                completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
+                            }
+                        }
+                        else
+                        {
+                            // Look for and parse the language code in the file
+                            string[] parsed = fileName.Split("_-.".ToCharArray());
+                            if (parsed.Length == 4)
+                            {
+                                Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[2]);
+                                if (languageEnum != Web_Language_Enum.UNDEFINED)
                                 {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Item_Source_File = "html\\" + fileName };
-                                    completeSkin.SourceFiles[languageEnum] = sourceFiles;
+                                    if (completeSkin.SourceFiles.ContainsKey(languageEnum))
+                                        completeSkin.SourceFiles[languageEnum].Footer_Item_Source_File = "html\\" + fileName;
+                                    else
+                                    {
+                                        Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files {Footer_Item_Source_File = "html\\" + fileName};
+                                        completeSkin.SourceFiles[languageEnum] = sourceFiles;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                        // Was this a non-item footer file?
+                    else if (fileName.IndexOf("footer", StringComparison.InvariantCultureIgnoreCase) == 0)
+                    {
+                        // If this is default (with no language specified) add as DEFAULT
+                        if (fileName.ToLower().Contains("footer.htm"))
+                        {
+                            if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
+                                completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Footer_Item_Source_File = "html\\" + fileName;
+                            else
+                            {
+                                Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files {Footer_Source_File = "html\\" + fileName};
+                                completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
+                            }
+                        }
+                        else
+                        {
+                            // Look for and parse the language code in the file
+                            string[] parsed = fileName.Split("_-.".ToCharArray());
+                            if (parsed.Length == 3)
+                            {
+                                Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[1]);
+                                if (languageEnum != Web_Language_Enum.UNDEFINED)
+                                {
+                                    if (completeSkin.SourceFiles.ContainsKey(languageEnum))
+                                        completeSkin.SourceFiles[languageEnum].Footer_Source_File = "html\\" + fileName;
+                                    else
+                                    {
+                                        Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files {Footer_Source_File = "html\\" + fileName};
+                                        completeSkin.SourceFiles[languageEnum] = sourceFiles;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                // Was this a non-item footer file?
-                else if (fileName.IndexOf("footer", StringComparison.InvariantCultureIgnoreCase) == 0)
-                {
-                    // If this is default (with no language specified) add as DEFAULT
-                    if (fileName.ToLower().Contains("footer.htm"))
-                    {
-                        if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Footer_Item_Source_File = "html\\" + fileName;
-                        else
-                        {
-                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Source_File = "html\\" + fileName };
-                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
-                        }
-                    }
-                    else
-                    {
-                        // Look for and parse the language code in the file
-                        string[] parsed = fileName.Split("_-.".ToCharArray());
-                        if (parsed.Length == 3)
-                        {
-                            Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[1]);
-                            if (languageEnum != Web_Language_Enum.UNDEFINED)
-                            {
-                                if (completeSkin.SourceFiles.ContainsKey(languageEnum))
-                                    completeSkin.SourceFiles[languageEnum].Footer_Source_File = "html\\" + fileName;
-                                else
-                                {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Footer_Source_File = "html\\" + fileName };
-                                    completeSkin.SourceFiles[languageEnum] = sourceFiles;
-                                }
-                            }
-                        }
-                    }
-                }
-	        }
-
+            }
+            
             // Look for banners as well
 	        if (override_banner)
 	        {
 	            string banner_source_directory = Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code;
-                string[] possible_banner_files = Directory.GetFiles(banner_source_directory, "banner*.*");
-                foreach (string thisBannerFile in possible_banner_files)
+	            if (Directory.Exists(banner_source_directory))
 	            {
-	                // Get the filename
-                    string fileName = Path.GetFileName(thisBannerFile);
+	                string[] possible_banner_files = Directory.GetFiles(banner_source_directory, "banner*.*");
+	                foreach (string thisBannerFile in possible_banner_files)
+	                {
+	                    // Get the filename
+	                    string fileName = Path.GetFileName(thisBannerFile);
 
-                    // If this is default (with no language specified) add as DEFAULT
-                    if (fileName.ToLower().Contains("banner."))
-                    {
-                        if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
-                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Banner = fileName;
-                        else
-                        {
-                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Banner = fileName };
-                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
-                        }
-                    }
-                    else
-                    {
-                        // Look for and parse the language code in the file
-                        string[] parsed = fileName.Split("_-.".ToCharArray());
-                        if (parsed.Length == 3)
-                        {
-                            Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[1]);
-                            if (languageEnum != Web_Language_Enum.UNDEFINED)
-                            {
-                                if (completeSkin.SourceFiles.ContainsKey(languageEnum))
-                                    completeSkin.SourceFiles[languageEnum].Banner = fileName;
-                                else
-                                {
-                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files { Banner = fileName };
-                                    completeSkin.SourceFiles[languageEnum] = sourceFiles;
-                                }
-                            }
-                        }
-                    }
+	                    // If this is default (with no language specified) add as DEFAULT
+	                    if (fileName.ToLower().Contains("banner."))
+	                    {
+	                        if (completeSkin.SourceFiles.ContainsKey(Web_Language_Enum.DEFAULT))
+	                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT].Banner = fileName;
+	                        else
+	                        {
+	                            Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files {Banner = fileName};
+	                            completeSkin.SourceFiles[Web_Language_Enum.DEFAULT] = sourceFiles;
+	                        }
+	                    }
+	                    else
+	                    {
+	                        // Look for and parse the language code in the file
+	                        string[] parsed = fileName.Split("_-.".ToCharArray());
+	                        if (parsed.Length == 3)
+	                        {
+	                            Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(parsed[1]);
+	                            if (languageEnum != Web_Language_Enum.UNDEFINED)
+	                            {
+	                                if (completeSkin.SourceFiles.ContainsKey(languageEnum))
+	                                    completeSkin.SourceFiles[languageEnum].Banner = fileName;
+	                                else
+	                                {
+	                                    Complete_Web_Skin_Source_Files sourceFiles = new Complete_Web_Skin_Source_Files {Banner = fileName};
+	                                    completeSkin.SourceFiles[languageEnum] = sourceFiles;
+	                                }
+	                            }
+	                        }
+	                    }
 
+	                }
 	            }
 	        }
 

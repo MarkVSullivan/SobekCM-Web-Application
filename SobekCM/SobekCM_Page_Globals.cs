@@ -70,12 +70,22 @@ namespace SobekCM
 			string base_url = request.Url.AbsoluteUri.ToLower().Replace("sobekcm.aspx", "");
 			if (base_url.IndexOf("?") > 0)
 				base_url = base_url.Substring(0, base_url.IndexOf("?"));
+            
 
 			try
 			{
 				tracer = new Custom_Tracer();
 				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", String.Empty);
 			    SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
+
+                // If this is running on localhost, and in debug, set base directory to this one
+#if DEBUG
+			    if (base_url.IndexOf("localhost:") > 0)
+			    {
+			        UI_ApplicationCache_Gateway.Settings.System_Base_URL = base_url;
+			        UI_ApplicationCache_Gateway.Settings.Base_URL = base_url;
+			    }
+#endif
 
                 // Ensure the settings base directory is set correctly 
 			    if ( String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Base_Directory))
