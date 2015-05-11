@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 
 #endregion
@@ -26,20 +27,17 @@ namespace SobekCM.Builder_Library.Statistics
         private readonly string dataset_location;
         private readonly string sobekcm_log_location;
         private readonly string sobekcm_web_location;
-        private readonly string sql_output_location;
-        private readonly string[] year_months;
+        private readonly List<string> year_months;
 
         /// <summary> Constructor for a new instance of the SobekCM_Stats_Reader_Processor worker class </summary>
         /// <param name="SobekCM_Log_Location">  </param>
-        /// <param name="SQL_Output_Location"></param>
         /// <param name="Temporary_Workspace"></param>
         /// <param name="SobekCM_Web_App_Directory"> </param>
         /// <param name="Year_Months"></param>
-        public SobekCM_Stats_Reader_Processor(string SobekCM_Log_Location, string SQL_Output_Location, string Temporary_Workspace, string SobekCM_Web_App_Directory, string[] Year_Months)
+        public SobekCM_Stats_Reader_Processor(string SobekCM_Log_Location, string Temporary_Workspace, string SobekCM_Web_App_Directory, List<string> Year_Months)
         {
             sobekcm_log_location = SobekCM_Log_Location;
             dataset_location = Temporary_Workspace;
-            sql_output_location = SQL_Output_Location;
             sobekcm_web_location = SobekCM_Web_App_Directory;
             year_months = Year_Months;
         }
@@ -56,23 +54,34 @@ namespace SobekCM.Builder_Library.Statistics
         public void Process_IIS_Logs()
         {
             // **** READ THE LOOKUP TABLES FROM THE DATABASE **** //
-            DataSet lookupTables = SobekCM_Database.Get_Statistics_Lookup_Tables();
+            DataSet lookupTables = Engine_Database.Get_Statistics_Lookup_Tables();
+
+            // Determine, from the year_month, which logs to read
+            List<string> logs_start = new List<string>();
+            foreach (string thisYearMonth in year_months)
+            {
+                logs_start.Add("u_ex" + thisYearMonth.Substring(2, 2) + thisYearMonth.Substring(4, 2));
+            }
 
             // ***** CODE BELOW READS ALL THE LOG FILES AND THEN WRITES THEM AS XML DATASETS *****//
             SobekCM_Log_Reader sobekcm_log_reader = new SobekCM_Log_Reader(lookupTables.Tables[0], sobekcm_web_location);
-            string[] files = Directory.GetFiles(sobekcm_log_location, "*.log");
+            string[] files = Directory.GetFiles(sobekcm_log_location, "u_ex*.log");
             foreach (string thisFile in files)
             {
-                On_New_Status("Processing " + (new FileInfo(thisFile)).Name);
+                string filename_lower = Path.GetFileName(thisFile).ToLower().Substring(0, 8);
+                if (logs_start.Contains(filename_lower))
+                {
+                    On_New_Status("Processing " + (new FileInfo(thisFile)).Name);
 
-                FileInfo fileInfo = new FileInfo(thisFile);
-                string name = fileInfo.Name.Replace(fileInfo.Extension, "");
-                DateTime logDate = new DateTime(Convert.ToInt32("20" + name.Substring(4, 2)),
-                                                Convert.ToInt32(name.Substring(6, 2)), Convert.ToInt32(name.Substring(8, 2)));
+                    FileInfo fileInfo = new FileInfo(thisFile);
+                    string name = fileInfo.Name.Replace(fileInfo.Extension, "");
+                    DateTime logDate = new DateTime(Convert.ToInt32("20" + name.Substring(4, 2)),
+                        Convert.ToInt32(name.Substring(6, 2)), Convert.ToInt32(name.Substring(8, 2)));
 
-                string resultant_file = dataset_location + "\\" + logDate.Year.ToString() + logDate.Month.ToString().PadLeft(2, '0') + logDate.Day.ToString().PadLeft(2, '0') + ".xml";
-                if (!File.Exists(resultant_file))
-                    sobekcm_log_reader.Read_Log(thisFile).Write_XML(dataset_location);
+                    string resultant_file = dataset_location + "\\" + logDate.Year.ToString() + logDate.Month.ToString().PadLeft(2, '0') + logDate.Day.ToString().PadLeft(2, '0') + ".xml";
+                    if (!File.Exists(resultant_file))
+                        sobekcm_log_reader.Read_Log(thisFile).Write_XML(dataset_location);
+                }
             }
 
 
@@ -117,7 +126,7 @@ namespace SobekCM.Builder_Library.Statistics
                 }
             }
 
-            On_New_Status("Writing SQL insert commands");
+            On_New_Status("Insert new statistics into database");
             foreach (string yearmonth in year_months)
             {
                 SobekCM_Stats_DataSet monthly;

@@ -6254,35 +6254,6 @@ namespace SobekCM.Library.Database
 
 		#endregion
 
-		#region Methods used by the Statistics Usage Reader
-
-		/// <summary> Gets all the tables ued during the process of reading the statistics 
-		/// from the web iis logs and creating the associated SQL commands  </summary>
-		/// <returns> Large dataset with several tables ( all items, all titles, aggregationPermissions, etc.. )</returns>
-		public static DataSet Get_Statistics_Lookup_Tables()
-		{
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString);
-
-			// Create the command 
-			SqlCommand executeCommand = new SqlCommand("SobekCM_Statistics_Lookup_Tables", connect) {CommandType = CommandType.StoredProcedure};
-
-			// Create the adapter
-			SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-			// Create the dataset
-			DataSet returnValue = new DataSet();
-
-			// Fill the dataset
-			adapter.Fill(returnValue);
-
-			// Return the results
-			return returnValue;
-		}
-
-
-		#endregion
-
 		#region Methods used by the Track_Item_MySobekViewer
 	 
 		/// <summary> Gets the list of users who are Scanning or Processing Technicians </summary>

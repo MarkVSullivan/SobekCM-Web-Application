@@ -994,7 +994,7 @@ namespace SobekCM.Builder_Library.Statistics
         /// <param name="directory"> Directory to write this XML into </param>
         public void Write_XML(string directory)
         {
-            Write_XML(directory, date.Year.ToString() + date.Month.ToString().PadLeft(2, '0') + date.Day.ToString().PadLeft(2, '0') + ".xml");
+            Write_XML(directory, date.Year + date.Month.ToString().PadLeft(2, '0') + date.Day.ToString().PadLeft(2, '0') + ".xml");
         }
 
         /// <summary> Merge this data with another existing set of data  </summary>

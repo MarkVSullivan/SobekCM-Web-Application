@@ -16,6 +16,10 @@ ALTER PROCEDURE dbo.SobekCM_Statistics_Save_TopLevel
 as
 begin
 
+	-- Clear any existing one
+	delete from SobekCM_Statistics where [Year]=@year and [Month]=@month;
+
+	-- Add this
 	insert into SobekCM_Statistics ( [Year], [Month], [Hits], [Sessions], Robot_Hits, XML_Hits, OAI_Hits, JSON_Hits )
 	values ( @year, @Month, @hits, @sessions, @robot_hits, @xml_hits, @oai_hits, @json_hits);
 end;

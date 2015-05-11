@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using SobekCM.Builder_Library.Modules.Schedulable;
 using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
@@ -145,6 +146,12 @@ namespace SobekCM.Builder_Library
 
 	        // Set to standard operation then
 			Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
+
+            // Run the usage stats module first
+            CalculateUsageStatisticsModule statsModule = new CalculateUsageStatisticsModule();
+            statsModule.Process += module_Process;
+            statsModule.Error += module_Error;
+            statsModule.DoWork(settings);
             
             // RUN ANY PRE-PROCESSING MODULES HERE 
             if (BuilderSettings.PreProcessModules.Count > 0)

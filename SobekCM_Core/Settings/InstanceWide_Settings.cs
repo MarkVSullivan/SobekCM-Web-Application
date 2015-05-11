@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Search;
-using SobekCM.Core.Serialization;
 using SobekCM.Core.Users;
 
 #endregion
@@ -77,6 +76,7 @@ namespace SobekCM.Core.Settings
                 isHosted = false;
                 Static_Resources_Config_File = "CDN";
                 Send_Email_On_Added_Aggregation = "Always";
+                Builder_Send_Usage_Emails = false;
 
                 MarcGeneration = new Marc21_Settings();
 
@@ -249,6 +249,11 @@ namespace SobekCM.Core.Settings
         [DataMember]
         public string Base_URL { get; set; }
 
+        /// <summary> IIS web log location (usually a network share) for the builder
+        /// to read the logs and add the usage statistics to the database </summary>
+        [DataMember]
+        public string Builder_IIS_Logs_Directory { get; set; }
+
         /// <summary> Number of days builder logs remain before the builder will try to delete it </summary>
         [DataMember]
         public int Builder_Log_Expiration_Days { get; set; }
@@ -261,6 +266,11 @@ namespace SobekCM.Core.Settings
         /// <summary> Number of seconds the builder waits between polls </summary>
         [DataMember]
         public int Builder_Seconds_Between_Polls { get; set; }
+
+        /// <summary> Flag indicates is usage emails should be sent automatically
+        /// after the stats usage has been calculated and added to the database </summary>
+        [DataMember]
+        public bool Builder_Send_Usage_Emails { get; set; }
 
         /// <summary> Flag indicates if the builder should be extra verbose in the log files (used for debugging purposes mostly) </summary>
         [DataMember]
@@ -595,9 +605,9 @@ namespace SobekCM.Core.Settings
             }
             set
             {
-                if (String.Compare(value, "DATABASE MAIL", true) == 0)
+                if (String.Compare(value, "DATABASE MAIL", StringComparison.OrdinalIgnoreCase) == 0)
                     EmailMethod = Email_Method_Enum.MsSqlDatabaseMail;
-                if (String.Compare(value, "SMTP DIRECT", true) == 0)
+                if (String.Compare(value, "SMTP DIRECT", StringComparison.OrdinalIgnoreCase) == 0)
                     EmailMethod = Email_Method_Enum.SmtpDirect;
             }
         }

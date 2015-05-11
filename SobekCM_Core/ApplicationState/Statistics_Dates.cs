@@ -62,8 +62,8 @@ namespace SobekCM.Core.ApplicationState
         /// <summary> Sets the statistics dates to the default </summary>
         public void Clear()
         {
-            Earliest_Month = 3;
-            Earliest_Year = 2006;
+            Earliest_Month = 1;
+            Earliest_Year = 2000;
             Latest_Month = DateTime.Now.Month;
             Latest_Year = DateTime.Now.Year;
         }
