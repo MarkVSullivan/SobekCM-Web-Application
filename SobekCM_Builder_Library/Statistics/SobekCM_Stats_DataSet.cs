@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 
 #endregion
@@ -743,30 +744,22 @@ namespace SobekCM.Builder_Library.Statistics
 
         /// <summary> Write the list of all SQL insert command to add this new usage statistical
         /// information to the SobekCM database  </summary>
-        /// <param name="filename"></param>
         /// <param name="year"></param>
         /// <param name="month"></param>
         /// <param name="aggregationHash"></param>
         /// <param name="bibHash"></param>
         /// <param name="portalHash"></param>
-        public void Write_SQL_Inserts(string filename, int year, int month, Dictionary<string, int> aggregationHash,
+        public void Perform_SQL_Inserts(int year, int month, Dictionary<string, int> aggregationHash,
                                       Dictionary<string, int> bibHash, Dictionary<string, int> portalHash)
         {
-            StreamWriter sqlWriter = new StreamWriter(filename, false);
-
             // Add the overall statistics
             if (sobekcm_stats.Rows.Count > 0)
             {
-                sqlWriter.WriteLine(
-                    "insert into SobekCM_Statistics ( [Year], [Month], [Hits], [Sessions], Robot_Hits, XML_Hits, OAI_Hits, JSON_Hits ) values ( " +
-                    year + ", " + month + ", " + sobekcm_stats.Rows[0]["hits"] + ", " +
-                    sobekcm_stats.Rows[0]["sessions"] + ", " + sobekcm_stats.Rows[0]["Robot_Hits"] + ", " +
-                    sobekcm_stats.Rows[0]["XML"] + ", " + sobekcm_stats.Rows[0]["OAI"] + ", " +
-                    sobekcm_stats.Rows[0]["JSON"] + " );");
+                Engine_Database.Save_TopLevel_Statistics(year, month, Convert.ToInt32(sobekcm_stats.Rows[0]["hits"]),
+                    Convert.ToInt32(sobekcm_stats.Rows[0]["sessions"]), Convert.ToInt32(sobekcm_stats.Rows[0]["Robot_Hits"]),
+                    Convert.ToInt32(sobekcm_stats.Rows[0]["XML"]), Convert.ToInt32(sobekcm_stats.Rows[0]["OAI"]),
+                    Convert.ToInt32(sobekcm_stats.Rows[0]["JSON"]), null);
             }
-
-            sqlWriter.WriteLine("GO");
-            sqlWriter.WriteLine();
 
             // Add the web content statistics
             if ((webcontent_stats != null) && (webcontent_stats.Rows.Count > 0))
@@ -806,14 +799,10 @@ namespace SobekCM.Builder_Library.Statistics
                     DataRow[] matches = webcontent_stats.Select(sql_builder.ToString().Replace("\"", "'"));
                     int hits_complete = matches.Sum(childRow => Convert.ToInt32(childRow[1]));
 
-                    sqlWriter.WriteLine(
-                        "insert into SobekCM_Webcontent_Statistics ( Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8, [Year], [Month], [Hits], Hits_Complete ) values ( '" +
-                        thisRow[2] + "','" + thisRow[3] + "','" + thisRow[4] + "','" + thisRow[5] + "', '" + thisRow[6] +
-                        "','" + thisRow[7] + "','" + thisRow[8] + "','" + thisRow[9] + "'," + year + "," + month + "," +
-                        thisRow[1] + ", " + hits_complete + " );");
+                    Engine_Database.Save_WebContent_Statistics(year, month, Convert.ToInt32(thisRow[1]), hits_complete, thisRow[2].ToString(),
+                        thisRow[3].ToString(), thisRow[4].ToString(), thisRow[5].ToString(), thisRow[6].ToString(), thisRow[7].ToString(), thisRow[8].ToString(),
+                        thisRow[9].ToString(), null);
                 }
-                sqlWriter.WriteLine("GO");
-                sqlWriter.WriteLine();
             }
 
             // Add the portal hits
@@ -825,13 +814,10 @@ namespace SobekCM.Builder_Library.Statistics
                     if (portalHash.ContainsKey(code.ToUpper()))
                     {
                         int portalid = portalHash[code.ToUpper()];
-                        sqlWriter.WriteLine(
-                            "insert into SobekCM_Portal_URL_Statistics ( PortalID, [Year], [Month], [Hits] ) values ( " +
-                            portalid + ", " + year + ", " + month + ", " + portalRow[1] + " );");
+
+                        Engine_Database.Save_Portal_Statistics(portalid, year, month, Convert.ToInt32(portalRow[1]), null);
                     }
                 }
-                sqlWriter.WriteLine("GO");
-                sqlWriter.WriteLine();
             }
 
 
@@ -846,20 +832,13 @@ namespace SobekCM.Builder_Library.Statistics
                                Convert.ToInt32(hierarchyRow["browse_hits"]) +
                                Convert.ToInt32(hierarchyRow["advanced_search_hits"]) +
                                Convert.ToInt32(hierarchyRow["results_hits"]);
-                    sql.Add(aggregationHash[code],
-                            "insert into SobekCM_Item_Aggregation_Statistics ( AggregationID, [Year], [Month], [Hits], [Sessions], Home_Page_Views, Browse_Views, Advanced_Search_Views, Search_Results_Views ) values ( " +
-                            aggregationHash[code] + ", " + year + ", " + month + ", " + hits + ", " +
-                            hierarchyRow["sessions"] + ", " + hierarchyRow["home_page_hits"] + ", " +
-                            hierarchyRow["browse_hits"] + ", " + hierarchyRow["advanced_search_hits"] + ", " +
-                            hierarchyRow["results_hits"] + ");");
+
+                    Engine_Database.Save_Aggregation_Statistics(aggregationHash[code], year, month, hits, Convert.ToInt32(hierarchyRow["sessions"]),
+                        Convert.ToInt32(hierarchyRow["home_page_hits"]), Convert.ToInt32(hierarchyRow["browse_hits"]), Convert.ToInt32(hierarchyRow["advanced_search_hits"]),
+                        Convert.ToInt32(hierarchyRow["results_hits"]), null);
                 }
             }
 
-            for (int i = 0; i < sql.Count; i++)
-                sqlWriter.WriteLine(sql.ElementAt(i).Value);
-
-            sqlWriter.WriteLine("GO");
-            sqlWriter.WriteLine();
 
             foreach (DataRow hierarchyRow in institution_stats.Rows)
             {
@@ -870,29 +849,21 @@ namespace SobekCM.Builder_Library.Statistics
                                Convert.ToInt32(hierarchyRow["browse_hits"]) +
                                Convert.ToInt32(hierarchyRow["advanced_search_hits"]) +
                                Convert.ToInt32(hierarchyRow["results_hits"]);
-                    sqlWriter.WriteLine(
-                        "insert into SobekCM_Item_Aggregation_Statistics ( AggregationID, [Year], [Month], [Hits], [Sessions], Home_Page_Views, Browse_Views, Advanced_Search_Views, Search_Results_Views ) values ( " +
-                        aggregationHash[code] + ", " + year + ", " + month + ", " + hits + ", " +
-                        hierarchyRow["sessions"] + ", " + hierarchyRow["home_page_hits"] + ", " +
-                        hierarchyRow["browse_hits"] + ", " + hierarchyRow["advanced_search_hits"] + ", " +
-                        hierarchyRow["results_hits"] + ");");
+
+                    Engine_Database.Save_Aggregation_Statistics(aggregationHash[code], year, month, hits, Convert.ToInt32(hierarchyRow["sessions"]),
+                        Convert.ToInt32(hierarchyRow["home_page_hits"]), Convert.ToInt32(hierarchyRow["browse_hits"]), Convert.ToInt32(hierarchyRow["advanced_search_hits"]),
+                        Convert.ToInt32(hierarchyRow["results_hits"]), null);
                 }
             }
-            sqlWriter.WriteLine("GO");
-            sqlWriter.WriteLine();
+
 
             foreach (DataRow hierarchyRow in bib_stats.Rows)
             {
                 if (bibHash.ContainsKey(hierarchyRow["bibid"].ToString().ToUpper()))
                 {
-                    sqlWriter.WriteLine(
-                        "insert into SobekCM_Item_Group_Statistics ( GroupID, [Year], [Month], [Hits], [Sessions] ) values ( " +
-                        bibHash[hierarchyRow["bibid"].ToString()] + ", " + year + ", " + month + ", " +
-                        hierarchyRow["hits"] + ", " + hierarchyRow["sessions"] + " );");
+                    Engine_Database.Save_Item_Group_Statistics(bibHash[hierarchyRow["bibid"].ToString()], year, month, Convert.ToInt32(hierarchyRow["hits"]), Convert.ToInt32(hierarchyRow["sessions"]), null);
                 }
             }
-            sqlWriter.WriteLine("GO");
-            sqlWriter.WriteLine();
 
             foreach (DataRow hierarchyRow in item_stats.Rows)
             {
@@ -905,26 +876,16 @@ namespace SobekCM.Builder_Library.Statistics
                            Convert.ToInt32(hierarchyRow["google_map_hits"]) +
                            Convert.ToInt32(hierarchyRow["download_hits"]) + Convert.ToInt32(hierarchyRow["other_hits"]) +
                            Convert.ToInt32(hierarchyRow["static_hits"]);
-                sqlWriter.WriteLine(
-                    "insert into SobekCM_Item_Statistics ( ItemID, [Year], [Month], [Hits], [Sessions], JPEG_Views, Zoomable_Views, Citation_Views, Thumbnail_Views, Text_Search_Views, Flash_Views, Google_Map_Views, Download_Views, Static_Views ) values ( " +
-                    hierarchyRow["itemid"] + ", " + year + ", " + month + ", " + hits + ", " + hierarchyRow["sessions"] +
-                    ", " + hierarchyRow["jpeg_hits"] + ", " + hierarchyRow["zoomable_hits"] + ", " +
-                    hierarchyRow["citation_hits"] + ", " + hierarchyRow["thumbnail_hits"] + ", " +
-                    hierarchyRow["text_search_hits"] + ", " + hierarchyRow["flash_hits"] + ", " +
-                    hierarchyRow["google_map_hits"] + ", " + hierarchyRow["download_hits"] + ", " +
-                    hierarchyRow["static_hits"] + ");");
+
+                Engine_Database.Save_Item_Statistics(year, month, hits, Convert.ToInt32(hierarchyRow["sessions"]), Convert.ToInt32(hierarchyRow["itemid"]),
+                    Convert.ToInt32(hierarchyRow["jpeg_hits"]), Convert.ToInt32(hierarchyRow["zoomable_hits"]), Convert.ToInt32(hierarchyRow["citation_hits"]),
+                    Convert.ToInt32(hierarchyRow["thumbnail_hits"]), Convert.ToInt32(hierarchyRow["text_search_hits"]), Convert.ToInt32(hierarchyRow["flash_hits"]),
+                    Convert.ToInt32(hierarchyRow["google_map_hits"]), Convert.ToInt32(hierarchyRow["download_hits"]), Convert.ToInt32(hierarchyRow["static_hits"]), null );
             }
-            sqlWriter.WriteLine("GO");
-            sqlWriter.WriteLine();
 
             // Add the call to the aggregator function
-            sqlWriter.WriteLine("exec SobekCM_Statistics_Aggregate " + year + ", " + month + ", '';");
-            sqlWriter.WriteLine("GO");
-            sqlWriter.WriteLine();
+            Engine_Database.Aggregate_Statistics(year, month, null);
 
-
-            sqlWriter.Flush();
-            sqlWriter.Close();
         }
 
         /// <summary> Write the highest users as a XML file </summary>

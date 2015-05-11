@@ -3696,5 +3696,272 @@ namespace SobekCM.Engine_Library.Database
             return null;
 
         }
+
+        #region Methods to support the collection of usage statitics from the IIS logs
+
+        public static bool Save_TopLevel_Statistics(int Year, int Month, int Hits, int Sessions, int Robot_Hits, int Xml_Hits, int Oai_Hits, int Json_Hits, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Save_TopLevel_Statistics", "");
+            }
+
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[8];
+                parameters[0] = new SqlParameter("@year", Year);
+                parameters[1] = new SqlParameter("@month", Month);
+                parameters[2] = new SqlParameter("@hits", Hits);
+                parameters[3] = new SqlParameter("@sessions", Sessions);
+                parameters[4] = new SqlParameter("@robot_hits", Robot_Hits);
+                parameters[5] = new SqlParameter("@xml_hits", Xml_Hits);
+                parameters[6] = new SqlParameter("@oai_hits", Oai_Hits);
+                parameters[7] = new SqlParameter("@json_hits", Json_Hits);
+      
+                // Define a temporary dataset
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_TopLevel", parameters);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Save_TopLevel_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_TopLevel_Statistics", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_TopLevel_Statistics", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        public static bool Save_WebContent_Statistics(int Year, int Month, int Hits, int Hits_Complete, string Level1, string Level2, string Level3, string Level4, string Level5, string Level6, string Level7, string Level8, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Save_WebContent_Statistics", "");
+            }
+
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[12];
+                parameters[0] = new SqlParameter("@year", Year);
+                parameters[1] = new SqlParameter("@month", Month);
+                parameters[2] = new SqlParameter("@hits", Hits);
+                parameters[3] = new SqlParameter("@hits_complete", Hits_Complete);
+                parameters[4] = new SqlParameter("@level1", Level1);
+                parameters[5] = new SqlParameter("@level2", Level2);
+                parameters[6] = new SqlParameter("@level3", Level3);
+                parameters[7] = new SqlParameter("@level4", Level4);
+                parameters[8] = new SqlParameter("@level5", Level5);
+                parameters[9] = new SqlParameter("@level6", Level6);
+                parameters[10] = new SqlParameter("@level7", Level7);
+                parameters[11] = new SqlParameter("@level8", Level8);
+      
+                // Define a temporary dataset
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_WebContent", parameters);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Save_WebContent_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_WebContent_Statistics", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_WebContent_Statistics", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+
+        public static bool Save_Portal_Statistics(int PortalID, int Year, int Month, int Hits, Custom_Tracer Tracer )
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Save_Portal_Statistics", "");
+            }
+
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[4];
+                parameters[0] = new SqlParameter("@year", Year);
+                parameters[1] = new SqlParameter("@month", Month);
+                parameters[2] = new SqlParameter("@hits", Hits);
+                parameters[3] = new SqlParameter("@portalid", PortalID);
+                
+                // Define a temporary dataset
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_Portal", parameters);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Save_Portal_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_Portal_Statistics", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_Portal_Statistics", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        public static bool Save_Aggregation_Statistics(int AggregationID, int Year, int Month, int Hits, 
+            int Sessions, int HomePageViews, int BrowseViews, int AdvancedSearchViews, int SearchResultViews, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Statistics", "");
+            }
+
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[9];
+                parameters[0] = new SqlParameter("@aggregationid", AggregationID);
+                parameters[1] = new SqlParameter("@year", Year);
+                parameters[2] = new SqlParameter("@month", Month);
+                parameters[3] = new SqlParameter("@hits", Hits);
+                parameters[4] = new SqlParameter("@sessions", Sessions);
+                parameters[5] = new SqlParameter("@home_page_views", HomePageViews);
+                parameters[6] = new SqlParameter("@browse_views", BrowseViews);
+                parameters[7] = new SqlParameter("@advanced_search_views", AdvancedSearchViews);
+                parameters[8] = new SqlParameter("@search_results_views", SearchResultViews);
+
+                // Define a temporary dataset
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_Aggregation", parameters);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Statistics", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_Aggregation_Statistics", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        public static bool Save_Item_Group_Statistics(int GroupID, int Year, int Month, int Hits, int Sessions, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Save_Item_Group_Statistics", "");
+            }
+
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[5];
+                parameters[0] = new SqlParameter("@year", Year);
+                parameters[1] = new SqlParameter("@month", Month);
+                parameters[2] = new SqlParameter("@hits", Hits);
+                parameters[3] = new SqlParameter("@sessions", Sessions);
+                parameters[4] = new SqlParameter("@groupid", GroupID);
+
+                // Define a temporary dataset
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_Item_Group", parameters);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Save_Item_Group_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_Item_Group_Statistics", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_Item_Group_Statistics", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        public static bool Save_Item_Statistics(int ItemID, int Year, int Month, int Hits, int Sessions, int JpegViews, int ZoomableViews,
+            int CitationViews, int ThumbnailViews, int TextSearchViews, int FlashViews, int GoogleMapViews, int DownloadViews, 
+            int StaticViews, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Save_Item_Statistics", "");
+            }
+
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[14];
+                parameters[0] = new SqlParameter("@year", Year);
+                parameters[1] = new SqlParameter("@month", Month);
+                parameters[2] = new SqlParameter("@hits", Hits);
+                parameters[3] = new SqlParameter("@sessions", Sessions);
+                parameters[4] = new SqlParameter("@itemid", ItemID);
+                parameters[5] = new SqlParameter("@jpeg_views", JpegViews);
+                parameters[6] = new SqlParameter("@zoomable_views", ZoomableViews);
+                parameters[7] = new SqlParameter("@citation_views", CitationViews);
+                parameters[8] = new SqlParameter("@thumbail_views", ThumbnailViews);
+                parameters[9] = new SqlParameter("@text_search_views", TextSearchViews);
+                parameters[10] = new SqlParameter("@flash_views", FlashViews);
+                parameters[11] = new SqlParameter("@google_map_views", GoogleMapViews);
+                parameters[12] = new SqlParameter("@download_views", DownloadViews);
+                parameters[13] = new SqlParameter("@static_views", StaticViews);
+
+                // Define a temporary dataset
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_Item", parameters);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Save_Item_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_Item_Statistics", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Save_Item_Statistics", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        public static string Aggregate_Statistics(int Year, int Month, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Aggregate_Statistics", "");
+            }
+
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[3];
+                parameters[0] = new SqlParameter("@statyear", Year);
+                parameters[1] = new SqlParameter("@statmonth", Month);
+                SqlParameter returnMsg = parameters[2] = new SqlParameter("@message", Month);
+                returnMsg.Direction = ParameterDirection.InputOutput;
+
+                // Define a temporary dataset
+                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Aggregate", parameters);
+
+                return returnMsg.Value.ToString();
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Aggregate_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Aggregate_Statistics", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Aggregate_Statistics", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return "Exception caught";
+            }
+        }
+
+        #endregion
     }
 }

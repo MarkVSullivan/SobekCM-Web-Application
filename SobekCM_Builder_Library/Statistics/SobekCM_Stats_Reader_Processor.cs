@@ -128,7 +128,7 @@ namespace SobekCM.Builder_Library.Statistics
                     monthly.Read_XML(thisFile);
                     int year = Convert.ToInt32(yearmonth.Substring(0, 4));
                     int month = Convert.ToInt32(yearmonth.Substring(4));
-                    monthly.Write_SQL_Inserts(sql_output_location + "\\" + yearmonth + ".sql", year, month, aggregationHash, bibHash, portalHash);
+                    monthly.Perform_SQL_Inserts(year, month, aggregationHash, bibHash, portalHash);
                 }
             }
 
