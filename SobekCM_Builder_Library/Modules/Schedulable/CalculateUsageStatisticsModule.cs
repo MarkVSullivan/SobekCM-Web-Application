@@ -213,20 +213,24 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             // Shoudl emails be sent?
             if (Settings.Builder_Send_Usage_Emails)
             {
+                // Load the text
+                string possible_email_body_dir = Path.Combine(Settings.Application_Server_Network, "design", "extra", "stats");
+                Usage_Stats_Email_Helper.Set_Email_Body(Path.Combine(possible_email_body_dir, "stats_email_body.txt"));
+
                 // Send emails for each year/month (in order)
                 foreach (string thisYearMonth in year_month)
                 {
                     int year = Convert.ToInt32(thisYearMonth.Substring(0, 4));
                     int month = Convert.ToInt32(thisYearMonth.Substring(4, 2));
 
-                    Send_Usage_Emails(year, month, Settings.System_Base_URL, Settings.EmailDefaultFromAddress);
+                    Send_Usage_Emails(year, month, Settings.System_Base_URL, Settings.System_Name, Settings.EmailDefaultFromAddress, Settings.EmailDefaultFromDisplay );
 
                 }
             }
 
         }
 
-        public static int Send_Usage_Emails(int year, int month, string BaseUrl, string FromAddress )
+        public static int Send_Usage_Emails(int year, int month, string SystemUrl, string SystemName, string FromAddress, string FromName )
         {
             // Get the list of all users linked to items
             DataTable usersLinkedToItems = Engine_Database.Get_Users_Linked_To_Items(null);
@@ -235,6 +239,12 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             if (usersLinkedToItems == null)
                 return 0;
 
+            // Determine the FROM
+            string fromAddr = FromAddress;
+            if (!String.IsNullOrEmpty(FromName))
+            {
+                fromAddr = FromName + " <" + FromAddress + ">";
+            }
 
             // Step through each row and pull data about the usage stats for this user
             int emails_sent = 0;
@@ -257,7 +267,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
 
                 // Try to compose and send the email.  The email will only be sent if there was 
                 // some total usage this month, as well as total
-                if (Usage_Stats_Email_Helper.Send_Individual_Usage_Email(userid, name, email, year, month, 10, BaseUrl, FromAddress ))
+                if (Usage_Stats_Email_Helper.Send_Individual_Usage_Email(userid, name, email, year, month, 10, SystemUrl, SystemName, fromAddr))
                     emails_sent++;
             }
 

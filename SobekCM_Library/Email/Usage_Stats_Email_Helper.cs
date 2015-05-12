@@ -2,6 +2,7 @@
 
 using System;
 using System.Data;
+using System.IO;
 using System.Text;
 using SobekCM.Core;
 using SobekCM.Engine_Library.Database;
@@ -18,9 +19,26 @@ namespace SobekCM.Library.Email
     {
         private const string EMAIL_SUBJECT = "Usage statistics for your materials ( <%DATE%> )";
 
-        private const string EMAIL_BODY = "<p>You are receiving this message because you are a contributor to a digital library or a collection supported by the UF Libraries, including the Institutional Repository (IR@UF), the UF Digital Collections (UFDC), the Digital Library of the Caribbean (dLOC), and many others. If you do not wish to receive future messages, please <a href=\"http://ufdc.ufl.edu/my/preferences\">edit your account preferences</a> online or send an email to <a href=\"mailto:ufdc@uflib.ufl.edu\">ufdc@uflib.ufl.edu</a>. </p>" + "<p><strong>Usage statistics for your materials ( <%DATE%> )</strong></p>" + "<p><%NAME%>,</p>" + "<p>Thank you for sharing materials that will be accessible online and for supporting worldwide open access to scholarly, creative, and other works.  This is a usage report for the shared materials.</p>" + "<p>Your items have been viewed <%TOTAL%> times since they were added and were viewed <%MONTHLY%> times this month</p>" + "<%ITEMS%>" + "<p><em><a href=\"http://ufdc.ufl.edu/my/stats/<%YEAR%><%MONTH%>d\">Click here to see the usage statistics for all of your items. &gt;&gt;</a></em></p>" + "<p>Thank you for sharing these materials.  Please contact us with any questions ( <a href=\"mailto:ufdc@uflib.ufl.edu\">ufdc@uflib.ufl.edu</a> or 352-273-2900).</p>";
+        private const string DEFAULT_EMAIL_BODY = "<p><%NAME%>,</p><p>You are receiving this message because you are a contributor to the <a href=\"<%SYSURL%>\"><%SYSNAME%></a> digital library. If you do not wish to receive future messages, please <a href=\"<%SYSURL%>my/preferences\">edit your account preferences</a> online. </p><p>Thank you for sharing materials that will be accessible online and for supporting worldwide open access to scholarly, creative, and other works. This is a usage report for the shared materials.</p><p><strong>Usage statistics for your materials ( <%DATE%> )</strong></p><p>Your items have been viewed <%TOTAL%> times since they were added and were viewed <%MONTHLY%> times this month</p><%ITEMS%><p><em><a href=\"<%SYSURL%>my/stats/<%YEAR%><%MONTH%>d\">Click here to see the usage statistics for ALL of your items.</a></em></p><p>Thank you for sharing these materials.</p>";
 
         private const string TOO_MANY_ITEMS_MESSAGE = "<p>Below are the details for your top 10 items.  See the link below to view usage statistics for all <%COUNT%> of your items.</p>";
+
+        private static string EmailBody;
+
+        /// <summary> Sets the email body, from a source file </summary>
+        /// <param name="SourceFile"> File to read the source from </param>
+        /// <remarks> If the file is not available, a default email body will be used </remarks>
+        public static void Set_Email_Body( string SourceFile )
+        {
+            try
+            {
+                if (File.Exists(SourceFile))
+                {
+                    EmailBody = File.ReadAllText(SourceFile);
+                }
+            }
+            catch { }
+        }
 
         /// <summary> Sends one email to a user from the system including 
         /// individual usage on items which are linked to the user </summary>
@@ -30,10 +48,14 @@ namespace SobekCM.Library.Email
         /// <param name="Year"> Year of statistics to highlight in the email </param>
         /// <param name="Month"> Month of statistics to highlight in the email </param>
         /// <param name="Number_Of_Items_To_Include"> Number of items to include in this email, in case the user has many, many items linked </param>
-        /// <param name="Base_URL"> Base URL to use for links to these items </param>
+        /// <param name="System_URL"> Base URL to use for links to these items </param>
         /// <returns> TRUE if succesful, otherwise FALSE </returns>
-        public static bool Send_Individual_Usage_Email(int UserID, string User_Name, string User_Email, int Year, int Month, int Number_Of_Items_To_Include, string Base_URL, string FromAddress )
+        public static bool Send_Individual_Usage_Email(int UserID, string User_Name, string User_Email, int Year, int Month, int Number_Of_Items_To_Include, string System_URL, string System_Name,  string FromAddress )
         {
+            // If no email body was loaded, use the default
+            if (String.IsNullOrEmpty(EmailBody))
+                EmailBody = DEFAULT_EMAIL_BODY;
+
             try
             {
                 // Get the item usage stats for this user on this month
@@ -61,9 +83,9 @@ namespace SobekCM.Library.Email
                             string bibid = thisRow["BibID"].ToString();
                             string vid = thisRow["VID"].ToString();
 
-                            itemStatsBuilder.AppendLine("<strong><a href=\"" + Base_URL + bibid + "/" + vid + "\">" + thisRow["Title"] + "</a></strong><br />");
+                            itemStatsBuilder.AppendLine("<strong><a href=\"" + System_URL + bibid + "/" + vid + "\">" + thisRow["Title"] + "</a></strong><br />");
                             itemStatsBuilder.AppendLine("<ul>");
-                            itemStatsBuilder.AppendLine("  <li>Permanent Link: <a href=\"" + Base_URL + bibid + "/" + vid + "\">" + Base_URL + bibid + "/" + vid + "</a></li>");
+                            itemStatsBuilder.AppendLine("  <li>Permanent Link: <a href=\"" + System_URL + bibid + "/" + vid + "\">" + System_URL + bibid + "/" + vid + "</a></li>");
                             itemStatsBuilder.AppendLine("  <li>Views");
                             itemStatsBuilder.AppendLine("    <ul>");
                             itemStatsBuilder.AppendLine("      <li>" + Month_From_Int(Month) + " " + Year + ": " + thisRow["Month_Hits"] + " views");
@@ -83,7 +105,7 @@ namespace SobekCM.Library.Email
                     if (item_count > Number_Of_Items_To_Include)
                         itemStatsBuilder.Insert(0, TOO_MANY_ITEMS_MESSAGE.Replace("<%COUNT%>", item_count.ToString()));
 
-                    string email_body_user = EMAIL_BODY.Replace("<%TOTAL%>", Number_To_String(total_total_hits)).Replace("<%MONTHLY%>", Number_To_String(total_month_hits)).Replace("<%ITEMS%>", itemStatsBuilder.ToString()).Replace("<%DATE%>", Month_From_Int(Month) + " " + Year).Replace("<%NAME%>", User_Name).Replace("<%YEAR%>", Year.ToString()).Replace("<%MONTH%>", Month.ToString().PadLeft(2, '0')) + "<br /><br /><p>( " + Month_From_Int(Month) + " " + Year + " )</p>";
+                    string email_body_user = EmailBody.Replace("<%TOTAL%>", Number_To_String(total_total_hits)).Replace("<%MONTHLY%>", Number_To_String(total_month_hits)).Replace("<%ITEMS%>", itemStatsBuilder.ToString()).Replace("<%DATE%>", Month_From_Int(Month) + " " + Year).Replace("<%NAME%>", User_Name).Replace("<%SYSURL%>", System_URL).Replace("<%SYSNAME%>", System_Name).Replace("<%YEAR%>", Year.ToString()).Replace("<%MONTH%>", Month.ToString().PadLeft(2, '0')) + "<br /><br /><p>( " + Month_From_Int(Month) + " " + Year + " )</p>";
 
                     // Only send the email if there was actually usage this month though
                     if (total_month_hits > 0)
@@ -91,7 +113,7 @@ namespace SobekCM.Library.Email
                         // Send this email
                         EmailInfo newEmail = new EmailInfo
                         {
-                            FromAddress = FromAddress, 
+                            FromAddress = FromAddress,
                             RecipientsList = User_Email, 
                             isContactUs = false, 
                             isHTML = true, 

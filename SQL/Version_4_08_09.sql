@@ -1,3 +1,65 @@
+-- THIS GOES FROM 4_08_08 to 4_08_09
+
+-- Esure the SobekCM_Set_Additional_Work_Needed exists
+IF object_id('SobekCM_Set_Additional_Work_Needed') IS NULL EXEC ('create procedure dbo.SobekCM_Set_Additional_Work_Needed as select 1;');
+GO
+
+-- Set the flag to have the builder reprocss this item
+alter procedure SobekCM_Set_Additional_Work_Needed
+	@bibid varchar(10),
+	@vid varchar(5) = null
+as
+begin transaction
+
+	-- Find the GroupID
+	declare @groupid int;
+	if ( exists ( select 1 from SobekCM_Item_Group where BibID=@bibid ))
+	begin
+		
+		set @groupid = ( select GroupID from SobekCM_Item_Group where BibID=@bibid );
+
+		-- Was a VID provided?
+		if ( @vid is null )
+		begin
+			-- Mark all VIDs of the BibID to be reprocessed
+			update SobekCM_Item set AdditionalWorkNeeded='true'
+			where GroupID = @groupid;
+		end
+		else
+		begin
+			-- update the specific vid
+			update SobekCM_Item set AdditionalWorkNeeded='true'
+			where GroupID = @groupid
+			  and VID = @vid;		
+		end;
+	end;
+
+commit transaction;
+GO
+
+-- Ensure the module exists in the stanard set for adding ALL Images
+if ( not exists ( select 1 from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.AttachImagesAllModule' ))
+begin
+	-- Ensure the more selective module is there
+	if ( exists ( select 1 from SobekCM_Builder_Module where Class='SobekCM.Builder_Library.Modules.Items.AddNewImagesAndViewsModule' and ModuleSetID=3 ))
+	begin
+		-- Add the new module
+		insert into SobekCM_Builder_Module ( ModuleSetID, ModuleDesc, Class, [Enabled], [Order] )
+		select 3, 'Attach ALL the images in the resource folder to the item', 'SobekCM.Builder_Library.Modules.Items.AttachImagesAllModule', 'true', [Order]
+		from SobekCM_Builder_Module 
+		where Class='SobekCM.Builder_Library.Modules.Items.AddNewImagesAndViewsModule' 
+		and ModuleSetID=3;
+
+		-- Disable the old, more selective, module
+		update SobekCM_Builder_Module
+		set [Enabled]='false'
+		where Class='SobekCM.Builder_Library.Modules.Items.AddNewImagesAndViewsModule' 
+		  and ModuleSetID=3;
+	end;
+end;
+GO
+
+
 
 
 IF object_id('SobekCM_Statistics_Save_TopLevel') IS NULL EXEC ('create procedure dbo.SobekCM_Statistics_Save_TopLevel as select 1;');
@@ -139,4 +201,52 @@ begin
 
 end;
 GO
+
+GRANT EXECUTE ON SobekCM_Set_Additional_Work_Needed to sobek_user;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Save_TopLevel to sobek_user;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Save_Webcontent to sobek_user;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Save_Portal to sobek_user;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Save_Aggregation to sobek_user;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Save_Item_Group to sobek_user;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Save_Item to sobek_user;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Aggregate to sobek_user;
+GO
+GRANT EXECUTE ON SobekCM_Set_Additional_Work_Needed to sobek_builder;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Save_TopLevel to sobek_builder;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Save_Webcontent to sobek_builder;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Save_Portal to sobek_builder;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Save_Aggregation to sobek_builder;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Save_Item_Group to sobek_builder;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Save_Item to sobek_builder;
+GO
+GRANT EXECUTE ON SobekCM_Statistics_Aggregate to sobek_builder;
+GO
+
+
+
+if (( select count(*) from SobekCM_Database_Version ) = 0 )
+begin
+	insert into SobekCM_Database_Version ( Major_Version, Minor_Version, Release_Phase )
+	values ( 4, 8, '9' );
+end
+else
+begin
+	update SobekCM_Database_Version
+	set Major_Version=4, Minor_Version=8, Release_Phase='9';
+end;
+GO
+
 
