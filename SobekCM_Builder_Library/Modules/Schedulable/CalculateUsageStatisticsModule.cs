@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using SobekCM.Builder_Library.Statistics;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Settings;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Library.Email;
 
 namespace SobekCM.Builder_Library.Modules.Schedulable
 {
@@ -184,12 +187,81 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             if (year_month.Count == 0)
                 return;
 
+            // Refresh the items
+            Engine_ApplicationCache_Gateway.RefreshItems();
+
             // Create the processor
             SobekCM_Stats_Reader_Processor processor = new SobekCM_Stats_Reader_Processor(log_directory, temporary_workspace, sobekcm_directory, year_month);
             processor.New_Status += new SobekCM_Stats_Reader_Processor_New_Status_Delegate(processor_New_Status);
 
             // Create the thread
             processor.Process_IIS_Logs();
+
+            // Delete the cached file, if one exists
+            try
+            {
+                string temp_directory = Path.Combine(Settings.Application_Server_Network, "temp");
+                if (Directory.Exists(temp_directory))
+                {
+                    string cache_xml_file = Path.Combine(temp_directory, "overall_usage.xml");
+                    if (File.Exists(cache_xml_file))
+                        File.Delete(cache_xml_file);
+                }
+            }
+            catch { }
+
+            // Shoudl emails be sent?
+            if (Settings.Builder_Send_Usage_Emails)
+            {
+                // Send emails for each year/month (in order)
+                foreach (string thisYearMonth in year_month)
+                {
+                    int year = Convert.ToInt32(thisYearMonth.Substring(0, 4));
+                    int month = Convert.ToInt32(thisYearMonth.Substring(4, 2));
+
+                    Send_Usage_Emails(year, month, Settings.System_Base_URL, Settings.EmailDefaultFromAddress);
+
+                }
+            }
+
+        }
+
+        public static int Send_Usage_Emails(int year, int month, string BaseUrl, string FromAddress )
+        {
+            // Get the list of all users linked to items
+            DataTable usersLinkedToItems = Engine_Database.Get_Users_Linked_To_Items(null);
+
+            // If NULL, then no data linked to users
+            if (usersLinkedToItems == null)
+                return 0;
+
+
+            // Step through each row and pull data about the usage stats for this user
+            int emails_sent = 0;
+            foreach (DataRow thisRow in usersLinkedToItems.Rows)
+            {
+                System.Threading.Thread.Sleep(1000);
+
+                // Pull out the user information from this row
+                string firstName = thisRow[0].ToString();
+                string lastName = thisRow[1].ToString();
+                string nickName = thisRow[2].ToString();
+                string userName = thisRow[3].ToString();
+                int userid = Convert.ToInt32(thisRow[4]);
+                string email = thisRow[5].ToString();
+
+                // Compose the name
+                string name = firstName + " " + lastName;
+                if (nickName.Length > 0)
+                    name = nickName + " " + lastName;
+
+                // Try to compose and send the email.  The email will only be sent if there was 
+                // some total usage this month, as well as total
+                if (Usage_Stats_Email_Helper.Send_Individual_Usage_Email(userid, name, email, year, month, 10, BaseUrl, FromAddress ))
+                    emails_sent++;
+            }
+
+            return emails_sent;
         }
 
         void processor_New_Status(string NewMessage)
@@ -197,7 +269,12 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             
             if (NewMessage == "COMPLETE!")
             {
-
+                Console.WriteLine(NewMessage);
+            }
+            else
+            {
+                Console.WriteLine(NewMessage);
+                
             }
 
         }

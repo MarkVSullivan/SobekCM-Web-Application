@@ -867,6 +867,11 @@ namespace SobekCM.Builder_Library.Statistics
 
             foreach (DataRow hierarchyRow in item_stats.Rows)
             {
+                int itemid = Convert.ToInt32(hierarchyRow["itemid"]);
+
+                if ( itemid < 0 )
+                    continue;
+
                 int hits = Convert.ToInt32(hierarchyRow["default_hits"]) + Convert.ToInt32(hierarchyRow["jpeg_hits"]) +
                            Convert.ToInt32(hierarchyRow["zoomable_hits"]) +
                            Convert.ToInt32(hierarchyRow["citation_hits"]) +
@@ -877,7 +882,8 @@ namespace SobekCM.Builder_Library.Statistics
                            Convert.ToInt32(hierarchyRow["download_hits"]) + Convert.ToInt32(hierarchyRow["other_hits"]) +
                            Convert.ToInt32(hierarchyRow["static_hits"]);
 
-                Engine_Database.Save_Item_Statistics(year, month, hits, Convert.ToInt32(hierarchyRow["sessions"]), Convert.ToInt32(hierarchyRow["itemid"]),
+                
+                Engine_Database.Save_Item_Statistics(itemid, year, month, hits, Convert.ToInt32(hierarchyRow["sessions"]), 
                     Convert.ToInt32(hierarchyRow["jpeg_hits"]), Convert.ToInt32(hierarchyRow["zoomable_hits"]), Convert.ToInt32(hierarchyRow["citation_hits"]),
                     Convert.ToInt32(hierarchyRow["thumbnail_hits"]), Convert.ToInt32(hierarchyRow["text_search_hits"]), Convert.ToInt32(hierarchyRow["flash_hits"]),
                     Convert.ToInt32(hierarchyRow["google_map_hits"]), Convert.ToInt32(hierarchyRow["download_hits"]), Convert.ToInt32(hierarchyRow["static_hits"]), null );

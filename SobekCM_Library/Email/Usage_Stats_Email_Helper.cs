@@ -4,6 +4,7 @@ using System;
 using System.Data;
 using System.Text;
 using SobekCM.Core;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.Database;
 
@@ -36,7 +37,7 @@ namespace SobekCM.Library.Email
             try
             {
                 // Get the item usage stats for this user on this month
-                DataTable usageStats = SobekCM_Database.Get_User_Linked_Items_Stats(UserID, Month, Year, null);
+                DataTable usageStats = Engine_Database.Get_User_Linked_Items_Stats(UserID, Month, Year, null);
 
                 // Only continue if stats were returned
                 if (usageStats != null)

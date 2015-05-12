@@ -3,6 +3,7 @@
 using System;
 using System.Data;
 using System.IO;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -117,7 +118,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<br />");
 
             // Get the item usage stats for this user on this month
-            DataTable usageStats = SobekCM_Database.Get_User_Linked_Items_Stats(RequestSpecificValues.Current_User.UserID, month, year, Tracer);
+            DataTable usageStats = Engine_Database.Get_User_Linked_Items_Stats(RequestSpecificValues.Current_User.UserID, month, year, Tracer);
 
             // Only continue if stats were returned
             if (usageStats != null)

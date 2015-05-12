@@ -346,7 +346,7 @@ namespace SobekCM.Engine_Library.ApplicationState
                         itemLookup = new Item_Lookup_Object();
                     }
 
-                    Engine_Database.Verify_Item_Lookup_Object(true, itemLookup, null);
+                    Engine_Database.Verify_Item_Lookup_Object(true, true, itemLookup, null);
                 }
 
                 return true;
@@ -367,7 +367,7 @@ namespace SobekCM.Engine_Library.ApplicationState
                     if (itemLookup == null)
                     {
                         itemLookup = new Item_Lookup_Object();
-                        Engine_Database.Verify_Item_Lookup_Object(true, itemLookup, null);
+                        Engine_Database.Verify_Item_Lookup_Object(false, true, itemLookup, null);
                     }
                     
                     return itemLookup;

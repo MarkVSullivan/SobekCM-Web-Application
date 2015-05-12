@@ -1049,7 +1049,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful or if the object is already filled, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Item_List_Web' stored procedure </remarks> 
-        internal static bool Verify_Item_Lookup_Object(bool Include_Private, Item_Lookup_Object ItemLookupObject, Custom_Tracer Tracer)
+        internal static bool Verify_Item_Lookup_Object(bool Always_Refresh, bool Include_Private, Item_Lookup_Object ItemLookupObject, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -1063,7 +1063,7 @@ namespace SobekCM.Engine_Library.Database
             lock (itemListPopulationLock)
             {
                 bool updateList = true;
-                if (ItemLookupObject != null)
+                if (( !Always_Refresh ) && ( ItemLookupObject != null))
                 {
                     TimeSpan sinceLastUpdate = DateTime.Now.Subtract(ItemLookupObject.Last_Updated);
                     if (sinceLastUpdate.TotalMinutes <= 1)
@@ -3983,6 +3983,92 @@ namespace SobekCM.Engine_Library.Database
                     Tracer.Add_Trace("Engine_Database.Aggregate_Statistics", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return "Exception caught";
+            }
+        }
+
+        /// <summary> Gets the list of all users that are linked to items which may have usage statistics  </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataTable of all the users linked to items </returns>
+        /// <remarks> This calls the 'SobekCM_Stats_Get_Users_Linked_To_Items' stored procedure </remarks>
+        public static DataTable Get_Users_Linked_To_Items(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_Users_Linked_To_Items", "Pulling from database");
+            }
+
+            try
+            {
+                // Define a temporary dataset
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Stats_Get_Users_Linked_To_Items");
+
+                // If there was no data for this collection and entry point, return null (an ERROR occurred)
+                if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+                {
+                    return null;
+                }
+
+                // Return the first table from the returned dataset
+                return tempSet.Tables[0];
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Get_Users_Linked_To_Items", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Users_Linked_To_Items", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Users_Linked_To_Items", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+
+        /// <summary> Gets the basic usage statistics for all items linked to a user </summary>
+        /// <param name="UserID"> Primary key for the user of interest, for which to pull the item usage stats </param>
+        /// <param name="Month"> Month for which to pull the usage information </param>
+        /// <param name="Year"> Year for which to pull the usage information </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataTable of the basic usage statistics for all items linked to a user for a single month and year </returns>
+        /// <remarks> This calls the 'SobekCM_Stats_Get_User_Linked_Items_Stats' stored procedure </remarks>
+        public static DataTable Get_User_Linked_Items_Stats(int UserID, int Month, int Year, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_User_Linked_Items_Stats", "Pulling from database");
+            }
+
+            try
+            {
+                // Build the parameter list
+                SqlParameter[] paramList = new SqlParameter[3];
+                paramList[0] = new SqlParameter("@userid", UserID);
+                paramList[1] = new SqlParameter("@month", Month);
+                paramList[2] = new SqlParameter("@year", Year);
+
+                // Define a temporary dataset
+                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Stats_Get_User_Linked_Items_Stats", paramList);
+
+                // If there was no data for this collection and entry point, return null (an ERROR occurred)
+                if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
+                {
+                    return null;
+                }
+
+                // Return the first table from the returned dataset
+                return tempSet.Tables[0];
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Get_User_Linked_Items_Stats", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_User_Linked_Items_Stats", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_User_Linked_Items_Stats", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
             }
         }
 

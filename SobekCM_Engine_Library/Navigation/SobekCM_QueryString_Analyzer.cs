@@ -944,7 +944,7 @@ namespace SobekCM.Engine_Library.Navigation
 									// Perform all aggregation_style checks next
 									aggregation_querystring_analyze( Navigator, QueryString, url_relative_list[0], url_relative_list.GetRange(1, url_relative_list.Count - 1 ));
 								}
-								else if ((Engine_Database.Verify_Item_Lookup_Object(true, All_Items_Lookup, Tracer)) && (All_Items_Lookup.Contains_BibID(url_relative_list[0].ToUpper())))
+								else if ((Engine_Database.Verify_Item_Lookup_Object(false, true, All_Items_Lookup, Tracer)) && (All_Items_Lookup.Contains_BibID(url_relative_list[0].ToUpper())))
 								{
 									// This is a BibID for an existing title with at least one public item
 									Navigator.BibID = url_relative_list[0].ToUpper();
