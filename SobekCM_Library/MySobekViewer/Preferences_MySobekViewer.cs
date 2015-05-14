@@ -485,7 +485,7 @@ namespace SobekCM.Library.MySobekViewer
 						// If they want to be able to contribue, send an email
 						if (desire_to_upload)
 						{
-                            Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>Name: " + user.Full_Name + "<br />Email: " + user.Email + "<br />Organization: " + user.Organization + "<br />User ID: " + user.UserID + "</blockquote>", true, RequestSpecificValues.Current_Mode.SobekCM_Instance_Name );
+                            Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>Name: " + user.Full_Name + "<br />Email: " + user.Email + "<br />Organization: " + user.Organization + "<br />User ID: " + user.UserID + "<br />System Name: " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Name + "<br />System URL: " + RequestSpecificValues.Current_Mode.Base_URL + "</blockquote>", true, RequestSpecificValues.Current_Mode.SobekCM_Instance_Name);
 						}
 
 						// Email the user their registation information

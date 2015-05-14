@@ -346,6 +346,7 @@ namespace SobekCM.Core.Navigation
 			set	{	infoBrowseMode = value;	}
 		}
 
+
 		/// <summary> Current aggregation code </summary>
 		/// <remarks>The value returned is always lower case</remarks>
 		public string Aggregation

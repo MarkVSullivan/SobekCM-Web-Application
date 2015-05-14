@@ -2218,7 +2218,7 @@ function jp2_set_fullscreen() {
 }
 
 // Function to set the full screen mode 
-function pdf_set_fullscreen() {
+function pdf_set_fullscreen(asIframe) {
 	var x = $("#sbkPdf_Container").offset().left;
 	var y = $("#sbkPdf_Container").offset().top;
 
@@ -2229,6 +2229,11 @@ function pdf_set_fullscreen() {
 	var window_width = $(window).width();
 	var new_width = window_width - x - 20;
 	$("#sbkPdf_Container").width(new_width);
+
+    // Chrome specific
+    if ( asIframe == true )
+        document.getElementById('sbkPdf_Container').src = document.getElementById('sbkPdf_Container').src;
+
 }
 
 

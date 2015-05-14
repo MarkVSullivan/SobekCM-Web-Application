@@ -181,6 +181,7 @@ namespace SobekCM
 			    currentMode.isPostBack = isPostBack;
                 currentMode.Browser_Type = request.Browser.Type.ToUpper();
 				currentMode.Set_Robot_Flag(request.UserAgent, request.UserHostAddress);
+
                 defaultSkin = currentMode.Skin;
 			}
 			catch

@@ -298,7 +298,7 @@ namespace SobekCM.Library.Settings
             Sobekcm_Admin_Js = "http://cdn.sobekrepository.org/js/sobekcm-admin/4.8.7/sobekcm_admin.js";
             Sobekcm_Bookturner_Css = "http://cdn.sobekrepository.org/css/sobekcm-bookturner/4.8.4/SobekCM_BookTurner.css";
             Sobekcm_Datatables_Css = "http://cdn.sobekrepository.org/css/sobekcm-datatables/4.8.4/SobekCM_DataTables.css";
-            Sobekcm_Full_Js = "http://cdn.sobekrepository.org/js/sobekcm-full/4.8.4/sobekcm_full.min.js";
+            Sobekcm_Full_Js = "http://cdn.sobekrepository.org/js/sobekcm-full/4.8.9/sobekcm_full.min.js";
             Sobekcm_Item_Css = "http://cdn.sobekrepository.org/css/sobekcm-item/4.8.4/SobekCM_Item.min.css";
             Sobekcm_Map_Editor_Js = "http://cdn.sobekrepository.org/js/sobekcm-map-editor/4.8.4/sobekcm_map_editor.js";
             Sobekcm_Map_Search_Js = "http://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_search.js";

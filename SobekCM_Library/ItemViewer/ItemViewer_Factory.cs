@@ -106,7 +106,7 @@ namespace SobekCM.Library.ItemViewer
 						return new GnuBooks_PageTurner_ItemViewer();
 
 				case View_Enum.PDF:
-						return new PDF_ItemViewer(viewObject.FileName);
+                        return new PDF_ItemViewer(viewObject.FileName, Current_Mode);
 
 				case View_Enum.QUALITY_CONTROL:
 						return new QC_ItemViewer(Current_Object, Current_User, Current_Mode);

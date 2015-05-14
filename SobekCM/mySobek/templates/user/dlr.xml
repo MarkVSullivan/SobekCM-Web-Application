@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Begin the XML for this input template -->
+<input_template
+  xmlns="http://digital.uflib.ufl.edu/metadata/sobekcm_template/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://digital.uflib.ufl.edu/metadata/sobekcm_template/
+		http://digital.uflib.ufl.edu/metadata/sobekcm_template/sobekcm_template.xsd">
+	
+	<!-- Define the information about this input template -->
+	<name>Learning Resource Self-Submittal Tool</name>
+	<notes>Template is used for self-submittal of Digital Learning Resources</notes>
+	<permissions>&lt;img src=&quot;&lt;%BASEURL%&gt;default/images/cc_by_nc_nd.png&quot; title=&quot;Creative Commons Attribution Non-Commercial Share Alike License&quot; &gt; All learning objects uploaded to this system are licensed with the Creative Commons Attribution Non-Commercial Share Alike License.  This license lets others remix, tweak, and build upon this work non-commercially, as long as they credit the author and license their new creations under the identical terms.  I certify that I own sufficient rights over this item to deposit the item within this repository under this license agreement.&lt;br /&gt;&lt;br /&gt;</permissions>
+	<dateCreated>March 21, 2013</dateCreated>
+	<lastModified>March 21, 2013</lastModified>
+	<creator>Mark V Sullivan</creator>
+	<includeUserAsAuthor>true</includeUserAsAuthor>
+	<uploads>FILE</uploads>
+	<uploadMandatory>true</uploadMandatory>
+	<bibidRoot>LR</bibidRoot>
+	<defaultVisibility>PRIVATE</defaultVisibility>
+	<emailUponSubmit>lrsdigital@gmail.com</emailUponSubmit>
+	
+
+
+	<!-- This defines the inputs which are available for the user -->
+	<inputs>
+		<page>
+			<name language="eng">Item Description</name>
+			<panel>
+				<name language="eng">Basic Information</name>
+				<element type="Title" subtype="simple" acronym="Enter the title of your chapter, article, report, or other material here." mandatory="true"/>
+				<element type="Language" subtype="select" repeatable="true" acronym="Enter the language(s) of the material.">
+					<element_data>
+						<options>Dutch, English, Papiamentu</options>
+					</element_data>
+				</element>
+				<element type="Creator" subtype="simple" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." repeatable="true"/>
+				<element type="Date" acronym="Enter the year in which your material was published.  If your material has not been published, enter the current year or leave the field blank."/>
+				<element type="Subject" subtype="simple" repeatable="true"/>
+				<element type="Abstract" repeatable="true" subtype="simple" acronym="Enter your abstract here.  If your material does not have an abstract, you may include a summary of your document here."/>
+			</panel>
+		</page>
+  <page>
+      <name language="eng">IEEE-LOM</name>
+      <panel>
+        <name language="eng">Learning Object Metadata</name>
+        <element type="LOM_Aggregation_Level" />
+        <element type="LOM_Learning_Resource_Type" />
+        <element type="LOM_Status" />
+        <element type="LOM_Interactivity_Type" />
+        <element type="LOM_Interactivity_Level" />
+        <element type="LOM_Difficulty_Level" />
+        <element type="LOM_Intended_End_User_Role" />
+        <element type="LOM_Context" />
+        <element type="LOM_Typical_Age_Range" />
+       </panel>
+    </page>
+	</inputs>
+ <!--  This defines the constants which can not be edited by the user   --> 
+<constants>
+<element type="Source" subtype="complex">
+<element_data>
+  <code>UNA</code> 
+  <statement>University of Netherland Antilles</statement> 
+  <options>UNA</options> 
+</element_data>
+</element>
+<element type="Type" subtype="simple">
+<element_data>
+  <value>Learning Resource</value> 
+  <options>Learning Resource</options>
+</element_data>
+</element>
+</constants>
+</input_template>
+<!-- End of input template XML -->
