@@ -101,7 +101,7 @@ namespace SobekCM.Library.MySobekViewer
             validationErrors = new List<string>();
 
 			// Set the text to use for each value (since we use if for the validation errors as well)
-			mySobekText = "my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
+			mySobekText = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 
 			// Get the labels to use, by language
 			accountInfoLabel = "Account Information";
@@ -485,17 +485,17 @@ namespace SobekCM.Library.MySobekViewer
 						// If they want to be able to contribue, send an email
 						if (desire_to_upload)
 						{
-                            Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>Name: " + user.Full_Name + "<br />Email: " + user.Email + "<br />Organization: " + user.Organization + "<br />User ID: " + user.UserID + "<br />System Name: " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Name + "<br />System URL: " + RequestSpecificValues.Current_Mode.Base_URL + "</blockquote>", true, RequestSpecificValues.Current_Mode.SobekCM_Instance_Name);
+                            Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.System_Email, "Submittal rights requested by " + user.Full_Name, "New user requested ability to submit new items.<br /><br /><blockquote>Name: " + user.Full_Name + "<br />Email: " + user.Email + "<br />Organization: " + user.Organization + "<br />User ID: " + user.UserID + "<br />System Name: " + RequestSpecificValues.Current_Mode.Instance_Name + "<br />System URL: " + RequestSpecificValues.Current_Mode.Base_URL + "</blockquote>", true, RequestSpecificValues.Current_Mode.Instance_Name);
 						}
 
 						// Email the user their registation information
 						if (desire_to_upload)
 						{
-                            Email_Helper.SendEmail(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/my\">" + RequestSpecificValues.Current_Mode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName + "<br /><br />You will receive an email when your request to submit items has been processed.", true, RequestSpecificValues.Current_Mode.SobekCM_Instance_Name);
+                            Email_Helper.SendEmail(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/my\">" + RequestSpecificValues.Current_Mode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName + "<br /><br />You will receive an email when your request to submit items has been processed.", true, RequestSpecificValues.Current_Mode.Instance_Name);
 						}
 						else
 						{
-                            Email_Helper.SendEmail(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/my\">" + RequestSpecificValues.Current_Mode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName, true, RequestSpecificValues.Current_Mode.SobekCM_Instance_Name);
+                            Email_Helper.SendEmail(email, "Welcome to " + mySobekText, "<strong>Thank you for registering for " + mySobekText + "</strong><br /><br />You can access this directly through the following link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/my\">" + RequestSpecificValues.Current_Mode.Base_URL + "/my</a><br /><br />Full Name: " + user.Full_Name + "<br />User Name: " + user.UserName, true, RequestSpecificValues.Current_Mode.Instance_Name);
 						}
 
 						// Now, forward back to the My Sobek home page
@@ -548,7 +548,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 if (HttpContext.Current.Session["user"] == null)
                 {
-                    return "Register for My" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
+                    return "Register for My" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
                 }
                 return "Edit Your Account Preferences";
             }

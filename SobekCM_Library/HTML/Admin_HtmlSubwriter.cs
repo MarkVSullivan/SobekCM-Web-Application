@@ -296,7 +296,7 @@ namespace SobekCM.Library.HTML
                         {
                             // Keep the current values
                             Admin_Type_Enum adminType = RequestSpecificValues.Current_Mode.Admin_Type;
-                            ushort page = RequestSpecificValues.Current_Mode.Page;
+                            ushort page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort) 1);
                             string browse_code = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
                             string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
                             string mySobekMode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
@@ -311,7 +311,7 @@ namespace SobekCM.Library.HTML
                             {
                                 // Render the breadcrumbns
                                 Output.WriteLine("<div class=\"sbkAdm_Breadcrumbs\">");
-                                Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home</a> > ");
+                                Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a> > ");
                                 Output.WriteLine("  System Administrative Tasks");
                                 Output.WriteLine("</div>"); 
                             }
@@ -327,7 +327,7 @@ namespace SobekCM.Library.HTML
 
                                 // Render the breadcrumbns
                                 Output.WriteLine("<div class=\"sbkAdm_Breadcrumbs\">");
-                                Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home</a> > ");
+                                Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a> > ");
                                 Output.WriteLine("  <a href=\"" + menu_url + "\">System Administrative Tasks</a> > ");
                                 Output.WriteLine("  " + adminViewer.Web_Title);
                                 Output.WriteLine("</div>"); 

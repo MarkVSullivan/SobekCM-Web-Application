@@ -72,7 +72,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// <param name="Current_Object"> Digital resource to display </param>
 		/// <param name="Current_User"> Current user for this session </param>
 		/// <param name="Current_Mode"> Navigation object which encapsulates the user's current request </param>
-		public QC_ItemViewer(SobekCM_Item Current_Object, User_Object Current_User, SobekCM_Navigation_Object Current_Mode)
+		public QC_ItemViewer(SobekCM_Item Current_Object, User_Object Current_User, Navigation_Object Current_Mode)
 		{
 			// Save the current user and current mode information (this is usually populated AFTER the constructor completes, 
 			// but in this case (QC viewer) we need the information for early processing
@@ -663,7 +663,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (CurrentMode.Thumbnails_Per_Page >= -1)
             {
                 CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailsPerPage", CurrentMode.Thumbnails_Per_Page);
-                thumbnailsPerPage = CurrentMode.Thumbnails_Per_Page;
+                thumbnailsPerPage = CurrentMode.Thumbnails_Per_Page.HasValue ? CurrentMode.Thumbnails_Per_Page.Value : -100;
 
                 // Now, reset the value in the navigation object, since we won't need to set it again
                 CurrentMode.Thumbnails_Per_Page = -100;
@@ -681,7 +681,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (CurrentMode.Size_Of_Thumbnails > -1)
             {
                 CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails);
-                thumbnailSize = CurrentMode.Size_Of_Thumbnails;
+                thumbnailSize = CurrentMode.Size_Of_Thumbnails.HasValue ? CurrentMode.Size_Of_Thumbnails.Value : -1;
 
                 //Now reset the current mode value since we won't need to set it again
                 CurrentMode.Size_Of_Thumbnails = -1;
@@ -1588,7 +1588,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				List<string> goToUrls = new List<string>();
 				for (int i = 1; i <= PageCount; i++)
 				{
-				    int numThumbnailstemp = CurrentMode.Thumbnails_Per_Page;
+				    int numThumbnailstemp = CurrentMode.Thumbnails_Per_Page.HasValue ? CurrentMode.Thumbnails_Per_Page.Value : -100;
 				    CurrentMode.Thumbnails_Per_Page =  (short)thumbnailsPerPage;
 				    CurrentMode.Size_Of_Thumbnails = (short)thumbnailSize;
                     goToUrls.Add(UrlWriterHelper.Redirect_URL(CurrentMode, i + "qc"));
@@ -1968,12 +1968,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			//Get the current QC page number
 			int current_qc_viewer_page_num = 1;
-			if (CurrentMode.ViewerCode.Replace("qc", "").Length > 0)
+			if (( !String.IsNullOrEmpty(CurrentMode.ViewerCode)) && ( CurrentMode.ViewerCode.Replace("qc", "").Length > 0))
 				Int32.TryParse(CurrentMode.ViewerCode.Replace("qc", ""), out current_qc_viewer_page_num);
 
 			// Save the current viewer code
 			string current_view_code = CurrentMode.ViewerCode;
-			ushort current_view_page = CurrentMode.Page;
+            ushort current_view_page = CurrentMode.Page.HasValue ? CurrentMode.Page.Value : ((ushort) 1);
 
 			// Start the citation table
 			Output.WriteLine( "\t\t<!-- QUALITY CONTROL VIEWER OUTPUT -->" );

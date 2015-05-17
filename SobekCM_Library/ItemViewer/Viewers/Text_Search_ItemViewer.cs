@@ -8,7 +8,6 @@ using System.Text;
 using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
@@ -90,17 +89,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("       <!-- TEXT SEARCH ITEM VIEWER OUTPUT -->");
 
             // Determine the value without any search
-            string currentSearch = CurrentMode.Text_Search;
+            string currentSearch = CurrentMode.Text_Search;   
             CurrentMode.Text_Search = String.Empty;
-            string redirect_url = UrlWriterHelper.Redirect_URL(CurrentMode);;
+            string redirect_url = UrlWriterHelper.Redirect_URL(CurrentMode);
             CurrentMode.Text_Search = currentSearch;
             string button_text = String.Empty;
+
+            // Makee sure the search is not null
+            if (String.IsNullOrWhiteSpace(currentSearch))
+                currentSearch = String.Empty;
 
             // Add the search this document portion
             Output.WriteLine("    <td style=\"text-align:center;\">");
             Output.WriteLine("      <div style=\"padding:10px 0 10px 0;\" >");
             Output.WriteLine("        <label for=\"searchTextBox\">" + search_this_document + ":</label> &nbsp;");
-			Output.WriteLine("        <input class=\"sbkTsv_SearchBox sbkIsw_Focusable\" id=\"searchTextBox\" name=\"searchTextBox\" type=\"text\" value=\"" + CurrentMode.Text_Search.Replace(" =", " or ") + "\" onkeydown=\"item_search_keytrap(event, '" + redirect_url + "');\" /> &nbsp; ");
+            Output.WriteLine("        <input class=\"sbkTsv_SearchBox sbkIsw_Focusable\" id=\"searchTextBox\" name=\"searchTextBox\" type=\"text\" value=\"" + currentSearch.Replace(" =", " or ") + "\" onkeydown=\"item_search_keytrap(event, '" + redirect_url + "');\" /> &nbsp; ");
             Output.WriteLine("        <button title=\"" + search_this_document + "\" class=\"sbkIsw_RoundButton\" onclick=\"item_search_sobekcm('" + redirect_url + "'); return false;\">GO<img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("      </div>");
             if (results != null)
@@ -117,9 +120,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 if (results.TotalResults > 20)
                 {
-                    int current_page = CurrentMode.SubPage;
-                    if (current_page == 0)
-                        current_page = 1;
+                    int current_page = CurrentMode.SubPage.HasValue ? Math.Max(CurrentMode.SubPage.Value, ((ushort)1)) : 1;
 
                     string first_page = "First Page";
                     string previous_page = "Previous Page";
@@ -154,10 +155,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         last_page_text = "Derniere";
                     }
 
-                    string language_suffix = CurrentMode.Language_Code;
-                    if (language_suffix.Length > 0)
-                        language_suffix = "_" + language_suffix;
-
                     // Use a stringbuilder here
                     StringBuilder buttonWriter = new StringBuilder(2000);
 
@@ -168,9 +165,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         // Get the URL for the first and previous buttons
                         CurrentMode.SubPage = 1;
-                        string firstButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);;
+                        string firstButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);
                         CurrentMode.SubPage = (ushort)(current_page - 1);
-                        string prevButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);;
+                        string prevButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);
 
                         buttonWriter.AppendLine("              <span class=\"sbkIsw_LeftPaginationButtons\">");
                         buttonWriter.AppendLine("                <button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + Static_Resources.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
@@ -186,9 +183,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         // Get the URL for the first and previous buttons
                         CurrentMode.SubPage = (ushort)total_pages;
-                        string lastButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);;
+                        string lastButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);
                         CurrentMode.SubPage = (ushort)(current_page + 1);
-                        string nextButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);;
+                        string nextButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);
 
                         buttonWriter.AppendLine("              <span class=\"sbkIsw_RightPaginationButtons\">");
                         buttonWriter.AppendLine("                <button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
@@ -324,7 +321,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <remarks> This method his class pulls any full-text search results for this single item from the Solr/Lucene engine </remarks>
         public override void Perform_PreDisplay_Work(Custom_Tracer Tracer)
         {
-            if (CurrentMode.Text_Search.Length > 0)
+            if (!String.IsNullOrWhiteSpace(CurrentMode.Text_Search))
             {
                 List<string> terms = new List<string>();
                 List<string> web_fields = new List<string>();
@@ -334,7 +331,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 Tracer.Add_Trace("Text_Search_Item_Viewer.Perform_PreDisplay_Work", "Performing Solr/Lucene search");
 
-                results = Solr_Page_Results.Search(CurrentItem.BibID, CurrentItem.VID, terms, 20, CurrentMode.SubPage, false);
+                int page = CurrentMode.SubPage.HasValue ? Math.Max(CurrentMode.SubPage.Value, ((ushort)1)) : 1;
+                results = Solr_Page_Results.Search(CurrentItem.BibID, CurrentItem.VID, terms, 20, page, false);
 
                 Tracer.Add_Trace("Text_Search_Item_Viewer.Perform_PreDisplay_Work", "Completed Solr/Lucene search in " + results.QueryTime + "ms");
             }
@@ -353,8 +351,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // If this is basic, do some other preparation
             string complete_search = CurrentMode.Text_Search;
-            ushort subpage = CurrentMode.SubPage;
-            CurrentMode.SubPage =1;
+            ushort subpage = CurrentMode.SubPage.HasValue ? Math.Max(CurrentMode.SubPage.Value, ((ushort)1)) : ((ushort) 1);
+            CurrentMode.SubPage = 1;
             Solr_Documents_Searcher.Split_Multi_Terms(CurrentMode.Text_Search, "ZZ", terms, fields);
 
             string your_search_language = "Your search within this document for ";

@@ -39,7 +39,7 @@ namespace SobekCM.Library.HTML
 		/// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
 		/// <param name="CurrentMode"> Mode / navigation information for the current request</param>
 		/// <remarks> This is called by several html subwriters that otherwise tell this class to suppress writing the banner </remarks>
-		public static void Add_Banner(TextWriter Output, string Banner_Division_Name, SobekCM_Navigation_Object CurrentMode, Web_Skin_Object HTML_Skin, Item_Aggregation Hierarchy_Object)
+		public static void Add_Banner(TextWriter Output, string Banner_Division_Name, Navigation_Object CurrentMode, Web_Skin_Object HTML_Skin, Item_Aggregation Hierarchy_Object)
 		{
 			Output.WriteLine("<!-- Write the main collection, interface, or institution banner -->");
 			if ((HTML_Skin != null) && (HTML_Skin.Override_Banner))
@@ -120,7 +120,7 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("          <tr style=\"vertical-align:top; height: 16px;\">");
 			Output.WriteLine("            <td valign=\"top\">");
 			Output.Write("              <input name=\"internalSearchTextBox\" type=\"text\" id=\"internalSearchTextBox\" class=\"SobekInternalSearchBox\" value=\"\" onfocus=\"javascript:textbox_enter('internalSearchTextBox', 'SobekInternalSearchBox_focused')\" onblur=\"javascript:textbox_leave('internalSearchTextBox', 'SobekInternalSearchBox')\"");
-            if (RequestSpecificValues.Current_Mode.Browser_Type.IndexOf("IE") >= 0)
+            if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && ( RequestSpecificValues.Current_Mode.Browser_Type.IndexOf("IE") >= 0))
                 Output.WriteLine(" onkeydown=\"internalTrapKD(event, '" + RequestSpecificValues.Current_Mode.Base_URL + "contains');\" />");
 			else
                 Output.WriteLine(" onkeydown=\"return internalTrapKD(event, '" + RequestSpecificValues.Current_Mode.Base_URL + "contains');\" />");

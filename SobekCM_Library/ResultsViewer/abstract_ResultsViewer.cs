@@ -52,7 +52,10 @@ namespace SobekCM.Library.ResultsViewer
             get	
             {	
                 // Determine which rows to display
-                return (RequestSpecificValues.Current_Mode.Page * Results_Per_Page);
+                if (RequestSpecificValues.Current_Mode.Page.HasValue)
+                    return (RequestSpecificValues.Current_Mode.Page.Value * Results_Per_Page);
+                else
+                    return Results_Per_Page;
             }
         }
 
@@ -132,7 +135,7 @@ namespace SobekCM.Library.ResultsViewer
         private string compute_image_redirect_stem()
         {
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
-            if (RequestSpecificValues.Current_Mode.Coordinates.Length > 0)
+            if ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates))
             {
                 return (url_options.Length > 0) ? "?coord=" + RequestSpecificValues.Current_Mode.Coordinates + "&" + url_options : "?coord=" + RequestSpecificValues.Current_Mode.Coordinates;
             }
@@ -174,7 +177,7 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
-            if (RequestSpecificValues.Current_Mode.Coordinates.Length > 0)
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates))
             {
                 return (url_options.Length > 0) ? "?coord=" + RequestSpecificValues.Current_Mode.Coordinates + "&" + url_options : "?coord=" + RequestSpecificValues.Current_Mode.Coordinates;
             }

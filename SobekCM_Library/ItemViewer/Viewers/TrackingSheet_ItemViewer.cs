@@ -35,7 +35,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Current_Object"></param>
         /// <param name="Current_User"></param>
         /// <param name="Current_Mode"></param>
-        public TrackingSheet_ItemViewer(SobekCM_Item Current_Object, User_Object Current_User, SobekCM_Navigation_Object Current_Mode)
+        public TrackingSheet_ItemViewer(SobekCM_Item Current_Object, User_Object Current_User, Navigation_Object Current_Mode)
         {
             CurrentMode = Current_Mode;
             CurrentUser = Current_User;

@@ -56,7 +56,8 @@ namespace SobekCM.Library.ResultsViewer
             resultsBldr.AppendLine("<table>");
 
             // Set the counter for these results from the page 
-            int result_counter = ((RequestSpecificValues.Current_Mode.Page - 1)*Results_Per_Page) + 1;
+            int current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
+            int result_counter = ((current_page - 1) * Results_Per_Page) + 1;
 
             // Step through all the results
             int current_row = 0;

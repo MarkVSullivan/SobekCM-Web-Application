@@ -45,7 +45,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 if (RequestSpecificValues.Current_User.Is_Just_Registered)
                 {
-                    return (RequestSpecificValues.Current_User.Nickname.Length > 0) ? "Welcome to my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ", " + RequestSpecificValues.Current_User.Nickname : "Welcome to my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ", " + RequestSpecificValues.Current_User.Given_Name;
+                    return (RequestSpecificValues.Current_User.Nickname.Length > 0) ? "Welcome to my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ", " + RequestSpecificValues.Current_User.Nickname : "Welcome to my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ", " + RequestSpecificValues.Current_User.Given_Name;
                 }
 
                 return (RequestSpecificValues.Current_User.Nickname.Length > 0) ? "Welcome Back, " + RequestSpecificValues.Current_User.Nickname : "Welcome Back, " + RequestSpecificValues.Current_User.Given_Name;
@@ -59,7 +59,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("Home_MySobekViewer.Write_HTML", String.Empty);
 
-            string sobek_text = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
+            string sobek_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation;
             string my_sobek = "my" + sobek_text;
 
 			Output.WriteLine("<h1>" + Web_Title + "</h1>");

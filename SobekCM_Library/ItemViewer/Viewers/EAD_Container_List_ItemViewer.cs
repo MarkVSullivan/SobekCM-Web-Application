@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -69,7 +70,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Build any search terms
             List<string> terms = new List<string>();
-            if (CurrentMode.Text_Search.Length > 0)
+            if ( !String.IsNullOrWhiteSpace(CurrentMode.Text_Search))
             {
                 // Get any search terms
                 if (CurrentMode.Text_Search.Trim().Length > 0)

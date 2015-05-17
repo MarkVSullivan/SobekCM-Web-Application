@@ -7,7 +7,6 @@ using System.Linq;
 using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
@@ -317,7 +316,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// Save the current viewer code
 			string current_view_code = CurrentMode.ViewerCode;
-			ushort current_view_page = CurrentMode.Page;
+		    ushort current_view_page = CurrentMode.Page.HasValue ? CurrentMode.Page.Value : ((ushort) 1);
 
 			// Start the citation table
 			Output.WriteLine("\t\t<td>" );
@@ -334,7 +333,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Get any search terms for highlighting purposes
             List<string> terms = new List<string>();
-            if (CurrentMode.Text_Search.Trim().Length > 0)
+            if ( !String.IsNullOrWhiteSpace(CurrentMode.Text_Search))
             {
                 string[] splitter = CurrentMode.Text_Search.Replace("\"", "").Split(" ".ToCharArray());
                 terms.AddRange(from thisSplit in splitter where thisSplit.Trim().Length > 0 select thisSplit.Trim());
@@ -447,10 +446,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				thumbnailsPerPage = CurrentUser.Get_Setting("Related_Images_ItemViewer:ThumbnailsPerPage", 50);
 
 				// Or was there a new value in the URL?
-				if (CurrentMode.Thumbnails_Per_Page >= -1)
+				if (( CurrentMode.Thumbnails_Per_Page.HasValue ) && ( CurrentMode.Thumbnails_Per_Page.Value >= -1))
 				{
 					CurrentUser.Add_Setting("Related_Images_ItemViewer:ThumbnailsPerPage", CurrentMode.Thumbnails_Per_Page);
-					thumbnailsPerPage = CurrentMode.Thumbnails_Per_Page;
+                    thumbnailsPerPage = CurrentMode.Thumbnails_Per_Page.Value;
 				}
 			}
 			else
@@ -464,10 +463,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				thumbnailsPerPage = tempValue;
 
 				// Or was there a new value in the URL?
-				if (CurrentMode.Thumbnails_Per_Page >= -1)
+				if ((CurrentMode.Thumbnails_Per_Page.HasValue ) && ( CurrentMode.Thumbnails_Per_Page.Value >= -1 ))
 				{
 					HttpContext.Current.Session["Related_Images_ItemViewer:ThumbnailsPerPage"] = CurrentMode.Thumbnails_Per_Page;
-					thumbnailsPerPage = CurrentMode.Thumbnails_Per_Page;
+					thumbnailsPerPage = CurrentMode.Thumbnails_Per_Page.Value;
 				}
 			}
 
@@ -485,10 +484,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				thumbnailSize = CurrentUser.Get_Setting("Related_Images_ItemViewer:ThumbnailSize", 1);
 
 				// Or was there a new value in the URL?
-				if (CurrentMode.Size_Of_Thumbnails > -1)
+				if (( CurrentMode.Size_Of_Thumbnails.HasValue ) && (CurrentMode.Size_Of_Thumbnails.Value > -1))
 				{
 					CurrentUser.Add_Setting("Related_Images_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails);
-					thumbnailSize = CurrentMode.Size_Of_Thumbnails;
+                    thumbnailSize = CurrentMode.Size_Of_Thumbnails.Value;
 				}
 			}
 			else
@@ -502,10 +501,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				thumbnailSize = tempValue;
 
 				// Or was there a new value in the URL?
-				if (CurrentMode.Size_Of_Thumbnails > -1)
+				if (( CurrentMode.Size_Of_Thumbnails.HasValue ) && ( CurrentMode.Size_Of_Thumbnails.Value > -1))
 				{
 					HttpContext.Current.Session["Related_Images_ItemViewer:ThumbnailSize"] = CurrentMode.Size_Of_Thumbnails;
-					thumbnailSize = CurrentMode.Size_Of_Thumbnails;
+					thumbnailSize = CurrentMode.Size_Of_Thumbnails.Value;
 				}
 			}
 

@@ -499,4 +499,20 @@
         /// <remarks> Trace route can be requested either by IP address, or by currently logged on user</remarks>
         Implied
     };
+
+    /// <summary> Type of top-level web content display </summary>
+    public enum WebContent_Type_Enum : byte
+    {
+        /// <summary> Standard public display of the web content </summary>
+        Display = 0,
+
+        /// <summary> Edit of the web content </summary>
+        Edit,
+
+        /// <summary> Milestones for the web content </summary>
+        Milestones,
+
+        /// <summary> Permissions admin for the web content </summary>
+        Permissions
+    }
 }

@@ -23,7 +23,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 	/// During a valid html request to display the home page with basic search and year range, the following steps occur:
 	/// <ul>
 	/// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-	/// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="SobekCM_Navigation_Object"/> </li>
+	/// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation_Object"/> </li>
 	/// <li>Main writer is created for rendering the output, in this case the <see cref="Html_MainWriter"/> </li>
 	/// <li>The HTML writer will create the necessary subwriter.  For a collection-level request, an instance of the  <see cref="Aggregation_HtmlSubwriter"/> class is created. </li>
 	/// <li>To display the requested collection view, the collection subwriter will creates an instance of this class </li>
@@ -150,7 +150,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 				Output.WriteLine("        <select name=\"YearDropDown1\" id=\"YearDropDown1\" class=\"sbkBsav_YearDropDown\">");
 			//	Output.WriteLine("          <option value=\"ZZ\"> </option>");
-		        int currYear1 = RequestSpecificValues.Current_Mode.DateRange_Year1;
+                int currYear1 = RequestSpecificValues.Current_Mode.DateRange_Year1.HasValue ? RequestSpecificValues.Current_Mode.DateRange_Year1.Value : -1;
 		        if (( currYear1 != -1 ) && ( !yearRange.Contains(currYear1)))
 			        Output.WriteLine("          <option selected=\"selected\" value=\"" + currYear1 + "\">" + currYear1 + "</option>");
 		        if (currYear1 == -1)
@@ -172,7 +172,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 				Output.WriteLine("        <select name=\"YearDropDown2\" id=\"YearDropDown2\" class=\"sbkBsav_YearDropDown\">");
 			//	Output.WriteLine("          <option value=\"ZZ\"> </option>");
-				int currYear2 = RequestSpecificValues.Current_Mode.DateRange_Year1;
+                int currYear2 = RequestSpecificValues.Current_Mode.DateRange_Year2.HasValue ? RequestSpecificValues.Current_Mode.DateRange_Year2.Value : -1;
 				if (( currYear2 != -1 ) && ( !yearRange.Contains(currYear2)))
 					Output.WriteLine("          <option selected=\"selected\" value=\"" + currYear2 + "\">" + currYear2 + "</option>");
 		        if (currYear2 == -1)

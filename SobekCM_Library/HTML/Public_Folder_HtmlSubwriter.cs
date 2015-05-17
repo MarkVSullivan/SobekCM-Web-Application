@@ -94,7 +94,7 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("<ul class=\"sf-menu\">");
 
 			// Get ready to draw the tabs
-			string sobek_home_text = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home";
+			string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
 
 			// Add the 'SOBEK HOME' first menu option and suboptions
 			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;

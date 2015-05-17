@@ -8,7 +8,6 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Items;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Tools;
@@ -123,15 +122,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the current page for paging purposes </summary>
-        /// <value> This returns either 1, or the <see cref="Navigation.SobekCM_Navigation_Object.SubPage"/> value from the current reqeust mode</value>
+        /// <value> This returns either 1, or the <see cref="Navigation_Object.SubPage"/> value from the current reqeust mode</value>
         public override int Current_Page
         {
             get
             {
-                if (CurrentMode.SubPage <= 0)
-                    CurrentMode.SubPage = 1;
-
-                return CurrentMode.SubPage;
+                return CurrentMode.SubPage.HasValue ? Math.Max(CurrentMode.SubPage.Value, ((short) 1)) : 1;
             }
         }
 
@@ -164,9 +160,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (viewType != View_Type.Thumbnail )
                     return String.Empty;
 
-                ushort subpage = CurrentMode.SubPage;
+                ushort? subpage = CurrentMode.SubPage;
                 CurrentMode.SubPage = 1;
-                string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);;
+                string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);
                 CurrentMode.SubPage = subpage;
                 return returnVal;
             }
@@ -181,9 +177,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (viewType != View_Type.Thumbnail)
                     return String.Empty;
 
-                ushort subpage = CurrentMode.SubPage;
-                CurrentMode.SubPage = (ushort)(CurrentMode.SubPage - 1);
-                string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);;
+                ushort? subpage = CurrentMode.SubPage;
+                ushort subpage_current = CurrentMode.SubPage.HasValue ? Math.Max(CurrentMode.SubPage.Value, ((ushort) 1)) : ((ushort) 1);
+
+                CurrentMode.SubPage = (ushort)(subpage_current - 1);
+                string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);
                 CurrentMode.SubPage = subpage;
                 return returnVal;
             }
@@ -197,10 +195,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 if (viewType != View_Type.Thumbnail)
                     return String.Empty;
-                
-                ushort subpage = CurrentMode.SubPage;
-                CurrentMode.SubPage = (ushort)(CurrentMode.SubPage + 1);
-                string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);;
+
+                ushort? subpage = CurrentMode.SubPage;
+                ushort subpage_current = CurrentMode.SubPage.HasValue ? Math.Max(CurrentMode.SubPage.Value, ((ushort)1)) : ((ushort)1);
+
+                CurrentMode.SubPage = (ushort)(subpage_current + 1);
+                string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);
                 CurrentMode.SubPage = subpage;
                 return returnVal;
             }
@@ -215,11 +215,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (viewType != View_Type.Thumbnail)
                     return String.Empty;
 
-                ushort subpage = CurrentMode.SubPage;
+                ushort? subpage = CurrentMode.SubPage;
                 CurrentMode.SubPage = (ushort)((thumbnail_count / 60));
                 if ((thumbnail_count % 60) != 0)
                     CurrentMode.SubPage = (ushort)(CurrentMode.SubPage + 1);
-                string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);;
+                string returnVal = UrlWriterHelper.Redirect_URL(CurrentMode);
                 CurrentMode.SubPage = subpage;
                 return returnVal;
             }
@@ -331,7 +331,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             // Save the current viewer code
             string current_view_code = CurrentMode.ViewerCode;
-            ushort current_view_page = CurrentMode.Page;
+            ushort current_view_page = CurrentMode.Page.HasValue ? CurrentMode.Page.Value : (ushort) 1;
 
             // Compute the base redirect URL
             string current_vid = CurrentMode.VID;
@@ -450,7 +450,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Save the current viewer code
             string current_view_code = CurrentMode.ViewerCode;
-            ushort current_view_page = CurrentMode.Page;
+            ushort current_view_page = CurrentMode.Page.HasValue ? CurrentMode.Page.Value : (ushort)1;
 
             //Outer div which contains all the thumbnails
             Output.WriteLine("<div style=\"margin:5px;text-align:center;\">");
@@ -461,7 +461,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Compute the base redirect URL
             string current_vid = CurrentMode.VID;
             string viewercode = CurrentMode.ViewerCode;
-            ushort subpage = CurrentMode.SubPage;
+            ushort? subpage = CurrentMode.SubPage;
             CurrentMode.ViewerCode = String.Empty;
             CurrentMode.SubPage = 0;
             CurrentMode.VID = "<%VID%>";
@@ -484,8 +484,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             DataRow[] matches = Volumes.Select("(IP_Restriction_Mask >= 0 ) and ( Dark = 'false')");
 
             // Step through item in the results
-	        int startItemCount = (CurrentMode.SubPage - 1) * 60;
-            int endItemCount = (CurrentMode.SubPage) * 60;
+            int currenSubPage = CurrentMode.SubPage.HasValue ? CurrentMode.SubPage.Value : 0;
+            int startItemCount = (currenSubPage - 1) * 60;
+            int endItemCount = currenSubPage * 60;
             if (Volumes.Rows.Count < 100)
                 endItemCount = matches.Length;
             for (int i = startItemCount; (i < endItemCount) && (i < matches.Length); i++)

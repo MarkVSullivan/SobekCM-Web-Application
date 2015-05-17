@@ -31,7 +31,7 @@ namespace SobekCM.Library
     public class Static_Pages_Builder
     {
         private readonly SobekCM_Assistant assistant;
-        private readonly SobekCM_Navigation_Object currentMode;
+        private readonly Navigation_Object currentMode;
 
         private int errors;
 
@@ -60,7 +60,7 @@ namespace SobekCM.Library
 		    defaultSkin = Default_Skin;
 
             // Create the mode object
-            currentMode = new SobekCM_Navigation_Object
+            currentMode = new Navigation_Object
                               {
                                   ViewerCode = "citation",
                                   Skin = String.Empty,
@@ -814,7 +814,8 @@ namespace SobekCM.Library
             currentMode.Trace_Flag = Trace_Flag_Type_Enum.No;
 
             // Get the current page
-            Page_TreeNode currentPage = SobekCM_Item_Factory.Get_Current_Page(Current_Item, currentMode.Page, null);
+            int current_page_index = currentMode.Page.HasValue ? Math.Max(currentMode.Page.Value, ((ushort)1)) : 1;
+            Page_TreeNode currentPage = SobekCM_Item_Factory.Get_Current_Page(Current_Item, current_page_index, null);
 
             // Finish writing this
             Finish_writing_html(Current_Item, currentPage, Static_FileName, Text_File_Directory);
@@ -923,7 +924,8 @@ namespace SobekCM.Library
                 currentMode.Aggregation = currentItem.Behaviors.Aggregations[0].Code;
 
             // Get the current page
-            currentPage = SobekCM_Item_Factory.Get_Current_Page(currentItem, currentMode.Page, tracer);
+            int current_page_index = currentMode.Page.HasValue ? Math.Max(currentMode.Page.Value, ((ushort)1)) : 1;
+            currentPage = SobekCM_Item_Factory.Get_Current_Page(currentItem, current_page_index, tracer);
 
             // Finish writing this
             Finish_writing_html(currentItem, currentPage, Static_FileName, Text_File_Directory);

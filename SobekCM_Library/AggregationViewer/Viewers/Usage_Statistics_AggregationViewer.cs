@@ -81,7 +81,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             get
             {
                 // Normalize the submode
-                string submode = RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToLower();
+                string submode = "views";
+                if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode))
+                    submode = RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToLower();
+
                 if ((submode != "views") && (submode != "itemviews") && (submode != "titles") && (submode != "items") && (submode != "definitions"))
                 {
                     submode = "views";
@@ -148,7 +151,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			Output.WriteLine("  <ul class=\"sbk_FauxUpwardTabsList\">");
 
             // Save and normalize the submode
-            string submode = RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToLower();
+            string submode = "views";
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode))
+                submode = RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToLower();
             if ((submode != "views") && (submode != "itemviews") && (submode != "titles") && (submode != "items") && (submode != "definitions"))
             {
                 submode = "views";
@@ -664,8 +669,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                 Output.WriteLine("<a name=\"Views\" ></a>");
                 Output.WriteLine("<h3>VIEWS</h3>");
-                Output.WriteLine("<p>Views are the actual page hits. Each time a person goes to " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " it counts as a view. The " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " statistics are cleaned so that views from robots, which search engines use to index websites, are removed. If they were not removed, the views on all collections and items would be much higher. Web usage statistics are always somewhat fallible, and this is one of the means for ensuring better quality usage statistics. <br /><br />");
-                Output.WriteLine("Some web statistics count &quot;page item downloads&quot; as views, which is highly inaccurate because each page has multiple items on it. For instance, the digital library main page, " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ", includes the page HTML and all of the images. If the statistics counted each “page item download” as a hit, each single view to the main page would be counted as over 30 “page item downloads.” To make matters more confusing, some digital repositories only offer PDF downloads for users to view items. Those digital repositories track &quot;item downloads&quot; and those are most equivalent to our statistics for usage by &quot;item.&quot; </p>");
+                Output.WriteLine("<p>Views are the actual page hits. Each time a person goes to " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " it counts as a view. The " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " statistics are cleaned so that views from robots, which search engines use to index websites, are removed. If they were not removed, the views on all collections and items would be much higher. Web usage statistics are always somewhat fallible, and this is one of the means for ensuring better quality usage statistics. <br /><br />");
+                Output.WriteLine("Some web statistics count &quot;page item downloads&quot; as views, which is highly inaccurate because each page has multiple items on it. For instance, the digital library main page, " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ", includes the page HTML and all of the images. If the statistics counted each “page item download” as a hit, each single view to the main page would be counted as over 30 “page item downloads.” To make matters more confusing, some digital repositories only offer PDF downloads for users to view items. Those digital repositories track &quot;item downloads&quot; and those are most equivalent to our statistics for usage by &quot;item.&quot; </p>");
 
                 Output.WriteLine("<a name=\"Visits\" ></a>");
                 Output.WriteLine("<h3>VISITS</h3>");

@@ -36,7 +36,7 @@ namespace SobekCM.Library
         /// <param name="Items_In_Title"> List of items within the current title ( used for the Item Group display )</param>
         /// <param name="Static_Web_Content"> HTML content-based browse, info, or imple CMS-style web content objects.  These are objects which are read from a static HTML file and much of the head information must be maintained </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public RequestCache(SobekCM_Navigation_Object Current_Mode,
+        public RequestCache(Navigation_Object Current_Mode,
             Item_Aggregation Hierarchy_Object,
             Search_Results_Statistics Results_Statistics,
             List<iSearch_Title_Result> Paged_Results,
@@ -68,7 +68,7 @@ namespace SobekCM.Library
         }
 
         /// <summary> Mode / navigation information for the current request </summary>
-        public readonly SobekCM_Navigation_Object Current_Mode;
+        public readonly Navigation_Object Current_Mode;
 
         /// <summary>  Current item aggregation object to display  </summary>
         public readonly Item_Aggregation Hierarchy_Object;

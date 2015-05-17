@@ -84,7 +84,8 @@ namespace SobekCM.Library.ItemViewer.Fragments
 
                     if ((pageViewer != null) && (pageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000))
                     {
-                        int adjustedZoom = CurrentMode.Viewport_Zoom - 1;
+                        int currViewportZoom = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : 1;
+                        int adjustedZoom = currViewportZoom - 1;
                         if (adjustedZoom > 0)
                         {
                             if ((CurrentMode.Viewport_Size > 0) || (adjustedZoom > 0) || (CurrentMode.Viewport_Rotation > 0))
@@ -181,7 +182,7 @@ namespace SobekCM.Library.ItemViewer.Fragments
                 responseBuilder.AppendLine("</div>");
                 responseBuilder.AppendLine();
 
-                MainPlaceHolder.Controls.Add(new Literal() {Text = responseBuilder.ToString()});
+                MainPlaceHolder.Controls.Add(new Literal {Text = responseBuilder.ToString()});
             }
         }
     }

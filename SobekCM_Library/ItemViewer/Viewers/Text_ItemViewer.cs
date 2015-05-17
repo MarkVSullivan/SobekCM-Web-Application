@@ -115,7 +115,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 Output.WriteLine("\t\t<td id=\"sbkTiv_MainArea\">");
                 // If there was a term search here, highlight it
-                if (CurrentMode.Text_Search.Length > 0)
+                if ( !String.IsNullOrWhiteSpace(CurrentMode.Text_Search))
                 {
                     // Get any search terms
                     List<string> terms = new List<string>();

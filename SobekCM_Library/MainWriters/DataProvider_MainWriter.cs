@@ -27,7 +27,7 @@ namespace SobekCM.Library.MainWriters
 		}
 
 		/// <summary> Gets the enumeration of the type of main writer </summary>
-		/// <value> This property always returns the enumerational value <see cref="SobekCM.UI_Library.Navigation.Writer_Type_Enum.DataSet"/>. </value>
+		/// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.DataSet"/>. </value>
 		public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.DataSet; } }
 
 		/// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
@@ -89,11 +89,9 @@ namespace SobekCM.Library.MainWriters
 			// jquery datatables library pass in
 			int displayStart;
 			int displayLength;
-			string sEcho = String.Empty;
 			int sortingColumn1;
 			string sortDirection1 = "asc";
 			int sortingColumn2;
-			string sortDirection2 = "asc";
 
 
 			// Get the display start and length from the DataTables generated data URL
@@ -101,16 +99,13 @@ namespace SobekCM.Library.MainWriters
 			Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength);
 
 			// Get the echo value
-			sEcho = HttpContext.Current.Request.QueryString["sEcho"];
+			string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
 
 			// Get the sorting column and sorting direction
 			Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1);
 			if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
 				sortDirection1 = "desc";
 			Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_1"], out sortingColumn2);
-			if ((HttpContext.Current.Request.QueryString["sSortDir_1"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_1"] == "desc"))
-				sortDirection2 = "desc";
-
 
 			// Look for the search term and such from the current query string
 			string term = String.Empty;
@@ -127,7 +122,8 @@ namespace SobekCM.Library.MainWriters
 			}
 
 			// Create the results view
-			DataTable results = itemDataset.Tables[RequestSpecificValues.Current_Mode.SubPage - 2];
+		    int subpage = RequestSpecificValues.Current_Mode.SubPage.HasValue ? RequestSpecificValues.Current_Mode.SubPage.Value : 0;
+			DataTable results = itemDataset.Tables[subpage - 2];
 			DataView resultsView = new DataView(results);
 
 			// Should a filter be applied?

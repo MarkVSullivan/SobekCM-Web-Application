@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.IO;
 using SobekCM.Tools;
 
@@ -31,6 +32,11 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<div id=\"pagecontainer\">");
             Output.WriteLine("<br />");
 
+            string errorMessage = RequestSpecificValues.Current_Mode.Error_Message;
+            if (String.IsNullOrEmpty(errorMessage))
+                errorMessage = "Error";
+
+
                 Output.WriteLine("<center>");
                 
                 Output.WriteLine("  <br /><br />");
@@ -40,7 +46,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<span style=\"font-size:1.2em\">");
                 Output.WriteLine("  <br /><br />");
                 Output.WriteLine("The URL you entered is a legacy URL.  Support for this URL will end shortly.<br /><br />Please update your records to the new URL below:<br /><br />");
-                Output.WriteLine("<a href=\"" + RequestSpecificValues.Current_Mode.Error_Message + "\">" + RequestSpecificValues.Current_Mode.Error_Message + "</a>");
+                Output.WriteLine("<a href=\"" + errorMessage + "\">" + errorMessage + "</a>");
                 Output.WriteLine("  <br /><br /><br /><br />");
                 Output.WriteLine("</span>");
                 Output.WriteLine("</center>");

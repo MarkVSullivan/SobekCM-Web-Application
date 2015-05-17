@@ -186,7 +186,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// Get any search terms
 			List<string> terms = new List<string>();
-			if (CurrentMode.Text_Search.Trim().Length > 0)
+			if ( !String.IsNullOrWhiteSpace(CurrentMode.Text_Search))
 			{
 			    string[] splitter = CurrentMode.Text_Search.Replace("\"", "").Split(" ".ToCharArray());
 			    terms.AddRange(from thisSplit in splitter where thisSplit.Trim().Length > 0 select thisSplit.Trim());
@@ -803,7 +803,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// Build the strings for each section
 			string mets_info = translator.Get_Translation("METS Information", CurrentMode.Language);
-			string internal_info = translator.Get_Translation(CurrentMode.SobekCM_Instance_Abbreviation + " Membership", CurrentMode.Language);
+			string internal_info = translator.Get_Translation(CurrentMode.Instance_Abbreviation + " Membership", CurrentMode.Language);
 			string biblio_info = translator.Get_Translation("Material Information", CurrentMode.Language);
 			string subject_info = translator.Get_Translation("Subjects", CurrentMode.Language);
 			string notes_info = translator.Get_Translation("Notes", CurrentMode.Language);
@@ -2060,7 +2060,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						if (sourceAggr.Active)
 						{
 						    result.Append( !String.IsNullOrEmpty(sourceAggr.External_Link)
-											  ? Single_Citation_HTML_Row("Source Institution", "<span itemprop=\"sourceOrganization\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Source.Statement) + "</span>" + codeString + " ( <a href=\"" + CurrentMode.Base_URL + "i" + CurrentItem.Bib_Info.Source.Code + url_options + "\">" + CurrentMode.SobekCM_Instance_Abbreviation + " page</a> | <a href=\"" + sourceAggr.External_Link + "\">external link</a> )", INDENT)
+											  ? Single_Citation_HTML_Row("Source Institution", "<span itemprop=\"sourceOrganization\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Source.Statement) + "</span>" + codeString + " ( <a href=\"" + CurrentMode.Base_URL + "i" + CurrentItem.Bib_Info.Source.Code + url_options + "\">" + CurrentMode.Instance_Abbreviation + " page</a> | <a href=\"" + sourceAggr.External_Link + "\">external link</a> )", INDENT)
 											  : Single_Citation_HTML_Row("Source Institution", "<a href=\"" + CurrentMode.Base_URL + "i" + CurrentItem.Bib_Info.Source.Code + url_options + "\"><span itemprop=\"sourceOrganization\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Source.Statement) + "</span></a> " + codeString, INDENT));
 						}
 						else
@@ -2097,7 +2097,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						if (holdingAggr.Active)
 						{
 						    result.Append(!String.IsNullOrEmpty(holdingAggr.External_Link)
-											  ? Single_Citation_HTML_Row("Holding Location", "<span itemprop=\"contentLocation\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Location.Holding_Name) + "</span>" + codeString + " ( <a href=\"" + CurrentMode.Base_URL + "i" + CurrentItem.Bib_Info.Location.Holding_Code + url_options + "\">" + CurrentMode.SobekCM_Instance_Abbreviation + " page</a> | <a href=\"" + holdingAggr.External_Link + "\">external link</a> )", INDENT)
+											  ? Single_Citation_HTML_Row("Holding Location", "<span itemprop=\"contentLocation\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Location.Holding_Name) + "</span>" + codeString + " ( <a href=\"" + CurrentMode.Base_URL + "i" + CurrentItem.Bib_Info.Location.Holding_Code + url_options + "\">" + CurrentMode.Instance_Abbreviation + " page</a> | <a href=\"" + holdingAggr.External_Link + "\">external link</a> )", INDENT)
 											  : Single_Citation_HTML_Row("Holding Location", "<a href=\"" + CurrentMode.Base_URL + "i" + CurrentItem.Bib_Info.Location.Holding_Code.ToLower() + url_options + "\"><span itemprop=\"contentLocation\">" + Convert_String_To_XML_Safe(CurrentItem.Bib_Info.Location.Holding_Name) + "</span></a> " + codeString, INDENT));
 						}
 						else

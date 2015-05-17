@@ -13,7 +13,6 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.ResultsViewer;
@@ -90,7 +89,7 @@ namespace SobekCM.Library.HTML
 								cc_list = String.Empty;
 
 							// Send the email
-							string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation, is_html_format, HttpContext.Current.Items["Original_URL"].ToString(), url_description, list_type, RequestSpecificValues.Current_User.UserID);
+							string any_error = URL_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, is_html_format, HttpContext.Current.Items["Original_URL"].ToString(), url_description, list_type, RequestSpecificValues.Current_User.UserID);
 							HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", any_error.Length > 0 ? any_error : "Your email has been sent");
 
 							RequestSpecificValues.Current_Mode.isPostBack = true;
@@ -181,7 +180,7 @@ namespace SobekCM.Library.HTML
 			// If this is default, determine the type from the aggregation (currently) or user
 			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Default)
 			{
-				if (RequestSpecificValues.Current_Mode.Coordinates.Length > 0)
+				if ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates))
 					RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
 				else
 				{
@@ -506,7 +505,8 @@ namespace SobekCM.Library.HTML
                     return false;
 
                 // Determine which rows are being displayed
-                int lastRow = RequestSpecificValues.Current_Mode.Page * RESULTS_PER_PAGE;
+                int current_page_last = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
+                int lastRow = current_page_last * RESULTS_PER_PAGE;
                 int startRow = lastRow - 19;
 
                 // Start the form for this, unless we are already in an appropriate form
@@ -546,7 +546,7 @@ namespace SobekCM.Library.HTML
                 if ((resultWriter.Sortable) && (!RequestSpecificValues.Current_Mode.Is_Robot) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Public_Folder))
                 {
                     StringBuilder sorterBuilder = new StringBuilder("  <div class=\"sbkPrsw_ResultsSort\">");
-                    short current_order = RequestSpecificValues.Current_Mode.Sort;
+                    short current_order = RequestSpecificValues.Current_Mode.Sort.HasValue ? RequestSpecificValues.Current_Mode.Sort.Value : ((short) 0 );
                     RequestSpecificValues.Current_Mode.Sort = 0;
                     string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                     RequestSpecificValues.Current_Mode.Sort = current_order;
@@ -650,7 +650,7 @@ namespace SobekCM.Library.HTML
 
                     if (RESULTS_PER_PAGE < resultWriter.Total_Results)
                     {
-                        ushort current_page = RequestSpecificValues.Current_Mode.Page;
+                        ushort current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort) 1);
                         StringBuilder buttons_builder = new StringBuilder(1000);
 
                         // Should the previous and first buttons be enabled?
@@ -716,7 +716,7 @@ namespace SobekCM.Library.HTML
                 StringBuilder iconBuilder = new StringBuilder(1000);
                 iconBuilder.AppendLine();
                 iconBuilder.AppendLine("    <div class=\"sbkPrsw_ViewIconButtons\">");
-                if ((RequestSpecificValues.Current_Mode.Coordinates.Length > 0) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map)))
+                if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map)))
                 {
                     if (resultView == Result_Display_Type_Enum.Map)
                     {
@@ -729,7 +729,7 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                if ((RequestSpecificValues.Current_Mode.Coordinates.Length > 0) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)))
+                if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)))
                 {
                     if (resultView == Result_Display_Type_Enum.Map_Beta)
                     {
@@ -827,7 +827,7 @@ namespace SobekCM.Library.HTML
 
                 // Determine the number of columns for text areas, depending on browser
                 int actual_cols = 50;
-                if (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0)
+                if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0))
                     actual_cols = 45;
 
                 // Add the hidden field
@@ -993,13 +993,10 @@ namespace SobekCM.Library.HTML
                     if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Public_Folder)
                     {
                         DESCRIPTION = "<h1>&quot;" + UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + "&quot;</h1>" + Environment.NewLine + "  <span class=\"sbkPrsw_PublicFolderAuthor\">This is a publicly shared bookshelf of <a href=\"mailto:" + Folder_Owner_Email + "\">" + Folder_Owner_Name + "</a>.</span>";
-
-                        summation = UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + " (publicly shared folder)";
                     }
                     else
                     {
                         DESCRIPTION = "<h1>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + "</h1>";
-                        summation = UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + " browse in " + RequestSpecificValues.Hierarchy_Object.Name;
                     }
                 }
                 else
@@ -1009,7 +1006,6 @@ namespace SobekCM.Library.HTML
                     StringBuilder searchInfoBuilder = new StringBuilder();
                     StringWriter writer = new StringWriter(searchInfoBuilder);
                     Show_Search_Info(writer, false);
-                    summation = remove_html_tags(searchInfoBuilder.ToString()).Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26");
                     descriptionBuilder.Append(searchInfoBuilder);
                     descriptionBuilder.Append("</div>");
                     DESCRIPTION = descriptionBuilder.ToString();
@@ -1019,8 +1015,7 @@ namespace SobekCM.Library.HTML
                 //string DESCRIPTION = String.Empty;
                 //DESCRIPTION = "<div id\"descriptionHolder\"></div>";
 
-                string SHOWING = String.Empty;
-                SHOWING = "showing <div id=\"showingCountHook\" style=\"display:inline;\"></div> matching titles";
+                string SHOWING = "showing <div id=\"showingCountHook\" style=\"display:inline;\"></div> matching titles";
 
                 // Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
                 string LEFT_BUTTONS = String.Empty;
@@ -1063,19 +1058,6 @@ namespace SobekCM.Library.HTML
                         iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + Static_Resources.Geo_Blue_Png + "\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
-
-		        if ((RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)) & (RequestSpecificValues.Current_Mode.Use_Beta))
-		        {
-		            if (resultView == Result_Display_Type_Enum.Map_Beta)
-		            {
-                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Geo_Blue_Png + "\" alt=\"MAPBETA\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
-		            }
-		            else
-		            {
-		                RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Map_Beta;
-                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + Static_Resources.Geo_Blue_Png + "\" alt=\"MAPBETA\" class=\"sbkPrsw_ViewIconButton\"/></a>");
-		            }
-		        }
 
 		        if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Brief))
                 {
@@ -1594,7 +1576,7 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Advanced;
                     RequestSpecificValues.Current_Mode.Search_Fields = "<%CODE%>";
                     RequestSpecificValues.Current_Mode.Search_String = "<%VALUE%>";
-                    ushort page = RequestSpecificValues.Current_Mode.Page;
+                    ushort? page = RequestSpecificValues.Current_Mode.Page;
                     RequestSpecificValues.Current_Mode.Page = 1;
                     url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
                     RequestSpecificValues.Current_Mode.Mode = displayMode;
@@ -1624,7 +1606,7 @@ namespace SobekCM.Library.HTML
                         string orig_terms = RequestSpecificValues.Current_Mode.Search_String;
                         RequestSpecificValues.Current_Mode.Search_Fields = RequestSpecificValues.Current_Mode.Search_Fields + ",<%CODE%>";
                         RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
-                        ushort page = RequestSpecificValues.Current_Mode.Page;
+                        ushort? page = RequestSpecificValues.Current_Mode.Page;
                         RequestSpecificValues.Current_Mode.Page = 1;
                         url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
                         RequestSpecificValues.Current_Mode.Page = page;
@@ -1879,7 +1861,7 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Search_Type = Search_Type_Enum.Advanced;
                     RequestSpecificValues.Current_Mode.Search_Fields = "<%CODE%>";
                     RequestSpecificValues.Current_Mode.Search_String = "<%VALUE%>";
-                    ushort page = RequestSpecificValues.Current_Mode.Page;
+                    ushort? page = RequestSpecificValues.Current_Mode.Page;
                     RequestSpecificValues.Current_Mode.Page = 1;
                     url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
                     RequestSpecificValues.Current_Mode.Mode = displayMode;
@@ -1909,7 +1891,7 @@ namespace SobekCM.Library.HTML
                         string orig_terms = RequestSpecificValues.Current_Mode.Search_String;
                         RequestSpecificValues.Current_Mode.Search_Fields = RequestSpecificValues.Current_Mode.Search_Fields + ",<%CODE%>";
                         RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
-                        ushort page = RequestSpecificValues.Current_Mode.Page;
+                        ushort? page = RequestSpecificValues.Current_Mode.Page;
                         RequestSpecificValues.Current_Mode.Page = 1;
                         url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
                         RequestSpecificValues.Current_Mode.Page = page;

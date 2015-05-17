@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -70,7 +71,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("          <td>");
             Output.WriteLine("            <div id=\"sbkEad_MainArea\">");
 
-            if (CurrentMode.Text_Search.Length > 0)
+            if ( !String.IsNullOrWhiteSpace(CurrentMode.Text_Search))
             {
                 // Get any search terms
                 List<string> terms = new List<string>();

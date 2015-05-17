@@ -20,8 +20,6 @@ namespace SobekCM.Core.WebContent
     {
         private string code;
 
-        [DataMember(EmitDefaultValue = false, Name = "source"), ProtoMember(100)]
-        public string TEMP_Source { get; set; }
 
         #region Constructors
 
@@ -58,7 +56,7 @@ namespace SobekCM.Core.WebContent
         /// <param name="Text"> Static text to use for this item </param>
         /// <param name="Title"> Title to display with this item </param>
         /// <remarks> This constructor is mostly used with passing back errors to be displayed. </remarks>
-        public HTML_Based_Content(string Text, string Title, string TEMP_Source )
+        public HTML_Based_Content(string Text, string Title, string Source )
         {
             // Set the necessary values to empty initially
             code = String.Empty;
@@ -66,7 +64,7 @@ namespace SobekCM.Core.WebContent
             // Save the parameters
             Content = Text;
             this.Title = Title;
-            this.TEMP_Source = TEMP_Source;
+            this.Source = Source;
         }
 
         #endregion
@@ -75,7 +73,8 @@ namespace SobekCM.Core.WebContent
 
         /// <summary> Code for this info or browse page </summary>
         /// <remarks> This is the code that is used in the URL to specify this info or browse page </remarks>
-        [DataMember(EmitDefaultValue = false, Name = "code"), ProtoMember(1)]
+        [DataMember(EmitDefaultValue = false, Name = "code")]
+        [ProtoMember(1)]
         public string Code
         {
             get { return code ?? String.Empty; }
@@ -84,52 +83,69 @@ namespace SobekCM.Core.WebContent
 
         ///// <summary> Banner to display whenever this browse or information page is displayed, which overrides the standard collection banner </summary>
         /// <remarks> If this is [DEFAULT] then the default collection banner will be displayed, otherwise no banner should be shown</remarks>
-        [DataMember(EmitDefaultValue = false, Name = "banner"), ProtoMember(2)]
+        [DataMember(EmitDefaultValue = false, Name = "banner")]
+        [ProtoMember(2)]
         public string Banner { get; set; }
 
         /// <summary> Extra information which was read from the head value and should be included in the final html rendering </summary>
-        [DataMember(EmitDefaultValue = false, Name = "extraHeadInfo"), ProtoMember(3)]
+        [DataMember(EmitDefaultValue = false, Name = "extraHeadInfo")]
+        [ProtoMember(3)]
         public string Extra_Head_Info { get; set; }
 
         /// <summary> Site maps indicate a sitemap XML file to use to render the left navigation bar's tree view (MSDN-style) table of contents </summary>
-        [DataMember(EmitDefaultValue = false, Name = "siteMap"), ProtoMember(4)]
+        [DataMember(EmitDefaultValue = false, Name = "siteMap")]
+        [ProtoMember(4)]
         public string SiteMap { get; set; }
 
         /// <summary> Web skin in the head overrides any other web skin which may be present in the URL </summary>
-        [DataMember(EmitDefaultValue = false, Name = "webSkin"), ProtoMember(5)]
+        [DataMember(EmitDefaultValue = false, Name = "webSkin")]
+        [ProtoMember(5)]
         public string Web_Skin { get; set; }
 
         /// <summary> Thumbnail is used when displaying this info/browse page as a search result </summary>
-        [DataMember(EmitDefaultValue = false, Name = "thumbnail"), ProtoMember(6)]
+        [DataMember(EmitDefaultValue = false, Name = "thumbnail")]
+        [ProtoMember(6)]
         public string Thumbnail { get; set; }
 
         /// <summary> Title  is used when displaying this info/browse page as a search result </summary>
-        [DataMember(EmitDefaultValue = false, Name = "title"), ProtoMember(7)]
+        [DataMember(EmitDefaultValue = false, Name = "title")]
+        [ProtoMember(7)]
         public string Title { get; set; }
 
         /// <summary> Author is used when displaying this info/browse page as a search result </summary>
-        [DataMember(EmitDefaultValue = false, Name = "author"), ProtoMember(8)]
+        [DataMember(EmitDefaultValue = false, Name = "author")]
+        [ProtoMember(8)]
         public string Author { get; set; }
 
         /// <summary> Date is used when displaying this info/browse page as a search result </summary>
-        [DataMember(EmitDefaultValue = false, Name = "date"), ProtoMember(9)]
+        [DataMember(EmitDefaultValue = false, Name = "date")]
+        [ProtoMember(9)]
         public string Date { get; set; }
 
         /// <summary> Keywords are used when displaying this info/browse page as a search result </summary>
-        [DataMember(EmitDefaultValue = false, Name = "keywords"), ProtoMember(10)]
+        [DataMember(EmitDefaultValue = false, Name = "keywords")]
+        [ProtoMember(10)]
         public string Keywords { get; set; }
 
         /// <summary> Description is used when displaying this info/browse page as a search result </summary>
-        [DataMember(EmitDefaultValue = false, Name = "description"), ProtoMember(11)]
+        [DataMember(EmitDefaultValue = false, Name = "description")]
+        [ProtoMember(11)]
         public string Description { get; set; }
 
         /// <summary> Text to display in the primary display region </summary>
-        [DataMember(EmitDefaultValue = false, Name = "content"), ProtoMember(12)]
+        [DataMember(EmitDefaultValue = false, Name = "content")]
+        [ProtoMember(12)]
         public string Content { get; set; }
 
         /// <summary> Text to display in the primary display region </summary>
-        [DataMember(EmitDefaultValue = false, Name = "includeMenu"), ProtoMember(13)]
+        [DataMember(EmitDefaultValue = false, Name = "includeMenu")]
+        [ProtoMember(13)]
         public bool? IncludeMenu { get; set; }
+
+        /// <summary> Source for this html-based web content </summary>
+        [DataMember(EmitDefaultValue = false, Name = "source")]
+        [ProtoMember(14)]
+        public string Source { get; set; }
 
         /// <summary> Static text included as the body of the static HTML file if item aggregation custom directives
         /// appears in the content source (otherwise NULL) </summary>

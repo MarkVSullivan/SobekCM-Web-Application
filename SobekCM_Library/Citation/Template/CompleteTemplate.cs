@@ -279,7 +279,7 @@ namespace SobekCM.Library.Citation.Template
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
         /// <returns>HTML code for any pop-up forms, which must be placed in a different DIV on the web page</returns>
-        public string Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, SobekCM_Navigation_Object Current_Mode )
+        public string Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool isMozilla, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, Navigation_Object Current_Mode )
         {
             Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine("<a name=\"template\"> </a>");

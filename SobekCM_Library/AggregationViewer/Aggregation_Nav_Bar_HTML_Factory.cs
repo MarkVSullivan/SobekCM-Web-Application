@@ -68,7 +68,7 @@ namespace SobekCM.Library.AggregationViewer
 		/// <param name="Current_Mode"> Mode / navigation information for the current request, to see if the tab is currently selected or not and determine current skin language </param>
 		/// <param name="Translations"> Language support object for writing the name of the view in the appropriate interface language </param>
 		/// <returns> HTML to display the tab, including the link if it is not currently selected </returns>
-		public static string Menu_Get_Nav_Bar_HTML(Item_Aggregation_Views_Searches_Enum ThisView, SobekCM_Navigation_Object Current_Mode, Language_Support_Info Translations )
+		public static string Menu_Get_Nav_Bar_HTML(Item_Aggregation_Views_Searches_Enum ThisView, Navigation_Object Current_Mode, Language_Support_Info Translations )
 		{
 			string skinCode = Current_Mode.Base_Skin;
 
@@ -106,7 +106,7 @@ namespace SobekCM.Library.AggregationViewer
 			return String.Empty;
 		}
 
-		private static string Menu_HTML_Helper(string SkinCode, Search_Type_Enum Search_Type, string Display_Text, SobekCM_Navigation_Object Current_Mode)
+		private static string Menu_HTML_Helper(string SkinCode, Search_Type_Enum Search_Type, string Display_Text, Navigation_Object Current_Mode)
 		{
 			if (Current_Mode.Is_Robot)
 			{
@@ -147,7 +147,7 @@ namespace SobekCM.Library.AggregationViewer
         /// <param name="Translations"> Language support object for writing the name of the view in the appropriate interface language </param>
         /// <param name="Downward_Tabs"> Flag indicates if this tab faces downward, rather than the default upward </param>
         /// <returns> HTML to display the tab, including the link if it is not currently selected </returns>
-        public static string Tabs2_Get_Nav_Bar_HTML( Item_Aggregation_Views_Searches_Enum ThisView, SobekCM_Navigation_Object Current_Mode, Language_Support_Info Translations, bool Downward_Tabs )
+        public static string Tabs2_Get_Nav_Bar_HTML( Item_Aggregation_Views_Searches_Enum ThisView, Navigation_Object Current_Mode, Language_Support_Info Translations, bool Downward_Tabs )
         {
             string skinCode = Current_Mode.Base_Skin;
 
@@ -187,7 +187,7 @@ namespace SobekCM.Library.AggregationViewer
             return String.Empty;
         }
 
-        private static string Tabs_HTML_Helper(string SkinCode, Search_Type_Enum Search_Type, string Display_Text, SobekCM_Navigation_Object Current_Mode, bool Downward_Tabs)
+        private static string Tabs_HTML_Helper(string SkinCode, Search_Type_Enum Search_Type, string Display_Text, Navigation_Object Current_Mode, bool Downward_Tabs)
         {
             if (Downward_Tabs)
             {

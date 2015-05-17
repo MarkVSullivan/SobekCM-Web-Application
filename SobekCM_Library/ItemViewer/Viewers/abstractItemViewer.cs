@@ -55,7 +55,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    public string FileName { protected get; set; }
 
 	    /// <summary> Sets the mode / navigation information for the current request </summary>
-	    public SobekCM_Navigation_Object CurrentMode { protected get; set; }
+	    public Navigation_Object CurrentMode { protected get; set; }
 
 	    /// <summary> Sets the current item for this viewer to display </summary>
 	    public SobekCM_Item CurrentItem { protected get; set; }
@@ -115,7 +115,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			    // Only continue if there is an item and mode, and there is previous pages to go to
 				if ( CurrentMode.Page > 1 )
 				{
-					int currSeq = CurrentMode.Page;
+				    int currSeq = CurrentMode.Page.HasValue ? CurrentMode.Page.Value : 1;
 					string currView = CurrentMode.ViewerCode;
 
 					// Add the button for the first page
@@ -139,7 +139,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			    // Only continue if there is an item and mode, and there is previous pages to go to
 				if ( CurrentMode.Page > 1 )
 				{
-					int currSeq = CurrentMode.Page;
+                    int currSeq = CurrentMode.Page.HasValue ? CurrentMode.Page.Value : 1;
 					string currView = CurrentMode.ViewerCode;
 
 					// Add the button for the previous page
@@ -163,7 +163,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			    // Only continue if there is an item and mode, and there is next pages to go to
 				if ( CurrentMode.Page < PageCount )
 				{
-					int currSeq = CurrentMode.Page;
+                    int currSeq = CurrentMode.Page.HasValue ? CurrentMode.Page.Value : 1;
 					string currView = CurrentMode.ViewerCode;
 
 					// Add the button for the previous page
@@ -187,7 +187,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			    // Only continue if there is an item and mode, and there is next pages to go to
 				if ( CurrentMode.Page < PageCount )
 				{
-					int currSeq = CurrentMode.Page;
+                    int currSeq = CurrentMode.Page.HasValue ? CurrentMode.Page.Value : 1;
 					string currView = CurrentMode.ViewerCode;
 
 					// Add the button for the previous page
@@ -259,7 +259,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <value> By default this returns the page value from the current reqeust mode</value>
         public virtual int Current_Page
         {
-            get { return CurrentMode.Page; }
+            get { return CurrentMode.Page.HasValue ? CurrentMode.Page.Value : 1; }
         }
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>

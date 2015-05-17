@@ -25,8 +25,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     /// Collection viewers are used when displaying collection home pages, searches, browses, and information pages.<br /><br />
     /// During a valid html request to display the usage statistics page, the following steps occur:
     /// <ul>
-    /// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-    /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
+    /// <li>Application state is built/verified by the <see cref="Application_State_Builder"/> </li>
+    /// <li>Request is analyzed by the <see cref="SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in this case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  For a collection-level request, an instance of the  <see cref="Aggregation_HtmlSubwriter"/> class is created. </li>
     /// <li>To display the requested collection view, the collection subwriter will creates an instance of this class </li>
@@ -44,7 +44,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // them this list
             if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
             {
-                RequestSpecificValues.Current_Mode.Aggregation_Type = Core.Navigation.Aggregation_Type_Enum.Home;
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
@@ -53,11 +53,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if (RequestSpecificValues.Current_User.PermissionedAggregations != null)
             {
                 // Do they have some special permissions against this aggregation?
-                string aggrCodeUpper = RequestSpecificValues.Hierarchy_Object.Code.ToUpper();
                 bool special_permissions_found = false;
                 foreach (User_Permissioned_Aggregation permissions in RequestSpecificValues.Current_User.PermissionedAggregations)
                 {
-                    if (String.Compare(permissions.Code, RequestSpecificValues.Hierarchy_Object.Code, true) == 0)
+                    if (String.Compare(permissions.Code, RequestSpecificValues.Hierarchy_Object.Code, StringComparison.OrdinalIgnoreCase) == 0)
                     {
                         if ((permissions.CanChangeVisibility) || (permissions.CanDelete) || (permissions.CanEditBehaviors) || (permissions.CanEditItems) ||
                             (permissions.CanEditMetadata) || (permissions.CanPerformQc) || (permissions.CanUploadFiles) || (permissions.IsAdmin) || (permissions.IsCurator))
@@ -75,7 +74,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 // If no permissions, forward them back
                 if (!special_permissions_found)
                 {
-                    RequestSpecificValues.Current_Mode.Aggregation_Type = Core.Navigation.Aggregation_Type_Enum.Home;
+                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     return;
                 }
@@ -85,14 +84,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 // Are they a portal/system admin or power user?
                 if ((!RequestSpecificValues.Current_User.Is_Internal_User) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin))
                 {
-                    RequestSpecificValues.Current_Mode.Aggregation_Type = Core.Navigation.Aggregation_Type_Enum.Home;
+                    RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                     return;
                 }
             }
 
             // Get the list of private items
-            privateItems = SobekCM_Database.Tracking_Get_Aggregation_Private_Items(RequestSpecificValues.Hierarchy_Object.Code, (int)RESULTS_PER_PAGE, RequestSpecificValues.Current_Mode.Page, RequestSpecificValues.Current_Mode.Sort, RequestSpecificValues.Tracer);
+            int current_sort = RequestSpecificValues.Current_Mode.Sort.HasValue ? RequestSpecificValues.Current_Mode.Sort.Value : 0;
+            int current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
+            privateItems = SobekCM_Database.Tracking_Get_Aggregation_Private_Items(RequestSpecificValues.Hierarchy_Object.Code, (int)RESULTS_PER_PAGE, current_page, current_sort, RequestSpecificValues.Tracer);
         }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>
@@ -160,7 +161,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             // Get the URL for the sort options
-            short sort = RequestSpecificValues.Current_Mode.Sort;
+            short sort = RequestSpecificValues.Current_Mode.Sort.HasValue ? RequestSpecificValues.Current_Mode.Sort.Value : ((short) 0);
             RequestSpecificValues.Current_Mode.Sort = 0;
             string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.Sort = sort;
@@ -267,7 +268,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 }
 
                 // Get the current page
-                ushort current_page = RequestSpecificValues.Current_Mode.Page;
+                ushort current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort) 1 );
 
                 // Should the previous and first buttons be enabled?
                 Output.WriteLine("  <span class=\"leftButtons\">");

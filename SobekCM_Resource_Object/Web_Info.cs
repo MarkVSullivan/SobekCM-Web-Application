@@ -153,7 +153,9 @@ namespace SobekCM.Resource_Object
         /// <remarks> The requested viewer code and page are validated, and if valid, returned.  Otherwise, the closest valid viewer code to the one requested is returned. </remarks>
         public string Get_Valid_Viewer_Code(string viewer_code, int page)
         {
-            string lower_code = viewer_code.ToLower();
+            string lower_code = String.Empty;
+            if (!String.IsNullOrEmpty(viewer_code))
+                lower_code = viewer_code.ToLower();
 
             // If this is 'RES' for restricted, taht is always valid
             if (viewer_code == "res")
@@ -237,7 +239,7 @@ namespace SobekCM.Resource_Object
             }
 
             // No match, so just return the default, if there is one
-            if ((viewer_code.Length == 0) && ( behaviors.Default_View != null) && (behaviors.Default_View.Viewer_Codes.Length > 0))
+            if ((lower_code.Length == 0) && ( behaviors.Default_View != null) && (behaviors.Default_View.Viewer_Codes.Length > 0))
             {
 	            if (behaviors.Item_Level_Page_Views.Contains(behaviors.Default_View))
 	            {

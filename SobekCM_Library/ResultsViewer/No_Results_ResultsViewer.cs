@@ -91,9 +91,9 @@ namespace SobekCM.Library.ResultsViewer
                     string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
                     RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
                     if (RequestSpecificValues.Results_Statistics.All_Collections_Items > 1)
-                        noResultsTextBuilder.AppendLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + number_to_string(RequestSpecificValues.Results_Statistics.All_Collections_Items) + " found in the " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Name + "</a><br /><br />");
+                        noResultsTextBuilder.AppendLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + number_to_string(RequestSpecificValues.Results_Statistics.All_Collections_Items) + " found in the " + RequestSpecificValues.Current_Mode.Instance_Name + "</a><br /><br />");
                     else
-                        noResultsTextBuilder.AppendLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + RequestSpecificValues.Results_Statistics.All_Collections_Items + " found in the " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Name + "</a><br /><br />");
+                        noResultsTextBuilder.AppendLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + RequestSpecificValues.Results_Statistics.All_Collections_Items + " found in the " + RequestSpecificValues.Current_Mode.Instance_Name + "</a><br /><br />");
 
                     RequestSpecificValues.Current_Mode.Aggregation = aggregation;
                 }

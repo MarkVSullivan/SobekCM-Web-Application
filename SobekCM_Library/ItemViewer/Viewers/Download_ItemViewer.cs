@@ -1,5 +1,6 @@
 #region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -173,7 +174,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
 
                     Output.WriteLine("                <h2>The following tiles are available for download:</h2>");
-                    Output.WriteLine(CurrentMode.Browser_Type.IndexOf("FIREFOX") >= 0
+                    Output.WriteLine(( !String.IsNullOrEmpty(CurrentMode.Browser_Type)) && ( CurrentMode.Browser_Type.IndexOf("FIREFOX") >= 0) 
                                            ? "                <p>To download, right click on the tile name below, select 'Save Link As...' and save the JPEG2000 to your local computer.</p>"
                                            : "                <p>To download, right click on the tile name below, select 'Save Target As...' and save the JPEG2000 to your local computer. </p>");
                     Output.WriteLine("                  <table id=\"sbkDiv_Aerials\">");

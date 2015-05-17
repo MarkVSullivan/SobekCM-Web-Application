@@ -8,7 +8,6 @@ using System.Web.UI.WebControls;
 using GemBox.Spreadsheet;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -62,7 +61,7 @@ namespace SobekCM.Library.ResultsViewer
             // Prepare to build an output
             StringBuilder resultsBldr = new StringBuilder(5000);
 
-            int currentPage = RequestSpecificValues.Current_Mode.Page;
+            int currentPage = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
             if (currentPage < 2)
             {
                 resultsBldr.Append("<br />" + Environment.NewLine + "<div class=\"SobekHomeText\">" + Environment.NewLine + "<blockquote>" + Environment.NewLine );
@@ -95,7 +94,7 @@ namespace SobekCM.Library.ResultsViewer
             }
             else
             {
-                string filename = RequestSpecificValues.Current_Mode.SobekCM_Instance_Name;
+                string filename = RequestSpecificValues.Current_Mode.Instance_Name;
 
                 // Set the Gembox spreadsheet license key
 	           
@@ -121,7 +120,7 @@ namespace SobekCM.Library.ResultsViewer
 
                 // Create the excel file and worksheet
                 ExcelFile excelFile = new ExcelFile();
-                ExcelWorksheet excelSheet = excelFile.Worksheets.Add(RequestSpecificValues.Current_Mode.SobekCM_Instance_Name);
+                ExcelWorksheet excelSheet = excelFile.Worksheets.Add(RequestSpecificValues.Current_Mode.Instance_Name);
                 excelFile.Worksheets.ActiveWorksheet = excelSheet;
 
                 // Create the header cell style

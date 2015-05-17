@@ -42,7 +42,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    private static Dictionary<string, object> options;
 		
 		/// <summary> init viewer instance </summary>
-		public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM_Item Current_Item, SobekCM_Navigation_Object Current_Mode)
+		public Google_Coordinate_Entry_ItemViewer(User_Object Current_User, SobekCM_Item Current_Item, Navigation_Object Current_Mode)
 		{
 			try
 			{

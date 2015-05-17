@@ -42,7 +42,7 @@ namespace SobekCM.Engine_Library.Navigation
 		/// <param name="URL_Portals"> List of all web portals into this system </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		public static void Parse_Query(NameValueCollection QueryString,
-			SobekCM_Navigation_Object Navigator,
+			Navigation_Object Navigator,
 			string Base_URL,
 			string[] User_Languages,
 			Aggregation_Code_Manager Code_Manager,
@@ -131,15 +131,19 @@ namespace SobekCM.Engine_Library.Navigation
             // Get the valid URL Portal
             Navigator.Default_Aggregation = "all";
             Portal urlPortal = URL_Portals.Get_Valid_Portal(Base_URL);
-            Navigator.SobekCM_Instance_Abbreviation = urlPortal.Abbreviation;
-            Navigator.SobekCM_Instance_Name = urlPortal.Name;
+            Navigator.Instance_Abbreviation = urlPortal.Abbreviation;
+            Navigator.Instance_Name = urlPortal.Name;
             Navigator.Portal_PURL = urlPortal.Base_PURL;
-            if (urlPortal.Default_Aggregation.Length > 0)
-            {
+		    if (String.IsNullOrEmpty(urlPortal.Default_Aggregation))
+		    {
+		        Navigator.Aggregation = "";
+		    }
+		    else
+		    {
                 Navigator.Default_Aggregation = urlPortal.Default_Aggregation;
-                Navigator.Aggregation = urlPortal.Default_Aggregation;
-            }
-            if (urlPortal.Default_Web_Skin.Length > 0)
+                Navigator.Aggregation = urlPortal.Default_Aggregation; 
+		    }
+            if (!String.IsNullOrEmpty(urlPortal.Default_Web_Skin))
             {
                 Navigator.Default_Skin = urlPortal.Default_Web_Skin;
                 Navigator.Skin = urlPortal.Default_Web_Skin;
@@ -847,7 +851,7 @@ namespace SobekCM.Engine_Library.Navigation
 								break;
 
 							case "partners":
-								if (Navigator.Default_Aggregation == "all")
+								if (( String.IsNullOrEmpty(Navigator.Default_Aggregation)) || ( Navigator.Default_Aggregation == "all"))
 								{
 									Navigator.Mode = Display_Mode_Enum.Aggregation;
 									Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
@@ -1123,37 +1127,59 @@ namespace SobekCM.Engine_Library.Navigation
 										source = source.Substring(0, source.Length - filename.Length);
 									}
 
+                                    // If the designated source exists, look for the files 
+								    if (Directory.Exists(source))
+								    {
+								        // This may point to the default html in the parent directory
+								        if ((Directory.Exists(source + "\\" + filename)) && (File.Exists(source + "\\" + filename + "\\default.html")))
+								        {
+								            Navigator.Info_Browse_Mode = possible_info_mode;
+								            Navigator.Page_By_FileName = source + "\\" + filename + "\\default.html";
+								        }
 
-									if (Directory.Exists(source))
-									{
-										string[] matching_file = Directory.GetFiles(source, filename + ".htm*");
-										if (matching_file.Length > 0)
-										{
-											Navigator.Info_Browse_Mode = possible_info_mode;
-											Navigator.Page_By_FileName = matching_file[0];
-										}
-									}
+								        if ( String.IsNullOrEmpty(Navigator.Page_By_FileName))
+								        {
+								            string[] matching_file = Directory.GetFiles(source, filename + ".htm*");
+								            if (matching_file.Length > 0)
+								            {
+								                Navigator.Info_Browse_Mode = possible_info_mode;
+								                Navigator.Page_By_FileName = matching_file[0];
+								            }
+								        }
 
-									if ( Navigator.Page_By_FileName.Length == 0 )
-									{
-										// This may point to the default html in the parent directory
-										if ((Directory.Exists(source + "\\" + filename)) && (File.Exists(source + "\\" + filename + "\\default.html")))
-										{
-											Navigator.Info_Browse_Mode = possible_info_mode;
-											Navigator.Page_By_FileName = source + "\\" + filename + "\\default.html";
-										}
-										else
-										{
-											if (Navigator.Default_Aggregation == "all")
-											{
-												Navigator.Info_Browse_Mode = "default";
-												Navigator.Page_By_FileName = base_source + "\\default.html";
-											}
-										}
-									}
+                                        if ((String.IsNullOrEmpty(Navigator.Page_By_FileName)) && ((String.IsNullOrEmpty(Navigator.Default_Aggregation)) || (Navigator.Default_Aggregation == "all")))
+								        {
+								            Navigator.Info_Browse_Mode = "default";
+								            Navigator.Page_By_FileName = base_source + "\\default.html";
+								        }
+								    }
 
-									// Last choice would be if this is a default aggregation
-									if ((Navigator.Page_By_FileName.Length == 0) && (Navigator.Default_Aggregation != "all"))
+                                    // If something was found, then check for submodes
+                                    if (!String.IsNullOrEmpty(Navigator.Page_By_FileName))
+								    {
+								        Navigator.WebContent_Type = WebContent_Type_Enum.Display;
+								        if (!String.IsNullOrEmpty(QueryString["mode"]))
+								        {
+								            switch (QueryString["mode"].ToLower())
+								            {
+								                case "edit":
+								                    Navigator.WebContent_Type = WebContent_Type_Enum.Edit;
+                                                    break;
+
+								                case "permissions":
+								                    Navigator.WebContent_Type = WebContent_Type_Enum.Permissions;
+                                                    break;
+
+                                                case "milestones":
+                                                    Navigator.WebContent_Type = WebContent_Type_Enum.Milestones;
+                                                    break;
+
+								            }
+								        }
+								    }
+
+								    // Last choice would be if this is a default aggregation
+                                    if ((String.IsNullOrEmpty(Navigator.Page_By_FileName)) && ((String.IsNullOrEmpty(Navigator.Default_Aggregation)) || (Navigator.Default_Aggregation == "all")))
 									{
 										aggregation_querystring_analyze(Navigator, QueryString, Navigator.Default_Aggregation, url_relative_list);
 									}
@@ -1167,8 +1193,12 @@ namespace SobekCM.Engine_Library.Navigation
 
 		#endregion
 
-		private static void aggregation_querystring_analyze(SobekCM_Navigation_Object Navigator, NameValueCollection QueryString, string Aggregation, List<string> RemainingURLRedirectList)
+		private static void aggregation_querystring_analyze(Navigation_Object Navigator, NameValueCollection QueryString, string Aggregation, List<string> RemainingURLRedirectList)
 		{
+            // If the aggrgeation passed in was null or empty, use ALL
+		    if (String.IsNullOrEmpty(Aggregation))
+		        Aggregation = "all";
+
 			Navigator.Aggregation = Aggregation;
 			Navigator.Mode = Display_Mode_Enum.Aggregation;
 			Navigator.Aggregation_Type = Aggregation_Type_Enum.Home;
@@ -1398,7 +1428,7 @@ namespace SobekCM.Engine_Library.Navigation
 						if (QueryString["coord"] != null)
 						{
 							Navigator.Coordinates = QueryString["coord"].Trim();
-							if (Navigator.Coordinates.Length > 0)
+							if (!String.IsNullOrEmpty(Navigator.Coordinates))
 							{
 								Navigator.Search_Type = Search_Type_Enum.Map;
 								Navigator.Search_Fields = String.Empty;
@@ -1419,10 +1449,10 @@ namespace SobekCM.Engine_Library.Navigation
 							if (Int16.TryParse(QueryString["yr2"], out year2))
 								Navigator.DateRange_Year2 = year2;
 						}
-						if (Navigator.DateRange_Year1 > Navigator.DateRange_Year2)
+						if ((Navigator.DateRange_Year1.HasValue ) && ( Navigator.DateRange_Year2.HasValue ) && (Navigator.DateRange_Year1.Value > Navigator.DateRange_Year2.Value ))
 						{
-							short temp = Navigator.DateRange_Year1;
-							Navigator.DateRange_Year1 = Navigator.DateRange_Year2;
+							short temp = Navigator.DateRange_Year1.Value;
+                            Navigator.DateRange_Year1 = Navigator.DateRange_Year2.Value;
 							Navigator.DateRange_Year2 = temp;
 						}
 						if (QueryString["da1"] != null)

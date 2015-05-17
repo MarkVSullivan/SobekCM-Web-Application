@@ -70,8 +70,8 @@ namespace SobekCM.Library.HTML
             if (action == "email")
             {
                 // Some values to collect information
-                string subject = "Contact [" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Submission]";
-                string message_from = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + "<" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
+                string subject = "Contact [" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Submission]";
+                string message_from = RequestSpecificValues.Current_Mode.Instance_Abbreviation + "<" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
                 if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
                 {
                     message_from = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + "<" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
@@ -106,7 +106,7 @@ namespace SobekCM.Library.HTML
                         {
                             if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.Subject)
                             {
-                                subject = postBackValues[control_name] + " [" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Submission]";
+                                subject = postBackValues[control_name] + " [" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Submission]";
                             }
                             else if (thisElement.Element_Type == ContactForm_Configuration_Element_Type_Enum.Email)
                             {
@@ -117,7 +117,7 @@ namespace SobekCM.Library.HTML
                                     errorBuilder.Append(thisElement.QueryText.Get_Value(RequestSpecificValues.Current_Mode.Language).Replace(":", "") + " (INVALID) <br />");
                                 }
 
-                                message_from = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + "<" + entered_message_from + ">";
+                                message_from = RequestSpecificValues.Current_Mode.Instance_Abbreviation + "<" + entered_message_from + ">";
                                 if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
                                 {
                                     message_from = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + "<" + entered_message_from + ">";
@@ -306,7 +306,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("      <br /><br />");
                 Output.WriteLine("      <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "\">Click here to return to the digital collection home</a>");
                 Output.WriteLine("      <br /><br />");
-                if (RequestSpecificValues.Current_Mode.Browser_Type.IndexOf("IE") >= 0)
+                if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.IndexOf("IE") >= 0))
                 {
                     Output.WriteLine("      <a href=\"javascript:window.close();\">Click here to close this tab in your browser</a>");
                 }

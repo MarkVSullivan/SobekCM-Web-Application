@@ -14,7 +14,6 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.ItemViewer;
@@ -172,7 +171,7 @@ namespace SobekCM.Library.HTML
                                     cc_list = String.Empty;
 
                                 // Send the email
-                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name,RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation,RequestSpecificValues.Current_Item,is_html_format,HttpContext.Current.Items["Original_URL"].ToString(), RequestSpecificValues.Current_User.UserID)
+                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name,RequestSpecificValues.Current_Mode.Instance_Abbreviation,RequestSpecificValues.Current_Item,is_html_format,HttpContext.Current.Items["Original_URL"].ToString(), RequestSpecificValues.Current_User.UserID)
                                     ? "Error encountered while sending email" : "Your email has been sent");
 
                                 HttpContext.Current.Response.Redirect( HttpContext.Current.Items["Original_URL"].ToString(), false);
@@ -323,13 +322,13 @@ namespace SobekCM.Library.HTML
             }
 
             // Set the code for bib level mets to show the volume tree by default
-            if ((RequestSpecificValues.Current_Item.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL) && (RequestSpecificValues.Current_Mode.ViewerCode.Length == 0))
+            if ((RequestSpecificValues.Current_Item.METS_Header.RecordStatus_Enum == METS_Record_Status.BIB_LEVEL) && (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.ViewerCode)))
             {
                 RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes1";
             }
 
             // If there is a file name included, look for the sequence of that file
-            if (RequestSpecificValues.Current_Mode.Page_By_FileName.Length > 0)
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Page_By_FileName))
             {
                 int page_sequence = RequestSpecificValues.Current_Item.Divisions.Physical_Tree.Page_Sequence_By_FileName(RequestSpecificValues.Current_Mode.Page_By_FileName);
                 if (page_sequence > 0)
@@ -340,13 +339,14 @@ namespace SobekCM.Library.HTML
             }
 
             // Get the valid viewer code
-            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Getting the appropriate item viewer");
+            RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Add_Controls", "Getting the appropriate item viewer");
 
-            if ((RequestSpecificValues.Current_Mode.ViewerCode.Length == 0) && (RequestSpecificValues.Current_Mode.Coordinates.Length > 0))
+            if (( String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.ViewerCode)) && ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)))
             {
                 RequestSpecificValues.Current_Mode.ViewerCode = "map";
             }
-            RequestSpecificValues.Current_Mode.ViewerCode = RequestSpecificValues.Current_Item.Web.Get_Valid_Viewer_Code(RequestSpecificValues.Current_Mode.ViewerCode, RequestSpecificValues.Current_Mode.Page);
+            int currentPageIndex = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
+            RequestSpecificValues.Current_Mode.ViewerCode = RequestSpecificValues.Current_Item.Web.Get_Valid_Viewer_Code(RequestSpecificValues.Current_Mode.ViewerCode, currentPageIndex );
             View_Object viewObject = RequestSpecificValues.Current_Item.Web.Get_Viewer(RequestSpecificValues.Current_Mode.ViewerCode);
             PageViewer = ItemViewer_Factory.Get_Viewer(viewObject, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String.ToUpper(), RequestSpecificValues.Current_Item, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode);
 
@@ -1121,8 +1121,8 @@ namespace SobekCM.Library.HTML
 
 
 			    // Save the current view type
-			    ushort page = RequestSpecificValues.Current_Mode.Page;
-			    ushort subpage = RequestSpecificValues.Current_Mode.SubPage;
+			    ushort page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value  : (ushort) 1;
+			    ushort subpage = RequestSpecificValues.Current_Mode.SubPage.HasValue ? RequestSpecificValues.Current_Mode.SubPage.Value : (ushort) 1;
 			    string viewerCode = RequestSpecificValues.Current_Mode.ViewerCode;
 			    RequestSpecificValues.Current_Mode.SubPage = 0;
 
@@ -1306,7 +1306,7 @@ namespace SobekCM.Library.HTML
 			    // Add each page display type
 			    if ((RequestSpecificValues.Current_Page != null) && (!itemRestrictedFromUserByIp))
 			    {
-				    int page_seq = RequestSpecificValues.Current_Mode.Page;
+				    int page_seq = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value  : 1;
 				    string resourceType = RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String.ToUpper();
 				    if (RequestSpecificValues.Current_Item.Behaviors.Item_Level_Page_Views_Count > 0)
 				    {

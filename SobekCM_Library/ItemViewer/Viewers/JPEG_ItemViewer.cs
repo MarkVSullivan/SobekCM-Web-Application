@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
@@ -40,11 +39,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (Attributes.Length <= 0) return;
 
             string[] splitter = Attributes.Split(";".ToCharArray());
-            foreach (string thisSplitter in splitter.Where(thisSplitter => thisSplitter.ToUpper().IndexOf("WIDTH") >= 0))
+            foreach (string thisSplitter in splitter.Where(ThisSplitter => ThisSplitter.ToUpper().IndexOf("WIDTH") >= 0))
             {
                 Int32.TryParse(thisSplitter.Substring(thisSplitter.IndexOf("=") + 1), out width);
             }
-            foreach (string thisSplitter in splitter.Where(thisSplitter => thisSplitter.ToUpper().IndexOf("HEIGHT") >= 0))
+            foreach (string thisSplitter in splitter.Where(ThisSplitter => ThisSplitter.ToUpper().IndexOf("HEIGHT") >= 0))
             {
                 Int32.TryParse(thisSplitter.Substring(thisSplitter.IndexOf("=") + 1), out height);
             }
@@ -76,7 +75,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				if ( value.Length > 0 )
 				{
 				    string[] splitter = value.Split(";".ToCharArray() );
-				    foreach (string thisSplitter in splitter.Where(thisSplitter => thisSplitter.ToUpper().IndexOf("WIDTH") >= 0))
+				    foreach (string thisSplitter in splitter.Where(ThisSplitter => ThisSplitter.ToUpper().IndexOf("WIDTH") >= 0))
 				    {
 				        Int32.TryParse(thisSplitter.Substring(thisSplitter.IndexOf("=") + 1), out width);
 				    }
@@ -107,19 +106,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        bool isZoomable = false;
 	        if (CurrentItem.Web.Pages_By_Sequence.Count > CurrentMode.Page - 1)
 	        {
-		        foreach (View_Object thisPageView in CurrentItem.Behaviors.Item_Level_Page_Views)
-		        {
-			        View_Enum thisViewType = thisPageView.View_Type;
-			        foreach (SobekCM_File_Info thisFile in CurrentItem.Web.Pages_By_Sequence[CurrentMode.Page-1].Files)
-			        {
-				        View_Object fileObject = thisFile.Get_Viewer();
-				        if ((fileObject != null) && (fileObject.View_Type == View_Enum.JPEG2000))
-				        {
-					        isZoomable = true;
-					        break;
-				        }
-			        }
-		        }
+		        int currentPageIndex = CurrentMode.Page.HasValue ? CurrentMode.Page.Value : 1;
+	            foreach (SobekCM_File_Info thisFile in CurrentItem.Web.Pages_By_Sequence[currentPageIndex - 1].Files)
+	            {
+	                View_Object fileObject = thisFile.Get_Viewer();
+	                if ((fileObject != null) && (fileObject.View_Type == View_Enum.JPEG2000))
+	                {
+	                    isZoomable = true;
+	                    break;
+	                }
+	            }
 	        }
 
 	        string displayFileName = CurrentItem.Web.Source_URL + "/" + FileName;
@@ -144,8 +140,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        {
 		        string currViewer = CurrentMode.ViewerCode;
 		        CurrentMode.ViewerCode = CurrentMode.ViewerCode.ToLower().Replace("j", "") + "x";
-		        string toZoomable = UrlWriterHelper.Redirect_URL(CurrentMode);;
-		        CurrentMode.ViewerCode = currViewer;
+		        string toZoomable = UrlWriterHelper.Redirect_URL(CurrentMode);
+	            CurrentMode.ViewerCode = currViewer;
 		        Output.WriteLine("\t\t<td id=\"sbkJiv_ImageZoomable\">");
 		        Output.WriteLine("Click on image below to switch to zoomable version<br />");
 		        Output.WriteLine("<a href=\"" + toZoomable + "\" title=\"Click on image to switch to zoomable version\">");

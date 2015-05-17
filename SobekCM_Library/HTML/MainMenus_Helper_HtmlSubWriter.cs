@@ -10,7 +10,6 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.AggregationViewer;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
@@ -37,7 +36,7 @@ namespace SobekCM.Library.HTML
             // Get ready to draw the tabs
             string home = "Home";
             string collection_home = UI_ApplicationCache_Gateway.Translation.Get_Translation(RequestSpecificValues.Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language ) + " Home";
-            string sobek_home_text = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home";
+            string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
             string viewItems = "View Items";
             string allItems = "View All Items";
             string newItems = "View Recently Added Items";
@@ -54,7 +53,7 @@ namespace SobekCM.Library.HTML
             {
                 home = "INICIO";
                 collection_home = "INICIO " + UI_ApplicationCache_Gateway.Translation.Get_Translation(RequestSpecificValues.Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language);
-                sobek_home_text = "INICIO " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation.ToUpper();
+                sobek_home_text = "INICIO " + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper();
                 allItems = "TODOS LOS ARTÍCULOS";
                 newItems = "NUEVOS ARTÍCULOS";
                 browseBy = "BÚSQUEDA POR";
@@ -79,7 +78,7 @@ namespace SobekCM.Library.HTML
             Search_Type_Enum thisSearch = RequestSpecificValues.Current_Mode.Search_Type;
             Home_Type_Enum thisHomeType = RequestSpecificValues.Current_Mode.Home_Type;
             Result_Display_Type_Enum resultsType = RequestSpecificValues.Current_Mode.Result_Display_Type;
-            ushort page = RequestSpecificValues.Current_Mode.Page;
+            ushort? page = RequestSpecificValues.Current_Mode.Page;
             string browse_code = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
             string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
             if ((thisMode == Display_Mode_Enum.Aggregation) && ((thisAggrType == Aggregation_Type_Enum.Browse_Info) || (thisAggrType == Aggregation_Type_Enum.Child_Page_Edit)))
@@ -640,7 +639,7 @@ namespace SobekCM.Library.HTML
             // Get ready to draw the tabs
             string home = "Home";
             string collection_home = UI_ApplicationCache_Gateway.Translation.Get_Translation(RequestSpecificValues.Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language) + " Home";
-            string sobek_home_text = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home";
+            string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
             string myCollections = "My Collections";
             string otherSearches_text = "Search Options";
             const string list_view_text = "List View";
@@ -659,7 +658,7 @@ namespace SobekCM.Library.HTML
             {
                 home = "INICIO";
                 collection_home = "INICIO " + UI_ApplicationCache_Gateway.Translation.Get_Translation(RequestSpecificValues.Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language);
-                sobek_home_text = "INICIO " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation.ToUpper();
+                sobek_home_text = "INICIO " + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper();
                 myCollections = "MIS COLECCIONES";
                 bookshelf_view = "VISTA BIBLIOTECA";
                 map_view = "VISTA MAPA";
@@ -727,7 +726,7 @@ namespace SobekCM.Library.HTML
             Search_Type_Enum thisSearch = RequestSpecificValues.Current_Mode.Search_Type;
             Home_Type_Enum thisHomeType = RequestSpecificValues.Current_Mode.Home_Type;
             Result_Display_Type_Enum resultsType = RequestSpecificValues.Current_Mode.Result_Display_Type;
-            ushort page = RequestSpecificValues.Current_Mode.Page;
+            ushort? page = RequestSpecificValues.Current_Mode.Page;
             string browse_code = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
             string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
             if ((thisMode == Display_Mode_Enum.Aggregation) && ((thisAggrType == Aggregation_Type_Enum.Browse_Info) || (thisAggrType == Aggregation_Type_Enum.Child_Page_Edit)))
@@ -923,7 +922,7 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-            if ((RequestSpecificValues.Current_Mode.Coordinates.Length > 0) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map)))
+            if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map)))
             {
                 if (resultView == Result_Display_Type_Enum.Map)
                 {
@@ -1049,15 +1048,15 @@ namespace SobekCM.Library.HTML
             Internal_Type_Enum internalType = RequestSpecificValues.Current_Mode.Internal_Type;
             Result_Display_Type_Enum resultType = RequestSpecificValues.Current_Mode.Result_Display_Type;
             string mySobekSubmode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
-            ushort page = RequestSpecificValues.Current_Mode.Page;
+            ushort? page = RequestSpecificValues.Current_Mode.Page;
 
             // Ensure some values that SHOULD be blank really are
             RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
 
             // Get ready to draw the tabs
-            string sobek_home_text = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home";
+            string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
             const string myCollections = "My Collections";
-            string my_sobek_home_text = "<span style=\"text-transform:lowercase\">my</span>" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home";
+            string my_sobek_home_text = "<span style=\"text-transform:lowercase\">my</span>" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
             const string myLibrary = "My Library";
             const string myPreferences = "My Account";
             const string internal_text = "Internal";

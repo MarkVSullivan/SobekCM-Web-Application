@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Library.ItemViewer.Viewers;
@@ -26,7 +27,7 @@ namespace SobekCM.Library.ItemViewer.Fragments
             {
                 // Determine the number of columns for text areas, depending on browser
                 int actual_cols = 50;
-                if (CurrentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0)
+                if (( !String.IsNullOrEmpty(CurrentMode.Browser_Type)) && (CurrentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0))
                     actual_cols = 45;
 
                 StringBuilder responseBuilder = new StringBuilder();

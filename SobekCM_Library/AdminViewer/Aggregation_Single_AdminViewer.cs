@@ -123,34 +123,36 @@ namespace SobekCM.Library.AdminViewer
 
 			// Determine the page
 			page = 1;
-			if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "b")
-				page = 2;
-			else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "c")
-				page = 3;
-			else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "d")
-				page = 4;
-			else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "e")
-				page = 5;
-			else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "f")
-				page = 6;
-			else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "g")
-				page = 7;
-			else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "h")
-				page = 8;
-            else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "i")
-                page = 9;
-            else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "j")
-                page = 10;
-            else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "k")
-                page = 11;
-			else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "y")
-				page = 12;
-			else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("g_") == 0)
-				page = 13;
+		    if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
+		    {
+		        if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "b")
+		            page = 2;
+		        else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "c")
+		            page = 3;
+		        else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "d")
+		            page = 4;
+		        else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "e")
+		            page = 5;
+		        else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "f")
+		            page = 6;
+		        else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "g")
+		            page = 7;
+		        else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "h")
+		            page = 8;
+		        else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "i")
+		            page = 9;
+		        else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "j")
+		            page = 10;
+		        else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "k")
+		            page = 11;
+		        else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "y")
+		            page = 12;
+		        else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("g_") == 0)
+		            page = 13;
+		    }
 
 
-
-			// If this is a postback, handle any events first
+		    // If this is a postback, handle any events first
 			if (RequestSpecificValues.Current_Mode.isPostBack)
 			{
 				try

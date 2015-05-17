@@ -45,7 +45,7 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Internal_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
-            string title = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation.ToUpper() + " HOME";
+            string title = RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper() + " HOME";
             string collection_details = "COLLECTION HIERARCHY";
             string collection_details_title = "Active and Inactive Collections";
             string new_items = "NEW ITEMS";
@@ -57,7 +57,7 @@ namespace SobekCM.Library.HTML
             const string buildFailures = "BUILD FAILURES";
             const string buildFailuresTitle = "Build Failure Log";
             const string unauthorizedTitle = "Internal Users Only";
-            string my_sobek_home = "my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation.ToUpper() + " HOME";
+            string my_sobek_home = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper() + " HOME";
             const string myLibrary = "MY LIBRARY";
             const string myPreferences = "MY ACCOUNT";
             const string internalTab = "INTERNAL";

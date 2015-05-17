@@ -174,7 +174,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
         }
 
-        private void add_single_point(string Latitude, string Longitude, SobekCM_Navigation_Object Current_Mode, List<DataRow> DatarowsInThisPoint, StringBuilder ScriptBuilder)
+        private void add_single_point(string Latitude, string Longitude, Navigation_Object Current_Mode, List<DataRow> DatarowsInThisPoint, StringBuilder ScriptBuilder)
         {
             // Build the info window
             StringBuilder contentBuilder = new StringBuilder(2000);

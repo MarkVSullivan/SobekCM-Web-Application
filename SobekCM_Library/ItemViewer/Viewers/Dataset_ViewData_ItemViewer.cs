@@ -8,7 +8,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
@@ -71,10 +70,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// Check the row data
 			if ((itemDataset != null) && ( itemDataset.Tables.Count > 0 ))
 			{
+                int subpage_index = CurrentMode.SubPage.HasValue ? CurrentMode.SubPage.Value : 0;
+
 				DataTable tbl = itemDataset.Tables[0];
-				if ((CurrentMode.SubPage < itemDataset.Tables.Count + 2) && (CurrentMode.SubPage >= 2))
+                if ((subpage_index < itemDataset.Tables.Count + 2) && (subpage_index >= 2))
 				{
-					tbl = itemDataset.Tables[CurrentMode.SubPage - 2];
+                    tbl = itemDataset.Tables[subpage_index - 2];
 				}
 
 				row = -1;
@@ -192,9 +193,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (row > 0)
 			{
 				DataTable tbl = itemDataset.Tables[0];
-				if ((CurrentMode.SubPage < itemDataset.Tables.Count + 2) && (CurrentMode.SubPage >= 2))
+                int subpage_index = CurrentMode.SubPage.HasValue ? CurrentMode.SubPage.Value : 0;
+                if ((subpage_index < itemDataset.Tables.Count + 2) && (subpage_index >= 2))
 				{
-					tbl = itemDataset.Tables[CurrentMode.SubPage - 2];
+                    tbl = itemDataset.Tables[subpage_index - 2];
 				}
 				DataRow thisRow = tbl.Rows[row];
 
@@ -233,7 +235,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Look for the search term and such from the current query string
 				string term = String.Empty;
 				string field = String.Empty;
-				string[] possibles = new string[] {"col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12", "col13", "col14", "col15", "col16", "col17", "col18", "col19", "col20"};
+				string[] possibles = {"col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12", "col13", "col14", "col15", "col16", "col17", "col18", "col19", "col20"};
 				foreach (string possibility in possibles)
 				{
 					if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString[possibility]))
@@ -252,9 +254,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					Output.WriteLine("              <select id=\"sbkDvd_Select1\" name=\"bkDvd_Select1\">");
 
 					DataTable tbl = itemDataset.Tables[0];
-					if ((CurrentMode.SubPage < itemDataset.Tables.Count + 2) && (CurrentMode.SubPage >= 2))
+                    int subpage_index = CurrentMode.SubPage.HasValue ? CurrentMode.SubPage.Value : 0;
+                    if ((subpage_index < itemDataset.Tables.Count + 2) && (subpage_index >= 2))
 					{
-						tbl = itemDataset.Tables[CurrentMode.SubPage - 2];
+                        tbl = itemDataset.Tables[subpage_index - 2];
 					}
 					int column_count = 1;
 					foreach (DataColumn thisColumn in tbl.Columns)
@@ -306,7 +309,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					Output.WriteLine("            <p>Select a table below to view that data:</p>");
 					Output.WriteLine("            <ul>");
 					int table_number = 2;
-					ushort subpage = CurrentMode.SubPage;
+					ushort? subpage = CurrentMode.SubPage;
 					foreach (DataTable thisTableList in itemDataset.Tables)
 					{
 						CurrentMode.SubPage = (ushort) table_number;
@@ -327,7 +330,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 
 				// Get the datatable from the set
-				DataTable thisTable = itemDataset.Tables[CurrentMode.SubPage - 2];
+                int subpage_index2 = CurrentMode.SubPage.HasValue ? CurrentMode.SubPage.Value : 0;
+                DataTable thisTable = itemDataset.Tables[subpage_index2 - 2];
 
 
 				// Start the main area
@@ -382,7 +386,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				Output.WriteLine("           \"bProcessing\": true,");
 
 				Output.WriteLine("           \"bServerSide\": true,");
-				string redirect_url = UrlWriterHelper.Redirect_URL(CurrentMode);;
+				string redirect_url = UrlWriterHelper.Redirect_URL(CurrentMode);
 				if ((field.Length > 0) && (term.Length > 0))
 				{
 					if (redirect_url.IndexOf("?") > 0)

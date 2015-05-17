@@ -1,10 +1,10 @@
 #region Using directives
 
+using System;
 using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -51,7 +51,7 @@ namespace SobekCM.Library.ResultsViewer
             resultsBldr.AppendLine("<table width=\"100%\">");
 
             // Start the header row and add the 'No.' part
-            short currentOrder = RequestSpecificValues.Current_Mode.Sort;
+            short? currentOrder = RequestSpecificValues.Current_Mode.Sort;
             if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results)
             {
                 RequestSpecificValues.Current_Mode.Sort = 0;
@@ -76,7 +76,8 @@ namespace SobekCM.Library.ResultsViewer
             resultsBldr.AppendLine("\t<tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
 
             // Set the counter for these results from the page 
-            int result_counter = ((RequestSpecificValues.Current_Mode.Page - 1) * Results_Per_Page) + 1;
+            int page = RequestSpecificValues.Current_Mode.Page.HasValue ? Math.Max(RequestSpecificValues.Current_Mode.Page.Value, ((ushort)1)) : 1;
+            int result_counter = ((page - 1) * Results_Per_Page) + 1;
             int current_row = 0;
 
             // Step through all the results

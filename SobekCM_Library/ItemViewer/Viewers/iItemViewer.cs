@@ -161,7 +161,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	public interface iItemViewer
 	{
 		/// <summary> Sets the current mode which (may) tell how to display this item </summary>
-		SobekCM_Navigation_Object CurrentMode { set; }
+		Navigation_Object CurrentMode { set; }
 
 		/// <summary> Sets the current item for this viewer to display </summary>
 		SobekCM_Item CurrentItem { set; }

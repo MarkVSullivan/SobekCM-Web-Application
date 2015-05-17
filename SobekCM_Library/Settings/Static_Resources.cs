@@ -2934,6 +2934,8 @@ namespace SobekCM.Library.Settings
                 if (readerStream != null) readerStream.Close();
             }
 
+            Sobekcm_Css = "http://cdn.sobekdigital.com/css/sobekcm/4.8.10/sobekcm.css";
+
             return returnValue;
         }
     }

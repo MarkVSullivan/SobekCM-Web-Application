@@ -5,7 +5,6 @@ using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
@@ -20,7 +19,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     /// During a valid html request to display the home page with newspaper-specific search, the following steps occur:
     /// <ul>
     /// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-    /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="SobekCM_Navigation_Object"/> </li>
+    /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in this case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  For a collection-level request, an instance of the  <see cref="Aggregation_HtmlSubwriter"/> class is created. </li>
     /// <li>To display the requested collection view, the collection subwriter will creates an instance of this class </li>
@@ -68,7 +67,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             arg2 = String.Empty;
             arg1 = redirect_stem;
 
-            if ((RequestSpecificValues.Hierarchy_Object.Children_Count > 0) && (RequestSpecificValues.Current_Mode.Show_Selection_Panel))
+            if ((RequestSpecificValues.Hierarchy_Object.Children_Count > 0) && ((RequestSpecificValues.Current_Mode.Show_Selection_Panel.HasValue) && (RequestSpecificValues.Current_Mode.Show_Selection_Panel.Value )))
             {
                 Search_Script_Action = "newspaper_select_search_sobekcm('" + arg1 + "', '" + SUB_CODE + "', '" + browse_url + "');";
                 arg2 = SUB_CODE;

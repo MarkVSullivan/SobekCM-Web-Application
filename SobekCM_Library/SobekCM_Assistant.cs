@@ -52,7 +52,7 @@ namespace SobekCM.Library
         /// <param name="Site_Map"> [OUT] Optional navigational site map object related to this page </param>
         /// <returns>TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This always pulls the data directly from disk; this text is not cached. </remarks>
-        public bool Get_Simple_Web_Content_Text(SobekCM_Navigation_Object Current_Mode, string Base_Directory, Custom_Tracer Tracer, out HTML_Based_Content Simple_Web_Content, out SobekCM_SiteMap Site_Map ) 
+        public bool Get_Simple_Web_Content_Text(Navigation_Object Current_Mode, string Base_Directory, Custom_Tracer Tracer, out HTML_Based_Content Simple_Web_Content, out SobekCM_SiteMap Site_Map ) 
         {
             if (Tracer != null)
             {
@@ -383,7 +383,7 @@ namespace SobekCM.Library
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> File name to read for the static browse HTML to display </returns>
-        public string Get_All_Browse_Static_HTML(SobekCM_Navigation_Object Current_Mode, Custom_Tracer Tracer)
+        public string Get_All_Browse_Static_HTML(Navigation_Object Current_Mode, Custom_Tracer Tracer)
         {
             string base_image_url = UI_ApplicationCache_Gateway.Settings.Base_Data_Directory + Current_Mode.Aggregation + "_all.html";
             return base_image_url;
@@ -405,7 +405,7 @@ namespace SobekCM.Library
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
-        public bool Get_Browse_Info(SobekCM_Navigation_Object Current_Mode,
+        public bool Get_Browse_Info(Navigation_Object Current_Mode,
                                     Item_Aggregation Aggregation_Object,
                                     string Base_Directory,
                                     Custom_Tracer Tracer,
@@ -453,8 +453,8 @@ namespace SobekCM.Library
 
                     // Set the current sort to ZERO, if currently set to ONE and this is an ALL BROWSE.
                     // Those two sorts are the same in this case
-                    int sort = Current_Mode.Sort;
-                    if ((Current_Mode.Sort == 0) && (Browse_Object.Code == "all"))
+                    int sort = Current_Mode.Sort.HasValue ? Math.Max(Current_Mode.Sort.Value, ((ushort)1)) : 1;
+                    if ((sort == 0) && (Browse_Object.Code == "all"))
                         sort = 1;
 
                     // Special code if this is a JSON browse
@@ -464,6 +464,9 @@ namespace SobekCM.Library
                         browse_code = browse_code + "_JSON";
                         sort = 12;
                     }
+
+                    // Get the page count in the results
+                    int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
 
                     // Determine if this is a special search type which returns more rows and is not cached.
                     // This is used to return the results as XML and DATASET
@@ -488,7 +491,7 @@ namespace SobekCM.Library
                             need_browse_statistics = false;
 
                         // Look to see if the paged results are available on any cache..
-                        Paged_Results = CachedDataManager.Retrieve_Browse_Results(Aggregation_Object.Code, browse_code, Current_Mode.Page, sort, Tracer);
+                        Paged_Results = CachedDataManager.Retrieve_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, Tracer);
                         if (Paged_Results != null)
                             need_paged_results = false;
                     }
@@ -514,7 +517,7 @@ namespace SobekCM.Library
                         // Get from the hierarchy object
                         if (Current_Mode.Writer_Type == Writer_Type_Enum.JSON)
                         {
-                            Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Item_Aggregation_Browse_Paged(Current_Mode.Aggregation, "1900-01-01", false, 20, Current_Mode.Page, 0, need_browse_statistics, Aggregation_Object.Facets, need_browse_statistics, Tracer);
+                            Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Item_Aggregation_Browse_Paged(Current_Mode.Aggregation, "1900-01-01", false, 20, current_page_index, 0, need_browse_statistics, Aggregation_Object.Facets, need_browse_statistics, Tracer);
                             if (need_browse_statistics)
                             {
                                 Complete_Result_Set_Info = returnArgs.Statistics;
@@ -525,7 +528,7 @@ namespace SobekCM.Library
                         }
                         else
                         {
-                            Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Get_Browse_Results(Aggregation_Object, Browse_Object, Current_Mode.Page, sort, results_per_page, !special_search_type, need_browse_statistics, Tracer);
+                            Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Get_Browse_Results(Aggregation_Object, Browse_Object, current_page_index, sort, results_per_page, !special_search_type, need_browse_statistics, Tracer);
                             if (need_browse_statistics)
                             {
                                 Complete_Result_Set_Info = returnArgs.Statistics;
@@ -546,7 +549,7 @@ namespace SobekCM.Library
                             // Save the overall result set statistics to the cache if something was pulled
                             if ((need_paged_results) && (Paged_Results != null))
                             {
-                                CachedDataManager.Store_Browse_Results(Aggregation_Object.Code, browse_code, Current_Mode.Page, sort, pagesOfResults, Tracer);
+                                CachedDataManager.Store_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, pagesOfResults, Tracer);
                             }
                         }
                     }
@@ -568,7 +571,7 @@ namespace SobekCM.Library
         /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Location for the static html file to display for this item view request </returns>
-        public string Get_Item_Static_HTML(SobekCM_Navigation_Object Current_Mode, Item_Lookup_Object All_Items_Lookup, Custom_Tracer Tracer)
+        public string Get_Item_Static_HTML(Navigation_Object Current_Mode, Item_Lookup_Object All_Items_Lookup, Custom_Tracer Tracer)
         {
             // Must at least have a bib id of the proper length
             if (Current_Mode.BibID.Length < 10)
@@ -635,8 +638,8 @@ namespace SobekCM.Library
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache.  If the item must be 
-        /// built from scratch, the <see cref="Items.SobekCM_Item_Factory"/> class is utilized. </remarks>
-        public bool Get_Item(SobekCM_Navigation_Object Current_Mode,
+        /// built from scratch, the <see cref="SobekCM_Item_Factory"/> class is utilized. </remarks>
+        public bool Get_Item(Navigation_Object Current_Mode,
                              Item_Lookup_Object All_Items_Lookup,
                              string Base_URL, 
                              Dictionary<string, Wordmark_Icon> Icon_Table,
@@ -664,9 +667,9 @@ namespace SobekCM.Library
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache.  If the item must be 
-        /// built from scratch, the <see cref="Items.SobekCM_Item_Factory"/> class is utilized. </remarks>
+        /// built from scratch, the <see cref="SobekCM_Item_Factory"/> class is utilized. </remarks>
         public bool Get_Item(string Collection_Code, 
-                             SobekCM_Navigation_Object Current_Mode, 
+                             Navigation_Object Current_Mode, 
                              Item_Lookup_Object All_Items_Lookup, 
                              string Base_URL, 
                              Dictionary<string, Wordmark_Icon> Icon_Table, 
@@ -688,9 +691,9 @@ namespace SobekCM.Library
             Items_In_Title = null;
 
             // Check for legacy reference by itemid
-            if ((Current_Mode.BibID.Length == 0) && (Current_Mode.ItemID_DEPRECATED > 0))
+            if ((Current_Mode.BibID.Length == 0) && (Current_Mode.ItemID_DEPRECATED.HasValue))
             {
-                DataRow thisRowInfo = SobekCM_Database.Lookup_Item_By_ItemID(Current_Mode.ItemID_DEPRECATED, Tracer);
+                DataRow thisRowInfo = SobekCM_Database.Lookup_Item_By_ItemID(Current_Mode.ItemID_DEPRECATED.Value, Tracer);
                 if (thisRowInfo == null)
                 {
                     Current_Mode.Invalid_Item = true;
@@ -732,13 +735,13 @@ namespace SobekCM.Library
             // If this is not a mode that is only item group display, try to pull the item
             if (!item_group_display)
             {
-                if ((Current_Mode.VID.Length > 0) && (Current_Mode.VID != "00000"))
+                if (( !String.IsNullOrEmpty(Current_Mode.VID)) && (Current_Mode.VID != "00000"))
                 {
                     selected_item = All_Items_Lookup.Item_By_Bib_VID(Current_Mode.BibID, Current_Mode.VID, Tracer);
                 }
                 else
                 {
-                    if ((dbTitle.Item_Count == 1) && (Current_Mode.VID != "00000"))
+                    if ((dbTitle.Item_Count == 1) && (( String.IsNullOrEmpty(Current_Mode.VID)) || ( Current_Mode.VID != "00000")))
                     {
                         selected_item = All_Items_Lookup.Item_By_Bib_Only(Current_Mode.BibID);
                     }
@@ -816,7 +819,10 @@ namespace SobekCM.Library
                     {
                         Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "Get the current page");
                     }
-                    Current_Page = SobekCM_Item_Factory.Get_Current_Page(Current_Item, Current_Mode.Page, Tracer);
+
+                    // Get the page count in the results
+                    int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
+                    Current_Page = SobekCM_Item_Factory.Get_Current_Page(Current_Item, current_page_index, Tracer);
                 }
             }
             else
@@ -867,7 +873,7 @@ namespace SobekCM.Library
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
-        public void Get_Search_Results(SobekCM_Navigation_Object Current_Mode,
+        public void Get_Search_Results(Navigation_Object Current_Mode,
                                        Item_Lookup_Object All_Items_Lookup,
                                        Item_Aggregation Aggregation_Object, List<string> Search_Stop_Words,
                                        Custom_Tracer Tracer,
@@ -884,7 +890,7 @@ namespace SobekCM.Library
             Complete_Result_Set_Info = null;
 
             // Get the sort
-            int sort = Current_Mode.Sort;
+            int sort = Current_Mode.Sort.HasValue ? Math.Max(Current_Mode.Sort.Value, ((ushort)1)) : 0;
             if ((sort != 0) && (sort != 1) && (sort != 2) && (sort != 10) && (sort != 11))
                 sort = 0;
 
@@ -949,9 +955,11 @@ namespace SobekCM.Library
 			        // Perform the search against the database
 			        try
 			        {
-				        // Try to pull more than one page, so we can cache the next page or so
+                        // Get the page count in the results
+                        int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
 
-				        Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Items_By_Coordinates(Current_Mode.Aggregation, lat1, long1, lat2, long2, false, 20, Current_Mode.Page, sort, false, new List<short>(), true, Tracer);
+				        // Try to pull more than one page, so we can cache the next page or so
+                        Multiple_Paged_Results_Args returnArgs = Engine_Database.Get_Items_By_Coordinates(Current_Mode.Aggregation, lat1, long1, lat2, long2, false, 20, current_page_index, sort, false, new List<short>(), true, Tracer);
 				        List<List<iSearch_Title_Result>> pagesOfResults = returnArgs.Paged_Results;
 				        Complete_Result_Set_Info = returnArgs.Statistics;
 
@@ -1009,17 +1017,17 @@ namespace SobekCM.Library
 		        // Determine if a date range was provided
 		        long date1 = -1;
 		        long date2 = -1;
-		        if (Current_Mode.DateRange_Date1 >= 0)
+		        if (Current_Mode.DateRange_Date1.HasValue)
 		        {
-			        date1 = Current_Mode.DateRange_Date1;
-			        if (Current_Mode.DateRange_Date2 >= 0)
+                    date1 = Current_Mode.DateRange_Date1.Value;
+			        if (Current_Mode.DateRange_Date2.HasValue)
 			        {
-				        if (Current_Mode.DateRange_Date2 >= Current_Mode.DateRange_Date1)
-					        date2 = Current_Mode.DateRange_Date2;
+                        if (Current_Mode.DateRange_Date2.Value >= Current_Mode.DateRange_Date1.Value)
+					        date2 = Current_Mode.DateRange_Date2.Value;
 				        else
 				        {
-					        date1 = Current_Mode.DateRange_Date2;
-					        date2 = Current_Mode.DateRange_Date1;
+                            date1 = Current_Mode.DateRange_Date2.Value;
+                            date2 = Current_Mode.DateRange_Date1.Value;
 				        }
 			        }
 			        else
@@ -1029,20 +1037,20 @@ namespace SobekCM.Library
 		        }
 				if (date1 < 0)
 				{
-					if (Current_Mode.DateRange_Year1 >= 0)
+					if ((Current_Mode.DateRange_Year1.HasValue ) && ( Current_Mode.DateRange_Year1.Value > 0 ))
 					{
-						DateTime startDate = new DateTime(Current_Mode.DateRange_Year1, 1, 1);
+						DateTime startDate = new DateTime(Current_Mode.DateRange_Year1.Value, 1, 1);
 						TimeSpan timeElapsed = startDate.Subtract(new DateTime(1, 1, 1));
 						date1 = (long)timeElapsed.TotalDays;
-						if (Current_Mode.DateRange_Year2 >= 0)
+                        if ((Current_Mode.DateRange_Year2.HasValue) && (Current_Mode.DateRange_Year2.Value > 0))
 						{
-							startDate = new DateTime(Current_Mode.DateRange_Year2, 12, 31);
+							startDate = new DateTime(Current_Mode.DateRange_Year2.Value, 12, 31);
 							timeElapsed = startDate.Subtract(new DateTime(1, 1, 1));
 							date2 = (long)timeElapsed.TotalDays;
 						}
 						else
 						{
-							startDate = new DateTime(Current_Mode.DateRange_Year1, 12, 31);
+							startDate = new DateTime(Current_Mode.DateRange_Year1.Value, 12, 31);
 							timeElapsed = startDate.Subtract(new DateTime(1, 1, 1));
 							date2 = (long) timeElapsed.TotalDays;
 						}
@@ -1074,9 +1082,12 @@ namespace SobekCM.Library
                     {
                         try
                         {
+                            // Get the page count in the results
+                            int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
+
                             // Perform the search against greenstone
                             Search_Results_Statistics recomputed_search_statistics;
-                            Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Current_Mode.Aggregation, Current_Mode.Page, sort, results_per_page, out recomputed_search_statistics, out Paged_Results);
+                            Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Current_Mode.Aggregation, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results);
                             if (need_search_statistics)
                                 Complete_Result_Set_Info = recomputed_search_statistics;
                         }
@@ -1288,7 +1299,7 @@ namespace SobekCM.Library
             }
         }
 
-        private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, long Date1, long Date2, int ActualCount, SobekCM_Navigation_Object Current_Mode, int Current_Sort, Item_Aggregation Aggregation_Object, Item_Lookup_Object All_Items_Lookup, int Results_Per_Page, bool Potentially_Include_Facets, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
+        private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, long Date1, long Date2, int ActualCount, Navigation_Object Current_Mode, int Current_Sort, Item_Aggregation Aggregation_Object, Item_Lookup_Object All_Items_Lookup, int Results_Per_Page, bool Potentially_Include_Facets, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
         {
             if (Tracer != null)
             {
@@ -1480,10 +1491,13 @@ namespace SobekCM.Library
                 }
             }
 
+            // Get the page count in the results
+            int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
+
             // If this is an exact match, just do the search
             if (Current_Mode.Search_Precision == Search_Precision_Type_Enum.Exact_Match)
             {
-                Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Exact_Search_Paged(db_terms[0], db_fields[0], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Exact_Search_Paged(db_terms[0], db_fields[0], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
                 if (Need_Search_Statistics)
                     Complete_Result_Set_Info = returnArgs.Statistics;
                 Paged_Results = returnArgs.Paged_Results;
@@ -1540,7 +1554,7 @@ namespace SobekCM.Library
 
 
 
-                    Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(searchBuilder.ToString(), INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                    Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(searchBuilder.ToString(), INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
                     if (Need_Search_Statistics)
                         Complete_Result_Set_Info = returnArgs.Statistics;
                     Paged_Results = returnArgs.Paged_Results;
@@ -1550,7 +1564,7 @@ namespace SobekCM.Library
                     // Perform search in the database
                     Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(links[0], db_terms[0], db_fields[0], links[1], db_terms[1], db_fields[1], links[2], db_terms[2], db_fields[2], links[3], db_terms[3],
                                                                                                             db_fields[3], links[4], db_terms[4], db_fields[4], links[5], db_terms[5], db_fields[5], links[6], db_terms[6], db_fields[6], links[7], db_terms[7], db_fields[7], links[8], db_terms[8], db_fields[8],
-                                                                                                            links[9], db_terms[9], db_fields[9], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, Current_Mode.Page, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                                                                                                            links[9], db_terms[9], db_fields[9], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
 					if (Need_Search_Statistics)
                         Complete_Result_Set_Info = returnArgs.Statistics;
                     Paged_Results = returnArgs.Paged_Results;
@@ -1692,7 +1706,7 @@ namespace SobekCM.Library
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache. </remarks>
-        public bool Get_Entire_Collection_Hierarchy(SobekCM_Navigation_Object Current_Mode, Aggregation_Code_Manager Code_Manager, Custom_Tracer Tracer, out Item_Aggregation Aggregation_Object)
+        public bool Get_Entire_Collection_Hierarchy(Navigation_Object Current_Mode, Aggregation_Code_Manager Code_Manager, Custom_Tracer Tracer, out Item_Aggregation Aggregation_Object)
         {
             if (Tracer != null)
             {
@@ -1793,7 +1807,7 @@ namespace SobekCM.Library
 	    /// <param name="Cache_On_Build"> Flag indicates if this should be added to the ASP.net (or caching server) cache </param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
 	    /// <returns> Fully-built object used to "skin" this digital library </returns>
-	    public Web_Skin_Object Get_HTML_Skin(SobekCM_Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer)
+	    public Web_Skin_Object Get_HTML_Skin(Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer)
         {
             return Get_HTML_Skin(Current_Mode.Skin, Current_Mode, Skin_Collection, Cache_On_Build, Tracer); 
         }
@@ -1805,13 +1819,10 @@ namespace SobekCM.Library
 		/// <param name="Cache_On_Build"> Flag indicates if this should be added to the ASP.net (or caching server) cache </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully-built object used to "skin" this digital library </returns>
-        public Web_Skin_Object Get_HTML_Skin( string Web_Skin_Code, SobekCM_Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer )
+        public Web_Skin_Object Get_HTML_Skin( string Web_Skin_Code, Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer )
         {
             // Get the interface object
             Web_Skin_Object htmlSkin = null;
-            string webskin_code_language = Web_Skin_Code;
-            if ( Current_Mode.Language_Code.Length > 0 )
-                webskin_code_language = webskin_code_language + "|" + Current_Mode.Language_Code;
 
             // If no interface yet, look in the cache
             if (( Web_Skin_Code != "new") && ( Cache_On_Build ))

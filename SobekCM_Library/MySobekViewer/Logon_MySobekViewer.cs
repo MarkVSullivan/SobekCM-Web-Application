@@ -92,7 +92,7 @@ namespace SobekCM.Library.MySobekViewer
                         string raw_url = HttpContext.Current.Items["Original_URL"].ToString();
                         if (raw_url.ToLower().IndexOf("my/logon") > 0)
                         {
-                            if (RequestSpecificValues.Current_Mode.Return_URL.Length > 0)
+                            if ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Return_URL))
                             {
                                 HttpContext.Current.Response.Redirect(RequestSpecificValues.Current_Mode.Return_URL, false);
                                 RequestSpecificValues.Current_Mode.Request_Completed = true;
@@ -137,7 +137,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             get 
             {
-                return "Logon to My" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
+                return "Logon to My" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
             }
         }
 
@@ -147,7 +147,7 @@ namespace SobekCM.Library.MySobekViewer
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
 	    {
 			// Get ready to draw the tabs
-			string my_sobek = "my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
+			string my_sobek = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 
 			Output.WriteLine("<br />");
 			Output.WriteLine("<h1>Logon to " + my_sobek + "</h1>");
@@ -166,7 +166,7 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("  <p>Please choose the appropriate logon directly below.</p>");
 			Output.WriteLine("  <ul id=\"sbkLomv_OptionsList\">");
 
-			if (RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation == "dLOC")
+			if (RequestSpecificValues.Current_Mode.Instance_Abbreviation == "dLOC")
 			{
 				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid myDLOC logon</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with myDLOC authentication</a>.</li>");
 
@@ -183,7 +183,7 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + UI_ApplicationCache_Gateway.Settings.Shibboleth.Label + " ID</span>, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Shibboleth.ShibbolethURL + "\">Sign on with your " + UI_ApplicationCache_Gateway.Settings.Shibboleth.Label + " here</a>.</li>");
 				}
 
-				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " logon</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with my" + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " authentication here</a>.</li>");
+				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " logon</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " authentication here</a>.</li>");
 			}
 
 			RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;

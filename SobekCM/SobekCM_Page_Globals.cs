@@ -19,7 +19,7 @@ using SobekCM.Core.SiteMap;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
-using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library;
@@ -41,7 +41,7 @@ namespace SobekCM
 
 		public string browse_info_display_text;
 		public SobekCM_Item currentItem;
-		public SobekCM_Navigation_Object currentMode;
+		public Navigation_Object currentMode;
 		public Page_TreeNode currentPage;
 		public User_Object currentUser;
 		public Item_Aggregation hierarchyObject;
@@ -174,8 +174,10 @@ namespace SobekCM
 			// Analyze the response and get the mode
 			try
 			{
-			    currentMode = new SobekCM_Navigation_Object();
-			    SobekCM_QueryString_Analyzer.Parse_Query(request.QueryString, currentMode, base_url, request.UserLanguages, UI_ApplicationCache_Gateway.Aggregations, UI_ApplicationCache_Gateway.Collection_Aliases, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.URL_Portals, tracer);
+			    currentMode = new Navigation_Object();
+			    NameValueCollection queryString = request.QueryString;
+
+			    SobekCM_QueryString_Analyzer.Parse_Query(queryString, currentMode, base_url, request.UserLanguages, UI_ApplicationCache_Gateway.Aggregations, UI_ApplicationCache_Gateway.Collection_Aliases, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.URL_Portals, tracer);
 
                 currentMode.Base_URL=base_url;
 			    currentMode.isPostBack = isPostBack;
@@ -354,7 +356,7 @@ namespace SobekCM
 
 		#region Special checks for search engine robot URL behaviors
 
-		private void Perform_Search_Engine_Robot_Checks(SobekCM_Navigation_Object CurrentModeCheck, NameValueCollection QueryString)
+		private void Perform_Search_Engine_Robot_Checks(Navigation_Object CurrentModeCheck, NameValueCollection QueryString)
 		{
 			// Some writers should not be selected yet
 			if ((CurrentModeCheck.Writer_Type != Writer_Type_Enum.HTML) && (CurrentModeCheck.Writer_Type != Writer_Type_Enum.HTML_Echo) && (CurrentModeCheck.Writer_Type != Writer_Type_Enum.OAI))
@@ -589,12 +591,17 @@ namespace SobekCM
 				HttpContext.Current.Session["user"] = null;
 
 				// Determine new redirect location
-				string redirect = currentMode.Base_URL + currentMode.Return_URL;
-				if (((currentMode.Return_URL.IndexOf("admin") >= 0) && (currentMode.Return_URL.IndexOf("admin") <= 1)) ||
-				    ((currentMode.Return_URL.IndexOf("mysobek") >= 0) && (currentMode.Return_URL.IndexOf("mysobek") <= 1)))
-					redirect = currentMode.Base_URL;
+			    string redirect = currentMode.Base_URL;
+			    if (!String.IsNullOrEmpty(currentMode.Return_URL))
+			    {
+			        redirect = currentMode.Base_URL + currentMode.Return_URL;
 
-				HttpContext.Current.Response.Redirect(redirect, false);
+			        if (((currentMode.Return_URL.IndexOf("admin") >= 0) && (currentMode.Return_URL.IndexOf("admin") <= 1)) ||
+			            ((currentMode.Return_URL.IndexOf("mysobek") >= 0) && (currentMode.Return_URL.IndexOf("mysobek") <= 1)))
+			            redirect = currentMode.Base_URL;
+			    }
+
+			    HttpContext.Current.Response.Redirect(redirect, false);
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				currentMode.Request_Completed = true;
 				return;
@@ -1079,7 +1086,9 @@ namespace SobekCM
 			tracer.Add_Trace("SobekCM_Page_Globals.Public_Folder", "Retrieving public folder information and browse");
 
 			SobekCM_Assistant assistant = new SobekCM_Assistant();
-			bool result = assistant.Get_Public_User_Folder(currentMode.FolderID, currentMode.Page, tracer, out publicFolder, out searchResultStatistics, out pagedSearchResults);
+		    int currentPageIndex = currentMode.Page.HasValue ? currentMode.Page.Value : 1;
+		    int currentFolderId = currentMode.FolderID.HasValue ? currentMode.FolderID.Value : -1;
+            bool result = assistant.Get_Public_User_Folder(currentFolderId, currentPageIndex, tracer, out publicFolder, out searchResultStatistics, out pagedSearchResults);
 
 			if ((!result) || (!publicFolder.IsPublic))
 			{
@@ -1192,7 +1201,7 @@ namespace SobekCM
 			try
 			{
 				// If there is no search term, forward back to the collection
-				if ((currentMode.Search_String.Length == 0) && (currentMode.Coordinates.Length == 0))
+				if (( String.IsNullOrEmpty(currentMode.Search_String)) && ( String.IsNullOrEmpty(currentMode.Coordinates)))
 				{
 					currentMode.Mode = Display_Mode_Enum.Aggregation;
 					currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
@@ -1218,7 +1227,7 @@ namespace SobekCM
 			}
 		}
 
-	    private Recent_Searches.Search Get_Search_From_Mode(SobekCM_Navigation_Object currentMode, string SessionIP, Search_Type_Enum Search_Type, string Aggregation, string Search_Terms)
+	    private Recent_Searches.Search Get_Search_From_Mode(Navigation_Object currentMode, string SessionIP, Search_Type_Enum Search_Type, string Aggregation, string Search_Terms)
 	    {
 	        Recent_Searches.Search returnValue = new Recent_Searches.Search();
 
@@ -1276,7 +1285,7 @@ namespace SobekCM
 
 				// For EXPORT option, include ALL the items
 				int results_per_page = 20;
-				int current_page = currentMode.Page;
+				int current_page = currentMode.Page.HasValue ? currentMode.Page.Value : 1;
 				if (currentMode.Result_Display_Type == Result_Display_Type_Enum.Export)
 				{
 					results_per_page = 10000;

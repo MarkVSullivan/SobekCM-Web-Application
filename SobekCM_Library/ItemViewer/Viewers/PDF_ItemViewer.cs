@@ -22,10 +22,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 		/// <summary> Constructor for a new instance of the PDF_ItemViewer class </summary>
 		/// <param name="FileName"> Name of the PDF file to display </param>
-        public PDF_ItemViewer(string FileName, SobekCM_Navigation_Object Current_Mode)
+        public PDF_ItemViewer(string FileName, Navigation_Object Current_Mode)
 		{
             // Determine if this should be written as an iFrame
-            writeAsIframe = Current_Mode.Browser_Type.IndexOf("CHROME") == 0;
+		    writeAsIframe = ((!String.IsNullOrEmpty(Current_Mode.Browser_Type)) && (Current_Mode.Browser_Type.IndexOf("CHROME") == 0));
 
 		    // Save the filename
 			this.FileName = FileName;
@@ -121,7 +121,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Output.WriteLine("</td></tr>");
             //Output.WriteLine("\t\t<tr><td>");
 
-			if (CurrentMode.Text_Search.Length > 0)
+			if ( !String.IsNullOrWhiteSpace(CurrentMode.Text_Search))
 			{
 				displayFileName = displayFileName + "#search=\"" + CurrentMode.Text_Search.Replace("\"", "").Replace("+", " ").Replace("-", " ") + "\"";
 			}

@@ -25,7 +25,7 @@ namespace SobekCM.Library.ItemViewer
         /// <param name="Show_Zoomable"> Flag indicates if the zoomable server is online and should be displayable </param>
         /// <returns> Collection of the html for the navigation bar (one view could have multiple tabs)</returns>
         public static List<string> Get_Nav_Bar_HTML(View_Object Item_View, string Resource_Type, 
-            string Skin_Code, SobekCM_Navigation_Object Current_Mode, int Page_Sequence,
+            string Skin_Code, Navigation_Object Current_Mode, int Page_Sequence,
             Language_Support_Info Translator, bool Show_Zoomable, SobekCM_Item Current_Item )
         {
             List<string> returnVal = new List<string>();
@@ -238,7 +238,7 @@ namespace SobekCM.Library.ItemViewer
             return returnVal;
         }
 
-        private static string HTML_Helper_PageView(string interface_code, string Viewer_Code, string Display_Text, SobekCM_Navigation_Object Current_Mode)
+        private static string HTML_Helper_PageView(string interface_code, string Viewer_Code, string Display_Text, Navigation_Object Current_Mode)
         {
             string previousViewerCode = Current_Mode.ViewerCode;
             Current_Mode.ViewerCode = Viewer_Code;
@@ -247,7 +247,7 @@ namespace SobekCM.Library.ItemViewer
             return returnValue;
         }
 
-        private static string HTML_Helper(string interface_code, string Viewer_Code, string Display_Text, SobekCM_Navigation_Object Current_Mode)
+        private static string HTML_Helper(string interface_code, string Viewer_Code, string Display_Text, Navigation_Object Current_Mode)
         {
             if (Current_Mode.ViewerCode == Viewer_Code)
             {

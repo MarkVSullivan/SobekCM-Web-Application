@@ -56,7 +56,7 @@ namespace SobekCM.Library.HTML
 
             #region Code to add the statistics menu
 
-            string sobek_home_text = RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " Home";
+            string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
             const string list_view_text = "List View";
             const string brief_view_text = "Brief View";
             const string tree_view_text = "Tree View";
@@ -77,20 +77,20 @@ namespace SobekCM.Library.HTML
             const string definitions_text = "Definitions";
             const string recent_searches_text = "Recent Searches";
 
-			string item_count_title = "Resource Count in " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
-			string recent_searches_title = "Recent Searches in " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
-			string usage_title = "Usage Statistics for " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
+			string item_count_title = "Resource Count in " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+			string recent_searches_title = "Recent Searches in " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+			string usage_title = "Usage Statistics for " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 
 			if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
 			{
-				item_count_title = "Numero de Recursos en " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
-				recent_searches_title = "Búsquedas Recientes en " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
+				item_count_title = "Numero de Recursos en " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+				recent_searches_title = "Búsquedas Recientes en " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 			}
 
 			if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
 			{
-				item_count_title = "Nombre de Ressources en " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
-				recent_searches_title = "Recherches Récentes en " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation;
+				item_count_title = "Nombre de Ressources en " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+				recent_searches_title = "Recherches Récentes en " + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 			}
 
             Output.WriteLine("<!-- Add the statistics menu -->");
@@ -316,14 +316,7 @@ namespace SobekCM.Library.HTML
 					else
 					{
 						RequestSpecificValues.Current_Mode.Statistics_Type = Statistics_Type_Enum.Usage_Collections_By_Date;
-						if ((RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 12) && (type == Statistics_Type_Enum.Usage_Item_Views_By_Date))
-						{
-							Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + collections_date_text + "</a></li>");
-						}
-						else
-						{
-							Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + collections_date_text + "</a></li>");
-						}
+    					Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + collections_date_text + "</a></li>");
 						RequestSpecificValues.Current_Mode.Statistics_Type = type;
 					}
 
@@ -334,15 +327,7 @@ namespace SobekCM.Library.HTML
 					else
 					{
 						RequestSpecificValues.Current_Mode.Statistics_Type = Statistics_Type_Enum.Usage_Item_Views_By_Date;
-						if ((RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 12) && (type == Statistics_Type_Enum.Usage_Collections_By_Date))
-						{
-							Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + items_date_text + "</a></li>");
-						}
-						else
-						{
-							Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + items_date_text + "</a></li>");
-						}
-
+    					Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + items_date_text + "</a></li>");
 						RequestSpecificValues.Current_Mode.Statistics_Type = type;
 					}
 
@@ -395,7 +380,7 @@ namespace SobekCM.Library.HTML
             int end_year = UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Year;
             if ((type == Statistics_Type_Enum.Usage_Collections_By_Date) || (type == Statistics_Type_Enum.Usage_Item_Views_By_Date) || (type == Statistics_Type_Enum.Usage_By_Date_Text))
             {
-                if (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 12)
+                if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode)) && ( RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 12))
                 {
                     Int32.TryParse(RequestSpecificValues.Current_Mode.Info_Browse_Mode.Substring(0, 4), out start_year);
                     Int32.TryParse(RequestSpecificValues.Current_Mode.Info_Browse_Mode.Substring(4, 2), out start_month);
@@ -464,28 +449,28 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case Statistics_Type_Enum.Usage_Collection_History:
-                    string collection = RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper();
+                    string collection = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode) ? String.Empty : RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper();
                     if ((collection.Length == 0) || (!UI_ApplicationCache_Gateway.Aggregations.isValidCode(collection)))
 						collection = UI_ApplicationCache_Gateway.Aggregations.All_Aggregations[0].Code;
                     add_collection_history(Output, collection, SobekCM_Database.Get_Aggregation_Statistics_History(collection, Tracer), Tracer);
                     break;
 
                 case Statistics_Type_Enum.Usage_Items_By_Collection:
-                    string collection2 = RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper();
+                    string collection2 = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode) ? String.Empty : RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper();
                     if ((collection2.Length == 0) || (!UI_ApplicationCache_Gateway.Aggregations.isValidCode(collection2)))
 						collection2 = UI_ApplicationCache_Gateway.Aggregations.All_Aggregations[0].Code;
                     add_items_by_collection(Output, collection2, Tracer);
                     break;
 
                 case Statistics_Type_Enum.Usage_Titles_By_Collection:
-                    string collection5 = RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper();
+                    string collection5 = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode) ? String.Empty : RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper();
                     if ((collection5.Length == 0) || (!UI_ApplicationCache_Gateway.Aggregations.isValidCode(collection5)))
 						collection5 = UI_ApplicationCache_Gateway.Aggregations.All_Aggregations[0].Code;
                     add_titles_by_collection(Output, collection5, Tracer);
                     break;
 
                 case Statistics_Type_Enum.Usage_Collection_History_Text:
-                    string collection_text = RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper();
+                    string collection_text = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode) ? String.Empty : RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper();
 		            if (((collection_text.Length == 0) || (!UI_ApplicationCache_Gateway.Aggregations.isValidCode(collection_text))) && (collection_text.ToUpper() != "ALL"))
 			            collection_text = UI_ApplicationCache_Gateway.Aggregations.All_Aggregations[0].Code;
                     add_collection_history_text(Output, collection_text, SobekCM_Database.Get_Aggregation_Statistics_History(collection_text, Tracer), Tracer);
@@ -986,8 +971,8 @@ namespace SobekCM.Library.HTML
 
                 Output.WriteLine("<a name=\"Views\" ></a>");
                 Output.WriteLine("<h3>VIEWS</h3>");
-                Output.WriteLine("<p>Views are the actual page hits. Each time a person goes to " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " it counts as a view. The " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " statistics are cleaned so that views from robots, which search engines use to index websites, are removed. If they were not removed, the views on all collections and items would be much higher. Web usage statistics are always somewhat fallible, and this is one of the means for ensuring better quality usage statistics. <br /><br />");
-                Output.WriteLine("Some web statistics count &quot;page item downloads&quot; as views, which is highly inaccurate because each page has multiple items on it. For instance, the digital library main page, " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ", includes the page HTML and all of the images. If the statistics counted each “page item download” as a hit, each single view to the main page would be counted as over 30 “page item downloads.” To make matters more confusing, some digital repositories only offer PDF downloads for users to view items. Those digital repositories track &quot;item downloads&quot; and those are most equivalent to our statistics for usage by &quot;item.&quot; </p>");
+                Output.WriteLine("<p>Views are the actual page hits. Each time a person goes to " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " it counts as a view. The " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " statistics are cleaned so that views from robots, which search engines use to index websites, are removed. If they were not removed, the views on all collections and items would be much higher. Web usage statistics are always somewhat fallible, and this is one of the means for ensuring better quality usage statistics. <br /><br />");
+                Output.WriteLine("Some web statistics count &quot;page item downloads&quot; as views, which is highly inaccurate because each page has multiple items on it. For instance, the digital library main page, " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ", includes the page HTML and all of the images. If the statistics counted each “page item download” as a hit, each single view to the main page would be counted as over 30 “page item downloads.” To make matters more confusing, some digital repositories only offer PDF downloads for users to view items. Those digital repositories track &quot;item downloads&quot; and those are most equivalent to our statistics for usage by &quot;item.&quot; </p>");
 
                 Output.WriteLine("<a name=\"Visits\" ></a>");
                 Output.WriteLine("<h3>VISITS</h3>");
@@ -1092,7 +1077,7 @@ namespace SobekCM.Library.HTML
                             if (Convert.ToInt32(thisRow[11]) > 0)
                             {
                                 Output.Write(Month_From_Int(FirstMonth) + " " + FirstYear + "," + Month_From_Int(SecondMonth) + " " + SecondYear + ",");
-                                Output.WriteLine(RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ",,," + RequestSpecificValues.Current_Mode.SobekCM_Instance_Name + "," + thisRow[5] + "," + thisRow[6] + "," + main_page_total + "," + browses_total + "," + search_results_total + "," + thisRow[11] + "," + thisRow[12] + "," + thisRow[13] + "," + thisRow[14] + "," + thisRow[15] + "," + thisRow[16] + "," + thisRow[17] + "," + thisRow[18] + "," + thisRow[19] + "," + thisRow[20] + "," + thisRow[21]);
+                                Output.WriteLine(RequestSpecificValues.Current_Mode.Instance_Abbreviation + ",,," + RequestSpecificValues.Current_Mode.Instance_Name + "," + thisRow[5] + "," + thisRow[6] + "," + main_page_total + "," + browses_total + "," + search_results_total + "," + thisRow[11] + "," + thisRow[12] + "," + thisRow[13] + "," + thisRow[14] + "," + thisRow[15] + "," + thisRow[16] + "," + thisRow[17] + "," + thisRow[18] + "," + thisRow[19] + "," + thisRow[20] + "," + thisRow[21]);
                             }
                             break;
                     }
@@ -2217,7 +2202,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<p>Below are the overall statistics.  Additionally, the tabs above show statistics for:</p>");
                 Output.WriteLine("<ul>");
                 Output.WriteLine("  <li><b>Collections by date</b> provides the usage reports at the collection group, collection, and subcollection level for a provided date range.  This records views on the collection main pages, searches, and browses.  Total number of title and item views are also displayed by collection.</li>");
-                Output.WriteLine("  <li><b>Item Views by date</b> provides the usage reports on the specialized item-level views for all items in " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ".  The item statistics are aggregated at the collection level for easy analysis.</li>");
+                Output.WriteLine("  <li><b>Item Views by date</b> provides the usage reports on the specialized item-level views for all items in " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ".  The item statistics are aggregated at the collection level for easy analysis.</li>");
                 Output.WriteLine("  <li><b>Collection history</b> displays information about a single collection or subcollection over time.</li>");
                 Output.WriteLine("</ul>");
                 Output.WriteLine("<p>These statistics are generally updated monthly.</p>");
@@ -2234,7 +2219,7 @@ namespace SobekCM.Library.HTML
             }
             
             Output.WriteLine();
-            Output.WriteLine("<p>Below are the most up to date numbers for overall utilization of " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ".  The first table shows the summary of views against all collections.  The second table includes the details for specialized item-level views.</p>");
+            Output.WriteLine("<p>Below are the most up to date numbers for overall utilization of " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ".  The first table shows the summary of views against all collections.  The second table includes the details for specialized item-level views.</p>");
             Output.WriteLine("</div>");
  
 			Output.WriteLine("  <table id=\"sbkShw_OverallStatsTbl\">");
@@ -2589,7 +2574,7 @@ namespace SobekCM.Library.HTML
                 }
 
 				Output.WriteLine("<div class=\"sbkShw_MainText\">");
-                Output.WriteLine("<p>The " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Name + " ( " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + " ) is comprised of collections, organized into collection groups and subdivided into subcollections.  Currently, there are " + items + " total items in " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ", which make up " + titles + " different titles.   In all, there are over " + page_string + " million pages in " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ".</p>");
+                Output.WriteLine("<p>The " + RequestSpecificValues.Current_Mode.Instance_Name + " ( " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " ) is comprised of collections, organized into collection groups and subdivided into subcollections.  Currently, there are " + items + " total items in " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ", which make up " + titles + " different titles.   In all, there are over " + page_string + " million pages in " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ".</p>");
 
                 if ((IncludesFytd) && ( total_row[0] != null ))
                 {
@@ -2597,7 +2582,7 @@ namespace SobekCM.Library.HTML
                     ytd_items = items - Convert.ToInt32(total_row[0][10]);
                     ytd_pages = pages - Convert.ToInt32(total_row[0][11]);
 
-                    Output.WriteLine("<p>During the current fiscal year (which starts on July 1st), " + ytd_items + " items in " + ytd_titles + " titles have been added to " + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ".  This has added " + ytd_pages + " pages to this digital collection.</p>");
+                    Output.WriteLine("<p>During the current fiscal year (which starts on July 1st), " + ytd_items + " items in " + ytd_titles + " titles have been added to " + RequestSpecificValues.Current_Mode.Instance_Abbreviation + ".  This has added " + ytd_pages + " pages to this digital collection.</p>");
                 }
 
                 Output.WriteLine("<p>Below are the number of items in each collection and subcollection.</p>");
@@ -2905,7 +2890,7 @@ namespace SobekCM.Library.HTML
                         break;
 
                     case "z":
-                        Output.WriteLine(RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + ",,," + RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation + "," + thisRow[7] + "," + thisRow[8] + "," + thisRow[9] + "," + ytd_titles + "," + ytd_items + "," + ytd_pages);
+                        Output.WriteLine(RequestSpecificValues.Current_Mode.Instance_Abbreviation + ",,," + RequestSpecificValues.Current_Mode.Instance_Abbreviation + "," + thisRow[7] + "," + thisRow[8] + "," + thisRow[9] + "," + ytd_titles + "," + ytd_items + "," + ytd_pages);
                         break;
                 }
             }

@@ -603,10 +603,13 @@ namespace SobekCM.Core.Users
         public void Set_Aggregation_Home_Page_Flag(string Code, string Name, bool Flag)
         {
             string aggrCodeUpper = Code.ToUpper();
-            foreach (User_Permissioned_Aggregation thisAggregation in aggregationPermissions.Aggregations.Where(ThisAggregation => ThisAggregation.Code == aggrCodeUpper))
+            if ((aggregationPermissions != null) && (aggregationPermissions.Aggregations != null))
             {
-                thisAggregation.OnHomePage = Flag;
-                return;
+                foreach (User_Permissioned_Aggregation thisAggregation in aggregationPermissions.Aggregations.Where(ThisAggregation => ThisAggregation.Code == aggrCodeUpper))
+                {
+                    thisAggregation.OnHomePage = Flag;
+                    return;
+                }
             }
 
             if (Flag)

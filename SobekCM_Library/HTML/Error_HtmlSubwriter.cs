@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.IO;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Navigation;
@@ -59,7 +60,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <tr>");
                 Output.WriteLine("    <td align=\"center\" >");
                 string error_message = "Unknown error occurred";
-                if ((RequestSpecificValues.Current_Mode != null) && (RequestSpecificValues.Current_Mode.Error_Message.Length > 0))
+                if ((RequestSpecificValues.Current_Mode != null) && ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Error_Message)))
                 {
                     error_message = RequestSpecificValues.Current_Mode.Error_Message;
                 }

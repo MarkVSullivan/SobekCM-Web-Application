@@ -7,7 +7,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
@@ -256,11 +255,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			else
 			{
 				Output.WriteLine("          <td id=\"sbkDcv_DetailsArea\">");
-				DataTable thisTable = itemDataset.Tables[CurrentMode.SubPage - 2];
+                int subpage_index = CurrentMode.SubPage.HasValue ? CurrentMode.SubPage.Value : 0;
+                DataTable thisTable = itemDataset.Tables[subpage_index - 2];
 
 				if (itemDataset.Tables.Count > 1)
 				{
-					ushort subpage = CurrentMode.SubPage;
+					ushort? subpage = CurrentMode.SubPage;
 					CurrentMode.SubPage = 1;
 					Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\" title=\"Back to full data structure\">&larr; Back</a><br /><br />");
 					CurrentMode.SubPage = subpage;

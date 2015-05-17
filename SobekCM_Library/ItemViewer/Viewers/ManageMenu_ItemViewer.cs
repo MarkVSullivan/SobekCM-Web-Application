@@ -22,7 +22,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// <param name="Current_Object"> Digital resource to display </param>
 		/// <param name="Current_User"> Current user for this session </param>
 		/// <param name="Current_Mode"> Navigation object which encapsulates the user's current request </param>
-		public ManageMenu_ItemViewer(SobekCM_Item Current_Object, User_Object Current_User, SobekCM_Navigation_Object Current_Mode)
+		public ManageMenu_ItemViewer(SobekCM_Item Current_Object, User_Object Current_User, Navigation_Object Current_Mode)
 		{
 			// Save the current user and current mode information (this is usually populated AFTER the constructor completes, 
 			// but in this case (QC viewer) we need the information for early processing

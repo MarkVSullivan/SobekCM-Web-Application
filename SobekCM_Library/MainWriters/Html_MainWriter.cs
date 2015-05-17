@@ -110,7 +110,7 @@ namespace SobekCM.Library.MainWriters
                         // Send the email now
                         if (RequestSpecificValues.Current_Mode.Caught_Exception != null)
                         {
-                            if (RequestSpecificValues.Current_Mode.Error_Message.Length == 0)
+                            if ( String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Error_Message))
                                 RequestSpecificValues.Current_Mode.Error_Message = "Unknown exception caught";
                             Email_Information(RequestSpecificValues.Current_Mode.Error_Message, RequestSpecificValues.Current_Mode.Caught_Exception, RequestSpecificValues.Tracer, false);
                         }
@@ -522,7 +522,7 @@ namespace SobekCM.Library.MainWriters
             if ( String.IsNullOrEmpty(thisTitle))
                 thisTitle = "{0}";
 
-            return String.Format(thisTitle, RequestSpecificValues.Current_Mode.SobekCM_Instance_Abbreviation);
+            return String.Format(thisTitle, RequestSpecificValues.Current_Mode.Instance_Abbreviation);
         }
 
         /// <summary> Writes the style references and other data to the HEAD portion of the web page </summary>

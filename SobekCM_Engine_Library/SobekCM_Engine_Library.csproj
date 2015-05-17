@@ -75,7 +75,10 @@
     <Compile Include="Email\Email_Helper.cs" />
     <Compile Include="Endpoints\AggregationServices.cs" />
     <Compile Include="Endpoints\ItemServices.cs" />
+    <Compile Include="Endpoints\NavigationServices.cs" />
+    <Compile Include="Endpoints\WebContentServices.cs" />
     <Compile Include="Endpoints\WebSkinServices.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IpRangeUtilities\ComparableIpAddress.cs" />
     <Compile Include="IpRangeUtilities\IpRangeSetV4.cs" />
     <Compile Include="IpRangeUtilities\SingleIpRangeV4.cs" />

@@ -10,7 +10,6 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -43,7 +42,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    private int thumbnailClickY;
 
 		/// <summary> Constructor for a new instance of the Aware_JP2_ItemViewer class </summary>
-        public Aware_JP2_ItemViewer(SobekCM_Navigation_Object Current_Mode)
+        public Aware_JP2_ItemViewer(Navigation_Object Current_Mode)
 		{
 			width = 0;
 			height = 0;
@@ -58,7 +57,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// <summary> Constructor for a new instance of the Aware_JP2_ItemViewer class </summary>
 		/// <param name="Attributes"> Attributes for the JPEG2000 file to display, including width and height</param>
 		/// <param name="Resource_Type"> Resource type for the item being displayed; this affects the overall rendering style </param>
-		public Aware_JP2_ItemViewer( string Resource_Type, string Attributes, SobekCM_Navigation_Object Current_Mode )
+		public Aware_JP2_ItemViewer( string Resource_Type, string Attributes, Navigation_Object Current_Mode )
 		{
 			resourceType = Resource_Type;
 			width = 0;
@@ -214,19 +213,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 				// Calculate the number of zooms
 				zoomlevels = zoom_levels();
+                ushort zoom = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : (ushort)1;
 
 				// Calculate the size, in pixels, of the viewport
-				int size_pixels = get_jp2_viewport_size(CurrentMode.Viewport_Size, CurrentMode.Viewport_Zoom);
+			    int currViewportSize = CurrentMode.Viewport_Size.HasValue ? CurrentMode.Viewport_Size.Value : 1;
+                int size_pixels = get_jp2_viewport_size(currViewportSize, zoom);
 
 				// Save the current x and y
-				int x = CurrentMode.Viewport_Point_X;
-				int y = CurrentMode.Viewport_Point_Y;
+                int x = CurrentMode.Viewport_Point_X.HasValue ? CurrentMode.Viewport_Point_X.Value : 0;
+                int y = CurrentMode.Viewport_Point_Y.HasValue ? CurrentMode.Viewport_Point_Y.Value : 0;
+                
 
 				// Do Zoom out button
-				ushort zoom = CurrentMode.Viewport_Zoom;
 				if (zoom > 1)
-					CurrentMode.Viewport_Zoom = (ushort)(CurrentMode.Viewport_Zoom - 1);
-				int zoomed_pixel_size = get_jp2_viewport_size(CurrentMode.Viewport_Size, CurrentMode.Viewport_Zoom);
+					CurrentMode.Viewport_Zoom = (ushort)(zoom - 1);
+                int zoomed_pixel_size = get_jp2_viewport_size(currViewportSize, zoom);
 				CurrentMode.Viewport_Point_X = adjust_x(x, y, size_pixels, zoomed_pixel_size);
 				CurrentMode.Viewport_Point_Y = adjust_y(x, y, size_pixels, zoomed_pixel_size);
 				navRow.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img alt=\"" + zoom_out_text + "\" src=\"" + image_location + "zoom_out.gif\" /></a>" + Environment.NewLine );
@@ -236,7 +237,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				{
 					// Direct access to zoom
 					CurrentMode.Viewport_Zoom = i;
-					zoomed_pixel_size = get_jp2_viewport_size(CurrentMode.Viewport_Size, CurrentMode.Viewport_Zoom);
+                    zoomed_pixel_size = get_jp2_viewport_size(currViewportSize, i);
 					if (zoom != i)
 					{
 						CurrentMode.Viewport_Point_X = adjust_x(x, y, size_pixels, zoomed_pixel_size);
@@ -253,7 +254,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Viewport_Zoom = (ushort)(zoom + 1);
 				if (CurrentMode.Viewport_Zoom > zoomlevels)
 					CurrentMode.Viewport_Zoom = zoomlevels;
-				zoomed_pixel_size = get_jp2_viewport_size(CurrentMode.Viewport_Size, CurrentMode.Viewport_Zoom);
+                zoomed_pixel_size = get_jp2_viewport_size(currViewportSize, CurrentMode.Viewport_Zoom.Value);
 				CurrentMode.Viewport_Point_X = adjust_x(x, y, size_pixels, zoomed_pixel_size);
 				CurrentMode.Viewport_Point_Y = adjust_y(x, y, size_pixels, zoomed_pixel_size);
 				navRow.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img alt=\"" + zoom_in_text + "\" src=\"" + image_location + "zoom_in.gif\" /></a>" + Environment.NewLine );
@@ -282,7 +283,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				navRow.Append("<td>" + Environment.NewLine );
 
 				// Do the rotate buttons
-				ushort rotate = CurrentMode.Viewport_Rotation;
+			    ushort rotate = CurrentMode.Viewport_Rotation.HasValue ? CurrentMode.Viewport_Rotation.Value : (ushort) 0;
 				CurrentMode.Viewport_Point_Y = x;
 				if (CurrentMode.Viewport_Point_X < 0)
 					CurrentMode.Viewport_Point_X = 0;
@@ -318,7 +319,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				navRow.Append("<td>" + Environment.NewLine );
 
 				// Smallest screen button (512 x 512)
-				ushort size = CurrentMode.Viewport_Size;
+                ushort size = CurrentMode.Viewport_Size.HasValue ? CurrentMode.Viewport_Size.Value : (ushort) 1;
 				if (size == 0)
 					navRow.Append("<img src=\"" + image_location + "sizetools1.gif\" alt=\"Small size view\" />" + Environment.NewLine );
 				else
@@ -385,8 +386,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// Add the pan map, if the pan tool is displayed
 				if (CurrentMode.Viewport_Zoom != 1)
 				{
-					x = CurrentMode.Viewport_Point_X;
-					y = CurrentMode.Viewport_Point_Y;
+				    x = CurrentMode.Viewport_Point_X.HasValue ? CurrentMode.Viewport_Point_X.Value : 0;
+                    y = CurrentMode.Viewport_Point_Y.HasValue ? CurrentMode.Viewport_Point_Y.Value : 0;
 
 					navRow.Append("<map name=\"Map\">" + Environment.NewLine );
 					CurrentMode.Viewport_Point_X = x - size_pixels;
@@ -443,10 +444,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-				int x = CurrentMode.Viewport_Point_X;
-				int y = CurrentMode.Viewport_Point_Y;
-				ushort zoom = CurrentMode.Viewport_Zoom;
-				ushort rotation = CurrentMode.Viewport_Rotation;
+                int x = CurrentMode.Viewport_Point_X.HasValue ? CurrentMode.Viewport_Point_X.Value : 0;
+                int y = CurrentMode.Viewport_Point_Y.HasValue ? CurrentMode.Viewport_Point_Y.Value : 0;
+			    ushort zoom = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : (ushort) 1;
+                ushort rotation = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : (ushort) 0;
 				CurrentMode.Viewport_Point_X = 0;
 				CurrentMode.Viewport_Point_Y = 0;
 				CurrentMode.Viewport_Zoom = 1;
@@ -466,10 +467,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-				int x = CurrentMode.Viewport_Point_X;
-				int y = CurrentMode.Viewport_Point_Y;
-				ushort zoom = CurrentMode.Viewport_Zoom;
-				ushort rotation = CurrentMode.Viewport_Rotation;
+                int x = CurrentMode.Viewport_Point_X.HasValue ? CurrentMode.Viewport_Point_X.Value : 0;
+                int y = CurrentMode.Viewport_Point_Y.HasValue ? CurrentMode.Viewport_Point_Y.Value : 0;
+                ushort zoom = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : (ushort)1;
+                ushort rotation = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : (ushort)0;
 				CurrentMode.Viewport_Point_X = 0;
 				CurrentMode.Viewport_Point_Y = 0;
 				CurrentMode.Viewport_Zoom = 1;
@@ -489,10 +490,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-				int x = CurrentMode.Viewport_Point_X;
-				int y = CurrentMode.Viewport_Point_Y;
-				ushort zoom = CurrentMode.Viewport_Zoom;
-				ushort rotation = CurrentMode.Viewport_Rotation;
+                int x = CurrentMode.Viewport_Point_X.HasValue ? CurrentMode.Viewport_Point_X.Value : 0;
+                int y = CurrentMode.Viewport_Point_Y.HasValue ? CurrentMode.Viewport_Point_Y.Value : 0;
+                ushort zoom = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : (ushort)1;
+                ushort rotation = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : (ushort)0;
 				CurrentMode.Viewport_Point_X = 0;
 				CurrentMode.Viewport_Point_Y = 0;
 				CurrentMode.Viewport_Zoom = 1;
@@ -512,10 +513,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		{
 			get
 			{
-				int x = CurrentMode.Viewport_Point_X;
-				int y = CurrentMode.Viewport_Point_Y;
-				ushort zoom = CurrentMode.Viewport_Zoom;
-				ushort rotation = CurrentMode.Viewport_Rotation;
+                int x = CurrentMode.Viewport_Point_X.HasValue ? CurrentMode.Viewport_Point_X.Value : 0;
+                int y = CurrentMode.Viewport_Point_Y.HasValue ? CurrentMode.Viewport_Point_Y.Value : 0;
+                ushort zoom = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : (ushort)1;
+                ushort rotation = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : (ushort)0;
 				CurrentMode.Viewport_Point_X = 0;
 				CurrentMode.Viewport_Point_Y = 0;
 				CurrentMode.Viewport_Zoom = 1;
@@ -561,7 +562,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	        // Determine the zoom levels
 	        zoomlevels = zoom_levels();
-	        actualZoomLevel = (zoomlevels - CurrentMode.Viewport_Zoom + 1);
+	        int currentZoom = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : 1;
+            actualZoomLevel = (zoomlevels - currentZoom + 1);
 
 	        // Now, handle a post back from the thumbnail being clicked
             if ((thumbnailClickX != -100) && (thumbnailClickY != -100))
@@ -588,7 +590,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 // Determine the size of the current portal
-                long size_pixels = get_jp2_viewport_size(CurrentMode.Viewport_Size, CurrentMode.Viewport_Zoom);
+                int currViewportSize = CurrentMode.Viewport_Size.HasValue ? CurrentMode.Viewport_Size.Value : 1;
+                currentZoom = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : 1;
+                long size_pixels = get_jp2_viewport_size(currViewportSize, currentZoom);
 
 
                 // Subtract one half of that from the x and y value, so the image is centered
@@ -660,10 +664,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("          <li class=\"sbkIsw_NavBarMenuNonLink\">");
 
 	        // Compute the values needed to create the thumbnail
-	        int size_pixels = 512 + ( CurrentMode.Viewport_Size * 256 );
+            int currViewportSize = CurrentMode.Viewport_Size.HasValue ? CurrentMode.Viewport_Size.Value : 1;
+	        int size_pixels = 512 + ( currViewportSize * 256 );
 	        if ( CurrentMode.Viewport_Size == 3 )
 	            size_pixels = 1536;
-	        int rotation = ( CurrentMode.Viewport_Rotation % 4 ) * 90;
+            ushort currViewRotation = CurrentMode.Viewport_Rotation.HasValue ? CurrentMode.Viewport_Rotation.Value : (ushort) 0;
+	        int rotation = ( currViewRotation % 4 ) * 90;
 
 	        // Build the filename
 	        string jpeg2000_filename = FileName.Replace(" ", "%20");
@@ -818,10 +824,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	        // Build the value
 	        //StringBuilder builder = new StringBuilder();
-	        int size_pixels = 512 + ( CurrentMode.Viewport_Size * 256 );
+            int currViewportSize = CurrentMode.Viewport_Size.HasValue ? CurrentMode.Viewport_Size.Value : 1;
+	        int size_pixels = 512 + ( currViewportSize * 256 );
 	        if ( CurrentMode.Viewport_Size == 3 )
 	            size_pixels = 1536;
-	        int rotation = ( CurrentMode.Viewport_Rotation % 4 ) * 90;
+            ushort currViewRotation = CurrentMode.Viewport_Rotation.HasValue ? CurrentMode.Viewport_Rotation.Value : (ushort)0;
+	        int rotation = ( currViewRotation % 4 ) * 90;
 	        //builder.Append( "\t\t<td align=\"center\" colspan=\"3\">" + Environment.NewLine );
 
 	        if ( FileName.Length == 0 )
@@ -846,7 +854,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				
 	            // Build the source URL
 	            StringBuilder url_builder = new StringBuilder(500);
-	            int actual_zoom_level = (zoomlevels - CurrentMode.Viewport_Zoom + 1);
+                int currentZoom = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : 1;
+	            int actual_zoom_level = (zoomlevels - currentZoom + 1);
 	            if ((string.IsNullOrEmpty(featureType) || ( actual_zoom_level == 1 )))
 	            {
 	                url_builder.Append(UI_ApplicationCache_Gateway.Settings.JP2ServerUrl + "imageserver?res=" + actual_zoom_level + "&viewwidth=" + size_pixels + "&viewheight=" + size_pixels);
@@ -908,7 +917,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		private ushort zoom_levels()
 		{
 			// Get the current portal size in pixels
-			float size_pixels = 512 + ( CurrentMode.Viewport_Size * 256 );
+            int currViewportSize = CurrentMode.Viewport_Size.HasValue ? CurrentMode.Viewport_Size.Value : 1;
+            float size_pixels = 512 + (currViewportSize * 256);
 			if ( CurrentMode.Viewport_Size == 3 )
 				size_pixels = 1536;
 
@@ -934,10 +944,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		private void mainImage_Click(object sender, ImageClickEventArgs e)
 		{
 			// Determine the size of the current portal
-			int size_pixels = get_jp2_viewport_size( CurrentMode.Viewport_Size, CurrentMode.Viewport_Zoom );
+            int currViewportSize = CurrentMode.Viewport_Size.HasValue ? CurrentMode.Viewport_Size.Value : 1;
+		    int currentZoom = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : 1;
+            int size_pixels = get_jp2_viewport_size(currViewportSize, currentZoom);
 
 			// Get the image dimensions
-			int image_size = 512 + ( CurrentMode.Viewport_Size * 256 );
+            int image_size = 512 + (currViewportSize * 256);
 			if ( CurrentMode.Viewport_Size == 3 )
 				image_size = 1536;
 
@@ -946,8 +958,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			int y = (int) (((float) e.Y / image_size ) * size_pixels);
 
 			// Re-center
-			int x_value = CurrentMode.Viewport_Point_X + ( x - ( size_pixels / 2 ));
-			int y_value = CurrentMode.Viewport_Point_Y + ( y - ( size_pixels / 2 ));
+            int x_current = CurrentMode.Viewport_Point_X.HasValue ? CurrentMode.Viewport_Point_X.Value : 0;
+            int y_current = CurrentMode.Viewport_Point_Y.HasValue ? CurrentMode.Viewport_Point_Y.Value : 0;
+            int x_value = x_current + (x - (size_pixels / 2));
+            int y_value = y_current + (y - (size_pixels / 2));
 
 			// Make sure this doesn't violate anything
 			if ( x_value < 0 )

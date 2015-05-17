@@ -251,7 +251,7 @@ namespace SobekCM.URL_Rewriter
 								if ((Regex.Match(bib_possibly.ToUpper(), bibid_regex).Success) && (Regex.Match(vid_possibly, vid_regex).Success))
 								{
 									// This is for an item, so check for ROBOT here
-									if (( !String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["robot"])) || ( SobekCM_Navigation_Object.Is_UserAgent_IP_Robot(HttpContext.Current.Request.UserAgent, HttpContext.Current.Request.UserHostAddress)))
+									if (( !String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["robot"])) || ( Navigation_Object.Is_UserAgent_IP_Robot(HttpContext.Current.Request.UserAgent, HttpContext.Current.Request.UserHostAddress)))
 									{
 										string directory = bib_possibly.Substring(0, 2) + "/" + bib_possibly.Substring(2, 2) + "/" + bib_possibly.Substring(4, 2) + "/" + bib_possibly.Substring(6, 2) + "/" + bib_possibly.Substring(8);
 										string redirect_dir = "~/data/" + directory + "/" + bib_possibly + "_" + vid_possibly + ".html";

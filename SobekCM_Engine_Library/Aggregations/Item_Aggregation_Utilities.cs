@@ -555,7 +555,7 @@ namespace SobekCM.Engine_Library.Aggregations
                 }
 
                 HTML_Based_Content content = HTML_Based_Content_Reader.Read_HTML_File(homeFileSource, true, Tracer);
-                content.TEMP_Source = homeFileSource;
+                content.Source = homeFileSource;
 
                 return content;
             }

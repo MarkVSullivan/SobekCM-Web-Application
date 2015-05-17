@@ -566,7 +566,7 @@ namespace SobekCM.Library.MySobekViewer
 		    Output.WriteLine("      </div>");
 		    Output.WriteLine();
 
-		    bool isMozilla = RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0;
+	        bool isMozilla = ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0));
 
 		    // Create a new blank item for display purposes
 		    SobekCM_Item displayItem = new SobekCM_Item {BibID = RequestSpecificValues.Current_Item.BibID};
