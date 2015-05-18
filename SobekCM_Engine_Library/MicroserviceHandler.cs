@@ -48,6 +48,7 @@ namespace SobekCM.Engine_Library
                 Microservice_Endpoint endpoint = microserviceConfig.Get_Endpoint(paths);
                 if (endpoint == null)
                 {
+                    context.Response.ContentType = "text/plain";
                     context.Response.StatusCode = 501;
                     context.Response.Write("No endpoint found");
                     
@@ -58,6 +59,7 @@ namespace SobekCM.Engine_Library
                     string requestIp = context.Request.UserHostAddress;
                     if (!endpoint.AccessPermitted(requestIp))
                     {
+                        context.Response.ContentType = "text/plain";
                         context.Response.StatusCode = 403;
                         context.Response.Write("You are forbidden from accessing this endpoint");
                         return;
@@ -72,10 +74,14 @@ namespace SobekCM.Engine_Library
                         context.Response.ContentType = "application/octet-stream";
                     if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.XML)
                         context.Response.ContentType = "text/xml";
+                    if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.SOAP)
+                        context.Response.ContentType = "text/xml";
+                    if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.BINARY)
+                        context.Request.ContentType = "application/octet-stream";
 
                     try
                     {
-                        endpoint.Invoke(context.Response, paths, context.Request.Form);
+                        endpoint.Invoke(context.Response, paths, context.Request.QueryString, context.Request.Form);
                     }
                     catch (Exception ee)
                     {
@@ -87,7 +93,7 @@ namespace SobekCM.Engine_Library
             }
             else
             {
-
+                context.Response.ContentType = "text/plain";
                 context.Response.StatusCode = 400;
                 context.Response.Write("Invalid URI - No endpoint requested");
             }

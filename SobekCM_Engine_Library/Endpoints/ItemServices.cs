@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization.Formatters.Soap;
 using System.Web;
 using Jil;
 using ProtoBuf;
@@ -24,7 +28,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetItemCitation(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetItemCitation(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (UrlSegments.Count > 0)
             {
@@ -58,6 +62,21 @@ namespace SobekCM.Engine_Library.Endpoints
                             JSON.Serialize(new { bibid = returnValue.BibID, vid = returnValue.VID, description = returnValue.Description, title = returnValue.Title }, Response.Output, Options.ISO8601ExcludeNullsJSONP);
                             Response.Output.Write(");");
                             break;
+
+                        case Microservice_Endpoint_Protocol_Enum.XML:
+                            System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
+                            x.Serialize(Response.Output, returnValue);
+                            break;
+
+                        case Microservice_Endpoint_Protocol_Enum.SOAP:
+                            IFormatter soap = new SoapFormatter();
+                            soap.Serialize(Response.OutputStream, returnValue);
+                            break;
+
+                        case Microservice_Endpoint_Protocol_Enum.BINARY:
+                            IFormatter binary = new BinaryFormatter();
+                            binary.Serialize(Response.OutputStream, returnValue);
+                            break;
                     }
                 }
             }
@@ -68,7 +87,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetItemBrief(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetItemBrief(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (UrlSegments.Count > 0)
             {
@@ -101,6 +120,21 @@ namespace SobekCM.Engine_Library.Endpoints
                             Response.Output.Write("parseItemBrief(");
                             JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
                             Response.Output.Write(");");
+                            break;
+
+                        case Microservice_Endpoint_Protocol_Enum.XML:
+                            System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
+                            x.Serialize(Response.Output, returnValue);
+                            break;
+
+                        case Microservice_Endpoint_Protocol_Enum.SOAP:
+                            IFormatter soap = new SoapFormatter();
+                            soap.Serialize(Response.OutputStream, returnValue);
+                            break;
+
+                        case Microservice_Endpoint_Protocol_Enum.BINARY:
+                            IFormatter binary = new BinaryFormatter();
+                            binary.Serialize(Response.OutputStream, returnValue);
                             break;
                     }
                 }
@@ -158,7 +192,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetRandomItem(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetRandomItem(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON) || ( Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P ))
             {
@@ -183,7 +217,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetItemRdf(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetItemRdf(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (Protocol == Microservice_Endpoint_Protocol_Enum.XML)
             {
@@ -220,7 +254,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetItemXml(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetItemXml(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (Protocol == Microservice_Endpoint_Protocol_Enum.XML)
             {

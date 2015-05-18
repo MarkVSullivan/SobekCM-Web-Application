@@ -35,6 +35,8 @@ namespace SobekCM.Core.Client
                 WebSkins = new SobekEngineClient_WebSkinEndpoints(configObj);
                 Items = new SobekEngineClient_ItemEndpoints(configObj);
                 Search = new SobekEngineClient_SearchEndpoints(configObj);
+                WebContent = new SobekEngineClient_WebContentEndpoints(configObj);
+                Navigation = new SobekEngineClient_NavigationEndpoints(configObj);
 
                 return true;
             }
@@ -54,6 +56,12 @@ namespace SobekCM.Core.Client
 
         /// <summary> Search-related endpoints exposed by the SobekCM engine </summary>
         public static SobekEngineClient_SearchEndpoints Search { get; private set; }
+
+        /// <summary> Web Content-related endpoints exposed by the SobekCM engine </summary>
+        public static SobekEngineClient_WebContentEndpoints WebContent { get; private set; }
+
+        /// <summary> Navigation-related endpoints exposed by the SobekCM engine </summary>
+        public static SobekEngineClient_NavigationEndpoints Navigation { get; private set; }
 
     }
 }

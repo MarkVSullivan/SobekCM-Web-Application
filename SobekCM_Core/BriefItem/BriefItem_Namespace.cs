@@ -11,12 +11,12 @@ namespace SobekCM.Core.BriefItem
         /// <summary> Prefix used for this namespace throughout the object </summary>
         [DataMember(Name = "prefix")]
         [ProtoMember(1)]
-        public string Prefix { get; private set; }
+        public string Prefix { get; set; }
 
         /// <summary> URI for the schema/namespace referred to by the prefix  </summary>
         [DataMember(Name = "uri")]
         [ProtoMember(2)]
-        public string URI { get; private set; }
+        public string URI { get; set; }
 
         /// <summary> Constructor for a new instance of the BriefItem_Namespace class </summary>
         public BriefItem_Namespace()

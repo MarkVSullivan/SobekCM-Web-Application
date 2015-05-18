@@ -59,6 +59,12 @@ namespace SobekCM.Core.Configuration
             QueryText = new Web_Language_Translation_Lookup();
         }
 
+        /// <summary> Constructor for a new instance of the ContactForm_Configuration_Element class </summary>
+        public ContactForm_Configuration_Element()
+        {
+            // Parameterless constructor for serialization and deserialization
+        }
+
         /// <summary> Type of the element to display with the Contact Us form </summary>
         [DataMember(Name = "type"), ProtoMember(1)]
         public ContactForm_Configuration_Element_Type_Enum Element_Type { get; set; }
@@ -77,7 +83,7 @@ namespace SobekCM.Core.Configuration
 
         /// <summary> Text to display before the options for the user to enter answers or select options </summary>
         [DataMember(Name = "query", EmitDefaultValue = false), ProtoMember(5)]
-        public Web_Language_Translation_Lookup QueryText { get; private set; }
+        public Web_Language_Translation_Lookup QueryText { get; set; }
 
         /// <summary> If this element could be either skipped or be auto-populated for logged on users, this indicates which
         /// field would replace thie field </summary>

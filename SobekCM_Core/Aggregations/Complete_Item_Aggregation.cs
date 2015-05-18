@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
@@ -37,6 +38,36 @@ namespace SobekCM.Core.Aggregations
         #endregion
 
         #region Constructor
+
+        /// <summary> Constructor for a new instance of the Item_Aggregation_Complete class  </summary>
+        public Complete_Item_Aggregation()
+        {
+            // Set some defaults
+            Name = String.Empty;
+            ShortName = String.Empty;
+            Active = true;
+            Hidden = false;
+            Map_Search = 0;
+            Map_Search_Beta = 0;
+            Map_Display = 0;
+            Map_Display_Beta = 0;
+            OAI_Enabled = false;
+            Has_New_Items = false;
+            childPagesHash = new Dictionary<string, Complete_Item_Aggregation_Child_Page>();
+            Search_Fields = new List<Complete_Item_Aggregation_Metadata_Type>();
+            Browseable_Fields = new List<Complete_Item_Aggregation_Metadata_Type>();
+            Facets = new List<short> { 3, 5, 7, 10, 8 };
+
+            // Add the default result views
+            Result_Views = new List<Result_Display_Type_Enum>
+                              {
+                                  Result_Display_Type_Enum.Brief,
+                                  Result_Display_Type_Enum.Table,
+                                  Result_Display_Type_Enum.Thumbnails,
+                                  Result_Display_Type_Enum.Full_Citation
+                              };
+            Default_Result_View = Result_Display_Type_Enum.Brief;
+        }
 
         /// <summary> Constructor for a new instance of the Item_Aggregation_Complete class  </summary>
         /// <param name="Default_UI_Language"> Default user interface language for this interface </param>
@@ -214,15 +245,15 @@ namespace SobekCM.Core.Aggregations
         /// <summary> ID for this item aggregation object </summary>
         /// <remarks> The AggregationID for the ALL aggregation is set to -1 by the stored procedure </remarks>
         [DataMember(Name = "id"), ProtoMember(1)]
-        public int ID { get; private set; }
+        public int ID { get; set; }
 
         /// <summary> Type of item aggregation object </summary>
         [DataMember(Name = "type"), ProtoMember(2)]
-        public string Type { get; private set; }
+        public string Type { get; set; }
 
         /// <summary> Code for this item aggregation object </summary>
         [DataMember(Name = "code"), ProtoMember(3)]
-        public string Code { get; private set; }
+        public string Code { get; set; }
 
         /// <summary> Date the last item was added to this collection </summary>
         /// <remarks> If there is no record of this, the date of 1/1/2000 is returned </remarks>
@@ -231,23 +262,24 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Flag indicates if this aggregation can potentially include the ALL ITEMS and NEW ITEMS tabs </summary>
         [IgnoreDataMember]
+        [XmlIgnore]
         public bool Can_Browse_Items { get { return (Display_Options.IndexOf("I") >= 0); } }
 
         /// <summary> Returns the list of the primary identifiers for all metadata fields which have data and thus should appear in the advanced search drop downs  </summary>
         [DataMember(Name = "searchFields")]
         [ProtoMember(5)]
-        public List<Complete_Item_Aggregation_Metadata_Type> Search_Fields { get; private set; }
+        public List<Complete_Item_Aggregation_Metadata_Type> Search_Fields { get; set; }
 
         /// <summary> Returns the list of the primary identifiers for all metadata fields which have data and thus could appear in the metadata browse </summary>
         [DataMember(Name = "browseableFields")]
         [ProtoMember(6)]
-        public List<Complete_Item_Aggregation_Metadata_Type> Browseable_Fields { get; private set; }
+        public List<Complete_Item_Aggregation_Metadata_Type> Browseable_Fields { get; set; }
 
         /// <summary> Returns the list of all facets to display during searches and browses within this aggregation </summary>
         /// <remarks> This can hold up to eight facets, by primary key for the metadata type.  By default this holds 3,5,7,10, and 8. </remarks>
         [DataMember(Name = "facets")]
         [ProtoMember(7)]
-        public List<short> Facets { get; private set; }
+        public List<short> Facets { get; set; }
 
         /// <summary> Gets the list of web skins this aggregation can appear under </summary>
         /// <remarks> If no web skins are indicated, this is not restricted to any set of web skins, and can appear under any skin </remarks>
@@ -259,6 +291,7 @@ namespace SobekCM.Core.Aggregations
         ///   for this item aggregation </summary>
         [DataMember(EmitDefaultValue = false, Name = "customDirectives")]
         [ProtoMember(8)]
+        [XmlIgnore]
         public Dictionary<string, Item_Aggregation_Custom_Directive> Custom_Directives { get; set; }
 
         /// <summary> Default browse by code, if no code is provided in the request </summary>
@@ -278,7 +311,7 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Gets the list of all result views present in this item aggregation </summary>
         [DataMember(Name = "resultsViews")]
         [ProtoMember(11)]
-        public List<Result_Display_Type_Enum> Result_Views { get; private set; }
+        public List<Result_Display_Type_Enum> Result_Views { get; set; }
 
         /// <summary> Statistical information about this aggregation ( i.e., item, title, and page count ) </summary>
         [DataMember(EmitDefaultValue = false, Name = "statistics")]
@@ -309,6 +342,7 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Directory where all design information for this object is found </summary>
         /// <remarks> This always returns the string 'aggregationPermissions/[Code]/' with the code for this item aggregation </remarks>
         [IgnoreDataMember]
+        [XmlIgnore]
         public string ObjDirectory
         {
             get { return "aggregations/" + Code + "/"; }
@@ -365,6 +399,7 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Flag that tells what type of map display to show for this item aggregation </summary>
         [IgnoreDataMember]
+        [XmlIgnore]
         public ushort Map_Display_Beta { get; set; }
 
         /// <summary> Flag indicates whether this item aggregation should be made available via OAI-PMH </summary>
@@ -412,7 +447,7 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Read-only list of collection views and searches for this item aggregation </summary>
         [DataMember(EmitDefaultValue = false, Name = "Views_And_Searches")]
         [ProtoMember(36)]
-        public List<Item_Aggregation_Views_Searches_Enum> Views_And_Searches { get; private set; }
+        public List<Item_Aggregation_Views_Searches_Enum> Views_And_Searches { get; set; }
 
         /// <summary> Gets the read-only collection of children item aggregation objects </summary>
         /// <remarks> You should check the count of children first using the <see cref = "Active_Children_Count" /> before using this property.
@@ -436,22 +471,23 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Gets the raw home page source file </summary>
         [DataMember(EmitDefaultValue = false, Name = "homePageFiles"), ProtoMember(41)]
-        public Dictionary<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> Home_Page_File_Dictionary { get; private set; }
+        public Dictionary<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> Home_Page_File_Dictionary { get; set; }
 
         /// <summary> Get the standard banner dictionary, by language </summary>
         [DataMember(EmitDefaultValue = false, Name = "banners"), ProtoMember(42)]
-        public Dictionary<Web_Language_Enum, string> Banner_Dictionary { get; private set; }
+        public Dictionary<Web_Language_Enum, string> Banner_Dictionary { get; set; }
 
         /// <summary> Get the front banner dictionary, by language </summary>
         [DataMember(EmitDefaultValue = false, Name = "frontBanners"), ProtoMember(43)]
-        public Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner> Front_Banner_Dictionary { get; private set; }
+        public Dictionary<Web_Language_Enum, Item_Aggregation_Front_Banner> Front_Banner_Dictionary { get; set; }
 
         /// <summary> Get the list of different language variants available </summary>
         [DataMember(EmitDefaultValue = false, Name = "languageVariants"), ProtoMember(44)]
-        public List<Web_Language_Enum> Language_Variants { get; private set; }
+        public List<Web_Language_Enum> Language_Variants { get; set; }
 
         /// <summary> Gets the number of browses and info pages attached to this item aggregation </summary>
         [IgnoreDataMember]
+        [XmlIgnore]
         public int Browse_Info_Count
         {
             get { return childPagesHash.Count; }
@@ -459,6 +495,7 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Flag indicates if this item aggregation has at least one BROWSE BY page to display </summary>
         [IgnoreDataMember]
+        [XmlIgnore]
         public bool Has_Browse_By_Pages
         {
             get
@@ -470,6 +507,7 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Read-only list of all the info objects attached to this item aggregation </summary>
         /// <remarks> These are returned in alphabetical order of the SUBMODE CODE portion of each info </remarks>
         [IgnoreDataMember]
+        [XmlIgnore]
         public ReadOnlyCollection<Complete_Item_Aggregation_Child_Page> Info_Pages
         {
             get
@@ -486,6 +524,7 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Read-only list of searches types for this item aggregation </summary>
         [IgnoreDataMember]
+        [XmlIgnore]
         public ReadOnlyCollection<Search_Type_Enum> Search_Types
         {
             get
@@ -521,6 +560,7 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Flag indicates if this aggregation has had any changes over the last two weeks </summary>
         /// <remarks> This, in part, controls whether the NEW ITEMS tab will appear for this item aggregation </remarks>
         [IgnoreDataMember]
+        [XmlIgnore]
         public bool Show_New_Item_Browse
         {
             get
@@ -534,12 +574,14 @@ namespace SobekCM.Core.Aggregations
         /// <summary> Flag indicates if new items have recently been added to this collection which requires additional collection-level work </summary>
         /// <remarks> This flag is used by the builder to determine if the static collection level pages should be recreated and if the search index for this aggregation should be rebuilt. </remarks>
         [IgnoreDataMember]
+        [XmlIgnore]
         public bool Has_New_Items { get; set; }
 
         /// <summary> Gets the number of child item aggregationPermissions present </summary>
         /// <remarks> This should be used rather than the Count property of the <see cref = "Children" /> property.  Even if 
         ///   there are no children, the Children property creates a readonly collection to pass back out. </remarks>
         [IgnoreDataMember]
+        [XmlIgnore]
         public int Active_Children_Count
         {
             get
@@ -553,6 +595,7 @@ namespace SobekCM.Core.Aggregations
         /// <remarks> This should be used rather than the Count property of the <see cref = "Children" /> property.  Even if 
         ///   there are no children, the Children property creates a readonly collection to pass back out. </remarks>
         [IgnoreDataMember]
+        [XmlIgnore]
         public int Children_Count
         {
             get
@@ -582,6 +625,7 @@ namespace SobekCM.Core.Aggregations
         /// <remarks> This should be used rather than the Count property of the <see cref = "Parents" /> property.  Even if 
         ///   there are no parents, the Parent property creates a readonly collection to pass back out. </remarks>
         [IgnoreDataMember]
+        [XmlIgnore]
         public int Parent_Count
         {
             get
@@ -593,6 +637,7 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Returns the list of all parent codes to this aggregation, seperate by a semi-colon  </summary>
         [IgnoreDataMember]
+        [XmlIgnore]
         public string Parent_Codes
         {
             get

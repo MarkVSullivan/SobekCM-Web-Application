@@ -62,151 +62,41 @@ namespace SobekCM.Library
             Site_Map = null;
 
             string source = Current_Mode.Page_By_FileName;
-            Simple_Web_Content = HTML_Based_Content_Reader.Read_HTML_File(source, true, Tracer);
+           
 
-            if (Simple_Web_Content == null)
-            {
-                Current_Mode.Error_Message = "Unable to retrieve simple text item '" + Current_Mode.Info_Browse_Mode.Replace("_","\\") + "'";
-                return false;
-            }
+            //// Look for a site map
+            //if ( !String.IsNullOrEmpty(Simple_Web_Content.SiteMap))
+            //{
+            //    // Look in the cache first
+            //    Site_Map = CachedDataManager.Retrieve_Site_Map(Simple_Web_Content.SiteMap, Tracer);
 
-            if ( Simple_Web_Content.Content.Length == 0 )
-            {
-                Current_Mode.Error_Message = "Unable to read the file for display";
-                return false;
-            }
+            //    // If this was NULL, pull it
+            //    if (Site_Map == null)
+            //    {
+            //        // Only continue if the file exists
+            //        if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap))
+            //        {
+            //            if (Tracer != null)
+            //            {
+            //                Tracer.Add_Trace("SobekCM_Assistant.Get_Simple_Web_Content_Text", "Reading site map file");
+            //            }
 
-            // Now, check for any "server-side include" directorives in the source text
-            int include_index = Simple_Web_Content.Content.IndexOf("<%INCLUDE");
-            while(( include_index > 0 ) && ( Simple_Web_Content.Content.IndexOf("%>", include_index, StringComparison.Ordinal) > 0 ))
-            {
-                int include_finish_index = Simple_Web_Content.Content.IndexOf("%>", include_index, StringComparison.Ordinal) + 2;
-                string include_statement = Simple_Web_Content.Content.Substring(include_index, include_finish_index - include_index);
-                string include_statement_upper = include_statement.ToUpper();
-                int file_index = include_statement_upper.IndexOf("FILE");
-                string filename_to_include = String.Empty;
-                if (file_index > 0)
-                {
-                    // Pull out the possible file name
-                    string possible_file_name = include_statement.Substring(file_index + 4);
-                    int file_start = -1;
-                    int file_end = -1;
-                    int char_index = 0;
+            //            // Try to read this sitemap file
+            //            Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap);
 
-                    // Find the start of the file information
-                    while ((file_start < 0) && (char_index < possible_file_name.Length))
-                    {
-                        if ((possible_file_name[char_index] != '"') && (possible_file_name[char_index] != '=') && (possible_file_name[char_index] != ' '))
-                        {
-                            file_start = char_index;
-                        }
-                        else
-                        {
-                            char_index++;
-                        }
-                    }
+            //            // If the sitemap file was succesfully read, cache it
+            //            if (Site_Map != null)
+            //            {
+            //                CachedDataManager.Store_Site_Map(Site_Map, Simple_Web_Content.SiteMap, Tracer);
+            //            }
+            //        }
+            //    }
+            //}
 
-                    // Find the end of the file information
-                    if (file_start >= 0)
-                    {
-                        char_index++;
-                        while ((file_end < 0) && (char_index < possible_file_name.Length))
-                        {
-                            if ((possible_file_name[char_index] == '"') || (possible_file_name[char_index] == ' ') || (possible_file_name[char_index] == '%'))
-                            {
-                                file_end = char_index;
-                            }
-                            else
-                            {
-                                char_index++;
-                            }
-                        }
-                    }
+            //// Since this is not cached, we can apply the individual user settings to the static text which was read right here
+            //Simple_Web_Content.Content = Simple_Web_Content.Apply_Settings_To_Static_Text(Simple_Web_Content.Content, null, Current_Mode.Skin, Current_Mode.Base_Skin_Or_Skin, Current_Mode.Base_URL, UrlWriterHelper.URL_Options(Current_Mode), Tracer);
 
-                    // Get the filename
-                    if ((file_start > 0) && (file_end > 0))
-                    {
-                        filename_to_include = possible_file_name.Substring(file_start, file_end - file_start);
-                    }
-                }
-
-                // Remove the include and either place in the text from the indicated file, 
-                // or just remove
-                if ((filename_to_include.Length > 0 ) && (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + filename_to_include)))
-                {
-                    // Define the value for the include text
-                    string include_text;
-
-                    // Look in the cache for this
-                    object returnValue = HttpContext.Current.Cache.Get("INCLUDE_" + filename_to_include );
-                    if (returnValue != null)
-                    {
-                        include_text = returnValue.ToString();
-                    }
-                    else
-                    {
-                        try
-                        {
-                            // Pull from the file
-                            StreamReader reader = new StreamReader(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + filename_to_include);
-                            include_text = reader.ReadToEnd();
-                            reader.Close();
-
-                            // Store on the cache for two minutes, if no indication not to
-                            if ( include_statement_upper.IndexOf("NOCACHE") < 0 )
-                                HttpContext.Current.Cache.Insert("INCLUDE_" + filename_to_include, include_text, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
-                        }
-                        catch(Exception)
-                        {
-                            include_text = "Unable to read the soruce file ( " + filename_to_include + " )";
-                        }
-                    }
-
-                    // Replace the text with the include file
-                    Simple_Web_Content.Content = Simple_Web_Content.Content.Replace(include_statement, include_text);
-                    include_index = Simple_Web_Content.Content.IndexOf("<%INCLUDE", include_index + include_text.Length - 1, StringComparison.Ordinal);
-                }
-                else
-                {
-                    // No suitable name was found, or it doesn't exist so just remove the INCLUDE completely
-                    Simple_Web_Content.Content = Simple_Web_Content.Content.Replace(include_statement, "");
-                    include_index = Simple_Web_Content.Content.IndexOf("<%INCLUDE", include_index, StringComparison.Ordinal);
-                }
-            }
-
-            // Look for a site map
-            if ( !String.IsNullOrEmpty(Simple_Web_Content.SiteMap))
-            {
-                // Look in the cache first
-                Site_Map = CachedDataManager.Retrieve_Site_Map(Simple_Web_Content.SiteMap, Tracer);
-
-                // If this was NULL, pull it
-                if (Site_Map == null)
-                {
-                    // Only continue if the file exists
-                    if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap))
-                    {
-                        if (Tracer != null)
-                        {
-                            Tracer.Add_Trace("SobekCM_Assistant.Get_Simple_Web_Content_Text", "Reading site map file");
-                        }
-
-                        // Try to read this sitemap file
-                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap);
-
-                        // If the sitemap file was succesfully read, cache it
-                        if (Site_Map != null)
-                        {
-                            CachedDataManager.Store_Site_Map(Site_Map, Simple_Web_Content.SiteMap, Tracer);
-                        }
-                    }
-                }
-            }
-
-            // Since this is not cached, we can apply the individual user settings to the static text which was read right here
-            Simple_Web_Content.Content = Simple_Web_Content.Apply_Settings_To_Static_Text(Simple_Web_Content.Content, null, Current_Mode.Skin, Current_Mode.Base_Skin_Or_Skin, Current_Mode.Base_URL, UrlWriterHelper.URL_Options(Current_Mode), Tracer);
-
-
+            Simple_Web_Content = null;
             return true;
         }
 

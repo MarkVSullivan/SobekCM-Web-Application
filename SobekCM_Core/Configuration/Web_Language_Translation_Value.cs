@@ -1,13 +1,28 @@
-﻿namespace SobekCM.Core.Configuration
+﻿using System;
+using System.Runtime.Serialization;
+using ProtoBuf;
+
+namespace SobekCM.Core.Configuration
 {
     /// <summary> A single translated value, or a pair of the web language and the string itself </summary>
+    [Serializable, DataContract, ProtoContract]
     public class Web_Language_Translation_Value
     {
         /// <summary> Language in which this value is represented </summary>
-        public readonly Web_Language_Enum Language;
+        [DataMember(Name = "language")]
+        [ProtoMember(1)]
+        public Web_Language_Enum Language { get; set; }
 
         /// <summary> Value in provided language </summary>
-        public readonly string Value;
+        [DataMember(Name = "value")]
+        [ProtoMember(2)]
+        public string Value { get; set; }
+
+        /// <summary> Constructor for a new instance of the Web_Language_Translation_Value class </summary>
+        public Web_Language_Translation_Value()
+        {
+            // Parameterless constructor for serialization
+        }
 
         /// <summary> Constructor for a new instance of the Web_Language_Translation_Value class </summary>
         /// <param name="Language"> Language in which this value is represented </param>

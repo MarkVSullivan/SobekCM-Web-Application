@@ -24,7 +24,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void ResolveUrl(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void ResolveUrl(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             // Pull out the http request
             HttpRequest request = HttpContext.Current.Request;
@@ -36,7 +36,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             Custom_Tracer tracer = new Custom_Tracer();
 
-            Navigation_Object returnValue = get_navigation_object( request.QueryString, base_url, request.UserLanguages, tracer);
+            Navigation_Object returnValue = get_navigation_object( QueryString, base_url, request.UserLanguages, tracer);
 
             returnValue.Base_URL = base_url;
             returnValue.Browser_Type = request.Browser.Type.ToUpper();

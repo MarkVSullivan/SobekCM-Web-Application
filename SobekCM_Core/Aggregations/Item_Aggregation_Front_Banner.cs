@@ -12,6 +12,11 @@ namespace SobekCM.Core.Aggregations
     [Serializable, DataContract, ProtoContract]
 	public class Item_Aggregation_Front_Banner
 	{
+        /// <summary> Constructor for a new instance of the Item_Aggregation_Front_Banner class </summary>
+        public Item_Aggregation_Front_Banner()
+        {
+            // Parameterless constructor for serialization
+        }
 
 		/// <summary> Constructor for a new instance of the Item_Aggregation_Front_Banner class </summary>
 		/// <param name="File"> Name of the image file used in this front banner</param>

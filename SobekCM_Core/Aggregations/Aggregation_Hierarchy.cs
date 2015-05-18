@@ -18,10 +18,10 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> List of collections, complete with children nodes </summary>
         [DataMember(Name = "collections"), ProtoMember(1)]
-        public List<Item_Aggregation_Related_Aggregations> Collections { get; private set; }
+        public List<Item_Aggregation_Related_Aggregations> Collections { get; set; }
 
         /// <summary> List of institutions (not linked to a collection), complete with children nodes </summary>
         [DataMember(Name = "institutions"), ProtoMember(2)]
-        public List<Item_Aggregation_Related_Aggregations> Institutions { get; private set; }
+        public List<Item_Aggregation_Related_Aggregations> Institutions { get; set; }
     }
 }

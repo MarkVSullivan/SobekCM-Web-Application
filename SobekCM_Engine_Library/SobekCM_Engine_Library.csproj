@@ -50,6 +50,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -67,7 +68,9 @@
     <Compile Include="Client\SobekEngineClient.cs" />
     <Compile Include="Client\SobekEngineClient_AggregationEndpoints.cs" />
     <Compile Include="Client\SobekEngineClient_ItemEndpoints.cs" />
+    <Compile Include="Client\SobekEngineClient_NavigationEndpoints.cs" />
     <Compile Include="Client\SobekEngineClient_SearchEndpoints.cs" />
+    <Compile Include="Client\SobekEngineClient_WebContentEndpoints.cs" />
     <Compile Include="Client\SobekEngineClient_WebSkinEndpoints.cs" />
     <Compile Include="Configuration\ContactForm_Configuration_Reader.cs" />
     <Compile Include="Configuration\OAI_PMH_Configuration_Reader.cs" />

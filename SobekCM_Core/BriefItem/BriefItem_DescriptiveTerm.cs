@@ -22,7 +22,7 @@ namespace SobekCM.Core.BriefItem
         /// <summary> List of the values tied to this item of this metadata type </summary>
         [DataMember(EmitDefaultValue = false, Name = "properties")]
         [ProtoMember(3)]
-        public List<BriefItem_DescTermValue> Values { get; private set; }
+        public List<BriefItem_DescTermValue> Values { get; set; }
 
         /// <summary> Constructor for a new instance of the BriefItem_DescriptiveTerm class </summary>
         public BriefItem_DescriptiveTerm()

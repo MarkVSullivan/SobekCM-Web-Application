@@ -12,7 +12,7 @@ namespace SobekCM.Core.BriefItem
         /// <summary> String version of this single value for a metadata term/type </summary>
         [DataMember(Name = "value")]
         [ProtoMember(1)]
-        public string Value { get; private set; }
+        public string Value { get;  set; }
 
         /// <summary> URI references related to this single value </summary>
         [DataMember(EmitDefaultValue = false, Name = "uris")]

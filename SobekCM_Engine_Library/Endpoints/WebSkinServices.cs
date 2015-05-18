@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Web;
@@ -22,7 +23,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetCompleteWebSkin(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetCompleteWebSkin(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (UrlSegments.Count > 0)
             {
@@ -48,7 +49,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetWebSkin(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetWebSkin(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (UrlSegments.Count > 1)
             {
@@ -77,7 +78,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetOrderedCodes(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetOrderedCodes(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
             {
@@ -94,7 +95,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
         /// <remarks> This REST API should be publicly available for users that are performing administrative work </remarks>
-        public void GetWebSkinUploadedImages(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetWebSkinUploadedImages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (UrlSegments.Count > 0)
             {

@@ -50,7 +50,7 @@ namespace SobekCM.Engine_Library.Microservices
         private object restApiObject;
         private IpRangeSetV4 rangeTester;
 
-        public void Invoke(HttpResponse Response, List<string> UrlSegments, NameValueCollection RequestForm )
+        public void Invoke(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, NameValueCollection RequestForm )
         {
             if ((methodInfo == null) || (restApiObject == null))
             {
@@ -63,7 +63,7 @@ namespace SobekCM.Engine_Library.Microservices
 
             // Invokation is different, dependingon whether this is a PUT or POST
             if ( RequestType == Microservice_Endpoint_RequestType_Enum.GET )
-                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, Protocol });
+                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, QueryString, Protocol });
             else
                 methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, Protocol, RequestForm });
         }

@@ -18,19 +18,25 @@ namespace SobekCM.Core.Aggregations
     {
         /// <summary> Aggregation code for this related aggregation </summary>
         [DataMember(Name = "code"), ProtoMember(1)]
-        public readonly string Code;
+        public string Code { get; set; }
 
         /// <summary> Description for this aggregation </summary>
         [DataMember(Name = "description", EmitDefaultValue=false), ProtoMember(2)]
-        public readonly string Description;
+        public string Description { get; set; }
 
         /// <summary> Aggregation id for this related aggregation </summary>
         [DataMember(Name = "id", EmitDefaultValue = false), ProtoMember(3)]
-        public readonly ushort ID;
+        public ushort ID { get; set; }
 
         /// <summary> Type of this related aggregation </summary>
         [DataMember(Name = "type", EmitDefaultValue=false), ProtoMember(4)]
-        public readonly string Type;
+        public string Type { get; set; }
+
+        /// <summary> Constructor for a new instance of the Item_Aggregation_Related_Aggregations class </summary>
+        public Item_Aggregation_Related_Aggregations()
+        {
+            // Paramaterless constructor for serialization
+        }
 
         /// <summary> Constructor for a new instance of the Item_Aggregation_Related_Aggregations class </summary>
         /// <param name="Code"> Aggregation code for this related aggregation</param>
@@ -207,15 +213,21 @@ namespace SobekCM.Core.Aggregations
     {
         /// <summary> Aggregation code for this minimally reported aggregation </summary>
         [DataMember(Name = "code"), ProtoMember(1)]
-        public readonly string Code;
+        public string Code { get; set; }
 
         /// <summary> Full name for this minimally reported aggregation </summary>
         [DataMember(Name = "name", EmitDefaultValue = false), ProtoMember(2)]
-        public readonly string Name;
+        public string Name { get; set; }
 
         /// <summary> Shortened name for this minimally reported aggregation </summary>
         [DataMember(Name = "shortName", EmitDefaultValue = false), ProtoMember(3)]
-        public readonly string ShortName;
+        public string ShortName { get; set; }
+
+        /// <summary> Constructor for a new instance of the Item_Aggregaiton_Minimal object </summary>
+        public Item_Aggregation_Minimal()
+        {
+            // Parameterless constructor for serialization/deserialization
+        }
 
         /// <summary> Constructor for a new instance of the Item_Aggregaiton_Minimal object </summary>
         /// <param name="Code"> Aggregation code for this minimally reported aggregation </param>

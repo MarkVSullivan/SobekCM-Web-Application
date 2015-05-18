@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization.Formatters.Soap;
 using System.Text;
 using System.Web;
 using Jil;
@@ -31,7 +35,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetCompleteAggregationByCode(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetCompleteAggregationByCode(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (UrlSegments.Count > 0)
             {
@@ -41,14 +45,36 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 Complete_Item_Aggregation returnValue = get_complete_aggregation(aggrCode, true, tracer);
 
+                switch (Protocol)
+                {
+                    case Microservice_Endpoint_Protocol_Enum.JSON:
+                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
+                        break;
 
-                if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
-                {
-                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                }
-                else
-                {
-                    Serializer.Serialize(Response.OutputStream, returnValue);
+                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                        Serializer.Serialize(Response.OutputStream, returnValue);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                        Response.Output.Write("parseCompleteAggregation(");
+                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                        Response.Output.Write(");");
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.XML:
+                        System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
+                        x.Serialize(Response.Output, returnValue);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.SOAP:
+                        IFormatter soap = new SoapFormatter();
+                        soap.Serialize(Response.OutputStream, returnValue);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.BINARY:
+                        IFormatter binary = new BinaryFormatter();
+                        binary.Serialize(Response.OutputStream, returnValue);
+                        break;
                 }
             }
         }
@@ -57,7 +83,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetAggregationByCode(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetAggregationByCode(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
 
             if (UrlSegments.Count > 1)
@@ -71,14 +97,36 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 Item_Aggregation returnValue = get_item_aggregation(aggrCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
 
+                switch (Protocol)
+                {
+                    case Microservice_Endpoint_Protocol_Enum.JSON:
+                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
+                        break;
 
-                if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
-                {
-                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                }
-                else
-                {
-                    Serializer.Serialize(Response.OutputStream, returnValue);
+                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                        Serializer.Serialize(Response.OutputStream, returnValue);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                        Response.Output.Write("parseAggregationByCode(");
+                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                        Response.Output.Write(");");
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.XML:
+                        System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
+                        x.Serialize(Response.Output, returnValue);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.SOAP:
+                        IFormatter soap = new SoapFormatter();
+                        soap.Serialize(Response.OutputStream, returnValue);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.BINARY:
+                        IFormatter binary = new BinaryFormatter();
+                        binary.Serialize(Response.OutputStream, returnValue);
+                        break;
                 }
             }
         }
@@ -87,18 +135,41 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetAllAggregations(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetAllAggregations(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             // Get the aggregation code manager
-            List<Item_Aggregation_Related_Aggregations> list = Engine_ApplicationCache_Gateway.Codes.All_Aggregations;
+            List<Item_Aggregation_Related_Aggregations> returnValue = Engine_ApplicationCache_Gateway.Codes.All_Aggregations;
 
-            if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
+            switch (Protocol)
             {
-                JSON.Serialize(list, Response.Output, Options.ISO8601ExcludeNulls);
-            }
-            else
-            {
-                Serializer.Serialize(Response.OutputStream, list);
+                case Microservice_Endpoint_Protocol_Enum.JSON:
+                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                    Serializer.Serialize(Response.OutputStream, returnValue);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                    Response.Output.Write("parseAllAggregations(");
+                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                    Response.Output.Write(");");
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.XML:
+                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
+                    x.Serialize(Response.Output, returnValue);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.SOAP:
+                    IFormatter soap = new SoapFormatter();
+                    soap.Serialize(Response.OutputStream, returnValue);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.BINARY:
+                    IFormatter binary = new BinaryFormatter();
+                    binary.Serialize(Response.OutputStream, returnValue);
+                    break;
             }
         }
 
@@ -107,7 +178,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
         /// <remarks> This REST API should be publicly available for users that are performing administrative work </remarks>
-        public void GetAggregationUploadedImages(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetAggregationUploadedImages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (UrlSegments.Count > 0)
             {
@@ -150,18 +221,41 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetCollectionHierarchy(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetCollectionHierarchy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             // Get the aggregation code manager
             Aggregation_Hierarchy returnValue = get_aggregation_hierarchy(null);
 
-            if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
+            switch (Protocol)
             {
-                JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-            }
-            else
-            {
-                Serializer.Serialize(Response.OutputStream, returnValue);
+                case Microservice_Endpoint_Protocol_Enum.JSON:
+                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                    Serializer.Serialize(Response.OutputStream, returnValue);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                    Response.Output.Write("parseCollectionHierarchy(");
+                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                    Response.Output.Write(");");
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.XML:
+                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
+                    x.Serialize(Response.Output, returnValue);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.SOAP:
+                    IFormatter soap = new SoapFormatter();
+                    soap.Serialize(Response.OutputStream, returnValue);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.BINARY:
+                    IFormatter binary = new BinaryFormatter();
+                    binary.Serialize(Response.OutputStream, returnValue);
+                    break;
             }
         }
 
@@ -169,7 +263,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
-        public void GetCollectionStaticPage(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetCollectionStaticPage(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (UrlSegments.Count > 2)
             {
@@ -182,13 +276,36 @@ namespace SobekCM.Engine_Library.Endpoints
                 // Get the aggregation code manager
                 HTML_Based_Content returnValue = get_item_aggregation_html_child_page(aggrCode, langEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, childCode, null);
 
-                if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
+                switch (Protocol)
                 {
-                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                }
-                else
-                {
-                    Serializer.Serialize(Response.OutputStream, returnValue);
+                    case Microservice_Endpoint_Protocol_Enum.JSON:
+                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                        Serializer.Serialize(Response.OutputStream, returnValue);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                        Response.Output.Write("parseCollectionStaticPage(");
+                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                        Response.Output.Write(");");
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.XML:
+                        System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
+                        x.Serialize(Response.Output, returnValue);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.SOAP:
+                        IFormatter soap = new SoapFormatter();
+                        soap.Serialize(Response.OutputStream, returnValue);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.BINARY:
+                        IFormatter binary = new BinaryFormatter();
+                        binary.Serialize(Response.OutputStream, returnValue);
+                        break;
                 }
             }
         }
