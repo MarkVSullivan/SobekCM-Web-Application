@@ -67,8 +67,8 @@ namespace SobekCM.Engine_Library.Endpoints
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.SOAP:
-                        IFormatter soap = new SoapFormatter();
-                        soap.Serialize(Response.OutputStream, returnValue);
+                        DataContractSerializer soap = new DataContractSerializer(returnValue.GetType());
+                        soap.WriteObject(Response.OutputStream, returnValue);
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.BINARY:
@@ -119,8 +119,8 @@ namespace SobekCM.Engine_Library.Endpoints
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.SOAP:
-                        IFormatter soap = new SoapFormatter();
-                        soap.Serialize(Response.OutputStream, returnValue);
+                        DataContractSerializer soap = new DataContractSerializer(returnValue.GetType());
+                        soap.WriteObject(Response.OutputStream, returnValue);
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.BINARY:
@@ -162,8 +162,8 @@ namespace SobekCM.Engine_Library.Endpoints
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.SOAP:
-                    IFormatter soap = new SoapFormatter();
-                    soap.Serialize(Response.OutputStream, returnValue);
+                        DataContractSerializer soap = new DataContractSerializer(returnValue.GetType());
+                        soap.WriteObject(Response.OutputStream, returnValue);
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.BINARY:
@@ -248,8 +248,8 @@ namespace SobekCM.Engine_Library.Endpoints
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.SOAP:
-                    IFormatter soap = new SoapFormatter();
-                    soap.Serialize(Response.OutputStream, returnValue);
+                        DataContractSerializer soap = new DataContractSerializer(returnValue.GetType());
+                        soap.WriteObject(Response.OutputStream, returnValue);
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.BINARY:
@@ -298,8 +298,8 @@ namespace SobekCM.Engine_Library.Endpoints
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.SOAP:
-                        IFormatter soap = new SoapFormatter();
-                        soap.Serialize(Response.OutputStream, returnValue);
+                        DataContractSerializer soap = new DataContractSerializer(returnValue.GetType());
+                        soap.WriteObject(Response.OutputStream, returnValue);
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.BINARY:
