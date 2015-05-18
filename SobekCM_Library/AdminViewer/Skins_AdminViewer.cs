@@ -332,7 +332,7 @@ namespace SobekCM.Library.AdminViewer
                                                 if (new_base_code.Length == 0)
                                                 {
                                                     // What is the current base skin folder then?
-                                                    string base_skin_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + RequestSpecificValues.Current_Mode.Base_Skin;
+                                                    string base_skin_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin;
                                                     copy_entire_folder(base_skin_folder + "/buttons", folder + "/buttons");
                                                     copy_entire_folder(base_skin_folder + "/tabs", folder + "/tabs");
                                                 }

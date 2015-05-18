@@ -16,7 +16,6 @@ namespace SobekCM.Core.Navigation
 	{
 		#region Private members of this object
 
-		private string baseSkin;
 		private string searchFields;
 		private string searchString;
 
@@ -35,30 +34,30 @@ namespace SobekCM.Core.Navigation
 		private void Constructor_Helper()
 		{
 			// Declare some defaults
-		    Admin_Type = Admin_Type_Enum.Home;
+		    Admin_Type = Admin_Type_Enum.NONE;
 			Mode = Display_Mode_Enum.Error;
-			Search_Type = Search_Type_Enum.Basic;
-			Result_Display_Type = Result_Display_Type_Enum.Default;
-			Statistics_Type = Statistics_Type_Enum.Item_Count_Standard_View;
-			Internal_Type = Internal_Type_Enum.Aggregations_List;
-			My_Sobek_Type = My_Sobek_Type_Enum.Home;
+            Search_Type = Search_Type_Enum.NONE;
+            Result_Display_Type = Result_Display_Type_Enum.NONE;
+            Statistics_Type = Statistics_Type_Enum.NONE;
+            Internal_Type = Internal_Type_Enum.NONE;
+            My_Sobek_Type = My_Sobek_Type_Enum.NONE;
 			Language = Web_Language_Enum.English;
 			Default_Language = Web_Language_Enum.English;
 			Writer_Type = Writer_Type_Enum.HTML;
 			TOC_Display = TOC_Display_Type_Enum.Undetermined;
 			Trace_Flag = Trace_Flag_Type_Enum.Unspecified;
 			Search_Precision = Search_Precision_Type_Enum.Contains;
+            WebContent_Type = WebContent_Type_Enum.NONE;
+
 
 			Skin = "sobek";
 			Default_Skin = "sobek";
 		    Instance_Abbreviation = "SOBEK";
             Instance_Name = "Default SobekCM Library";
 
-			Invalid_Item = false;
 			Skin_In_URL = false;
 			isPostBack = false;
 			Is_Robot = false;
-			Internal_User = false;
 			Logon_Required = false;
 		    Request_Completed = false;
 		}
@@ -154,15 +153,19 @@ namespace SobekCM.Core.Navigation
         /// <remarks> The value returned is always lower case</remarks>
         [DataMember(EmitDefaultValue = false, Name = "baseSkin")]
         [ProtoMember(5)]
-        public string Base_Skin
+        public string Base_Skin { get; set; }
+
+        /// <summary> Base infterface interface for display purposes </summary>
+        /// <remarks> The value returned is always lower case</remarks>
+        [IgnoreDataMember]
+        public string Base_Skin_Or_Skin
         {
             get
             {
-                if (!string.IsNullOrEmpty(baseSkin))
-                    return baseSkin;
+                if (!string.IsNullOrEmpty(Base_Skin))
+                    return Base_Skin;
                 return Skin ?? String.Empty;
             }
-            set { baseSkin = value; }
         }
 
         /// <summary> Base URL requested by the user </summary>
@@ -278,15 +281,10 @@ namespace SobekCM.Core.Navigation
         [ProtoMember(25)]
         public Internal_Type_Enum Internal_Type { get; set; }
 
-        /// <summary> Flag indicating this is an internal user </summary>
-        [DataMember(EmitDefaultValue = false, Name = "internalUser")]
-        [ProtoMember(26)]
-        public bool Internal_User { get; set; }
-
         /// <summary> Flag that is set to indicate item requested is invalid </summary>
         [DataMember(EmitDefaultValue = false, Name = "invalidItem")]
         [ProtoMember(27)]
-        public bool Invalid_Item { get; set; }
+        public bool? Invalid_Item { get; set; }
 
         /// <summary> Flag indicating this is a post back </summary>
         [DataMember(Name = "isPostBack")]
@@ -372,8 +370,7 @@ namespace SobekCM.Core.Navigation
 
         /// <summary> Flag indicates if the request was completed, so no further
         /// operations should occur </summary>
-        [DataMember(EmitDefaultValue = false, Name = "requestCompleted")]
-        [ProtoMember(42)]
+        [IgnoreDataMember]
         public bool Request_Completed { get; set; }
 
         /// <summary> Search fields </summary>

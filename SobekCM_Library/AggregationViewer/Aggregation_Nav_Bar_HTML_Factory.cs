@@ -70,7 +70,7 @@ namespace SobekCM.Library.AggregationViewer
 		/// <returns> HTML to display the tab, including the link if it is not currently selected </returns>
 		public static string Menu_Get_Nav_Bar_HTML(Item_Aggregation_Views_Searches_Enum ThisView, Navigation_Object Current_Mode, Language_Support_Info Translations )
 		{
-			string skinCode = Current_Mode.Base_Skin;
+			string skinCode = Current_Mode.Base_Skin_Or_Skin;
 
 			switch (ThisView)
 			{
@@ -149,7 +149,7 @@ namespace SobekCM.Library.AggregationViewer
         /// <returns> HTML to display the tab, including the link if it is not currently selected </returns>
         public static string Tabs2_Get_Nav_Bar_HTML( Item_Aggregation_Views_Searches_Enum ThisView, Navigation_Object Current_Mode, Language_Support_Info Translations, bool Downward_Tabs )
         {
-            string skinCode = Current_Mode.Base_Skin;
+            string skinCode = Current_Mode.Base_Skin_Or_Skin;
 
             switch (ThisView)
             {

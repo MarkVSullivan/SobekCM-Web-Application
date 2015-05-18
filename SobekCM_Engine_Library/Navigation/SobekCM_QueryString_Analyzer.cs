@@ -133,7 +133,8 @@ namespace SobekCM.Engine_Library.Navigation
             Portal urlPortal = URL_Portals.Get_Valid_Portal(Base_URL);
             Navigator.Instance_Abbreviation = urlPortal.Abbreviation;
             Navigator.Instance_Name = urlPortal.Name;
-            Navigator.Portal_PURL = urlPortal.Base_PURL;
+            if ( !String.IsNullOrEmpty(urlPortal.Base_PURL ))
+                Navigator.Portal_PURL = urlPortal.Base_PURL;
 		    if (String.IsNullOrEmpty(urlPortal.Default_Aggregation))
 		    {
 		        Navigator.Aggregation = "";
@@ -388,6 +389,7 @@ namespace SobekCM.Engine_Library.Navigation
 
 							case "my":
 								Navigator.Mode = Display_Mode_Enum.My_Sobek;
+                                Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Home;
 								if (QueryString["return"] != null)
 									Navigator.Return_URL = QueryString["return"];
 								if ( url_relative_list.Count > 1 )
@@ -732,6 +734,7 @@ namespace SobekCM.Engine_Library.Navigation
 							case "stats":
 							case "statistics":
 								Navigator.Mode = Display_Mode_Enum.Statistics;
+						        Navigator.Statistics_Type = Statistics_Type_Enum.Item_Count_Standard_View;
 								if ( url_relative_list.Count > 1 )
 								{
 									switch( url_relative_list[1] )

@@ -283,7 +283,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td colspan=\"2\" class=\"sbkAsav_SearchOptions\">" + searchOptions + "</span></td>");
-            Output.WriteLine("      <td style=\"vertical-align:middle;text-align:left;\"> &nbsp; &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "help\" target=\"SEARCHHELP\" ><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/help_button.jpg\" alt=\"HELP\" /></a></td>");
+            Output.WriteLine("      <td style=\"vertical-align:middle;text-align:left;\"> &nbsp; &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "help\" target=\"SEARCHHELP\" ><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/help_button.jpg\" alt=\"HELP\" /></a></td>");
             Output.WriteLine("      <td colspan=\"2\">&nbsp;</td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr>");

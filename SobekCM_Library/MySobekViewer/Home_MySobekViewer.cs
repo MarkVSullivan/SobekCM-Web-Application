@@ -145,7 +145,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<tr><td style=\"width:35px\"><a href=\""+UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode)+"\"><img src=\""+ Static_Resources.Track2_Gif + "\"/></a></td><td><a href=\""+UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode)+"\">Track Item Scanning/Processing</a></td></tr>");
 
             // If a return URL was provided, add a link to return there
-            if ((RequestSpecificValues.Current_Mode.Return_URL.Length > 0) && ( RequestSpecificValues.Current_Mode.Return_URL.IndexOf("my") < 0 ))
+            if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Return_URL)) && ( RequestSpecificValues.Current_Mode.Return_URL.IndexOf("my") < 0 ))
             {
                 Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Return_URL + "\"><img src=\"" + Static_Resources.Return_Img + "\" /></a></td><td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Current_Mode.Return_URL + "\">Return to previous " + sobek_text + " page</a></td></tr>");
             }

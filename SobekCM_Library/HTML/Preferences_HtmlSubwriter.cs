@@ -147,7 +147,7 @@ namespace SobekCM.Library.HTML
             Output.WriteLine(user_sort == 0 ? "            <option selected=\"selected\" value=\"1\">Title</option>" : "            <option value=\"1\">Title</option>");
 
             // Add the bibid sorts if this is an internal user
-            if (RequestSpecificValues.Current_Mode.Internal_User)
+            if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && (RequestSpecificValues.Current_User.Is_Internal_User))
             {
                 Output.WriteLine(user_sort == 2 ? "            <option selected=\"selected\" value=\"2\">BibID Ascending</option>" : "            <option value=\"2\">BibID Ascending</option>");
                 Output.WriteLine(user_sort == 3 ? "            <option selected=\"selected\" value=\"3\">BibID Descending</option>" : "            <option value=\"3\">BibID Descending</option>");

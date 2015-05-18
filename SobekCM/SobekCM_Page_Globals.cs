@@ -908,7 +908,6 @@ namespace SobekCM
 			if (HttpContext.Current.Session["user"] != null) 
 			{
 				currentUser = (User_Object) HttpContext.Current.Session["user"];
-				currentMode.Internal_User = currentUser.Is_Internal_User;
 
 				// Check if this is an administrative task that the current user does not have access to
 				if ((!currentUser.Is_System_Admin) && (!currentUser.Is_Portal_Admin) && (currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type != Admin_Type_Enum.Aggregation_Single))
@@ -1121,7 +1120,7 @@ namespace SobekCM
                 if (!assistant.Get_Item(currentMode, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.Settings.Image_URL,
                                         UI_ApplicationCache_Gateway.Icon_List, UI_ApplicationCache_Gateway.Item_Viewer_Priority, currentUser, tracer, out currentItem, out currentPage, out itemsInTitle))
 				{
-					if ((currentMode.Mode == Display_Mode_Enum.Legacy_URL) || (currentMode.Invalid_Item))
+					if ((currentMode.Mode == Display_Mode_Enum.Legacy_URL) || (currentMode.Invalid_Item.HasValue && currentMode.Invalid_Item.Value ))
 					{
 						if (currentMode.Mode != Display_Mode_Enum.Legacy_URL)
 						{
@@ -1277,7 +1276,7 @@ namespace SobekCM
 
 		private void MySobekCM_Block()
 		{
-			if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management) && (HttpContext.Current.Session["user"] != null) && (currentMode.My_Sobek_SubMode.Length > 0))
+			if ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management) && (HttpContext.Current.Session["user"] != null) && (!String.IsNullOrEmpty(currentMode.My_Sobek_SubMode)))
 			{
 				tracer.Add_Trace("SobekCM_Page_Globals.MySobekCM_Block", "Retrieiving Browse/Info Object");
 

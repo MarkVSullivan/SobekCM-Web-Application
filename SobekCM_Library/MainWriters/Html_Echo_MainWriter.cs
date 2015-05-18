@@ -52,7 +52,7 @@ namespace SobekCM.Library.MainWriters
 			}
 
 			// Include the interface's style sheet if it has one
-			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/" + RequestSpecificValues.Current_Mode.Base_Skin + ".css\" rel=\"stylesheet\" type=\"text/css\" />");
+			Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + ".css\" rel=\"stylesheet\" type=\"text/css\" />");
         }
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>

@@ -204,7 +204,7 @@ namespace SobekCM.Library.MainWriters
                         break;
 
                     case Display_Mode_Enum.Item_Display:
-                        if ((!RequestSpecificValues.Current_Mode.Invalid_Item) && (RequestSpecificValues.Current_Item != null))
+                        if ((!RequestSpecificValues.Current_Mode.Invalid_Item.HasValue || !RequestSpecificValues.Current_Mode.Invalid_Item.Value ) && (RequestSpecificValues.Current_Item != null))
                         {
                             bool show_toc = false;
                             if (HttpContext.Current.Session["Show TOC"] != null)

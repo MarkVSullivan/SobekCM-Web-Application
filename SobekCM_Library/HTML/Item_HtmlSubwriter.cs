@@ -1263,7 +1263,7 @@ namespace SobekCM.Library.HTML
 							    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Thumbnails</a></li>");
 
 
-							    if (RequestSpecificValues.Current_Mode.Internal_User)
+                                if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && (RequestSpecificValues.Current_User.Is_Internal_User))
 							    {
 								    RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes3";
 								    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">List View</a></li>");
@@ -1603,7 +1603,7 @@ namespace SobekCM.Library.HTML
                         // Add the TOC as a floating DIV
                         Output.WriteLine("      <div id=\"sbkEad_FloatingTOC\">");
                         Output.WriteLine("      <ul class=\"sbkEad_TocMenu\">");
-                        Output.WriteLine("        <li class=\"sbkEad_TocHeader\">TABLE OF CONTENTS &nbsp; <span style=\"color:#eeeeee\"><a href=\"#\" title=\"Return to the top of this document\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin + "/buttons/up_arrow.gif\" /></a></span></li>");
+                        Output.WriteLine("        <li class=\"sbkEad_TocHeader\">TABLE OF CONTENTS &nbsp; <span style=\"color:#eeeeee\"><a href=\"#\" title=\"Return to the top of this document\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/up_arrow.gif\" /></a></span></li>");
 
                         foreach (EAD_TOC_Included_Section thisMatch in eadInfo.TOC_Included_Sections)
                         {

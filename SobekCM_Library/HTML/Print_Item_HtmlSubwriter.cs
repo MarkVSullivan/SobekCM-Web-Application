@@ -114,13 +114,13 @@ namespace SobekCM.Library.HTML
 
         private void print_brief_citation( string image_width, TextWriter Output)
         {
-            if (RequestSpecificValues.Current_Mode.Base_Skin == "ufdc")
+            if (RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin == "ufdc")
             {
                 Output.WriteLine("<img src=\"ufdc_banner_" + image_width + ".jpg\" />");
                 Output.WriteLine("<br />");
             }
 
-            if (RequestSpecificValues.Current_Mode.Base_Skin == "dloc")
+            if (RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin == "dloc")
             {
                 Output.WriteLine("<img src=\"dloc_banner_" + image_width + ".jpg\" />");
                 Output.WriteLine("<br />");
@@ -272,13 +272,13 @@ namespace SobekCM.Library.HTML
         private void print_full_citation(TextWriter Output)
         {
             Output.WriteLine("</center>");
-            if (RequestSpecificValues.Current_Mode.Base_Skin == "ufdc")
+            if (RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin == "ufdc")
             {
                 Output.WriteLine("<img src=\"ufdc_banner_700.jpg\" />");
                 Output.WriteLine("<br />");
             }
 
-            if (RequestSpecificValues.Current_Mode.Base_Skin == "dloc")
+            if (RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin == "dloc")
             {
                 Output.WriteLine("<img src=\"dloc_banner_700.jpg\" />");
                 Output.WriteLine("<br />");

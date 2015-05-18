@@ -139,7 +139,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Statistics_Type = Statistics_Type_Enum.Item_Count_Growth_View;
             Output.WriteLine("\t\t\t<li id=\"sbkShs_ItemCountFytd\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + fytd_view_text + "</a></li>");
 
-            if (RequestSpecificValues.Current_Mode.Internal_User)
+            if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && (RequestSpecificValues.Current_User.Is_Internal_User))
             {
                 RequestSpecificValues.Current_Mode.Statistics_Type = Statistics_Type_Enum.Item_Count_Arbitrary_View;
                 Output.WriteLine("\t\t\t<li id=\"sbkShs_ItemCountArbitrary\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + arbitrary_view_text + "</a></li>");
@@ -267,7 +267,7 @@ namespace SobekCM.Library.HTML
 					RequestSpecificValues.Current_Mode.Statistics_Type = type;
 				}
 
-				if (RequestSpecificValues.Current_Mode.Internal_User)
+                if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && (RequestSpecificValues.Current_User.Is_Internal_User))
 				{
 					if (type == Statistics_Type_Enum.Item_Count_Arbitrary_View)
 					{

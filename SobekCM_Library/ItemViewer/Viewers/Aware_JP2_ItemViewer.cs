@@ -203,7 +203,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				}
 
 
-				string image_location = CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/zoom_controls/";
+				string image_location = CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin_Or_Skin + "/zoom_controls/";
 
 				StringBuilder navRow = new StringBuilder(1000);
 				navRow.Append("<table>" + Environment.NewLine );
@@ -376,7 +376,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				{
                     navRow.Append("<td style=\"width:50px;\">&nbsp;</td>" + Environment.NewLine);
 					navRow.Append("<td>" + Environment.NewLine );
-					navRow.Append("<a title=\"To download, right click here, select 'Save Target As...' and save the JPEG2000 to your local computer.\" href=\"" + CurrentItem.Web.Source_URL + "/" + FileName + "\" target=\"jp2_downlad\" ><img border=\"0px\" alt=\"To download, right click here, select 'Save Target As...' and save the JPEG2000 to your local computer.\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/zoom_controls/save.gif\"></a></td>");
+					navRow.Append("<a title=\"To download, right click here, select 'Save Target As...' and save the JPEG2000 to your local computer.\" href=\"" + CurrentItem.Web.Source_URL + "/" + FileName + "\" target=\"jp2_downlad\" ><img border=\"0px\" alt=\"To download, right click here, select 'Save Target As...' and save the JPEG2000 to your local computer.\" src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin_Or_Skin + "/zoom_controls/save.gif\"></a></td>");
 					navRow.Append("<td><a title=\"To download, right click here, select 'Save Target As...' and save the JPEG2000 to your local computer.\" href=\"" + CurrentItem.Web.Source_URL + "/" + FileName + "\" target=\"jp2_downlad\" >Download<br />this tile</a>");
 					navRow.Append("</td>" + Environment.NewLine );
 				}

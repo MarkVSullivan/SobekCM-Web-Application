@@ -117,6 +117,9 @@
     /// <remarks> This roughly corresponds to the collection viewer used by the collection html subwriter</remarks>
     public enum Search_Type_Enum : byte
     {
+        /// <summary> No search type specified, not applicable </summary>
+        NONE,
+
         /// <summary> Advanced search type allows boolean searching with four different search fields </summary>
         Advanced,
 
@@ -160,13 +163,12 @@
     /// <remarks> This roughly corresponds to the result viewer used by the results (or collection) html subwriter</remarks>
     public enum Result_Display_Type_Enum : byte
     {
+        /// <summary> No result display type specified, not applicable </summary>
+        NONE,
+
         /// <summary> Default result display type means that not particular type was selected
         /// and the item aggregation default is utilized </summary>
-        Default = 0,
-
-        /// <summary> This is not really a result display, so no type should
-        /// be included </summary>
-        NONE,
+        Default,
 
         /// <summary> Displays the results in the bookshelf view, which allows the user to remove the item
         /// from the bookshelf, move the item, or edit the user notes </summary>
@@ -203,6 +205,9 @@
     /// <summary> Type of administrative information requested for display </summary>
     public enum Internal_Type_Enum : byte
     {
+        /// <summary> No internal type specified, not applicable </summary>
+        NONE,
+
         /// <summary> Gets the complete list of all aggregations </summary>
         Aggregations_List,
 
@@ -249,8 +254,11 @@
     /// <summary> Type of statistical information to display </summary>
     public enum Statistics_Type_Enum : byte
     {
+        /// <summary> No statistics type specified, not applicable </summary>
+        NONE,
+
         /// <summary> Displays the item count for an arbitrary date and the growth from the first arbitrary date and the second date </summary>
-        Item_Count_Arbitrary_View = 1,
+        Item_Count_Arbitrary_View,
 
         /// <summary> Displays the current number of items in each aggregation, as well as growth during the last FYTD </summary>
         Item_Count_Growth_View,
@@ -295,6 +303,9 @@
     /// <summary> Type of mySobek display or action requested by the user </summary>
     public enum My_Sobek_Type_Enum : byte
     {
+        /// <summary> No mySobek type specified, not applicable </summary>
+        NONE,
+
         /// <summary> Allows system administrators the ability to delete an item online </summary>
         Delete_Item,
 
@@ -368,8 +379,11 @@
     /// <summary> Type of admin display or action requested by the system or portal administrator </summary>
     public enum Admin_Type_Enum : byte
     {
+        /// <summary> No admin type specified, not applicable </summary>
+        NONE,
+
         /// <summary> Adds a single collection to this instance, via the wizard </summary>
-        Add_Collection_Wizard = 1,
+        Add_Collection_Wizard,
 
         /// <summary> Allows all the information and behaviors for a single aggregation to be viewed / edited </summary>
         Aggregation_Single,
@@ -426,6 +440,9 @@
     /// <summary> Type of aggregation display </summary>
     public enum Aggregation_Type_Enum : byte
     {
+        /// <summary> No aggregation type specified, not applicable </summary>
+        NONE,
+
         /// <summary>Browse item metadata values within an aggregation </summary>
         Browse_By,
 
@@ -503,8 +520,11 @@
     /// <summary> Type of top-level web content display </summary>
     public enum WebContent_Type_Enum : byte
     {
+        /// <summary> No web content display type specified, not applicable </summary>
+        NONE,
+
         /// <summary> Standard public display of the web content </summary>
-        Display = 0,
+        Display,
 
         /// <summary> Edit of the web content </summary>
         Edit,

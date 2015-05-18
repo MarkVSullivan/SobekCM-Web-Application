@@ -204,7 +204,7 @@ namespace SobekCM.Library
             }
 
             // Since this is not cached, we can apply the individual user settings to the static text which was read right here
-            Simple_Web_Content.Content = Simple_Web_Content.Apply_Settings_To_Static_Text(Simple_Web_Content.Content, null, Current_Mode.Skin, Current_Mode.Base_Skin, Current_Mode.Base_URL, UrlWriterHelper.URL_Options(Current_Mode), Tracer);
+            Simple_Web_Content.Content = Simple_Web_Content.Apply_Settings_To_Static_Text(Simple_Web_Content.Content, null, Current_Mode.Skin, Current_Mode.Base_Skin_Or_Skin, Current_Mode.Base_URL, UrlWriterHelper.URL_Options(Current_Mode), Tracer);
 
 
             return true;
@@ -1834,7 +1834,8 @@ namespace SobekCM.Library
 	                {
 		                Tracer.Add_Trace("SobekCM_Assistant.Get_HTML_Skin", "Web skin '" + Web_Skin_Code + "' found in cache");
 	                }
-	                Current_Mode.Base_Skin = htmlSkin.Base_Skin_Code;
+                    if ((!String.IsNullOrEmpty(htmlSkin.Base_Skin_Code)) && (htmlSkin.Base_Skin_Code != htmlSkin.Skin_Code))
+    	                Current_Mode.Base_Skin = htmlSkin.Base_Skin_Code;
                     return htmlSkin;
                 }
             }
@@ -1866,7 +1867,8 @@ namespace SobekCM.Library
             // If there is still no interface, this is an ERROR
             if (htmlSkin != null)
             {
-                Current_Mode.Base_Skin = htmlSkin.Base_Skin_Code;
+                if (( !String.IsNullOrEmpty(htmlSkin.Base_Skin_Code)) && ( htmlSkin.Base_Skin_Code != htmlSkin.Skin_Code ))
+                    Current_Mode.Base_Skin = htmlSkin.Base_Skin_Code;
             }
 
             // Return the value

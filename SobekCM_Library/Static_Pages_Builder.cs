@@ -810,7 +810,6 @@ namespace SobekCM.Library
             currentMode.Skin = defaultSkin;
             currentMode.Mode = Display_Mode_Enum.Item_Display;
             currentMode.Language = Web_Language_Enum.English;
-            currentMode.Internal_User = false;
             currentMode.Trace_Flag = Trace_Flag_Type_Enum.No;
 
             // Get the current page
@@ -847,7 +846,6 @@ namespace SobekCM.Library
                 currentMode.Skin = "";
                 currentMode.Mode = Display_Mode_Enum.Item_Display;
                 currentMode.Language = Web_Language_Enum.English;
-                currentMode.Internal_User = false;
                 currentMode.Trace_Flag = Trace_Flag_Type_Enum.No;
 
                 // Get the item
@@ -909,7 +907,6 @@ namespace SobekCM.Library
 			currentMode.Skin = defaultSkin;
             currentMode.Mode = Display_Mode_Enum.Item_Display;
             currentMode.Language = Web_Language_Enum.English;
-            currentMode.Internal_User = false;
             currentMode.Trace_Flag = Trace_Flag_Type_Enum.No;
 
             // Get the item

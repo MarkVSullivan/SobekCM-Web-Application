@@ -142,7 +142,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// If this is an internal user or can edit this item, ensure the extra information 
 			// has been pulled for this item
-			if ((userCanEditItem) || (CurrentMode.Internal_User) || ( CurrentMode.ViewerCode == "tracking" ) || ( CurrentMode.ViewerCode == "media" ) || ( CurrentMode.ViewerCode == "archive" ))
+			if ((userCanEditItem) || (((CurrentUser != null ) && ( CurrentUser.LoggedOn ) && ( CurrentUser.Is_Internal_User ))) || ( CurrentMode.ViewerCode == "tracking" ) || ( CurrentMode.ViewerCode == "media" ) || ( CurrentMode.ViewerCode == "archive" ))
 			{
 				if (!CurrentItem.Tracking.Tracking_Info_Pulled)
 				{
@@ -713,7 +713,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.Mode = Display_Mode_Enum.My_Sobek;
 				CurrentMode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
 				CurrentMode.My_Sobek_SubMode = "1";
-				builder.AppendLine("<blockquote><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin + "/buttons/edit_item_button.gif\" border=\"0px\" alt=\"Edit this item\" /></a></blockquote>");
+				builder.AppendLine("<blockquote><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\"><img src=\"" + CurrentMode.Base_URL + "design/skins/" + CurrentMode.Base_Skin_Or_Skin + "/buttons/edit_item_button.gif\" border=\"0px\" alt=\"Edit this item\" /></a></blockquote>");
 				CurrentMode.Mode = Display_Mode_Enum.Item_Display;
 			}
 			else
@@ -758,6 +758,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// <returns> HTML string with the basic information about this digital resource for display </returns>
 		public string Standard_Citation_String(bool Include_Links, Custom_Tracer Tracer)
 		{
+		    bool internalUser = ((CurrentUser != null) && (CurrentUser.LoggedOn) && (CurrentUser.Is_Internal_User));
 
             // Retrieve all the metadata modules that wil be used here
 		    Zoological_Taxonomy_Info taxonInfo = CurrentItem.Get_Metadata_Module(GlobalVar.ZOOLOGICAL_TAXONOMY_METADATA_MODULE_KEY) as Zoological_Taxonomy_Info;
@@ -1946,7 +1947,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if ((CurrentItem.Bib_Info.Abstracts_Count > 0) || (CurrentItem.Bib_Info.Notes_Count > 0) || (CurrentItem.Behaviors.User_Tags_Count > 0))
 			{
 				// Ensure that if this user is non-internal, the only notes field is not internal
-				bool valid_notes_exist = CurrentMode.Internal_User;
+                bool valid_notes_exist = internalUser;
 				if (!valid_notes_exist)
 				{
 					if (CurrentItem.Bib_Info.Abstracts_Count > 0)
@@ -1991,7 +1992,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							    }
 							    else
 							    {
-							        if ((thisNote.Note_Type != Note_Type_Enum.internal_comments) || (CurrentMode.Internal_User))
+							        if ((thisNote.Note_Type != Note_Type_Enum.internal_comments) || (internalUser))
 							        {
 							            result.Append(Single_Citation_HTML_Row(thisNote.Note_Type_Display_String, "<span itemprop=\"notes\">" + Convert_String_To_XML_Safe(thisNote.Note) + "</span>", INDENT));
 							        }
@@ -2051,7 +2052,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				{
 					// Include the code for internal users
 					string codeString = String.Empty;
-					if (CurrentMode.Internal_User)
+                    if (internalUser)
 						codeString = " ( i" + CurrentItem.Bib_Info.Source.Code + " )";
 
 					if ((Code_Manager != null) && (Code_Manager.isValidCode("i" + CurrentItem.Bib_Info.Source.Code)))
@@ -2088,7 +2089,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				{
 					// Include the code for internal users
 					string codeString = String.Empty;
-					if (CurrentMode.Internal_User)
+                    if (internalUser)
 						codeString = " ( i" + CurrentItem.Bib_Info.Location.Holding_Code + " )";
 
 					if ((Code_Manager != null) && (Code_Manager.isValidCode("i" + CurrentItem.Bib_Info.Location.Holding_Code)))
@@ -2295,7 +2296,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				result.AppendLine();
 			}
 
-			if (CurrentMode.Internal_User)
+            if (internalUser)
 			{
 				List<string> codeList = new List<string>();
 
@@ -2305,14 +2306,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 				if (Code_Manager != null)
 				{
-				    codeList.AddRange(CurrentMode.Internal_User
+                    codeList.AddRange(internalUser
 				                          ? CurrentItem.Behaviors.Aggregations.Select(Aggregation => Aggregation.Code).Select(AltCode =>"<a href=\"" + CurrentMode.Base_URL + AltCode.ToLower() + url_options + "\">" +Convert_String_To_XML_Safe(Code_Manager.Get_Collection_Short_Name(AltCode)) + "</a> ( " +AltCode + " )")
 				                          : CurrentItem.Behaviors.Aggregations.Select(Aggregation => Aggregation.Code).Select(AltCode =>"<a href=\"" + CurrentMode.Base_URL + AltCode.ToLower() + url_options + "\">" +Convert_String_To_XML_Safe(Code_Manager.Get_Collection_Short_Name(AltCode)) + "</a>"));
 				    Add_Citation_HTML_Rows("Aggregations", codeList, INDENT, result);
 					codeList.Clear();
 				}
 
-				if (CurrentMode.Internal_User)
+                if (internalUser)
 				{
 					if (CurrentItem.Behaviors.Ticklers_Count > 0)
 					{
@@ -2327,7 +2328,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				result.AppendLine();
 			}
 
-			if (CurrentMode.Internal_User)
+            if (internalUser)
 			{
 
 				result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_MetsSection\" >");
