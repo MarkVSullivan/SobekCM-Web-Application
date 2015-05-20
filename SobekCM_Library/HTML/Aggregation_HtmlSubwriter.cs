@@ -757,7 +757,7 @@ namespace SobekCM.Library.HTML
                 if (collectionViewer.Type != Item_Aggregation_Views_Searches_Enum.DataSet_Browse) 
 		        {
 			        // Add the main aggrgeation menu here
-                    if ((!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_MainMenu)))
+                    if (((!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation.HasValue) || (!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation.Value)) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_MainMenu)))
                         MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(Output, RequestSpecificValues);
 
 					// Start the page container
@@ -767,7 +767,7 @@ namespace SobekCM.Library.HTML
 				else
 				{
 					// Add the main aggrgeation menu here
-                    if ((!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_MainMenu)))
+                    if (((!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation.HasValue) || (!RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation.Value)) && (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_MainMenu)))
                         MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, false);
 
 					// Start the (optional) page container

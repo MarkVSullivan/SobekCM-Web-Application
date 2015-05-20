@@ -2,6 +2,7 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration;
 
@@ -12,6 +13,7 @@ namespace SobekCM.Core.Navigation
 	/// <summary> This object stores the current and next mode information for a single HTTP request. <br /> <br /> </summary>
 	/// <remarks>  Object written by Mark V Sullivan for the University of Florida. </remarks>
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("navigationObject")]
 	public class Navigation_Object 
 	{
 		#region Private members of this object
@@ -129,34 +131,40 @@ namespace SobekCM.Core.Navigation
 
         /// <summary> Admin type of display for the current request.</summary>
         [DataMember(EmitDefaultValue = false, Name = "adminType")]
+        [XmlElement("adminType")]
         [ProtoMember(1)]
         public Admin_Type_Enum Admin_Type { get; set; }
 
         /// <summary> Current aggregation code </summary>
         /// <remarks>The value returned is always lower case</remarks>
         [DataMember(EmitDefaultValue = false, Name = "aggregation")]
+        [XmlElement("aggregation")]
         [ProtoMember(2)]
         public string Aggregation { get; set; }
 
         /// <summary> Current aggregation alias code, if there is one </summary>
         /// <remarks>The value returned is always lower case</remarks>
         [DataMember(EmitDefaultValue = false, Name = "aggrAlias")]
+        [XmlElement("aggrAlias")]
         [ProtoMember(3)]
         public string Aggregation_Alias { get; set; }
 
         /// <summary> Submode for agrgegation views </summary>
         [DataMember(EmitDefaultValue = false, Name = "aggrType")]
+        [XmlElement("aggrType")]
         [ProtoMember(4)]
         public Aggregation_Type_Enum Aggregation_Type { get; set; }
 
         /// <summary> Base infterface interface for display purposes </summary>
         /// <remarks> The value returned is always lower case</remarks>
         [DataMember(EmitDefaultValue = false, Name = "baseSkin")]
+        [XmlElement("baseSkin")]
         [ProtoMember(5)]
         public string Base_Skin { get; set; }
 
         /// <summary> Base infterface interface for display purposes </summary>
         /// <remarks> The value returned is always lower case</remarks>
+        [XmlIgnore]
         [IgnoreDataMember]
         public string Base_Skin_Or_Skin
         {
@@ -171,27 +179,32 @@ namespace SobekCM.Core.Navigation
         /// <summary> Base URL requested by the user </summary>
         /// <remarks> This is the URL post-rewriting from any URL path rewrite routine (such as SobekCM_URL_Rewriter) </remarks>
         [DataMember(EmitDefaultValue = false, Name = "baseUrl")]
+        [XmlAttribute("baseUrl")]
         [ProtoMember(6)]
         public string Base_URL { get; set; }
 
         /// <summary> Bib id to display </summary>
         /// <remarks>The value returned is always upper case </remarks>
         [DataMember(EmitDefaultValue = false, Name = "bibid")]
+        [XmlElement("bibid")]
         [ProtoMember(7)]
         public string BibID { get; set; }
 
         /// <summary> Browser type </summary>
         [DataMember(EmitDefaultValue = false, Name = "browser")]
+        [XmlElement("browser")]
         [ProtoMember(8)]
         public string Browser_Type { get; set; }
 
         /// <summary> Exception generated during execution </summary>
         [DataMember(EmitDefaultValue = false, Name = "exception")]
+        [XmlIgnore]
         [ProtoMember(9)]
         public Exception Caught_Exception { get; set; }
 
         /// <summary> Coordinate search string for a geographic search </summary>
         [DataMember(EmitDefaultValue = false, Name = "coordinates")]
+        [XmlElement("coordinates")]
         [ProtoMember(10)]
         public string Coordinates { get; set; }
 
@@ -199,6 +212,7 @@ namespace SobekCM.Core.Navigation
         /// a date range between two arbitrary dates </summary>
         /// <value>-1 if no year range</value>
         [DataMember(EmitDefaultValue = false, Name = "dateRangeDate1")]
+        [XmlElement("dateRangeDate1")]
         [ProtoMember(11)]
         public long? DateRange_Date1 { get; set; }
 
@@ -206,6 +220,7 @@ namespace SobekCM.Core.Navigation
         /// a date range between two arbitrary dates </summary>
         /// <value>-1 if no year range</value>
         [DataMember(EmitDefaultValue = false, Name = "dateRangeDate2")]
+        [XmlElement("dateRangeDate2")]
         [ProtoMember(12)]
         public long? DateRange_Date2 { get; set; }
 
@@ -213,6 +228,7 @@ namespace SobekCM.Core.Navigation
         /// a date range between two years </summary>
         /// <value>-1 if no year range</value>
         [DataMember(EmitDefaultValue = false, Name = "dateRangeYear1")]
+        [XmlElement("dateRangeYear1")]
         [ProtoMember(13)]
         public short? DateRange_Year1 { get; set; }
 
@@ -220,74 +236,88 @@ namespace SobekCM.Core.Navigation
         /// a date range between two years </summary>
         /// <value>-1 if no year range</value>
         [DataMember(EmitDefaultValue = false, Name = "dateRangeYear2")]
+        [XmlElement("dateRangeYear2")]
         [ProtoMember(14)]
         public short? DateRange_Year2 { get; set; }
 
         /// <summary> Default aggregation (based on original URL) </summary>
         /// <remarks>The value returned is always lower case</remarks>
         [DataMember(EmitDefaultValue = false, Name = "defaultAggregation")]
+        [XmlElement("defaultAggregation")]
         [ProtoMember(15)]
         public string Default_Aggregation { get; set; }
 
         /// <summary> Default language for this user, from their browser settings </summary>
         [DataMember(EmitDefaultValue = false, Name = "defaultLanguage")]
+        [XmlElement("defaultLanguage")]
         [ProtoMember(16)]
         public Web_Language_Enum Default_Language { get; set; }
 
         /// <summary> Default interface (based on original URL) </summary>
         /// <remarks>The value returned is always lower case</remarks>
         [DataMember(EmitDefaultValue = false, Name = "defaultSkin")]
+        [XmlElement("defaultSkin")]
         [ProtoMember(17)]
         public string Default_Skin { get; set; }
         
         /// <summary> Simple error message generated during execution </summary>
         [DataMember(EmitDefaultValue = false, Name = "error")]
+        [XmlElement("error")]
         [ProtoMember(18)]
         public string Error_Message { get; set; }
 
         /// <summary> Primary key for the folder to display </summary>
         [DataMember(EmitDefaultValue = false, Name = "folder")]
+        [XmlElement("folder")]
         [ProtoMember(19)]
         public int? FolderID { get; set; }
 
         /// <summary> Fragment utilized when only a portion of a page needs to be rendered </summary>
         [DataMember(EmitDefaultValue = false, Name = "fragment")]
+        [XmlElement("fragment")]
         [ProtoMember(20)]
         public string Fragment { get; set; }
 
         /// <summary>Submode for the main library home page </summary>
         [DataMember(EmitDefaultValue = false, Name = "homeType")]
+        [XmlElement("homeType")]
         [ProtoMember(21)]
         public Home_Type_Enum Home_Type { get; set; }
         
         /// <summary> Browse or info mode to display </summary>
         /// <remarks>The value returned is always lower case</remarks>
         [DataMember(EmitDefaultValue = false, Name = "infoBrowseMode")]
+        [XmlElement("infoBrowseMode")]
         [ProtoMember(22)]
         public string Info_Browse_Mode { get; set; }
 
         /// <summary> Returns the name of this instance ( i.e., 'UDC', 'dLOC', etc... ) </summary>
         [DataMember(EmitDefaultValue = false, Name = "instanceAbbreviation")]
+        [XmlElement("instanceAbbreviation")]
         [ProtoMember(23)]
         public string Instance_Abbreviation { get; set; }
 
         /// <summary> Returns the name of this instance ( i.e., 'UDC', 'dLOC', etc... ) </summary>
         [DataMember(EmitDefaultValue = false, Name = "instanceName")]
+        [XmlElement("instanceName")]
         [ProtoMember(24)]
         public string Instance_Name { get; set; }
 
         /// <summary> Submode for the internal pages </summary>
         [DataMember(EmitDefaultValue = false, Name = "internalType")]
+        [XmlElement("internalType")]
         [ProtoMember(25)]
         public Internal_Type_Enum Internal_Type { get; set; }
 
         /// <summary> Flag that is set to indicate item requested is invalid </summary>
         [DataMember(EmitDefaultValue = false, Name = "invalidItem")]
+        [XmlElement("invalidItem")]
         [ProtoMember(27)]
         public bool? Invalid_Item { get; set; }
 
         /// <summary> Flag indicating this is a post back </summary>
         [DataMember(Name = "isPostBack")]
+        [XmlAttribute("isPostBack")]
         [ProtoMember(28)]
         public bool isPostBack { get; set; }
 
@@ -295,21 +325,25 @@ namespace SobekCM.Core.Navigation
         /// indexer or web site crawler bot.</summary>
         /// <remarks>This value is set in by calling the <see cref="Set_Robot_Flag"/> procedure. </remarks>
         [DataMember(Name = "isRobot")]
+        [XmlAttribute("isRobot")]
         [ProtoMember(29)]
         public bool Is_Robot { get; set; }
 
         /// <summary> (DEPRECATED) ItemID which formerly was used for indicating items in the URL </summary>
-        [DataMember(EmitDefaultValue = false, Name = "invalidItem")]
+        [DataMember(EmitDefaultValue = false, Name = "itemId")]
+        [XmlElement("itemId")]
         [ProtoMember(30)]
         public int? ItemID_DEPRECATED { get; set; }
 
         /// <summary> Language for the interface </summary>
         [DataMember(EmitDefaultValue = false, Name = "language")]
+        [XmlElement("language")]
         [ProtoMember(31)]
         public Web_Language_Enum Language { get; set; }
 
         /// <summary> Language code for the current skin language  </summary>
         [IgnoreDataMember]
+        [XmlIgnore]
         public string Language_Code
         {
             get { return Web_Language_Enum_Converter.Enum_To_Code(Language); }
@@ -317,47 +351,56 @@ namespace SobekCM.Core.Navigation
 
         /// <summary> Flag indicates that logon is required to access the requested mode </summary>
         [DataMember(EmitDefaultValue = false, Name = "logonRequired")]
+        [XmlElement("logonRequired")]
         [ProtoMember(32)]
         public bool Logon_Required { get; set; }
 
         /// <summary> Mode determined by parsing the query string </summary>
         [DataMember(EmitDefaultValue = false, Name = "mode")]
+        [XmlAttribute("mode")]
         [ProtoMember(33)]
         public Display_Mode_Enum Mode { get; set; }
 
         /// <summary> mySobek submode for the current request.</summary>
         /// <remarks>The value returned is always lower case, and is also used for the admin pages</remarks>
         [DataMember(EmitDefaultValue = false, Name = "mySobekSubmode")]
+        [XmlElement("mySobekSubmode")]
         [ProtoMember(34)]
         public string My_Sobek_SubMode { get; set; }
 
         /// <summary> mySobek type of display for the current request.</summary>
         [DataMember(EmitDefaultValue = false, Name = "mySobekType")]
+        [XmlElement("mySobekType")]
         [ProtoMember(35)]
         public My_Sobek_Type_Enum My_Sobek_Type { get; set; }
 
         /// <summary> Page number to be displayed (either for an item or for results )</summary>
         [DataMember(EmitDefaultValue = false, Name = "page")]
+        [XmlElement("page")]
         [ProtoMember(36)]
         public ushort? Page { get; set; }
 
         /// <summary> Filename indicated in the URL to allow direct link by page file name, rather than sequence </summary>
         [DataMember(EmitDefaultValue = false, Name = "pageByFilename")]
+        [XmlElement("pageByFilename")]
         [ProtoMember(37)]
         public string Page_By_FileName { get; set; }
 
         /// <summary> Gets the PURL associated with this portal which should be used for building permanent links for items </summary>
         [DataMember(EmitDefaultValue = false, Name = "portalPurl")]
+        [XmlElement("portalPurl")]
         [ProtoMember(38)]
         public string Portal_PURL { get; set; }
 
 		/// <summary> Name of the report requested from the reporting module </summary>
         [DataMember(EmitDefaultValue = false, Name = "reportName")]
+        [XmlElement("reportName")]
         [ProtoMember(39)]
 		public string Report_Name { get; set; }
 
         /// <summary> Submode for the results display </summary>
         [DataMember(EmitDefaultValue = false, Name = "resultType")]
+        [XmlElement("resultType")]
         [ProtoMember(40)]
         public Result_Display_Type_Enum Result_Display_Type { get; set; }
 
@@ -365,16 +408,19 @@ namespace SobekCM.Core.Navigation
         /// <remarks>This is primarily used by the mySobek feature, to return a user to their previously
         /// requested site, once they log on.</remarks>
         [DataMember(EmitDefaultValue = false, Name = "returnUri")]
+        [XmlElement("returnUri")]
         [ProtoMember(41)]
         public string Return_URL { get; set; }
 
         /// <summary> Flag indicates if the request was completed, so no further
         /// operations should occur </summary>
+        [XmlIgnore]
         [IgnoreDataMember]
         public bool Request_Completed { get; set; }
 
         /// <summary> Search fields </summary>
         [DataMember(Name = "searchFields")]
+        [XmlElement("searchFields")]
         [ProtoMember(43)]
         public string Search_Fields
         {
@@ -384,11 +430,13 @@ namespace SobekCM.Core.Navigation
 
         /// <summary> Precision to be used while performing a metadata search in the database </summary>
         [DataMember(EmitDefaultValue = false, Name = "searchPrecision")]
+        [XmlElement("searchPrecision")]
         [ProtoMember(44)]
         public Search_Precision_Type_Enum Search_Precision { get; set; }
 
         /// <summary> Search string </summary>
         [DataMember(EmitDefaultValue = false, Name = "searchString")]
+        [XmlElement("searchString")]
         [ProtoMember(45)]
         public string Search_String
         {
@@ -398,75 +446,89 @@ namespace SobekCM.Core.Navigation
 
         /// <summary> Submode for searching </summary>
         [DataMember(EmitDefaultValue = false, Name = "searchType")]
+        [XmlElement("searchType")]
         [ProtoMember(46)]
         public Search_Type_Enum Search_Type { get; set; }
 
         /// <summary> Flag which determines if the selection panel is shown
         /// for an aggregation search </summary>
         [DataMember(EmitDefaultValue = false, Name = "showSelectionPanel")]
+        [XmlElement("showSelectionPanel")]
         [ProtoMember(47)]
         public bool? Show_Selection_Panel { get; set; }
 
         /// <summary> Size of Thumbnails to appear in the related items viewer </summary>
         [DataMember(EmitDefaultValue = false, Name = "thumbnailSize")]
+        [XmlElement("thumbnailSize")]
         [ProtoMember(48)]
         public short? Size_Of_Thumbnails { get; set; }
 
         /// <summary> Current skin for display purposes </summary>
         /// <remarks>The value returned is always lower case</remarks>
         [DataMember(EmitDefaultValue = false, Name = "skin")]
+        [XmlElement("skin")]
         [ProtoMember(49)]
         public string Skin { get; set; }
 
         /// <summary> Flag which indicates the interface is indicated in the URL and query string </summary>
         [DataMember(EmitDefaultValue = false, Name = "skinInUrl")]
+        [XmlElement("skinInUrl")]
         [ProtoMember(50)]
         public bool Skin_In_URL { get; set; }
 
         /// <summary> Sort type employed for displaying result sets </summary>
         [DataMember(EmitDefaultValue = false, Name = "sort")]
+        [XmlElement("sort")]
         [ProtoMember(51)]
         public short? Sort { get; set; }
 
         /// <summary> Submode for the statistics pages </summary>
         [DataMember(EmitDefaultValue = false, Name = "statsType")]
+        [XmlElement("statsType")]
         [ProtoMember(52)]
         public Statistics_Type_Enum Statistics_Type { get; set; }
 
         /// <summary> Information about which sub aggregationPermissions to include or exclude
         /// during a collection group search</summary>
         [DataMember(EmitDefaultValue = false, Name = "subAggregation")]
+        [XmlElement("subAggregation")]
         [ProtoMember(53)]
         public string SubAggregation { get; set; }
 
         /// <summary> Sub page number to be displayed (either for an item or for results )</summary>
         [DataMember(EmitDefaultValue = false, Name = "subPage")]
+        [XmlElement("subPage")]
         [ProtoMember(54)]
         public ushort? SubPage { get; set; }
 
         /// <summary> String to use for a single-item text search </summary>
         [DataMember(EmitDefaultValue = false, Name = "textSearch")]
+        [XmlElement("textSearch")]
         [ProtoMember(55)]
         public string Text_Search { get; set; }
 
         /// <summary> Thumbnails per page to appear in the related images item viewer  </summary>
         [DataMember(EmitDefaultValue = false, Name = "thumbnailsPerPage")]
+        [XmlElement("thumbnailsPerPage")]
         [ProtoMember(56)]
         public short? Thumbnails_Per_Page { get; set; }
 
         /// <summary> TOC Display flag, which indicates whether to display the table of contents in the item viewer </summary>
         [DataMember(EmitDefaultValue = false, Name = "tocDisplay")]
+        [XmlElement("tocDisplay")]
         [ProtoMember(57)]
         public TOC_Display_Type_Enum TOC_Display { get; set; }
 
 
         /// <summary> Trace flag which indicates whether to display the trace route </summary>
         [DataMember(EmitDefaultValue = false, Name = "traceFlag")]
+        [XmlElement("traceFlag")]
         [ProtoMember(58)]
         public Trace_Flag_Type_Enum Trace_Flag { get; set; }
 
         /// <summary> Simplified flag for displaying the trace route </summary>
         [IgnoreDataMember]
+        [XmlIgnore]
         public bool Trace_Flag_Simple
         {
             get
@@ -477,6 +539,7 @@ namespace SobekCM.Core.Navigation
 
 	    /// <summary> Volume id to display </summary>
         [DataMember(EmitDefaultValue = false, Name = "vid")]
+        [XmlElement("vid")]
         [ProtoMember(59)]
 	    public string VID { get; set; }
 
@@ -484,16 +547,19 @@ namespace SobekCM.Core.Navigation
         /// a single item in the item writer.  </summary>
         /// <remarks>The value returned is always lower case</remarks>
         [DataMember(EmitDefaultValue = false, Name = "viewerCode")]
+        [XmlElement("viewerCode")]
         [ProtoMember(60)]
         public string ViewerCode { get; set; }
 
         /// <summary> Webcontent type of display for the current request </summary>
         [DataMember(EmitDefaultValue = false, Name = "webContentType")]
+        [XmlElement("webContentType")]
         [ProtoMember(61)]
         public WebContent_Type_Enum WebContent_Type { get; set; }
 
         /// <summary> Writer type to be employed for rendering </summary>
         [DataMember(EmitDefaultValue = false, Name = "writerType")]
+        [XmlElement("writerType")]
         [ProtoMember(62)]
         public Writer_Type_Enum Writer_Type { get; set; }
 
@@ -503,26 +569,31 @@ namespace SobekCM.Core.Navigation
 
         /// <summary>Viewport size for the zoomable image display </summary>
         [DataMember(EmitDefaultValue = false, Name = "jp2ViewportSize")]
+        [XmlElement("jp2ViewportSize")]
         [ProtoMember(70)]
         public ushort? Viewport_Size { get; set; }
 
         /// <summary>Viewport zoom for the zoomable image display </summary>
         [DataMember(EmitDefaultValue = false, Name = "jp2ViewportZoom")]
+        [XmlElement("jp2ViewportZoom")]
         [ProtoMember(71)]
         public ushort? Viewport_Zoom { get; set; }
 
         /// <summary> Viewport horizontal location for the zoomable image display </summary>
         [DataMember(EmitDefaultValue = false, Name = "jp2ViewportX")]
+        [XmlElement("jp2ViewportX")]
         [ProtoMember(72)]
         public int? Viewport_Point_X { get; set; }
 
         /// <summary> Viewport vertical location for the zoomable image display </summary>
         [DataMember(EmitDefaultValue = false, Name = "jp2ViewportY")]
+        [XmlElement("jp2ViewportY")]
         [ProtoMember(73)]
         public int? Viewport_Point_Y { get; set; }
 
         /// <summary> Viewport rotation for the zoomable image display </summary>
         [DataMember(EmitDefaultValue = false, Name = "jp2ViewportRotation")]
+        [XmlElement("jp2ViewportRotation")]
         [ProtoMember(74)]
         public ushort? Viewport_Rotation { get; set; }
 

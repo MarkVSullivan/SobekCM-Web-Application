@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.ApplicationState;
 
@@ -17,19 +18,27 @@ namespace SobekCM.Core.Aggregations
     public class Item_Aggregation_Related_Aggregations : IEquatable<Item_Aggregation_Related_Aggregations>
     {
         /// <summary> Aggregation code for this related aggregation </summary>
-        [DataMember(Name = "code"), ProtoMember(1)]
+        [DataMember(Name = "code")]
+        [XmlAttribute("code")]
+        [ProtoMember(1)]
         public string Code { get; set; }
 
         /// <summary> Description for this aggregation </summary>
-        [DataMember(Name = "description", EmitDefaultValue=false), ProtoMember(2)]
+        [DataMember(Name = "description", EmitDefaultValue=false)]
+        [XmlElement("description")]
+        [ProtoMember(2)]
         public string Description { get; set; }
 
         /// <summary> Aggregation id for this related aggregation </summary>
-        [DataMember(Name = "id", EmitDefaultValue = false), ProtoMember(3)]
+        [DataMember(Name = "id", EmitDefaultValue = false)]
+        [XmlAttribute("id")]
+        [ProtoMember(3)]
         public ushort ID { get; set; }
 
         /// <summary> Type of this related aggregation </summary>
-        [DataMember(Name = "type", EmitDefaultValue=false), ProtoMember(4)]
+        [DataMember(Name = "type", EmitDefaultValue=false)]
+        [XmlAttribute("type")]
+        [ProtoMember(4)]
         public string Type { get; set; }
 
         /// <summary> Constructor for a new instance of the Item_Aggregation_Related_Aggregations class </summary>
@@ -80,39 +89,58 @@ namespace SobekCM.Core.Aggregations
         }
 
         /// <summary> Name for this related aggregation </summary>
-        [DataMember(Name = "name", EmitDefaultValue = false), ProtoMember(5)]
+        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [XmlAttribute("name")]
+        [ProtoMember(5)]
         public string Name { get; set; }
 
         /// <summary> Shortened name for this related aggregation </summary>
-        [DataMember(Name = "shortName", EmitDefaultValue = false), ProtoMember(6)]
+        [DataMember(Name = "shortName", EmitDefaultValue = false)]
+        [XmlAttribute("shortName")]
+        [ProtoMember(6)]
         public string ShortName { get; set; }
 
         /// <summary> Flag indicates if this aggregation is hidden </summary>
-        [DataMember(Name = "isHidden"), ProtoMember(7)]
+        [DataMember(Name = "isHidden")]
+        [XmlAttribute("isHidden")]
+        [ProtoMember(7)]
         public bool Hidden { get; set; }
 
         /// <summary> Flag indicates if this aggregation is active </summary>
-        [DataMember(Name = "isActive"), ProtoMember(8)]
+        [DataMember(Name = "isActive")]
+        [XmlAttribute("isActive")]
+        [ProtoMember(8)]
         public bool Active { get; set; }
 
         /// <summary> External link for this institution </summary>
-        [DataMember(Name = "link", EmitDefaultValue = false), ProtoMember(9)]
+        [DataMember(Name = "link", EmitDefaultValue = false)]
+        [XmlElement("link")]
+        [ProtoMember(9)]
         public string External_Link { get; set; }
 
         /// <summary> Gets the collection of children item aggregation objects </summary>
-        [DataMember(Name = "children", EmitDefaultValue = false), ProtoMember(10)]
+        [DataMember(Name = "children", EmitDefaultValue = false)]
+        [XmlArray("children")]
+        [XmlArrayItem("relatedAggr", typeof(Item_Aggregation_Related_Aggregations))]
+        [ProtoMember(10)]
         public List<Item_Aggregation_Related_Aggregations> Children { get; private set; }
 
         /// <summary> Thematic heading, used for placing items on the home page of the entire collection </summary>
-        [DataMember(Name = "thematicHeading", EmitDefaultValue = false), ProtoMember(11)]
+        [DataMember(Name = "thematicHeading", EmitDefaultValue = false)]
+        [XmlElement("thematicHeading")]
+        [ProtoMember(11)]
         public Thematic_Heading Thematic_Heading { get; set; }
 
         /// <summary> Gets the collection of minimally-reported parent aggregations </summary>
-        [DataMember(Name = "parents", EmitDefaultValue = false), ProtoMember(12)]
+        [DataMember(Name = "parents", EmitDefaultValue = false)]
+        [XmlArray("parents")]
+        [XmlArrayItem("parent", typeof(Item_Aggregation_Minimal))]
+        [ProtoMember(12)]
         public List<Item_Aggregation_Minimal> Parents { get; private set; }
 
         /// <summary> Gets the number of child item aggregations present </summary>
         [IgnoreDataMember]
+        [XmlIgnore]
         public int Children_Count
         {
             get
@@ -123,6 +151,7 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Gets the number of parent item aggregations present </summary>
         [IgnoreDataMember]
+        [XmlIgnore]
         public int Parent_Count
         {
             get
@@ -212,15 +241,21 @@ namespace SobekCM.Core.Aggregations
     public class Item_Aggregation_Minimal : IEquatable<Item_Aggregation_Minimal>
     {
         /// <summary> Aggregation code for this minimally reported aggregation </summary>
-        [DataMember(Name = "code"), ProtoMember(1)]
+        [DataMember(Name = "code")]
+        [XmlAttribute("code")]
+        [ProtoMember(1)]
         public string Code { get; set; }
 
         /// <summary> Full name for this minimally reported aggregation </summary>
-        [DataMember(Name = "name", EmitDefaultValue = false), ProtoMember(2)]
+        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [XmlAttribute("name")]
+        [ProtoMember(2)]
         public string Name { get; set; }
 
         /// <summary> Shortened name for this minimally reported aggregation </summary>
-        [DataMember(Name = "shortName", EmitDefaultValue = false), ProtoMember(3)]
+        [DataMember(Name = "shortName", EmitDefaultValue = false)]
+        [XmlAttribute("shortName")]
+        [ProtoMember(3)]
         public string ShortName { get; set; }
 
         /// <summary> Constructor for a new instance of the Item_Aggregaiton_Minimal object </summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using ProtoBuf;
 
 namespace SobekCM.Core.BriefItem
@@ -12,11 +13,14 @@ namespace SobekCM.Core.BriefItem
     {
         /// <summary> Label for this file grouping </summary>
         [DataMember(Name = "label")]
+        [XmlAttribute("label")]
         [ProtoMember(1)]
         public string Label;
 
         /// <summary> Collection of one or more files related to this grouping </summary>
         [DataMember(Name="files")]
+        [XmlArray("files")]
+        [XmlArrayItem("file", typeof(BriefItem_File))]
         [ProtoMember(2)]
         public List<BriefItem_File> Files;
 

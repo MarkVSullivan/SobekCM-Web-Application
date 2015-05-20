@@ -42,7 +42,7 @@ namespace SobekCM.Library.HTML
 		public static void Add_Banner(TextWriter Output, string Banner_Division_Name, Navigation_Object CurrentMode, Web_Skin_Object HTML_Skin, Item_Aggregation Hierarchy_Object)
 		{
 			Output.WriteLine("<!-- Write the main collection, interface, or institution banner -->");
-			if ((HTML_Skin != null) && (HTML_Skin.Override_Banner))
+            if ((HTML_Skin != null) && (HTML_Skin.Override_Banner.HasValue) && (HTML_Skin.Override_Banner.Value))
 			{
                 if ( !String.IsNullOrEmpty(HTML_Skin.Banner_HTML))
                     Output.WriteLine(HTML_Skin.Banner_HTML);

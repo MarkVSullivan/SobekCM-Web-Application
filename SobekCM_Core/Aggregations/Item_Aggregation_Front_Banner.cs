@@ -2,6 +2,7 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using ProtoBuf;
 
 #endregion
@@ -29,21 +30,29 @@ namespace SobekCM.Core.Aggregations
 		}
 
 		/// <summary> Name of the image file used in this front banner </summary>
-        [DataMember(Name = "file"), ProtoMember(1)]
+        [DataMember(Name = "file")]
+        [XmlText]
+        [ProtoMember(1)]
 		public string File { get; set;  }
 
 		/// <summary> Width of the special front banner image used for aggregationPermissions that show the highlighted
 		/// item and the search box in the main banner at the top on the front page  </summary>
-        [DataMember(Name = "width"), ProtoMember(2)]
+        [DataMember(Name = "width")]
+        [XmlAttribute("width")]
+        [ProtoMember(2)]
 		public ushort Width { get; set; }
 
 		/// <summary> Height of the special front banner image used for aggregationPermissions that show the highlighted
 		/// item and the search box in the main banner at the top on the front page </summary>
-        [DataMember(Name = "height"), ProtoMember(3)]
+        [DataMember(Name = "height")]
+        [XmlAttribute("height")]
+        [ProtoMember(3)]
 		public ushort Height { get; set; }
 
 		/// <summary>  Flag indicates type of front banner -- either FULL, LEFT, or RIGHT </summary>
-        [DataMember(Name = "type"), ProtoMember(4)]
+        [DataMember(Name = "type")]
+        [XmlAttribute("type")]
+        [ProtoMember(4)]
         public Item_Aggregation_Front_Banner_Type_Enum Type { get; set; }
 	}
 }

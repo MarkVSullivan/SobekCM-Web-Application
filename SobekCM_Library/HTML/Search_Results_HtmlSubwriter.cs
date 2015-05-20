@@ -69,7 +69,7 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Search_Results_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
             // If this skin has top-level navigation suppressed, skip the top tabs
-            if (RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation)
+            if ((RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation.HasValue) && (RequestSpecificValues.HTML_Skin.Suppress_Top_Navigation.Value))
             {
                 Output.WriteLine("<br />");
             }

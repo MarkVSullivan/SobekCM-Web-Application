@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using ProtoBuf;
 
 #endregion
@@ -14,26 +15,43 @@ namespace SobekCM.Core.Skins
     /// the rendered html to be altered to match a partner's institutional web pages as well. <br /><br />
     /// Since this class holds the header, footer, and banner information, this HTML skin object is language-specific.</remarks>
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("webSkin")]
     public class Web_Skin_Object
     {
         /// <summary> Code for the base skin which this skin derives from  </summary>
         /// <remarks> The base skin is used for many of the common design image files which are reused, such as button images, tab images, etc..<br /><br />
         /// This also corresponds to the location of the base skin files under the design folder.  (i.e., '\design\skins\[CODE]' ) </remarks>
         [DataMember(EmitDefaultValue = false, Name = "base")]
+        [XmlAttribute("base")]
         [ProtoMember(1)]
-        public readonly string Base_Skin_Code;
+        public string Base_Skin_Code { get; set; }
 
         /// <summary> Additional CSS Stylesheet to be included for this skin </summary>
         /// <remarks> The standard SobekCM stylesheet is always included, but this stylesheet can override any styles from the standard </remarks>
         [DataMember(Name = "cssStyle")]
+        [XmlElement("cssStyle")]
         [ProtoMember(2)]
-        public readonly string CSS_Style;
+        public string CSS_Style { get; set; }
 
         /// <summary> Code for this skin </summary>
         /// <remarks> This also corresponds to the location of the main interface files under the design folder.  (i.e., '\design\skins\[CODE]' ) </remarks>
         [DataMember(Name = "code")]
+        [XmlAttribute("code")]
         [ProtoMember(3)]
-        public readonly string Skin_Code;
+        public string Skin_Code { get; set; }
+
+        /// <summary> Constructor for a new instance of the Web_Skin_Object class </summary>
+        public Web_Skin_Object()
+        {
+            // Parameterless constructor primarily used for serialization
+
+            // Set some defaults
+            Header_HTML = String.Empty;
+            Footer_HTML = String.Empty;
+            Header_Item_HTML = String.Empty;
+            Footer_Item_HTML = String.Empty;
+            Language_Code = String.Empty;
+        }
 
 		/// <summary> Constructor for a new instance of the Web_Skin_Object class </summary>
         /// <param name="Skin_Code"> Code for this HTML skin</param>
@@ -44,7 +62,6 @@ namespace SobekCM.Core.Skins
             // Save the parameters
             this.CSS_Style = CSS_Style;
             this.Skin_Code = Skin_Code;
-            Override_Banner = false;
 
             this.Base_Skin_Code = String.IsNullOrEmpty(Base_Skin_Code) ? Skin_Code : Base_Skin_Code;
 
@@ -54,8 +71,6 @@ namespace SobekCM.Core.Skins
             Header_Item_HTML = String.Empty;
             Footer_Item_HTML = String.Empty;
             Language_Code = String.Empty;
-			Header_Has_Container_Directive = false;
-			Footer_Has_Container_Directive = false;
         }
 
         /// <summary> Constructor for a new instance of the Web_Skin_Object class </summary>
@@ -69,7 +84,6 @@ namespace SobekCM.Core.Skins
             this.CSS_Style = CSS_Style;
             this.Skin_Code = Skin_Code;
             this.Banner_HTML = Banner_HTML;
-            Override_Banner = true;
 
             this.Base_Skin_Code = Base_Skin_Code.Length > 0 ? Base_Skin_Code : Skin_Code;
 
@@ -78,48 +92,54 @@ namespace SobekCM.Core.Skins
             Footer_HTML = String.Empty;
             Header_Item_HTML = String.Empty;
             Footer_Item_HTML = String.Empty;
-	        Header_Has_Container_Directive = false;
-	        Footer_Has_Container_Directive = false;
         }
 
         /// <summary> Code for the banner to use, if this is set to override the banner </summary>
         [DataMember(EmitDefaultValue = false, Name = "banner")]
+        [XmlElement("banner")]
         [ProtoMember(4)]
         public string Banner_HTML { get; set; }
 
         /// <summary>  Flag indicates if the top-level aggregation navigation should be suppressed for this web skin ( i.e., is the top-level navigation embedded into the header file already? ) </summary>
         [DataMember(Name = "suppressTopNav")]
+        [XmlElement("suppressTopNav")]
         [ProtoMember(5)]
-        public bool Suppress_Top_Navigation { get; set; }
+        public bool? Suppress_Top_Navigation { get; set; }
 
         /// <summary> Language code, which indicates which language this skin information pertains to </summary>
         /// <remarks> Since this object holds the header and footer information, this is language-specific </remarks>
         [DataMember(EmitDefaultValue = false, Name = "language")]
+        [XmlAttribute("language")]
         [ProtoMember(6)]
         public string Language_Code { get; set; }
 
         /// <summary> Flag indicates if this skin has a banner which should override any aggregation-specific banner </summary>
         [DataMember(Name = "overrideBanner")]
+        [XmlElement("overrideBanner")]
         [ProtoMember(7)]
-        public bool Override_Banner { get; set; }
+        public bool? Override_Banner { get; set; }
 
         /// <summary> HTML for the standard header, to be included when rendering an HTML page  </summary>
         [DataMember(EmitDefaultValue = false, Name = "header")]
+        [XmlElement("header")]
         [ProtoMember(8)]
         public string Header_HTML { get; set; }
 
         /// <summary> HTML for the standard footer, to be included when rendering an HTML page  </summary>
         [DataMember(EmitDefaultValue = false, Name = "footer")]
+        [XmlElement("footer")]
         [ProtoMember(9)]
         public string Footer_HTML { get; set; }
 
         /// <summary> HTML for the item-specific header, to be included when rendering an HTML page from the item viewer  </summary>
         [DataMember(EmitDefaultValue = false, Name = "headerItem")]
+        [XmlElement("headerItem")]
         [ProtoMember(10)]
         public string Header_Item_HTML { get; set; }
 
         /// <summary> HTML for the item-specific footer, to be included when rendering an HTML page from the item viewer  </summary>
         [DataMember(EmitDefaultValue = false, Name = "footerItem")]
+        [XmlElement("footerItem")]
         [ProtoMember(11)]
         public string Footer_Item_HTML { get; set; }
 
@@ -127,15 +147,41 @@ namespace SobekCM.Core.Skins
 		/// where the container tag should be placed.  This is useful if either the whole header, or
 		/// a portion of the header, should extend past the main container. </summary>
         [DataMember(Name = "headerHasContainerDirective")]
+        [XmlElement("headerHasContainerDirective")]
         [ProtoMember(12)]
-		public bool Header_Has_Container_Directive { get; set; }
+		public bool? Header_Has_Container_Directive { get; set; }
 
 		/// <summary> Flag indicates if the main footer has a %CONTAINER% directive indicating
 		/// where the container tag should be placed.  This is useful if either the whole footer, or
 		/// a portion of the footer, should extend past the main container. </summary>
         [DataMember(Name = "footerHasContainerDirective")]
+        [XmlElement("footerHasContainerDirective")]
         [ProtoMember(13)]
-		public bool Footer_Has_Container_Directive { get; set; }
+		public bool? Footer_Has_Container_Directive { get; set; }
+
+        #region Methods for XML serialization
+
+        public bool ShouldSerializeSuppress_Top_Navigation()
+        {
+            return Suppress_Top_Navigation != null;
+        }
+
+        public bool ShouldSerializeOverride_Banner()
+        {
+            return Override_Banner != null;
+        }
+
+        public bool ShouldSerializeHeader_Has_Container_Directive()
+        {
+            return Header_Has_Container_Directive != null;
+        }
+
+        public bool ShouldSerializeFooter_Has_Container_Directive()
+        {
+            return Footer_Has_Container_Directive != null;
+        }
+
+        #endregion
 
         /// <summary> Method sets the header and footer to be used by this HTML skin </summary>
         /// <param name="HeaderHTML"> HTML to use for the standard header </param>
@@ -229,8 +275,10 @@ namespace SobekCM.Core.Skins
 
 			// Check here if the <%CONTAINER%> directive exists... useful to only 
 			// do this once
-	        Header_Has_Container_Directive = (Header_HTML.IndexOf("<%CONTAINER%>") >= 0);
-			Footer_Has_Container_Directive = (Footer_HTML.IndexOf("<%CONTAINER%>") >= 0);
+            if (Header_HTML.IndexOf("<%CONTAINER%>") >= 0)
+                Header_Has_Container_Directive = true;
+            if (Footer_HTML.IndexOf("<%CONTAINER%>") >= 0)
+                Footer_Has_Container_Directive = true;
 
         }
     }

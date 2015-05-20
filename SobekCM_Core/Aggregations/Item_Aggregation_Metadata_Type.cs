@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using ProtoBuf;
 
 namespace SobekCM.Core.Aggregations
@@ -21,11 +22,15 @@ namespace SobekCM.Core.Aggregations
         }
 
         /// <summary> Display term for this metadata type </summary>
-        [DataMember(Name = "term"), ProtoMember(1)]
+        [DataMember(Name = "term")]
+        [XmlText]
+        [ProtoMember(1)]
         public string DisplayTerm { get; set; }
 
         /// <summary> Code related to this metadata type, used for searching for example </summary>
-        [DataMember(Name = "code"), ProtoMember(2)]
+        [DataMember(Name = "code")]
+        [XmlAttribute("code")]
+        [ProtoMember(2)]
         public string SobekCode { get; set; }
     }
 }

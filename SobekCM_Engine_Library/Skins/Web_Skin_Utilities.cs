@@ -299,23 +299,28 @@ namespace SobekCM.Engine_Library.Skins
             if (!CompleteSkin.SourceFiles.ContainsKey(language))
             {
                 language = Engine_ApplicationCache_Gateway.Settings.Default_UI_Language;
+                if (!CompleteSkin.SourceFiles.ContainsKey(language))
+                {
+                    language = Web_Language_Enum.DEFAULT;
+                    if (!CompleteSkin.SourceFiles.ContainsKey(language))
+                    {
+                        language = Web_Language_Enum.English;
+
+                        if (!CompleteSkin.SourceFiles.ContainsKey(language))
+                        {
+                            if (CompleteSkin.SourceFiles.Count > 0)
+                            {
+                                language = CompleteSkin.SourceFiles.Keys.First();
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }
+                    }
+                }
             }
-            if (!CompleteSkin.SourceFiles.ContainsKey(language))
-            {
-                language = Web_Language_Enum.DEFAULT;
-            }
-            if (!CompleteSkin.SourceFiles.ContainsKey(language))
-            {
-                language = Web_Language_Enum.English;
-            }
-            if (CompleteSkin.SourceFiles.Count > 0)
-            {
-                language = CompleteSkin.SourceFiles.Keys.First();
-            }
-            else
-            {
-                return null;
-            }
+
 
             // Now, look in the cache for this
             Web_Skin_Object cacheObject = CachedDataManager.WebSkins.Retrieve_Skin(CompleteSkin.Skin_Code, Web_Language_Enum_Converter.Enum_To_Code(language), null);
@@ -323,11 +328,17 @@ namespace SobekCM.Engine_Library.Skins
                 return cacheObject;
 
             // Build this then
-            Web_Skin_Object returnValue = new Web_Skin_Object(CompleteSkin.Skin_Code, CompleteSkin.Base_Skin_Code, "design/skins/" + CompleteSkin.Skin_Code + "/" + CompleteSkin.CSS_Style)
-            {
-                Override_Banner = CompleteSkin.Override_Banner, 
-                Suppress_Top_Navigation = CompleteSkin.Suppress_Top_Navigation
-            };
+            Web_Skin_Object returnValue = new Web_Skin_Object(CompleteSkin.Skin_Code, CompleteSkin.Base_Skin_Code, "design/skins/" + CompleteSkin.Skin_Code + "/" + CompleteSkin.CSS_Style);
+
+            // Set the language code
+            if ( language == Web_Language_Enum.DEFAULT )
+                returnValue.Language_Code = Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.Default_UI_Language);
+            else
+                returnValue.Language_Code = Web_Language_Enum_Converter.Enum_To_Code(language);
+
+            // Set some optional (nullable) flags
+            if ( CompleteSkin.Override_Banner ) returnValue.Override_Banner = true;
+            if ( CompleteSkin.Suppress_Top_Navigation ) returnValue.Suppress_Top_Navigation = true;
 
             // If not default, assign the language
             if (language != Web_Language_Enum.DEFAULT)
@@ -339,7 +350,7 @@ namespace SobekCM.Engine_Library.Skins
             Complete_Web_Skin_Source_Files sourceFiles = CompleteSkin.SourceFiles[language];
 
             // Build the banner
-            if (returnValue.Override_Banner)
+            if ((returnValue.Override_Banner.HasValue) && (returnValue.Override_Banner.Value))
             {
                 // Find the LANGUAGE-SPECIFIC high-bandwidth banner image
                  if ( !String.IsNullOrEmpty(sourceFiles.Banner))

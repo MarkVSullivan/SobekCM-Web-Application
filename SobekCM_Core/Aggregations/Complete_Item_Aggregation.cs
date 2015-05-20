@@ -917,7 +917,7 @@ namespace SobekCM.Core.Aggregations
         {
             // Does the web skin exist and override the banner?  For non-institutional agggregations
             // use the web skin banner HTML instead of the aggregation's banner
-            if ((ThisWebSkin != null) && (ThisWebSkin.Override_Banner) && (Type.ToLower().IndexOf("institution") < 0))
+            if ((ThisWebSkin != null) && (ThisWebSkin.Override_Banner.HasValue) && (ThisWebSkin.Override_Banner.Value) && (Type.ToLower().IndexOf("institution") < 0))
             {
                 return !String.IsNullOrEmpty(ThisWebSkin.Banner_HTML) ? ThisWebSkin.Banner_HTML : String.Empty;
             }

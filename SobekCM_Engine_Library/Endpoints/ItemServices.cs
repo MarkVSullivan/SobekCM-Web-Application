@@ -47,35 +47,33 @@ namespace SobekCM.Engine_Library.Endpoints
                     if (returnValue == null)
                         return;
 
+                    // Create the wrapper to return only basic citation-type information
+                    BriefItem_CitationResponse responder = new BriefItem_CitationResponse(returnValue);
+
                     switch (Protocol)
                     {
                         case Microservice_Endpoint_Protocol_Enum.JSON:
-                            JSON.Serialize(new { bibid = returnValue.BibID, vid = returnValue.VID, description = returnValue.Description, title = returnValue.Title }, Response.Output, Options.ISO8601ExcludeNulls);
+                            JSON.Serialize(responder, Response.Output, Options.ISO8601ExcludeNulls);
                             break;
 
                         case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                            Serializer.Serialize(Response.OutputStream, returnValue);
+                            Serializer.Serialize(Response.OutputStream, responder);
                             break;
 
                         case Microservice_Endpoint_Protocol_Enum.JSON_P:
                             Response.Output.Write("parseItemCitation(");
-                            JSON.Serialize(new { bibid = returnValue.BibID, vid = returnValue.VID, description = returnValue.Description, title = returnValue.Title }, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                            JSON.Serialize(responder, Response.Output, Options.ISO8601ExcludeNullsJSONP);
                             Response.Output.Write(");");
                             break;
 
                         case Microservice_Endpoint_Protocol_Enum.XML:
-                            System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
-                            x.Serialize(Response.Output, returnValue);
-                            break;
-
-                        case Microservice_Endpoint_Protocol_Enum.SOAP:
-                            DataContractSerializer soap = new DataContractSerializer(returnValue.GetType());
-                            soap.WriteObject(Response.OutputStream, returnValue);
+                            System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(responder.GetType());
+                            x.Serialize(Response.Output, responder);
                             break;
 
                         case Microservice_Endpoint_Protocol_Enum.BINARY:
                             IFormatter binary = new BinaryFormatter();
-                            binary.Serialize(Response.OutputStream, returnValue);
+                            binary.Serialize(Response.OutputStream, responder);
                             break;
                     }
                 }
@@ -125,11 +123,6 @@ namespace SobekCM.Engine_Library.Endpoints
                         case Microservice_Endpoint_Protocol_Enum.XML:
                             System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
                             x.Serialize(Response.Output, returnValue);
-                            break;
-
-                        case Microservice_Endpoint_Protocol_Enum.SOAP:
-                            DataContractSerializer soap = new DataContractSerializer(returnValue.GetType());
-                            soap.WriteObject(Response.OutputStream, returnValue);
                             break;
 
                         case Microservice_Endpoint_Protocol_Enum.BINARY:

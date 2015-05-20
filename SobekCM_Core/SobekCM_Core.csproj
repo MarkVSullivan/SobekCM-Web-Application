@@ -32,10 +32,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Jil">
-      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\JIL\Jil.dll</HintPath>
+      <HintPath>..\DLLs\JIL\Jil.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
+      <HintPath>..\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="Sigil">
+      <HintPath>..\DLLs\JIL\Sigil.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -82,6 +85,7 @@
     <Compile Include="ApplicationState\Template.cs" />
     <Compile Include="ApplicationState\Wordmark_Icon.cs" />
     <Compile Include="BriefItem\BriefItemInfo.cs" />
+    <Compile Include="BriefItem\BriefItem_CitationResponse.cs" />
     <Compile Include="BriefItem\BriefItem_DescriptiveTerm.cs" />
     <Compile Include="BriefItem\BriefItem_DescTermValue.cs" />
     <Compile Include="BriefItem\BriefItem_File.cs" />

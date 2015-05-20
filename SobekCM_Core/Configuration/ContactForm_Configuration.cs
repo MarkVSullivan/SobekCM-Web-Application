@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Xml.Serialization;
 using ProtoBuf;
 
 namespace SobekCM.Core.Configuration
@@ -66,37 +67,54 @@ namespace SobekCM.Core.Configuration
         }
 
         /// <summary> Type of the element to display with the Contact Us form </summary>
-        [DataMember(Name = "type"), ProtoMember(1)]
+        [DataMember(Name = "type")]
+        [XmlAttribute("type")]
+        [ProtoMember(1)]
         public ContactForm_Configuration_Element_Type_Enum Element_Type { get; set; }
 
         /// <summary> CSS class to apply for this HTML element </summary>
-        [DataMember(Name = "cssClass", EmitDefaultValue = false), ProtoMember(2)]
+        [DataMember(Name = "cssClass", EmitDefaultValue = false)]
+        [XmlAttribute("cssClass")]
+        [ProtoMember(2)]
         public string CssClass { get; set;  }
 
         /// <summary> Name of the element, which is also the name that appears in the output email </summary>
-        [DataMember(Name = "name", EmitDefaultValue = false), ProtoMember(3)]
+        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [XmlAttribute("name")]
+        [ProtoMember(3)]
         public string Name { get; set; }
 
         /// <summary> Options from which the user can select ( for radio, checkboxes, and select ) </summary>
-        [DataMember(Name = "options", EmitDefaultValue = false), ProtoMember(4)]
+        [DataMember(Name = "options", EmitDefaultValue = false)]
+        [XmlArray("options")]
+        [XmlArrayItem("option", typeof(string))]
+        [ProtoMember(4)]
         public List<string> Options { get; set; }
 
         /// <summary> Text to display before the options for the user to enter answers or select options </summary>
-        [DataMember(Name = "query", EmitDefaultValue = false), ProtoMember(5)]
+        [DataMember(Name = "query", EmitDefaultValue = false)]
+        [XmlElement("query")]
+        [ProtoMember(5)]
         public Web_Language_Translation_Lookup QueryText { get; set; }
 
         /// <summary> If this element could be either skipped or be auto-populated for logged on users, this indicates which
         /// field would replace thie field </summary>
-        [DataMember(Name = "userArttribute", EmitDefaultValue = false), ProtoMember(6)]
+        [DataMember(Name = "userAttribute", EmitDefaultValue = false)]
+        [XmlAttribute("userAttribute")]
+        [ProtoMember(6)]
         public Users.User_Object_Attribute_Mapping_Enum UserAttribute { get; set; }
 
         /// <summary> If this is mapped from a user attribute, this flag indicates whether it should be shown, even 
         /// if the user is logged on </summary>
-        [DataMember(Name = "alwaysShow"), ProtoMember(7)]
+        [DataMember(Name = "alwaysShow")]
+        [XmlAttribute("alwaysShow")]
+        [ProtoMember(7)]
         public bool AlwaysShow { get; set; }
 
         /// <summary> Flag indicates if this field requires a value </summary>
-        [DataMember(Name = "required"), ProtoMember(8)]
+        [DataMember(Name = "required")]
+        [XmlAttribute("required")]
+        [ProtoMember(8)]
         public bool Required { get; set; }
     }
 
@@ -112,15 +130,22 @@ namespace SobekCM.Core.Configuration
         }
 
         /// <summary> Error message in case there was an issue pulling this configuration from the configuration files </summary>
-        [DataMember(Name = "error", EmitDefaultValue=false), ProtoMember(1)]
+        [DataMember(Name = "error", EmitDefaultValue=false)]
+        [XmlElement("error")]
+        [ProtoMember(1)]
         public string Error { get; set; }
 
         /// <summary> Name for this contact us form, used for copying the form, or referencing during administrative work </summary>
-        [DataMember(Name = "name"), ProtoMember(2)]
+        [DataMember(Name = "name")]
+        [XmlElement("name")]
+        [ProtoMember(2)]
         public string Name { get; set; }
 
         /// <summary> Collection of form elements to be displayed for the user on a Contact Us form within the system </summary>
-        [DataMember(Name = "elements"), ProtoMember(3)]
+        [DataMember(Name = "elements")]
+        [XmlArray("elements")]
+        [XmlArrayItem("element", typeof(ContactForm_Configuration_Element))]
+        [ProtoMember(3)]
         public List<ContactForm_Configuration_Element> FormElements { get; set; }
 
         /// <summary> Add a new element to this contact form configuration file </summary>
@@ -132,6 +157,7 @@ namespace SobekCM.Core.Configuration
 
         /// <summary> Returns the number of text areas within this template </summary>
         [IgnoreDataMember]
+        [XmlIgnore]
         public int TextAreaElementCount
         {
             get

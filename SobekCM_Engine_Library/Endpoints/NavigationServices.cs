@@ -49,11 +49,18 @@ namespace SobekCM.Engine_Library.Endpoints
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                    Response.Output.Write("parseUrlResolver(");
                     JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                    Response.Output.Write(");");
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
                     Serializer.Serialize(Response.OutputStream, returnValue);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.XML:
+                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
+                    x.Serialize(Response.Output, returnValue);
                     break;
             }
         }

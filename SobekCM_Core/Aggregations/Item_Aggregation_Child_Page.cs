@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using ProtoBuf;
 
 
 namespace SobekCM.Core.Aggregations
 {
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("childPage")]
     public class Item_Aggregation_Child_Page
     {
         #region Constructors
@@ -23,7 +25,8 @@ namespace SobekCM.Core.Aggregations
 			this.Browse_Type = Browse_Type;
             this.Source_Data_Type = Source_Data_Type;
             this.Label = Label;
-		    this.Source = Static_HTML_Source;
+            if ( !String.IsNullOrEmpty(Static_HTML_Source))
+    		    this.Source = Static_HTML_Source;
 
 		    //// If this is the special ALL or NEW, then the source will be a database table/set
 		    //if ((Code == "all") || (Code == "new"))
@@ -48,28 +51,41 @@ namespace SobekCM.Core.Aggregations
 
         /// <summary> Code for this info or browse page </summary>
         /// <remarks> This is the code that is used in the URL to specify this info or browse page </remarks>
-        [DataMember(Name = "code"), ProtoMember(1)]
+        [DataMember(Name = "code")]
+        [XmlAttribute("code")]
+        [ProtoMember(1)]
         public string Code { get; set; }
 
         /// <summary> Source and data type of this browse or info page </summary>
-        [DataMember(Name = "sourceData"), ProtoMember(2)]
+        [DataMember(Name = "sourceData")]
+        [XmlAttribute("sourceData")]
+        [ProtoMember(2)]
         public Item_Aggregation_Child_Source_Data_Enum Source_Data_Type { get; set; }
 
         /// <summary> Flag indicates where this child page should appear </summary>
-        [DataMember(Name = "browseType"), ProtoMember(3)]
+        [DataMember(Name = "browseType")]
+        [XmlAttribute("browseType")]
+        [ProtoMember(3)]
         public Item_Aggregation_Child_Visibility_Enum Browse_Type { get; set; }
 
         /// <summary> If this is to appear on the main menu, this allows the browses
         /// to be established hierarchically, with this child page either being at the
         /// top, or sitting under another child page </summary>
-        [DataMember(Name = "parentCode", EmitDefaultValue = false), ProtoMember(4)]
+        [DataMember(Name = "parentCode", EmitDefaultValue = false)]
+        [XmlAttribute("parentCode")]
+        [ProtoMember(4)]
         public string Parent_Code { get; set; }
 
         /// <summary> Gets the complete dictionary of labels and languages </summary>
-        [DataMember(Name = "label", EmitDefaultValue = false), ProtoMember(5)]
+        [DataMember(Name = "label", EmitDefaultValue = false)]
+        [XmlAttribute("label")]
+        [ProtoMember(5)]
         public string Label { get; set; }
 
-        [DataMember(Name = "source", EmitDefaultValue = false), ProtoMember(6)]
+        /// <summary> Source for this child page </summary>
+        [DataMember(Name = "source", EmitDefaultValue = false)]
+        [XmlAttribute("source")]
+        [ProtoMember(6)]
         public string Source { get; set;}
     }
 }

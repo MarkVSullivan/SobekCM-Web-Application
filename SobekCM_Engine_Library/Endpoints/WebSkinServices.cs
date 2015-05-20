@@ -34,13 +34,26 @@ namespace SobekCM.Engine_Library.Endpoints
                 Complete_Web_Skin_Object returnValue = get_complete_web_skin(skinCode, tracer);
 
 
-                if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
+                switch (Protocol)
                 {
-                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                }
-                else
-                {
-                    Serializer.Serialize(Response.OutputStream, returnValue);
+                    case Microservice_Endpoint_Protocol_Enum.JSON:
+                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                        Serializer.Serialize(Response.OutputStream, returnValue);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                        Response.Output.Write("parseCompleteSkinn(");
+                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                        Response.Output.Write(");");
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.XML:
+                        System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
+                        x.Serialize(Response.Output, returnValue);
+                        break;
                 }
             }
         }
@@ -62,14 +75,26 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 Web_Skin_Object returnValue = get_web_skin(skinCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
 
+                switch (Protocol)
+                {
+                    case Microservice_Endpoint_Protocol_Enum.JSON:
+                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
+                        break;
 
-                if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
-                {
-                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                }
-                else
-                {
-                    Serializer.Serialize(Response.OutputStream, returnValue);
+                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                        Serializer.Serialize(Response.OutputStream, returnValue);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                        Response.Output.Write("parseCompleteSkinn(");
+                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                        Response.Output.Write(");");
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.XML:
+                        System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
+                        x.Serialize(Response.Output, returnValue);
+                        break;
                 }
             }
         }
