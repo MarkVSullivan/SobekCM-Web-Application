@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ProtoBuf;
 
@@ -31,6 +28,8 @@ namespace SobekCM.Core.BriefItem
         }
 
         /// <summary> Get the BriefItemInfo class wrapped by this class </summary>
+        [IgnoreDataMember]
+        [XmlIgnore]
         public BriefItemInfo BriefItem
         {
             get { return briefItem;  }

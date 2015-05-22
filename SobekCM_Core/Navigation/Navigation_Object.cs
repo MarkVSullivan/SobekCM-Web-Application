@@ -597,10 +597,140 @@ namespace SobekCM.Core.Navigation
         [ProtoMember(74)]
         public ushort? Viewport_Rotation { get; set; }
 
+        /// <summary> Method suppresses XML Serialization of the Viewport_Size property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeViewport_Size()
+        {
+            return Viewport_Size != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Viewport_Zoom property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeViewport_Zoom()
+        {
+            return Viewport_Zoom != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Viewport_Point_X property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeViewport_Point_X()
+        {
+            return Viewport_Point_X != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Viewport_Point_Y property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeViewport_Point_Y()
+        {
+            return Viewport_Point_Y != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Viewport_Rotation property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeViewport_Rotation()
+        {
+            return Viewport_Rotation != null;
+        }
+
+
         #endregion
 
+        #region Methods for XML serialization
 
-		#region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
+        /// <summary> Method suppresses XML Serialization of the DateRange_Date1 property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeDateRange_Date1()
+        {
+            return DateRange_Date1 != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the DateRange_Date2 property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeDateRange_Date2()
+        {
+            return DateRange_Date2 != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the DateRange_Year1 property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeDateRange_Year1()
+        {
+            return DateRange_Year1 != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the DateRange_Year2 property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeDateRange_Year2()
+        {
+            return DateRange_Year2 != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the FolderID property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeFolderID()
+        {
+            return FolderID != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Invalid_Item property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeInvalid_Item()
+        {
+            return Invalid_Item != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the ItemID_DEPRECATED property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeItemID_DEPRECATED()
+        {
+            return ItemID_DEPRECATED != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Page property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializePage()
+        {
+            return Page != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Show_Selection_Panel property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeShow_Selection_Panel()
+        {
+            return Show_Selection_Panel != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Size_Of_Thumbnails property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeSize_Of_Thumbnails()
+        {
+            return Size_Of_Thumbnails != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Sort property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeSort()
+        {
+            return Sort != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the SubPage property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeSubPage()
+        {
+            return SubPage != null;
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Thumbnails_Per_Page property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeThumbnails_Per_Page()
+        {
+            return Thumbnails_Per_Page != null;
+        }
+
+        #endregion
+
+        #region Methods which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 
         ///// <summary> URL for the general image folder containing images used throughout the system, and not aggregation or item specific </summary>
         ///// <value> [Base_URL] + 'default/images/' </value>
@@ -626,7 +756,6 @@ namespace SobekCM.Core.Navigation
 		}
 
 		#endregion
-
 
 	}
 }

@@ -2004,7 +2004,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// Start the main div for the thumbnails
 	
-			ushort page = (ushort)(CurrentMode.Page - 1);
+			ushort page = (ushort)(CurrentMode.Page.HasValue ? CurrentMode.Page.Value - 1 : (ushort) 0 );
 			if (page > (qc_item.Web.Static_PageCount - 1) / images_per_page)
 				page = (ushort)((qc_item.Web.Static_PageCount - 1) / images_per_page);
 

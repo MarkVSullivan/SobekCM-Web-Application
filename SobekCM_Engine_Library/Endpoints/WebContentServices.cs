@@ -11,6 +11,7 @@ using SobekCM.Engine_Library.Microservices;
 
 namespace SobekCM.Engine_Library.Endpoints
 {
+    /// <summary> Endpoint supports services related to the static web content, CMS functionality </summary>
     public class WebContentServices
     {
         /// <summary> Resolve the URL to a Navigation_Object </summary>

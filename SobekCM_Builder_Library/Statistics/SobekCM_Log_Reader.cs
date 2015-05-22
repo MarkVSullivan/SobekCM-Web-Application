@@ -148,7 +148,7 @@ namespace SobekCM.Builder_Library.Statistics
 
                     try
                     {
-                        SobekCM_Navigation_Object currentMode = new SobekCM_Navigation_Object();
+                        Navigation_Object currentMode = new Navigation_Object();
                         SobekCM_QueryString_Analyzer.Parse_Query(queryStringCollection, currentMode, hit.SobekCM_URL,
                             new string[] { "en" }, Engine_ApplicationCache_Gateway.Codes, Engine_ApplicationCache_Gateway.Collection_Aliases,
                             Engine_ApplicationCache_Gateway.Items, Engine_ApplicationCache_Gateway.URL_Portals, null);
@@ -164,7 +164,7 @@ namespace SobekCM.Builder_Library.Statistics
                             returnValue.Add_IP_Hit(hit.IP, hit.UserAgent);
 
                             // Increment the portal hits
-                            returnValue.Add_Portal_Hit(currentMode.SobekCM_Instance_Name.ToUpper());
+                            returnValue.Add_Portal_Hit(currentMode.Instance_Name.ToUpper());
 
                             // Check for pre-existing session
                             SobekCM_Session thisSession;
@@ -211,7 +211,11 @@ namespace SobekCM.Builder_Library.Statistics
                                         }
                                     }
 
-                                    returnValue.Add_Item_Hit(currentMode.ItemID_DEPRECATED, currentMode.BibID,
+                                    int itemid = -1;
+                                    if (currentMode.ItemID_DEPRECATED.HasValue)
+                                        itemid = currentMode.ItemID_DEPRECATED.Value;
+
+                                    returnValue.Add_Item_Hit(itemid, currentMode.BibID,
                                                              currentMode.VID, currentMode.ViewerCode.ToUpper(),
                                                              currentMode.Text_Search, thisSession.SessionID);
                                 }

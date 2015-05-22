@@ -99,6 +99,16 @@ namespace SobekCM.Engine_Library.Settings
                 returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_contactform.config");
             }
 
+            // Try to read the QUALITY CONTROL configuration file
+            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_qc.config"))
+            {
+                QualityControl_Configuration.Read_Metadata_Configuration(returnValue.Base_Directory + "\\config\\user\\sobekcm_qc.config");
+            }
+            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_qc.config"))
+            {
+                QualityControl_Configuration.Read_Metadata_Configuration(returnValue.Base_Directory + "\\config\\default\\sobekcm_qc.config");
+            }
+
             // Try to read the BRIEF ITEM MAPPING configuration file
             if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_brief_item_mapping.config"))
             {

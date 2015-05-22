@@ -161,21 +161,29 @@ namespace SobekCM.Core.Skins
 
         #region Methods for XML serialization
 
+        /// <summary> Method suppresses XML Serialization of the Suppress_Top_Navigation property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
         public bool ShouldSerializeSuppress_Top_Navigation()
         {
             return Suppress_Top_Navigation != null;
         }
 
+        /// <summary> Method suppresses XML Serialization of the Override_Banner property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
         public bool ShouldSerializeOverride_Banner()
         {
             return Override_Banner != null;
         }
 
+        /// <summary> Method suppresses XML Serialization of the Header_Has_Container_Directive property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
         public bool ShouldSerializeHeader_Has_Container_Directive()
         {
             return Header_Has_Container_Directive != null;
         }
 
+        /// <summary> Method suppresses XML Serialization of the Footer_Has_Container_Directive property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
         public bool ShouldSerializeFooter_Has_Container_Directive()
         {
             return Footer_Has_Container_Directive != null;
