@@ -96,7 +96,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 StringBuilder headerBuilder = new StringBuilder();
                 StringWriter headerWriter = new StringWriter(headerBuilder);
-                HeaderFooter_Helper_HtmlSubWriter.Add_Header(headerWriter, RequestSpecificValues, "container-inner-custom", null);
+                HeaderFooter_Helper_HtmlSubWriter.Add_Header(headerWriter, RequestSpecificValues, "container-inner-custom", RequestSpecificValues.Hierarchy_Object.ShortName, null);
                 string header = headerBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%HEADER%>", header).Replace("[%HEADER%]", header);
             }

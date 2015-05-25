@@ -198,7 +198,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             Output.WriteLine("  <table id=\"sbkAsav_SearchPanel\" >");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td style=\"width:28%;text-align:right;\"><label for=\"Textbox1\">" + searchLanguage + "</label></td>");
+            Output.WriteLine("      <td style=\"width:28%;text-align:right;\"><label for=\"Textbox1\" id=\"sbkAsav_SearchPrompt\">" + searchLanguage + "</label></td>");
             Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
             Output.WriteLine("      <td style=\"width:58%;\">");
             Output.WriteLine("        <input name=\"Textbox1\" type=\"text\" id=\"Textbox1\" class=\"sbkAsav_SearchBox sbk_Focusable\" value=\"" + text1 + "\" />");
@@ -283,10 +283,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td colspan=\"2\" class=\"sbkAsav_SearchOptions\">" + searchOptions + "</span></td>");
-            Output.WriteLine("      <td style=\"vertical-align:middle;text-align:left;\"> &nbsp; &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "help\" target=\"SEARCHHELP\" ><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/help_button.jpg\" alt=\"HELP\" /></a></td>");
+            Output.WriteLine("      <td style=\"vertical-align:middle;text-align:left;\" id=\"sbkAsav_SearchHelp\"> &nbsp; &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "help\" target=\"SEARCHHELP\" ><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/help_button.jpg\" alt=\"HELP\" /></a></td>");
             Output.WriteLine("      <td colspan=\"2\">&nbsp;</td>");
             Output.WriteLine("    </tr>");
-            Output.WriteLine("    <tr>");
+            Output.WriteLine("    <tr id=\"sbkAsav_SearchPrecision\">");
             Output.WriteLine("      <td colspan=\"5\">");
             Output.WriteLine("        <table>");
             Output.WriteLine("           <tr style=\"text-align:left;vertical-align:top;\">");

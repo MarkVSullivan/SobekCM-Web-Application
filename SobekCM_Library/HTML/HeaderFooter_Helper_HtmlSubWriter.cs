@@ -22,7 +22,7 @@ namespace SobekCM.Library.HTML
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Container_CssClass"> Class name for the container around the page </param>
         /// <param name="Behaviors"> List of behaviors from the html subwriters </param>
-        public static void Add_Header(TextWriter Output, RequestCache RequestSpecificValues, string Container_CssClass, List<HtmlSubwriter_Behaviors_Enum> Behaviors)
+        public static void Add_Header(TextWriter Output, RequestCache RequestSpecificValues, string Container_CssClass, string Web_Page_Title, List<HtmlSubwriter_Behaviors_Enum> Behaviors)
         {
             // Get the url options
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
@@ -300,17 +300,17 @@ namespace SobekCM.Library.HTML
                         if (RequestSpecificValues.Hierarchy_Object.Code != "all")
                         {
                             if (banner_image.Length > 0)
-                                banner = "<div id=\"sbkHmw_BannerDiv\"><a alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Hierarchy_Object.Code + urlOptions1 + "\" style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
+                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Hierarchy_Object.Code + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\"  alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\" /></a></section>";
                         }
                         else
                         {
                             if (banner_image.Length > 0)
                             {
-                                banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"  style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\" alt=\"\" /></a></div>";
+                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\"  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\"  alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\" /></a></section>";
                             }
                             else
                             {
-                                banner = "<div id=\"sbkHmw_BannerDiv\"><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"  style=\"padding-bottom:0px;margin-bottom:0px\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"\" /></a></div>";
+                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\"  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\" /></a></section>";
                             }
                         }
                     }

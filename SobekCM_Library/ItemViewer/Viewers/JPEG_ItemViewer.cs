@@ -149,7 +149,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		        Output.Write("\t\t\t<img itemprop=\"primaryImageOfPage\" ");
 		        if ((height > 0) && (width > 0))
 			        Output.Write("style=\"height:" + height + "px;width:" + width + "px;\" ");
-		        Output.WriteLine("src=\"" + displayFileName + "\" alt=\"MISSING IMAGE\" />");
+		        Output.WriteLine("src=\"" + displayFileName + "\" alt=\"" + name_for_image + "\" />");
 
 		        Output.WriteLine("</a>");
 	        }
@@ -160,7 +160,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		        Output.Write("\t\t\t<img itemprop=\"primaryImageOfPage\" ");
 		        if ((height > 0) && (width > 0))
 			        Output.Write("style=\"height:" + height + "px;width:" + width + "px;\" ");
-		        Output.WriteLine("src=\"" + displayFileName + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" />");
+		        Output.WriteLine("src=\"" + displayFileName + "\" alt=\"" + name_for_image + "\" />");
 	        }
 
 	        Output.WriteLine("\t\t</td>");

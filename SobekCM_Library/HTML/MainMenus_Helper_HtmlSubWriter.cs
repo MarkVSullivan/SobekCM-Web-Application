@@ -30,7 +30,8 @@ namespace SobekCM.Library.HTML
         public static void Add_Aggregation_Main_Menu(TextWriter Output, RequestCache RequestSpecificValues )
         {
             Output.WriteLine("<!-- Add the main aggregation menu -->");
-            Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\">");
+            Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"Aggregation menu\">");
+            Output.WriteLine("<h2 class=\"hidden-element\">Aggregation menu</h2>");
             Output.WriteLine("  <ul class=\"sf-menu\" id=\"sbkAgm_Menu\">");
 
             // Get ready to draw the tabs
@@ -155,9 +156,9 @@ namespace SobekCM.Library.HTML
                     else
                     {
                         if ( isOnHome )
-                            Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
+                            Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
                         else
-                            Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
+                            Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
                     }
 
                     if (( UI_ApplicationCache_Gateway.Thematic_Headings != null ) && ( UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0 ))
@@ -180,7 +181,7 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    Output.WriteLine("    <li id=\"sbkAgm_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkAgm_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" /> <div class=\"sbkAgm_HomeText\">" + sobek_home_text + "</div></a></li>");
+                    Output.WriteLine("    <li id=\"sbkAgm_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkAgm_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkAgm_HomeText\">" + sobek_home_text + "</div></a></li>");
                 }
             }
             else
@@ -207,11 +208,11 @@ namespace SobekCM.Library.HTML
                 {
                     if (isOnHome)
                     {
-                        Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"selected-sf-menu-item-link sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" /> <div class=\"sbkMenu_HomeText\">" + home + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+                        Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"selected-sf-menu-item-link sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkMenu_HomeText\">" + home + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
                     }
                     else
                     {
-                        Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" /> <div class=\"sbkMenu_HomeText\">" + home + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+                        Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkMenu_HomeText\">" + home + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
                     }
                 }
 
@@ -634,7 +635,8 @@ namespace SobekCM.Library.HTML
         public static void Add_Aggregation_Search_Results_Menu(TextWriter Output, RequestCache RequestSpecificValues, bool Include_Bookshelf_View )
         {
             Output.WriteLine("<!-- Add the main search results menu -->");
-            Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\">");
+            Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"Search results menu\">");
+            Output.WriteLine("<h2 class=\"hidden-element\">Search results menu</h2>");
 
             // Get ready to draw the tabs
             string home = "Home";
@@ -787,7 +789,7 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
+                        Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
                     }
 
                     if ((UI_ApplicationCache_Gateway.Thematic_Headings != null) && (UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0))
@@ -1038,7 +1040,8 @@ namespace SobekCM.Library.HTML
         {
             // Add the item views
             Output.WriteLine("<!-- Add the main user-specific menu -->");
-            Output.WriteLine("<nav id=\"sbkUsm_MenuBar\" class=\"sbkMenu_Bar\">");
+            Output.WriteLine("<nav id=\"sbkUsm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"User menu\">");
+            Output.WriteLine("<h2 class=\"hidden-element\">User menu</h2>");
             Output.WriteLine("  <ul class=\"sf-menu\">");
 
             // Save the current view information type
@@ -1096,7 +1099,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
             RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
-            Output.WriteLine("    <li id=\"sbkUsm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkUsm_HomeSubMenu\">");
+            Output.WriteLine("    <li id=\"sbkUsm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkUsm_HomeSubMenu\">");
 
             if ((UI_ApplicationCache_Gateway.Thematic_Headings != null) && (UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0))
             {

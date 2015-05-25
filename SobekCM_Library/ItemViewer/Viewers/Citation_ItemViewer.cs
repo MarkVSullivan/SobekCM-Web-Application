@@ -825,7 +825,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// Start this table
 			result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_LinkSection\" >");
-			result.AppendLine(INDENT + "  <h2></h2>");
 			result.AppendLine(INDENT + "  <dl>");
 
 			// If this item is an external link item (i.e. has related URL, but no pages or downloads) the PURL should display as the Other URL
@@ -907,7 +906,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		        {
 		            string name_for_image = HttpUtility.HtmlEncode(CurrentItem.Bib_Info.Main_Title.ToString());
 		            result.AppendLine();
-		            result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + CurrentItem.Behaviors.Main_Thumbnail + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + CurrentItem.Behaviors.Main_Thumbnail + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
 		            result.AppendLine();
 		        }
 		        else if (CurrentItem.Web.Static_PageCount > 0)
@@ -935,7 +934,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		                if (jpeg.Length > 0)
 		                {
 		                    result.AppendLine();
-		                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + jpeg + "\" alt=\"MISSING IMAGE\" title=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+		                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "\" ><img src=\"" + CurrentItem.Web.Source_URL + "/" + jpeg + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
 		                    result.AppendLine();
 		                }
 		            }
@@ -981,7 +980,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							break;
 
 						case Title_Type_Enum.translated:
-							translated_titles.Add((Convert_String_To_XML_Safe(thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle) + " ( <i>" + thisTitle.Language + "</i> )").Trim());
+							translated_titles.Add((Convert_String_To_XML_Safe(thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle) + " ( <em>" + thisTitle.Language + "</em> )").Trim());
 							break;
 
 						case Title_Type_Enum.abbreviated:
@@ -1076,7 +1075,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 								{
 									if (baseSubject.Authority.Length > 0)
 									{
-										genres.Add(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(Convert_String_To_XML_Safe(thisGenre)).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "GE") + "<span itemprop=\"genre\">" + Convert_String_To_XML_Safe(thisGenre) + "</span>" + search_link_end + " &nbsp; ( <i>" + baseSubject.Authority.ToLower() + "</i> )");
+										genres.Add(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(Convert_String_To_XML_Safe(thisGenre)).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "GE") + "<span itemprop=\"genre\">" + Convert_String_To_XML_Safe(thisGenre) + "</span>" + search_link_end + " &nbsp; ( <em>" + baseSubject.Authority.ToLower() + "</em> )");
 									}
 									else
 									{
@@ -1088,7 +1087,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							{
 								if ((thisSubject.Authority.Length > 0) && (thisSubject.Authority.ToUpper() != "NONE"))
 								{
-									subjects.Add(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(thisSubject.ToString(false)).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "SU") + "<span itemprop=\"keywords\">" + thisSubject.ToString(false) + "</span>"+ search_link_end + " &nbsp; ( <i>" + thisSubject.Authority.ToLower() + "</i> )");
+									subjects.Add(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(thisSubject.ToString(false)).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "SU") + "<span itemprop=\"keywords\">" + thisSubject.ToString(false) + "</span>"+ search_link_end + " &nbsp; ( <em>" + thisSubject.Authority.ToLower() + "</em> )");
 								}
 								else
 								{
@@ -1106,7 +1105,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				{
 					if (thisGenre.Authority.Length > 0)
 					{
-						genres.Add(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(Convert_String_To_XML_Safe(thisGenre.Genre_Term)).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "GE") + "<span itemprop=\"genre\">" + Convert_String_To_XML_Safe(thisGenre.Genre_Term) + "</span>" + search_link_end + " &nbsp; ( <i>" + thisGenre.Authority.ToLower() + "</i> )");
+						genres.Add(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(Convert_String_To_XML_Safe(thisGenre.Genre_Term)).Replace(",", "").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "GE") + "<span itemprop=\"genre\">" + Convert_String_To_XML_Safe(thisGenre.Genre_Term) + "</span>" + search_link_end + " &nbsp; ( <em>" + thisGenre.Authority.ToLower() + "</em> )");
 					}
 					else
 					{
@@ -1931,7 +1930,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					{
 						if (thisAudience.Authority.Length > 0)
 						{
-							tempList.Add(Convert_String_To_XML_Safe(thisAudience.Audience) + " &nbsp; ( <i>" + thisAudience.Authority.ToLower() + "</i> )");
+							tempList.Add(Convert_String_To_XML_Safe(thisAudience.Audience) + " &nbsp; ( <em>" + thisAudience.Authority.ToLower() + "</em> )");
 						}
 						else
 						{
@@ -2023,12 +2022,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						{
 							if ((currentUser != null) && (currentUser.UserID == tag.UserID))
 							{
-								string citation_value = Convert_String_To_XML_Safe(tag.Description_Tag) + " <br /><i> Description added by you on " + tag.Date_Added.ToShortDateString() + "</i><br />( <a href=\"\" name=\"edit_describe_button" + tag_counter + "\" id=\"edit_describe_button" + tag_counter + "\" onclick=\"return edit_tag( 'edit_describe_button" + tag_counter + "', " + tag.TagID + ", '" + HttpUtility.HtmlEncode(tag.Description_Tag) + "');\">edit</a> | <a href=\"\" onclick=\"return delete_tag(" + tag.TagID + ");\">delete</a> )";
+								string citation_value = Convert_String_To_XML_Safe(tag.Description_Tag) + " <br /><em> Description added by you on " + tag.Date_Added.ToShortDateString() + "</em><br />( <a href=\"\" name=\"edit_describe_button" + tag_counter + "\" id=\"edit_describe_button" + tag_counter + "\" onclick=\"return edit_tag( 'edit_describe_button" + tag_counter + "', " + tag.TagID + ", '" + HttpUtility.HtmlEncode(tag.Description_Tag) + "');\">edit</a> | <a href=\"\" onclick=\"return delete_tag(" + tag.TagID + ");\">delete</a> )";
 								result.Append(INDENT + "    <tr>\n" + INDENT + "      <td width=\"15\"> </td>\n" + INDENT + "      <td width=\"" + width + "\" valign=\"top\"><b>" + Translator.Get_Translation("User Description", CurrentMode.Language) + ": </b></td>\n" + INDENT + "      <td style=\"background-color:#eeee88\">" + citation_value + "</td>\n" + INDENT + "    </tr>\n");
 							}
 							else
 							{
-								result.Append(Single_Citation_HTML_Row("User Description", Convert_String_To_XML_Safe(tag.Description_Tag) + " <br /><i> Description added by " + tag.UserName + " on " + tag.Date_Added.ToShortDateString() + "</i>", INDENT));
+								result.Append(Single_Citation_HTML_Row("User Description", Convert_String_To_XML_Safe(tag.Description_Tag) + " <br /><em> Description added by " + tag.UserName + " on " + tag.Date_Added.ToShortDateString() + "</em>", INDENT));
 							}
 
 							tag_counter++;
@@ -2178,7 +2177,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				{
 					if (thisIdentifier.Type.Length > 0)
 					{
-						tempList.Add("<i>" + Convert_String_To_XML_Safe(thisIdentifier.Type.ToLower()) + "</i> - <span itemprop=\"identifier\">" + Convert_String_To_XML_Safe(thisIdentifier.Identifier) + "</span>");
+						tempList.Add("<em>" + Convert_String_To_XML_Safe(thisIdentifier.Type.ToLower()) + "</em> - <span itemprop=\"identifier\">" + Convert_String_To_XML_Safe(thisIdentifier.Identifier) + "</span>");
 					}
 					else
 					{
@@ -2196,7 +2195,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				{
 					if (thisClassification.Authority.Length > 0)
 					{
-						tempList.Add("<i>" + Convert_String_To_XML_Safe(thisClassification.Authority.ToLower()) + "</i> - <span itemprop=\"classification\">" + Convert_String_To_XML_Safe(thisClassification.Classification) + "</span>");
+						tempList.Add("<em>" + Convert_String_To_XML_Safe(thisClassification.Authority.ToLower()) + "</em> - <span itemprop=\"classification\">" + Convert_String_To_XML_Safe(thisClassification.Classification) + "</span>");
 					}
 					else
 					{

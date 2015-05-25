@@ -127,6 +127,17 @@ namespace SobekCM.Library.HTML
             }
         }
 
+        /// <summary> Gets the collection of special behaviors which this subwriter
+        /// requests from the main HTML subwriter. </summary>
+        /// <remarks> By default, this returns an empty list </remarks>
+        public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
+        {
+            get
+            {
+                return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link };
+            }
+        }
+
         /// <summary> Write any additional values within the HTML Head of the
         /// final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>

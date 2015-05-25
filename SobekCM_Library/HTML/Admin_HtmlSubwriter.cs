@@ -265,7 +265,7 @@ namespace SobekCM.Library.HTML
                 if ((RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Skins_Single) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Add_Collection_Wizard))
                 {
                     // Add the banner
-                    Add_Banner(Output, "sbkAhs_BannerDiv", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Hierarchy_Object);
+                    Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ",""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Hierarchy_Object);
 
                     // Add the RequestSpecificValues.Current_User-specific main menu
                     MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues );
@@ -367,7 +367,7 @@ namespace SobekCM.Library.HTML
                 // Start to build the result to write, with the banner
                 StringBuilder header_builder = new StringBuilder();
                 StringWriter header_writer = new StringWriter(header_builder);
-                Add_Banner(header_writer, "sbkAhs_BannerDiv", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Hierarchy_Object);
+                Add_Banner(header_writer, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Hierarchy_Object);
 
                 // Now, add this literal
                 LiteralControl header_literal = new LiteralControl(header_builder.ToString());

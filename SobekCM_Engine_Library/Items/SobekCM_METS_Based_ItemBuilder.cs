@@ -132,13 +132,13 @@ namespace SobekCM.Engine_Library.Items
 				{
 					newIcon.Title = thisIconRow["Icon_Name"].ToString();
 					newIcon.Link = thisIconRow["Link"].ToString();
-					newIcon.HTML = "<img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + thisIconRow["Icon_URL"].ToString().Replace("&","&amp;") + "\" title=\"" + newIcon.Title.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" alt=\"" + newIcon.Title.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" />";
+					newIcon.HTML = "<img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + thisIconRow["Icon_URL"].ToString().Replace("&","&amp;") + "\" alt=\"" + newIcon.Title.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" />";
 				}
 				else
 				{
 					newIcon.Title = thisIconRow["Icon_Name"].ToString();
 					newIcon.Link = thisIconRow["Link"].ToString();
-					newIcon.HTML = "<a href=\"" + newIcon.Link + "\" target=\"_blank\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + thisIconRow["Icon_URL"].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "\" title=\"" + newIcon.Title.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" alt=\"" + newIcon.Title.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a>";
+					newIcon.HTML = "<a href=\"" + newIcon.Link + "\" target=\"_blank\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + thisIconRow["Icon_URL"].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "\" alt=\"" + newIcon.Title.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a>";
 				}
 				Item_Group_Object.Behaviors.Add_Wordmark(newIcon);
 			}
@@ -664,11 +664,11 @@ namespace SobekCM.Engine_Library.Items
 				{
 					if (link[0] == '?')
 					{
-						html = "<a href=\"" + link + "\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" title=\"" + name + "\" alt=\"" + name + "\" /></a>";
+						html = "<a href=\"" + link + "\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" alt=\"" + name + "\" /></a>";
 					}
 					else
 					{
-						html = "<a href=\"" + link + "\" target=\"_blank\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" title=\"" + name + "\" alt=\"" + name + "\" /></a>";
+						html = "<a href=\"" + link + "\" target=\"_blank\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" alt=\"" + name + "\" /></a>";
 					}
 				}
 

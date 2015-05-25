@@ -52,8 +52,7 @@ namespace SobekCM.Library.ResultsViewer
 
             // Start the results
             StringBuilder resultsBldr = new StringBuilder(2000);
-            resultsBldr.AppendLine("<br />");
-            resultsBldr.AppendLine("<table>");
+            resultsBldr.AppendLine("<section class=\"sbkBrv_Results\">");
 
             // Set the counter for these results from the page 
             int current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
@@ -76,14 +75,20 @@ namespace SobekCM.Library.ResultsViewer
                     internal_link = base_url + titleResult.BibID + textRedirectStem;
 
                 // Start this row
+                string title = firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;");
                 if (multiple_title)
-                    resultsBldr.AppendLine( "\t<tr valign=\"top\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" >");
+                {
+                    title = titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;");
+                    resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\">");
+
+                }
                 else
-                    resultsBldr.AppendLine( "\t<tr valign=\"top\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onclick=\"window.location.href='" + internal_link + "';\" >");
+                    resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\" onclick=\"window.location.href='" + internal_link + "';\" >");
+
 
                 // Add the counter as the first column
-                resultsBldr.AppendLine("\t\t<td><br /><b>" + result_counter + "</b></td>\t\t<td valign=\"top\" width=\"150\">");
-
+                resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultNum\">" + result_counter + "</div>");
+                resultsBldr.Append("\t\t<div class=\"sbkBrv_SingleResultThumb\">");
                 //// Is this restricted?
                 bool restricted_by_ip = false;
                 if ((titleResult.Item_Count == 1) && (firstItemResult.IP_Restriction_Mask > 0))
@@ -101,52 +106,56 @@ namespace SobekCM.Library.ResultsViewer
                 // Draw the thumbnail 
                 if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
-                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" + Static_Resources.Nothumb_Jpg + "\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></td>");
+                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" + Static_Resources.Nothumb_Jpg + "\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></div>");
                 }
                 else
                 {
-                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" +UI_ApplicationCache_Gateway.Settings.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></td>");
+                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" +UI_ApplicationCache_Gateway.Settings.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"" + title.Replace("\"","") + "\" /></a></div>");
                 }
-                resultsBldr.AppendLine("\t\t<td>");
+
+
+                resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultDesc\">");
 
                 // If this was access restricted, add that
                 if (restricted_by_ip)
                 {
-                    resultsBldr.AppendLine("<span class=\"RestrictedItemText\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Access Restricted", RequestSpecificValues.Current_Mode.Language) + "</span>");
+                    resultsBldr.AppendLine("\t\t\t<span class=\"RestrictedItemText\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Access Restricted", RequestSpecificValues.Current_Mode.Language) + "</span>");
                 }
-
-                // Add each element to this table
-                resultsBldr.AppendLine("\t\t\t<table cellspacing=\"0px\">");
 
                 if (multiple_title)
                 {
-                    resultsBldr.AppendLine( "\t\t\t\t<tr style=\"height:40px;\" valign=\"middle\"><td colspan=\"3\"><span class=\"briefResultsTitle\"><a href=\"" + internal_link + "\">" + titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;") + "</a></span> &nbsp; </td></tr>");
+                    resultsBldr.AppendLine("\t\t\t<span class=\"briefResultsTitle\"><a href=\"" + internal_link + "\">" + titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;") + "</a></span>");
                 }
                 else
                 {
                     resultsBldr.AppendLine(
-                        "\t\t\t\t<tr style=\"height:40px;\" valign=\"middle\"><td colspan=\"3\"><span class=\"briefResultsTitle\"><a href=\"" +
+                        "\t\t\t<span class=\"briefResultsTitle\"><a href=\"" +
                         internal_link + "\">" + firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
-                        "</a></span> &nbsp; </td></tr>");
+                        "</a></span>");
                 }
+
+                // Add each element to this table
+                resultsBldr.AppendLine("\t\t\t<dl class=\"sbkBrv_SingleResultDescList\">");
+
+
 
                 if ((titleResult.Primary_Identifier_Type.Length > 0) && (titleResult.Primary_Identifier.Length > 0))
                 {
-                    resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + titleResult.Primary_Identifier + "</td></tr>");
+                    resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + titleResult.Primary_Identifier + "</dd>");
                 }
 
                 if ((RequestSpecificValues.Current_User != null ) && ( RequestSpecificValues.Current_User.LoggedOn ) && ( RequestSpecificValues.Current_User.Is_Internal_User ))
                 {
-                    resultsBldr.AppendLine("\t\t\t\t<tr><td>BibID:</td><td>&nbsp;</td><td>" + titleResult.BibID + "</td></tr>");
+                    resultsBldr.AppendLine("\t\t\t\t<dt>BibID:</dt><dd>" + titleResult.BibID + "</dd>");
 
                     if (titleResult.OPAC_Number > 1)
                     {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>OPAC:</td><td>&nbsp;</td><td>" +titleResult.OPAC_Number + "</td></tr>");
+                        resultsBldr.AppendLine("\t\t\t\t<dt>OPAC:</dt><dd>" +titleResult.OPAC_Number + "</dd>");
                     }
 
                     if (titleResult.OCLC_Number > 1)
                     {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>OCLC:</td><td>&nbsp;</td><td>" + titleResult.OCLC_Number + "</td></tr>");
+                        resultsBldr.AppendLine("\t\t\t\t<dt>OCLC:</dt><dd>" + titleResult.OCLC_Number + "</dd>");
                     }
                 }
 
@@ -169,7 +178,7 @@ namespace SobekCM.Library.ResultsViewer
 
 					if (value == "*")
 					{
-						resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(VARIES_STRING) + "</td></tr>");
+						resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + HttpUtility.HtmlDecode(VARIES_STRING) + "</dd>");
 					}
 					else if ( value.Trim().Length > 0 )
 					{
@@ -184,72 +193,32 @@ namespace SobekCM.Library.ResultsViewer
 								{
 									if (!value_found)
 									{
-										resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>");
+										resultsBldr.Append("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt>");
 										value_found = true;
 									}
-									resultsBldr.Append(HttpUtility.HtmlDecode(thisValue) + "<br />");
+									resultsBldr.Append("<dd>" + HttpUtility.HtmlDecode(thisValue) + "</dd>");
 								}
 							}
 
-							if (value_found)
-							{
-								resultsBldr.AppendLine("</td></tr>");
-							}
+                            if (value_found)
+                            {
+                                resultsBldr.AppendLine();
+                            }
 						}
 						else
 						{
-							resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(value) + "</td></tr>");
+							resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + HttpUtility.HtmlDecode(value) + "</dd>");
 						}
 					}
 				}
 
-				//if (titleResult.Author.Length > 0)
-				//{
-				//	string creatorString = "Author";
-				//	if (titleResult.MaterialType.ToUpper().IndexOf("ARTIFACT") == 0)
-				//	{
-				//		creatorString = "Creator";
-				//	}
-
-				//	if (titleResult.Author == "*")
-				//	{
-				//		resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(creatorString, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + VARIES_STRING + "</td></tr>");
-				//	}
-				//	else
-				//	{
-				//		bool author_found = false;
-				//		string[] author_split = titleResult.Author.Split("|".ToCharArray());
-
-				//		foreach (string thisAuthor in author_split)
-				//		{
-				//			if (thisAuthor.ToUpper().IndexOf("PUBLISHER") < 0)
-				//			{
-				//				if (!author_found)
-				//				{
-				//					resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" +UI_ApplicationCache_Gateway.Translation.Get_Translation(creatorString, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>");
-				//					author_found = true;
-				//				}
-				//				resultsBldr.Append(thisAuthor + "<br />");
-				//			}
-				//		}
-
-				//		if (author_found)
-				//		{
-				//			resultsBldr.AppendLine("</td></tr>");
-				//		}
-				//	}
-				//}
+                resultsBldr.AppendLine("\t\t\t</dl>");
 
                 if (titleResult.Snippet.Length > 0)
                 {
-                    resultsBldr.AppendLine("\t\t\t\t<tr><td colspan=\"3\"><br />&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace ("</em>", "</span>") + "...&rdquo;</td></tr>");
+                    resultsBldr.AppendLine("\t\t\t<div class=\"sbkBrv_SearchResultSnippet\">&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace ("</em>", "</span>") + "...&rdquo;</div>");
                 }
-
-                resultsBldr.AppendLine("\t\t\t</table>");
-
-                // End this row
-                resultsBldr.AppendLine("\t\t<br />");
-
+                
                 // Add children, if there are some
                 if (multiple_title)
                 {
@@ -262,11 +231,10 @@ namespace SobekCM.Library.ResultsViewer
                     Add_Issue_Tree(MainPlaceHolder, titleResult, current_row, textRedirectStem, base_url);
                 }
 
-                resultsBldr.AppendLine("\t\t</td>");
-                resultsBldr.AppendLine("\t</tr>");
+                resultsBldr.AppendLine("\t\t</div>");
 
-                // Add a horizontal line
-                resultsBldr.AppendLine("\t<tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
+                resultsBldr.AppendLine("\t</section>");
+                resultsBldr.AppendLine();
 
                 // Increment the result counters
                 result_counter++;
@@ -274,7 +242,7 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // End this table
-            resultsBldr.AppendLine("</table>");
+            resultsBldr.AppendLine("</section>");
 
             // Add this to the HTML page
             Literal mainLiteral = new Literal

@@ -52,7 +52,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Add the banner
-            Add_Banner(Output, "sbkShs_BannerDiv", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Hierarchy_Object);
+            Add_Banner(Output, "sbkShs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Hierarchy_Object);
 
             #region Code to add the statistics menu
 

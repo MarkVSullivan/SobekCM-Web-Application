@@ -94,7 +94,7 @@ namespace SobekCM.Library.HTML
             Internal_Type_Enum type = RequestSpecificValues.Current_Mode.Internal_Type;
 
             // Add the banner
-            Add_Banner(Output, "sbkAhs_BannerDiv", RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Hierarchy_Object);
+            Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Hierarchy_Object);
 
             if (!isAuthorized)
             {

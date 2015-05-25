@@ -514,7 +514,10 @@ namespace SobekCM.Library.MainWriters
         /// <returns> Title to use in the HTML result document </returns>
         public string Get_Page_Title(Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Html_MainWriter.Get_Page_Title", "Getting page title");
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Html_MainWriter.Get_Page_Title", "Getting page title");
+            }
 
             string thisTitle = null;
             if (subwriter != null)
@@ -749,6 +752,14 @@ namespace SobekCM.Library.MainWriters
 			// Get the list of behaviors here
 	        List<HtmlSubwriter_Behaviors_Enum> behaviors = subwriter.Subwriter_Behaviors;
 
+            // Include a skip to main content?
+            if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link))
+            {
+                Output.WriteLine("<nav id=\"skip-to-main-content\" role=\"navigation\" aria-label=\"Skin to main content\">");
+                Output.WriteLine("  <a href=\"#main-content\" class=\"hidden-element\">Skip to main content</a>");
+                Output.WriteLine("</nav>");
+            }
+
             //// If no header should be added, just return
             //if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
             //    return;
@@ -818,7 +829,7 @@ namespace SobekCM.Library.MainWriters
             }
 
             if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
-                HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, subwriter.Container_CssClass, behaviors);
+                HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, subwriter.Container_CssClass, Get_Page_Title(null),  behaviors);
 
             Output.WriteLine(String.Empty);
         }

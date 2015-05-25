@@ -56,6 +56,9 @@
         Aggregation_Suppress_Home_Text,
 
         /// <summary> This viewer uses the JQuery datatables plug-in </summary>
-        Use_Jquery_DataTables
+        Use_Jquery_DataTables,
+
+        /// <summary> Include the link to skip to the main content at the top of this </summary>
+        Include_Skip_To_Main_Content_Link
     }
 }

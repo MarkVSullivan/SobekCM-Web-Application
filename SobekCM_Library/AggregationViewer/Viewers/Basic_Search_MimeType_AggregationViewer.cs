@@ -120,38 +120,21 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 search_collection = "Recherche dans la collection";
             }
 
-            Output.WriteLine("  <table id=\"sbkBsav_SearchPanel\" >");
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td style=\"text-align:right;width:27%;\" id=\"sbkBsav_SearchPrompt\"><label for=\"SobekHomeSearchBox\">" + search_collection + ":</label></td>");
-            Output.WriteLine("      <td style=\"width:3%;\">&nbsp;</td>");
-            Output.WriteLine("      <td style=\"width:60%;\"><input name=\"u_search\" type=\"text\" class=\"sbkBsav_SearchBox sbk_Focusable\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" /></td>");
-            Output.WriteLine("      <td style=\"width:10%;\"><button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button></td>");
-            Output.WriteLine("      <td><div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div></td>");
-            Output.WriteLine("    </tr>");
+            Output.WriteLine("  <div id=\"sbkBsav_SearchPanel\" role=\"search\" >");
+            Output.WriteLine("    <label for=\"SobekHomeSearchBox\" id=\"sbkBsav_SearchPrompt\">" + search_collection + ":</label>");
+            Output.WriteLine("    <input name=\"u_search\" type=\"text\" class=\"sbkBsav_SearchBox sbk_Focusable\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'basic', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" />");
+            Output.WriteLine("    <button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button>");
+            Output.WriteLine("    <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
 
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td colspan=\"4\">");
-            Output.WriteLine("          &nbsp; &nbsp; &nbsp; &nbsp; <input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkBsav_mimetypeCheck\" id=\"sbkBsav_mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkBsav_mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
+            Output.WriteLine("    <div id=\"sbkBsav_MimeType\"><input type=\"checkbox\" value=\"MIME_TYPE\" name=\"sbkBsav_mimetypeCheck\" id=\"sbkBsav_mimetypeCheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"sbkBsav_mimetypeCheck\">" + INCLUDE_NO_MIMETYPE + "</label></div>");
+
 
             if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin))
             {
-                Output.WriteLine("    <tr>");
-                Output.WriteLine("      <td>&nbsp;</td>");
-                Output.WriteLine("      <td colspan=\"4\">");
-                Output.WriteLine("          <input type=\"checkbox\" value=\"PRIVATE_ITEMS\" name=\"privatecheck\" id=\"privatecheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"privatecheck\">" + INCLUDE_PRIVATES + "</label>");
-                Output.WriteLine("      </td>");
-                Output.WriteLine("    </tr>");
+                Output.WriteLine("    <div id=\"sbkBsav_PrivateCheck\"><input type=\"checkbox\" value=\"PRIVATE_ITEMS\" name=\"privatecheck\" id=\"privatecheck\" unchecked onclick=\"focus_element( 'SobekHomeSearchBox');\" /><label for=\"privatecheck\">" + INCLUDE_PRIVATES + "</label></div>");
             }
 
-            Output.WriteLine("  </table>");
-
-            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.Is_System_Admin))
-            {
-                Output.WriteLine("<br /><br />");
-            }
+            Output.WriteLine("  </div>");
 
             Output.WriteLine();
             Output.WriteLine("<!-- Focus on search box -->");

@@ -142,6 +142,22 @@ namespace SobekCM
 
 		#region Methods called during execution of the HTML from SobekCM.aspx
 
+	    protected void Write_Lang_Code()
+	    {
+            // If the was a very basic error, or the request was complete, do nothing here
+            if ((pageGlobals.currentMode == null) || (pageGlobals.currentMode.Request_Completed))
+                return;
+
+	        if (pageGlobals.currentMode.Language == Core.Configuration.Web_Language_Enum.DEFAULT)
+	        {
+	            Response.Output.Write(Core.Configuration.Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.Default_UI_Language));
+	        }
+	        else
+	        {
+                Response.Output.Write(Core.Configuration.Web_Language_Enum_Converter.Enum_To_Code(pageGlobals.currentMode.Language));
+	        }
+	    }
+
 		protected void Write_Page_Title()
 		{
 			// If the was a very basic error, or the request was complete, do nothing here

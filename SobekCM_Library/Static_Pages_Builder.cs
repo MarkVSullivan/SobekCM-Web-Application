@@ -738,8 +738,7 @@ namespace SobekCM.Library
 			writer.WriteLine("</div>");
 			writer.WriteLine();
 
-			writer.WriteLine("<div class=\"sbkPrsw_ResultsPanel\">");
-
+			writer.WriteLine("<div class=\"sbkPrsw_ResultsPanel\" id=\"main-content\">");
 
             writer.WriteLine("<br />");
             writer.WriteLine("<br />");

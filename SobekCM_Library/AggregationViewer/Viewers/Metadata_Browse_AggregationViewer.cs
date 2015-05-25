@@ -44,13 +44,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             
 
             // If there is not info browse mode listed, use the default
-            if (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 0)
+            if ( String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode))
             {
                 string defaultBrowseBy = RequestSpecificValues.Hierarchy_Object.Default_BrowseBy ?? String.Empty;
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = defaultBrowseBy;
 
                 // Still length of zero?
-                if (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 0)
+                if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode))
                 {
                     // Just look for the first browse by
                     foreach (Item_Aggregation_Child_Page browse in RequestSpecificValues.Hierarchy_Object.Child_Pages)
@@ -65,7 +65,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             }
 
-            if ((RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 0) && (RequestSpecificValues.Hierarchy_Object.Has_Browse_By_Pages))
+            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode)) && (RequestSpecificValues.Hierarchy_Object.Has_Browse_By_Pages))
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = RequestSpecificValues.Hierarchy_Object.Child_Page_By_Code(RequestSpecificValues.Current_Mode.Info_Browse_Mode).Code;
 
             // Get this browse
@@ -296,7 +296,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("</td>");
                 Output.WriteLine("<td>");
             }
-			Output.WriteLine("<div class=\"sbkMebv_ResultsPanel\">");
+			Output.WriteLine("<div class=\"sbkMebv_ResultsPanel\" id=\"main-content\" role=\"main\">");
 
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = original_browse_mode;
 

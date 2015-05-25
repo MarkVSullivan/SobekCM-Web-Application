@@ -408,7 +408,7 @@ namespace SobekCM.Library.HTML
 				return;
 			}
 
-			Literal startingLiteral = new Literal{ Text = (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map) ? "</div>" + Environment.NewLine + "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine : (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta) ? "</div>" + Environment.NewLine + "<div>" + Environment.NewLine : "<div class=\"sbkPrsw_ResultsPanel\">" + Environment.NewLine};
+            Literal startingLiteral = new Literal { Text = (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map) ? "</div>" + Environment.NewLine + "<div class=\"sbkPrsw_ResultsPanel\" id=\"main-content\" role=\"main\">" + Environment.NewLine : (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta) ? "</div>" + Environment.NewLine + "<div>" + Environment.NewLine : "<div class=\"sbkPrsw_ResultsPanel\" id=\"main-content\" role=\"main\" itemscope itemtype=\"http:schema.org/SearchResultsPage\">" + Environment.NewLine };
 			MainPlaceHolder.Controls.Add(startingLiteral);
 
 			resultWriter.Add_HTML(MainPlaceHolder, Tracer );
@@ -550,7 +550,7 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Sort = 0;
                     string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                     RequestSpecificValues.Current_Mode.Sort = current_order;
-                    sorterBuilder.AppendLine("    " + sort_by + ": &nbsp;");
+                    sorterBuilder.AppendLine("    <label for=\"sorter_input\">" + sort_by + "</label>: &nbsp;");
                     sorterBuilder.AppendLine("    <select name=\"sorter_input\" onchange=\"sort_results('" + url.Replace("&", "&amp;") + "')\" id=\"sorter_input\" class=\"sbkPrsw_SorterDropDown\">");
                     sorterBuilder.AppendLine(sortOptions);
                     sorterBuilder.AppendLine("    </select>");
@@ -926,20 +926,20 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("<!-- Share form -->");
                     Output.WriteLine("<div class=\"share_popup_div\" id=\"share_form\" style=\"display:none;\">");
 
-                    Output.WriteLine("<a href=\"http://www.facebook.com/share.php?u=" + share_url + "&amp;t=" + title + "\" target=\"FACEBOOK_WINDOW\" onmouseover=\"facebook_share.src='" + Static_Resources.Facebook_Share_H_Gif + "'\" onmouseout=\"facebook_share.src='" + Static_Resources.Facebook_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"facebook_share\" name=\"facebook_share\" src=\"" + Static_Resources.Facebook_Share_Gif + "\" alt=\"FACEBOOK\" /></a>");
-                    Output.WriteLine("<a href=\"http://buzz.yahoo.com/buzz?targetUrl=" + share_url + "&amp;headline=" + title + "\" target=\"YAHOOBUZZ_WINDOW\" onmouseover=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_H_Gif + "'\" onmouseout=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoobuzz_share\" name=\"yahoobuzz_share\" src=\"" + Static_Resources.Yahoobuzz_Share_Gif + "\" alt=\"YAHOO BUZZ\" /></a>");
+                    Output.WriteLine("<a href=\"http://www.facebook.com/share.php?u=" + share_url + "&amp;t=" + title + "\" target=\"FACEBOOK_WINDOW\" onmouseover=\"facebook_share.src='" + Static_Resources.Facebook_Share_H_Gif + "'\" onfocus=\"facebook_share.src='" + Static_Resources.Facebook_Share_H_Gif + "'\" onmouseout=\"facebook_share.src='" + Static_Resources.Facebook_Share_Gif + "'\" onblur=\"facebook_share.src='" + Static_Resources.Facebook_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"facebook_share\" name=\"facebook_share\" src=\"" + Static_Resources.Facebook_Share_Gif + "\" alt=\"FACEBOOK\" /></a>");
+                    Output.WriteLine("<a href=\"http://buzz.yahoo.com/buzz?targetUrl=" + share_url + "&amp;headline=" + title + "\" target=\"YAHOOBUZZ_WINDOW\" onmouseover=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_H_Gif + "'\" onfocus=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_H_Gif + "'\" onmouseout=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_Gif + "'\" onblur=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoobuzz_share\" name=\"yahoobuzz_share\" src=\"" + Static_Resources.Yahoobuzz_Share_Gif + "\" alt=\"YAHOO BUZZ\" /></a>");
                     Output.WriteLine("<br />");
 
-                    Output.WriteLine("<a href=\"http://twitter.com/home?status=Currently reading " + share_url + "\" target=\"TWITTER_WINDOW\" onmouseover=\"twitter_share.src='" + Static_Resources.Twitter_Share_H_Gif + "'\" onmouseout=\"twitter_share.src='" + Static_Resources.Twitter_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"twitter_share\" name=\"twitter_share\" src=\"" + Static_Resources.Twitter_Share_Gif + "\" alt=\"TWITTER\" /></a>");
-                    Output.WriteLine("<a href=\"http://www.google.com/bookmarks/mark?op=add&amp;bkmk=" + share_url + "&amp;title=" + title + "\" target=\"GOOGLE_WINDOW\" onmouseover=\"google_share.src='" + Static_Resources.Google_Share_H_Gif + "'\" onmouseout=\"google_share.src='" + Static_Resources.Google_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"google_share\" name=\"google_share\" src=\"" + Static_Resources.Google_Share_Gif + "\" alt=\"GOOGLE SHARE\" /></a>");
+                    Output.WriteLine("<a href=\"http://twitter.com/home?status=Currently reading " + share_url + "\" target=\"TWITTER_WINDOW\" onmouseover=\"twitter_share.src='" + Static_Resources.Twitter_Share_H_Gif + "'\" onfocus=\"twitter_share.src='" + Static_Resources.Twitter_Share_H_Gif + "'\" onmouseout=\"twitter_share.src='" + Static_Resources.Twitter_Share_Gif + "'\" onblur=\"twitter_share.src='" + Static_Resources.Twitter_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"twitter_share\" name=\"twitter_share\" src=\"" + Static_Resources.Twitter_Share_Gif + "\" alt=\"TWITTER\" /></a>");
+                    Output.WriteLine("<a href=\"http://www.google.com/bookmarks/mark?op=add&amp;bkmk=" + share_url + "&amp;title=" + title + "\" target=\"GOOGLE_WINDOW\" onmouseover=\"google_share.src='" + Static_Resources.Google_Share_H_Gif + "'\" onfocus=\"google_share.src='" + Static_Resources.Google_Share_H_Gif + "'\" onmouseout=\"google_share.src='" + Static_Resources.Google_Share_Gif + "'\" onblur=\"google_share.src='" + Static_Resources.Google_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"google_share\" name=\"google_share\" src=\"" + Static_Resources.Google_Share_Gif + "\" alt=\"GOOGLE SHARE\" /></a>");
                     Output.WriteLine("<br />");
 
-                    Output.WriteLine("<a href=\"http://www.stumbleupon.com/submit?url=" + share_url + "&amp;title=" + title + "\" target=\"STUMBLEUPON_WINDOW\" onmouseover=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_H_Gif + "'\" onmouseout=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"stumbleupon_share\" name=\"stumbleupon_share\" src=\"" + Static_Resources.Stumbleupon_Share_Gif + "\" alt=\"STUMBLEUPON\" /></a>");
-                    Output.WriteLine("<a href=\"http://myweb.yahoo.com/myresults/bookmarklet?t=" + title + "&amp;u=" + share_url + "\" target=\"YAHOO_WINDOW\" onmouseover=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_H_Gif + "'\" onmouseout=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoo_share\" name=\"yahoo_share\" src=\"" + Static_Resources.Yahoo_Share_Gif + "\" alt=\"YAHOO SHARE\" /></a>");
+                    Output.WriteLine("<a href=\"http://www.stumbleupon.com/submit?url=" + share_url + "&amp;title=" + title + "\" target=\"STUMBLEUPON_WINDOW\" onmouseover=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_H_Gif + "'\" onfocus=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_H_Gif + "'\" onmouseout=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_Gif + "'\" onblur=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"stumbleupon_share\" name=\"stumbleupon_share\" src=\"" + Static_Resources.Stumbleupon_Share_Gif + "\" alt=\"STUMBLEUPON\" /></a>");
+                    Output.WriteLine("<a href=\"http://myweb.yahoo.com/myresults/bookmarklet?t=" + title + "&amp;u=" + share_url + "\" target=\"YAHOO_WINDOW\" onmouseover=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_H_Gif + "'\" onfocus=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_H_Gif + "'\" onmouseout=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_Gif + "'\" onblur=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoo_share\" name=\"yahoo_share\" src=\"" + Static_Resources.Yahoo_Share_Gif + "\" alt=\"YAHOO SHARE\" /></a>");
                     Output.WriteLine("<br />");
 
-                    Output.WriteLine("<a href=\"http://digg.com/submit?phase=2&amp;url=" + share_url + "&amp;title=" + title + "\" target=\"DIGG_WINDOW\" onmouseover=\"digg_share.src='" + Static_Resources.Digg_Share_H_Gif + "'\" onmouseout=\"digg_share.src='" + Static_Resources.Digg_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"digg_share\" name=\"digg_share\" src=\"" + Static_Resources.Digg_Share_Gif + "\" alt=\"DIGG\" /></a>");
-                    Output.WriteLine("<a onmouseover=\"favorites_share.src='" + Static_Resources.Favorites_Share_H_Gif + "'\" onmouseout=\"favorites_share.src='" + Static_Resources.Favorites_Share_Gif + "'\" onclick=\"javascript:add_to_favorites();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"favorites_share\" name=\"favorites_share\" src=\"" + Static_Resources.Favorites_Share_Gif + "\" alt=\"MY FAVORITES\" /></a>");
+                    Output.WriteLine("<a href=\"http://digg.com/submit?phase=2&amp;url=" + share_url + "&amp;title=" + title + "\" target=\"DIGG_WINDOW\" onmouseover=\"digg_share.src='" + Static_Resources.Digg_Share_H_Gif + "'\" onfocus=\"digg_share.src='" + Static_Resources.Digg_Share_H_Gif + "'\" onmouseout=\"digg_share.src='" + Static_Resources.Digg_Share_Gif + "'\" onblur=\"digg_share.src='" + Static_Resources.Digg_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"digg_share\" name=\"digg_share\" src=\"" + Static_Resources.Digg_Share_Gif + "\" alt=\"DIGG\" /></a>");
+                    Output.WriteLine("<a onmouseover=\"favorites_share.src='" + Static_Resources.Favorites_Share_H_Gif + "'\" onfocus=\"favorites_share.src='" + Static_Resources.Favorites_Share_H_Gif + "'\" onmouseout=\"favorites_share.src='" + Static_Resources.Favorites_Share_Gif + "'\" onblur=\"favorites_share.src='" + Static_Resources.Favorites_Share_Gif + "'\" onclick=\"javascript:add_to_favorites();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"favorites_share\" name=\"favorites_share\" src=\"" + Static_Resources.Favorites_Share_Gif + "\" alt=\"MY FAVORITES\" /></a>");
                     Output.WriteLine("<br />");
 
                     Output.WriteLine("</div>");
@@ -1657,7 +1657,7 @@ namespace SobekCM.Library.HTML
                 builder.AppendLine("</script>");
                 builder.AppendLine();
 
-                builder.AppendLine("<div class=\"sbkPrsw_FacetColumn\">");
+                builder.AppendLine("<nav class=\"sbkPrsw_FacetColumn\" role=\"complementary\" aria-label=\"Facets\">");
                 builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("NARROW RESULTS BY", RequestSpecificValues.Current_Mode.Language) + ":</div>");
 
 
@@ -1707,7 +1707,7 @@ namespace SobekCM.Library.HTML
                     builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + title + "</div>");
                     builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
                     if (RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count > 1)
-                        builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
+                        builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/" + resort_image + "\" alt=\"Resort " + title + "\" /></a></div>");
                     if ((facetInformation[FACET_INDEX] == '2') || (facetInformation[FACET_INDEX] == '3'))
                     {
                         SortedList<string, string> order_facets = new SortedList<string, string>();
@@ -1829,7 +1829,7 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                builder.AppendLine("</div>");
+                builder.AppendLine("</nav>");
 
                 #endregion
             }
@@ -2209,7 +2209,7 @@ namespace SobekCM.Library.HTML
 			Builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
 			if (Collection.Count > 1)
 			{
-				Builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + (FacetIndex - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
+				Builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + (FacetIndex - 1) + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/" + resort_image + "\" alt=\"Resort " + Title + "\" /></a></div>");
 			}
 			if ((facetInformation[FacetIndex - 1] == '2') || (facetInformation[FacetIndex - 1] == '3'))
 			{

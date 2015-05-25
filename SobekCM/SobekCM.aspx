@@ -1,6 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" validateRequest="false" CodeBehind="SobekCM.aspx.cs" Inherits="SobekCM.SobekCM" %>
 <!DOCTYPE html>
-<html>
+<html lang="<%Write_Lang_Code();%>">
 <head>
   <title><%Write_Page_Title();%></title>
     

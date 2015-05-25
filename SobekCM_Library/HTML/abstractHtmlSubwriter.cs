@@ -39,7 +39,7 @@ namespace SobekCM.Library.HTML
 		/// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
 		/// <param name="CurrentMode"> Mode / navigation information for the current request</param>
 		/// <remarks> This is called by several html subwriters that otherwise tell this class to suppress writing the banner </remarks>
-		public static void Add_Banner(TextWriter Output, string Banner_Division_Name, Navigation_Object CurrentMode, Web_Skin_Object HTML_Skin, Item_Aggregation Hierarchy_Object)
+		public static void Add_Banner(TextWriter Output, string Banner_Division_Name, string Web_Page_Title, Navigation_Object CurrentMode, Web_Skin_Object HTML_Skin, Item_Aggregation Hierarchy_Object)
 		{
 			Output.WriteLine("<!-- Write the main collection, interface, or institution banner -->");
             if ((HTML_Skin != null) && (HTML_Skin.Override_Banner.HasValue) && (HTML_Skin.Override_Banner.Value))
@@ -55,18 +55,24 @@ namespace SobekCM.Library.HTML
 
 				if ((Hierarchy_Object != null) && (Hierarchy_Object.Code != "all"))
 				{
-                    Output.WriteLine("<div id=\"sbkAhs_BannerDiv\"><a alt=\"" + Hierarchy_Object.ShortName + "\" href=\"" + CurrentMode.Base_URL + Hierarchy_Object.Code + url_options + "\"><img id=\"mainBanner\" src=\"" + CurrentMode.Base_URL + Hierarchy_Object.Get_Banner_Image(HTML_Skin) + "\" alt=\"\" /></a></div>");
+				    Output.WriteLine("<section id=\"sbkAhs_BannerDiv\" role=\"banner\" title=\"" + Hierarchy_Object.ShortName + "\">");
+				    Output.WriteLine("  <h1 class=\"hidden-element\">" + Web_Page_Title + "</h1>");
+				    Output.WriteLine("  <a alt=\"" + Hierarchy_Object.ShortName + "\" href=\"" + CurrentMode.Base_URL + Hierarchy_Object.Code + url_options + "\"><img id=\"mainBanner\" src=\"" + CurrentMode.Base_URL + Hierarchy_Object.Get_Banner_Image(HTML_Skin) + "\"  alt=\"" + Hierarchy_Object.ShortName + "\" /></a>");
+                    Output.WriteLine("</section>");
 				}
 				else
 				{
                     if ((Hierarchy_Object != null) && (Hierarchy_Object.Get_Banner_Image(HTML_Skin).Length > 0))
-					{
-						Output.WriteLine("<div id=\"sbkAhs_BannerDiv\"><a href=\"" + CurrentMode.Base_URL + url_options + "\"><img id=\"mainBanner\" src=\"" + CurrentMode.Base_URL + Hierarchy_Object.Get_Banner_Image( HTML_Skin) + "\" alt=\"\" /></a></div>");
+                    {
+                        Output.WriteLine("<section id=\"sbkAhs_BannerDiv\" role=\"banner\" title=\"" + Hierarchy_Object.ShortName + "\">");
+                        Output.WriteLine("  <h1 class=\"hidden-element\">" + Web_Page_Title + "</h1>");
+                        Output.WriteLine("  <a alt=\"" + Hierarchy_Object.ShortName + "\" href=\"" + CurrentMode.Base_URL + url_options + "\"><img id=\"mainBanner\" src=\"" + CurrentMode.Base_URL + Hierarchy_Object.Get_Banner_Image(HTML_Skin) + "\"  alt=\"" + Hierarchy_Object.ShortName + "\" /></a>");
+                        Output.WriteLine("</section>");
 					}
 					else
 					{
 						string skin_url = CurrentMode.Base_Design_URL + "skins/" + CurrentMode.Skin + "/";
-						Output.WriteLine("<div id=\"sbkAhs_BannerDiv\"><a href=\"" + CurrentMode.Base_URL + url_options + "\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"\" /></a></div>");
+                        Output.WriteLine("<section id=\"sbkAhs_BannerDiv\" role=\"banner\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a href=\"" + CurrentMode.Base_URL + url_options + "\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"\" /></a></section>");
 					}
 				}
 			}

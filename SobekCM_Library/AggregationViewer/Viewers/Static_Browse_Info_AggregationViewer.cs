@@ -243,6 +243,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			else
 			{
 				Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
+			    Output.WriteLine("<section id=\"main-content\" role=\"main\">");
 
 				// Output the adjusted home html
 				if (isAdmin)
@@ -268,6 +269,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 					Output.WriteLine(static_browse_info_text);
 					Output.WriteLine("</div>");
 				}
+
+			    Output.WriteLine("</section>");
 			}
 
            
