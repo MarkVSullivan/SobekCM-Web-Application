@@ -133,7 +133,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Output.WriteLine("  <div id=\"sbkFtsav_SearchPanel\" role=\"search\" >");
             Output.WriteLine("    <label for=\"SobekHomeSearchBox\" id=\"sbkBsav_SearchPrompt\">" + search_collection + ":</label>");
             Output.WriteLine("    <input name=\"u_search\" type=\"text\" class=\"sbkBsav_SearchBox sbk_Focusable\" id=\"SobekHomeSearchBox\" value=\"" + textBoxValue + "\" onkeydown=\"return fnTrapKD(event, 'text', '" + arg1 + "', '" + arg2 + "','" + browse_url + "');\" />");
-            Output.WriteLine("    <button class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button>");
+            Output.WriteLine("    <button id=\"sbkFtsav_SearchButton\" class=\"sbk_GoButton\" title=\"" + search_collection + "\" onclick=\"" + Search_Script_Action + ";return false;\">Go</button>");
             Output.WriteLine("    <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
             Output.WriteLine("  </div>");
 

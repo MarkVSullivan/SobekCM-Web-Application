@@ -1187,7 +1187,7 @@ namespace SobekCM.Library.HTML
 	                    Output.WriteLine("<h2 id=\"subcolls\">" + translatedChild  + "</h2>");
 			            
 
-						Output.WriteLine("<ul id=\"sbkAghsw_CollectionButtonList\">");
+						Output.WriteLine("<ul class=\"sbkAghsw_CollectionButtonList\">");
 
 			            foreach (string thisHtml in html_list)
                         {
@@ -1731,12 +1731,12 @@ namespace SobekCM.Library.HTML
 
             // Step through each thematic heading and add all the needed aggreagtions
 	        bool first = true;
+            int aggreCount = -1;
             foreach (Thematic_Heading thisTheme in UI_ApplicationCache_Gateway.Thematic_Headings)
             {
                 // Build the list of html to display
                 SortedList<string, string> html_list = new SortedList<string, string>();
                 ReadOnlyCollection<Item_Aggregation_Related_Aggregations> thisThemesAggrs = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_ThemeID(thisTheme.ID);
-                int aggreCount = -1;
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in thisThemesAggrs)
                 {
                     aggreCount++;
@@ -1790,7 +1790,7 @@ namespace SobekCM.Library.HTML
 	                else
 						Output.WriteLine("<h2>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(thisTheme.Text, RequestSpecificValues.Current_Mode.Language) + "</h2>");
 
-					Output.WriteLine("<ul id=\"sbkAghsw_CollectionButtonList\">");
+					Output.WriteLine("<ul class=\"sbkAghsw_CollectionButtonList\">");
 
                     foreach (string thisHtml in html_list.Values)
                     {
@@ -2016,11 +2016,11 @@ namespace SobekCM.Library.HTML
                         string image_url = RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/" + thisAggr.Code + "/images/buttons/coll.gif";
                         if ((name.IndexOf("The ") == 0) && (name.Length > 4))
                         {
-                            html_list[name.Substring(4)] = "    <td class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span id=\"sbkAghsw_CollectionButtonImg" + aggreCount + "\" class=\"sbkAghsw_CollectionButtonImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + name + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + name + "</a></span>" + Environment.NewLine + "    </td>";
+                            html_list[name.Substring(4)] = "    <li class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span id=\"sbkAghsw_CollectionButtonImg" + aggreCount + "\" class=\"sbkAghsw_CollectionButtonImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + name + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + name + "</a></span>" + Environment.NewLine + "    </li>";
                         }
                         else
                         {
-							html_list[name] = "    <td class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + name + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + name + "</a></span>" + Environment.NewLine + "    </td>";
+							html_list[name] = "    <li class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonImg\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + name + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + name + "</a></span>" + Environment.NewLine + "    </li>";
                         }
                     }
                 }
@@ -2032,34 +2032,14 @@ namespace SobekCM.Library.HTML
                 // Write this theme
 				Output.WriteLine("<h2 style=\"margin-top:0;\">Partners and Contributing Institutions</h2>");
 
-				Output.WriteLine("<table id=\"sbkAghsw_CollectionButtonTbl\">");
-                int column_spot = 0;
-                Output.WriteLine("  <tr>");
+				Output.WriteLine("<ul class=\"sbkAghsw_CollectionButtonList\">");
 
                 foreach (string thisHtml in html_list.Values)
                 {
-                    if (column_spot == 3)
-                    {
-                        Output.WriteLine("  </tr>");
-                        Output.WriteLine("  <tr>");
-                        column_spot = 0;
-                    }
-
                     Output.WriteLine(thisHtml);
-                    column_spot++;
                 }
 
-				if (column_spot == 2)
-				{
-					Output.WriteLine("    <td class=\"sbkAghsw_CollectionButton\">&nbsp;</td>");
-				}
-				if (column_spot == 1)
-				{
-					Output.WriteLine("    <td class=\"sbkAghsw_CollectionButton\">&nbsp;</td>");
-					Output.WriteLine("    <td class=\"sbkAghsw_CollectionButton\">&nbsp;</td>");
-				}
-                Output.WriteLine("  </tr>");
-                Output.WriteLine("</table>");
+                Output.WriteLine("</ul>");
             }
 
             Output.WriteLine("<br />");
