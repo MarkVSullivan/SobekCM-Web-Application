@@ -79,26 +79,32 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             int page = 1;
-            switch (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.ToLower())
+            string submode = "a";
+
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
             {
-                case "b":
-                    page = 2;
-                    break;
+                switch (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.ToLower())
+                {
+                    case "b":
+                        page = 2;
+                        break;
 
-                case "c":
-                    page = 3;
-                    break;
+                    case "c":
+                        page = 3;
+                        break;
 
-                case "d":
-                    page = 4;
-                    break;
+                    case "d":
+                        page = 4;
+                        break;
 
-                case "e":
-                    page = 5;
-                    break;
+                    case "e":
+                        page = 5;
+                        break;
+                }
+
+                submode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             }
 
-            string submode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "Xyzzy";

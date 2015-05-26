@@ -149,16 +149,16 @@ namespace SobekCM.Library.HTML
                     if (pre_menu_options_exist)
                     {
                         if (isOnHome)
-                            Output.Write("    <li class=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a>");
+                            Output.Write("    <li id=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a>");
                         else
                             Output.Write("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + sobek_home_text + "</a>");
                     }
                     else
                     {
                         if ( isOnHome )
-                            Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
+                            Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"Home\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
                         else
-                            Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
+                            Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"Home\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
                     }
 
                     if (( UI_ApplicationCache_Gateway.Thematic_Headings != null ) && ( UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0 ))
@@ -208,11 +208,11 @@ namespace SobekCM.Library.HTML
                 {
                     if (isOnHome)
                     {
-                        Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"selected-sf-menu-item-link sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkMenu_HomeText\">" + home + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+                        Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"selected-sf-menu-item-link sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"Home\" /> <div class=\"sbkMenu_HomeText\">" + home + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
                     }
                     else
                     {
-                        Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkMenu_HomeText\">" + home + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+                        Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"Home\" /> <div class=\"sbkMenu_HomeText\">" + home + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
                     }
                 }
 
@@ -789,7 +789,7 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
+                        Output.Write("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"Home\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a>");
                     }
 
                     if ((UI_ApplicationCache_Gateway.Thematic_Headings != null) && (UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0))
@@ -830,7 +830,7 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" /> <div class=\"sbkMenu_HomeText\">" + home + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
+                    Output.WriteLine("    <li id=\"sbkAgm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"Home\" /> <div class=\"sbkMenu_HomeText\">" + home + "</div></a><ul id=\"sbkAgm_HomeSubMenu\">");
                 }
 
                 Output.WriteLine("      <li id=\"sbkAgm_AggrHome\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + collection_home + "</a></li>");
@@ -915,7 +915,7 @@ namespace SobekCM.Library.HTML
             {
                 if (resultView == Result_Display_Type_Enum.Bookshelf)
                 {
-                    Output.WriteLine("    <li id=\"selected-sf-menu-item-link\"><a href=\"\">" + bookshelf_view + "</a></li>");
+                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + bookshelf_view + "</a></li>");
                 }
                 else
                 {
@@ -928,7 +928,7 @@ namespace SobekCM.Library.HTML
             {
                 if (resultView == Result_Display_Type_Enum.Map)
                 {
-                    Output.WriteLine("    <li id=\"selected-sf-menu-item-link\"><a href=\"\">" + map_view + "</a></li>");
+                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + map_view + "</a></li>");
                 }
                 else
                 {
@@ -941,7 +941,7 @@ namespace SobekCM.Library.HTML
             {
                 if (resultView == Result_Display_Type_Enum.Brief)
                 {
-                    Output.WriteLine("    <li id=\"selected-sf-menu-item-link\"><a href=\"\">" + brief_view + "</a></li>");
+                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + brief_view + "</a></li>");
                 }
                 else
                 {
@@ -954,7 +954,7 @@ namespace SobekCM.Library.HTML
             {
                 if (resultView == Result_Display_Type_Enum.Table)
                 {
-                    Output.WriteLine("    <li id=\"selected-sf-menu-item-link\"><a href=\"\">" + table_view + "</a></li>");
+                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + table_view + "</a></li>");
                 }
                 else
                 {
@@ -967,7 +967,7 @@ namespace SobekCM.Library.HTML
             {
                 if (resultView == Result_Display_Type_Enum.Thumbnails)
                 {
-                    Output.WriteLine("    <li id=\"selected-sf-menu-item-link\"><a href=\"\">" + thumbnail_view + "</a></li>");
+                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + thumbnail_view + "</a></li>");
                 }
                 else
                 {
@@ -981,7 +981,7 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Current_Mode.Page = 1;
                 if (resultView == Result_Display_Type_Enum.Export)
                 {
-                    Output.WriteLine("    <li id=\"selected-sf-menu-item-link\"><a href=\"\">" + EXPORT_VIEW + "</a></li>");
+                    Output.WriteLine("    <li class=\"selected-sf-menu-item-link\"><a href=\"\">" + EXPORT_VIEW + "</a></li>");
                 }
                 else
                 {
@@ -1099,7 +1099,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
             RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
-            Output.WriteLine("    <li id=\"sbkUsm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkUsm_HomeSubMenu\">");
+            Output.WriteLine("    <li id=\"sbkUsm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" alt=\"Home\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a><ul id=\"sbkUsm_HomeSubMenu\">");
 
             if ((UI_ApplicationCache_Gateway.Thematic_Headings != null) && (UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0))
             {

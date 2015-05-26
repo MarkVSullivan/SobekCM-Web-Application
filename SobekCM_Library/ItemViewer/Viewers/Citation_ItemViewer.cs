@@ -1410,12 +1410,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (CurrentItem.Bib_Info.Containers_Count > 0)
 			{
 				StringBuilder physicalLocationBuilder = new StringBuilder(1000);
-				physicalLocationBuilder.Append("<table>");
+				physicalLocationBuilder.Append("<dl id=\"sbkCiv_LocationList\">");
 				foreach (Finding_Guide_Container thisContainer in CurrentItem.Bib_Info.Containers)
 				{
-					physicalLocationBuilder.Append("<tr><td>" + thisContainer.Type + ": </td><td>" + thisContainer.Name + "</td></tr>");
+					physicalLocationBuilder.Append("<dt>" + thisContainer.Type + ": </dt><dd>" + thisContainer.Name + "</dd>");
 				}
-				physicalLocationBuilder.Append("</table>");
+				physicalLocationBuilder.Append("</dl>");
 				result.Append(Single_Citation_HTML_Row("Physical Location", physicalLocationBuilder.ToString(), INDENT));
 			}
 			result.AppendLine(INDENT + "  </dl>");

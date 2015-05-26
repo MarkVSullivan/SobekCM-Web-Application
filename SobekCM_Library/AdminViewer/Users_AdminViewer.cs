@@ -68,7 +68,7 @@ namespace SobekCM.Library.AdminViewer
 
 			// Get the user to edit, if there was a user id in the submode
 			editUser = null;
-			if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
+			if ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
 			{
 				try
 				{
@@ -246,6 +246,7 @@ namespace SobekCM.Library.AdminViewer
 							editUser.Is_System_Admin = false;
 							editUser.Is_Portal_Admin = false;
 							editUser.Include_Tracking_In_Standard_Forms = false;
+                            editUser.Can_Delete_All = false;
 
 					        if ((UI_ApplicationCache_Gateway.Settings.isHosted) && (RequestSpecificValues.Current_User.Is_Host_Admin))
 					        {

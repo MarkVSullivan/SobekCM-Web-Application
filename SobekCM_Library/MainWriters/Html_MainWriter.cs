@@ -755,7 +755,7 @@ namespace SobekCM.Library.MainWriters
             // Include a skip to main content?
             if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link))
             {
-                Output.WriteLine("<nav id=\"skip-to-main-content\" role=\"navigation\" aria-label=\"Skin to main content\">");
+                Output.WriteLine("<nav id=\"skip-to-main-content\" role=\"navigation\" aria-label=\"Skip to main content\">");
                 Output.WriteLine("  <a href=\"#main-content\" class=\"hidden-element\">Skip to main content</a>");
                 Output.WriteLine("</nav>");
             }

@@ -95,7 +95,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // If coordinates were passed in, pull the actual coordinates out of the URL
             validCoordinateSearchFound = false;
-            if (CurrentMode.Coordinates.Length > 0)
+            if (!String.IsNullOrEmpty(CurrentMode.Coordinates))
             {
                 string[] splitter = CurrentMode.Coordinates.Split(",".ToCharArray());
                 if (((splitter.Length > 1) && (splitter.Length < 4)) || ((splitter.Length == 4) && (splitter[2].Length == 0) && (splitter[3].Length == 0)))

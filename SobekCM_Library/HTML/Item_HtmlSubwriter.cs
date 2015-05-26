@@ -1178,7 +1178,7 @@ namespace SobekCM.Library.HTML
 					    {
 						    if (RequestSpecificValues.Current_Mode.Is_Robot)
 						    {
-								Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"\">Description</a></li>");
+								Output.Write("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"\">Description</a></li>");
 						    }
 						    else
 						    {
@@ -1188,7 +1188,7 @@ namespace SobekCM.Library.HTML
 							    if ((viewerCode == "citation") || (viewerCode == "marc") || (viewerCode == "metadata") ||
 							        (viewerCode == "usage") || (viewerCode == "description"))
 							    {
-								    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Description</a>");
+								    Output.Write("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Description</a>");
 							    }
 							    else
 							    {
@@ -1248,7 +1248,7 @@ namespace SobekCM.Library.HTML
 							    if ((viewerCode == "allvolumes") || (viewerCode == "allvolumes2") ||
 							        (viewerCode == "allvolumes3"))
 							    {
-								    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + all_volumes + "</a>");
+								    Output.Write("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + all_volumes + "</a>");
 							    }
 							    else
 							    {
@@ -1360,7 +1360,7 @@ namespace SobekCM.Library.HTML
 						    // Was this a match?
 						    if ((RequestSpecificValues.Current_Mode.ViewerCode == page_seq + "t") || (RequestSpecificValues.Current_Mode.ViewerCode == page_seq + "x") || (RequestSpecificValues.Current_Mode.ViewerCode == page_seq + "j"))
 						    {
-							    Output.Write("\t\t<li id=\"selected-sf-menu-item-link\"><a href=\"" + link + "\">" + menu_title + "</a>");
+							    Output.Write("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + link + "\">" + menu_title + "</a>");
 						    }
 						    else
 						    {

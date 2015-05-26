@@ -2935,6 +2935,7 @@ namespace SobekCM.Library.Settings
             }
 
             Sobekcm_Css = "http://cdn.sobekdigital.com/css/sobekcm/4.8.10/sobekcm.css";
+            Sobekcm_Item_Css = "http://cdn.sobekdigital.com/css/sobekcm-item/4.8.10/sobekcm_item.css";
 
             return returnValue;
         }
