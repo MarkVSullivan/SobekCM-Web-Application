@@ -358,7 +358,12 @@ namespace SobekCM.Builder_Library
                         Metadata.Behaviors.Clear_Web_Skins();
 
                     // Now, save the behaviors for this item
-                    SobekCM_Database.Save_Behaviors(Metadata, false, false);
+                    SobekCM_Database.Save_Behaviors(Metadata, Metadata.Behaviors.Text_Searchable, false, false);
+                }
+                else
+                {
+                    // Now, save the MINIMAL behaviors for this item
+                    SobekCM_Database.Save_Behaviors(Metadata, Metadata.Behaviors.Text_Searchable, false, true);
                 }
 
                 //// Set the suppress endeca flag

@@ -103,7 +103,7 @@ namespace SobekCM.Library.MySobekViewer
                 completeTemplate.Save_To_Bib(item, RequestSpecificValues.Current_User, 1);
 
                 // Save the behaviors
-                SobekCM_Database.Save_Behaviors(item, false, true );
+                SobekCM_Database.Save_Behaviors(item, false, true, false );
 
                 // Store on the caches (to replace the other)
                 CachedDataManager.Remove_Digital_Resource_Objects(item.BibID, RequestSpecificValues.Tracer);

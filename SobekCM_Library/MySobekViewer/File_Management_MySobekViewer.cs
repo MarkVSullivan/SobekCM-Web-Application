@@ -271,7 +271,7 @@ namespace SobekCM.Library.MySobekViewer
                 try
                 {
                     SobekCM_Database.Save_Digital_Resource( Item_To_Complete, options  );
-                    SobekCM_Database.Save_Behaviors(Item_To_Complete, Item_To_Complete.Behaviors.Text_Searchable, false);
+                    SobekCM_Database.Save_Behaviors(Item_To_Complete, Item_To_Complete.Behaviors.Text_Searchable, false, false);
                 }
                 catch (Exception ee)
                 {

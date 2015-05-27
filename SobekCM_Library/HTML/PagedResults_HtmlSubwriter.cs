@@ -1369,7 +1369,10 @@ namespace SobekCM.Library.HTML
 										{
 											if (termsBuilder.Length > 0)
 												termsBuilder.Append(",");
-											termsBuilder.Append(terms[j]);
+                                            if ( terms[j].IndexOf(" ") > 0 )
+    											termsBuilder.Append("\"" + terms[j] + "\"");
+                                            else
+                                                termsBuilder.Append(terms[j]);
 
 											if (fieldsBuilder.Length > 0)
 												fieldsBuilder.Append(",");
@@ -1626,7 +1629,10 @@ namespace SobekCM.Library.HTML
                         {
                             if (term_builder.Length > 0)
                                 term_builder.Append(",");
-                            term_builder.Append(thisTerm);
+                            if ( thisTerm.IndexOf(" ") > 0 )
+                                term_builder.Append("\"" + thisTerm + "\"");
+                            else
+                                term_builder.Append(thisTerm);
                         }
                         StringBuilder field_builder = new StringBuilder();
                         foreach (string thisField in output_fields)

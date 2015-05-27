@@ -1323,10 +1323,7 @@ namespace SobekCM.Library
                     }
                     else
                     {
-                        if (i != 0)
-                        {
-                            links.Add(0);
-                        }
+                        links.Add(0);
                     }
 
                     // Find the db field number
@@ -1422,7 +1419,7 @@ namespace SobekCM.Library
                                 }
                                 else
                                 {
-                                    switch (links[i])
+                                    switch (links[i-1])
                                     {
                                         case 0:
                                             searchBuilder.Append(" AND ");

@@ -1703,7 +1703,8 @@ namespace SobekCM.Resource_Object.Database
         /// <param name="ThisPackage"> Digital resource which needs to have its behaviors saved to the SobekCM database </param>
         /// <param name="TextFlag"> Flag indicates if this item has text files </param>
         /// <param name="Mass_Update_Mode"> Flag indicates if this is a mass-update mode, in which case all items within a single item group will be updated </param>
-        public static void Save_Behaviors(SobekCM_Item ThisPackage, bool TextFlag, bool Mass_Update_Mode)
+        /// <param name="Minimal_Mode"> Flag indicates if this is just additive with new viewers and setting the text flag</param>
+        public static void Save_Behaviors(SobekCM_Item ThisPackage, bool TextFlag, bool Mass_Update_Mode, bool Minimal_Mode )
         {
             // Get the source and holding codes
             string source_code = ThisPackage.Bib_Info.Source.Code;
@@ -1939,20 +1940,35 @@ namespace SobekCM.Resource_Object.Database
             }
             else
             {
+                if (Minimal_Mode)
+                {
+                    Save_Item_Behaviors_Minimal(ThisPackage.Web.ItemID, TextFlag, 
+                         view_type_ids[0], view_labels[0], view_attributes[0],
+                         view_type_ids[1], view_labels[1], view_attributes[1],
+                         view_type_ids[2], view_labels[2], view_attributes[2],
+                         view_type_ids[3], view_labels[3], view_attributes[3],
+                         view_type_ids[4], view_labels[4], view_attributes[4],
+                         view_type_ids[5], view_labels[5], view_attributes[5]);
 
 
+                    return;
+                }
+                else
+                {
 
-                Save_Item_Behaviors(ThisPackage.Web.ItemID, TextFlag, ThisPackage.Behaviors.Main_Thumbnail,
-                    ThisPackage.Behaviors.Main_Thumbnail.Replace("thm", ""), ip_restrict,
-                    ThisPackage.Behaviors.CheckOut_Required, darkFlag, ThisPackage.Tracking.Born_Digital, ThisPackage.Tracking.Disposition_Advice, ThisPackage.Tracking.Disposition_Advice_Notes,
-                    ThisPackage.Tracking.Material_Received_Date, ThisPackage.Tracking.Material_Rec_Date_Estimated, ThisPackage.Tracking.Tracking_Box, aggregationCodes[0], aggregationCodes[1], aggregationCodes[2], aggregationCodes[3], aggregationCodes[4], aggregationCodes[5], aggregationCodes[6],
-                    aggregationCodes[7], holding_code, source_code, icon1_name, icon2_name, icon3_name, icon4_name, icon5_name,
-                    view_type_ids[0], view_labels[0], view_attributes[0],
-                    view_type_ids[1], view_labels[1], view_attributes[1],
-                    view_type_ids[2], view_labels[2], view_attributes[2],
-                    view_type_ids[3], view_labels[3], view_attributes[3],
-                    view_type_ids[4], view_labels[4], view_attributes[4],
-                    view_type_ids[5], view_labels[5], view_attributes[5], ThisPackage.Behaviors.Left_To_Right);
+
+                    Save_Item_Behaviors(ThisPackage.Web.ItemID, TextFlag, ThisPackage.Behaviors.Main_Thumbnail,
+                        ThisPackage.Behaviors.Main_Thumbnail.Replace("thm", ""), ip_restrict,
+                        ThisPackage.Behaviors.CheckOut_Required, darkFlag, ThisPackage.Tracking.Born_Digital, ThisPackage.Tracking.Disposition_Advice, ThisPackage.Tracking.Disposition_Advice_Notes,
+                        ThisPackage.Tracking.Material_Received_Date, ThisPackage.Tracking.Material_Rec_Date_Estimated, ThisPackage.Tracking.Tracking_Box, aggregationCodes[0], aggregationCodes[1], aggregationCodes[2], aggregationCodes[3], aggregationCodes[4], aggregationCodes[5], aggregationCodes[6],
+                        aggregationCodes[7], holding_code, source_code, icon1_name, icon2_name, icon3_name, icon4_name, icon5_name,
+                        view_type_ids[0], view_labels[0], view_attributes[0],
+                        view_type_ids[1], view_labels[1], view_attributes[1],
+                        view_type_ids[2], view_labels[2], view_attributes[2],
+                        view_type_ids[3], view_labels[3], view_attributes[3],
+                        view_type_ids[4], view_labels[4], view_attributes[4],
+                        view_type_ids[5], view_labels[5], view_attributes[5], ThisPackage.Behaviors.Left_To_Right);
+                }
             }
 
             // Also, save the ticlers
@@ -2746,6 +2762,73 @@ namespace SobekCM.Resource_Object.Database
 
                 // Execute this non-query stored procedure
                 SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Behaviors", param_list);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                // Pass this exception onto the method to handle it
+                exception_caught("SobekCM_Save_Item_Behaviors", ee);
+                return false;
+            }
+        }
+
+        /// <summary> Saves the behaviors for a single item in a SobekCM digital library </summary>
+        /// <param name="ItemID">Item ID to associate these icons and downlaods with</param>
+        /// <param name="TextSearchable"> Flag indicates if this item is text searchable </param>
+        /// <param name="Viewer1_Type"> Primary key for the first viewer type in the SobekCM database </param>
+        /// <param name="Viewer1_Label"> Label to be displayed for the first viewer of this item </param>
+        /// <param name="Viewer1_Attributes"> Optional attributes for the first viewer of this item </param>
+        /// <param name="Viewer2_Type"> Primary key for the second viewer type in the SobekCM database </param>
+        /// <param name="Viewer2_Label"> Label to be displayed for the second viewer of this item </param>
+        /// <param name="Viewer2_Attributes"> Optional attributes for the second viewer of this item </param>
+        /// <param name="Viewer3_Type"> Primary key for the third viewer type in the SobekCM database </param>
+        /// <param name="Viewer3_Label"> Label to be displayed for the third viewer of this item </param>
+        /// <param name="Viewer3_Attributes"> Optional attributes for the third viewer of this item </param>
+        /// <param name="Viewer4_Type"> Primary key for the fourth viewer type in the SobekCM database </param>
+        /// <param name="Viewer4_Label"> Label to be displayed for the fourth viewer of this item </param>
+        /// <param name="Viewer4_Attributes"> Optional attributes for the fourth viewer of this item </param>
+        /// <param name="Viewer5_Type"> Primary key for the fifth viewer type in the SobekCM database </param>
+        /// <param name="Viewer5_Label"> Label to be displayed for the fifth viewer of this item </param>
+        /// <param name="Viewer5_Attributes"> Optional attributes for the fifth viewer of this item </param>
+        /// <param name="Viewer6_Type"> Primary key for the sixth viewer type in the SobekCM database </param>
+        /// <param name="Viewer6_Label"> Label to be displayed for the sixth viewer of this item </param>
+        /// <param name="Viewer6_Attributes"> Optional attributes for the sixth viewer of this item </param>
+        /// <remarks> This method calls the stored procedure 'SobekCM_Save_Item_Behaviors'. </remarks>
+        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
+        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
+        protected static bool Save_Item_Behaviors_Minimal(int ItemID, bool TextSearchable, 
+            int Viewer1_Type, string Viewer1_Label, string Viewer1_Attributes, int Viewer2_Type, string Viewer2_Label, string Viewer2_Attributes,
+            int Viewer3_Type, string Viewer3_Label, string Viewer3_Attributes, int Viewer4_Type, string Viewer4_Label, string Viewer4_Attributes,
+            int Viewer5_Type, string Viewer5_Label, string Viewer5_Attributes, int Viewer6_Type, string Viewer6_Label, string Viewer6_Attributes)
+        {
+            try
+            {
+                // Build the parameter list
+                SqlParameter[] param_list = new SqlParameter[20];
+                param_list[0] = new SqlParameter("@ItemID", ItemID);
+                param_list[1] = new SqlParameter("@TextSearchable", TextSearchable);
+                param_list[2] = new SqlParameter("@Viewer1_TypeID", Viewer1_Type);
+                param_list[3] = new SqlParameter("@Viewer1_Label", Viewer1_Label);
+                param_list[4] = new SqlParameter("@Viewer1_Attribute", Viewer1_Attributes);
+                param_list[5] = new SqlParameter("@Viewer2_TypeID", Viewer2_Type);
+                param_list[6] = new SqlParameter("@Viewer2_Label", Viewer2_Label);
+                param_list[7] = new SqlParameter("@Viewer2_Attribute", Viewer2_Attributes);
+                param_list[8] = new SqlParameter("@Viewer3_TypeID", Viewer3_Type);
+                param_list[9] = new SqlParameter("@Viewer3_Label", Viewer3_Label);
+                param_list[10] = new SqlParameter("@Viewer3_Attribute", Viewer3_Attributes);
+                param_list[11] = new SqlParameter("@Viewer4_TypeID", Viewer4_Type);
+                param_list[12] = new SqlParameter("@Viewer4_Label", Viewer4_Label);
+                param_list[13] = new SqlParameter("@Viewer4_Attribute", Viewer4_Attributes);
+                param_list[14] = new SqlParameter("@Viewer5_TypeID", Viewer5_Type);
+                param_list[15] = new SqlParameter("@Viewer5_Label", Viewer5_Label);
+                param_list[16] = new SqlParameter("@Viewer5_Attribute", Viewer5_Attributes);
+                param_list[17] = new SqlParameter("@Viewer6_TypeID", Viewer6_Type);
+                param_list[18] = new SqlParameter("@Viewer6_Label", Viewer6_Label);
+                param_list[19] = new SqlParameter("@Viewer6_Attribute", Viewer6_Attributes);
+
+                // Execute this non-query stored procedure
+                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Behaviors_Minimal", param_list);
 
                 return true;
             }

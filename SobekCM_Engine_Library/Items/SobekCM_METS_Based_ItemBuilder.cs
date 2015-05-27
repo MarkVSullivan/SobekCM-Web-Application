@@ -1118,23 +1118,24 @@ namespace SobekCM.Engine_Library.Items
 				//}
 			}
 
-			// Look for the RELATED IMAGES view next
-			if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))
-			{
-				Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.RELATED_IMAGES]);
-				viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
-			}
-
-			// Look for the PAGE TURNER view next
-			if (viewsFromDb.ContainsKey(View_Enum.PAGE_TURNER))
-			{
-				Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.PAGE_TURNER]);
-				viewsFromDb.Remove(View_Enum.PAGE_TURNER);
-			}
-
 			// Finally, add all the ITEM VIEWS
 			if ((Package_To_Finalize.Web.Pages_By_Sequence != null) && (Package_To_Finalize.Web.Pages_By_Sequence.Count > 0))
 			{
+                // Look for the RELATED IMAGES view next
+                if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))
+                {
+                    Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.RELATED_IMAGES]);
+                    viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
+                }
+
+                // Look for the PAGE TURNER view next
+                if (viewsFromDb.ContainsKey(View_Enum.PAGE_TURNER))
+                {
+                    Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.PAGE_TURNER]);
+                    viewsFromDb.Remove(View_Enum.PAGE_TURNER);
+                }
+
+                // Add the individual PAGE VIEWS
 				foreach (View_Object thisObject in viewsFromDb.Values)
 				{
 					switch (thisObject.View_Type)

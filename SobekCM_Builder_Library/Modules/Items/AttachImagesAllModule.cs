@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using SobekCM.Resource_Object.Behaviors;
+using SobekCM.Resource_Object.Divisions;
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
@@ -18,14 +21,34 @@ namespace SobekCM.Builder_Library.Modules.Items
                 string filename_sans_extension = Path.GetFileNameWithoutExtension(thisFile);
                 string extension = Path.GetExtension(thisFile).ToLower().Replace(".", "");
 
-                // Try to just always add it
-                Resource.Metadata.Divisions.Physical_Tree.Add_File(filename);
-
                 // Also, check to see if this is a jpeg or jpeg2000
                 if (extension == "jp2")
+                {
+                    // Try to just always add JPEG2000s
+                    Resource.Metadata.Divisions.Physical_Tree.Add_File(filename);
                     jpeg2000_added = true;
+                }
                 if (extension == "jpg")
-                    jpeg_added = true;
+                {
+                    // If this is a thumbnail jpeg, only add if a regular JPEG or JP2000 exists
+                    // Otherwise, it is likely just a thumbnail for a PDF or PPT file or something
+                    if (filename.IndexOf("thm.jpg", StringComparison.OrdinalIgnoreCase) > 0)
+                    {
+                        string possible_jpeg = thisFile.ToLower().Replace("thm.jpg", ".jpg");
+                        string possible_jpeg2000 = thisFile.ToLower().Replace("thm.jpg", "jp2");
+
+                        if ((File.Exists(possible_jpeg)) || (File.Exists(possible_jpeg2000)))
+                        {
+                            Resource.Metadata.Divisions.Physical_Tree.Add_File(filename);
+                        }
+                    }
+                    else
+                    {
+                        // Non thumbnail, so go ahead and add it
+                        Resource.Metadata.Divisions.Physical_Tree.Add_File(filename);
+                        jpeg_added = true;
+                    }
+                }
             }
 
             // Ensure proper views are attached to this item
@@ -42,6 +65,22 @@ namespace SobekCM.Builder_Library.Modules.Items
                 else
                 {
                     Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
+                }
+            }
+
+            // THIS IS A TEMPORARY FIX FOR THUMBNAILS ACCIDENTALLY ADDED
+            List<abstract_TreeNode> allPages = Resource.Metadata.Divisions.Physical_Tree.Pages_PreOrder;
+            List<Page_TreeNode> deletePages = new List<Page_TreeNode>();
+            foreach (Page_TreeNode thisPage in allPages)
+            {
+                // If there is only one file attached, look for the thumbnails
+                if (thisPage.Files.Count == 1)
+                {
+                    // If the only file is a thumbnail, just CLEAR this page.  That should
+                    // cause the page to be skipped
+                    string fileName = thisPage.Files[0].System_Name;
+                    if (fileName.IndexOf("thm.jpg", StringComparison.OrdinalIgnoreCase) > 0)
+                        thisPage.Files.Clear();
                 }
             }
 

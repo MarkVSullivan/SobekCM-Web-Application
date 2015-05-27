@@ -76,7 +76,12 @@ namespace SobekCM.Library.MySobekViewer
             isProject = item.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project;
 
 	        string template_code = RequestSpecificValues.Current_User.Edit_Template_Code_Simple;
-            if ((isProject) || (item.Contains_Complex_Content) || (item.Using_Complex_Template))
+
+            if ((item.Contains_Complex_Content) || (item.Using_Complex_Template))
+            {
+                template_code = RequestSpecificValues.Current_User.Edit_Template_Code_Complex;
+            }
+            if (isProject)
             {
                 template_code = "standard_project";
                 completeTemplate = Template_MemoryMgmt_Utility.Retrieve_Template(template_code, RequestSpecificValues.Tracer);
@@ -321,14 +326,14 @@ namespace SobekCM.Library.MySobekViewer
 			            else
 			            {
 			                Output.Write("      <li>You are using the full editing form.  Click");
-			                Output.Write("<a href=\"#\" onclick=\"editmetadata_simplify();return false;\">here to return to the simplified version</a>.");
+			                Output.Write("<a href=\"#\" onclick=\"editmetadata_simplify();return false;\"> here to return to the simplified version</a>.");
 			                Output.WriteLine("</li>");
 			            }
 			        }
 			        else
 			        {
 			            Output.WriteLine("      <li>You are using the simplified editing form.  Click");
-			            Output.Write("<a href=\"#\" onclick=\"editmetadata_complicate();return false;\">here to use the full form</a>.");
+			            Output.Write("<a href=\"#\" onclick=\"editmetadata_complicate();return false;\"> here to use the full form</a>.");
 			            Output.WriteLine("</li>");
 			        }
 

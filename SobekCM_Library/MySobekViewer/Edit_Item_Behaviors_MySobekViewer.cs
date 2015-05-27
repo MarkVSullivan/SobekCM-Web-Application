@@ -100,7 +100,7 @@ namespace SobekCM.Library.MySobekViewer
                 completeTemplate.Save_To_Bib(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_User, 1);
 
                 // Save the behaviors
-                SobekCM_Database.Save_Behaviors(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_Item.Behaviors.Text_Searchable, false );
+                SobekCM_Database.Save_Behaviors(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_Item.Behaviors.Text_Searchable, false, false );
 
                 // Save the serial hierarchy as well (sort of a behavior)
                 SobekCM_Database.Save_Serial_Hierarchy_Information(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_Item.Web.GroupID, RequestSpecificValues.Current_Item.Web.ItemID);

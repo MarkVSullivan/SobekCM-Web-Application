@@ -136,7 +136,7 @@ namespace SobekCM.Library.HTML
                     break;
 
                 case Admin_Type_Enum.Default_Metadata:
-                    if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 1)
+                    if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) && ( RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 1 ))
                     {
                         string project_code = RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(1);
                         RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Checking cache for valid project file");
@@ -406,7 +406,7 @@ namespace SobekCM.Library.HTML
             }
 
             // If editing projects, add the mySobek stylesheet as well
-            if ((RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Default_Metadata) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0))
+            if ((RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Default_Metadata) && ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)))
             {
                 Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Metadata_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
             }

@@ -97,7 +97,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules
 		/// <summary> Clears the list of committee members </summary>
 		public void Clear_Committee_Members()
 		{
-			committeeMember.Clear();
+            if ( committeeMember != null )
+    			committeeMember.Clear();
 		}
 
 		/// <summary> Adds the name for a single committee member </summary>
