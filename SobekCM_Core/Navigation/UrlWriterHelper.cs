@@ -1022,21 +1022,21 @@ namespace SobekCM.Core.Navigation
                             {
                                 if (!String.IsNullOrEmpty(adjusted_aggregation))
                                 {
-                                    if (Current_Mode.Sort == 0)
+                                    if ((!Current_Mode.Sort.HasValue) || (Current_Mode.Sort == 0))
                                         return this_base_url + adjusted_aggregation + "/inprocess/" + Current_Mode.Page + urlOptions1;
                                     return this_base_url + adjusted_aggregation + "/inprocess/" + Current_Mode.Page + "?o=" + Current_Mode.Sort + urlOptions2;
                                 }
-                                if (Current_Mode.Sort == 0)
+                                if ((!Current_Mode.Sort.HasValue) || (Current_Mode.Sort == 0))
                                     return this_base_url + "inprocess/" + Current_Mode.Page + urlOptions1;
                                 return this_base_url + "inprocess/" + Current_Mode.Page + "?o=" + Current_Mode.Sort + urlOptions2;
                             }
                             if (!String.IsNullOrEmpty(adjusted_aggregation))
                             {
-                                if (Current_Mode.Sort == 0)
+                                if ((!Current_Mode.Sort.HasValue) || (Current_Mode.Sort == 0))
                                     return this_base_url + adjusted_aggregation + "/inprocess" + urlOptions1;
                                 return this_base_url + adjusted_aggregation + "/inprocess?o=" + Current_Mode.Sort + urlOptions2;
                             }
-                            if (Current_Mode.Sort == 0)
+                            if ((!Current_Mode.Sort.HasValue) || (Current_Mode.Sort == 0))
                                 return this_base_url + "inprocess" + urlOptions1;
                             return this_base_url + "inprocess?o=" + Current_Mode.Sort + urlOptions2;
 

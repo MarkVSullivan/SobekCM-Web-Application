@@ -70,7 +70,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Determine if there is an specific IP address range for editing
             int index = -1;
-            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
+            if ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
             {
                 if ( !Int32.TryParse(RequestSpecificValues.Current_Mode.My_Sobek_SubMode, out index ))
                     index = -1;

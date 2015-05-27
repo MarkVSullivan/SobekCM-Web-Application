@@ -41,7 +41,7 @@ namespace SobekCM.Library.MySobekViewer
         public override string Web_Title
         {
             get {
-                return RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length == 0 ? "My Descriptive Tags" : "Descriptive Tags";
+                return String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode) ? "My Descriptive Tags" : "Descriptive Tags";
             }
         }
 
@@ -56,7 +56,7 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine();
 
             Output.WriteLine("<div class=\"SobekHomeText\">");
-            string submode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+            string submode = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode) ? String.Empty : RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 
             // Is this either a sys admin or a collection admin/manager
             if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_A_Collection_Manager_Or_Admin))

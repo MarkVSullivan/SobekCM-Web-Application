@@ -181,7 +181,7 @@ namespace SobekCM.Library.HTML
                         int start_year = DateTime.Now.Year;
                         int end_month = DateTime.Now.Month;
                         int end_year = DateTime.Now.Year;
-                        if (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 12)
+                        if ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode)) && (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 12))
                         {
                             Int32.TryParse(RequestSpecificValues.Current_Mode.Info_Browse_Mode.Substring(0, 4), out start_year);
                             Int32.TryParse(RequestSpecificValues.Current_Mode.Info_Browse_Mode.Substring(4, 2), out start_month);
