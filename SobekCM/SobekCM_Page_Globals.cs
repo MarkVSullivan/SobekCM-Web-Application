@@ -380,7 +380,7 @@ namespace SobekCM
 			}
 
 			// Browse are okay, except when it is the NEW
-			if ((CurrentModeCheck.Mode == Display_Mode_Enum.Aggregation) && (CurrentModeCheck.Aggregation_Type == Aggregation_Type_Enum.Browse_Info) && (CurrentModeCheck.Info_Browse_Mode == "new"))
+            if ((CurrentModeCheck.Mode == Display_Mode_Enum.Aggregation) && (CurrentModeCheck.Aggregation_Type == Aggregation_Type_Enum.Browse_Info) && (!String.IsNullOrEmpty(CurrentModeCheck.Info_Browse_Mode)) && (CurrentModeCheck.Info_Browse_Mode == "new"))
 			{
 				CurrentModeCheck.Info_Browse_Mode = "all";
 
@@ -480,7 +480,7 @@ namespace SobekCM
 						}
 						else if (url_relative_depth == 2)
 						{
-							if (url_relative_info[1] != "itemcount")
+							if (( url_relative_info != null ) && (url_relative_info.Length > 1 ) && ( url_relative_info[1] != "itemcount"))
 							{
 								HttpContext.Current.Response.Status = "301 Moved Permanently";
 								HttpContext.Current.Response.AddHeader("Location", UrlWriterHelper.Redirect_URL(CurrentModeCheck));
@@ -497,7 +497,7 @@ namespace SobekCM
 			if ((CurrentModeCheck.Mode == Display_Mode_Enum.Aggregation) && ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Home) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit)))
 			{
 				// Different code depending on if this is an aggregation or not
-				if ((CurrentModeCheck.Aggregation.Length == 0) || (CurrentModeCheck.Aggregation == "all"))
+				if (( String.IsNullOrEmpty(CurrentModeCheck.Aggregation)) || (CurrentModeCheck.Aggregation == "all"))
 				{
 					switch (CurrentModeCheck.Home_Type)
 					{
@@ -549,7 +549,8 @@ namespace SobekCM
 			// Ensure this is requesting the item without a viewercode and without extraneous information
 			if (CurrentModeCheck.Mode == Display_Mode_Enum.Item_Display)
 			{
-				if ((CurrentModeCheck.ViewerCode.Length > 0) || (url_relative_depth > 2))
+				if (( !String.IsNullOrEmpty(CurrentModeCheck.ViewerCode)) || (url_relative_depth > 2))
+
 				{
 					CurrentModeCheck.ViewerCode = String.Empty;
 

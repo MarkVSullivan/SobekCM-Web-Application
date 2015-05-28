@@ -222,8 +222,7 @@ namespace SobekCM.Resource_Object.Utilities
 
 
 						// Get the date for this file and the date for the QC files, if they exist
-						if (((!File.Exists(rootName + ".QC.jpg")) || (!File.Exists(rootName + ".jpg")) || (!File.Exists(rootName + "thm.jpg")))
-							|| (File.GetLastWriteTime(rootName + ".QC.jpg").CompareTo(File.GetLastWriteTime(tifFile)) < 0)
+						if (((!File.Exists(rootName + ".jpg")) || (!File.Exists(rootName + "thm.jpg")))
 							|| (File.GetLastWriteTime(rootName + ".jpg").CompareTo(File.GetLastWriteTime(tifFile)) < 0))
 						{
 							// We'll do the processing on our local machine to avoid pulling the data from the SAN multiple times
