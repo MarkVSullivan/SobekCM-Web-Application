@@ -141,7 +141,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // Get the current page number, or default to 1
             page = 1;
-            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
             {
                 if ((RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "preview") || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "marc") || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "mets"))
                 {
@@ -367,7 +367,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
 			int page_iterator = 1;
-			string current_submode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+	        string current_submode = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode) ? String.Empty : RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 			if (current_submode.Length == 0)
 				current_submode = "1";
 			while (page_iterator <= completeTemplate.InputPages.Count)

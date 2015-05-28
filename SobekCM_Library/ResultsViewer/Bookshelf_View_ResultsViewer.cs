@@ -109,7 +109,7 @@ namespace SobekCM.Library.ResultsViewer
 
             // Add the actions as the first column
             resultsBldr.Append("\t\t<td class=\"SobekFolderActionLink\" width=\"170px\" >( ");
-            resultsBldr.Append("<a title=\"Remove this item from your bookshelf\" href=\"javascript:remove_item( '" + identifier + "' );\">remove</a> | ");
+            resultsBldr.Append("<a title=\"Remove this item from your bookshelf\" href=\"\" onclick=\"return remove_item( '" + identifier + "' );\">remove</a> | ");
             resultsBldr.Append("<a title=\"Move this item to a new bookshelf\" href=\"\" name=\"item_move_" + index_in_page + "\" id=\"item_move_" + index_in_page + "\" onclick=\"return move_form_open('item_move_" + index_in_page + "', '" + identifier + "' );\">move</a> | ");
             resultsBldr.Append("<a title=\"Send this item to a friend\" href=\"\" name=\"item_send_" + index_in_page + "\" id=\"item_send_" + index_in_page + "\" onclick=\"return email_form_open('item_send_" + index_in_page + "', '" + identifier + "' );\">send</a>");
 

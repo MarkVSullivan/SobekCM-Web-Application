@@ -275,13 +275,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (current_page > 1)
                 {
                     RequestSpecificValues.Current_Mode.Page = 1;
-                    Output.WriteLine("    &nbsp; &nbsp; &nbsp; <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/first_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + first_page + "\" /></a> &nbsp; ");
+                    Output.WriteLine("    &nbsp; &nbsp; &nbsp; <button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + Static_Resources.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + first_page + " </button>&nbsp;");
+
                     RequestSpecificValues.Current_Mode.Page = (ushort)(current_page - 1);
-                    Output.WriteLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/previous_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + previous_page + "\" /></a>");
+                    Output.WriteLine("    <button title=\"" + previous_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + previous_page + " </button>");
                 }
                 else
                 {
-                    Output.WriteLine("    <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/no_button_spacer.gif\" />");
+                    Output.WriteLine("    <div style=\"width:160px\">&nbsp;</div>");
                 }
                 Output.WriteLine("  </span>");
 
@@ -294,14 +295,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (current_page < pages)
                 {
                     RequestSpecificValues.Current_Mode.Page = (ushort)(current_page + 1);
-                    Output.WriteLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/next_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + next_page + "\" /></a>&nbsp;");
+                    Output.WriteLine("    <button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"> " + next_page + " <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+
                     RequestSpecificValues.Current_Mode.Page = pages;
-                    Output.WriteLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/last_button" + language_suffix + ".gif\" border=\"0\" alt=\"" + last_page + "\" /></a> &nbsp; &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"" + last_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"> " + last_page + " <img src=\"" + Static_Resources.Button_Last_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                 }
                 else
                 {
-                    Output.WriteLine("    <img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.HTML_Skin.Base_Skin_Code + "/buttons/no_button_spacer.gif\" />");
+                    Output.WriteLine("    <div style=\"width:160px\">&nbsp;</div>");
                 }
+
                 Output.WriteLine("  </span>");
                 RequestSpecificValues.Current_Mode.Page = current_page;
 

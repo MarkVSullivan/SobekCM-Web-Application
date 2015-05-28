@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -377,7 +378,7 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
-				if ((RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("0.2") == 0))
+				if ((RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("0.2") == 0))
 					return "container-inner1000";
 
 				if ((RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Behaviors) ||
