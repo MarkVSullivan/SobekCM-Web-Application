@@ -31,10 +31,10 @@ namespace SobekCM.Engine_Library.Settings
 
         /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
         // DO NOT CHANGE THIS LINE.. THIS IS READ BY THE CODE DOCUMENTATION BUILDING TASK
-        private const string CURRENT_WEB_VERSION = "4.8.9B";
+        private const string CURRENT_WEB_VERSION = "4.8.10";
 
         /// <summary> Current version number associated with this SobekCM builder application </summary>
-        private const string CURRENT_BUILDER_VERSION = "4.8.9B"; 
+        private const string CURRENT_BUILDER_VERSION = "4.8.10"; 
 
         /// <summary> Number of ticks that a complete package must age before being processed </summary>
         /// <value> This is currently set to 15 minutes (in ticks) </value>
@@ -252,6 +252,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "Application Server Network", SettingsObject, X => X.Application_Server_Network, ref error);
                 Get_String_Value(settingsDictionary, "Application Server URL", SettingsObject, X => X.Application_Server_URL, ref error);
                 Get_String_Value(settingsDictionary, "Archive DropBox", SettingsObject, X => X.Archive_DropBox, ref error);
+                Get_Boolean_Value(settingsDictionary, "Builder Add PageTurner ItemViewer", SettingsObject, X => X.Builder_Add_PageTurner_ItemViewer, ref error, false);
                 Get_String_Value(settingsDictionary, "Builder IIS Logs Directory", SettingsObject, X => X.Builder_IIS_Logs_Directory, ref error);
                 Get_Integer_Value(settingsDictionary, "Builder Log Expiration in Days", SettingsObject, X => X.Builder_Log_Expiration_Days, ref error, 10);
                 Get_Integer_Value(settingsDictionary, "Builder Seconds Between Polls", SettingsObject, X => X.Builder_Seconds_Between_Polls, ref error, 60);

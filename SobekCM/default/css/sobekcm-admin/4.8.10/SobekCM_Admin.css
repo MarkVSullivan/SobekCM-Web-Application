@@ -416,7 +416,7 @@ select.sbkWav_medium_input  {  width: 250px;  margin-right: 10px; margin-top: 6p
 
 /** Manage_Menu_AggregationViewer **/
 .sbkMmav_MainArea { BORDER-WIDTH: 0;COLOR: #222222; BACKGROUND-COLOR: #ffffff; TEXT-ALIGN: left;  }
-#sbkMmav_MainTable { margin: 30px 40px 20px 80px;border-collapse: collapse;border: 0px;}
+#sbkMmav_MainTable { margin: 30px 40px 20px 80px;border-collapse: collapse;border: 0;text-align: left;}
 #sbkMmav_MainTable tr { vertical-align: top; margin-bottom: 20px; }
 .sbkMmav_HeaderRow { font-size: 1.20em; }
 .sbkMmav_HeaderRow td {padding-bottom: 30px;  }

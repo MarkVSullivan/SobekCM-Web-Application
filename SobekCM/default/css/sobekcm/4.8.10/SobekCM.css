@@ -473,23 +473,6 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
     float: right; height: 25px;
 }
 
-/** Used for top-level static pages     */
-#sbkWchs_Panel A:link {	color: Blue; }
-#sbkWchs_Panel A:hover { color: Blue; text-decoration:underline; }
-#sbkWchs_Panel A:visited { 	color: Purple; }
-#sbkWchs_Panel { WIDTH: 900px; TEXT-ALIGN: left; font-size: small; }
-#sbkWchs_MainTd { vertical-align:top;text-align: center; }
-.sbkWchs_Breadcrumbs {color:#888888;font-size:0.8em;}
-.sbkWchs_Breadcrumbs a {color:#888888; text-decoration:none;}
-.sbkWchs_Breadcrumbs a:visited {color:#888888; text-decoration:none; }
-.sbkWchs_Breadcrumbs a:hover {color:Purple; text-decoration:underline;}
-.sbkWchs_SiteMapTree { FONT-WEIGHT: bold; FONT-SIZE: 11px; COLOR: Blue;  WIDTH: 100%; FONT-FAMILY: Arial, Helvetica, sans-serif; BACKGROUND-COLOR: #ffffff; text-decoration:none; text-align: left; }
-.sbkWchs_SiteMapTree A:link { TEXT-DECORATION: none; color:#555;  }
-.sbkWchs_SiteMapTree A:visited { TEXT-DECORATION: none; color:#555;  }
-.sbkWchs_SiteMapNoLink { color:#555; } 
-.sbkWchs_SiteMapTree td div {height: 20px !important }
-
-
 /* This allows visited links to appear visited in the results panel, but not the sort text */
 .SobekResultsPanel A:link {	color: Blue; }
 .SobekResultsPanel A:hover { color: Blue; text-decoration:underline; }
@@ -598,6 +581,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
     padding: 0;
     width: 32px;
     height: 32px;
+    display: inline-block;
 }
 
 
@@ -608,6 +592,7 @@ A:hover { COLOR: #00a; TEXT-DECORATION: underline; }
     padding: 0;
     width: 32px;
     height: 32px;
+    display: inline-block;
 }
 
 .shown_progress_gray
@@ -862,10 +847,12 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 #sbkAghsw_EditableHomeLink { float: right; vertical-align:text-top;padding-right: 15px;display: none; }
 #sbkAghsw_HomeEditButtons { float: right;padding: 10px 10px 0 0; }
 #sbkAghsw_HomeTypeLinks { margin-left: 450px;}
-#sbkAghsw_CollectionButtonTbl { width: 750px;border: 0;text-align: center; border-collapse: separate; border-spacing: 5px;margin-left: 15px; }
-.sbkAghsw_CollectionButton { text-align:left;width:203px;padding:5px;}
+#sbkAghsw_CollectionButtonList {margin: 0;padding: 0; list-style-type: none;width: 100%;vertical-align: top; }
+.sbkAghsw_CollectionButtonList {margin: 0;padding: 0; list-style-type: none;width: 100%;vertical-align: top; }
+.sbkAghsw_CollectionButton { text-align:left; width:220px; padding:5px 5px 5px 5px; display: inline-block; margin: 0 5px 10px 0;vertical-align: top; }
+.sbkAghsw_CollectionButton:hover { background-color: #e7e7e7; }
 .sbkAghsw_CollectionButtonImg { float:left;margin:0 5px 0 0; }
-.sbkAghsw_CollectionButtonTxt {color: black; text-align: left; font-size: 1.05em;  }
+.sbkAghsw_CollectionButtonTxt { color: black; text-align: left; font-size: 1.05em;  }
 .sbkAghsw_CollectionButtonTxt a:link {color: black;}
 .sbkAghsw_CollectionButtonTxt a:visited {color: black;}
 .sbkAghsw_CollectionButtonTxt a:hover {color: black;}
@@ -891,19 +878,18 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 
 
 /** Basic_Search_AggregationViewer (and related) **/
-#sbkBsav_SearchPanel { width:100%;}
+#sbkBsav_SearchPanel { text-align: left; padding-left: 60px;margin-top: 30px;padding-bottom: 20px; }
 #sbkBsav_SearchPanel_Years { width:100%;}
 #sbkBsav_SearchPanel tr { text-align:left;}
-#sbkBsav_SearchPrompt { font-weight:bold;}
+#sbkBsav_SearchPrompt { font-weight:bold; text-align:right;display: inline-block; margin-right: 10px; }
 #sbkBsav_SearchYearPrompt { font-weight:bold;}
 .sbkBsav_YearDropDown { width:80px;}
-.sbkBsav_SearchBox { width:422px;}
-#sbkFtsav_SearchPanel { height: 70px; }
-#sbkFtsav_SearchPanel tr { text-align:left;}
-#sbkDsav_SearchPanel { height: 80px;padding-top: 10px; }
-#sbkDsav_SearchPanel { height: 80px;padding-top: 10px; }tr { text-align:left;}
-#sbkNsav_SearchPanel { height: 45px;width:100%;padding-bottom: 15px; }
-#sbkNsav_SearchPanel tr { text-align:left;}
+.sbkBsav_SearchBox { width:422px; margin-right: 10px; }
+#sbkBsav_PrivateCheck { padding-left: 130px;padding-bottom: 20px; }
+#sbkBsav_MimeType { padding-left: 130px;padding-bottom: 20px; }
+#sbkFtsav_SearchPanel { text-align: left; padding-left: 60px;margin-top: 30px; padding-bottom: 20px; }
+#sbkDsav_SearchPanel { height: 80px;padding-top: 10px;text-align:left; }
+#sbkNsav_SearchPanel { height: 45px;width:100%;padding-bottom: 15px; text-align:left;}
 .sbkNsav_SearchBox { width:340px;}
 .sbkNsav_DropDownList { width:128px;}
 
@@ -940,6 +926,17 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 .sbkMebv_ResultsPanel a:link { color:blue;}
 .sbkMebv_ResultsPanel a:hover { color:blue;text-decoration:underline;}
 .sbkMebv_ResultsPanel a:visited { color:purple;}
+
+/** Brief Results Viewer */
+.sbkBrv_SingleResult { background-color: White; cursor: pointer; vertical-align: top;padding: 12px 10px 5px 10px; border-bottom: 2px solid #e7e7e7; }
+.sbkBrv_SingleResult:hover { background-color: #efefef; }
+.sbkBrv_SingleResultNum { font-weight: bold;display: inline-block; vertical-align: top;padding-top: 5px; }
+.sbkBrv_SingleResultThumb { width: 150px; display: inline-block; vertical-align: top; padding: 5px; }
+.sbkBrv_SingleResultDesc { display: inline-block; vertical-align: top;padding-top: 2px; }
+.sbkBrv_SingleResultDesc table { padding-top: 0;margin-top: 0; }
+.sbkBrv_SingleResultDescList { line-height: 150%; }
+.sbkBrv_SingleResultDescList dt { float: left; width: 140px; }
+.sbkBrv_SingleResultDescList dd { margin-left: 150px; }
 
 
 .sbkMebv_NavRow
@@ -1011,6 +1008,11 @@ textarea.sbkSbia_HeaderTextArea {width: 400px; color:Blue; border-style:solid; b
 #sbkWchs_Panel A:hover { color: Blue; text-decoration:underline; }
 #sbkWchs_Panel A:visited { 	color: Purple; }
 #sbkWchs_Panel { WIDTH: 900px; TEXT-ALIGN: left; font-size: small; }
+#sbkWchs_InnerPanel { padding: 3px 3px 28px 3px; }
+#sbkWchs_InnerPanel { padding: 3px 3px 3px 3px; }
+#sbkWchs_InnerPanelEditable { padding: 3px 3px 28px 3px; }
+#sbkWchs_InnerPanelEditable:hover {padding: 0 0 25px 0; border: 3px solid #cccccc; }
+#sbkWchs_EditableLink { float: right; vertical-align:text-top;padding-right: 15px;display: none; }
 #sbkWchs_MainTd { vertical-align:top;text-align: center; }
 .sbkWchs_Breadcrumbs {color:#888888;font-size:0.8em;}
 .sbkWchs_Breadcrumbs a {color:#888888; text-decoration:none;}
@@ -1024,6 +1026,15 @@ textarea.sbkSbia_HeaderTextArea {width: 400px; color:Blue; border-style:solid; b
 
 /** Class used for all administrative boxes which take focus */
 .sbk_Focusable:focus { color:#0000a8; background-color: #fbf7b4; }
+
+/** Class to hide some stuff **/
+.hidden-element {
+  position: absolute !important;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  overflow: hidden;
+  height: 1px;
+}
 
 /** Classes used for the superfish menu system */
 .sbkMenu_Bar {padding:0;margin:0;width:100%;background-color:#7d90d5;font-size:12px;color:#FFFFFF;vertical-align:bottom;display:inline-block;text-align:left;}
@@ -1052,7 +1063,7 @@ textarea.sbkSbia_HeaderTextArea {width: 400px; color:Blue; border-style:solid; b
 .sf-arrows ul li > .sf-with-ul:focus:after,.sf-arrows ul li:hover > .sf-with-ul:after,.sf-arrows ul .sfHover > .sf-with-ul:after {border-left-color:white;}
 .action-sf-menu-item {padding:6px 10px 6px 0;text-decoration:none;height:18px;cursor:pointer;margin-right:5px;}
 #menu-right-actions {float:right;color:white;text-transform:uppercase;font-weight:bold;padding:6px 0 0 0;margin:0;}
-#selected-sf-menu-item,.selected-sf-menu-item {text-decoration:none;background-color:#0021a6;border-right:1px solid #fff;height:14px;text-decoration:none;zoom:1;padding:6px 9px;color:white;border-top:none;margin:0;}
+#selected-sf-menu-item,.selected-sf-menu-item {text-decoration:none;background-color:#0021a6 !important;border-right:1px solid #fff;height:14px;text-decoration:none;zoom:1;padding:6px 9px;color:white;border-top:none;margin:0;}
 #selected-sf-menu-item-link,.selected-sf-menu-item-link {background-color:#0021a6 !important;height:26px;margin:0;padding:0;}
 .submenu-item-selected { height: 35px; }
 

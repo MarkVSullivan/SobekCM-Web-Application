@@ -48,8 +48,10 @@ namespace SobekCM.Engine_Library.Skins
         /// <summary> Builds the complete web skin object </summary>
         /// <param name="Skin_Row"> Row for this web skin, from the database query </param>
         /// <returns> Complete web skin </returns>
-	    public static Complete_Web_Skin_Object Build_Skin_Complete(DataRow Skin_Row)
+	    public static Complete_Web_Skin_Object Build_Skin_Complete(DataRow Skin_Row, Custom_Tracer Tracer )
 	    {
+            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin_Complete", "Building the complete web skin from the row and design files");
+
             // Pull values out from this row
             string code = Skin_Row["WebSkinCode"].ToString();
             string base_interface = Skin_Row["BaseInterface"].ToString();
@@ -57,6 +59,9 @@ namespace SobekCM.Engine_Library.Skins
             string banner_link = Skin_Row["BannerLink"].ToString();
             string notes = Skin_Row["Notes"].ToString();
             string this_style = code + ".css";
+
+            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin_Complete", "Verifying existence of the CSS file");
+
             if (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + code + "\\" + this_style))
                 this_style = String.Empty;
 
@@ -75,9 +80,16 @@ namespace SobekCM.Engine_Library.Skins
                 completeSkin.Banner_Link = banner_link;
 
             // Look for source files
+            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin_Complete", "Look for all the source files in the design folder");
+
 	        string html_soure_directory = Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + code + "/html";
+
+            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin_Complete", "Design folder = " + html_soure_directory  );
+
             if (Directory.Exists(html_soure_directory))
             {
+                if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin_Complete", "Building the dictionary of language-specific headers and footers");
+
                 string[] possible_header_files = Directory.GetFiles(html_soure_directory, "*.htm*");
                 foreach (string thisHeaderFile in possible_header_files)
                 {
@@ -222,6 +234,10 @@ namespace SobekCM.Engine_Library.Skins
                     }
                 }
             }
+            else
+            {
+                if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin_Complete", "Unable to find the design folder!");
+            }
             
             // Look for banners as well
 	        if (override_banner)
@@ -270,6 +286,8 @@ namespace SobekCM.Engine_Library.Skins
 	            }
 	        }
 
+            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin_Complete", "Return the built complete web skin");
+
 	        return completeSkin;
 	    }
 
@@ -282,8 +300,8 @@ namespace SobekCM.Engine_Library.Skins
 	    /// application startup and is then stored in the <see cref="SobekCM_Skin_Collection"/> class until needed. </remarks>
 	    public static Web_Skin_Object Build_Skin(DataRow Skin_Row, string Language_Code)
 	    {
-	        Complete_Web_Skin_Object completeSkinObject = Build_Skin_Complete(Skin_Row);
-	        return Build_Skin(completeSkinObject, Language_Code);
+	        Complete_Web_Skin_Object completeSkinObject = Build_Skin_Complete(Skin_Row, null);
+	        return Build_Skin(completeSkinObject, Language_Code, null);
 	    }
 
         /// <summary> Builds a language-specific <see cref="SobekCM_Skin_Object"/> when needed by a user's request </summary>
@@ -292,28 +310,38 @@ namespace SobekCM.Engine_Library.Skins
         /// <returns> Completely built HTML interface object </returns>
         /// <remarks> The datarow for this method is retrieved from the database by calling the <see cref="Database.SobekCM_Database.Get_All_Web_Skins"/> method during 
         /// application startup and is then stored in the <see cref="SobekCM_Skin_Collection"/> class until needed. </remarks>
-        public static Web_Skin_Object Build_Skin(Complete_Web_Skin_Object CompleteSkin, string Language_Code)
+        public static Web_Skin_Object Build_Skin(Complete_Web_Skin_Object CompleteSkin, string Language_Code, Custom_Tracer Tracer )
         {
             // Look for the language
             Web_Language_Enum language = Web_Language_Enum_Converter.Code_To_Enum(Language_Code);
             if (!CompleteSkin.SourceFiles.ContainsKey(language))
             {
+                if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Language requested ( " + Web_Language_Enum_Converter.Enum_To_Name(language) + " ) not in language list");
+
                 language = Engine_ApplicationCache_Gateway.Settings.Default_UI_Language;
                 if (!CompleteSkin.SourceFiles.ContainsKey(language))
                 {
+                    if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Default UI language ( " + Web_Language_Enum_Converter.Enum_To_Name(language) + " ) not in language list");
+
                     language = Web_Language_Enum.DEFAULT;
                     if (!CompleteSkin.SourceFiles.ContainsKey(language))
                     {
+                        if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "DEFAULT language not in language list");
+
                         language = Web_Language_Enum.English;
 
                         if (!CompleteSkin.SourceFiles.ContainsKey(language))
                         {
+                            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "English language also not in language list");
+
                             if (CompleteSkin.SourceFiles.Count > 0)
                             {
                                 language = CompleteSkin.SourceFiles.Keys.First();
                             }
                             else
                             {
+                                if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Apparently there are NO source files.. returning NULL");
+
                                 return null;
                             }
                         }
@@ -321,11 +349,18 @@ namespace SobekCM.Engine_Library.Skins
                 }
             }
 
+            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Will build language-specific web skin for '" + Web_Language_Enum_Converter.Enum_To_Name(language)  + "'");
 
             // Now, look in the cache for this
             Web_Skin_Object cacheObject = CachedDataManager.WebSkins.Retrieve_Skin(CompleteSkin.Skin_Code, Web_Language_Enum_Converter.Enum_To_Code(language), null);
             if (cacheObject != null)
+            {
+                if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Web skin found in the memory cache");
+
                 return cacheObject;
+            }
+
+            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Web skin not found in the memory cache, so building it now");
 
             // Build this then
             Web_Skin_Object returnValue = new Web_Skin_Object(CompleteSkin.Skin_Code, CompleteSkin.Base_Skin_Code, "design/skins/" + CompleteSkin.Skin_Code + "/" + CompleteSkin.CSS_Style);
@@ -340,18 +375,14 @@ namespace SobekCM.Engine_Library.Skins
             if ( CompleteSkin.Override_Banner ) returnValue.Override_Banner = true;
             if ( CompleteSkin.Suppress_Top_Navigation ) returnValue.Suppress_Top_Navigation = true;
 
-            // If not default, assign the language
-            if (language != Web_Language_Enum.DEFAULT)
-            {
-                returnValue.Language_Code = Web_Language_Enum_Converter.Enum_To_Code(language);
-            }
-
             // Get the source file
             Complete_Web_Skin_Source_Files sourceFiles = CompleteSkin.SourceFiles[language];
 
             // Build the banner
             if ((returnValue.Override_Banner.HasValue) && (returnValue.Override_Banner.Value))
             {
+                if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Skin overrides the banner, so build the banner HTML");
+
                 // Find the LANGUAGE-SPECIFIC high-bandwidth banner image
                  if ( !String.IsNullOrEmpty(sourceFiles.Banner))
                 {
@@ -367,6 +398,7 @@ namespace SobekCM.Engine_Library.Skins
             }
 
             // Now, set the header and footer html
+            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Determine the header footer source HTML files");
             string this_header = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Header_Source_File);
             string this_footer = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Footer_Source_File);
             string this_item_header = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Header_Item_Source_File);
@@ -379,8 +411,10 @@ namespace SobekCM.Engine_Library.Skins
                 this_item_footer = this_footer;
 
             // Now, assign all of these
+            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Get the HTML source for all the headers and footers");
             returnValue.Set_Header_Footer_Source(this_header, this_footer, this_item_header, this_item_footer);
 
+            if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Returning the fully built web skin");
             return returnValue;
         }
 	}

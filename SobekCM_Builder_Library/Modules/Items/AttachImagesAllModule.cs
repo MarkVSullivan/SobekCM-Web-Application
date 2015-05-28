@@ -12,6 +12,7 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
             bool jpeg_added = false;
             bool jpeg2000_added = false;
+            int jpeg_files = 0;
 
             // Ensure all non-image files are linked to the METS file
             string[] all_files = SobekCM.Tools.SobekCM_File_Utilities.GetFiles(Resource.Resource_Folder, "*.jp2|*.jpg");
@@ -47,6 +48,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                         // Non thumbnail, so go ahead and add it
                         Resource.Metadata.Divisions.Physical_Tree.Add_File(filename);
                         jpeg_added = true;
+                        jpeg_files++;
                     }
                 }
             }
@@ -54,11 +56,13 @@ namespace SobekCM.Builder_Library.Modules.Items
             // Ensure proper views are attached to this item
             if ((jpeg2000_added) || (jpeg_added))
             {
-                Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG);
                 if (jpeg_added)
                 {
                     Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG);
-                    Resource.Metadata.Behaviors.Add_View(View_Enum.RELATED_IMAGES);
+                    if ( jpeg_files > 1 )
+                        Resource.Metadata.Behaviors.Add_View(View_Enum.RELATED_IMAGES);
+                    if ((jpeg_files >= 4) && (Settings.Builder_Add_PageTurner_ItemViewer))
+                        Resource.Metadata.Behaviors.Add_View(View_Enum.PAGE_TURNER);
                     if (jpeg2000_added)
                         Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
                 }

@@ -293,13 +293,13 @@ namespace SobekCM.Library.Settings
             Skins_Img = "http://cdn.sobekrepository.org/images/misc/skins.gif";
             Skins_Img_Small = "http://cdn.sobekrepository.org/images/misc/skins.png";
             Skins_Img_Large = "http://cdn.sobekrepository.org/images/misc/skins_lg.png";
-            Sobekcm_Css = "http://cdn.sobekrepository.org/css/sobekcm/4.8.7/SobekCM.min.css";
-            Sobekcm_Admin_Css = "http://cdn.sobekrepository.org/css/sobekcm-admin/4.8.7/SobekCM_Admin.min.css";
+            Sobekcm_Css = "http://cdn.sobekrepository.org/css/sobekcm/4.8.10/sobekcm.min.css";
+            Sobekcm_Admin_Css = "http://cdn.sobekrepository.org/css/sobekcm-admin/4.8.10/sobekcm_admin.min.css";
             Sobekcm_Admin_Js = "http://cdn.sobekrepository.org/js/sobekcm-admin/4.8.7/sobekcm_admin.js";
             Sobekcm_Bookturner_Css = "http://cdn.sobekrepository.org/css/sobekcm-bookturner/4.8.4/SobekCM_BookTurner.css";
             Sobekcm_Datatables_Css = "http://cdn.sobekrepository.org/css/sobekcm-datatables/4.8.4/SobekCM_DataTables.css";
-            Sobekcm_Full_Js = "http://cdn.sobekrepository.org/js/sobekcm-full/4.8.9/sobekcm_full.min.js";
-            Sobekcm_Item_Css = "http://cdn.sobekrepository.org/css/sobekcm-item/4.8.4/SobekCM_Item.min.css";
+            Sobekcm_Full_Js = "http://cdn.sobekrepository.org/js/sobekcm-full/4.8.10/sobekcm_full.min.js";
+            Sobekcm_Item_Css = "http://cdn.sobekrepository.org/css/sobekcm-item/4.8.10/sobekCM_item.min.css";
             Sobekcm_Map_Editor_Js = "http://cdn.sobekrepository.org/js/sobekcm-map-editor/4.8.4/sobekcm_map_editor.js";
             Sobekcm_Map_Search_Js = "http://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_search.js";
             Sobekcm_Map_Tool_Js = "http://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_tool.js";
@@ -307,7 +307,7 @@ namespace SobekCM.Library.Settings
             Sobekcm_Mapsearch_Css = "http://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapSearch.css";
             Sobekcm_Metadata_Css = "http://cdn.sobekrepository.org/css/sobekcm-metadata/4.8.4/SobekCM_Metadata.min.css";
             Sobekcm_Metadata_Js = "http://cdn.sobekrepository.org/js/sobekcm-metadata/4.8.4/sobekcm_metadata.js";
-            Sobekcm_Mysobek_Css = "http://cdn.sobekrepository.org/css/sobekcm-mysobek/4.8.4/SobekCM_MySobek.min.css";
+            Sobekcm_Mysobek_Css = "http://cdn.sobekrepository.org/css/sobekcm-mysobek/4.8.10/sobekCM_mysobek.min.css";
             Sobekcm_Print_Css = "http://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/SobekCM_Print.css";
             Sobekcm_Qc_Css = "http://cdn.sobekrepository.org/css/sobekcm-qc/4.8.4/SobekCM_QC.css";
             Sobekcm_Qc_Js = "http://cdn.sobekrepository.org/js/sobekcm-qc/4.8.4/sobekcm_qc.js";

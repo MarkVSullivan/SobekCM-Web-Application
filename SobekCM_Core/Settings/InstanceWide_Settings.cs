@@ -77,6 +77,7 @@ namespace SobekCM.Core.Settings
                 Static_Resources_Config_File = "CDN";
                 Send_Email_On_Added_Aggregation = "Always";
                 Builder_Send_Usage_Emails = false;
+                Builder_Add_PageTurner_ItemViewer = false;
 
                 MarcGeneration = new Marc21_Settings();
 
@@ -248,6 +249,10 @@ namespace SobekCM.Core.Settings
         /// <summary> Gets the base URL for this instance, without the application name </summary>
         [DataMember]
         public string Base_URL { get; set; }
+
+        /// <summary> Flag indicates if the page turner should be added automatically </summary>
+        [DataMember]
+        public bool Builder_Add_PageTurner_ItemViewer { get; set; }
 
         /// <summary> IIS web log location (usually a network share) for the builder
         /// to read the logs and add the usage statistics to the database </summary>

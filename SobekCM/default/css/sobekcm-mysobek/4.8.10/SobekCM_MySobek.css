@@ -108,10 +108,16 @@ h1 { margin-left: auto; margin-right: auto; width: 710px; background-color: #eee
 
 
 /** Folder_Mgmt_MySobekViewer **/
-.sbkFmsv_EmailPopup { width:480px; } 
+.sbkFmsv_EmailPopup { width:480px;height: 300px; } 
+.sbkFmsv_EmailPopup button { font-size: 1.2em; margin-top: 10px;  }
 .sbkFmsv_EmailInput { width: 318px; margin-right: 15px; margin-top: 6px; }
 textarea.sbkFmsv_EmailTextArea  { width: 318px; margin-top: 6px; }
-
+#new_bookshelf_form { height: 235px; }
+#new_bookshelf_form button { font-size: 1.2em; }
+#add_item_form { height: 300px; }
+#add_item_form button { font-size: 1.2em;}
+#move_item_form { height: 210px; }
+#move_item_form button { font-size: 1.2em; }
 
 /** Home_Item_MySobekViewer **/
 #sbkHmv_WhatWouldDiv {padding: 10px 0 20px 220px; font-size: larger;}

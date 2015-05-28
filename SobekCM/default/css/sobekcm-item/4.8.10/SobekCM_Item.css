@@ -71,7 +71,7 @@ textarea.intheader_comments_input  {  FONT-FAMILY: Arial, sans-serif; font-size:
 #sbkIsw_Titlebar h1  { font-size: 1.25em; padding: 0 0 4px 0; margin: 0; line-height: 1.25em;font-weight: bold; background-color: #333333;text-align: center;color: white;border: none; width:100%}
 #sbkIsw_Titlebar a:link { color: cornflowerblue; }
 #sbkIsw_Titlebar a:visited { color: cornflowerblue; }
-#sbkIsw_Titlebar a:hover { color: cornflowerblue; text-decoration: underline; }
+#sbkIsw_Titlebar a:hover { color: #a9c1ed; text-decoration: underline; }
 
 /** left navigation bar general styles ( Item_HtmlSubwriter ) */
 #sbkIsw_Leftnavbar { background-color: #333333; padding: 0; MARGIN-RIGHT: 5px;  text-align: left; width: 185px; margin-top: 0;  float:left; font-size: 0.80em; box-shadow: 0 0 0 Black; box-shadow: 2px 2px 6px rgba(0,0,0,.2); }
@@ -103,7 +103,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 #sbkIsw_DocumentDisplay2 { background-color: #333333; margin-bottom: 2px; margin-left:10px; margin-right:10px; margin-top: 5px; font-size: 0.8em; box-shadow: 2px 2px 6px rgba(0,0,0,.2); color: white; }
 #sbkIsw_DocumentNonWindowed { font-size: 0.8em; background-color: #333333; color: white; padding: 0; margin: 0; border-collapse: collapse; border: none; }
 #sbkIsw_RestrictedRow { text-align: center;background-color: #cccccc;height: 50px;vertical-align: middle;color: #222222; }
-.sbkIsw_PageNavBar { background-color: #333333; padding: 6px 20px 3px 20px;  HEIGHT: 25px; TEXT-ALIGN: center; color:#222; font-weight: bold;border: 0; }
+.sbkIsw_PageNavBar { background-color: #333333; padding: 6px 20px 3px 20px;  HEIGHT: 25px; TEXT-ALIGN: center; color: #ffffff; font-weight: bold;border: 0; }
 .sbkIsw_PageNavBar2 { margin: 3px 20px 0 20px;  HEIGHT: 20px; TEXT-ALIGN: center; color:#222; font-weight: bold; }
 .sbkIsw_PageNavBar select { background-color: #777777; color: white; border: none; }
 .sbkIsw_PageNavBar2 select { background-color: #777777; color: white; border: none; }
@@ -128,7 +128,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 
 /* JPEG_ITEMVIEWER (Standard Page View) */
 #sbkJiv_Image { text-align: center; }
-#sbkJiv_ImageZoomable { text-align: center; font-size: 0.90em; color: #aaaaaa; }
+#sbkJiv_ImageZoomable { text-align: center; font-size: 0.90em; color: #cccccc; }
 #sbkJiv_ImageZoomable img { text-align: center; cursor:url(../../../images/misc/zoom_tool.cur), pointer; border: none; }
 
 /* AWARE_JP2_ITEMVIEWER ( Aware Zoomable ) */
@@ -153,7 +153,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 .sbkCiv_StatsTableFinalSeperator { background-color: black; }
 #sbkCiv_StatsTableTotalRow {text-align: center; font-weight: bold; }
 .sbkCiv_CitationSection { border: none; width: 100%; background-color: white;line-height: 120%;padding-bottom: 5px; font-size: 1.0em; }
-.sbkCiv_CitationSection h2 {padding-top: 0;margin-top: 0; color: #999999; padding-left: 15px;font-size: 1.2em; }
+.sbkCiv_CitationSection h2 {padding-top: 0;margin-top: 0; color: #777777; padding-left: 15px;font-size: 1.2em; }
 .sbkCiv_CitationSection dl { padding-left: 30px;font-size: 1.1em;padding-bottom: 0; }
 .sbkCiv_CitationSection dt {float: left; vertical-align:top; font-weight:bold; }
 .sbkCiv_CitationSection dd {margin-left: 150px; padding-bottom: 10px; vertical-align:top; padding-left: 10px;padding-right: 15px;line-height: 140%; }
@@ -163,6 +163,9 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 #Sbk_CivThumbnailDiv { float: right;padding-right: 15px;padding-left: 10px; }
 #Sbk_CivThumbnailImg { width: 150px;border: #333333 solid 1px; }
 #sbkCiv_EmptyRobotDiv { width: 0;height: 0;border: none;display: none; }
+#sbkCiv_LocationList { padding: 0; margin: 0; font-size: 1.0em;  }
+#sbkCiv_LocationList dt { float: left; width: 90px; font-weight: normal; }
+#sbkCiv_LocationList dd { margin-left: 100px; }
 
 /** DOWNLOAD_ITEMVIEWER (For any downloads related to the resource) */
 #sbkDiv_MainArea { width: 100%; COLOR: #222222; BACKGROUND-COLOR: #ffffff;}

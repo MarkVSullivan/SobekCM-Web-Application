@@ -30,6 +30,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Custom_Tracer tracer = new Custom_Tracer();
 
                 string skinCode = UrlSegments[0];
+                tracer.Add_Trace("WebSkinServices.GetCompleteWebSkin", "Getting skin for '" + skinCode + "'");
 
                 Complete_Web_Skin_Object returnValue = get_complete_web_skin(skinCode, tracer);
 
@@ -67,13 +68,47 @@ namespace SobekCM.Engine_Library.Endpoints
             if (UrlSegments.Count > 1)
             {
                 Custom_Tracer tracer = new Custom_Tracer();
+                Web_Skin_Object returnValue = null;
+                try
+                {
+                    // Get the code and language from the URL
+                    string skinCode = UrlSegments[0];
+                    tracer.Add_Trace("WebSkinServices.GetWebSkin", "Getting skin for '" + skinCode + "'");
 
-                // Get the code and language from the URL
-                string skinCode = UrlSegments[0];
-                string language = UrlSegments[1];
-                Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
+                    string language = UrlSegments[1];
+                    Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
+                    tracer.Add_Trace("WebSkinServices.GetWebSkin", "Getting skin for language '" + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + "'");
 
-                Web_Skin_Object returnValue = get_web_skin(skinCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
+                    returnValue = get_web_skin(skinCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
+
+                    if (QueryString["debug"] == "debug")
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+
+                        return;
+                    }
+                }
+                catch ( Exception ee )
+                {
+                    if (QueryString["debug"] == "debug")
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+
+                        return;
+                    }
+                }
+
+
 
                 switch (Protocol)
                 {
@@ -167,11 +202,19 @@ namespace SobekCM.Engine_Library.Endpoints
         /// the release of SobekCM 5.0 </remarks>
         public static Complete_Web_Skin_Object get_complete_web_skin(string SkinCode, Custom_Tracer Tracer)
         {
-            DataRow thisRow = Engine_ApplicationCache_Gateway.Web_Skin_Collection.Skin_Row(SkinCode);
-            if ( thisRow == null )
-                return null;
+            if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Try to get the web skin code row from the web skin collection object");
 
-            Complete_Web_Skin_Object returnObject = Web_Skin_Utilities.Build_Skin_Complete(thisRow);
+            DataRow thisRow = Engine_ApplicationCache_Gateway.Web_Skin_Collection.Skin_Row(SkinCode);
+            if (thisRow == null)
+            {
+                if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Unable to find the web skin row for code '" + SkinCode + "'.  Returning NULL");
+                return null;
+            }
+
+            if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Found the web skin row for code '" + SkinCode + "'");
+
+
+            Complete_Web_Skin_Object returnObject = Web_Skin_Utilities.Build_Skin_Complete(thisRow, Tracer);
             return returnObject;
         }
 
@@ -188,9 +231,12 @@ namespace SobekCM.Engine_Library.Endpoints
             Complete_Web_Skin_Object completeSkin = get_complete_web_skin(SkinCode, Tracer);
 
             if (completeSkin == null)
+            {
+                Tracer.Add_Trace("WebSkinServices.get_web_skin", "Complete skin retrieved was NULL, so returning NULL");
                 return null;
+            }
 
-            return Web_Skin_Utilities.Build_Skin(completeSkin, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage));
+            return Web_Skin_Utilities.Build_Skin(completeSkin, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), Tracer);
         }
 
         #endregion
