@@ -932,7 +932,7 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 .sbkBrv_SingleResult:hover { background-color: #efefef; }
 .sbkBrv_SingleResultNum { font-weight: bold;display: inline-block; vertical-align: top;padding-top: 5px; }
 .sbkBrv_SingleResultThumb { width: 150px; display: inline-block; vertical-align: top; padding: 5px; }
-.sbkBrv_SingleResultDesc { display: inline-block; vertical-align: top;padding-top: 2px; }
+.sbkBrv_SingleResultDesc { display: inline-block; vertical-align: top;padding-top: 2px;width: 500px; }
 .sbkBrv_SingleResultDesc table { padding-top: 0;margin-top: 0; }
 .sbkBrv_SingleResultDescList { line-height: 150%; }
 .sbkBrv_SingleResultDescList dt { float: left; width: 140px; }

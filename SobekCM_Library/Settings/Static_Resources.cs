@@ -2934,12 +2934,6 @@ namespace SobekCM.Library.Settings
                 if (readerStream != null) readerStream.Close();
             }
 
-            Sobekcm_Css = "http://cdn.sobekdigital.com/css/sobekcm/4.8.10/sobekcm.css";
-            Sobekcm_Item_Css = "http://cdn.sobekdigital.com/css/sobekcm-item/4.8.10/sobekcm_item.css";
-            Sobekcm_Admin_Css = "http://cdn.sobekdigital.com/css/sobekcm-admin/4.8.10/sobekcm_admin.css";
-            Sobekcm_Mysobek_Css = "http://cdn.sobekdigital.com/css/sobekcm-mysobek/4.8.10/sobekcm_mysobek.css";
-            Sobekcm_Full_Js = "http://cdn.sobekdigital.com/js/sobekcm-full/4.8.10/sobekcm_full.js";
-
             return returnValue;
         }
     }

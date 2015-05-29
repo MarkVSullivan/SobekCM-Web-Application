@@ -358,7 +358,8 @@ namespace SobekCM.Library.HTML
                 if (  collectionViewer == null )
                     return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link };
 
-                List<HtmlSubwriter_Behaviors_Enum> subviewer_behavior = new List<HtmlSubwriter_Behaviors_Enum>();
+                List<HtmlSubwriter_Behaviors_Enum> subviewer_behavior = collectionViewer.AggregationViewer_Behaviors;
+
                 if (!subviewer_behavior.Contains(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link))
                     subviewer_behavior.Add(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link);
                 return subviewer_behavior;
