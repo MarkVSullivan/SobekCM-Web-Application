@@ -504,10 +504,10 @@ namespace SobekCM.Builder_Library
                 // Do all the item processing per instance config
                 foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
                 {
-                    //if (superverbose)
-                    //{
-                    //    Add_NonError_To_Log("Running module " + thisModule.GetType().ToString(), true, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, String.Empty, AdditionalWorkResource.BuilderLogId);
-                    //}
+                    if (verbose)
+                    {
+                        Add_NonError_To_Log("Running module " + thisModule.GetType().ToString(), true, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, String.Empty, AdditionalWorkResource.BuilderLogId);
+                    }
                     if (!thisModule.DoWork(AdditionalWorkResource))
                     {
                         Add_Error_To_Log("Unable to complete additional work for " + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, String.Empty, AdditionalWorkResource.BuilderLogId);

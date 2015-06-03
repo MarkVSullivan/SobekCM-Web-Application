@@ -238,6 +238,17 @@ namespace SobekCM.Resource_Object
             }
         }
 
+        /// <summary> Get the pairtree folder structure from a provided BibID / VID pair </summary>
+        /// <param name="BaseDirectory"> Base directory </param>
+        /// <param name="BibID"> Provided BibID to use for creating the folder structure </param>
+        /// <param name="VID"> Provided VID to use for creating the folder structure </param>
+        /// <returns> Directory for this item, determined by the BibID and VID, under the given base directory </returns>
+        public static string Directory_From_Bib_VID(string BaseDirectory, string BibID, string VID)
+        {
+            string folder = BibID.Substring(0, 2) + Path.DirectorySeparatorChar + BibID.Substring(2, 2) + Path.DirectorySeparatorChar + BibID.Substring(4, 2) + Path.DirectorySeparatorChar + BibID.Substring(6, 2) + Path.DirectorySeparatorChar + BibID.Substring(8, 2) + Path.DirectorySeparatorChar + VID;
+            return Path.Combine(BaseDirectory, folder);
+        }
+
         /// <summary> Size of the entire package on disk (in kilobytes ) </summary>
         public double DiskSize_KB { get; set; }
 

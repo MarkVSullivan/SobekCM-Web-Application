@@ -100,7 +100,7 @@ namespace SobekCM.Library.AdminViewer
                                     string edit_name = form["form_portal_name"].Trim();
                                     string edit_abbr = form["form_portal_abbr"].Trim();
                                     string edit_skin = form["form_portal_skin"].Trim();
-                                    string edit_aggr = form["form_portal_aggregation"].Trim();
+                                    string edit_aggr = String.IsNullOrEmpty(form["form_portal_aggregation"]) ? String.Empty : form["form_portal_aggregation"].Trim();
                                     string edit_url = form["form_portal_url"].Trim();
                                     string edit_purl = form["form_portal_purl"].Trim();
                                     int portalid = Convert.ToInt32(save_value);
@@ -131,13 +131,13 @@ namespace SobekCM.Library.AdminViewer
                                         {
                                             if (thisPortal.ID != portalid)
                                             {
-                                                if (String.Compare(thisPortal.Name, entered_portal_name, true) == 0)
+                                                if (String.Compare(thisPortal.Name, edit_name, true) == 0)
                                                 {
                                                     portal_name_match = true;
                                                     break;
                                                 }
 
-                                                if (String.Compare(thisPortal.URL_Segment, entered_url_segment, true) == 0)
+                                                if (String.Compare(thisPortal.URL_Segment, edit_url, true) == 0)
                                                 {
                                                     url_segment_match = true;
                                                     break;
@@ -265,7 +265,7 @@ namespace SobekCM.Library.AdminViewer
                             }
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ee)
                     {
                         actionMessage = "Exception caught while handling request";
                     }
