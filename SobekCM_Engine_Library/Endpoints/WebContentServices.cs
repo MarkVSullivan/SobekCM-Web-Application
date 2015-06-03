@@ -27,7 +27,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Error_Reading_File
         }
 
-        /// <summary> Resolve the URL to a Navigation_Object </summary>
+        /// <summary> Get top-level web content, static HTML </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
