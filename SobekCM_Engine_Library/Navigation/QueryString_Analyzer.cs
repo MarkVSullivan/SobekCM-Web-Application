@@ -23,7 +23,7 @@ namespace SobekCM.Engine_Library.Navigation
 	/// passed to the web server along with the URL.  This determines which portion
 	/// of the web application to display first, and allows users to cut and paste
 	/// a particular search or map. </remarks>
-	public static class SobekCM_QueryString_Analyzer 
+	public static class QueryString_Analyzer 
 	{
 		#region Constructor
 
@@ -51,6 +51,9 @@ namespace SobekCM.Engine_Library.Navigation
 			Portal_List URL_Portals,
 			Custom_Tracer Tracer )
 		{
+		    if (Tracer != null)
+		        Tracer.Add_Trace("QueryString_Analyzer.Parse_Query", "Parse the query into the provided Navigation_Object");
+
 			// Set default mode to error
 			Navigator.Mode = Display_Mode_Enum.Error;
 

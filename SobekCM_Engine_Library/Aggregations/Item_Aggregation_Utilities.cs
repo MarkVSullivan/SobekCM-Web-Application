@@ -34,10 +34,9 @@ namespace SobekCM.Engine_Library.Aggregations
 	    /// Then, either the Item Aggregation XML file is read (if present) or the entire folder hierarchy is analyzed to find the browses, infos, banners, etc..</remarks>
 	    public static Complete_Item_Aggregation Get_Complete_Item_Aggregation(string AggregationCode, Custom_Tracer Tracer)
 	    {
-	        // Does this exist in the cache?
 	        if (Tracer != null)
 	        {
-	            Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Creating '" + AggregationCode + "' item aggregation");
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Creating '" + AggregationCode + "' item aggregation");
 	        }
 
 	        // Get the information about this collection and this entry point
@@ -56,7 +55,7 @@ namespace SobekCM.Engine_Library.Aggregations
 	            {
 	                if (Tracer != null)
 	                {
-	                    Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Reading XML Configuration File");
+                        Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Reading aggregation XML configuration file");
 	                }
 
 	                // Add the ALL and NEW browses
@@ -70,7 +69,9 @@ namespace SobekCM.Engine_Library.Aggregations
 	            {
 	                if (Tracer != null)
 	                {
-	                    Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "Adding banner, home, and all/new browse information");
+                        Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Aggregation XML configuration file missing.. will try to build");
+
+                        Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Adding banner, home, and all/new browse information");
 	                }
 
 	                Add_HTML(hierarchyObject);
@@ -89,6 +90,11 @@ namespace SobekCM.Engine_Library.Aggregations
                         hierarchyObject.Add_Banner_Image("images/banners/coll.jpg", Web_Language_Enum.DEFAULT);
                     }
 
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Write aggregation XML configuration from built object");
+                    }
+
 	                // Since there was no configuration file, save one
 	                hierarchyObject.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + hierarchyObject.ObjDirectory);
 	            }
@@ -97,6 +103,11 @@ namespace SobekCM.Engine_Library.Aggregations
 	            string contactFormFile = Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + hierarchyObject.ObjDirectory + "\\config\\sobekcm_contactform.config";
 	            if (File.Exists(contactFormFile))
 	            {
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Found aggregation-specific contact form configuration file");
+                    }
+
 	                hierarchyObject.ContactForm = ContactForm_Configuration_Reader.Read_Config(contactFormFile);
 	            }
 
@@ -106,7 +117,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
 	        if (Tracer != null)
 	        {
-	            Tracer.Add_Trace("Item_Aggregation_Builder.Get_Item_Aggregation", "NULL value returned from database");
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "NULL value returned from database");
 	        }
 	        return null;
 
@@ -240,7 +251,7 @@ namespace SobekCM.Engine_Library.Aggregations
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Item_Aggregation.Get_Browse_Table", String.Empty);
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", String.Empty);
             }
 
             // Get the list of facets first
@@ -350,10 +361,22 @@ namespace SobekCM.Engine_Library.Aggregations
 	    public static Item_Aggregation Get_Item_Aggregation(Complete_Item_Aggregation CompAggr, Web_Language_Enum RequestedLanguage, Custom_Tracer Tracer)
 	    {
             // If the complete aggregation was null, return null
-            if (CompAggr == null)
-                return null;
+	        if (CompAggr == null)
+	        {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Complete item aggregation was NULL.. aborting and returning NULL");
+                }
 
-            // Build the item aggregation
+	            return null;
+	        }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Building language-specific item aggregation from the complete object");
+            }
+
+	        // Build the item aggregation
             Item_Aggregation returnValue = new Item_Aggregation(RequestedLanguage, CompAggr.ID, CompAggr.Code)
             {
                 Active = CompAggr.Active,
@@ -379,29 +402,60 @@ namespace SobekCM.Engine_Library.Aggregations
                 Type = CompAggr.Type
             };
 
+            // Copy any children aggregations over
             if (CompAggr.Active_Children_Count > 0)
             {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying children objects");
+                }
+
                 returnValue.Children = new List<Item_Aggregation_Related_Aggregations>();
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in CompAggr.Children)
                 {
                     returnValue.Children.Add(thisAggr);
                 }
             }
+
+            // Copy any parent aggregations over
             if (CompAggr.Parent_Count > 0)
             {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying parent objects");
+                }
+
                 returnValue.Parents = new List<Item_Aggregation_Related_Aggregations>();
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in CompAggr.Parents)
                 {
                     returnValue.Parents.Add(thisAggr);
                 }
             }
+
+            // Copy all the facet information over
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying facets");
+            }
             foreach (short thisFacet in CompAggr.Facets)
             {
                 returnValue.Facets.Add(thisFacet);
             }
+
+            // Copy over all the results views
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying result views");
+            }
             foreach (Result_Display_Type_Enum display in CompAggr.Result_Views)
             {
                 returnValue.Result_Views.Add(display);
+            }
+
+            // Copy all the views and searches over
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying views and searches");
             }
             if (CompAggr.Views_And_Searches != null)
             {
@@ -410,8 +464,15 @@ namespace SobekCM.Engine_Library.Aggregations
                     returnValue.Views_And_Searches.Add(viewsSearches);
                 }
             }
+
+            // Copy over any web skin limitations
             if ((CompAggr.Web_Skins != null) && (CompAggr.Web_Skins.Count > 0))
             {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying web skins");
+                }
+
                 returnValue.Web_Skins = new List<string>();
                 foreach (string thisSkin in CompAggr.Web_Skins)
                 {
@@ -420,6 +481,10 @@ namespace SobekCM.Engine_Library.Aggregations
             }
 
             // Language-specific (and simplified) metadata type info
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying search anbd browseable fields");
+            }
             foreach (Complete_Item_Aggregation_Metadata_Type thisAdvSearchField in CompAggr.Search_Fields)
             {
                 returnValue.Search_Fields.Add(new Item_Aggregation_Metadata_Type(thisAdvSearchField.DisplayTerm, thisAdvSearchField.SobekCode));
@@ -432,6 +497,11 @@ namespace SobekCM.Engine_Library.Aggregations
             // Language-specific (and simplified) child pages information
             if ((CompAggr.Child_Pages != null) && (CompAggr.Child_Pages.Count > 0))
             {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying child pages");
+                }
+
                 returnValue.Child_Pages = new List<Item_Aggregation_Child_Page>();
                 foreach (Complete_Item_Aggregation_Child_Page fullPage in CompAggr.Child_Pages)
                 {
@@ -456,6 +526,11 @@ namespace SobekCM.Engine_Library.Aggregations
             // Language-specific (and simplified) highlight information
             if ((CompAggr.Highlights != null) && (CompAggr.Highlights.Count > 0))
             {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "...Copying relevant highlights");
+                }
+
                 returnValue.Highlights = new List<Item_Aggregation_Highlights>();
                 int day_integer = DateTime.Now.DayOfYear + 1;
                 int highlight_to_use = day_integer % CompAggr.Highlights.Count;
@@ -513,11 +588,19 @@ namespace SobekCM.Engine_Library.Aggregations
             }
 
             // Language-specific source page
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Getting the home page source");
+            }
             returnValue.HomePageSource = String.Empty;
             HTML_Based_Content homeHtml = Get_Home_HTML(CompAggr, RequestedLanguage, null);
             returnValue.HomePageHtml = homeHtml;
 	        returnValue.Custom_Home_Page = (CompAggr.Home_Page_File(RequestedLanguage)==null) ? false : (CompAggr.Home_Page_File(RequestedLanguage).isCustomHome);
 
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Item_Aggregation", "Returning fully built item aggregation object");
+            }
             return returnValue;
 	    }
 
@@ -531,7 +614,7 @@ namespace SobekCM.Engine_Library.Aggregations
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Item_Aggregation.Get_Home_HTML", "Reading home text source file");
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Home_HTML", "Reading home text source file");
             }
 
             string homeFileSource = "";
@@ -576,21 +659,32 @@ namespace SobekCM.Engine_Library.Aggregations
         /// faster, even with a great number of item aggregationPermissions in the hierarchy </remarks>
         public static Aggregation_Hierarchy Get_Collection_Hierarchy(Custom_Tracer Tracer)
         {
+            if (Tracer != null)
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Collection_Hierarchy", "Preparing to create the aggregation hierarchy object");
+
             // Get the database table
             DataSet childInfo = Engine_Database.Get_Aggregation_Hierarchies(Tracer);
             if (childInfo == null)
+            {
+                if (Tracer != null)
+                    Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Collection_Hierarchy", "NULL value returned from database lookup");
+
                 return null;
+            }
 
             // Build the return value
             Aggregation_Hierarchy returnValue = new Aggregation_Hierarchy();
 
             // Add all the collections
+            if (Tracer != null)
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Collection_Hierarchy", "Add all the child aggregations to the hierarchy");
             add_hierarchy_children(returnValue.Collections, childInfo.Tables[0]);
 
             // Add all the institutions
+            if (Tracer != null)
+                Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Collection_Hierarchy", "Add all the institutions to the hierarchy");
             add_hierarchy_children(returnValue.Institutions, childInfo.Tables[1]);
 
-            //add_children(AllInfoObject, childInfo);
             return returnValue;
         }
 

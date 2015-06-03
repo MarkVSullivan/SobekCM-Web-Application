@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Using references
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
@@ -6,13 +8,9 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization.Formatters.Soap;
 using System.Text;
 using System.Web;
 using Jil;
-using ProtoBuf;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
@@ -26,10 +24,12 @@ using SobekCM.Engine_Library.JSON_Client_Helpers;
 using SobekCM.Engine_Library.Microservices;
 using SobekCM.Tools;
 
+#endregion
+
 namespace SobekCM.Engine_Library.Endpoints
 {
     /// <summary> Class supports all the aggregation-level services provided by the SobekCM engine </summary>
-    public class AggregationServices
+    public class AggregationServices : EndpointBase
     {
         /// <summary> Gets the complete (language agnostic) item aggregation, by aggregation code </summary>
         /// <param name="Response"></param>
@@ -41,40 +41,54 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 Custom_Tracer tracer = new Custom_Tracer();
 
-                string aggrCode = UrlSegments[0];
-
-                Complete_Item_Aggregation returnValue = get_complete_aggregation(aggrCode, true, tracer);
-
-                switch (Protocol)
+                try
                 {
-                    case Microservice_Endpoint_Protocol_Enum.JSON:
-                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                        break;
+                    // Get the aggregation code to get from the URL segments
+                    string aggrCode = UrlSegments[0];
+                    tracer.Add_Trace("AggregationServices.GetCompleteAggregationByCode", "Build and return '" + aggrCode + "' complete item aggregation");
 
-                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                        Serializer.Serialize(Response.OutputStream, returnValue);
-                        break;
+                    // Get the complete aggregation
+                    Complete_Item_Aggregation returnValue = get_complete_aggregation(aggrCode, true, tracer);
 
-                    case Microservice_Endpoint_Protocol_Enum.JSON_P:
-                        Response.Output.Write("parseCompleteAggregation(");
-                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
-                        Response.Output.Write(");");
-                        break;
+                    // If this was debug mode, then just write the tracer
+                    if (QueryString["debug"] == "debug")
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
 
-                    case Microservice_Endpoint_Protocol_Enum.XML:
-                        System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
-                        x.Serialize(Response.Output, returnValue);
-                        break;
+                        return;
+                    }
 
-                    case Microservice_Endpoint_Protocol_Enum.SOAP:
-                        DataContractSerializer soap = new DataContractSerializer(returnValue.GetType());
-                        soap.WriteObject(Response.OutputStream, returnValue);
-                        break;
+                    // Get the JSON-P callback function
+                    string json_callback = "parseCompleteAggregation";
+                    if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                    {
+                        json_callback = QueryString["callback"];
+                    }
 
-                    case Microservice_Endpoint_Protocol_Enum.BINARY:
-                        IFormatter binary = new BinaryFormatter();
-                        binary.Serialize(Response.OutputStream, returnValue);
-                        break;
+                    // Use the base class to serialize the object according to request protocol
+                    Serialize(returnValue, Response, Protocol, json_callback);
+                }
+                catch (Exception ee)
+                {
+                    if (QueryString["debug"] == "debug")
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
+                    }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+                    Response.StatusCode = 500;
                 }
             }
         }
@@ -85,48 +99,65 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         public void GetAggregationByCode(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
-
             if (UrlSegments.Count > 1)
             {
                 Custom_Tracer tracer = new Custom_Tracer();
 
-                // Get the code and language from the URL
-                string aggrCode = UrlSegments[0];
-                string language = UrlSegments[1];
-                Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
-
-                Item_Aggregation returnValue = get_item_aggregation(aggrCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
-
-                switch (Protocol)
+                try
                 {
-                    case Microservice_Endpoint_Protocol_Enum.JSON:
-                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                        break;
+                    // Get the code and language from the URL
+                    string aggrCode = UrlSegments[0];
+                    string language = UrlSegments[1];
+                    Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
 
-                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                        Serializer.Serialize(Response.OutputStream, returnValue);
-                        break;
+                    if (languageEnum == Web_Language_Enum.UNDEFINED)
+                    {
+                        tracer.Add_Trace("AggregationServices.GetCompleteAggregationByCode", "Language code '" + language + "' not recognized");
+                    }
 
-                    case Microservice_Endpoint_Protocol_Enum.JSON_P:
-                        Response.Output.Write("parseAggregationByCode(");
-                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
-                        Response.Output.Write(");");
-                        break;
+                    // Build the language-specific item aggregation
+                    tracer.Add_Trace("AggregationServices.GetCompleteAggregationByCode", "Build and return '" + aggrCode + "' language-specific item aggregation for '" + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + "'");
+                    Item_Aggregation returnValue = get_item_aggregation(aggrCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
 
-                    case Microservice_Endpoint_Protocol_Enum.XML:
-                        System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
-                        x.Serialize(Response.Output, returnValue);
-                        break;
+                    // If this was debug mode, then just write the tracer
+                    if (QueryString["debug"] == "debug")
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
 
-                    case Microservice_Endpoint_Protocol_Enum.SOAP:
-                        DataContractSerializer soap = new DataContractSerializer(returnValue.GetType());
-                        soap.WriteObject(Response.OutputStream, returnValue);
-                        break;
+                        return;
+                    }
 
-                    case Microservice_Endpoint_Protocol_Enum.BINARY:
-                        IFormatter binary = new BinaryFormatter();
-                        binary.Serialize(Response.OutputStream, returnValue);
-                        break;
+                    // Get the JSON-P callback function
+                    string json_callback = "parseAggregationByCode";
+                    if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                    {
+                        json_callback = QueryString["callback"];
+                    }
+
+                    // Use the base class to serialize the object according to request protocol
+                    Serialize(returnValue, Response, Protocol, json_callback);
+                }
+                catch (Exception ee)
+                {
+                    if (QueryString["debug"] == "debug")
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
+                    }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+                    Response.StatusCode = 500;
                 }
             }
         }
@@ -137,39 +168,59 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         public void GetAllAggregations(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
-            // Get the aggregation code manager
-            List<Item_Aggregation_Related_Aggregations> returnValue = Engine_ApplicationCache_Gateway.Codes.All_Aggregations;
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("AggregationServices.GetAllAggregations", "Return the list of all aggregations (including inactive and hidden)");
 
-            switch (Protocol)
+            try
             {
-                case Microservice_Endpoint_Protocol_Enum.JSON:
-                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                    break;
+                // Get the aggregation code manager
+                List<Item_Aggregation_Related_Aggregations> returnValue = Engine_ApplicationCache_Gateway.Codes.All_Aggregations;
 
-                case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                    Serializer.Serialize(Response.OutputStream, returnValue);
-                    break;
+                // Ensure not NULL (or give an informative trace route)
+                if (returnValue == null)
+                {
+                    tracer.Add_Trace("AggregationServices.GetAllAggregations", "Return from Engine_ApplicationCache_Gateway was NULL!");
+                }
 
-                case Microservice_Endpoint_Protocol_Enum.JSON_P:
-                    Response.Output.Write("parseAllAggregations(");
-                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
-                    Response.Output.Write(");");
-                    break;
+                // If this was debug mode, then just write the tracer
+                if (QueryString["debug"] == "debug")
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
 
-                case Microservice_Endpoint_Protocol_Enum.XML:
-                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
-                    x.Serialize(Response.Output, returnValue);
-                    break;
+                    return;
+                }
 
-                case Microservice_Endpoint_Protocol_Enum.SOAP:
-                        DataContractSerializer soap = new DataContractSerializer(returnValue.GetType());
-                        soap.WriteObject(Response.OutputStream, returnValue);
-                    break;
+                // Get the JSON-P callback function
+                string json_callback = "parseAllAggregations";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
 
-                case Microservice_Endpoint_Protocol_Enum.BINARY:
-                    IFormatter binary = new BinaryFormatter();
-                    binary.Serialize(Response.OutputStream, returnValue);
-                    break;
+                // Use the base class to serialize the object according to request protocol
+                Serialize(returnValue, Response, Protocol, json_callback);
+            }
+            catch (Exception ee)
+            {
+                if (QueryString["debug"] == "debug")
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.StackTrace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    return;
+                }
+
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error completing request");
+                Response.StatusCode = 500;
             }
         }
 
@@ -223,39 +274,53 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         public void GetCollectionHierarchy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
-            // Get the aggregation code manager
-            Aggregation_Hierarchy returnValue = get_aggregation_hierarchy(null);
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("AggregationServices.GetCollectionHierarchy", "Return the hierarchical list of all active and unhidden aggregations");
 
-            switch (Protocol)
+            try
             {
-                case Microservice_Endpoint_Protocol_Enum.JSON:
-                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                    break;
+                // Get the aggregation code manager
+                Aggregation_Hierarchy returnValue = get_aggregation_hierarchy(tracer);
 
-                case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                    Serializer.Serialize(Response.OutputStream, returnValue);
-                    break;
+                // If this was debug mode, then just write the tracer
+                if (QueryString["debug"] == "debug")
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
 
-                case Microservice_Endpoint_Protocol_Enum.JSON_P:
-                    Response.Output.Write("parseCollectionHierarchy(");
-                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
-                    Response.Output.Write(");");
-                    break;
+                    return;
+                }
 
-                case Microservice_Endpoint_Protocol_Enum.XML:
-                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
-                    x.Serialize(Response.Output, returnValue);
-                    break;
+                // Get the JSON-P callback function
+                string json_callback = "parseCollectionHierarchy";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
 
-                case Microservice_Endpoint_Protocol_Enum.SOAP:
-                        DataContractSerializer soap = new DataContractSerializer(returnValue.GetType());
-                        soap.WriteObject(Response.OutputStream, returnValue);
-                    break;
+                // Use the base class to serialize the object according to request protocol
+                Serialize(returnValue, Response, Protocol, json_callback);
+            }
+            catch (Exception ee)
+            {
+                if (QueryString["debug"] == "debug")
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.StackTrace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    return;
+                }
 
-                case Microservice_Endpoint_Protocol_Enum.BINARY:
-                    IFormatter binary = new BinaryFormatter();
-                    binary.Serialize(Response.OutputStream, returnValue);
-                    break;
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error completing request");
+                Response.StatusCode = 500;
             }
         }
 
@@ -267,45 +332,67 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             if (UrlSegments.Count > 2)
             {
-                // Get the code and language from the URL
-                string aggrCode = UrlSegments[0];
-                string language = UrlSegments[1];
-                string childCode = UrlSegments[2];
-                Web_Language_Enum langEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
+                Custom_Tracer tracer = new Custom_Tracer();
 
-                // Get the aggregation code manager
-                HTML_Based_Content returnValue = get_item_aggregation_html_child_page(aggrCode, langEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, childCode, null);
-
-                switch (Protocol)
+                try
                 {
-                    case Microservice_Endpoint_Protocol_Enum.JSON:
-                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                        break;
 
-                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                        Serializer.Serialize(Response.OutputStream, returnValue);
-                        break;
+                    // Get the code and language from the URL
+                    string aggrCode = UrlSegments[0];
+                    string language = UrlSegments[1];
+                    string childCode = UrlSegments[2];
+                    Web_Language_Enum langEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
 
-                    case Microservice_Endpoint_Protocol_Enum.JSON_P:
-                        Response.Output.Write("parseCollectionStaticPage(");
-                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
-                        Response.Output.Write(");");
-                        break;
+                    if (langEnum == Web_Language_Enum.UNDEFINED)
+                    {
+                        tracer.Add_Trace("AggregationServices.GetCollectionStaticPage", "Language code '" + language + "' not recognized");
+                    }
 
-                    case Microservice_Endpoint_Protocol_Enum.XML:
-                        System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
-                        x.Serialize(Response.Output, returnValue);
-                        break;
+                    // Build the language-specific item aggregation
+                    tracer.Add_Trace("AggregationServices.GetCollectionStaticPage", "Build and return child page '" + childCode + "' in aggregation '" + aggrCode + "' for '" + Web_Language_Enum_Converter.Enum_To_Name(langEnum) + "'");
 
-                    case Microservice_Endpoint_Protocol_Enum.SOAP:
-                        DataContractSerializer soap = new DataContractSerializer(returnValue.GetType());
-                        soap.WriteObject(Response.OutputStream, returnValue);
-                        break;
+                    // Get the aggregation code manager
+                    HTML_Based_Content returnValue = get_item_aggregation_html_child_page(aggrCode, langEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, childCode, tracer);
 
-                    case Microservice_Endpoint_Protocol_Enum.BINARY:
-                        IFormatter binary = new BinaryFormatter();
-                        binary.Serialize(Response.OutputStream, returnValue);
-                        break;
+                    // If this was debug mode, then just write the tracer
+                    if (QueryString["debug"] == "debug")
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+
+                        return;
+                    }
+
+                    // Get the JSON-P callback function
+                    string json_callback = "parseCollectionStaticPage";
+                    if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                    {
+                        json_callback = QueryString["callback"];
+                    }
+
+                    // Use the base class to serialize the object according to request protocol
+                    Serialize(returnValue, Response, Protocol, json_callback);
+                }
+                catch (Exception ee)
+                {
+                    if (QueryString["debug"] == "debug")
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
+                    }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+                    Response.StatusCode = 500;
                 }
             }
         }
@@ -321,14 +408,27 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             // Get the aggregation code manager
             Aggregation_Hierarchy returnValue = CachedDataManager.Aggregations.Retrieve_Aggregation_Hierarchy(Tracer);
-            if (returnValue != null) return returnValue;
+            if (returnValue != null)
+            {
+                Tracer.Add_Trace("AggregationServices.get_aggregation_hierarchy", "Found aggregation hierarchy in the cache");
+                return returnValue;
+            }
+
+            Tracer.Add_Trace("AggregationServices.get_aggregation_hierarchy", "Aggregation hierarchy NOT found in the cache.. will build");
 
             // Build the collection hierarchy (from the database)
             returnValue = Item_Aggregation_Utilities.Get_Collection_Hierarchy(Tracer);
 
             // Store in the cache
-            if ( returnValue != null )
+            if (returnValue != null)
+            {
+                Tracer.Add_Trace("AggregationServices.get_aggregation_hierarchy", "Storing built aggregation hierarchy in cache");
                 CachedDataManager.Aggregations.Store_Aggregation_Hierarchy(returnValue, Tracer);
+            }
+            else
+            {
+                Tracer.Add_Trace("AggregationServices.get_aggregation_hierarchy", "Aggregation hierarchy not built correctly, NULL returned from Item_Aggregation_Utilities.Get_Collection_Hierarchy method");
+            }
 
             return returnValue;
         }
@@ -347,22 +447,49 @@ namespace SobekCM.Engine_Library.Endpoints
             // Try to pull from the cache
             HTML_Based_Content cacheInst = CachedDataManager.Aggregations.Retrieve_Aggregation_HTML_Based_Content(AggregationCode, RequestedLanguage, ChildPageCode, Tracer);
             if (cacheInst != null)
+            {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation_html_child_page", "Found built child page in the cache");
                 return cacheInst;
+            }
 
+            // Get the language-specific item aggregation object
             Item_Aggregation itemAggr = get_item_aggregation(AggregationCode, RequestedLanguage, DefaultLanguage, Tracer);
-            if (itemAggr == null) return null;
+            if (itemAggr == null)
+            {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation_html_child_page", "Item aggregation object was NULL.. May not be a valid aggregation code");
+                return null;
+            }
 
+            // Get the child page object
+            Tracer.Add_Trace("AggregationServices.get_item_aggregation_html_child_page", "Get child page object from the language-specific item aggregation");
             Item_Aggregation_Child_Page childPage = itemAggr.Child_Page_By_Code(ChildPageCode);
-            if ((childPage == null) || ( childPage.Source_Data_Type != Item_Aggregation_Child_Source_Data_Enum.Static_HTML )) return null;
+            if (childPage == null)
+            {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation_html_child_page", "Child page does not exist in language-specific item agggregation");
+                return null;
+            }
+
+            if (childPage.Source_Data_Type != Item_Aggregation_Child_Source_Data_Enum.Static_HTML)
+            {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation_html_child_page", "Child page exists in language-specific item aggregation, but it is not of type static html");
+                return null;
+            }
 
             string path = Path.Combine("/design/", itemAggr.ObjDirectory, childPage.Source);
             string file = HttpContext.Current.Server.MapPath(path);
 
+            Tracer.Add_Trace("AggregationServices.get_item_aggregation_html_child_page", "Attempting to read source file for child page");
             HTML_Based_Content results = HTML_Based_Content_Reader.Read_HTML_File(file, true, Tracer);
 
             if (results != null)
             {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation_html_child_page", "Storing build child page in the cache");
+
                 CachedDataManager.Aggregations.Store_Aggregation_HTML_Based_Content(AggregationCode, RequestedLanguage, ChildPageCode, results, Tracer);
+            }
+            else
+            {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation_html_child_page", "Child page object returned from HTML_Based_Content_Reader was null.. returning NULL");
             }
 
             return results;
@@ -382,16 +509,37 @@ namespace SobekCM.Engine_Library.Endpoints
             // Try to pull from the cache
             Item_Aggregation cacheInst = CachedDataManager.Aggregations.Retrieve_Item_Aggregation(AggregationCode, RequestedLanguage, Tracer);
             if (cacheInst != null)
+            {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation", "Found language-specific item aggregation in the cache");
                 return cacheInst;
+            }
+
+            Tracer.Add_Trace("AggregationServices.get_item_aggregation", "Language-specific item aggregation NOT found in the cache.. will build");
 
             // Get the complete aggregation
             Complete_Item_Aggregation compAggr = get_complete_aggregation(AggregationCode, true, Tracer);
 
+            // If the complete aggregation was null, just return null now
+            if (compAggr == null)
+            {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation", "Complete item aggregation not built correctly.. returning NULL");
+                return null;
+            }
+
             // Get the language-specific version
             Item_Aggregation returnValue = Item_Aggregation_Utilities.Get_Item_Aggregation(compAggr, RequestedLanguage, Tracer);
 
-            // Store in cache again
-            CachedDataManager.Aggregations.Store_Item_Aggregation(AggregationCode, RequestedLanguage, returnValue, Tracer);
+            // Store in cache again, if not NULL
+            if (returnValue != null)
+            {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation", "Storing built Language-specific item aggregation in cache");
+
+                CachedDataManager.Aggregations.Store_Item_Aggregation(AggregationCode, RequestedLanguage, returnValue, Tracer);
+            }
+            else
+            {
+                Tracer.Add_Trace("AggregationServices.get_item_aggregation", "Language-specific item aggregation not built correctly by Item_Aggregation_Utilities.Get_Item_Aggregation.. returning NULL");
+            }
 
             return returnValue;
         }
@@ -409,7 +557,12 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 Complete_Item_Aggregation cacheAggr = CachedDataManager.Aggregations.Retrieve_Complete_Item_Aggregation(AggregationCode, Tracer);
                 if (cacheAggr != null)
+                {
+                    Tracer.Add_Trace("AggregationServices.get_complete_aggregation", "Found complete item aggregation in the cache");
                     return cacheAggr;
+                }
+
+                Tracer.Add_Trace("AggregationServices.get_complete_aggregation", "Complete item aggregation NOT found in the cache.. will build");
 
                 // Either use the cache version, or build the complete item aggregation
                 Complete_Item_Aggregation itemAggr = Item_Aggregation_Utilities.Get_Complete_Item_Aggregation(AggregationCode, Tracer);
@@ -417,13 +570,21 @@ namespace SobekCM.Engine_Library.Endpoints
                 // Now, save this to the cache
                 if (itemAggr != null)
                 {
+                    Tracer.Add_Trace("AggregationServices.get_complete_aggregation", "Store the built complete item aggregation in the cache");
+
                     CachedDataManager.Aggregations.Store_Complete_Item_Aggregation(AggregationCode, itemAggr, Tracer);
+                }
+                else
+                {
+                    Tracer.Add_Trace("AggregationServices.get_complete_aggregation", "Output from Item_Aggregation_Utilities.Get_Complete_Item_Aggregation is NULL");
                 }
 
                 return itemAggr;
             }
             else
             {
+                Tracer.Add_Trace("AggregationServices.get_complete_aggregation", "UseCache parameter is FALSE, will not use the cache for this request");
+
                 return Item_Aggregation_Utilities.Get_Complete_Item_Aggregation(AggregationCode, Tracer);
             }
         }

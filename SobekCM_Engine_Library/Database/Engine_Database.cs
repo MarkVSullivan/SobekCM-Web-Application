@@ -84,7 +84,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_Group_Details", "");
+                Tracer.Add_Trace("Engine_Database.Get_Item_Group_Details", "");
             }
 
             try
@@ -104,9 +104,9 @@ namespace SobekCM.Engine_Library.Database
                 lastException = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Group_Details", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Group_Details", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Group_Details", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Group_Details", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Group_Details", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Group_Details", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return null;
             }
@@ -122,7 +122,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_Details", "");
+                Tracer.Add_Trace("Engine_Database.Get_Item_Details", "");
             }
 
             try
@@ -143,9 +143,9 @@ namespace SobekCM.Engine_Library.Database
                 lastException = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Details", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Details", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Details", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Details", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Details", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Details", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return null;
             }
@@ -227,9 +227,9 @@ namespace SobekCM.Engine_Library.Database
                 Last_Exception = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Ranges", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Ranges", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_IP_Restriction_Ranges", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_IP_Restriction_Ranges", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_IP_Restriction_Ranges", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_IP_Restriction_Ranges", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return null;
             }
@@ -247,7 +247,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.StopWords", "Pull search stop words from the database");
+                Tracer.Add_Trace("Engine_Database.StopWords", "Pull search stop words from the database");
             }
 
             // Build return list
@@ -282,9 +282,9 @@ namespace SobekCM.Engine_Library.Database
                 Last_Exception = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.StopWords", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.StopWords", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.StopWords", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.StopWords", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.StopWords", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.StopWords", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return null;
             }
@@ -299,7 +299,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Populate_Thematic_Headings", "Pull thematic heading information from the database");
+                Tracer.Add_Trace("Engine_Database.Populate_Thematic_Headings", "Pull thematic heading information from the database");
             }
 
             try
@@ -326,9 +326,9 @@ namespace SobekCM.Engine_Library.Database
                 Last_Exception = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Thematic_Headings", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Thematic_Headings", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Thematic_Headings", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Thematic_Headings", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Thematic_Headings", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Thematic_Headings", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return false;
             }
@@ -343,7 +343,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Populate_Aggregation_Aliases", "Pull item aggregation aliases from the database");
+                Tracer.Add_Trace("Engine_Database.Populate_Aggregation_Aliases", "Pull item aggregation aliases from the database");
             }
 
             try
@@ -370,9 +370,9 @@ namespace SobekCM.Engine_Library.Database
                 Last_Exception = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Aggregation_Aliases", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Aggregation_Aliases", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Aggregation_Aliases", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Aggregation_Aliases", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Aggregation_Aliases", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Aggregation_Aliases", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return false;
             }
@@ -386,7 +386,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Get_All_User_Groups", String.Empty);
             }
 
             try
@@ -421,9 +421,9 @@ namespace SobekCM.Engine_Library.Database
                 lastException = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_All_User_Groups", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_All_User_Groups", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_All_User_Groups", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_All_User_Groups", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return null;
             }
@@ -438,7 +438,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_All_Skins", "Pull display skin information from the database");
+                Tracer.Add_Trace("Engine_Database.Get_All_Skins", "Pull display skin information from the database");
             }
 
             // Define a temporary dataset
@@ -459,7 +459,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Viewer_Priority", "Pulling from database");
+                Tracer.Add_Trace("Engine_Database.Get_Viewer_Priority", "Pulling from database");
             }
 
             try
@@ -487,9 +487,9 @@ namespace SobekCM.Engine_Library.Database
                 lastException = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Viewer_Priority", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Viewer_Priority", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Viewer_Priority", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Viewer_Priority", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Viewer_Priority", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Viewer_Priority", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return null;
             }
@@ -504,7 +504,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Populate_Code_Manager", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Populate_Code_Manager", String.Empty);
             }
 
             // Create the connection
@@ -612,7 +612,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Populate_Icon_List", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Populate_Icon_List", String.Empty);
             }
 
             // Create the connection
@@ -652,7 +652,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Populate_MIME_List", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Populate_MIME_List", String.Empty);
             }
 
             // Create the connection
@@ -692,7 +692,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", "Pulling statistics date information from database");
+                Tracer.Add_Trace("Engine_Database.Populate_Statistics_Dates", "Pulling statistics date information from database");
             }
 
             try
@@ -712,9 +712,9 @@ namespace SobekCM.Engine_Library.Database
                 lastException = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Statistics_Dates", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Statistics_Dates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Statistics_Dates", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Statistics_Dates", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return false;
             }
@@ -730,7 +730,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Populate_Translations", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Populate_Translations", String.Empty);
             }
 
             try
@@ -765,9 +765,9 @@ namespace SobekCM.Engine_Library.Database
                 lastException = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Translations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Translations", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Translations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Translations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Translations", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Translations", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return false;
             }
@@ -783,7 +783,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", "Pull URL portal information from the database");
+                Tracer.Add_Trace("Engine_Database.Populate_URL_Portals", "Pull URL portal information from the database");
             }
 
             try
@@ -859,9 +859,9 @@ namespace SobekCM.Engine_Library.Database
                 Portals.Default_Portal = Portals.Add_Portal(-1, "Default SobekCM Library", "Sobek", "all", "sobek", "", "");
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Populate_URL_Portals", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_URL_Portals", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_URL_Portals", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_URL_Portals", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return false;
             }
@@ -882,7 +882,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Edit_Thematic_Heading", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Edit_Thematic_Heading", String.Empty);
             }
 
             try
@@ -914,7 +914,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Delete_Thematic_Heading", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Delete_Thematic_Heading", String.Empty);
             }
 
             try
@@ -962,7 +962,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", "Trying to pull information for " + BibID + "_" + VID);
+                Tracer.Add_Trace("Engine_Database.Get_Item_Information", "Trying to pull information for " + BibID + "_" + VID);
             }
 
             try
@@ -989,9 +989,9 @@ namespace SobekCM.Engine_Library.Database
                 lastException = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Information", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Information", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Information", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return null;
             }
@@ -1008,7 +1008,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", "Trying to pull information for " + BibID + "_" + VID);
+                Tracer.Add_Trace("Engine_Database.Get_Item_Information", "Trying to pull information for " + BibID + "_" + VID);
             }
 
             try
@@ -1035,9 +1035,9 @@ namespace SobekCM.Engine_Library.Database
                 lastException = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Information", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Information", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Information", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Information", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return null;
             }
@@ -1053,7 +1053,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Verify_Item_Lookup_Object", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Verify_Item_Lookup_Object", String.Empty);
             }
 
             // If no database string, don't try to connect
@@ -1097,7 +1097,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Populate_Item_Lookup_Object", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Populate_Item_Lookup_Object", String.Empty);
             }
 
             try
@@ -1153,9 +1153,9 @@ namespace SobekCM.Engine_Library.Database
                 lastException = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Item_Lookup_Object", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Item_Lookup_Object", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Populate_Item_Lookup_Object", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Item_Lookup_Object", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Item_Lookup_Object", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Populate_Item_Lookup_Object", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return false;
             }
@@ -1218,7 +1218,7 @@ namespace SobekCM.Engine_Library.Database
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("SobekCM_Database.Perform_Metadata_Search_Paged", "Performing search in database");
+				Tracer.Add_Trace("Engine_Database.Perform_Metadata_Search_Paged", "Performing search in database");
 			}
 
 			Multiple_Paged_Results_Args returnArgs;
@@ -1400,7 +1400,7 @@ namespace SobekCM.Engine_Library.Database
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("SobekCM_Database.Perform_Basic_Search_Paged", "Performing basic search in database");
+				Tracer.Add_Trace("Engine_Database.Perform_Basic_Search_Paged", "Performing basic search in database");
 			}
 
 			Multiple_Paged_Results_Args returnArgs;
@@ -1553,7 +1553,7 @@ namespace SobekCM.Engine_Library.Database
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("SobekCM_Database.Perform_Metadata_Exact_Search_Paged", "Performing exact search in database");
+				Tracer.Add_Trace("Engine_Database.Perform_Metadata_Exact_Search_Paged", "Performing exact search in database");
 			}
 
 			Multiple_Paged_Results_Args returnArgs;
@@ -1661,7 +1661,7 @@ namespace SobekCM.Engine_Library.Database
 				{
 					if (Tracer != null)
 					{
-						Tracer.Add_Trace("SobekCM_Database.Perform_Metadata_Exact_Search_Paged", "Building result object from returned value");
+						Tracer.Add_Trace("Engine_Database.Perform_Metadata_Exact_Search_Paged", "Building result object from returned value");
 					}
 
 					// Create the return argument object
@@ -2137,7 +2137,7 @@ namespace SobekCM.Engine_Library.Database
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("SobekCM_Database.Get_Items_By_Coordinates", "Pulling data from database");
+				Tracer.Add_Trace("Engine_Database.Get_Items_By_Coordinates", "Pulling data from database");
 			}
 
 			Multiple_Paged_Results_Args returnArgs;
@@ -2263,7 +2263,7 @@ namespace SobekCM.Engine_Library.Database
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("SobekCM_Database.Items_By_OCLC_Number", "Searching by OCLC in the database");
+				Tracer.Add_Trace("Engine_Database.Items_By_OCLC_Number", "Searching by OCLC in the database");
 			}
 
 			// Build the parameter list
@@ -2315,7 +2315,7 @@ namespace SobekCM.Engine_Library.Database
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("SobekCM_Database.Items_By_ALEPH_Number", "Searching by ALEPH in the database");
+				Tracer.Add_Trace("Engine_Database.Items_By_ALEPH_Number", "Searching by ALEPH in the database");
 			}
 
 			// Build the parameter list
@@ -2374,7 +2374,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_User_Folder_Browse", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Get_User_Folder_Browse", String.Empty);
             }
 
             Single_Paged_Results_Args returnArgs;
@@ -2490,7 +2490,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Public_Folder_Browse", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Get_Public_Folder_Browse", String.Empty);
             }
 
             Single_Paged_Results_Args returnArgs;
@@ -2636,7 +2636,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.SobekCM_Get_All_Browse_Paged", "Pulling browse from database");
+                Tracer.Add_Trace("Engine_Database.SobekCM_Get_All_Browse_Paged", "Pulling browse from database");
             }
 
 
@@ -2752,9 +2752,9 @@ namespace SobekCM.Engine_Library.Database
                 lastException = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Get_All_Browse_Paged", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_All_Browse_Paged", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_All_Browse_Paged", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_All_Browse_Paged", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_All_Browse_Paged", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_All_Browse_Paged", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 throw;
             }
@@ -2811,7 +2811,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Browse_Paged", "Pulling browse from database");
+                Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation_Browse_Paged", "Pulling browse from database");
             }
 
             Multiple_Paged_Results_Args returnArgs;
@@ -2942,7 +2942,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Metadata_Browse", "Pull the metadata browse");
+                Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation_Metadata_Browse", "Pull the metadata browse");
             }
 
             // Build the parameter list
@@ -2972,7 +2972,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_All_Coordinate_Points_By_Aggregation", "Pull the coordinate list");
+                Tracer.Add_Trace("Engine_Database.Get_All_Coordinate_Points_By_Aggregation", "Pull the coordinate list");
             }
 
             // Build the parameter list
@@ -2997,7 +2997,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Counts", "Add the title, item, and page count to the item aggregation object");
+                Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation_Counts", "Add the title, item, and page count to the item aggregation object");
             }
 
             try
@@ -3025,9 +3025,9 @@ namespace SobekCM.Engine_Library.Database
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Counts", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Counts", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation_Counts", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation_Counts", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation_Counts", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation_Counts", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return false;
             }
@@ -3044,7 +3044,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", "Pulling item aggregation data from database");
+                Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation", "Pulling item aggregation data from database");
             }
 
             try
@@ -3081,9 +3081,9 @@ namespace SobekCM.Engine_Library.Database
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 
                 throw ee;
@@ -3098,7 +3098,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Main_Aggregation", "Pulling item aggregation data from database");
+                Tracer.Add_Trace("Engine_Database.Get_Main_Aggregation", "Pulling item aggregation data from database");
             }
 
             try
@@ -3129,9 +3129,9 @@ namespace SobekCM.Engine_Library.Database
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Main_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Main_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Main_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Main_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Main_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Main_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 throw;
             }
@@ -3327,7 +3327,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Hierarchies", "Pulling from database");
+                Tracer.Add_Trace("Engine_Database.Get_Aggregation_Hierarchies", "Pulling from database");
             }
 
             try
@@ -3349,9 +3349,9 @@ namespace SobekCM.Engine_Library.Database
                 lastException = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Hierarchies", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Hierarchies", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Get_Aggregation_Hierarchies", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Aggregation_Hierarchies", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Aggregation_Hierarchies", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Aggregation_Hierarchies", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return null;
             }
@@ -3414,7 +3414,7 @@ namespace SobekCM.Engine_Library.Database
 
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Save_Item_Aggregation", String.Empty);
+                Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation", String.Empty);
             }
 
             try
@@ -3464,9 +3464,9 @@ namespace SobekCM.Engine_Library.Database
                 lastException = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("SobekCM_Database.Save_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("SobekCM_Database.Save_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return false;
             }
@@ -3630,9 +3630,9 @@ namespace SobekCM.Engine_Library.Database
             if (Tracer != null)
             {
                 if (Aggregation_Code.Length == 0)
-                    Tracer.Add_Trace("SobekCM_Database.Simple_Item_List", "Pulling simple item list for all items");
+                    Tracer.Add_Trace("Engine_Database.Simple_Item_List", "Pulling simple item list for all items");
                 else
-                    Tracer.Add_Trace("SobekCM_Database.Simple_Item_List", "Pulling simple item list for '" + Aggregation_Code + "'");
+                    Tracer.Add_Trace("Engine_Database.Simple_Item_List", "Pulling simple item list for '" + Aggregation_Code + "'");
             }
 
             // Define a temporary dataset
@@ -3679,7 +3679,7 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("SobekCM_Database.Get_Random_Item", "Get random item");
+                Tracer.Add_Trace("Engine_Database.Get_Random_Item", "Get random item");
             }
 
             // Define a temporary dataset

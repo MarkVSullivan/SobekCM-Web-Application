@@ -1,11 +1,12 @@
-﻿using System;
+﻿#region Using references
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Web;
 using Jil;
-using ProtoBuf;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Skins;
 using SobekCM.Engine_Library.ApplicationState;
@@ -14,10 +15,12 @@ using SobekCM.Engine_Library.Microservices;
 using SobekCM.Engine_Library.Skins;
 using SobekCM.Tools;
 
+#endregion
+
 namespace SobekCM.Engine_Library.Endpoints
 {
     /// <summary> Class supports all the web skin-level services provided by the SobekCM engine </summary>
-    public class WebSkinServices
+    public class WebSkinServices : EndpointBase
     {
         /// <summary> Gets the complete (language agnostic) web skin, by web skin code </summary>
         /// <param name="Response"></param>
@@ -29,32 +32,52 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 Custom_Tracer tracer = new Custom_Tracer();
 
-                string skinCode = UrlSegments[0];
-                tracer.Add_Trace("WebSkinServices.GetCompleteWebSkin", "Getting skin for '" + skinCode + "'");
-
-                Complete_Web_Skin_Object returnValue = get_complete_web_skin(skinCode, tracer);
-
-
-                switch (Protocol)
+                try
                 {
-                    case Microservice_Endpoint_Protocol_Enum.JSON:
-                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                        break;
+                    string skinCode = UrlSegments[0];
+                    tracer.Add_Trace("WebSkinServices.GetCompleteWebSkin", "Getting skin for '" + skinCode + "'");
 
-                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                        Serializer.Serialize(Response.OutputStream, returnValue);
-                        break;
+                    Complete_Web_Skin_Object returnValue = get_complete_web_skin(skinCode, tracer);
 
-                    case Microservice_Endpoint_Protocol_Enum.JSON_P:
-                        Response.Output.Write("parseCompleteSkinn(");
-                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
-                        Response.Output.Write(");");
-                        break;
+                    // If this was debug mode, then just write the tracer
+                    if (QueryString["debug"] == "debug")
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
 
-                    case Microservice_Endpoint_Protocol_Enum.XML:
-                        System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
-                        x.Serialize(Response.Output, returnValue);
-                        break;
+                        return;
+                    }
+
+                    // Get the JSON-P callback function
+                    string json_callback = "parseCompleteSkin";
+                    if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                    {
+                        json_callback = QueryString["callback"];
+                    }
+
+                    // Use the base class to serialize the object according to request protocol
+                    Serialize(returnValue, Response, Protocol, json_callback);
+                }
+                catch (Exception ee)
+                {
+                    if (QueryString["debug"] == "debug")
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
+                    }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+                    Response.StatusCode = 500;
                 }
             }
         }
@@ -81,6 +104,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                     returnValue = get_web_skin(skinCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
 
+                    // If this was debug mode, then just write the tracer
                     if (QueryString["debug"] == "debug")
                     {
                         Response.ContentType = "text/plain";
@@ -106,31 +130,22 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         return;
                     }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+                    Response.StatusCode = 500;
+                    return;
                 }
 
-
-
-                switch (Protocol)
+                // Get the JSON-P callback function
+                string json_callback = "parseWebSkin";
+                if (( Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && ( !String.IsNullOrEmpty(QueryString["callback"])))
                 {
-                    case Microservice_Endpoint_Protocol_Enum.JSON:
-                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                        break;
-
-                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                        Serializer.Serialize(Response.OutputStream, returnValue);
-                        break;
-
-                    case Microservice_Endpoint_Protocol_Enum.JSON_P:
-                        Response.Output.Write("parseCompleteSkinn(");
-                        JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
-                        Response.Output.Write(");");
-                        break;
-
-                    case Microservice_Endpoint_Protocol_Enum.XML:
-                        System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
-                        x.Serialize(Response.Output, returnValue);
-                        break;
+                    json_callback = QueryString["callback"];
                 }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(returnValue, Response, Protocol, json_callback);
             }
         }
 
@@ -140,14 +155,15 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         public void GetOrderedCodes(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
-            if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
+            // Get the JSON-P callback function
+            string json_callback = "parseSkinCodes";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
             {
-                JSON.Serialize(Engine_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes, Response.Output, Options.ISO8601ExcludeNulls);
+                json_callback = QueryString["callback"];
             }
-            else
-            {
-                Serializer.Serialize(Response.OutputStream, Engine_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes);
-            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes, Response, Protocol, json_callback);
         }
 
         /// <summary> [PUBLIC] Get the list of uploaded images for a particular web skin </summary>

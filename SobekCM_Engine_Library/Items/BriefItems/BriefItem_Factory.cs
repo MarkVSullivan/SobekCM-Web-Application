@@ -7,6 +7,7 @@ using System.Xml;
 using SobekCM.Engine_Library.Items.BriefItems.Mappers;
 using SobekCM.Resource_Object;
 using SobekCM.Core.BriefItem;
+using SobekCM.Tools;
 
 namespace SobekCM.Engine_Library.Items.BriefItems
 {
@@ -28,21 +29,28 @@ namespace SobekCM.Engine_Library.Items.BriefItems
         /// <summary> Create the BriefItemInfo from a full METS-based SobekCM_Item object,
         /// using the default mapping set </summary>
         /// <param name="Original"> Original METS-based object to use </param>
+        /// <param name="Tracer"> Custom tracer to record general process flow </param>
         /// <returns> Completely built BriefItemInfo object from the METS-based SobekCM_Item object </returns>
-        public static BriefItemInfo Create(SobekCM_Item Original)
+        public static BriefItemInfo Create(SobekCM_Item Original, Custom_Tracer Tracer)
         {
             // Determine the mapping set
             string mappingSet = defaultSetId;
             if (((String.IsNullOrEmpty(mappingSet)) || ( !mappingSets.ContainsKey(mappingSet))) && ( mappingSets.Count > 0 ))
             {
+                Tracer.Add_Trace("BriefItem_Factory.Create", "Default mapping set is not present.  Will use (arbitrarily) first set instead.");
+
                 mappingSet = mappingSets.Keys.First();
             }
 
             // If still no mapping set, return NULL
             if ((String.IsNullOrEmpty(mappingSet)) || (!mappingSets.ContainsKey(mappingSet)))
+            {
+                Tracer.Add_Trace("BriefItem_Factory.Create", "No suitable mapping set could be found.  Returning NULL");
                 return null;
+            }
 
             // Create the mostly empty new brief item
+            Tracer.Add_Trace("BriefItem_Factory.Create", "Create the mostly empty new brief item");
             BriefItemInfo newItem = new BriefItemInfo
             {
                 BibID = Original.BibID, 
@@ -51,9 +59,11 @@ namespace SobekCM.Engine_Library.Items.BriefItems
             };
 
             // Build the new item using the selected mapping set
+            Tracer.Add_Trace("BriefItem_Factory.Create", "Use the set of mappers to map data to the brief item");
             List<IBriefItemMapper> mappers = mappingSets[mappingSet];
             foreach (IBriefItemMapper thisMapper in mappers)
             {
+                Tracer.Add_Trace("BriefItem_Factory.Create", "...." + thisMapper.GetType().ToString().Replace("SobekCM.Engine_Library.Items.BriefItems.Mappers.", ""));
                 thisMapper.MapToBriefItem(Original, newItem);
             }
 
@@ -64,27 +74,36 @@ namespace SobekCM.Engine_Library.Items.BriefItems
         /// using the default mapping set </summary>
         /// <param name="Original"> Original METS-based object to use </param>
         /// <param name="MappingSetId"> Name of the mapping set to use (if there are more than one)</param>
+        /// <param name="Tracer"> Custom tracer to record general process flow </param>
         /// <returns> Completely built BriefItemInfo object from the METS-based SobekCM_Item object </returns>
-        public static BriefItemInfo Create(SobekCM_Item Original, string MappingSetId )
+        public static BriefItemInfo Create(SobekCM_Item Original, string MappingSetId, Custom_Tracer Tracer )
         {
             // Ensure the mapping set exists
             if (!mappingSets.ContainsKey(MappingSetId))
             {
+                Tracer.Add_Trace("BriefItem_Factory.Create", "Requested MappingSetID '" + MappingSetId + "' not found.  Will use default set instead.");
+
                 // Just try to use the default
                 MappingSetId = defaultSetId;
 
                 // Determine the mapping set
                 if (((String.IsNullOrEmpty(MappingSetId)) || (!mappingSets.ContainsKey(MappingSetId))) && (mappingSets.Count > 0))
                 {
+                    Tracer.Add_Trace("BriefItem_Factory.Create", "Default mapping set is not present either.  Will use (arbitrarily) first set instead.");
+
                     MappingSetId = mappingSets.Keys.First();
                 }
 
                 // If still no mapping set, return NULL
                 if ((String.IsNullOrEmpty(MappingSetId)) || (!mappingSets.ContainsKey(MappingSetId)))
+                {
+                    Tracer.Add_Trace("BriefItem_Factory.Create", "No suitable mapping set could be found.  Returning NULL");
                     return null;
+                }
             }
 
             // Create the mostly empty new brief item
+            Tracer.Add_Trace("BriefItem_Factory.Create", "Create the mostly empty new brief item");
             BriefItemInfo newItem = new BriefItemInfo
             {
                 BibID = Original.BibID,
@@ -93,9 +112,11 @@ namespace SobekCM.Engine_Library.Items.BriefItems
             };
 
             // Build the new item using the selected mapping set
+            Tracer.Add_Trace("BriefItem_Factory.Create", "Use the set of mappers to map data to the brief item");
             List<IBriefItemMapper> mappers = mappingSets[MappingSetId];
             foreach (IBriefItemMapper thisMapper in mappers)
             {
+                Tracer.Add_Trace("BriefItem_Factory.Create", "...." + thisMapper.GetType().ToString().Replace("SobekCM.Engine_Library.Items.BriefItems.Mappers.",""));
                 thisMapper.MapToBriefItem(Original, newItem);
             }
 

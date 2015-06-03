@@ -3,7 +3,7 @@ using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Core.BriefItem;
 
-namespace SobekCM.Engine_Library.Items.BriefItems
+namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {
     /// <summary> Maps all the Thesis and Dissertation specific metadata from the METS-based SobekCM_Item object
     /// to the BriefItem, used for most the public functions of the front-end </summary>

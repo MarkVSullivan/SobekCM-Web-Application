@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
+using Jil;
+using ProtoBuf;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Microservices;
@@ -14,12 +18,85 @@ namespace SobekCM.Engine_Library.Endpoints
     /// <summary> Endpoint supports services related to the static web content, CMS functionality </summary>
     public class WebContentServices
     {
+        public enum WebContentEndpointErrorEnum : byte
+        {
+            NONE,
+
+            No_File_Found,
+     
+            Error_Reading_File
+        }
+
         /// <summary> Resolve the URL to a Navigation_Object </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
         public void Get_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
+            WebContentEndpointErrorEnum errorType;
+            HTML_Based_Content returnValue = get_html_content(UrlSegments, out errorType);
+            if (returnValue == null)
+            {
+                switch (errorType)
+                {
+                    case WebContentEndpointErrorEnum.Error_Reading_File:
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("Unable to read existing source file");
+                        Response.StatusCode = 500;
+                        return;
+
+                    case WebContentEndpointErrorEnum.No_File_Found:
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("Source file does not exist");
+                        Response.StatusCode = 404;
+                        return;
+
+                    default:
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("Error occurred");
+                        Response.StatusCode = 500;
+                        return;
+                }
+            }
+
+            switch (Protocol)
+            {
+                case Microservice_Endpoint_Protocol_Enum.JSON:
+                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                    Serializer.Serialize(Response.OutputStream, returnValue);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                    Response.Output.Write("parseCollectionStaticPage(");
+                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
+                    Response.Output.Write(");");
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.XML:
+                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
+                    x.Serialize(Response.Output, returnValue);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.BINARY:
+                    IFormatter binary = new BinaryFormatter();
+                    binary.Serialize(Response.OutputStream, returnValue);
+                    break;
+            }
+        }
+
+        /// <summary> Helper method retrieves HTML web content </summary>
+        /// <param name="UrlSegments"> URL segments </param>
+        /// <param name="ErrorType"> Any error enocuntered during the process </param>
+        /// <returns> Built HTML content object, or NULL </returns>
+        public HTML_Based_Content get_html_content(List<string> UrlSegments, out WebContentEndpointErrorEnum ErrorType)
+        {
+            // Set a default error message first
+            ErrorType = WebContentEndpointErrorEnum.NONE;
+
+            // Build the directory to look for the static content
             StringBuilder possibleInfoModeBuilder = new StringBuilder();
             if (UrlSegments.Count > 0)
             {
@@ -65,22 +142,20 @@ namespace SobekCM.Engine_Library.Endpoints
                 // If this was found, build it and return it
                 if (!String.IsNullOrEmpty(found_source))
                 {
-                    HTML_Based_Content Simple_Web_Content = HTML_Based_Content_Reader.Read_HTML_File(source, true, null);
+                    HTML_Based_Content simpleWebContent = HTML_Based_Content_Reader.Read_HTML_File(source, true, null);
 
-                    if ((Simple_Web_Content == null) || (Simple_Web_Content.Content.Length == 0))
+                    if ((simpleWebContent == null) || (simpleWebContent.Content.Length == 0))
                     {
-                        Response.ContentType = "text/plain";
-                        Response.Output.WriteLine("Unable to read existing source file");
-                        Response.StatusCode = 500;
-                        return;
+                        ErrorType = WebContentEndpointErrorEnum.Error_Reading_File;
+                        return null;
                     }
 
                     // Now, check for any "server-side include" directorives in the source text
-                    int include_index = Simple_Web_Content.Content.IndexOf("<%INCLUDE");
-                    while ((include_index > 0) && (Simple_Web_Content.Content.IndexOf("%>", include_index, StringComparison.Ordinal) > 0))
+                    int include_index = simpleWebContent.Content.IndexOf("<%INCLUDE");
+                    while ((include_index > 0) && (simpleWebContent.Content.IndexOf("%>", include_index, StringComparison.Ordinal) > 0))
                     {
-                        int include_finish_index = Simple_Web_Content.Content.IndexOf("%>", include_index, StringComparison.Ordinal) + 2;
-                        string include_statement = Simple_Web_Content.Content.Substring(include_index, include_finish_index - include_index);
+                        int include_finish_index = simpleWebContent.Content.IndexOf("%>", include_index, StringComparison.Ordinal) + 2;
+                        string include_statement = simpleWebContent.Content.Substring(include_index, include_finish_index - include_index);
                         string include_statement_upper = include_statement.ToUpper();
                         int file_index = include_statement_upper.IndexOf("FILE");
                         string filename_to_include = String.Empty;
@@ -162,21 +237,25 @@ namespace SobekCM.Engine_Library.Endpoints
                             }
 
                             // Replace the text with the include file
-                            Simple_Web_Content.Content = Simple_Web_Content.Content.Replace(include_statement, include_text);
-                            include_index = Simple_Web_Content.Content.IndexOf("<%INCLUDE", include_index + include_text.Length - 1, StringComparison.Ordinal);
+                            simpleWebContent.Content = simpleWebContent.Content.Replace(include_statement, include_text);
+                            include_index = simpleWebContent.Content.IndexOf("<%INCLUDE", include_index + include_text.Length - 1, StringComparison.Ordinal);
                         }
                         else
                         {
                             // No suitable name was found, or it doesn't exist so just remove the INCLUDE completely
-                            Simple_Web_Content.Content = Simple_Web_Content.Content.Replace(include_statement, "");
-                            include_index = Simple_Web_Content.Content.IndexOf("<%INCLUDE", include_index, StringComparison.Ordinal);
+                            simpleWebContent.Content = simpleWebContent.Content.Replace(include_statement, "");
+                            include_index = simpleWebContent.Content.IndexOf("<%INCLUDE", include_index, StringComparison.Ordinal);
                         }
                     }
 
                     // Now, return the web content object, with the text
-
+                    return simpleWebContent;
                 }
             }
+
+            // Was never found
+            ErrorType = WebContentEndpointErrorEnum.No_File_Found;
+            return null;
         }
 
 
