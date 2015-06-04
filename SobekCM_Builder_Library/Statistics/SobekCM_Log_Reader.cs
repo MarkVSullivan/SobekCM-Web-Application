@@ -149,7 +149,7 @@ namespace SobekCM.Builder_Library.Statistics
                     try
                     {
                         Navigation_Object currentMode = new Navigation_Object();
-                        SobekCM_QueryString_Analyzer.Parse_Query(queryStringCollection, currentMode, hit.SobekCM_URL,
+                        QueryString_Analyzer.Parse_Query(queryStringCollection, currentMode, hit.SobekCM_URL,
                             new string[] { "en" }, Engine_ApplicationCache_Gateway.Codes, Engine_ApplicationCache_Gateway.Collection_Aliases,
                             Engine_ApplicationCache_Gateway.Items, Engine_ApplicationCache_Gateway.URL_Portals, null);
 

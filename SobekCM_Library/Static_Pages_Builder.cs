@@ -416,7 +416,7 @@ namespace SobekCM.Library
 		                items = Engine_Database.Simple_Item_List(code, tracer);
 
 		                // Get the item aggregation object
-                        Item_Aggregation aggregation = SobekEngineClient.Aggregations.Get_Aggregation(code.ToLower(), UI_ApplicationCache_Gateway.Settings.Default_UI_Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, null);
+                        Item_Aggregation aggregation = SobekEngineClient.Aggregations.Get_Aggregation(code.ToLower(), UI_ApplicationCache_Gateway.Settings.Default_UI_Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
 
 
 		                // Build the static browse pages
@@ -456,7 +456,7 @@ namespace SobekCM.Library
             Console.WriteLine(InstanceName + @"Building static links page for ALL ITEMS");
 			SobekCM_Database.Builder_Add_Log_Entry(PrimaryLogId, String.Empty, "Standard", "Building static links page for ALL ITEMS", String.Empty);
 
-            Item_Aggregation allAggregation = SobekEngineClient.Aggregations.Get_Aggregation("all", UI_ApplicationCache_Gateway.Settings.Default_UI_Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, null);
+            Item_Aggregation allAggregation = SobekEngineClient.Aggregations.Get_Aggregation("all", UI_ApplicationCache_Gateway.Settings.Default_UI_Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
 
             Build_All_Browse(allAggregation, items);
 
@@ -683,7 +683,8 @@ namespace SobekCM.Library
 		        currentMode.Skin = Aggregation.Web_Skins[0];
 
            // Get the skin object
-            Web_Skin_Object skinObject = assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
+            Custom_Tracer tracer = new Custom_Tracer();
+            Web_Skin_Object skinObject = assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, tracer);
             if (skinObject == null)
                 return true;
   
