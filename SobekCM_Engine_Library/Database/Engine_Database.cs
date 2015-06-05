@@ -1244,7 +1244,7 @@ namespace SobekCM.Engine_Library.Database
             parameters.Add(totalItemsParameter);
 
             EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
-            parameters.Add(totalItemsParameter);
+            parameters.Add(totalTitlesParameter);
 
             // Add parameters for items and titles if this search is expanded to include all aggregationPermissions
             EalDbParameter expandedItemsParameter = new EalDbParameter("@all_collections_items", 0) {Direction = ParameterDirection.InputOutput};
@@ -1274,9 +1274,11 @@ namespace SobekCM.Engine_Library.Database
                 stats.All_Collections_Items = Convert.ToInt32(expandedItemsParameter.Value);
                 stats.All_Collections_Titles = Convert.ToInt32(expandedTitlesParameter.Value);
             }
-
-            // Close the reader (which also closes the connection)
-            readerWrapper.Close();
+            else
+            {
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+            }
 
             // Return the built result arguments
             return returnArgs;
@@ -1388,15 +1390,17 @@ namespace SobekCM.Engine_Library.Database
             {
                 Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
                 returnArgs.Statistics = stats;
-                reader.Close();
+                readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
                 stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
                 stats.All_Collections_Items = Convert.ToInt32(expandedItemsParameter.Value);
                 stats.All_Collections_Titles = Convert.ToInt32(expandedTitlesParameter.Value);
             }
-
-            // Close the reader (which also closes the connection)
-            readerWrapper.Close();
+            else
+            {
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+            }
 
             // Return the built result arguments
             return returnArgs;
@@ -1516,15 +1520,17 @@ namespace SobekCM.Engine_Library.Database
             {
                 Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
                 returnArgs.Statistics = stats;
-                reader.Close();
+                readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
                 stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
                 stats.All_Collections_Items = Convert.ToInt32(expandedItemsParameter.Value);
                 stats.All_Collections_Titles = Convert.ToInt32(expandedTitlesParameter.Value);
             }
-
-            // Close the reader (which also closes the connection)
-            readerWrapper.Close();
+            else
+            {
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+            }
 
             // Return the built result arguments
             return returnArgs;
@@ -2040,13 +2046,15 @@ namespace SobekCM.Engine_Library.Database
             {
                 Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataFields);
                 returnArgs.Statistics = stats;
-                reader.Close();
+                readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
                 stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
             }
-
-            // Close the reader (which also closes the connection)
-            readerWrapper.Close();
+            else
+            {
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+            }
 
             // Return the built result arguments
             return returnArgs;
@@ -2098,13 +2106,15 @@ namespace SobekCM.Engine_Library.Database
             {
                 Search_Results_Statistics stats = new Search_Results_Statistics(reader, null, metadataFields);
                 returnArgs.Statistics = stats;
-                reader.Close();
+                readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(paramList[3].Value);
                 stats.Total_Titles = Convert.ToInt32(paramList[4].Value);
             }
-
-            // Close the reader (which also closes the connection)
-            readerWrapper.Close();
+            else
+            {
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+            }
 
             // Return the built results
             return returnArgs;
@@ -2150,13 +2160,15 @@ namespace SobekCM.Engine_Library.Database
             {
                 Search_Results_Statistics stats = new Search_Results_Statistics(reader, null, metadataFields);
                 returnArgs.Statistics = stats;
-                reader.Close();
+                readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(paramList[3].Value);
                 stats.Total_Titles = Convert.ToInt32(paramList[4].Value);
             }
-
-            // Close the reader (which also closes the connection)
-            readerWrapper.Close();
+            else
+            {
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+            }
 
             // Return the built results
             return returnArgs;
@@ -2236,13 +2248,15 @@ namespace SobekCM.Engine_Library.Database
             {
                 Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
                 returnArgs.Statistics = stats;
-                reader.Close();
+                readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
                 stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
             }
-
-            // Close the reader (which also closes the connection)
-            readerWrapper.Close();
+            else
+            {
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+            }
 
             // Return the built result arguments
             return returnArgs;
@@ -2317,13 +2331,15 @@ namespace SobekCM.Engine_Library.Database
             {
                 Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
                 returnArgs.Statistics = stats;
-                reader.Close();
+                readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
                 stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
             }
-
-            // Close the reader (which also closes the connection)
-            readerWrapper.Close();
+            else
+            {
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+            }
 
             // Return the built result arguments
             return returnArgs;
@@ -2443,13 +2459,15 @@ namespace SobekCM.Engine_Library.Database
                 {
                     Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
                     returnArgs.Statistics = stats;
-                    reader.Close();
+                    readerWrapper.Close();
                     stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
                     stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
                 }
-
-                // Close the reader (which also closes the connection)
-                readerWrapper.Close();
+                else
+                {
+                    // Close the reader (which also closes the connection)
+                    readerWrapper.Close();
+                }
             }
             catch (Exception ee)
             {
@@ -2589,12 +2607,17 @@ namespace SobekCM.Engine_Library.Database
             {
                 Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
                 returnArgs.Statistics = stats;
+                readerWrapper.Close();
                 stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
                 stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
             }
+            else
+            {
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+            }
 
-            // Close the reader (which also closes the connection)
-            readerWrapper.Close();
+
 
             // Return the built result arguments
             return returnArgs;

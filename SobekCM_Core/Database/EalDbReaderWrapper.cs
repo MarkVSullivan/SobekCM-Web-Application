@@ -1,4 +1,6 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
 
 namespace SobekCM.Core.Database
 {
@@ -10,6 +12,8 @@ namespace SobekCM.Core.Database
 
         /// <summary> Open database data reader </summary>
         public readonly DbDataReader Reader;
+
+        private List<Tuple<EalDbParameter, DbParameter>> parameterCopy;
 
         /// <summary> Constructor for an engine agnostic layer data reader </summary>
         /// <param name="Connection"> Database connection (assumed open) </param>
@@ -23,8 +27,29 @@ namespace SobekCM.Core.Database
         /// <summary> Close the data reader and the underlying database connection </summary>
         public void Close()
         {
+            // Close the reader
             Reader.Close();
+
+            // Were there parameter values to copy over?
+            if (parameterCopy != null)
+            {
+                foreach (Tuple<EalDbParameter, DbParameter> paramPair in parameterCopy)
+                {
+                    paramPair.Item1.Value = paramPair.Item2.Value;
+                }
+            }
+
+
+            // Close the connection
             connection.Close();
+        }
+
+        public void Add_Parameter_Copy_Pair(EalDbParameter EalParam, DbParameter DbParam)
+        {
+            if (parameterCopy == null)
+                parameterCopy = new List<Tuple<EalDbParameter, DbParameter>>();
+
+            parameterCopy.Add(new Tuple<EalDbParameter, DbParameter>(EalParam, DbParam));
         }
     }
 }

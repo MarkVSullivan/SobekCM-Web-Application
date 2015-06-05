@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion
@@ -145,6 +146,15 @@ namespace SobekCM.Library.HTML
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
+
+            // If this is the thumbnails results, add the QTIP script and css
+            if ((RequestSpecificValues.Results_Statistics != null) &&
+                (RequestSpecificValues.Results_Statistics.Total_Items > 0) &&
+                (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Thumbnails))
+            {
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Qtip_Js + "\"></script>");
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Jquery_Qtip_Css + "\" /> ");
+            }
         }
 
 		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>

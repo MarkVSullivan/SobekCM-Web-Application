@@ -5182,15 +5182,13 @@ namespace SobekCM.Library.Database
 	        // Create the return argument object
 	        Private_Items_List returnArgs = new Private_Items_List {TitleResults = DataReader_To_Private_Items_List(reader)};
 
-	        // Close the reader
-	        reader.Close();
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
 
 	        // Store the total items/titles
 	        returnArgs.TotalItems = Convert.ToInt32(totalItemsParameter.Value);
 	        returnArgs.TotalTitles = Convert.ToInt32(totalTitlesParameter.Value);
 
-	        // Close the reader (which also closes the connection)
-	        readerWrapper.Close();
 
 	        if (Tracer != null)
 	            Tracer.Add_Trace("SobekCM_Database.Tracking_Get_Aggregation_Private_Items", "Done pulling list of private items");

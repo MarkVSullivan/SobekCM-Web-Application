@@ -370,11 +370,14 @@ namespace SobekCM.Core.Database
                     throw;
                 }
 
+                // Create the reader wrapper
+                EalDbReaderWrapper returnValue = new EalDbReaderWrapper(sqlConnect, reader);
+
                 // Copy any output values back to the parameters
-                sql_copy_returned_values_back_to_params(sqlCommand.Parameters, DbParameters);
+                sql_copy_returned_values_back_to_params(returnValue, sqlCommand.Parameters, DbParameters);
 
                 // Return the dataset
-                return new EalDbReaderWrapper(sqlConnect, reader );
+                return returnValue;
             }
 
             if (DbType == EalDbTypeEnum.PostgreSQL)
@@ -432,11 +435,14 @@ namespace SobekCM.Core.Database
                     throw;
                 }
 
+                // Create the reader wrapper
+                EalDbReaderWrapper returnValue = new EalDbReaderWrapper(sqlConnect, reader);
+
                 // Copy any output values back to the parameters
-                sql_copy_returned_values_back_to_params(sqlCommand.Parameters, DbParameters);
+                sql_copy_returned_values_back_to_params(returnValue, sqlCommand.Parameters, DbParameters);
 
                 // Return the dataset
-                return new EalDbReaderWrapper(sqlConnect, reader);
+                return returnValue;
             }
 
             if (DbType == EalDbTypeEnum.PostgreSQL)
@@ -705,6 +711,35 @@ namespace SobekCM.Core.Database
             }
         }
 
+        // Copy any output values back to the parameters
+        private static void sql_copy_returned_values_back_to_params(EalDbReaderWrapper Wrapper, SqlParameterCollection SqlParams, List<EalDbParameter> EalParams)
+        {
+            // Copy over any values as necessary
+            int i = 0;
+            foreach (EalDbParameter thisParameter in EalParams)
+            {
+                if ((thisParameter.Direction == ParameterDirection.Output) || (thisParameter.Direction == ParameterDirection.InputOutput))
+                {
+                    Wrapper.Add_Parameter_Copy_Pair(thisParameter, SqlParams[i]);
+                }
+                i++;
+            }
+        }
+
+        // Copy any output values back to the parameters
+        private static void sql_copy_returned_values_back_to_params(EalDbReaderWrapper Wrapper, SqlParameterCollection SqlParams, EalDbParameter[] EalParams)
+        {
+            // Copy over any values as necessary
+            int i = 0;
+            foreach (EalDbParameter thisParameter in EalParams)
+            {
+                if ((thisParameter.Direction == ParameterDirection.Output) || (thisParameter.Direction == ParameterDirection.InputOutput))
+                {
+                    Wrapper.Add_Parameter_Copy_Pair(thisParameter, SqlParams[i]);
+                }
+                i++;
+            }
+        }
 
         #endregion
     }
