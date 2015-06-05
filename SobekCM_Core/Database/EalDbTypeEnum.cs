@@ -1,7 +1,7 @@
 ﻿namespace SobekCM.Core.Database
 {
     /// <summary> Enumeration tells the type of underlying database connection to create </summary>
-    public enum SobekCM_Database_Type_Enum : byte
+    public enum EalDbTypeEnum : byte
     {
         /// <summary> Microsoft SQL Server </summary>
         MSSQL = 1,

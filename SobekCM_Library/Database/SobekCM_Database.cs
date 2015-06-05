@@ -4,19 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Data.SqlClient;
-using System.Data.SqlTypes;
+using System.Data.Common;
 using System.Linq;
-using Microsoft.ApplicationBlocks.Data;
-using SobekCM.Core.Aggregations;
-using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Database;
 using SobekCM.Core.Items;
 using SobekCM.Core.OAI;
 using SobekCM.Core.Results;
-using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Items.Authority;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Resource_Object;
@@ -36,6 +31,15 @@ namespace SobekCM.Library.Database
 
 		private static string connectionString;
 		private static Exception lastException;
+
+        /// <summary> Gets the type of database ( i.e. MSSQL v. PostgreSQL ) </summary>
+        public static EalDbTypeEnum DatabaseType { get; set; }
+
+        /// <summary> Static constructor for this class </summary>
+        static SobekCM_Database()
+        {
+            DatabaseType = EalDbTypeEnum.MSSQL;
+        }
 
 
 		#region Temporary dataset work 
@@ -131,7 +135,7 @@ namespace SobekCM.Library.Database
 		//{
 		//	get
 		//	{
-		//		DataSet returnSet = SqlHelper.ExecuteDataset(@"data source=lib-ufdc-cache\UFDCPROD;initial catalog=EPC;integrated security=Yes;", CommandType.StoredProcedure, "Export_DataSet");
+		//		DataSet returnSet = EalDbAccess.ExecuteDataset(Database_Type, @"data source=lib-ufdc-cache\UFDCPROD;initial catalog=EPC;integrated security=Yes;", CommandType.StoredProcedure, "Export_DataSet");
 		//		return returnSet;
 		//	}
 		//}
@@ -163,39 +167,14 @@ namespace SobekCM.Library.Database
 		/// <returns> TRUE if connection can be made, otherwise FALSE </returns>
 		public static bool Test_Connection()
 		{
-
-			try
-			{
-				SqlConnection newConnection = new SqlConnection(connectionString);
-				newConnection.Open();
-
-				newConnection.Close();
-				return true;
-			}
-			catch ( Exception ee )
-			{
-			    lastException = ee;
-				return false;
-			}
+		    return EalDbAccess.Test(DatabaseType, connectionString);
 		}
 
 		/// <summary> Test connectivity to the database </summary>
 		/// <returns> TRUE if connection can be made, otherwise FALSE </returns>
-		public static bool Test_Connection( string Test_Connection_String )
+		public static bool Test_Connection( string TestConnectionString )
 		{
-
-			try
-			{
-				SqlConnection newConnection = new SqlConnection(Test_Connection_String);
-				newConnection.Open();
-
-				newConnection.Close();
-				return true;
-			}
-			catch
-			{
-				return false;
-			}
+            return EalDbAccess.Test(DatabaseType, TestConnectionString);
 		}
 
 		/// <summary> Gets the datatable containging all possible disposition types </summary>
@@ -204,7 +183,7 @@ namespace SobekCM.Library.Database
 		{
 			get
 			{
-				DataSet returnSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Tracking_Get_All_Possible_Disposition_Types");
+				DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Get_All_Possible_Disposition_Types");
 				return returnSet.Tables[0];
 			}
 		}
@@ -215,7 +194,7 @@ namespace SobekCM.Library.Database
 		{
 			get
 			{
-				DataSet returnSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Tracking_Get_All_Possible_Workflows");
+				DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Get_All_Possible_Workflows");
 				return returnSet.Tables[0];
 			}
 		}
@@ -227,7 +206,7 @@ namespace SobekCM.Library.Database
 		{
 			get
 			{
-				DataSet returnSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Tracking_Box_List");
+				DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Box_List");
 				List<string> returnValue = new List<string>();
 				if (returnSet != null)
 				{
@@ -249,13 +228,13 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// build the parameter list
-				SqlParameter[] paramList = new SqlParameter[3];
-				paramList[0] = new SqlParameter("@bibid", BibID);
-				paramList[1] = new SqlParameter("@vid", VID);
-				paramList[2] = new SqlParameter("@mainthumb", MainThumbnail);
+				EalDbParameter[] paramList = new EalDbParameter[3];
+				paramList[0] = new EalDbParameter("@bibid", BibID);
+				paramList[1] = new EalDbParameter("@vid", VID);
+				paramList[2] = new EalDbParameter("@mainthumb", MainThumbnail);
 
 				//Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Set_Main_Thumbnail", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Set_Main_Thumbnail", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -272,17 +251,7 @@ namespace SobekCM.Library.Database
 		{
 			try
 			{
-				// Create the connection
-				using (SqlConnection connect = new SqlConnection(connectionString))
-				{
-					// Create the command 
-					SqlCommand executeCommand = new SqlCommand("Admin_Update_Cached_Aggregation_Metadata_Links", connect)
-													{CommandType = CommandType.StoredProcedure};
-
-					// Create the data reader
-					connect.Open();
-					executeCommand.BeginExecuteNonQuery();
-				}
+                EalDbAccess.BeginExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Admin_Update_Cached_Aggregation_Metadata_Links");
 
 				return true;
 			}
@@ -312,10 +281,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this query stored procedure
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@firstdate", StartDate);
-				paramList[1] = new SqlParameter("@seconddate", EndDate);
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Build_Error_Logs", paramList);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@firstdate", StartDate);
+				paramList[1] = new EalDbParameter("@seconddate", EndDate);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Build_Error_Logs", paramList);
 				return tempSet.Tables[0];
 			}
 			catch (Exception ee)
@@ -333,12 +302,12 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Clears the item error log associated with a particular bibid / vid </summary>
 		/// <param name="BibID"> Bibliographic identifier for the item (or name of failed process)</param>
-		/// <param name="VID"> Volume identifier for the item </param>
+		/// <param name="Vid"> Volume identifier for the item </param>
 		/// <param name="ClearedBy"> Name of user or process that cleared the error </param>
 		/// <returns>TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> No error is deleted, but this does set a flag on the error indicating it was cleared so it will no longer appear in the list<br /><br />
 		/// This calls the 'SobekCM_Clear_Item_Error_Log' stored procedure </remarks>
-		public static bool Builder_Clear_Item_Error_Log(string BibID, string VID, string ClearedBy)
+		public static bool Builder_Clear_Item_Error_Log(string BibID, string Vid, string ClearedBy)
 		{
 			// Note, this is no longer utilized in the new logging system.
 			// Keeping this hook while we consider if we should expire errors in the system.
@@ -348,13 +317,13 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// build the parameter list
-				SqlParameter[] paramList = new SqlParameter[3];
-				paramList[0] = new SqlParameter("@BibID", BibID);
-				paramList[1] = new SqlParameter("@VID", VID);
-				paramList[2] = new SqlParameter("@ClearedBy", ClearedBy);
+				EalDbParameter[] paramList = new EalDbParameter[3];
+				paramList[0] = new EalDbParameter("@BibID", BibID);
+				paramList[1] = new EalDbParameter("@VID", Vid);
+				paramList[2] = new EalDbParameter("@ClearedBy", ClearedBy);
 
 				//Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Item_Error_Log", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Item_Error_Log", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -373,11 +342,11 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// build the parameter list
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@Retain_For_Days", Retain_For_Days);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@Retain_For_Days", Retain_For_Days);
 
 				//Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Expire_Log_Entries", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Expire_Log_Entries", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -400,20 +369,20 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// build the parameter list
-				SqlParameter[] paramList = new SqlParameter[6];
+				EalDbParameter[] paramList = new EalDbParameter[6];
 				if ( RelatedBuilderLogID < 0 )
-					paramList[0] = new SqlParameter("@RelatedBuilderLogID", DBNull.Value);
+					paramList[0] = new EalDbParameter("@RelatedBuilderLogID", DBNull.Value);
 				else
-					paramList[0] = new SqlParameter("@RelatedBuilderLogID", RelatedBuilderLogID);
+					paramList[0] = new EalDbParameter("@RelatedBuilderLogID", RelatedBuilderLogID);
 
-				paramList[1] = new SqlParameter("@BibID_VID", BibID_VID);
-				paramList[2] = new SqlParameter("@LogType", LogType);
-				paramList[3] = new SqlParameter("@LogMessage", LogMessage);
-				paramList[4] = new SqlParameter("@Mets_Type", MetsType);
-				paramList[5] = new SqlParameter("@BuilderLogID", -1) {Direction = ParameterDirection.InputOutput};
+				paramList[1] = new EalDbParameter("@BibID_VID", BibID_VID);
+				paramList[2] = new EalDbParameter("@LogType", LogType);
+				paramList[3] = new EalDbParameter("@LogMessage", LogMessage);
+				paramList[4] = new EalDbParameter("@Mets_Type", MetsType);
+				paramList[5] = new EalDbParameter("@BuilderLogID", -1) {Direction = ParameterDirection.InputOutput};
 
 				//Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Add_Log", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Add_Log", paramList);
 				return Convert.ToInt64(paramList[5].Value);
 			}
 			catch (Exception ee)
@@ -443,9 +412,9 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@code", AggregationCode);
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Statistics_Aggregation_Titles", paramList);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@code", AggregationCode);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Statistics_Aggregation_Titles", paramList);
 				return tempSet;
 			}
 			catch (Exception ee)
@@ -480,12 +449,12 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this query stored procedure
-				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@year1", Early_Year);
-				paramList[1] = new SqlParameter("@month1", Early_Month);
-				paramList[2] = new SqlParameter("@year2", Last_Year);
-				paramList[3] = new SqlParameter("@month2", Last_Month);
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Statistics_By_Date_Range", paramList);
+				EalDbParameter[] paramList = new EalDbParameter[4];
+				paramList[0] = new EalDbParameter("@year1", Early_Year);
+				paramList[1] = new EalDbParameter("@month1", Early_Month);
+				paramList[2] = new EalDbParameter("@year2", Last_Year);
+				paramList[3] = new EalDbParameter("@month2", Last_Month);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Statistics_By_Date_Range", paramList);
 				return tempSet.Tables[0];
 			}
 			catch (Exception ee)
@@ -520,9 +489,9 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@code", AggregationCode);
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Collection_Statistics_History", paramList);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@code", AggregationCode);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Collection_Statistics_History", paramList);
 				return tempSet.Tables[0];
 			}
 			catch (Exception ee)
@@ -554,10 +523,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this query stored procedure
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@BibID", BibID);
-				paramList[1] = new SqlParameter("@VID", VID);
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Item_Statistics", paramList);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@BibID", BibID);
+				paramList[1] = new EalDbParameter("@VID", VID);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Item_Statistics", paramList);
 				return tempSet;
 			}
 			catch (Exception ee)
@@ -588,7 +557,7 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this query stored procedure
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection");
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection");
 				return tempSet.Tables[0];
 			}
 			catch (Exception ee)
@@ -620,12 +589,12 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@date1", Date1);
-				paramList[1] = new SqlParameter("@date2", DBNull.Value);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@date1", Date1);
+				paramList[1] = new EalDbParameter("@date2", DBNull.Value);
 
 				// Execute this query stored procedure
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection_By_Date_Range", paramList);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection_By_Date_Range", paramList);
 				return tempSet.Tables[0];
 			}
 			catch (Exception ee)
@@ -658,12 +627,12 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@date1", Date1);
-				paramList[1] = new SqlParameter("@date2", Date2);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@date1", Date1);
+				paramList[1] = new EalDbParameter("@date2", Date2);
 
 				// Execute this query stored procedure
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection_By_Date_Range", paramList);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection_By_Date_Range", paramList);
 				return tempSet.Tables[0];
 			}
 			catch (Exception ee)
@@ -695,7 +664,7 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Define a temporary dataset
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Page_Item_Count_History");
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Page_Item_Count_History");
 
 				// If there was no data for this collection and entry point, return null (an ERROR occurred)
 				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -726,11 +695,11 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the list of unique coordinate points and associated bibid and group title for a single 
 		/// item aggregation </summary>
-		/// <param name="Aggregation_Code"> Code for the item aggregation </param>
+		/// <param name="AggregationCode"> Code for the item aggregation </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable with all the coordinate values </returns>
 		/// <remarks> This calls the 'SobekCM_Coordinate_Points_By_Aggregation' stored procedure </remarks>
-		public static DataTable Get_All_Items_By_AggregationID(string Aggregation_Code, List<string> FIDs, Custom_Tracer Tracer)
+		public static DataTable Get_All_Items_By_AggregationID(string AggregationCode, List<string> FIDs, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -741,28 +710,28 @@ namespace SobekCM.Library.Database
             int nonFIDsParamCount = 2; //how many non fids are there?
 
             // Build the parameter list
-            SqlParameter[] paramList = new SqlParameter[(FIDs.Count + nonFIDsParamCount)];
-            paramList[0] = new SqlParameter("@aggregation_code", Aggregation_Code);
-            //paramList[1] = new SqlParameter("@FID1_PassIn", FIDs[0]);
-            //paramList[2] = new SqlParameter("@FID2_PassIn", FIDs[1]);
-            //paramList[3] = new SqlParameter("@FID3_PassIn", FIDs[2]);
-            //paramList[4] = new SqlParameter("@FID4_PassIn", FIDs[3]);
-            //paramList[5] = new SqlParameter("@FID5_PassIn", FIDs[4]);
-            //paramList[6] = new SqlParameter("@FID6_PassIn", FIDs[5]);
-            //paramList[7] = new SqlParameter("@FID7_PassIn", FIDs[6]);
-            //paramList[8] = new SqlParameter("@FID8_PassIn", FIDs[7]);
+            EalDbParameter[] paramList = new EalDbParameter[(FIDs.Count + nonFIDsParamCount)];
+            paramList[0] = new EalDbParameter("@aggregation_code", AggregationCode);
+            //paramList[1] = new EalDbParameter("@FID1_PassIn", FIDs[0]);
+            //paramList[2] = new EalDbParameter("@FID2_PassIn", FIDs[1]);
+            //paramList[3] = new EalDbParameter("@FID3_PassIn", FIDs[2]);
+            //paramList[4] = new EalDbParameter("@FID4_PassIn", FIDs[3]);
+            //paramList[5] = new EalDbParameter("@FID5_PassIn", FIDs[4]);
+            //paramList[6] = new EalDbParameter("@FID6_PassIn", FIDs[5]);
+            //paramList[7] = new EalDbParameter("@FID7_PassIn", FIDs[6]);
+            //paramList[8] = new EalDbParameter("@FID8_PassIn", FIDs[7]);
             int paramListIndex = 0; //set where we are at
             int FIDIndex = 0; //where do the fids start (zero)
             foreach (string fiD in FIDs)
             {
                 paramListIndex++;
                 FIDIndex++;
-                paramList[paramListIndex] = new SqlParameter("@FID" + FIDIndex.ToString(), fiD);
+                paramList[paramListIndex] = new EalDbParameter("@FID" + FIDIndex.ToString(), fiD);
             }
-            paramList[(paramListIndex + 1)] = new SqlParameter("FIDDBCallPrefix", HOOK_FIDDBCallPrefix);
+            paramList[(paramListIndex + 1)] = new EalDbParameter("FIDDBCallPrefix", HOOK_FIDDBCallPrefix);
 
             // Define a temporary dataset
-            DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_Items_By_AggregationID", paramList);
+            DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_Items_By_AggregationID", paramList);
             return tempSet == null ? null : tempSet.Tables[0];
         }
 
@@ -783,11 +752,11 @@ namespace SobekCM.Library.Database
             }
 
             // Build the parameter list
-            SqlParameter[] paramList = new SqlParameter[1];
-            paramList[0] = new SqlParameter("@metadataTypeID", metadataTypeId);
+            EalDbParameter[] paramList = new EalDbParameter[1];
+            paramList[0] = new EalDbParameter("@metadataTypeID", metadataTypeId);
 
             // Define a temporary dataset
-            DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Metadata_Name_From_MetadataTypeID", paramList);
+            DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Metadata_Name_From_MetadataTypeID", paramList);
             DataTable tempResult = tempSet.Tables[0];
             return tempResult.Rows[0][0].ToString();
         }
@@ -810,7 +779,7 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Define a temporary dataset
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Metadata_Fields");
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Metadata_Fields");
 
 				// If there was no data for this collection and entry point, return null (an ERROR occurred)
 				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -838,13 +807,15 @@ namespace SobekCM.Library.Database
 
         #region Methods to get the information about an ITEM or ITEM GROUP
 
-        /// <summary> Determines what restrictions are present on an item  </summary>
-		/// <param name="BibID"> Bibliographic identifier for the volume to retrieve </param>
-		/// <param name="VID"> Volume identifier for the volume to retrieve </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> DataSet with detailed information about this item from the database </returns>
-		/// <remarks> This calls the 'SobekCM_Get_Item_Restrictions' stored procedure </remarks> 
-		public static void Get_Item_Restrictions(string BibID, string VID, Custom_Tracer Tracer, out bool IsDark, out short IP_Restrction_Mask )
+	    /// <summary> Determines what restrictions are present on an item  </summary>
+	    /// <param name="BibID"> Bibliographic identifier for the volume to retrieve </param>
+	    /// <param name="Vid"> Volume identifier for the volume to retrieve </param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <param name="IsDark"></param>
+        /// <param name="IP_Restrction_Mask"></param>
+	    /// <returns> DataSet with detailed information about this item from the database </returns>
+	    /// <remarks> This calls the 'SobekCM_Get_Item_Restrictions' stored procedure </remarks> 
+	    public static void Get_Item_Restrictions(string BibID, string Vid, Custom_Tracer Tracer, out bool IsDark, out short IP_Restrction_Mask )
 		{
 			IsDark = true;
 			IP_Restrction_Mask = -1;
@@ -856,13 +827,13 @@ namespace SobekCM.Library.Database
 
 			try
 			{
-				SqlParameter[] parameters = new SqlParameter[2];
-				parameters[0] = new SqlParameter("@BibID", BibID);
-				parameters[1] = new SqlParameter("@VID", VID);
+				EalDbParameter[] parameters = new EalDbParameter[2];
+				parameters[0] = new EalDbParameter("@BibID", BibID);
+				parameters[1] = new EalDbParameter("@VID", Vid);
 
 
 				// Define a temporary dataset
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Item_Restrictions", parameters);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Item_Restrictions", parameters);
 
 				// Was there an answer?
 				if ((tempSet.Tables.Count > 0) && (tempSet.Tables[0].Rows.Count > 0))
@@ -897,11 +868,11 @@ namespace SobekCM.Library.Database
 
 			try
 			{
-				SqlParameter[] parameters = new SqlParameter[1];
-				parameters[0] = new SqlParameter("@itemid", ItemID);
+				EalDbParameter[] parameters = new EalDbParameter[1];
+				parameters[0] = new EalDbParameter("@itemid", ItemID);
 
 				// Define a temporary dataset
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_BibID_VID_From_ItemID", parameters);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_BibID_VID_From_ItemID", parameters);
 
 				// If there was no data for this collection and entry point, return null (an ERROR occurred)
 				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -933,12 +904,12 @@ namespace SobekCM.Library.Database
 		{
 			try
 			{
-				SqlParameter[] parameters = new SqlParameter[2];
-				parameters[0] = new SqlParameter("@bibid", Resource.BibID);
-				parameters[1] = new SqlParameter("@vid", Resource.VID);
+				EalDbParameter[] parameters = new EalDbParameter[2];
+				parameters[0] = new EalDbParameter("@bibid", Resource.BibID);
+				parameters[1] = new EalDbParameter("@vid", Resource.VID);
 
 				// Define a temporary dataset
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Get_Minimum_Item_Information", parameters);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Get_Minimum_Item_Information", parameters);
 
 				// If there was no data for this collection and entry point, return null (an ERROR occurred)
 				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -1020,12 +991,12 @@ namespace SobekCM.Library.Database
 		{
 			try
 			{
-				SqlParameter[] parameters = new SqlParameter[2];
-				parameters[0] = new SqlParameter("@bibid",BibID);
-				parameters[1] = new SqlParameter("@vid", VID);
+				EalDbParameter[] parameters = new EalDbParameter[2];
+				parameters[0] = new EalDbParameter("@bibid",BibID);
+				parameters[1] = new EalDbParameter("@vid", VID);
 
 				// Define a temporary dataset
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Get_Minimum_Item_Information", parameters);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Get_Minimum_Item_Information", parameters);
 
 				// If there was no data for this collection and entry point, return null (an ERROR occurred)
 				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -1114,20 +1085,7 @@ namespace SobekCM.Library.Database
 
 			try
 			{
-				// Create the connection
-				SqlConnection connect = new SqlConnection(connectionString);
-
-				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Multiple_Volumes", connect)
-												{CommandType = CommandType.StoredProcedure};
-				executeCommand.Parameters.AddWithValue("@bibid", BibID);
-
-				// Create the adapter
-				SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-				// Get the datatable
-				DataSet valueSet = new DataSet();
-				adapter.Fill(valueSet);
+                DataSet valueSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Multiple_Volumes", new List<EalDbParameter> { new EalDbParameter("@bibid", BibID) });
 
 				// If there was either no match, or more than one, return null
 				if ((valueSet.Tables.Count == 0) || (valueSet.Tables[0] == null) || (valueSet.Tables[0].Rows.Count == 0))
@@ -1161,25 +1119,25 @@ namespace SobekCM.Library.Database
 
 
 		/// <summary> Delete a URL Portal from the database, by primary key </summary>
-		/// <param name="Portal_ID"> Primary key for the URL portal to be deleted </param>
+		/// <param name="PortalID"> Primary key for the URL portal to be deleted </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successul, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Portal' stored procedure </remarks>
-		public static bool Delete_URL_Portal( int Portal_ID, Custom_Tracer Tracer)
+		public static bool Delete_URL_Portal( int PortalID, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("SobekCM_Database.Delete_URL_Portal", "Delete a URL Portal by portal id ( " + Portal_ID + " )");
+				Tracer.Add_Trace("SobekCM_Database.Delete_URL_Portal", "Delete a URL Portal by portal id ( " + PortalID + " )");
 			}
 
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@portalid", Portal_ID);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@portalid", PortalID);
 
 				// Define a temporary dataset
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Portal", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Portal", paramList);
 
 				return true;
 			}
@@ -1196,19 +1154,19 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Edit an existing URL Portal or add a new URL portal, by primary key </summary>
-		/// <param name="Portal_ID"> Primary key for the URL portal to be edited, or -1 if this is a new URL portal </param>
-		/// <param name="Default_Aggregation"> Default aggregation for this URL portal </param>
-		/// <param name="Default_Web_Skin"> Default web skin for this URL portal </param>
+		/// <param name="PortalID"> Primary key for the URL portal to be edited, or -1 if this is a new URL portal </param>
+		/// <param name="DefaultAggregation"> Default aggregation for this URL portal </param>
+		/// <param name="DefaultWebSkin"> Default web skin for this URL portal </param>
 		/// <param name="BasePurl"> Base PURL , used to override the default PURL built from the current URL</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <param name="Base_URL"> URL used to match the incoming request with this URL portal</param>
+		/// <param name="BaseUrl"> URL used to match the incoming request with this URL portal</param>
 		/// <param name="IsActive"> Flag indicates if this URL portal is active</param>
 		/// <param name="IsDefault"> Flag indicates if this is the default URL portal, if no other portal match is found</param>
 		/// <param name="Abbreviation"> Abbreviation for this system, when referenced by this URL portal</param>
 		/// <param name="Name"> Name of this system, when referenced by this URL portal </param>
 		/// <returns> New primary key (or existing key) for the URL portal added or edited </returns>
 		/// <remarks> This calls the 'SobekCM_Edit_Portal' stored procedure </remarks>
-		public static int Edit_URL_Portal(int Portal_ID, string Base_URL, bool IsActive, bool IsDefault, string Abbreviation, string Name, string Default_Aggregation, string Default_Web_Skin, string BasePurl, Custom_Tracer Tracer)
+		public static int Edit_URL_Portal(int PortalID, string BaseUrl, bool IsActive, bool IsDefault, string Abbreviation, string Name, string DefaultAggregation, string DefaultWebSkin, string BasePurl, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -1218,20 +1176,20 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[10];
-				paramList[0] = new SqlParameter("@PortalID", Portal_ID);
-				paramList[1] = new SqlParameter("@Base_URL", Base_URL);
-				paramList[2] = new SqlParameter("@isActive", IsActive);
-				paramList[3] = new SqlParameter("@isDefault", IsDefault);
-				paramList[4] = new SqlParameter("@Abbreviation", Abbreviation);
-				paramList[5] = new SqlParameter("@Name", Name);
-				paramList[6] = new SqlParameter("@Default_Aggregation", Default_Aggregation);
-				paramList[7] = new SqlParameter("@Base_PURL", BasePurl);
-				paramList[8] = new SqlParameter("@Default_Web_Skin", Default_Web_Skin);
-				paramList[9] = new SqlParameter("@NewID", Portal_ID) {Direction = ParameterDirection.InputOutput};
+				EalDbParameter[] paramList = new EalDbParameter[10];
+				paramList[0] = new EalDbParameter("@PortalID", PortalID);
+				paramList[1] = new EalDbParameter("@Base_URL", BaseUrl);
+				paramList[2] = new EalDbParameter("@isActive", IsActive);
+				paramList[3] = new EalDbParameter("@isDefault", IsDefault);
+				paramList[4] = new EalDbParameter("@Abbreviation", Abbreviation);
+				paramList[5] = new EalDbParameter("@Name", Name);
+				paramList[6] = new EalDbParameter("@Default_Aggregation", DefaultAggregation);
+				paramList[7] = new EalDbParameter("@Base_PURL", BasePurl);
+				paramList[8] = new EalDbParameter("@Default_Web_Skin", DefaultWebSkin);
+				paramList[9] = new EalDbParameter("@NewID", PortalID) {Direction = ParameterDirection.InputOutput};
 
 				// Define a temporary dataset
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Edit_Portal", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Edit_Portal", paramList);
 
 				return Convert.ToInt32( paramList[9].Value );
 			}
@@ -1259,12 +1217,7 @@ namespace SobekCM.Library.Database
 		/// <returns> List of groups, with the top item (VID) </returns>
 		public static DataTable Get_All_Groups_First_VID()
 		{
-			// Define a temporary dataset
-			SqlConnection connection = new SqlConnection(connectionString + "Connection Timeout=45");
-			SqlCommand command = new SqlCommand("SobekCM_Get_All_Groups_First_VID", connection) { CommandTimeout = 45, CommandType = CommandType.StoredProcedure };
-			SqlDataAdapter adapter = new SqlDataAdapter(command);
-			DataSet tempSet = new DataSet();
-			adapter.Fill(tempSet);
+            DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_Groups_First_VID" );
 
 			// If there was no data for this collection and entry point, return null (an ERROR occurred)
 			if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -1278,25 +1231,18 @@ namespace SobekCM.Library.Database
 
 
 		/// <summary> Gets the dataset of all public items and item groups </summary>
-		/// <param name="Include_Private"> Flag indicates whether to include private items in this list </param>
+		/// <param name="IncludePrivate"> Flag indicates whether to include private items in this list </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Dataset of all items and item groups </returns>
 		/// <remarks> This calls the 'SobekCM_Item_List_Brief2' stored procedure </remarks> 
-		public static DataSet Get_Item_List( bool Include_Private, Custom_Tracer Tracer)
+		public static DataSet Get_Item_List( bool IncludePrivate, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
 				Tracer.Add_Trace("SobekCM_Database.Get_Item_List", String.Empty);
 			}
 
-			// Define a temporary dataset
-			SqlConnection connection = new SqlConnection(connectionString + "Connection Timeout=45");
-			SqlCommand command = new SqlCommand("SobekCM_Item_List_Brief2", connection)
-									 {CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
-			command.Parameters.AddWithValue("@include_private", Include_Private);
-			SqlDataAdapter adapter = new SqlDataAdapter(command);
-			DataSet tempSet = new DataSet();
-			adapter.Fill(tempSet);
+            DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_List_Brief2", new List<EalDbParameter> { new EalDbParameter("@include_private", IncludePrivate) });
 				
 			// If there was no data for this collection and entry point, return null (an ERROR occurred)
 			if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null))
@@ -1327,51 +1273,7 @@ namespace SobekCM.Library.Database
 
             try
             {
-
-                // Create the dataset to fill (could also do a data reader, but we'll do a datatable)
-                DataSet fillSet = new DataSet("IP_Restriction_Ranges");
-
-                // Open the SQL connection
-                using (SqlConnection sqlConnect = new SqlConnection(Connection_String))
-                {
-                    try
-                    {
-                        sqlConnect.Open();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Unable to open connection to the database." + Environment.NewLine + ex.Message, ex);
-                    }
-
-                    // Create the sql command / stored procedure
-                    SqlCommand cmd = new SqlCommand("SobekCM_Get_All_IP_Restrictions");
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Connection = sqlConnect;
-
-
-                    // Fill the dataset
-                    try
-                    {
-                        SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
-                        dataAdapter.Fill(fillSet);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Unable to pull data from the Get_SnailKite_Details procedure in the database." + Environment.NewLine + ex.Message, ex);
-                    }
-
-
-                    // Close the connection (not technical necessary since we put the connection in the
-                    // scope of the using brackets.. it would dispose itself anyway)
-                    try
-                    {
-                        sqlConnect.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Unable to close connection to the database." + Environment.NewLine + ex.Message, ex);
-                    }
-                }
+                DataSet fillSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_IP_Restrictions");
 
                 // Was there a match?
                 if ((fillSet.Tables.Count == 0) || (fillSet.Tables[0].Rows.Count == 0))
@@ -1410,11 +1312,11 @@ namespace SobekCM.Library.Database
            
 
             {
-                SqlParameter[] parameters = new SqlParameter[1];
-                parameters[0] = new SqlParameter("@ip_rangeid", PrimaryID);
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@ip_rangeid", PrimaryID);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_IP_Restriction_Range", parameters);
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_IP_Restriction_Range", parameters);
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -1452,11 +1354,11 @@ namespace SobekCM.Library.Database
 
 			try
 			{
-				SqlParameter[] parameters = new SqlParameter[1];
-				parameters[0] = new SqlParameter("@ip_singleid", PrimaryID);
+				EalDbParameter[] parameters = new EalDbParameter[1];
+				parameters[0] = new EalDbParameter("@ip_singleid", PrimaryID);
 
 				// Define a temporary dataset
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Single_IP", parameters);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Single_IP", parameters);
 
 				// Return the first table from the returned dataset
 				return true;
@@ -1476,14 +1378,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Adds or edits a single IP address information in an IP restriction range </summary>
 		/// <param name="PrimaryID"> Primary key for this single IP address information to add, or -1 to add a new IP address </param>
-		/// <param name="IP_RangeID"> Primary key for the IP restriction range to add this single IP address information </param>
-		/// <param name="Start_IP"> Beginning of the IP range, or the complete IP address </param>
-		/// <param name="End_IP"> End of the IP range, if this was a true range </param>
+		/// <param name="IpRangeID"> Primary key for the IP restriction range to add this single IP address information </param>
+		/// <param name="StartIp"> Beginning of the IP range, or the complete IP address </param>
+		/// <param name="EndIp"> End of the IP range, if this was a true range </param>
 		/// <param name="Note"> Any note associated with this single IP information </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Primary key for the single IP address information, if no primary key was originally provided </returns>
 		/// <remarks> This calls the 'SobekCM_Edit_Single_IP' stored procedure </remarks> 
-		public static int Edit_Single_IP(int PrimaryID, int IP_RangeID, string Start_IP, string End_IP, string Note, Custom_Tracer Tracer)
+		public static int Edit_Single_IP(int PrimaryID, int IpRangeID, string StartIp, string EndIp, string Note, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -1492,16 +1394,16 @@ namespace SobekCM.Library.Database
 
 			try
 			{
-				SqlParameter[] parameters = new SqlParameter[6];
-				parameters[0] = new SqlParameter("@ip_singleid", PrimaryID);
-				parameters[1] = new SqlParameter("@ip_rangeid", IP_RangeID );
-				parameters[2] = new SqlParameter("@startip", Start_IP);
-				parameters[3] = new SqlParameter("@endip", End_IP);
-				parameters[4] = new SqlParameter("@notes", Note );
-				parameters[5] = new SqlParameter("@new_ip_singleid", -1) {Direction = ParameterDirection.InputOutput};
+				EalDbParameter[] parameters = new EalDbParameter[6];
+				parameters[0] = new EalDbParameter("@ip_singleid", PrimaryID);
+				parameters[1] = new EalDbParameter("@ip_rangeid", IpRangeID );
+				parameters[2] = new EalDbParameter("@startip", StartIp);
+				parameters[3] = new EalDbParameter("@endip", EndIp);
+				parameters[4] = new EalDbParameter("@notes", Note );
+				parameters[5] = new EalDbParameter("@new_ip_singleid", -1) {Direction = ParameterDirection.InputOutput};
 
 				// Define a temporary dataset
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Edit_Single_IP", parameters);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Edit_Single_IP", parameters);
 
 				// Return the first table from the returned dataset
 				return Convert.ToInt32(parameters[5].Value);
@@ -1521,14 +1423,14 @@ namespace SobekCM.Library.Database
 
 
 		/// <summary> Edits an existing IP restriction range, or adds a new one </summary>
-		/// <param name="IP_RangeID"> Primary key for the IP restriction range  </param>
+		/// <param name="IpRangeID"> Primary key for the IP restriction range  </param>
 		/// <param name="Title"> Title for this IP Restriction Range </param>
 		/// <param name="Notes"> Notes about this IP Restriction Range (for system admins)</param>
-		/// <param name="Item_Restricted_Statement"> Statement used when a user directly requests an item for which they do not the pre-requisite access </param>
+		/// <param name="ItemRestrictedStatement"> Statement used when a user directly requests an item for which they do not the pre-requisite access </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Edit_IP_Range' stored procedure </remarks> 
-		public static bool Edit_IP_Range(int IP_RangeID, string Title, string Notes, string Item_Restricted_Statement, Custom_Tracer Tracer)
+		public static bool Edit_IP_Range(int IpRangeID, string Title, string Notes, string ItemRestrictedStatement, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -1537,14 +1439,14 @@ namespace SobekCM.Library.Database
 
 			try
 			{
-				SqlParameter[] parameters = new SqlParameter[4];
-				parameters[0] = new SqlParameter("@rangeid", IP_RangeID);
-				parameters[1] = new SqlParameter("@title", Title);
-				parameters[2] = new SqlParameter("@notes", Notes);
-				parameters[3] = new SqlParameter("@not_valid_statement", Item_Restricted_Statement);
+				EalDbParameter[] parameters = new EalDbParameter[4];
+				parameters[0] = new EalDbParameter("@rangeid", IpRangeID);
+				parameters[1] = new EalDbParameter("@title", Title);
+				parameters[2] = new EalDbParameter("@notes", Notes);
+				parameters[3] = new EalDbParameter("@not_valid_statement", ItemRestrictedStatement);
 
 				// Execute the stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Edit_IP_Range", parameters);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Edit_IP_Range", parameters);
 
 				// Return true if successful
 				return true;
@@ -1576,11 +1478,11 @@ namespace SobekCM.Library.Database
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[1];
-                parameters[0] = new SqlParameter("@rangeid", IdToDelete);
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@rangeid", IdToDelete);
 
                 // Execute the stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_IP_Range", parameters);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_IP_Range", parameters);
 
                 // Return true if successful
                 return true;
@@ -1602,94 +1504,94 @@ namespace SobekCM.Library.Database
 
 		#region Methods to get authority type information
 
-		/// <summary> Gets the list of all map features linked to a particular item  </summary>
-		/// <param name="ItemID"> ItemID for the item of interest</param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> List of all features linked to the item of interest </returns>
-		/// <remarks> This calls the 'Auth_Get_All_Features_By_Item' stored procedure </remarks> 
-		public static Map_Features_DataSet Get_All_Features_By_Item(int ItemID, Custom_Tracer Tracer)
-		{
-			try
-			{
-				// Create the connection
-				SqlConnection connect = new SqlConnection( connectionString );
+        ///// <summary> Gets the list of all map features linked to a particular item  </summary>
+        ///// <param name="ItemID"> ItemID for the item of interest</param>
+        ///// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        ///// <returns> List of all features linked to the item of interest </returns>
+        ///// <remarks> This calls the 'Auth_Get_All_Features_By_Item' stored procedure </remarks> 
+        //public static Map_Features_DataSet Get_All_Features_By_Item(int ItemID, Custom_Tracer Tracer)
+        //{
+        //    try
+        //    {
+        //        // Create the connection
+        //        SqlConnection connect = new SqlConnection( connectionString );
 
-				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("Auth_Get_All_Features_By_Item", connect)
-												{CommandType = CommandType.StoredProcedure};
-				executeCommand.Parameters.AddWithValue( "@itemid", ItemID );
-				executeCommand.Parameters.AddWithValue( "@filter", 1 );
+        //        // Create the command 
+        //        SqlCommand executeCommand = new SqlCommand("Auth_Get_All_Features_By_Item", connect)
+        //                                        {CommandType = CommandType.StoredProcedure};
+        //        executeCommand.Parameters.AddWithValue( "@itemid", ItemID );
+        //        executeCommand.Parameters.AddWithValue( "@filter", 1 );
 
-				// Create the adapter
-				SqlDataAdapter adapter = new SqlDataAdapter( executeCommand );
+        //        // Create the adapter
+        //        SqlDataAdapter adapter = new SqlDataAdapter( executeCommand );
 
-				// Add appropriate table mappings
-				adapter.TableMappings.Add("Table", "Features");
-				adapter.TableMappings.Add("Table1", "Types");
+        //        // Add appropriate table mappings
+        //        adapter.TableMappings.Add("Table", "Features");
+        //        adapter.TableMappings.Add("Table1", "Types");
 
-				// Fill the strongly typed dataset
-				Map_Features_DataSet features = new Map_Features_DataSet();
-				adapter.Fill( features );
+        //        // Fill the strongly typed dataset
+        //        Map_Features_DataSet features = new Map_Features_DataSet();
+        //        adapter.Fill( features );
 
-				// Return the fully built object
-				return features;
-			}
-			catch (Exception ee)
-			{
-				lastException = ee;
-				if (Tracer != null)
-				{
-					Tracer.Add_Trace("SobekCM_Database.Get_All_Features_By_Item", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-					Tracer.Add_Trace("SobekCM_Database.Get_All_Features_By_Item", ee.Message, Custom_Trace_Type_Enum.Error);
-					Tracer.Add_Trace("SobekCM_Database.Get_All_Features_By_Item", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-				}
-				return null;
-			}
-		}
+        //        // Return the fully built object
+        //        return features;
+        //    }
+        //    catch (Exception ee)
+        //    {
+        //        lastException = ee;
+        //        if (Tracer != null)
+        //        {
+        //            Tracer.Add_Trace("SobekCM_Database.Get_All_Features_By_Item", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+        //            Tracer.Add_Trace("SobekCM_Database.Get_All_Features_By_Item", ee.Message, Custom_Trace_Type_Enum.Error);
+        //            Tracer.Add_Trace("SobekCM_Database.Get_All_Features_By_Item", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+        //        }
+        //        return null;
+        //    }
+        //}
 
-		/// <summary> Gets the list of all streets linked to a particular item  </summary>
-		/// <param name="ItemID"> ItemID for the item of interest</param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> List of all streets linked to the item of interest </returns>
-		/// <remarks> This calls the 'Auth_Get_All_Streets_By_Item' stored procedure </remarks> 
-		public static Map_Streets_DataSet Get_All_Streets_By_Item(int ItemID, Custom_Tracer Tracer)
-		{
-			try
-			{
-				// Create the connection
-				SqlConnection connect = new SqlConnection( connectionString );
+        ///// <summary> Gets the list of all streets linked to a particular item  </summary>
+        ///// <param name="ItemID"> ItemID for the item of interest</param>
+        ///// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        ///// <returns> List of all streets linked to the item of interest </returns>
+        ///// <remarks> This calls the 'Auth_Get_All_Streets_By_Item' stored procedure </remarks> 
+        //public static Map_Streets_DataSet Get_All_Streets_By_Item(int ItemID, Custom_Tracer Tracer)
+        //{
+        //    try
+        //    {
+        //        // Create the connection
+        //        SqlConnection connect = new SqlConnection( connectionString );
 
-				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("Auth_Get_All_Streets_By_Item", connect)
-												{CommandType = CommandType.StoredProcedure};
-				executeCommand.Parameters.AddWithValue( "@itemid", ItemID );
+        //        // Create the command 
+        //        SqlCommand executeCommand = new SqlCommand("Auth_Get_All_Streets_By_Item", connect)
+        //                                        {CommandType = CommandType.StoredProcedure};
+        //        executeCommand.Parameters.AddWithValue( "@itemid", ItemID );
 
-				// Create the adapter
-				SqlDataAdapter adapter = new SqlDataAdapter( executeCommand );
+        //        // Create the adapter
+        //        SqlDataAdapter adapter = new SqlDataAdapter( executeCommand );
 
-				// Add appropriate table mappings
-				adapter.TableMappings.Add("Table", "Streets");
+        //        // Add appropriate table mappings
+        //        adapter.TableMappings.Add("Table", "Streets");
 
 
-				// Fill the strongly typed dataset
-				Map_Streets_DataSet streets = new Map_Streets_DataSet();
-				adapter.Fill( streets );
+        //        // Fill the strongly typed dataset
+        //        Map_Streets_DataSet streets = new Map_Streets_DataSet();
+        //        adapter.Fill( streets );
 
-				// Return the fully built object
-				return streets;
-			}
-			catch ( Exception ee )
-			{
-				lastException = ee;
-				if (Tracer != null)
-				{
-					Tracer.Add_Trace("SobekCM_Database.Get_All_Streets_By_Item", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-					Tracer.Add_Trace("SobekCM_Database.Get_All_Streets_By_Item", ee.Message, Custom_Trace_Type_Enum.Error);
-					Tracer.Add_Trace("SobekCM_Database.Get_All_Streets_By_Item", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-				}
-				return null;
-			}
-		}
+        //        // Return the fully built object
+        //        return streets;
+        //    }
+        //    catch ( Exception ee )
+        //    {
+        //        lastException = ee;
+        //        if (Tracer != null)
+        //        {
+        //            Tracer.Add_Trace("SobekCM_Database.Get_All_Streets_By_Item", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+        //            Tracer.Add_Trace("SobekCM_Database.Get_All_Streets_By_Item", ee.Message, Custom_Trace_Type_Enum.Error);
+        //            Tracer.Add_Trace("SobekCM_Database.Get_All_Streets_By_Item", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+        //        }
+        //        return null;
+        //    }
+        //}
 
 
 		#endregion
@@ -1697,13 +1599,13 @@ namespace SobekCM.Library.Database
 		#region My Sobek database calls
 
 		/// <summary> Saves information about a single user </summary>
-		/// <param name="User"> <see cref="Users.User_Object"/> with all the information about the single user</param>
+		/// <param name="User"> <see cref="SobekCM.Core.Users.User_Object"/> with all the information about the single user</param>
 		/// <param name="Password"> Plain-text password, which is then encrypted prior to saving</param>
-        /// <param name="Authentication_Type"> String which indicates the type of authentication utilized, only important if this is the first time this user has authenticated/registered </param>
+        /// <param name="AuthenticationType"> String which indicates the type of authentication utilized, only important if this is the first time this user has authenticated/registered </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'mySobek_Save_User' stored procedure</remarks> 
-		public static bool Save_User(User_Object User, string Password, User_Authentication_Type_Enum Authentication_Type, Custom_Tracer Tracer)
+		public static bool Save_User(User_Object User, string Password, User_Authentication_Type_Enum AuthenticationType, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -1714,57 +1616,57 @@ namespace SobekCM.Library.Database
 			string encryptedPassword = SecurityInfo.SHA1_EncryptString(Password + SALT);
 
             string auth_string = String.Empty;
-            if (Authentication_Type == User_Authentication_Type_Enum.Sobek)
+            if (AuthenticationType == User_Authentication_Type_Enum.Sobek)
                 auth_string = "sobek";
-            if (Authentication_Type == User_Authentication_Type_Enum.Shibboleth)
+            if (AuthenticationType == User_Authentication_Type_Enum.Shibboleth)
                 auth_string = "shibboleth";
-            if ((Authentication_Type == User_Authentication_Type_Enum.Windows) || (Authentication_Type == User_Authentication_Type_Enum.LDAP))
+            if ((AuthenticationType == User_Authentication_Type_Enum.Windows) || (AuthenticationType == User_Authentication_Type_Enum.LDAP))
                 auth_string = "ldap";
 
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[24];
-				paramList[0] = new SqlParameter("@userid", User.UserID);
-				paramList[1] = new SqlParameter("@shibbid", User.ShibbID);
-				paramList[2] = new SqlParameter("@username", User.UserName);
-				paramList[3] = new SqlParameter("@password", encryptedPassword);
-				paramList[4] = new SqlParameter("@emailaddress", User.Email);
-				paramList[5] = new SqlParameter("@firstname", User.Given_Name);
-				paramList[6] = new SqlParameter("@lastname", User.Family_Name);
-				paramList[7] = new SqlParameter("@cansubmititems", User.Can_Submit);
-				paramList[8] = new SqlParameter("@nickname", User.Nickname);
-				paramList[9] = new SqlParameter("@organization", User.Organization);
-				paramList[10] = new SqlParameter("@college", User.College);
-				paramList[11] = new SqlParameter("@department", User.Department);
-				paramList[12] = new SqlParameter("@unit", User.Unit);
-				paramList[13] = new SqlParameter("@rights", User.Default_Rights);
-				paramList[14] = new SqlParameter("@sendemail", User.Send_Email_On_Submission);
-				paramList[15] = new SqlParameter("@language", User.Preferred_Language);
+				EalDbParameter[] paramList = new EalDbParameter[24];
+				paramList[0] = new EalDbParameter("@userid", User.UserID);
+				paramList[1] = new EalDbParameter("@shibbid", User.ShibbID);
+				paramList[2] = new EalDbParameter("@username", User.UserName);
+				paramList[3] = new EalDbParameter("@password", encryptedPassword);
+				paramList[4] = new EalDbParameter("@emailaddress", User.Email);
+				paramList[5] = new EalDbParameter("@firstname", User.Given_Name);
+				paramList[6] = new EalDbParameter("@lastname", User.Family_Name);
+				paramList[7] = new EalDbParameter("@cansubmititems", User.Can_Submit);
+				paramList[8] = new EalDbParameter("@nickname", User.Nickname);
+				paramList[9] = new EalDbParameter("@organization", User.Organization);
+				paramList[10] = new EalDbParameter("@college", User.College);
+				paramList[11] = new EalDbParameter("@department", User.Department);
+				paramList[12] = new EalDbParameter("@unit", User.Unit);
+				paramList[13] = new EalDbParameter("@rights", User.Default_Rights);
+				paramList[14] = new EalDbParameter("@sendemail", User.Send_Email_On_Submission);
+				paramList[15] = new EalDbParameter("@language", User.Preferred_Language);
 				if (User.Templates.Count > 0)
 				{
-					paramList[16] = new SqlParameter("@default_template", User.Templates[0]);
+					paramList[16] = new EalDbParameter("@default_template", User.Templates[0]);
 				}
 				else
 				{
-					paramList[16] = new SqlParameter("@default_template", String.Empty);
+					paramList[16] = new EalDbParameter("@default_template", String.Empty);
 				}
 				if (User.Default_Metadata_Sets.Count > 0)
 				{
-					paramList[17] = new SqlParameter("@default_metadata", User.Default_Metadata_Sets[0]);
+					paramList[17] = new EalDbParameter("@default_metadata", User.Default_Metadata_Sets[0]);
 				}
 				else
 				{
-					paramList[17] = new SqlParameter("@default_metadata", String.Empty);
+					paramList[17] = new EalDbParameter("@default_metadata", String.Empty);
 				}
-				paramList[18] = new SqlParameter("@organization_code", User.Organization_Code);
-				paramList[19] = new SqlParameter("@receivestatsemail", User.Receive_Stats_Emails);
-                paramList[20] = new SqlParameter("@scanningtechnician", User.Scanning_Technician);
-                paramList[21] = new SqlParameter("@processingtechnician", User.Processing_Technician);
-                paramList[22] = new SqlParameter("@internalnotes", User.Internal_Notes);
-                paramList[23] = new SqlParameter("@authentication", auth_string);
+				paramList[18] = new EalDbParameter("@organization_code", User.Organization_Code);
+				paramList[19] = new EalDbParameter("@receivestatsemail", User.Receive_Stats_Emails);
+                paramList[20] = new EalDbParameter("@scanningtechnician", User.Scanning_Technician);
+                paramList[21] = new EalDbParameter("@processingtechnician", User.Processing_Technician);
+                paramList[22] = new EalDbParameter("@internalnotes", User.Internal_Notes);
+                paramList[23] = new EalDbParameter("@authentication", auth_string);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_User", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -1792,11 +1694,11 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@userid", UserID);
-				paramList[1] = new SqlParameter("@usergroupid", UserGroupID);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@userid", UserID);
+				paramList[1] = new EalDbParameter("@usergroupid", UserGroupID);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Link_User_To_User_Group", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Link_User_To_User_Group", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -1827,14 +1729,14 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[5];
-				paramList[0] = new SqlParameter("@username", Username);
-				paramList[1] = new SqlParameter("@current_password", encryptedCurrentPassword);
-				paramList[2] = new SqlParameter("@new_password", encryptedNewPassword);
-				paramList[3] = new SqlParameter("@isTemporaryPassword", IsTemporary);
-				paramList[4] = new SqlParameter("@password_changed", false) {Direction = ParameterDirection.InputOutput};
+				EalDbParameter[] paramList = new EalDbParameter[5];
+				paramList[0] = new EalDbParameter("@username", Username);
+				paramList[1] = new EalDbParameter("@current_password", encryptedCurrentPassword);
+				paramList[2] = new EalDbParameter("@new_password", encryptedNewPassword);
+				paramList[3] = new EalDbParameter("@isTemporaryPassword", IsTemporary);
+				paramList[4] = new EalDbParameter("@password_changed", false) {Direction = ParameterDirection.InputOutput};
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Change_Password", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Change_Password", paramList);
 
 
 				return Convert.ToBoolean(paramList[4].Value);
@@ -1856,13 +1758,13 @@ namespace SobekCM.Library.Database
 		/// <summary> Checks to see if a username or email exist </summary>
 		/// <param name="UserName"> Username to check</param>
 		/// <param name="Email"> Email address to check</param>
-		/// <param name="UserName_Exists"> [OUT] Flag indicates if the username exists</param>
-		/// <param name="Email_Exists"> [OUT] Flag indicates if the email exists </param>
+		/// <param name="UserNameExists"> [OUT] Flag indicates if the username exists</param>
+		/// <param name="EmailExists"> [OUT] Flag indicates if the email exists </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'mySobek_UserName_Exists' stored procedure<br /><br />
 		/// This is used to enforce uniqueness during registration </remarks> 
-		public static bool UserName_Exists(string UserName, string Email, out bool UserName_Exists, out bool Email_Exists, Custom_Tracer Tracer )
+		public static bool UserName_Exists(string UserName, string Email, out bool UserNameExists, out bool EmailExists, Custom_Tracer Tracer )
 		{
 			if (Tracer != null)
 			{
@@ -1872,16 +1774,16 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@username", UserName);
-				paramList[1] = new SqlParameter("@email", Email);
-				paramList[2] = new SqlParameter("@UserName_Exists", true) {Direction = ParameterDirection.InputOutput};
-				paramList[3] = new SqlParameter("@Email_Exists", true) {Direction = ParameterDirection.InputOutput};
+				EalDbParameter[] paramList = new EalDbParameter[4];
+				paramList[0] = new EalDbParameter("@username", UserName);
+				paramList[1] = new EalDbParameter("@email", Email);
+				paramList[2] = new EalDbParameter("@UserName_Exists", true) {Direction = ParameterDirection.InputOutput};
+				paramList[3] = new EalDbParameter("@Email_Exists", true) {Direction = ParameterDirection.InputOutput};
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_UserName_Exists", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_UserName_Exists", paramList);
 
-				UserName_Exists = Convert.ToBoolean(paramList[2].Value);
-				Email_Exists = Convert.ToBoolean(paramList[3].Value);
+				UserNameExists = Convert.ToBoolean(paramList[2].Value);
+				EmailExists = Convert.ToBoolean(paramList[3].Value);
 				return true;
 			}
 			catch ( Exception ee )
@@ -1893,19 +1795,19 @@ namespace SobekCM.Library.Database
 					Tracer.Add_Trace("SobekCM_Database.UserName_Exists", ee.Message, Custom_Trace_Type_Enum.Error);
 					Tracer.Add_Trace("SobekCM_Database.UserName_Exists", ee.StackTrace, Custom_Trace_Type_Enum.Error);
 				}
-				UserName_Exists = true;
-				Email_Exists = true;
+				UserNameExists = true;
+				EmailExists = true;
 				return false;
 			}
 		}
 
 		/// <summary> Updates the flag that indicates the user would like to receive a monthly usage statistics email </summary>
 		/// <param name="UserID"> Primary key for this user in the database </param>
-		/// <param name="New_Flag"> New value for the flag </param>
+		/// <param name="NewFlag"> New value for the flag </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'mySobek_Set_Receive_Stats_Email_Flag' stored procedure</remarks> 
-		public static bool Set_User_Receive_Stats_Email( int UserID, bool New_Flag, Custom_Tracer Tracer)
+		public static bool Set_User_Receive_Stats_Email( int UserID, bool NewFlag, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -1915,11 +1817,11 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@userid", UserID);
-				paramList[1] = new SqlParameter("@newflag", New_Flag);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@userid", UserID);
+				paramList[1] = new EalDbParameter("@newflag", NewFlag);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Set_Receive_Stats_Email_Flag", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Set_Receive_Stats_Email_Flag", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -1938,7 +1840,7 @@ namespace SobekCM.Library.Database
 		/// <summary> Gets basic user information by UserID </summary>
 		/// <param name="UserID"> Primary key for this user in the database </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Fully built <see cref="Users.User_Object"/> object </returns>
+		/// <returns> Fully built <see cref="SobekCM.Core.Users.User_Object"/> object </returns>
 		/// <remarks> This calls the 'mySobek_Get_User_By_UserID' stored procedure<br /><br />
 		/// This is called when a user's cookie exists in a web request</remarks> 
 		public static User_Object Get_User(int UserID, Custom_Tracer Tracer)
@@ -1951,10 +1853,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@userid", UserID);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@userid", UserID);
 
-				DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_User_By_UserID", paramList);
+				DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Get_User_By_UserID", paramList);
 
 				if ((resultSet.Tables.Count > 0) && (resultSet.Tables[0].Rows.Count > 0))
 				{
@@ -1978,12 +1880,12 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Gets basic user information by the Shibboleth-provided user identifier </summary>
-		/// <param name="Shibboleth_ID"> Shibboleth ID (UFID) for the user </param>
+		/// <param name="ShibbolethID"> Shibboleth ID (UFID) for the user </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Fully built <see cref="Users.User_Object"/> object </returns>
+		/// <returns> Fully built <see cref="SobekCM.Core.Users.User_Object"/> object </returns>
 		/// <remarks> This calls the 'mySobek_Get_User_By_UFID' stored procedure<br /><br />
 		/// This method is called when user's logon through the Gatorlink Shibboleth service</remarks> 
-		public static User_Object Get_User(string Shibboleth_ID, Custom_Tracer Tracer)
+		public static User_Object Get_User(string ShibbolethID, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -1994,10 +1896,10 @@ namespace SobekCM.Library.Database
 			{
 
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@shibbid", Shibboleth_ID);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@shibbid", ShibbolethID);
 
-				DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_User_By_ShibbID", paramList);
+				DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Get_User_By_ShibbID", paramList);
 
 				if ((resultSet.Tables.Count > 0) && (resultSet.Tables[0].Rows.Count > 0))
 				{
@@ -2025,7 +1927,7 @@ namespace SobekCM.Library.Database
 		/// <param name="UserName"> UserName (or email address) for the user </param>
 		/// <param name="Password"> Plain-text password, which is then encrypted prior to sending to database</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Fully built <see cref="Users.User_Object"/> object </returns>
+		/// <returns> Fully built <see cref="SobekCM.Core.Users.User_Object"/> object </returns>
 		/// <remarks> This calls the 'mySobek_Get_User_By_UserName_Password' stored procedure<br /><br />
 		/// This is used when a user logs on through the mySobek authentication</remarks> 
 		public static User_Object Get_User(string UserName, string Password, Custom_Tracer Tracer)
@@ -2042,11 +1944,11 @@ namespace SobekCM.Library.Database
 
 
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@username", UserName);
-				paramList[1] = new SqlParameter("@password", encryptedPassword);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@username", UserName);
+				paramList[1] = new EalDbParameter("@password", encryptedPassword);
 
-				DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_User_By_UserName_Password", paramList);
+				DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Get_User_By_UserName_Password", paramList);
 
 				if ((resultSet.Tables.Count > 0) && (resultSet.Tables[0].Rows.Count > 0))
 				{
@@ -2199,11 +2101,11 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@userid", UserID);
-				paramList[1] = new SqlParameter("@groupid", GroupID);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@userid", UserID);
+				paramList[1] = new EalDbParameter("@groupid", GroupID);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Link_User_To_Item", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Link_User_To_Item", paramList);
 
 				// Return the browse id
 				return true;
@@ -2220,21 +2122,21 @@ namespace SobekCM.Library.Database
 		/// <param name="UserID"> Primary key for this user in the database </param>
 		/// <param name="ItemID"> Primary key for the item to link this user to</param>
 		/// <param name="RelationshipID"> Primary key for the type of relationship to use </param>
-		/// <param name="Change_Existing"> If a relationship already exists, should this override it? </param>
+		/// <param name="ChangeExisting"> If a relationship already exists, should this override it? </param>
 		/// <returns>TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'SobekCM_Link_User_To_Item' stored procedure</remarks> 
-		public static bool Add_User_Item_Link(int UserID, int ItemID, int RelationshipID, bool Change_Existing )
+		public static bool Add_User_Item_Link(int UserID, int ItemID, int RelationshipID, bool ChangeExisting )
 		{
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@itemid", ItemID);
-				paramList[1] = new SqlParameter("@userid", UserID);
-				paramList[2] = new SqlParameter("@relationshipid", RelationshipID);
-				paramList[3] = new SqlParameter("@change_existing", Change_Existing);
+				EalDbParameter[] paramList = new EalDbParameter[4];
+				paramList[0] = new EalDbParameter("@itemid", ItemID);
+				paramList[1] = new EalDbParameter("@userid", UserID);
+				paramList[2] = new EalDbParameter("@relationshipid", RelationshipID);
+				paramList[3] = new EalDbParameter("@change_existing", ChangeExisting);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Link_User_To_Item", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Link_User_To_Item", paramList);
 
 				// Return the browse id
 				return true;
@@ -2263,10 +2165,10 @@ namespace SobekCM.Library.Database
 			{
 
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@userid", UserID);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@userid", UserID);
 
-				DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_Folder_Search_Information", paramList);
+				DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Get_Folder_Search_Information", paramList);
 
 				return resultSet;
 
@@ -2299,10 +2201,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@usersearchid", UserSearchID);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@usersearchid", UserSearchID);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Delete_User_Search", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Delete_User_Search", paramList);
 
 				// Return TRUE
 				return true;
@@ -2336,10 +2238,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@userid", UserID);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@userid", UserID);
 
-				DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_User_Searches", paramList);
+				DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Get_User_Searches", paramList);
 
 				return resultSet.Tables[0];
 
@@ -2359,14 +2261,14 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Saves a search to the user's saved searches </summary>
 		/// <param name="UserID"> Primary key for this user in the database </param>
-		/// <param name="Search_URL"> SobekCM search URL </param>
-		/// <param name="Search_Description"> Programmatic description of this search</param>
+		/// <param name="SearchUrl"> SobekCM search URL </param>
+		/// <param name="SearchDescription"> Programmatic description of this search</param>
 		/// <param name="ItemOrder"> Order for this search within the folder</param>
 		/// <param name="UserNotes"> Notes from the user about this search </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> New UserSearchID, or -1 if this edits an existing one </returns>
 		/// <remarks> This calls the 'mySobek_Save_User_Search' stored procedure</remarks> 
-		public static int Save_User_Search(int UserID, string Search_URL, string Search_Description, int ItemOrder, string UserNotes, Custom_Tracer Tracer)
+		public static int Save_User_Search(int UserID, string SearchUrl, string SearchDescription, int ItemOrder, string UserNotes, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -2376,15 +2278,15 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[6];
-				paramList[0] = new SqlParameter("@userid", UserID);
-				paramList[1] = new SqlParameter("@searchurl", Search_URL);
-				paramList[2] = new SqlParameter("@searchdescription", Search_Description);
-				paramList[3] = new SqlParameter("@itemorder", ItemOrder);
-				paramList[4] = new SqlParameter("@usernotes", UserNotes);
-				paramList[5] = new SqlParameter("@new_usersearchid", -1) {Direction = ParameterDirection.InputOutput};
+				EalDbParameter[] paramList = new EalDbParameter[6];
+				paramList[0] = new EalDbParameter("@userid", UserID);
+				paramList[1] = new EalDbParameter("@searchurl", SearchUrl);
+				paramList[2] = new EalDbParameter("@searchdescription", SearchDescription);
+				paramList[3] = new EalDbParameter("@itemorder", ItemOrder);
+				paramList[4] = new EalDbParameter("@usernotes", UserNotes);
+				paramList[5] = new EalDbParameter("@new_usersearchid", -1) {Direction = ParameterDirection.InputOutput};
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Search", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Search", paramList);
 
 
 				// Return TRUE
@@ -2408,11 +2310,11 @@ namespace SobekCM.Library.Database
 		/// <param name="UserID"> Primary key for this user in the database </param>
 		/// <param name="FolderName"> Name of this user's folder </param>
 		/// <param name="BibID"> Bibliographic identifier for this title / item group </param>
-		/// <param name="VID"> Volume identifier for this one volume within a title / item group </param>
+		/// <param name="Vid"> Volume identifier for this one volume within a title / item group </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Delete_Item_From_User_Folder' stored procedure</remarks> 
-		public static bool Delete_Item_From_User_Folder(int UserID, string FolderName, string BibID, string VID, Custom_Tracer Tracer )
+		public static bool Delete_Item_From_User_Folder(int UserID, string FolderName, string BibID, string Vid, Custom_Tracer Tracer )
 		{
 			if (Tracer != null)
 			{
@@ -2422,13 +2324,13 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@userid", UserID);
-				paramList[1] = new SqlParameter("@foldername", FolderName);
-				paramList[2] = new SqlParameter("@bibid", BibID);
-				paramList[3] = new SqlParameter("@vid", VID);
+				EalDbParameter[] paramList = new EalDbParameter[4];
+				paramList[0] = new EalDbParameter("@userid", UserID);
+				paramList[1] = new EalDbParameter("@foldername", FolderName);
+				paramList[2] = new EalDbParameter("@bibid", BibID);
+				paramList[3] = new EalDbParameter("@vid", Vid);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Delete_Item_From_User_Folder", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Delete_Item_From_User_Folder", paramList);
 
 				// Return TRUE
 				return true;
@@ -2450,11 +2352,11 @@ namespace SobekCM.Library.Database
 		/// <summary> Remove an item from any user folder it currently resides in (besides Submitted Items)</summary>
 		/// <param name="UserID"> Primary key for this user in the database </param>
 		/// <param name="BibID"> Bibliographic identifier for this title / item group </param>
-		/// <param name="VID"> Volume identifier for this one volume within a title / item group </param>
+		/// <param name="Vid"> Volume identifier for this one volume within a title / item group </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Delete_Item_From_All_User_Folders' stored procedure</remarks> 
-		public static bool Delete_Item_From_User_Folders(int UserID, string BibID, string VID, Custom_Tracer Tracer)
+		public static bool Delete_Item_From_User_Folders(int UserID, string BibID, string Vid, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -2464,12 +2366,12 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[3];
-				paramList[0] = new SqlParameter("@userid", UserID);
-				paramList[1] = new SqlParameter("@bibid", BibID);
-				paramList[2] = new SqlParameter("@vid", VID);
+				EalDbParameter[] paramList = new EalDbParameter[3];
+				paramList[0] = new EalDbParameter("@userid", UserID);
+				paramList[1] = new EalDbParameter("@bibid", BibID);
+				paramList[2] = new EalDbParameter("@vid", Vid);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Delete_Item_From_All_User_Folders", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Delete_Item_From_All_User_Folders", paramList);
 
 				// Return TRUE
 				return true;
@@ -2492,13 +2394,13 @@ namespace SobekCM.Library.Database
 		/// <param name="UserID"> Primary key for this user in the database </param>
 		/// <param name="FolderName"> Name of this user's folder </param>
 		/// <param name="BibID"> Bibliographic identifier for this title / item group </param>
-		/// <param name="VID"> Volume identifier for this one volume within a title / item group </param>
+		/// <param name="Vid"> Volume identifier for this one volume within a title / item group </param>
 		/// <param name="ItemOrder"> Order for this item within the folder</param>
 		/// <param name="UserNotes"> Notes from the user about this item </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Add_Item_To_User_Folder' stored procedure</remarks> 
-		public static bool Add_Item_To_User_Folder(int UserID, string FolderName, string BibID, string VID, int ItemOrder, string UserNotes, Custom_Tracer Tracer)
+		public static bool Add_Item_To_User_Folder(int UserID, string FolderName, string BibID, string Vid, int ItemOrder, string UserNotes, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -2508,15 +2410,15 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[6];
-				paramList[0] = new SqlParameter("@userid", UserID);
-				paramList[1] = new SqlParameter("@foldername", FolderName);
-				paramList[2] = new SqlParameter("@bibid", BibID);
-				paramList[3] = new SqlParameter("@vid", VID);
-				paramList[4] = new SqlParameter("@itemorder", ItemOrder);
-				paramList[5] = new SqlParameter("@usernotes", UserNotes);
+				EalDbParameter[] paramList = new EalDbParameter[6];
+				paramList[0] = new EalDbParameter("@userid", UserID);
+				paramList[1] = new EalDbParameter("@foldername", FolderName);
+				paramList[2] = new EalDbParameter("@bibid", BibID);
+				paramList[3] = new EalDbParameter("@vid", Vid);
+				paramList[4] = new EalDbParameter("@itemorder", ItemOrder);
+				paramList[5] = new EalDbParameter("@usernotes", UserNotes);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_Item_To_User_Folder", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_Item_To_User_Folder", paramList);
 
 				// Return TRUE
 				return true;
@@ -2553,11 +2455,11 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@userfolderid", UserFolderID);
-				paramList[1] = new SqlParameter("@userid", UserID);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@userfolderid", UserFolderID);
+				paramList[1] = new EalDbParameter("@userid", UserID);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Delete_User_Folder", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Delete_User_Folder", paramList);
 
 				// Return TRUE
 				return true;
@@ -2596,16 +2498,16 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[7];
-				paramList[0] = new SqlParameter("@userfolderid", UserFolderID);
-				paramList[1] = new SqlParameter("@userid", UserID);
-				paramList[2] = new SqlParameter("@parentfolderid", ParentFolderID);
-				paramList[3] = new SqlParameter("@foldername", FolderName);
-				paramList[4] = new SqlParameter("@is_public", IsPublic);
-				paramList[5] = new SqlParameter("@description", Description);
-				paramList[6] = new SqlParameter("@new_folder_id", 0) {Direction = ParameterDirection.InputOutput};
+				EalDbParameter[] paramList = new EalDbParameter[7];
+				paramList[0] = new EalDbParameter("@userfolderid", UserFolderID);
+				paramList[1] = new EalDbParameter("@userid", UserID);
+				paramList[2] = new EalDbParameter("@parentfolderid", ParentFolderID);
+				paramList[3] = new EalDbParameter("@foldername", FolderName);
+				paramList[4] = new EalDbParameter("@is_public", IsPublic);
+				paramList[5] = new EalDbParameter("@description", Description);
+				paramList[6] = new EalDbParameter("@new_folder_id", 0) {Direction = ParameterDirection.InputOutput};
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Edit_User_Folder", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Edit_User_Folder", paramList);
 
 				// Return TRUE
 				return Convert.ToInt32(paramList[6].Value);
@@ -2641,12 +2543,12 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[3];
-				paramList[0] = new SqlParameter("@userid", UserID);
-				paramList[1] = new SqlParameter("@aggregationid", AggregationID);
-				paramList[2] = new SqlParameter("@onhomepage", NewFlag);
+				EalDbParameter[] paramList = new EalDbParameter[3];
+				paramList[0] = new EalDbParameter("@userid", UserID);
+				paramList[1] = new EalDbParameter("@aggregationid", AggregationID);
+				paramList[2] = new EalDbParameter("@onhomepage", NewFlag);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Set_Aggregation_Home_Page_Flag", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Set_Aggregation_Home_Page_Flag", paramList);
 
 				// Return TRUE
 				return true;
@@ -2680,10 +2582,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@folderid", UserFolderID);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@folderid", UserFolderID);
 
-				DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_Folder_Information", paramList);
+				DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Get_Folder_Information", paramList);
 
 				// Build the returnvalue
 				if ((resultSet == null) || (resultSet.Tables.Count == 0) || (resultSet.Tables[0].Rows.Count == 0))
@@ -2725,7 +2627,7 @@ namespace SobekCM.Library.Database
 		/// <summary> Gets the information about a single user group </summary>
 		/// <param name="UserGroupID"> Primary key for this user group from the database </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Fully built <see cref="Users.User_Group"/> object </returns>
+		/// <returns> Fully built <see cref="SobekCM.Core.Users.User_Group"/> object </returns>
 		/// <remarks> This calls the 'mySobek_Get_User_Group' stored procedure </remarks> 
 		public static User_Group Get_User_Group(int UserGroupID, Custom_Tracer Tracer)
 		{
@@ -2737,10 +2639,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
 
-				DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_User_Group", paramList);
+				DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Get_User_Group", paramList);
 
 				if ((resultSet.Tables.Count > 0) && (resultSet.Tables[0].Rows.Count > 0))
 				{
@@ -2826,11 +2728,11 @@ namespace SobekCM.Library.Database
 		/// <param name="UserID"> Primary key for the user adding the descriptive tag </param>
 		/// <param name="TagID"> Primary key for a descriptive tag, if this is an edit </param>
 		/// <param name="ItemID"> Primary key for the digital resource to tag </param>
-		/// <param name="Added_Description"> User-entered descriptive tag </param>
+		/// <param name="AddedDescription"> User-entered descriptive tag </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> New tag id if this is a new descriptive tag </returns>
 		/// <remarks> This calls the 'mySobek_Add_Description_Tag' stored procedure</remarks> 
-		public static int Add_Description_Tag(int UserID, int TagID, int ItemID, string Added_Description, Custom_Tracer Tracer)
+		public static int Add_Description_Tag(int UserID, int TagID, int ItemID, string AddedDescription, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -2840,14 +2742,14 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[5];
-				paramList[0] = new SqlParameter("@UserID", UserID);
-				paramList[1] = new SqlParameter("@TagID", TagID);
-				paramList[2] = new SqlParameter("@ItemID", ItemID);
-				paramList[3] = new SqlParameter("@Description ", Added_Description);
-				paramList[4] = new SqlParameter("@new_TagID", -1) {Direction = ParameterDirection.InputOutput};
+				EalDbParameter[] paramList = new EalDbParameter[5];
+				paramList[0] = new EalDbParameter("@UserID", UserID);
+				paramList[1] = new EalDbParameter("@TagID", TagID);
+				paramList[2] = new EalDbParameter("@ItemID", ItemID);
+				paramList[3] = new EalDbParameter("@Description ", AddedDescription);
+				paramList[4] = new EalDbParameter("@new_TagID", -1) {Direction = ParameterDirection.InputOutput};
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_Description_Tag", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_Description_Tag", paramList);
 
 				// Return TRUE
 				int returnValue = Convert.ToInt32(paramList[4].Value);
@@ -2882,10 +2784,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@TagID", TagID);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@TagID", TagID);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Delete_Description_Tag", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Delete_Description_Tag", paramList);
 
 				// Return TRUE
 				return true;
@@ -2919,10 +2821,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@UserID", UserID);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@UserID", UserID);
 
-				DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_View_All_User_Tags", paramList);
+				DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_View_All_User_Tags", paramList);
 
 				return resultSet.Tables[0];
 			}
@@ -2955,10 +2857,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@aggregationcode", AggregationCode);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@aggregationcode", AggregationCode);
 
-				DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Description_Tags_By_Aggregation", paramList);
+				DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Description_Tags_By_Aggregation", paramList);
 
 				return resultSet.Tables[0];
 			}
@@ -2988,7 +2890,7 @@ namespace SobekCM.Library.Database
 			{
 				try
 				{
-					DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_ColBuild_Script");
+					DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_ColBuild_Script");
 					return tempSet.Tables[0];
 				}
 				catch (Exception ee)
@@ -3011,7 +2913,7 @@ namespace SobekCM.Library.Database
 			try
 			{
 
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Settings");
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Settings");
 				if ((tempSet.Tables.Count > 0) && (tempSet.Tables[0].Rows.Count > 0))
 				{
 					foreach (DataRow thisRow in tempSet.Tables[0].Rows)
@@ -3030,21 +2932,21 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Sets a value for an individual user's setting </summary>
 		/// <param name="UserID"> Primary key for this user in the database </param>
-		/// <param name="Setting_Key"> Key for the setting to update or insert </param>
-		/// <param name="Setting_Value"> Value for the setting to update or insert </param>
+		/// <param name="SettingKey"> Key for the setting to update or insert </param>
+		/// <param name="SettingValue"> Value for the setting to update or insert </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Set_User_Setting_Value' stored procedure </remarks> 
-		public static bool Set_User_Setting(int UserID, string Setting_Key, string Setting_Value)
+		public static bool Set_User_Setting(int UserID, string SettingKey, string SettingValue)
 		{
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[3];
-				paramList[0] = new SqlParameter("@UserID", UserID);
-				paramList[1] = new SqlParameter("@Setting_Key", Setting_Key);
-				paramList[2] = new SqlParameter("@Setting_Value", Setting_Value);
+				EalDbParameter[] paramList = new EalDbParameter[3];
+				paramList[0] = new EalDbParameter("@UserID", UserID);
+				paramList[1] = new EalDbParameter("@Setting_Key", SettingKey);
+				paramList[2] = new EalDbParameter("@Setting_Value", SettingValue);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Set_User_Setting_Value", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Set_User_Setting_Value", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -3055,20 +2957,20 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Sets a value in the settings table </summary>
-		/// <param name="Setting_Key"> Key for the setting to update or insert </param>
-		/// <param name="Setting_Value"> Value for the setting to update or insert </param>
+		/// <param name="SettingKey"> Key for the setting to update or insert </param>
+		/// <param name="SettingValue"> Value for the setting to update or insert </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Set_Setting_Value' stored procedure </remarks> 
-		public static bool Set_Setting(string Setting_Key, string Setting_Value)
+		public static bool Set_Setting(string SettingKey, string SettingValue)
 		{
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@Setting_Key", Setting_Key);
-				paramList[1] = new SqlParameter("@Setting_Value", Setting_Value);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@Setting_Key", SettingKey);
+				paramList[1] = new EalDbParameter("@Setting_Value", SettingValue);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Set_Setting_Value", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Set_Setting_Value", paramList);
 				return true;
 			}
 			catch ( Exception ee )
@@ -3080,18 +2982,18 @@ namespace SobekCM.Library.Database
 
 
 		/// <summary> Delete a value from the settings table </summary>
-		/// <param name="Setting_Key"> Key for the setting to update or insert </param>
+		/// <param name="SettingKey"> Key for the setting to update or insert </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Settinge' stored procedure </remarks> 
-		public static bool Delete_Setting(string Setting_Key)
+		public static bool Delete_Setting(string SettingKey)
 		{
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@Setting_Key", Setting_Key);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@Setting_Key", SettingKey);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Setting", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Setting", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -3116,7 +3018,7 @@ namespace SobekCM.Library.Database
 				try
 				{
 					// Define a temporary dataset
-					DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_MarcXML_Production_Feed");
+					DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_MarcXML_Production_Feed");
 
 					// Return the first table from the returned dataset
 					return tempSet.Tables[0];
@@ -3140,7 +3042,7 @@ namespace SobekCM.Library.Database
 				try
 				{
 					// Define a temporary dataset
-					DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_MarcXML_Test_Feed");
+					DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_MarcXML_Test_Feed");
 
 					// Return the first table from the returned dataset
 					return tempSet.Tables[0];
@@ -3163,11 +3065,11 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@code", AggregationCode);
-				paramList[1] = new SqlParameter("@newitemflag", NewItemFlag);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@code", AggregationCode);
+				paramList[1] = new EalDbParameter("@newitemflag", NewItemFlag);
 				// Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Set_Aggregation_NewItem_Flag", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Set_Aggregation_NewItem_Flag", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -3185,7 +3087,7 @@ namespace SobekCM.Library.Database
 		{
 			try
 			{
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_CollectionList_toBuild");
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_CollectionList_toBuild");
 				return tempSet.Tables[0];
 			}
 			catch (Exception ee)
@@ -3199,24 +3101,24 @@ namespace SobekCM.Library.Database
 		/// <summary> Deletes an item from the SobekCM database</summary>
 		/// <param name="BibID"> Bibliographic identifier for the item to delete</param>
 		/// <param name="VID"> Volume identifier for the item to delete</param>
-		/// <param name="As_Admin"> Indicates this is an admin, who can delete ANY item, not just those without archives attached </param>
-		/// <param name="Delete_Message"> Message to include on any archive remnants after an admin delete </param>
+		/// <param name="AsAdmin"> Indicates this is an admin, who can delete ANY item, not just those without archives attached </param>
+		/// <param name="DeleteMessage"> Message to include on any archive remnants after an admin delete </param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This method calls the stored procedure 'SobekCM_Delete_Item'. <br /><br />
 		/// This just marks a flag on the item (and item group) as deleted, it does not actually remove the data from the database</remarks>
-		public static bool Delete_SobekCM_Item(string BibID, string VID, bool As_Admin, string Delete_Message )
+		public static bool Delete_SobekCM_Item(string BibID, string VID, bool AsAdmin, string DeleteMessage )
 		{
 			try
 			{
 				// build the parameter list
-				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@bibid", BibID);
-				paramList[1] = new SqlParameter("@vid", VID);
-				paramList[2] = new SqlParameter("@as_admin", As_Admin);
-				paramList[3] = new SqlParameter("@delete_message", Delete_Message);
+				EalDbParameter[] paramList = new EalDbParameter[4];
+				paramList[0] = new EalDbParameter("@bibid", BibID);
+				paramList[1] = new EalDbParameter("@vid", VID);
+				paramList[2] = new EalDbParameter("@as_admin", AsAdmin);
+				paramList[3] = new EalDbParameter("@delete_message", DeleteMessage);
 
 				//Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Item", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Item", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -3238,7 +3140,7 @@ namespace SobekCM.Library.Database
 			{
 				try
 				{
-					DataSet returnSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Items_Needing_Aditional_Work");
+					DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Items_Needing_Aditional_Work");
 					return returnSet.Tables[0];
 				}
 				catch
@@ -3250,11 +3152,11 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Update the additional work neeed flag, which flag an item for additional follow up work in the builder </summary>
 		/// <param name="ItemID"> Primary key for the item for which to update the additional work needed flag</param>
-		/// <param name="New_Flag"> New flag for the additional follow up work </param>
+		/// <param name="NewFlag"> New flag for the additional follow up work </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successul, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Update_Additional_Work_Needed_Flag' stored procedure</remarks> 
-		public static bool Update_Additional_Work_Needed_Flag(int ItemID, bool New_Flag, Custom_Tracer Tracer)
+		public static bool Update_Additional_Work_Needed_Flag(int ItemID, bool NewFlag, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -3264,11 +3166,11 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@itemid", ItemID);
-				paramList[1] = new SqlParameter("@newflag", New_Flag);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@itemid", ItemID);
+				paramList[1] = new EalDbParameter("@newflag", NewFlag);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Update_Additional_Work_Needed_Flag", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Update_Additional_Work_Needed_Flag", paramList);
 
 				// Return TRUE
 				return true;
@@ -3294,11 +3196,11 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Saves a item aggregation alias for future use </summary>
 		/// <param name="Alias"> Alias string which will forward to a item aggregation </param>
-		/// <param name="Aggregation_Code"> Code for the item aggregation to forward to </param>
+		/// <param name="AggregationCode"> Code for the item aggregation to forward to </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE</returns>
 		/// <remarks> This calls the 'SobekCM_Save_Item_Aggregation_Alias' stored procedure </remarks> 
-		public static bool Save_Aggregation_Alias(string Alias, string Aggregation_Code, Custom_Tracer Tracer)
+		public static bool Save_Aggregation_Alias(string Alias, string AggregationCode, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -3308,11 +3210,11 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@alias", Alias);
-				paramList[1] = new SqlParameter("@aggregation_code", Aggregation_Code);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@alias", Alias);
+				paramList[1] = new EalDbParameter("@aggregation_code", AggregationCode);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Aggregation_Alias", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Aggregation_Alias", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -3343,10 +3245,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@alias", Alias);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@alias", Alias);
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Item_Aggregation_Alias", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Item_Aggregation_Alias", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -3363,17 +3265,17 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Saves a HTML skin to the database </summary>
-		/// <param name="Skin_Code"> Code for this HTML skin </param>
-		/// <param name="Base_Skin_Code"> Base skin code from which this html skin inherits </param>
+		/// <param name="SkinCode"> Code for this HTML skin </param>
+		/// <param name="BaseSkinCode"> Base skin code from which this html skin inherits </param>
 		/// <param name="OverrideBanner"> Flag indicates this skin overrides the default banner </param>
 		/// <param name="OverrideHeaderFooter"> Flag indicates this skin overrides the default header/footer</param>
-		/// <param name="Banner_Link"> Link to which the banner sends the user </param>
+		/// <param name="BannerLink"> Link to which the banner sends the user </param>
 		/// <param name="Notes"> Notes on this skin ( name, use, etc...) </param>
-		/// <param name="Suppress_Top_Navigation"> Flag indicates if the top-level aggregation navigation should be suppressed for this web skin ( i.e., is the top-level navigation embedded into the header file already? )</param>
+		/// <param name="SuppressTopNavigation"> Flag indicates if the top-level aggregation navigation should be suppressed for this web skin ( i.e., is the top-level navigation embedded into the header file already? )</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Add_Web_Skin' stored procedure </remarks> 
-		public static bool Save_Web_Skin(string Skin_Code, string Base_Skin_Code, bool OverrideBanner, bool OverrideHeaderFooter, string Banner_Link, string Notes, bool Suppress_Top_Navigation, Custom_Tracer Tracer)
+		public static bool Save_Web_Skin(string SkinCode, string BaseSkinCode, bool OverrideBanner, bool OverrideHeaderFooter, string BannerLink, string Notes, bool SuppressTopNavigation, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -3383,17 +3285,17 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[8];
-				paramList[0] = new SqlParameter("@webskincode", Skin_Code);
-				paramList[1] = new SqlParameter("@basewebskin", Base_Skin_Code);
-				paramList[2] = new SqlParameter("@overridebanner", OverrideBanner);
-				paramList[3] = new SqlParameter("@overrideheaderfooter", OverrideHeaderFooter);
-				paramList[4] = new SqlParameter("@bannerlink", Banner_Link);
-				paramList[5] = new SqlParameter("@notes", Notes);
-				paramList[6] = new SqlParameter("@build_on_launch", false);
-				paramList[7] = new SqlParameter("@suppress_top_nav", Suppress_Top_Navigation  );
+				EalDbParameter[] paramList = new EalDbParameter[8];
+				paramList[0] = new EalDbParameter("@webskincode", SkinCode);
+				paramList[1] = new EalDbParameter("@basewebskin", BaseSkinCode);
+				paramList[2] = new EalDbParameter("@overridebanner", OverrideBanner);
+				paramList[3] = new EalDbParameter("@overrideheaderfooter", OverrideHeaderFooter);
+				paramList[4] = new EalDbParameter("@bannerlink", BannerLink);
+				paramList[5] = new EalDbParameter("@notes", Notes);
+				paramList[6] = new EalDbParameter("@build_on_launch", false);
+				paramList[7] = new EalDbParameter("@suppress_top_nav", SuppressTopNavigation  );
 
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Add_Web_Skin", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Add_Web_Skin", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -3410,12 +3312,12 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Deletes a HTML web skin fromo the database </summary>
-		/// <param name="Skin_Code"> Code for the  HTML web skin to delete </param>
-		/// <param name="Force_Delete"> Flag indicates if this should be deleted, even if things are still attached to this web skin (system admin)</param>
+		/// <param name="SkinCode"> Code for the  HTML web skin to delete </param>
+		/// <param name="ForceDelete"> Flag indicates if this should be deleted, even if things are still attached to this web skin (system admin)</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Web_Skin' stored procedure </remarks> 
-		public static bool Delete_Web_Skin(string Skin_Code, bool Force_Delete, Custom_Tracer Tracer)
+		public static bool Delete_Web_Skin(string SkinCode, bool ForceDelete, Custom_Tracer Tracer)
 		{
 			lastException = null;
 
@@ -3427,13 +3329,13 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Execute this non-query stored procedure
-				SqlParameter[] paramList = new SqlParameter[3];
-				paramList[0] = new SqlParameter("@webskincode", Skin_Code);
-				paramList[1] = new SqlParameter("@force_delete", Force_Delete);
-				paramList[2] = new SqlParameter("@links", -1) { Direction = ParameterDirection.Output };
+				EalDbParameter[] paramList = new EalDbParameter[3];
+				paramList[0] = new EalDbParameter("@webskincode", SkinCode);
+				paramList[1] = new EalDbParameter("@force_delete", ForceDelete);
+				paramList[2] = new EalDbParameter("@links", -1) { Direction = ParameterDirection.Output };
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Web_Skin", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Web_Skin", paramList);
 
 				if (Convert.ToInt32(paramList[2].Value) > 0)
 				{
@@ -3455,28 +3357,28 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Saves information about a new icon/wordmark or modify an existing one </summary>
-		/// <param name="Icon_Name"> Code identifier for this icon/wordmark</param>
-		/// <param name="Icon_File"> Filename for this icon/wordmark</param>
-		/// <param name="Icon_Link">  Link that clicking on this icon/wordmark will forward the user to</param>
-		/// <param name="Icon_Title"> Title for this icon, which appears when you hover over the icon </param>
+		/// <param name="IconName"> Code identifier for this icon/wordmark</param>
+		/// <param name="IconFile"> Filename for this icon/wordmark</param>
+		/// <param name="IconLink">  Link that clicking on this icon/wordmark will forward the user to</param>
+		/// <param name="IconTitle"> Title for this icon, which appears when you hover over the icon </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Primary key for this new icon (or wordmark), or -1 if this action failed</returns>
 		/// <remarks> This calls the 'SobekCM_Save_Icon' stored procedure </remarks> 
-		public static int Save_Icon(string Icon_Name, string Icon_File, string Icon_Link, string Icon_Title, Custom_Tracer Tracer)
+		public static int Save_Icon(string IconName, string IconFile, string IconLink, string IconTitle, Custom_Tracer Tracer)
 		{
-			return Save_Icon( Icon_Name, Icon_File, Icon_Link, 80, Icon_Title, Tracer);
+			return Save_Icon( IconName, IconFile, IconLink, 80, IconTitle, Tracer);
 		}
 
 		/// <summary> Saves information about a new icon/wordmark or modify an existing one </summary>
-		/// <param name="Icon_Name"> Code identifier for this icon/wordmark</param>
-		/// <param name="Icon_File"> Filename for this icon/wordmark</param>
-		/// <param name="Icon_Link">  Link that clicking on this icon/wordmark will forward the user to</param>
+		/// <param name="IconName"> Code identifier for this icon/wordmark</param>
+		/// <param name="IconFile"> Filename for this icon/wordmark</param>
+		/// <param name="IconLink">  Link that clicking on this icon/wordmark will forward the user to</param>
 		/// <param name="Height"> Height for this icon/wordmark </param>
-		/// <param name="Icon_Title"> Title for this icon, which appears when you hover over the icon </param>
+		/// <param name="IconTitle"> Title for this icon, which appears when you hover over the icon </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Primary key for this new icon (or wordmark), or -1 if this action failed</returns>
 		/// <remarks> This calls the 'SobekCM_Save_Icon' stored procedure </remarks> 
-		public static int Save_Icon(string Icon_Name, string Icon_File, string Icon_Link, int Height, string Icon_Title, Custom_Tracer Tracer)
+		public static int Save_Icon(string IconName, string IconFile, string IconLink, int Height, string IconTitle, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -3486,17 +3388,17 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[7];
-				paramList[0] = new SqlParameter("@iconid", -1 );
-				paramList[1] = new SqlParameter("@icon_name", Icon_Name);
-				paramList[2] = new SqlParameter("@icon_url", Icon_File);
-				paramList[3] = new SqlParameter("@link", Icon_Link);
-				paramList[4] = new SqlParameter("@height", Height);
-				paramList[5] = new SqlParameter("@title", Icon_Title);
-				paramList[6] = new SqlParameter("@new_iconid", -1) {Direction = ParameterDirection.Output};
+				EalDbParameter[] paramList = new EalDbParameter[7];
+				paramList[0] = new EalDbParameter("@iconid", -1 );
+				paramList[1] = new EalDbParameter("@icon_name", IconName);
+				paramList[2] = new EalDbParameter("@icon_url", IconFile);
+				paramList[3] = new EalDbParameter("@link", IconLink);
+				paramList[4] = new EalDbParameter("@height", Height);
+				paramList[5] = new EalDbParameter("@title", IconTitle);
+				paramList[6] = new EalDbParameter("@new_iconid", -1) {Direction = ParameterDirection.Output};
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Icon", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Icon", paramList);
 
 				// Return the new icon id
 				return Convert.ToInt32(paramList[6].Value);
@@ -3515,11 +3417,11 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Deletes an existing wordmark/icon if it is not linked to any titles in the database </summary>
-		/// <param name="Icon_Code"> Wordmark/icon code for the wordmark to delete </param>
+		/// <param name="IconCode"> Wordmark/icon code for the wordmark to delete </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successfully deleted, otherwise FALSE indicating the icon is linked to some titles and cannot be deleted </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Icon' stored procedure </remarks> 
-		public static bool Delete_Icon( string Icon_Code, Custom_Tracer Tracer )
+		public static bool Delete_Icon( string IconCode, Custom_Tracer Tracer )
 		{
 			if (Tracer != null)
 			{
@@ -3532,12 +3434,12 @@ namespace SobekCM.Library.Database
 				lastException = null;
 
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@icon_code", Icon_Code);
-				paramList[1] = new SqlParameter("@links", -1) {Direction = ParameterDirection.Output};
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@icon_code", IconCode);
+				paramList[1] = new EalDbParameter("@links", -1) {Direction = ParameterDirection.Output};
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Icon", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Icon", paramList);
 
 				if (Convert.ToInt32(paramList[1].Value) > 0)
 				{
@@ -3570,7 +3472,7 @@ namespace SobekCM.Library.Database
 			}
 
 			// Define a temporary dataset
-			DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Codes");
+			DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Codes");
 			return tempSet.Tables[0];
 		}
 			   
@@ -3586,7 +3488,7 @@ namespace SobekCM.Library.Database
 			}
 
 			// Define a temporary dataset
-			DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "mySobek_Get_All_Users");
+			DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Get_All_Users");
 			return tempSet.Tables[0];
 		}
 
@@ -3597,11 +3499,11 @@ namespace SobekCM.Library.Database
 		/// <param name="ShortName"> Short version of this item aggregation </param>
 		/// <param name="IsActive"> Flag indicates if this item aggregation is active</param>
 		/// <param name="IsHidden"> Flag indicates if this item is hidden</param>
-		/// <param name="External_Link">External link for this item aggregation (usually used for institutional aggregationPermissions)</param>
+		/// <param name="ExternalLink">External link for this item aggregation (usually used for institutional aggregationPermissions)</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Update_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-		public static bool Update_Item_Aggregation(string Code, string Name, string ShortName, bool IsActive, bool IsHidden, string External_Link, Custom_Tracer Tracer)
+		public static bool Update_Item_Aggregation(string Code, string Name, string ShortName, bool IsActive, bool IsHidden, string ExternalLink, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -3611,16 +3513,16 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[6];
-				paramList[0] = new SqlParameter("@code", Code);
-				paramList[1] = new SqlParameter("@name", Name);
-				paramList[2] = new SqlParameter("@shortname", ShortName);
-				paramList[3] = new SqlParameter("@isActive", IsActive);
-				paramList[4] = new SqlParameter("@hidden", IsHidden);
-				paramList[5] = new SqlParameter("@externallink", External_Link);
+				EalDbParameter[] paramList = new EalDbParameter[6];
+				paramList[0] = new EalDbParameter("@code", Code);
+				paramList[1] = new EalDbParameter("@name", Name);
+				paramList[2] = new EalDbParameter("@shortname", ShortName);
+				paramList[3] = new EalDbParameter("@isActive", IsActive);
+				paramList[4] = new EalDbParameter("@hidden", IsHidden);
+				paramList[5] = new EalDbParameter("@externallink", ExternalLink);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Update_Item_Aggregation", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Update_Item_Aggregation", paramList);
 
 				// Succesful, so return true
 				return true;
@@ -3644,13 +3546,13 @@ namespace SobekCM.Library.Database
 		/// <param name="Code"> Aggregation code for the aggregation to delete</param>
 		/// <param name="Username"> Name of the user that deleted this aggregation, for the milestones </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <param name="Error_Message"> [OUT] Error message, if there was an error</param>
-		/// <param name="Is_SysAdmin"> Flag indicates if this is a system admin, who can delete aggregationPermissions with items </param>
+		/// <param name="ErrorMessage"> [OUT] Error message, if there was an error</param>
+		/// <param name="IsSysAdmin"> Flag indicates if this is a system admin, who can delete aggregationPermissions with items </param>
 		/// <returns> Error code - 0 if there was no error </returns>
 		/// <remarks> This calls the 'SobekCM_Delete_Item_Aggregation' stored procedure</remarks> 
-		public static int Delete_Item_Aggregation(string Code, bool Is_SysAdmin, string Username, Custom_Tracer Tracer, out string Error_Message )
+		public static int Delete_Item_Aggregation(string Code, bool IsSysAdmin, string Username, Custom_Tracer Tracer, out string ErrorMessage )
 		{
-			Error_Message = String.Empty;
+			ErrorMessage = String.Empty;
 
 			if (Tracer != null)
 			{
@@ -3660,17 +3562,17 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[5];
-				paramList[0] = new SqlParameter("@aggrcode", Code);
-				paramList[1] = new SqlParameter("@isadmin", Is_SysAdmin);
-				paramList[2] = new SqlParameter("@username", Username);
-				paramList[3] = new SqlParameter("@message", "                                                                                               ") { Direction = ParameterDirection.InputOutput };
-				paramList[4] = new SqlParameter("@errorcode", -1) { Direction = ParameterDirection.InputOutput };
+				EalDbParameter[] paramList = new EalDbParameter[5];
+				paramList[0] = new EalDbParameter("@aggrcode", Code);
+				paramList[1] = new EalDbParameter("@isadmin", IsSysAdmin);
+				paramList[2] = new EalDbParameter("@username", Username);
+				paramList[3] = new EalDbParameter("@message", "                                                                                               ") { Direction = ParameterDirection.InputOutput };
+				paramList[4] = new EalDbParameter("@errorcode", -1) { Direction = ParameterDirection.InputOutput };
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Item_Aggregation", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Item_Aggregation", paramList);
 
-				Error_Message = paramList[3].Value.ToString();
+				ErrorMessage = paramList[3].Value.ToString();
 
 				// Save the error message
 				// Succesful, so return new id, if there was one
@@ -3700,13 +3602,13 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[3];
-				paramList[0] = new SqlParameter("@AggregationCode", AggregationCode);
-				paramList[1] = new SqlParameter("@Milestone", Milestone);
-				paramList[2] = new SqlParameter("@MilestoneUser", User);
+				EalDbParameter[] paramList = new EalDbParameter[3];
+				paramList[0] = new EalDbParameter("@AggregationCode", AggregationCode);
+				paramList[1] = new EalDbParameter("@Milestone", Milestone);
+				paramList[2] = new EalDbParameter("@MilestoneUser", User);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Add_Item_Aggregation_Milestone", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Add_Item_Aggregation_Milestone", paramList);
 
 				return true;
 			}
@@ -3726,11 +3628,11 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@AggregationCode", AggregationCode);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@AggregationCode", AggregationCode);
 
 				// Execute this query stored procedure
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Add_Item_Aggregation_Milestone", paramList);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Add_Item_Aggregation_Milestone", paramList);
 
 				return tempSet.Tables[0];
 			}
@@ -3743,12 +3645,12 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Sets a user's password to the newly provided one </summary>
 		/// <param name="UserID"> Primary key for this user from the database </param>
-		/// <param name="New_Password"> New password (unencrypted) to set for this user </param>
-		/// <param name="Is_Temporary_Password"> Flag indicates if this is a temporary password that must be reset the first time the user logs on</param>
+		/// <param name="NewPassword"> New password (unencrypted) to set for this user </param>
+		/// <param name="IsTemporaryPassword"> Flag indicates if this is a temporary password that must be reset the first time the user logs on</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwsie FALSE  </returns>
 		/// <remarks> This calls the 'mySobek_Reset_User_Password' stored procedure</remarks> 
-		public static bool Reset_User_Password(int UserID, string New_Password, bool Is_Temporary_Password, Custom_Tracer Tracer)
+		public static bool Reset_User_Password(int UserID, string NewPassword, bool IsTemporaryPassword, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -3756,18 +3658,18 @@ namespace SobekCM.Library.Database
 			}
 
 			const string SALT = "This is my salt to add to the password";
-			string encryptedPassword = SecurityInfo.SHA1_EncryptString(New_Password + SALT);
+			string encryptedPassword = SecurityInfo.SHA1_EncryptString(NewPassword + SALT);
 
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[3];
-				paramList[0] = new SqlParameter("@userid", UserID);
-				paramList[1] = new SqlParameter("@password", encryptedPassword);
-				paramList[2] = new SqlParameter("@is_temporary", Is_Temporary_Password);
+				EalDbParameter[] paramList = new EalDbParameter[3];
+				paramList[0] = new EalDbParameter("@userid", UserID);
+				paramList[1] = new EalDbParameter("@password", encryptedPassword);
+				paramList[2] = new EalDbParameter("@is_temporary", IsTemporaryPassword);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Reset_User_Password", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Reset_User_Password", paramList);
 
 				// Succesful, so return true
 				return true;
@@ -3787,22 +3689,22 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Sets some of the permissions values for a single user </summary>
 		/// <param name="UserID"> Primary key for this user from the database </param>
-		/// <param name="canSubmit"> Flag indicates if this user can submit items </param>
-		/// <param name="Is_Internal"> Flag indicates if this user is considered an 'internal user'</param>
-		/// <param name="Can_Edit_All"> Flag indicates if this user is authorized to edit all items in the library</param>
-		/// <param name="Is_Portal_Admin"> Flag indicates if this user is a portal Administrator </param>
-		/// <param name="Can_Delete_All"> Flag indicates if this user can delete anything in the repository </param>
-		/// <param name="Is_System_Admin"> Flag indicates if this user is a system Administrator</param>
-		/// <param name="Include_Tracking_Standard_Forms"> Flag indicates if this user should have tracking portions appear in their standard forms </param>
-		/// <param name="Edit_Template"> CompleteTemplate name for editing non-MARC records </param>
-		/// <param name="Edit_Template_MARC"> CompleteTemplate name for editing MARC-derived records </param>
-		/// <param name="Clear_Projects_Templates"> Flag indicates whether to clear projects and templates for this user </param>
-		/// <param name="Clear_Aggregation_Links"> Flag indicates whether to clear item aggregationPermissions linked to this user</param>
-		/// <param name="Clear_User_Groups"> Flag indicates whether to clear user group membership for this user </param>
+        /// <param name="CanSubmit"> Flag indicates if this user can submit items </param>
+		/// <param name="IsInternal"> Flag indicates if this user is considered an 'internal user'</param>
+		/// <param name="CanEditAll"> Flag indicates if this user is authorized to edit all items in the library</param>
+		/// <param name="IsPortalAdmin"> Flag indicates if this user is a portal Administrator </param>
+		/// <param name="CanDeleteAll"> Flag indicates if this user can delete anything in the repository </param>
+		/// <param name="IsSystemAdmin"> Flag indicates if this user is a system Administrator</param>
+		/// <param name="IncludeTrackingStandardForms"> Flag indicates if this user should have tracking portions appear in their standard forms </param>
+		/// <param name="EditTemplate"> CompleteTemplate name for editing non-MARC records </param>
+		/// <param name="EditTemplateMarc"> CompleteTemplate name for editing MARC-derived records </param>
+		/// <param name="ClearProjectsTemplates"> Flag indicates whether to clear projects and templates for this user </param>
+		/// <param name="ClearAggregationLinks"> Flag indicates whether to clear item aggregationPermissions linked to this user</param>
+		/// <param name="ClearUserGroups"> Flag indicates whether to clear user group membership for this user </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Update_User' stored procedure</remarks> 
-		public static bool Update_SobekCM_User(int UserID, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Can_Delete_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, string Edit_Template, string Edit_Template_MARC, bool Clear_Projects_Templates, bool Clear_Aggregation_Links, bool Clear_User_Groups, Custom_Tracer Tracer)
+		public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsSystemAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -3812,23 +3714,23 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[13];
-				paramList[0] = new SqlParameter("@userid", UserID);
-				paramList[1] = new SqlParameter("@can_submit", Can_Submit);
-				paramList[2] = new SqlParameter("@is_internal", Is_Internal);
-				paramList[3] = new SqlParameter("@can_edit_all", Can_Edit_All);
-				paramList[4] = new SqlParameter("@can_delete_all", Can_Delete_All);
-				paramList[5] = new SqlParameter("@is_portal_admin", Is_Portal_Admin);
-				paramList[6] = new SqlParameter("@is_system_admin", Is_System_Admin);
-				paramList[7] = new SqlParameter("@include_tracking_standard_forms", Include_Tracking_Standard_Forms);
-				paramList[8] = new SqlParameter("@edit_template", Edit_Template);
-				paramList[9] = new SqlParameter("@edit_template_marc", Edit_Template_MARC);
-				paramList[10] = new SqlParameter("@clear_projects_templates", Clear_Projects_Templates);
-				paramList[11] = new SqlParameter("@clear_aggregation_links", Clear_Aggregation_Links);
-				paramList[12] = new SqlParameter("@clear_user_groups", Clear_User_Groups);
+				EalDbParameter[] paramList = new EalDbParameter[13];
+				paramList[0] = new EalDbParameter("@userid", UserID);
+				paramList[1] = new EalDbParameter("@can_submit", CanSubmit);
+				paramList[2] = new EalDbParameter("@is_internal", IsInternal);
+				paramList[3] = new EalDbParameter("@can_edit_all", CanEditAll);
+				paramList[4] = new EalDbParameter("@can_delete_all", CanDeleteAll);
+				paramList[5] = new EalDbParameter("@is_portal_admin", IsPortalAdmin);
+				paramList[6] = new EalDbParameter("@is_system_admin", IsSystemAdmin);
+				paramList[7] = new EalDbParameter("@include_tracking_standard_forms", IncludeTrackingStandardForms);
+				paramList[8] = new EalDbParameter("@edit_template", EditTemplate);
+				paramList[9] = new EalDbParameter("@edit_template_marc", EditTemplateMarc);
+				paramList[10] = new EalDbParameter("@clear_projects_templates", ClearProjectsTemplates);
+				paramList[11] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
+				paramList[12] = new EalDbParameter("@clear_user_groups", ClearUserGroups);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Update_User", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Update_User", paramList);
 
 				// Succesful, so return true
 				return true;
@@ -3863,65 +3765,65 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list for the first run
-				SqlParameter[] paramList = new SqlParameter[6];
-				paramList[0] = new SqlParameter("@userid", UserID);
+				EalDbParameter[] paramList = new EalDbParameter[6];
+				paramList[0] = new EalDbParameter("@userid", UserID);
 
 				if (Templates.Count > 0)
-					paramList[1] = new SqlParameter("@template_default", Templates[0]);
+					paramList[1] = new EalDbParameter("@template_default", Templates[0]);
 				else
-					paramList[1] = new SqlParameter("@template_default", String.Empty);
+					paramList[1] = new EalDbParameter("@template_default", String.Empty);
 
 				if (Templates.Count > 1)
-					paramList[2] = new SqlParameter("@template2", Templates[1]);
+					paramList[2] = new EalDbParameter("@template2", Templates[1]);
 				else
-					paramList[2] = new SqlParameter("@template2", String.Empty);
+					paramList[2] = new EalDbParameter("@template2", String.Empty);
 
 				if (Templates.Count > 2)
-					paramList[3] = new SqlParameter("@template3", Templates[2]);
+					paramList[3] = new EalDbParameter("@template3", Templates[2]);
 				else
-					paramList[3] = new SqlParameter("@template3", String.Empty);
+					paramList[3] = new EalDbParameter("@template3", String.Empty);
 
 				if (Templates.Count > 3)
-					paramList[4] = new SqlParameter("@template4", Templates[3]);
+					paramList[4] = new EalDbParameter("@template4", Templates[3]);
 				else
-					paramList[4] = new SqlParameter("@template4", String.Empty);
+					paramList[4] = new EalDbParameter("@template4", String.Empty);
 
 				if (Templates.Count > 4)
-					paramList[5] = new SqlParameter("@template5", Templates[4]);
+					paramList[5] = new EalDbParameter("@template5", Templates[4]);
 				else
-					paramList[5] = new SqlParameter("@template5", String.Empty);
+					paramList[5] = new EalDbParameter("@template5", String.Empty);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Templates_Link", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Templates_Link", paramList);
 
 				int currentIndex = 5;
 				while (Templates.Count > currentIndex)
 				{
-					paramList[0] = new SqlParameter("@userid", UserID);
-					paramList[1] = new SqlParameter("@template_default", String.Empty);
+					paramList[0] = new EalDbParameter("@userid", UserID);
+					paramList[1] = new EalDbParameter("@template_default", String.Empty);
 
 					if (Templates.Count > currentIndex)
-						paramList[2] = new SqlParameter("@template2", Templates[currentIndex]);
+						paramList[2] = new EalDbParameter("@template2", Templates[currentIndex]);
 					else
-						paramList[2] = new SqlParameter("@template2", String.Empty);
+						paramList[2] = new EalDbParameter("@template2", String.Empty);
 
 					if (Templates.Count > currentIndex + 1 )
-						paramList[3] = new SqlParameter("@template3", Templates[currentIndex + 1]);
+						paramList[3] = new EalDbParameter("@template3", Templates[currentIndex + 1]);
 					else
-						paramList[3] = new SqlParameter("@template3", String.Empty);
+						paramList[3] = new EalDbParameter("@template3", String.Empty);
 
 					if (Templates.Count > currentIndex + 2)
-						paramList[4] = new SqlParameter("@template4", Templates[currentIndex + 2]);
+						paramList[4] = new EalDbParameter("@template4", Templates[currentIndex + 2]);
 					else
-						paramList[4] = new SqlParameter("@template4", String.Empty);
+						paramList[4] = new EalDbParameter("@template4", String.Empty);
 
 					if (Templates.Count > currentIndex + 3)
-						paramList[5] = new SqlParameter("@template5", Templates[currentIndex + 3]);
+						paramList[5] = new EalDbParameter("@template5", Templates[currentIndex + 3]);
 					else
-						paramList[5] = new SqlParameter("@template5", String.Empty);
+						paramList[5] = new EalDbParameter("@template5", String.Empty);
 
 					// Execute this query stored procedure
-					SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Templates_Link", paramList);
+					EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Templates_Link", paramList);
 
 					currentIndex += 4;
 				} 
@@ -3958,64 +3860,64 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list for the first run
-				SqlParameter[] paramList = new SqlParameter[6];
-				paramList[0] = new SqlParameter("@userid", UserID);
+				EalDbParameter[] paramList = new EalDbParameter[6];
+				paramList[0] = new EalDbParameter("@userid", UserID);
 				if (MetadataSets.Count > 0)
-					paramList[1] = new SqlParameter("@metadata_default", MetadataSets[0]);
+					paramList[1] = new EalDbParameter("@metadata_default", MetadataSets[0]);
 				else
-					paramList[1] = new SqlParameter("@metadata_default", String.Empty);
+					paramList[1] = new EalDbParameter("@metadata_default", String.Empty);
 
 				if (MetadataSets.Count > 1)
-					paramList[2] = new SqlParameter("@metadata2", MetadataSets[1]);
+					paramList[2] = new EalDbParameter("@metadata2", MetadataSets[1]);
 				else
-					paramList[2] = new SqlParameter("@metadata2", String.Empty);
+					paramList[2] = new EalDbParameter("@metadata2", String.Empty);
 
 				if (MetadataSets.Count > 2)
-					paramList[3] = new SqlParameter("@metadata3", MetadataSets[2]);
+					paramList[3] = new EalDbParameter("@metadata3", MetadataSets[2]);
 				else
-					paramList[3] = new SqlParameter("@metadata3", String.Empty);
+					paramList[3] = new EalDbParameter("@metadata3", String.Empty);
 
 				if (MetadataSets.Count > 3)
-					paramList[4] = new SqlParameter("@metadata4", MetadataSets[3]);
+					paramList[4] = new EalDbParameter("@metadata4", MetadataSets[3]);
 				else
-					paramList[4] = new SqlParameter("@metadata4", String.Empty);
+					paramList[4] = new EalDbParameter("@metadata4", String.Empty);
 
 				if (MetadataSets.Count > 4)
-					paramList[5] = new SqlParameter("@metadata5", MetadataSets[4]);
+					paramList[5] = new EalDbParameter("@metadata5", MetadataSets[4]);
 				else
-					paramList[5] = new SqlParameter("@metadata5", String.Empty);
+					paramList[5] = new EalDbParameter("@metadata5", String.Empty);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_DefaultMetadata_Link", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_DefaultMetadata_Link", paramList);
 
 				int currentIndex = 5;
 				while (MetadataSets.Count > currentIndex)
 				{
-					paramList[0] = new SqlParameter("@userid", UserID);
-					paramList[1] = new SqlParameter("@metadata_default", String.Empty);
+					paramList[0] = new EalDbParameter("@userid", UserID);
+					paramList[1] = new EalDbParameter("@metadata_default", String.Empty);
 
 					if (MetadataSets.Count > currentIndex)
-						paramList[2] = new SqlParameter("@metadata2", MetadataSets[currentIndex]);
+						paramList[2] = new EalDbParameter("@metadata2", MetadataSets[currentIndex]);
 					else
-						paramList[2] = new SqlParameter("@metadata2", String.Empty);
+						paramList[2] = new EalDbParameter("@metadata2", String.Empty);
 
 					if (MetadataSets.Count > currentIndex + 1)
-						paramList[3] = new SqlParameter("@metadata3", MetadataSets[currentIndex + 1]);
+						paramList[3] = new EalDbParameter("@metadata3", MetadataSets[currentIndex + 1]);
 					else
-						paramList[3] = new SqlParameter("@metadata3", String.Empty);
+						paramList[3] = new EalDbParameter("@metadata3", String.Empty);
 
 					if (MetadataSets.Count > currentIndex + 2)
-						paramList[4] = new SqlParameter("@metadata4", MetadataSets[currentIndex + 2]);
+						paramList[4] = new EalDbParameter("@metadata4", MetadataSets[currentIndex + 2]);
 					else
-						paramList[4] = new SqlParameter("@metadata4", String.Empty);
+						paramList[4] = new EalDbParameter("@metadata4", String.Empty);
 
 					if (MetadataSets.Count > currentIndex + 3)
-						paramList[5] = new SqlParameter("@metadata5", MetadataSets[currentIndex + 3]);
+						paramList[5] = new EalDbParameter("@metadata5", MetadataSets[currentIndex + 3]);
 					else
-						paramList[5] = new SqlParameter("@metadata5", String.Empty);
+						paramList[5] = new EalDbParameter("@metadata5", String.Empty);
 
 					// Execute this query stored procedure
-					SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_DefaultMetadata_Link", paramList);
+					EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_DefaultMetadata_Link", paramList);
 
 					currentIndex += 4;
 				}
@@ -4052,196 +3954,196 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list for the first run
-				SqlParameter[] paramList = new SqlParameter[34];
-				paramList[0] = new SqlParameter("@UserID", UserID);
+				EalDbParameter[] paramList = new EalDbParameter[34];
+				paramList[0] = new EalDbParameter("@UserID", UserID);
 
 				if (( Aggregations != null ) && ( Aggregations.Count > 0))
 				{
-					paramList[1] = new SqlParameter("@AggregationCode1", Aggregations[0].Code);
-					paramList[2] = new SqlParameter("@canSelect1", Aggregations[0].CanSelect);
-					paramList[3] = new SqlParameter("@canEditMetadata1", Aggregations[0].CanEditMetadata);
-					paramList[4] = new SqlParameter("@canEditBehaviors1", Aggregations[0].CanEditBehaviors);
-					paramList[5] = new SqlParameter("@canPerformQc1", Aggregations[0].CanPerformQc);
-					paramList[6] = new SqlParameter("@canUploadFiles1", Aggregations[0].CanUploadFiles);
-					paramList[7] = new SqlParameter("@canChangeVisibility1", Aggregations[0].CanChangeVisibility);
-					paramList[8] = new SqlParameter("@canDelete1", Aggregations[0].CanDelete);
-					paramList[9] = new SqlParameter("@isCurator1", Aggregations[0].IsCurator);
-					paramList[10] = new SqlParameter("@onHomePage1", Aggregations[0].OnHomePage);
-					paramList[11] = new SqlParameter("@isAdmin1", Aggregations[0].IsAdmin);
+					paramList[1] = new EalDbParameter("@AggregationCode1", Aggregations[0].Code);
+					paramList[2] = new EalDbParameter("@canSelect1", Aggregations[0].CanSelect);
+					paramList[3] = new EalDbParameter("@canEditMetadata1", Aggregations[0].CanEditMetadata);
+					paramList[4] = new EalDbParameter("@canEditBehaviors1", Aggregations[0].CanEditBehaviors);
+					paramList[5] = new EalDbParameter("@canPerformQc1", Aggregations[0].CanPerformQc);
+					paramList[6] = new EalDbParameter("@canUploadFiles1", Aggregations[0].CanUploadFiles);
+					paramList[7] = new EalDbParameter("@canChangeVisibility1", Aggregations[0].CanChangeVisibility);
+					paramList[8] = new EalDbParameter("@canDelete1", Aggregations[0].CanDelete);
+					paramList[9] = new EalDbParameter("@isCurator1", Aggregations[0].IsCurator);
+					paramList[10] = new EalDbParameter("@onHomePage1", Aggregations[0].OnHomePage);
+					paramList[11] = new EalDbParameter("@isAdmin1", Aggregations[0].IsAdmin);
 				}
 				else
 				{
-					paramList[1] = new SqlParameter("@AggregationCode1", String.Empty);
-					paramList[2] = new SqlParameter("@canSelect1", false);
-					paramList[3] = new SqlParameter("@canEditMetadata1", false);
-					paramList[4] = new SqlParameter("@canEditBehaviors1", false);
-					paramList[5] = new SqlParameter("@canPerformQc1", false);
-					paramList[6] = new SqlParameter("@canUploadFiles1", false);
-					paramList[7] = new SqlParameter("@canChangeVisibility1", false);
-					paramList[8] = new SqlParameter("@canDelete1", false);
-					paramList[9] = new SqlParameter("@isCurator1", false);
-					paramList[10] = new SqlParameter("@onHomePage1", false);
-					paramList[11] = new SqlParameter("@isAdmin1", false);
+					paramList[1] = new EalDbParameter("@AggregationCode1", String.Empty);
+					paramList[2] = new EalDbParameter("@canSelect1", false);
+					paramList[3] = new EalDbParameter("@canEditMetadata1", false);
+					paramList[4] = new EalDbParameter("@canEditBehaviors1", false);
+					paramList[5] = new EalDbParameter("@canPerformQc1", false);
+					paramList[6] = new EalDbParameter("@canUploadFiles1", false);
+					paramList[7] = new EalDbParameter("@canChangeVisibility1", false);
+					paramList[8] = new EalDbParameter("@canDelete1", false);
+					paramList[9] = new EalDbParameter("@isCurator1", false);
+					paramList[10] = new EalDbParameter("@onHomePage1", false);
+					paramList[11] = new EalDbParameter("@isAdmin1", false);
 				}
 
 				if (( Aggregations != null ) && ( Aggregations.Count > 1))
 				{
-					paramList[12] = new SqlParameter("@AggregationCode2", Aggregations[1].Code);
-					paramList[13] = new SqlParameter("@canSelect2", Aggregations[1].CanSelect);
-					paramList[14] = new SqlParameter("@canEditMetadata2", Aggregations[1].CanEditMetadata);
-					paramList[15] = new SqlParameter("@canEditBehaviors2", Aggregations[1].CanEditBehaviors);
-					paramList[16] = new SqlParameter("@canPerformQc2", Aggregations[1].CanPerformQc);
-					paramList[17] = new SqlParameter("@canUploadFiles2", Aggregations[1].CanUploadFiles);
-					paramList[18] = new SqlParameter("@canChangeVisibility2", Aggregations[1].CanChangeVisibility);
-					paramList[19] = new SqlParameter("@canDelete2", Aggregations[1].CanDelete);
-					paramList[20] = new SqlParameter("@isCurator2", Aggregations[1].IsCurator);
-					paramList[21] = new SqlParameter("@onHomePage2", Aggregations[1].OnHomePage);
-					paramList[22] = new SqlParameter("@isAdmin2", Aggregations[1].IsAdmin);
+					paramList[12] = new EalDbParameter("@AggregationCode2", Aggregations[1].Code);
+					paramList[13] = new EalDbParameter("@canSelect2", Aggregations[1].CanSelect);
+					paramList[14] = new EalDbParameter("@canEditMetadata2", Aggregations[1].CanEditMetadata);
+					paramList[15] = new EalDbParameter("@canEditBehaviors2", Aggregations[1].CanEditBehaviors);
+					paramList[16] = new EalDbParameter("@canPerformQc2", Aggregations[1].CanPerformQc);
+					paramList[17] = new EalDbParameter("@canUploadFiles2", Aggregations[1].CanUploadFiles);
+					paramList[18] = new EalDbParameter("@canChangeVisibility2", Aggregations[1].CanChangeVisibility);
+					paramList[19] = new EalDbParameter("@canDelete2", Aggregations[1].CanDelete);
+					paramList[20] = new EalDbParameter("@isCurator2", Aggregations[1].IsCurator);
+					paramList[21] = new EalDbParameter("@onHomePage2", Aggregations[1].OnHomePage);
+					paramList[22] = new EalDbParameter("@isAdmin2", Aggregations[1].IsAdmin);
 				}
 				else
 				{
-					paramList[12] = new SqlParameter("@AggregationCode2", String.Empty);
-					paramList[13] = new SqlParameter("@canSelect2", false);
-					paramList[14] = new SqlParameter("@canEditMetadata2", false);
-					paramList[15] = new SqlParameter("@canEditBehaviors2", false);
-					paramList[16] = new SqlParameter("@canPerformQc2", false);
-					paramList[17] = new SqlParameter("@canUploadFiles2", false);
-					paramList[18] = new SqlParameter("@canChangeVisibility2", false);
-					paramList[19] = new SqlParameter("@canDelete2", false);
-					paramList[20] = new SqlParameter("@isCurator2", false);
-					paramList[21] = new SqlParameter("@onHomePage2", false);
-					paramList[22] = new SqlParameter("@isAdmin2", false);
+					paramList[12] = new EalDbParameter("@AggregationCode2", String.Empty);
+					paramList[13] = new EalDbParameter("@canSelect2", false);
+					paramList[14] = new EalDbParameter("@canEditMetadata2", false);
+					paramList[15] = new EalDbParameter("@canEditBehaviors2", false);
+					paramList[16] = new EalDbParameter("@canPerformQc2", false);
+					paramList[17] = new EalDbParameter("@canUploadFiles2", false);
+					paramList[18] = new EalDbParameter("@canChangeVisibility2", false);
+					paramList[19] = new EalDbParameter("@canDelete2", false);
+					paramList[20] = new EalDbParameter("@isCurator2", false);
+					paramList[21] = new EalDbParameter("@onHomePage2", false);
+					paramList[22] = new EalDbParameter("@isAdmin2", false);
 				}
 
 
 				if (( Aggregations != null ) && ( Aggregations.Count > 2))
 				{
-					paramList[23] = new SqlParameter("@AggregationCode3", Aggregations[2].Code);
-					paramList[24] = new SqlParameter("@canSelect3", Aggregations[2].CanSelect);
-					paramList[25] = new SqlParameter("@canEditMetadata3", Aggregations[2].CanEditMetadata);
-					paramList[26] = new SqlParameter("@canEditBehaviors3", Aggregations[2].CanEditBehaviors);
-					paramList[27] = new SqlParameter("@canPerformQc3", Aggregations[2].CanPerformQc);
-					paramList[28] = new SqlParameter("@canUploadFiles3", Aggregations[2].CanUploadFiles);
-					paramList[29] = new SqlParameter("@canChangeVisibility3", Aggregations[2].CanChangeVisibility);
-					paramList[30] = new SqlParameter("@canDelete3", Aggregations[2].CanDelete);
-					paramList[31] = new SqlParameter("@isCurator3", Aggregations[2].IsCurator);
-					paramList[32] = new SqlParameter("@onHomePage3", Aggregations[2].OnHomePage);
-					paramList[33] = new SqlParameter("@isAdmin3", Aggregations[2].IsAdmin);
+					paramList[23] = new EalDbParameter("@AggregationCode3", Aggregations[2].Code);
+					paramList[24] = new EalDbParameter("@canSelect3", Aggregations[2].CanSelect);
+					paramList[25] = new EalDbParameter("@canEditMetadata3", Aggregations[2].CanEditMetadata);
+					paramList[26] = new EalDbParameter("@canEditBehaviors3", Aggregations[2].CanEditBehaviors);
+					paramList[27] = new EalDbParameter("@canPerformQc3", Aggregations[2].CanPerformQc);
+					paramList[28] = new EalDbParameter("@canUploadFiles3", Aggregations[2].CanUploadFiles);
+					paramList[29] = new EalDbParameter("@canChangeVisibility3", Aggregations[2].CanChangeVisibility);
+					paramList[30] = new EalDbParameter("@canDelete3", Aggregations[2].CanDelete);
+					paramList[31] = new EalDbParameter("@isCurator3", Aggregations[2].IsCurator);
+					paramList[32] = new EalDbParameter("@onHomePage3", Aggregations[2].OnHomePage);
+					paramList[33] = new EalDbParameter("@isAdmin3", Aggregations[2].IsAdmin);
 				}
 				else
 				{
-					paramList[23] = new SqlParameter("@AggregationCode3", String.Empty);
-					paramList[24] = new SqlParameter("@canSelect3", false);
-					paramList[25] = new SqlParameter("@canEditMetadata3", false);
-					paramList[26] = new SqlParameter("@canEditBehaviors3", false);
-					paramList[27] = new SqlParameter("@canPerformQc3", false);
-					paramList[28] = new SqlParameter("@canUploadFiles3", false);
-					paramList[29] = new SqlParameter("@canChangeVisibility3", false);
-					paramList[30] = new SqlParameter("@canDelete3", false);
-					paramList[31] = new SqlParameter("@isCurator3", false);
-					paramList[32] = new SqlParameter("@onHomePage3", false);
-					paramList[33] = new SqlParameter("@isAdmin3", false);
+					paramList[23] = new EalDbParameter("@AggregationCode3", String.Empty);
+					paramList[24] = new EalDbParameter("@canSelect3", false);
+					paramList[25] = new EalDbParameter("@canEditMetadata3", false);
+					paramList[26] = new EalDbParameter("@canEditBehaviors3", false);
+					paramList[27] = new EalDbParameter("@canPerformQc3", false);
+					paramList[28] = new EalDbParameter("@canUploadFiles3", false);
+					paramList[29] = new EalDbParameter("@canChangeVisibility3", false);
+					paramList[30] = new EalDbParameter("@canDelete3", false);
+					paramList[31] = new EalDbParameter("@isCurator3", false);
+					paramList[32] = new EalDbParameter("@onHomePage3", false);
+					paramList[33] = new EalDbParameter("@isAdmin3", false);
 				}
 				
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Aggregations_Link", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Aggregations_Link", paramList);
 
 				int currentIndex = 3;
 				while (( Aggregations != null ) && ( Aggregations.Count > currentIndex))
 				{
 					// Build the parameter list for the first run
-					paramList[0] = new SqlParameter("@UserID", UserID);
+					paramList[0] = new EalDbParameter("@UserID", UserID);
 
 					if (Aggregations.Count > currentIndex)
 					{
-						paramList[1] = new SqlParameter("@AggregationCode1", Aggregations[currentIndex].Code);
-						paramList[2] = new SqlParameter("@canSelect1", Aggregations[currentIndex].CanSelect);
-						paramList[3] = new SqlParameter("@canEditMetadata1", Aggregations[currentIndex].CanEditMetadata);
-						paramList[4] = new SqlParameter("@canEditBehaviors1", Aggregations[currentIndex].CanEditBehaviors);
-						paramList[5] = new SqlParameter("@canPerformQc1", Aggregations[currentIndex].CanPerformQc);
-						paramList[6] = new SqlParameter("@canUploadFiles1", Aggregations[currentIndex].CanUploadFiles);
-						paramList[7] = new SqlParameter("@canChangeVisibility1", Aggregations[currentIndex].CanChangeVisibility);
-						paramList[8] = new SqlParameter("@canDelete1", Aggregations[currentIndex].CanDelete);
-						paramList[9] = new SqlParameter("@isCurator1", Aggregations[currentIndex].IsCurator);
-						paramList[10] = new SqlParameter("@onHomePage1", Aggregations[currentIndex].OnHomePage);
-						paramList[11] = new SqlParameter("@isAdmin1", Aggregations[currentIndex].IsAdmin);
+						paramList[1] = new EalDbParameter("@AggregationCode1", Aggregations[currentIndex].Code);
+						paramList[2] = new EalDbParameter("@canSelect1", Aggregations[currentIndex].CanSelect);
+						paramList[3] = new EalDbParameter("@canEditMetadata1", Aggregations[currentIndex].CanEditMetadata);
+						paramList[4] = new EalDbParameter("@canEditBehaviors1", Aggregations[currentIndex].CanEditBehaviors);
+						paramList[5] = new EalDbParameter("@canPerformQc1", Aggregations[currentIndex].CanPerformQc);
+						paramList[6] = new EalDbParameter("@canUploadFiles1", Aggregations[currentIndex].CanUploadFiles);
+						paramList[7] = new EalDbParameter("@canChangeVisibility1", Aggregations[currentIndex].CanChangeVisibility);
+						paramList[8] = new EalDbParameter("@canDelete1", Aggregations[currentIndex].CanDelete);
+						paramList[9] = new EalDbParameter("@isCurator1", Aggregations[currentIndex].IsCurator);
+						paramList[10] = new EalDbParameter("@onHomePage1", Aggregations[currentIndex].OnHomePage);
+						paramList[11] = new EalDbParameter("@isAdmin1", Aggregations[currentIndex].IsAdmin);
 					}
 					else
 					{
-						paramList[1] = new SqlParameter("@AggregationCode1", String.Empty);
-						paramList[2] = new SqlParameter("@canSelect1", false);
-						paramList[3] = new SqlParameter("@canEditMetadata1", false);
-						paramList[4] = new SqlParameter("@canEditBehaviors1", false);
-						paramList[5] = new SqlParameter("@canPerformQc1", false);
-						paramList[6] = new SqlParameter("@canUploadFiles1", false);
-						paramList[7] = new SqlParameter("@canChangeVisibility1", false);
-						paramList[8] = new SqlParameter("@canDelete1", false);
-						paramList[9] = new SqlParameter("@isCurator1", false);
-						paramList[10] = new SqlParameter("@onHomePage1", false);
-						paramList[11] = new SqlParameter("@isAdmin1", false);
+						paramList[1] = new EalDbParameter("@AggregationCode1", String.Empty);
+						paramList[2] = new EalDbParameter("@canSelect1", false);
+						paramList[3] = new EalDbParameter("@canEditMetadata1", false);
+						paramList[4] = new EalDbParameter("@canEditBehaviors1", false);
+						paramList[5] = new EalDbParameter("@canPerformQc1", false);
+						paramList[6] = new EalDbParameter("@canUploadFiles1", false);
+						paramList[7] = new EalDbParameter("@canChangeVisibility1", false);
+						paramList[8] = new EalDbParameter("@canDelete1", false);
+						paramList[9] = new EalDbParameter("@isCurator1", false);
+						paramList[10] = new EalDbParameter("@onHomePage1", false);
+						paramList[11] = new EalDbParameter("@isAdmin1", false);
 					}
 
 					if (Aggregations.Count > currentIndex + 1)
 					{
-						paramList[12] = new SqlParameter("@AggregationCode2", Aggregations[currentIndex + 1].Code);
-						paramList[13] = new SqlParameter("@canSelect2", Aggregations[currentIndex + 1].CanSelect);
-						paramList[14] = new SqlParameter("@canEditMetadata2", Aggregations[currentIndex + 1].CanEditMetadata);
-						paramList[15] = new SqlParameter("@canEditBehaviors2", Aggregations[currentIndex + 1].CanEditBehaviors);
-						paramList[16] = new SqlParameter("@canPerformQc2", Aggregations[currentIndex + 1].CanPerformQc);
-						paramList[17] = new SqlParameter("@canUploadFiles2", Aggregations[currentIndex + 1].CanUploadFiles);
-						paramList[18] = new SqlParameter("@canChangeVisibility2", Aggregations[currentIndex + 1].CanChangeVisibility);
-						paramList[19] = new SqlParameter("@canDelete2", Aggregations[currentIndex + 1].CanDelete);
-						paramList[20] = new SqlParameter("@isCurator2", Aggregations[currentIndex + 1].IsCurator);
-						paramList[21] = new SqlParameter("@onHomePage2", Aggregations[currentIndex + 1].OnHomePage);
-						paramList[22] = new SqlParameter("@isAdmin2", Aggregations[currentIndex + 1].IsAdmin);
+						paramList[12] = new EalDbParameter("@AggregationCode2", Aggregations[currentIndex + 1].Code);
+						paramList[13] = new EalDbParameter("@canSelect2", Aggregations[currentIndex + 1].CanSelect);
+						paramList[14] = new EalDbParameter("@canEditMetadata2", Aggregations[currentIndex + 1].CanEditMetadata);
+						paramList[15] = new EalDbParameter("@canEditBehaviors2", Aggregations[currentIndex + 1].CanEditBehaviors);
+						paramList[16] = new EalDbParameter("@canPerformQc2", Aggregations[currentIndex + 1].CanPerformQc);
+						paramList[17] = new EalDbParameter("@canUploadFiles2", Aggregations[currentIndex + 1].CanUploadFiles);
+						paramList[18] = new EalDbParameter("@canChangeVisibility2", Aggregations[currentIndex + 1].CanChangeVisibility);
+						paramList[19] = new EalDbParameter("@canDelete2", Aggregations[currentIndex + 1].CanDelete);
+						paramList[20] = new EalDbParameter("@isCurator2", Aggregations[currentIndex + 1].IsCurator);
+						paramList[21] = new EalDbParameter("@onHomePage2", Aggregations[currentIndex + 1].OnHomePage);
+						paramList[22] = new EalDbParameter("@isAdmin2", Aggregations[currentIndex + 1].IsAdmin);
 					}
 					else
 					{
-						paramList[12] = new SqlParameter("@AggregationCode2", String.Empty);
-						paramList[13] = new SqlParameter("@canSelect2", false);
-						paramList[14] = new SqlParameter("@canEditMetadata2", false);
-						paramList[15] = new SqlParameter("@canEditBehaviors2", false);
-						paramList[16] = new SqlParameter("@canPerformQc2", false);
-						paramList[17] = new SqlParameter("@canUploadFiles2", false);
-						paramList[18] = new SqlParameter("@canChangeVisibility2", false);
-						paramList[19] = new SqlParameter("@canDelete2", false);
-						paramList[20] = new SqlParameter("@isCurator2", false);
-						paramList[21] = new SqlParameter("@onHomePage2", false);
-						paramList[22] = new SqlParameter("@isAdmin2", false);
+						paramList[12] = new EalDbParameter("@AggregationCode2", String.Empty);
+						paramList[13] = new EalDbParameter("@canSelect2", false);
+						paramList[14] = new EalDbParameter("@canEditMetadata2", false);
+						paramList[15] = new EalDbParameter("@canEditBehaviors2", false);
+						paramList[16] = new EalDbParameter("@canPerformQc2", false);
+						paramList[17] = new EalDbParameter("@canUploadFiles2", false);
+						paramList[18] = new EalDbParameter("@canChangeVisibility2", false);
+						paramList[19] = new EalDbParameter("@canDelete2", false);
+						paramList[20] = new EalDbParameter("@isCurator2", false);
+						paramList[21] = new EalDbParameter("@onHomePage2", false);
+						paramList[22] = new EalDbParameter("@isAdmin2", false);
 					}
 
 
 					if (Aggregations.Count > currentIndex + 2)
 					{
-						paramList[23] = new SqlParameter("@AggregationCode3", Aggregations[currentIndex + 2].Code);
-						paramList[24] = new SqlParameter("@canSelect3", Aggregations[currentIndex + 2].CanSelect);
-						paramList[25] = new SqlParameter("@canEditMetadata3", Aggregations[currentIndex + 2].CanEditMetadata);
-						paramList[26] = new SqlParameter("@canEditBehaviors3", Aggregations[currentIndex + 2].CanEditBehaviors);
-						paramList[27] = new SqlParameter("@canPerformQc3", Aggregations[currentIndex + 2].CanPerformQc);
-						paramList[28] = new SqlParameter("@canUploadFiles3", Aggregations[currentIndex + 2].CanUploadFiles);
-						paramList[29] = new SqlParameter("@canChangeVisibility3", Aggregations[currentIndex + 2].CanChangeVisibility);
-						paramList[30] = new SqlParameter("@canDelete3", Aggregations[currentIndex + 2].CanDelete);
-						paramList[31] = new SqlParameter("@isCurator3", Aggregations[currentIndex + 2].IsCurator);
-						paramList[32] = new SqlParameter("@onHomePage3", Aggregations[currentIndex + 2].OnHomePage);
-						paramList[33] = new SqlParameter("@isAdmin3", Aggregations[currentIndex + 2].IsAdmin);
+						paramList[23] = new EalDbParameter("@AggregationCode3", Aggregations[currentIndex + 2].Code);
+						paramList[24] = new EalDbParameter("@canSelect3", Aggregations[currentIndex + 2].CanSelect);
+						paramList[25] = new EalDbParameter("@canEditMetadata3", Aggregations[currentIndex + 2].CanEditMetadata);
+						paramList[26] = new EalDbParameter("@canEditBehaviors3", Aggregations[currentIndex + 2].CanEditBehaviors);
+						paramList[27] = new EalDbParameter("@canPerformQc3", Aggregations[currentIndex + 2].CanPerformQc);
+						paramList[28] = new EalDbParameter("@canUploadFiles3", Aggregations[currentIndex + 2].CanUploadFiles);
+						paramList[29] = new EalDbParameter("@canChangeVisibility3", Aggregations[currentIndex + 2].CanChangeVisibility);
+						paramList[30] = new EalDbParameter("@canDelete3", Aggregations[currentIndex + 2].CanDelete);
+						paramList[31] = new EalDbParameter("@isCurator3", Aggregations[currentIndex + 2].IsCurator);
+						paramList[32] = new EalDbParameter("@onHomePage3", Aggregations[currentIndex + 2].OnHomePage);
+						paramList[33] = new EalDbParameter("@isAdmin3", Aggregations[currentIndex + 2].IsAdmin);
 					}
 					else
 					{
-						paramList[23] = new SqlParameter("@AggregationCode3", String.Empty);
-						paramList[24] = new SqlParameter("@canSelect3", false);
-						paramList[25] = new SqlParameter("@canEditMetadata3", false);
-						paramList[26] = new SqlParameter("@canEditBehaviors3", false);
-						paramList[27] = new SqlParameter("@canPerformQc3", false);
-						paramList[28] = new SqlParameter("@canUploadFiles3", false);
-						paramList[29] = new SqlParameter("@canChangeVisibility3", false);
-						paramList[30] = new SqlParameter("@canDelete3", false);
-						paramList[31] = new SqlParameter("@isCurator3", false);
-						paramList[32] = new SqlParameter("@onHomePage3", false);
-						paramList[33] = new SqlParameter("@isAdmin3", false);
+						paramList[23] = new EalDbParameter("@AggregationCode3", String.Empty);
+						paramList[24] = new EalDbParameter("@canSelect3", false);
+						paramList[25] = new EalDbParameter("@canEditMetadata3", false);
+						paramList[26] = new EalDbParameter("@canEditBehaviors3", false);
+						paramList[27] = new EalDbParameter("@canPerformQc3", false);
+						paramList[28] = new EalDbParameter("@canUploadFiles3", false);
+						paramList[29] = new EalDbParameter("@canChangeVisibility3", false);
+						paramList[30] = new EalDbParameter("@canDelete3", false);
+						paramList[31] = new EalDbParameter("@isCurator3", false);
+						paramList[32] = new EalDbParameter("@onHomePage3", false);
+						paramList[33] = new EalDbParameter("@isAdmin3", false);
 					}
 					 
 					// Execute this query stored procedure
-					SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Aggregations_Link", paramList);
+					EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Aggregations_Link", paramList);
 
 					currentIndex += 3;
 				}
@@ -4262,23 +4164,26 @@ namespace SobekCM.Library.Database
 		}
 
 
-		/// <summary> Sets some of the basic information and global permissions values for a single user group </summary>
-		/// <param name="UserGroupID"> Primary key for this user group from the database, or -1 for a new user group </param>
-		/// <param name="GroupName"> Name of this user group </param>
-		/// <param name="GroupDescription"> Basic description of this user group </param>
-		/// <param name="canSubmit"> Flag indicates if this user group can submit items </param>
-		/// <param name="Is_Internal"> Flag indicates if this user group is considered an 'internal user'</param>
-		/// <param name="Can_Edit_All"> Flag indicates if this user group is authorized to edit all items in the library</param>
-		/// <param name="Is_System_Admin"> Flag indicates if this user group is a system Administrator</param>
-		/// <param name="Is_Portal_Admin"> Flag indicated if this user group is a portal administrator </param>
-		/// <param name="Include_Tracking_Standard_Forms"> Should this user's settings include the tracking form portions? </param>
-		/// <param name="Clear_Metadata_Templates"> Flag indicates whether to clear default metadata sets and templates for this user group </param>
-		/// <param name="Clear_Aggregation_Links"> Flag indicates whether to clear item aggregationPermissions linked to this user group </param>
-		/// <param name="Clear_Editable_Links"> Flag indicates whether to clear the link between this user group and editable regex expressions  </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> UserGroupId for a new user group, if this was to save a new one </returns>
-		/// <remarks> This calls the 'mySobek_Save_User_Group' stored procedure</remarks> 
-		public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool Can_Submit, bool Is_Internal, bool Can_Edit_All, bool Is_System_Admin, bool Is_Portal_Admin, bool Include_Tracking_Standard_Forms, bool Clear_Metadata_Templates, bool Clear_Aggregation_Links, bool Clear_Editable_Links, bool Is_Sobek_Default, bool Is_Shibboleth_Default, bool Is_LDAP_Default, Custom_Tracer Tracer)
+	    /// <summary> Sets some of the basic information and global permissions values for a single user group </summary>
+	    /// <param name="UserGroupID"> Primary key for this user group from the database, or -1 for a new user group </param>
+	    /// <param name="GroupName"> Name of this user group </param>
+	    /// <param name="GroupDescription"> Basic description of this user group </param>
+	    /// <param name="CanSubmit"> Flag indicates if this user group can submit items </param>
+	    /// <param name="IsInternal"> Flag indicates if this user group is considered an 'internal user'</param>
+	    /// <param name="CanEditAll"> Flag indicates if this user group is authorized to edit all items in the library</param>
+	    /// <param name="IsSystemAdmin"> Flag indicates if this user group is a system Administrator</param>
+	    /// <param name="IsPortalAdmin"> Flag indicated if this user group is a portal administrator </param>
+	    /// <param name="IncludeTrackingStandardForms"> Should this user's settings include the tracking form portions? </param>
+	    /// <param name="ClearMetadataTemplates"> Flag indicates whether to clear default metadata sets and templates for this user group </param>
+	    /// <param name="ClearAggregationLinks"> Flag indicates whether to clear item aggregationPermissions linked to this user group </param>
+	    /// <param name="ClearEditableLinks"> Flag indicates whether to clear the link between this user group and editable regex expressions  </param>
+	    /// <param name="IsLdapDefault"></param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <param name="IsSobekDefault"></param>
+	    /// <param name="IsShibbolethDefault"></param>
+	    /// <returns> UserGroupId for a new user group, if this was to save a new one </returns>
+	    /// <remarks> This calls the 'mySobek_Save_User_Group' stored procedure</remarks> 
+	    public static int Save_User_Group(int UserGroupID, string GroupName, string GroupDescription, bool CanSubmit, bool IsInternal, bool CanEditAll, bool IsSystemAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, bool ClearMetadataTemplates, bool ClearAggregationLinks, bool ClearEditableLinks, bool IsSobekDefault, bool IsShibbolethDefault, bool IsLdapDefault, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -4288,26 +4193,26 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[17];
-				paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
-				paramList[1] = new SqlParameter("@groupname", GroupName);
-				paramList[2] = new SqlParameter("@groupdescription", GroupDescription);
-				paramList[3] = new SqlParameter("@can_submit_items", Can_Submit);
-				paramList[4] = new SqlParameter("@is_internal", Is_Internal);
-				paramList[6] = new SqlParameter("@can_edit_all", Can_Edit_All);
-				paramList[7] = new SqlParameter("@is_system_admin", Is_System_Admin);
-				paramList[8] = new SqlParameter("@is_portal_admin", Is_Portal_Admin);
-				paramList[9] = new SqlParameter("@include_tracking_standard_forms", Include_Tracking_Standard_Forms );
-				paramList[10] = new SqlParameter("@clear_metadata_templates", Clear_Metadata_Templates);
-				paramList[11] = new SqlParameter("@clear_aggregation_links", Clear_Aggregation_Links);
-				paramList[12] = new SqlParameter("@clear_editable_links", Clear_Editable_Links);
-				paramList[13] = new SqlParameter("@is_sobek_default", Is_Sobek_Default);
-                paramList[14] = new SqlParameter("@is_shibboleth_default", Is_Shibboleth_Default);
-                paramList[15] = new SqlParameter("@is_ldap_default", Is_LDAP_Default);
-				paramList[16] = new SqlParameter("@new_usergroupid", UserGroupID) {Direction = ParameterDirection.InputOutput};
+				EalDbParameter[] paramList = new EalDbParameter[17];
+				paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
+				paramList[1] = new EalDbParameter("@groupname", GroupName);
+				paramList[2] = new EalDbParameter("@groupdescription", GroupDescription);
+				paramList[3] = new EalDbParameter("@can_submit_items", CanSubmit);
+				paramList[4] = new EalDbParameter("@is_internal", IsInternal);
+				paramList[6] = new EalDbParameter("@can_edit_all", CanEditAll);
+				paramList[7] = new EalDbParameter("@is_system_admin", IsSystemAdmin);
+				paramList[8] = new EalDbParameter("@is_portal_admin", IsPortalAdmin);
+				paramList[9] = new EalDbParameter("@include_tracking_standard_forms", IncludeTrackingStandardForms );
+				paramList[10] = new EalDbParameter("@clear_metadata_templates", ClearMetadataTemplates);
+				paramList[11] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
+				paramList[12] = new EalDbParameter("@clear_editable_links", ClearEditableLinks);
+				paramList[13] = new EalDbParameter("@is_sobek_default", IsSobekDefault);
+                paramList[14] = new EalDbParameter("@is_shibboleth_default", IsShibbolethDefault);
+                paramList[15] = new EalDbParameter("@is_ldap_default", IsLdapDefault);
+				paramList[16] = new EalDbParameter("@new_usergroupid", UserGroupID) {Direction = ParameterDirection.InputOutput};
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Group", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Group", paramList);
 
 				// Succesful, so return new id, if there was one
 				return Convert.ToInt32(paramList[16].Value);
@@ -4346,16 +4251,16 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list for the first run
-				SqlParameter[] paramList = new SqlParameter[6];
-				paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
-				paramList[1] = new SqlParameter("@template1", Templates[0]);
-				paramList[2] = new SqlParameter("@template2", Templates[1]);
-				paramList[3] = new SqlParameter("@template3", Templates[2]);
-				paramList[4] = new SqlParameter("@template4", Templates[3]);
-				paramList[5] = new SqlParameter("@template5", Templates[4]);
+				EalDbParameter[] paramList = new EalDbParameter[6];
+				paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
+				paramList[1] = new EalDbParameter("@template1", Templates[0]);
+				paramList[2] = new EalDbParameter("@template2", Templates[1]);
+				paramList[3] = new EalDbParameter("@template3", Templates[2]);
+				paramList[4] = new EalDbParameter("@template4", Templates[3]);
+				paramList[5] = new EalDbParameter("@template5", Templates[4]);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Templates_Link", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Templates_Link", paramList);
 
 				int currentIndex = 5;
 				while (Templates.Count > currentIndex)
@@ -4363,15 +4268,15 @@ namespace SobekCM.Library.Database
 					while (Templates.Count < currentIndex + 4)
 						Templates.Add(String.Empty);
 
-					paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
-					paramList[1] = new SqlParameter("@template1", String.Empty);
-					paramList[2] = new SqlParameter("@template2", Templates[currentIndex]);
-					paramList[3] = new SqlParameter("@template3", Templates[currentIndex + 1]);
-					paramList[4] = new SqlParameter("@template4", Templates[currentIndex + 2]);
-					paramList[5] = new SqlParameter("@template5", Templates[currentIndex + 3]);
+					paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
+					paramList[1] = new EalDbParameter("@template1", String.Empty);
+					paramList[2] = new EalDbParameter("@template2", Templates[currentIndex]);
+					paramList[3] = new EalDbParameter("@template3", Templates[currentIndex + 1]);
+					paramList[4] = new EalDbParameter("@template4", Templates[currentIndex + 2]);
+					paramList[5] = new EalDbParameter("@template5", Templates[currentIndex + 3]);
 
 					// Execute this query stored procedure
-					SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Templates_Link", paramList);
+					EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Templates_Link", paramList);
 
 					currentIndex += 4;
 				}
@@ -4412,16 +4317,16 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list for the first run
-				SqlParameter[] paramList = new SqlParameter[6];
-				paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
-				paramList[1] = new SqlParameter("@metadata1", MetadataSets[0]);
-				paramList[2] = new SqlParameter("@metadata2", MetadataSets[1]);
-				paramList[3] = new SqlParameter("@metadata3", MetadataSets[2]);
-				paramList[4] = new SqlParameter("@metadata4", MetadataSets[3]);
-				paramList[5] = new SqlParameter("@metadata5", MetadataSets[4]);
+				EalDbParameter[] paramList = new EalDbParameter[6];
+				paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
+				paramList[1] = new EalDbParameter("@metadata1", MetadataSets[0]);
+				paramList[2] = new EalDbParameter("@metadata2", MetadataSets[1]);
+				paramList[3] = new EalDbParameter("@metadata3", MetadataSets[2]);
+				paramList[4] = new EalDbParameter("@metadata4", MetadataSets[3]);
+				paramList[5] = new EalDbParameter("@metadata5", MetadataSets[4]);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Metadata_Link", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Metadata_Link", paramList);
 
 				int currentIndex = 5;
 				while (MetadataSets.Count > currentIndex)
@@ -4429,15 +4334,15 @@ namespace SobekCM.Library.Database
 					while (MetadataSets.Count < currentIndex + 4)
 						MetadataSets.Add(String.Empty);
 
-					paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
-					paramList[1] = new SqlParameter("@metadata1", String.Empty);
-					paramList[2] = new SqlParameter("@metadata2", MetadataSets[currentIndex]);
-					paramList[3] = new SqlParameter("@metadata3", MetadataSets[currentIndex + 1]);
-					paramList[4] = new SqlParameter("@metadata4", MetadataSets[currentIndex + 2]);
-					paramList[5] = new SqlParameter("@metadata5", MetadataSets[currentIndex + 3]);
+					paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
+					paramList[1] = new EalDbParameter("@metadata1", String.Empty);
+					paramList[2] = new EalDbParameter("@metadata2", MetadataSets[currentIndex]);
+					paramList[3] = new EalDbParameter("@metadata3", MetadataSets[currentIndex + 1]);
+					paramList[4] = new EalDbParameter("@metadata4", MetadataSets[currentIndex + 2]);
+					paramList[5] = new EalDbParameter("@metadata5", MetadataSets[currentIndex + 3]);
 
 					// Execute this query stored procedure
-					SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Metadata_Link", paramList);
+					EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Metadata_Link", paramList);
 
 					currentIndex += 4;
 				}
@@ -4474,196 +4379,196 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list for the first run
-				SqlParameter[] paramList = new SqlParameter[34];
-				paramList[0] = new SqlParameter("@UserGroupID", UserGroupID);
+				EalDbParameter[] paramList = new EalDbParameter[34];
+				paramList[0] = new EalDbParameter("@UserGroupID", UserGroupID);
 
 				if (Aggregations.Count > 0)
 				{
-					paramList[1] = new SqlParameter("@AggregationCode1", Aggregations[0].Code);
-					paramList[2] = new SqlParameter("@canSelect1", Aggregations[0].CanSelect);
-					paramList[3] = new SqlParameter("@canEditMetadata1", Aggregations[0].CanEditMetadata);
-					paramList[4] = new SqlParameter("@canEditBehaviors1", Aggregations[0].CanEditBehaviors);
-					paramList[5] = new SqlParameter("@canPerformQc1", Aggregations[0].CanPerformQc);
-					paramList[6] = new SqlParameter("@canUploadFiles1", Aggregations[0].CanUploadFiles);
-					paramList[7] = new SqlParameter("@canChangeVisibility1", Aggregations[0].CanChangeVisibility);
-					paramList[8] = new SqlParameter("@canDelete1", Aggregations[0].CanDelete);
-					paramList[9] = new SqlParameter("@isCurator1", Aggregations[0].IsCurator);
-					paramList[10] = new SqlParameter("@onHomePage1", false);
-					paramList[11] = new SqlParameter("@isAdmin1", Aggregations[0].IsAdmin);
+					paramList[1] = new EalDbParameter("@AggregationCode1", Aggregations[0].Code);
+					paramList[2] = new EalDbParameter("@canSelect1", Aggregations[0].CanSelect);
+					paramList[3] = new EalDbParameter("@canEditMetadata1", Aggregations[0].CanEditMetadata);
+					paramList[4] = new EalDbParameter("@canEditBehaviors1", Aggregations[0].CanEditBehaviors);
+					paramList[5] = new EalDbParameter("@canPerformQc1", Aggregations[0].CanPerformQc);
+					paramList[6] = new EalDbParameter("@canUploadFiles1", Aggregations[0].CanUploadFiles);
+					paramList[7] = new EalDbParameter("@canChangeVisibility1", Aggregations[0].CanChangeVisibility);
+					paramList[8] = new EalDbParameter("@canDelete1", Aggregations[0].CanDelete);
+					paramList[9] = new EalDbParameter("@isCurator1", Aggregations[0].IsCurator);
+					paramList[10] = new EalDbParameter("@onHomePage1", false);
+					paramList[11] = new EalDbParameter("@isAdmin1", Aggregations[0].IsAdmin);
 				}
 				else
 				{
-					paramList[1] = new SqlParameter("@AggregationCode1", String.Empty);
-					paramList[2] = new SqlParameter("@canSelect1", false);
-					paramList[3] = new SqlParameter("@canEditMetadata1", false);
-					paramList[4] = new SqlParameter("@canEditBehaviors1", false);
-					paramList[5] = new SqlParameter("@canPerformQc1", false);
-					paramList[6] = new SqlParameter("@canUploadFiles1", false);
-					paramList[7] = new SqlParameter("@canChangeVisibility1", false);
-					paramList[8] = new SqlParameter("@canDelete1", false);
-					paramList[9] = new SqlParameter("@isCurator1", false);
-					paramList[10] = new SqlParameter("@onHomePage1", false);
-					paramList[11] = new SqlParameter("@isAdmin1", false);
+					paramList[1] = new EalDbParameter("@AggregationCode1", String.Empty);
+					paramList[2] = new EalDbParameter("@canSelect1", false);
+					paramList[3] = new EalDbParameter("@canEditMetadata1", false);
+					paramList[4] = new EalDbParameter("@canEditBehaviors1", false);
+					paramList[5] = new EalDbParameter("@canPerformQc1", false);
+					paramList[6] = new EalDbParameter("@canUploadFiles1", false);
+					paramList[7] = new EalDbParameter("@canChangeVisibility1", false);
+					paramList[8] = new EalDbParameter("@canDelete1", false);
+					paramList[9] = new EalDbParameter("@isCurator1", false);
+					paramList[10] = new EalDbParameter("@onHomePage1", false);
+					paramList[11] = new EalDbParameter("@isAdmin1", false);
 				}
 
 				if (Aggregations.Count > 1)
 				{
-					paramList[12] = new SqlParameter("@AggregationCode2", Aggregations[1].Code);
-					paramList[13] = new SqlParameter("@canSelect2", Aggregations[1].CanSelect);
-					paramList[14] = new SqlParameter("@canEditMetadata2", Aggregations[1].CanEditMetadata);
-					paramList[15] = new SqlParameter("@canEditBehaviors2", Aggregations[1].CanEditBehaviors);
-					paramList[16] = new SqlParameter("@canPerformQc2", Aggregations[1].CanPerformQc);
-					paramList[17] = new SqlParameter("@canUploadFiles2", Aggregations[1].CanUploadFiles);
-					paramList[18] = new SqlParameter("@canChangeVisibility2", Aggregations[1].CanChangeVisibility);
-					paramList[19] = new SqlParameter("@canDelete2", Aggregations[1].CanDelete);
-					paramList[20] = new SqlParameter("@isCurator2", Aggregations[1].IsCurator);
-					paramList[21] = new SqlParameter("@onHomePage2", false);
-					paramList[22] = new SqlParameter("@isAdmin2", Aggregations[1].IsAdmin);
+					paramList[12] = new EalDbParameter("@AggregationCode2", Aggregations[1].Code);
+					paramList[13] = new EalDbParameter("@canSelect2", Aggregations[1].CanSelect);
+					paramList[14] = new EalDbParameter("@canEditMetadata2", Aggregations[1].CanEditMetadata);
+					paramList[15] = new EalDbParameter("@canEditBehaviors2", Aggregations[1].CanEditBehaviors);
+					paramList[16] = new EalDbParameter("@canPerformQc2", Aggregations[1].CanPerformQc);
+					paramList[17] = new EalDbParameter("@canUploadFiles2", Aggregations[1].CanUploadFiles);
+					paramList[18] = new EalDbParameter("@canChangeVisibility2", Aggregations[1].CanChangeVisibility);
+					paramList[19] = new EalDbParameter("@canDelete2", Aggregations[1].CanDelete);
+					paramList[20] = new EalDbParameter("@isCurator2", Aggregations[1].IsCurator);
+					paramList[21] = new EalDbParameter("@onHomePage2", false);
+					paramList[22] = new EalDbParameter("@isAdmin2", Aggregations[1].IsAdmin);
 				}
 				else
 				{
-					paramList[12] = new SqlParameter("@AggregationCode2", String.Empty);
-					paramList[13] = new SqlParameter("@canSelect2", false);
-					paramList[14] = new SqlParameter("@canEditMetadata2", false);
-					paramList[15] = new SqlParameter("@canEditBehaviors2", false);
-					paramList[16] = new SqlParameter("@canPerformQc2", false);
-					paramList[17] = new SqlParameter("@canUploadFiles2", false);
-					paramList[18] = new SqlParameter("@canChangeVisibility2", false);
-					paramList[19] = new SqlParameter("@canDelete2", false);
-					paramList[20] = new SqlParameter("@isCurator2", false);
-					paramList[21] = new SqlParameter("@onHomePage2", false);
-					paramList[22] = new SqlParameter("@isAdmin2", false);
+					paramList[12] = new EalDbParameter("@AggregationCode2", String.Empty);
+					paramList[13] = new EalDbParameter("@canSelect2", false);
+					paramList[14] = new EalDbParameter("@canEditMetadata2", false);
+					paramList[15] = new EalDbParameter("@canEditBehaviors2", false);
+					paramList[16] = new EalDbParameter("@canPerformQc2", false);
+					paramList[17] = new EalDbParameter("@canUploadFiles2", false);
+					paramList[18] = new EalDbParameter("@canChangeVisibility2", false);
+					paramList[19] = new EalDbParameter("@canDelete2", false);
+					paramList[20] = new EalDbParameter("@isCurator2", false);
+					paramList[21] = new EalDbParameter("@onHomePage2", false);
+					paramList[22] = new EalDbParameter("@isAdmin2", false);
 				}
 
 
 				if (Aggregations.Count > 2)
 				{
-					paramList[23] = new SqlParameter("@AggregationCode3", Aggregations[2].Code);
-					paramList[24] = new SqlParameter("@canSelect3", Aggregations[2].CanSelect);
-					paramList[25] = new SqlParameter("@canEditMetadata3", Aggregations[2].CanEditMetadata);
-					paramList[26] = new SqlParameter("@canEditBehaviors3", Aggregations[2].CanEditBehaviors);
-					paramList[27] = new SqlParameter("@canPerformQc3", Aggregations[2].CanPerformQc);
-					paramList[28] = new SqlParameter("@canUploadFiles3", Aggregations[2].CanUploadFiles);
-					paramList[29] = new SqlParameter("@canChangeVisibility3", Aggregations[2].CanChangeVisibility);
-					paramList[30] = new SqlParameter("@canDelete3", Aggregations[2].CanDelete);
-					paramList[31] = new SqlParameter("@isCurator3", Aggregations[2].IsCurator);
-					paramList[32] = new SqlParameter("@onHomePage3", false);
-					paramList[33] = new SqlParameter("@isAdmin3", Aggregations[2].IsAdmin);
+					paramList[23] = new EalDbParameter("@AggregationCode3", Aggregations[2].Code);
+					paramList[24] = new EalDbParameter("@canSelect3", Aggregations[2].CanSelect);
+					paramList[25] = new EalDbParameter("@canEditMetadata3", Aggregations[2].CanEditMetadata);
+					paramList[26] = new EalDbParameter("@canEditBehaviors3", Aggregations[2].CanEditBehaviors);
+					paramList[27] = new EalDbParameter("@canPerformQc3", Aggregations[2].CanPerformQc);
+					paramList[28] = new EalDbParameter("@canUploadFiles3", Aggregations[2].CanUploadFiles);
+					paramList[29] = new EalDbParameter("@canChangeVisibility3", Aggregations[2].CanChangeVisibility);
+					paramList[30] = new EalDbParameter("@canDelete3", Aggregations[2].CanDelete);
+					paramList[31] = new EalDbParameter("@isCurator3", Aggregations[2].IsCurator);
+					paramList[32] = new EalDbParameter("@onHomePage3", false);
+					paramList[33] = new EalDbParameter("@isAdmin3", Aggregations[2].IsAdmin);
 				}
 				else
 				{
-					paramList[23] = new SqlParameter("@AggregationCode3", String.Empty);
-					paramList[24] = new SqlParameter("@canSelect3", false);
-					paramList[25] = new SqlParameter("@canEditMetadata3", false);
-					paramList[26] = new SqlParameter("@canEditBehaviors3", false);
-					paramList[27] = new SqlParameter("@canPerformQc3", false);
-					paramList[28] = new SqlParameter("@canUploadFiles3", false);
-					paramList[29] = new SqlParameter("@canChangeVisibility3", false);
-					paramList[30] = new SqlParameter("@canDelete3", false);
-					paramList[31] = new SqlParameter("@isCurator3", false);
-					paramList[32] = new SqlParameter("@onHomePage3", false);
-					paramList[33] = new SqlParameter("@isAdmin3", false);
+					paramList[23] = new EalDbParameter("@AggregationCode3", String.Empty);
+					paramList[24] = new EalDbParameter("@canSelect3", false);
+					paramList[25] = new EalDbParameter("@canEditMetadata3", false);
+					paramList[26] = new EalDbParameter("@canEditBehaviors3", false);
+					paramList[27] = new EalDbParameter("@canPerformQc3", false);
+					paramList[28] = new EalDbParameter("@canUploadFiles3", false);
+					paramList[29] = new EalDbParameter("@canChangeVisibility3", false);
+					paramList[30] = new EalDbParameter("@canDelete3", false);
+					paramList[31] = new EalDbParameter("@isCurator3", false);
+					paramList[32] = new EalDbParameter("@onHomePage3", false);
+					paramList[33] = new EalDbParameter("@isAdmin3", false);
 				}
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Aggregations_Link", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Aggregations_Link", paramList);
 
 				int currentIndex = 3;
 				while (Aggregations.Count > currentIndex)
 				{
 					// Build the parameter list for the first run
-					paramList[0] = new SqlParameter("@UserGroupID", UserGroupID);
+					paramList[0] = new EalDbParameter("@UserGroupID", UserGroupID);
 
 					if (Aggregations.Count > currentIndex)
 					{
-						paramList[1] = new SqlParameter("@AggregationCode1", Aggregations[currentIndex].Code);
-						paramList[2] = new SqlParameter("@canSelect1", Aggregations[currentIndex].CanSelect);
-						paramList[3] = new SqlParameter("@canEditMetadata1", Aggregations[currentIndex].CanEditMetadata);
-						paramList[4] = new SqlParameter("@canEditBehaviors1", Aggregations[currentIndex].CanEditBehaviors);
-						paramList[5] = new SqlParameter("@canPerformQc1", Aggregations[currentIndex].CanPerformQc);
-						paramList[6] = new SqlParameter("@canUploadFiles1", Aggregations[currentIndex].CanUploadFiles);
-						paramList[7] = new SqlParameter("@canChangeVisibility1", Aggregations[currentIndex].CanChangeVisibility);
-						paramList[8] = new SqlParameter("@canDelete1", Aggregations[currentIndex].CanDelete);
-						paramList[9] = new SqlParameter("@isCurator1", Aggregations[currentIndex].IsCurator);
-						paramList[10] = new SqlParameter("@onHomePage1", false);
-						paramList[11] = new SqlParameter("@isAdmin1", Aggregations[currentIndex].IsAdmin);
+						paramList[1] = new EalDbParameter("@AggregationCode1", Aggregations[currentIndex].Code);
+						paramList[2] = new EalDbParameter("@canSelect1", Aggregations[currentIndex].CanSelect);
+						paramList[3] = new EalDbParameter("@canEditMetadata1", Aggregations[currentIndex].CanEditMetadata);
+						paramList[4] = new EalDbParameter("@canEditBehaviors1", Aggregations[currentIndex].CanEditBehaviors);
+						paramList[5] = new EalDbParameter("@canPerformQc1", Aggregations[currentIndex].CanPerformQc);
+						paramList[6] = new EalDbParameter("@canUploadFiles1", Aggregations[currentIndex].CanUploadFiles);
+						paramList[7] = new EalDbParameter("@canChangeVisibility1", Aggregations[currentIndex].CanChangeVisibility);
+						paramList[8] = new EalDbParameter("@canDelete1", Aggregations[currentIndex].CanDelete);
+						paramList[9] = new EalDbParameter("@isCurator1", Aggregations[currentIndex].IsCurator);
+						paramList[10] = new EalDbParameter("@onHomePage1", false);
+						paramList[11] = new EalDbParameter("@isAdmin1", Aggregations[currentIndex].IsAdmin);
 					}
 					else
 					{
-						paramList[1] = new SqlParameter("@AggregationCode1", String.Empty);
-						paramList[2] = new SqlParameter("@canSelect1", false);
-						paramList[3] = new SqlParameter("@canEditMetadata1", false);
-						paramList[4] = new SqlParameter("@canEditBehaviors1", false);
-						paramList[5] = new SqlParameter("@canPerformQc1", false);
-						paramList[6] = new SqlParameter("@canUploadFiles1", false);
-						paramList[7] = new SqlParameter("@canChangeVisibility1", false);
-						paramList[8] = new SqlParameter("@canDelete1", false);
-						paramList[9] = new SqlParameter("@isCurator1", false);
-						paramList[10] = new SqlParameter("@onHomePage1", false);
-						paramList[11] = new SqlParameter("@isAdmin1", false);
+						paramList[1] = new EalDbParameter("@AggregationCode1", String.Empty);
+						paramList[2] = new EalDbParameter("@canSelect1", false);
+						paramList[3] = new EalDbParameter("@canEditMetadata1", false);
+						paramList[4] = new EalDbParameter("@canEditBehaviors1", false);
+						paramList[5] = new EalDbParameter("@canPerformQc1", false);
+						paramList[6] = new EalDbParameter("@canUploadFiles1", false);
+						paramList[7] = new EalDbParameter("@canChangeVisibility1", false);
+						paramList[8] = new EalDbParameter("@canDelete1", false);
+						paramList[9] = new EalDbParameter("@isCurator1", false);
+						paramList[10] = new EalDbParameter("@onHomePage1", false);
+						paramList[11] = new EalDbParameter("@isAdmin1", false);
 					}
 
 					if (Aggregations.Count > currentIndex + 1)
 					{
-						paramList[12] = new SqlParameter("@AggregationCode2", Aggregations[currentIndex + 1].Code);
-						paramList[13] = new SqlParameter("@canSelect2", Aggregations[currentIndex + 1].CanSelect);
-						paramList[14] = new SqlParameter("@canEditMetadata2", Aggregations[currentIndex + 1].CanEditMetadata);
-						paramList[15] = new SqlParameter("@canEditBehaviors2", Aggregations[currentIndex + 1].CanEditBehaviors);
-						paramList[16] = new SqlParameter("@canPerformQc2", Aggregations[currentIndex + 1].CanPerformQc);
-						paramList[17] = new SqlParameter("@canUploadFiles2", Aggregations[currentIndex + 1].CanUploadFiles);
-						paramList[18] = new SqlParameter("@canChangeVisibility2", Aggregations[currentIndex + 1].CanChangeVisibility);
-						paramList[19] = new SqlParameter("@canDelete2", Aggregations[currentIndex + 1].CanDelete);
-						paramList[20] = new SqlParameter("@isCurator2", Aggregations[currentIndex + 1].IsCurator);
-						paramList[21] = new SqlParameter("@onHomePage2", false);
-						paramList[22] = new SqlParameter("@isAdmin2", Aggregations[currentIndex + 1].IsAdmin);
+						paramList[12] = new EalDbParameter("@AggregationCode2", Aggregations[currentIndex + 1].Code);
+						paramList[13] = new EalDbParameter("@canSelect2", Aggregations[currentIndex + 1].CanSelect);
+						paramList[14] = new EalDbParameter("@canEditMetadata2", Aggregations[currentIndex + 1].CanEditMetadata);
+						paramList[15] = new EalDbParameter("@canEditBehaviors2", Aggregations[currentIndex + 1].CanEditBehaviors);
+						paramList[16] = new EalDbParameter("@canPerformQc2", Aggregations[currentIndex + 1].CanPerformQc);
+						paramList[17] = new EalDbParameter("@canUploadFiles2", Aggregations[currentIndex + 1].CanUploadFiles);
+						paramList[18] = new EalDbParameter("@canChangeVisibility2", Aggregations[currentIndex + 1].CanChangeVisibility);
+						paramList[19] = new EalDbParameter("@canDelete2", Aggregations[currentIndex + 1].CanDelete);
+						paramList[20] = new EalDbParameter("@isCurator2", Aggregations[currentIndex + 1].IsCurator);
+						paramList[21] = new EalDbParameter("@onHomePage2", false);
+						paramList[22] = new EalDbParameter("@isAdmin2", Aggregations[currentIndex + 1].IsAdmin);
 					}
 					else
 					{
-						paramList[12] = new SqlParameter("@AggregationCode2", String.Empty);
-						paramList[13] = new SqlParameter("@canSelect2", false);
-						paramList[14] = new SqlParameter("@canEditMetadata2", false);
-						paramList[15] = new SqlParameter("@canEditBehaviors2", false);
-						paramList[16] = new SqlParameter("@canPerformQc2", false);
-						paramList[17] = new SqlParameter("@canUploadFiles2", false);
-						paramList[18] = new SqlParameter("@canChangeVisibility2", false);
-						paramList[19] = new SqlParameter("@canDelete2", false);
-						paramList[20] = new SqlParameter("@isCurator2", false);
-						paramList[21] = new SqlParameter("@onHomePage2", false);
-						paramList[22] = new SqlParameter("@isAdmin2", false);
+						paramList[12] = new EalDbParameter("@AggregationCode2", String.Empty);
+						paramList[13] = new EalDbParameter("@canSelect2", false);
+						paramList[14] = new EalDbParameter("@canEditMetadata2", false);
+						paramList[15] = new EalDbParameter("@canEditBehaviors2", false);
+						paramList[16] = new EalDbParameter("@canPerformQc2", false);
+						paramList[17] = new EalDbParameter("@canUploadFiles2", false);
+						paramList[18] = new EalDbParameter("@canChangeVisibility2", false);
+						paramList[19] = new EalDbParameter("@canDelete2", false);
+						paramList[20] = new EalDbParameter("@isCurator2", false);
+						paramList[21] = new EalDbParameter("@onHomePage2", false);
+						paramList[22] = new EalDbParameter("@isAdmin2", false);
 					}
 
 
 					if (Aggregations.Count > currentIndex + 2)
 					{
-						paramList[23] = new SqlParameter("@AggregationCode3", Aggregations[currentIndex + 2].Code);
-						paramList[24] = new SqlParameter("@canSelect3", Aggregations[currentIndex + 2].CanSelect);
-						paramList[25] = new SqlParameter("@canEditMetadata3", Aggregations[currentIndex + 2].CanEditMetadata);
-						paramList[26] = new SqlParameter("@canEditBehaviors3", Aggregations[currentIndex + 2].CanEditBehaviors);
-						paramList[27] = new SqlParameter("@canPerformQc3", Aggregations[currentIndex + 2].CanPerformQc);
-						paramList[28] = new SqlParameter("@canUploadFiles3", Aggregations[currentIndex + 2].CanUploadFiles);
-						paramList[29] = new SqlParameter("@canChangeVisibility3", Aggregations[currentIndex + 2].CanChangeVisibility);
-						paramList[30] = new SqlParameter("@canDelete3", Aggregations[currentIndex + 2].CanDelete);
-						paramList[31] = new SqlParameter("@isCurator3", Aggregations[currentIndex + 2].IsCurator);
-						paramList[32] = new SqlParameter("@onHomePage3", false);
-						paramList[33] = new SqlParameter("@isAdmin3", Aggregations[currentIndex + 2].IsAdmin);
+						paramList[23] = new EalDbParameter("@AggregationCode3", Aggregations[currentIndex + 2].Code);
+						paramList[24] = new EalDbParameter("@canSelect3", Aggregations[currentIndex + 2].CanSelect);
+						paramList[25] = new EalDbParameter("@canEditMetadata3", Aggregations[currentIndex + 2].CanEditMetadata);
+						paramList[26] = new EalDbParameter("@canEditBehaviors3", Aggregations[currentIndex + 2].CanEditBehaviors);
+						paramList[27] = new EalDbParameter("@canPerformQc3", Aggregations[currentIndex + 2].CanPerformQc);
+						paramList[28] = new EalDbParameter("@canUploadFiles3", Aggregations[currentIndex + 2].CanUploadFiles);
+						paramList[29] = new EalDbParameter("@canChangeVisibility3", Aggregations[currentIndex + 2].CanChangeVisibility);
+						paramList[30] = new EalDbParameter("@canDelete3", Aggregations[currentIndex + 2].CanDelete);
+						paramList[31] = new EalDbParameter("@isCurator3", Aggregations[currentIndex + 2].IsCurator);
+						paramList[32] = new EalDbParameter("@onHomePage3", false);
+						paramList[33] = new EalDbParameter("@isAdmin3", Aggregations[currentIndex + 2].IsAdmin);
 					}
 					else
 					{
-						paramList[23] = new SqlParameter("@AggregationCode3", String.Empty);
-						paramList[24] = new SqlParameter("@canSelect3", false);
-						paramList[25] = new SqlParameter("@canEditMetadata3", false);
-						paramList[26] = new SqlParameter("@canEditBehaviors3", false);
-						paramList[27] = new SqlParameter("@canPerformQc3", false);
-						paramList[28] = new SqlParameter("@canUploadFiles3", false);
-						paramList[29] = new SqlParameter("@canChangeVisibility3", false);
-						paramList[30] = new SqlParameter("@canDelete3", false);
-						paramList[31] = new SqlParameter("@isCurator3", false);
-						paramList[32] = new SqlParameter("@onHomePage3", false);
-						paramList[33] = new SqlParameter("@isAdmin3", false);
+						paramList[23] = new EalDbParameter("@AggregationCode3", String.Empty);
+						paramList[24] = new EalDbParameter("@canSelect3", false);
+						paramList[25] = new EalDbParameter("@canEditMetadata3", false);
+						paramList[26] = new EalDbParameter("@canEditBehaviors3", false);
+						paramList[27] = new EalDbParameter("@canPerformQc3", false);
+						paramList[28] = new EalDbParameter("@canUploadFiles3", false);
+						paramList[29] = new EalDbParameter("@canChangeVisibility3", false);
+						paramList[30] = new EalDbParameter("@canDelete3", false);
+						paramList[31] = new EalDbParameter("@isCurator3", false);
+						paramList[32] = new EalDbParameter("@onHomePage3", false);
+						paramList[33] = new EalDbParameter("@isAdmin3", false);
 					}
 
 					// Execute this query stored procedure
-					SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Aggregations_Link", paramList);
+					EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Add_User_Group_Aggregations_Link", paramList);
 
 					currentIndex += 3;
 				}
@@ -4684,11 +4589,12 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-        /// <summary> Deletes a user group, if there are no users attached and if it is not a special group </summary>
-        /// <param name="UserGroupID"> Primary key for this user group from the database</param>
-        /// <returns> Message value ( -1=users attached, -2=special group, -3=exception, 1 = success) </returns>
-        /// <remarks> This calls the 'mySobek_Delete_User_Group' stored procedure</remarks> 
-        public static int Delete_User_Group(int UserGroupID, Custom_Tracer Tracer)
+	    /// <summary> Deletes a user group, if there are no users attached and if it is not a special group </summary>
+	    /// <param name="UserGroupID"> Primary key for this user group from the database</param>
+	    /// <param name="Tracer"></param>
+	    /// <returns> Message value ( -1=users attached, -2=special group, -3=exception, 1 = success) </returns>
+	    /// <remarks> This calls the 'mySobek_Delete_User_Group' stored procedure</remarks> 
+	    public static int Delete_User_Group(int UserGroupID, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -4698,12 +4604,12 @@ namespace SobekCM.Library.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[2];
-                paramList[0] = new SqlParameter("@usergroupid", UserGroupID);
-                paramList[1] = new SqlParameter("@message", 1) { Direction = ParameterDirection.InputOutput };
+                EalDbParameter[] paramList = new EalDbParameter[2];
+                paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
+                paramList[1] = new EalDbParameter("@message", 1) { Direction = ParameterDirection.InputOutput };
 
                 // Execute this query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Delete_User_Group", paramList);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Delete_User_Group", paramList);
 
                 // Succesful, so return new id, if there was one
                 return Convert.ToInt32(paramList[1].Value);
@@ -4739,17 +4645,17 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@metadata_code", Code);
-                paramList[1] = new SqlParameter("@metadata_name", Name);
-                paramList[2] = new SqlParameter("@description", Description);
-                paramList[3] = new SqlParameter("@userid", UserID);
+				EalDbParameter[] paramList = new EalDbParameter[4];
+				paramList[0] = new EalDbParameter("@metadata_code", Code);
+                paramList[1] = new EalDbParameter("@metadata_name", Name);
+                paramList[2] = new EalDbParameter("@description", Description);
+                paramList[3] = new EalDbParameter("@userid", UserID);
 
                 if (UserID <= 0)
                     paramList[3].Value = DBNull.Value;
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_DefaultMetadata", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_DefaultMetadata", paramList);
 
 				// Succesful, so return true
 				return true;
@@ -4782,11 +4688,11 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@MetadataCode", Code);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@MetadataCode", Code);
 
 				// Execute this query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Delete_DefaultMetadata", paramList);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Delete_DefaultMetadata", paramList);
 
 				// Succesful, so return true
 				return true;
@@ -4821,13 +4727,13 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[3];
-				paramList[0] = new SqlParameter("@project_code", Code);
-				paramList[1] = new SqlParameter("@project_name", Name);
-                paramList[2] = new SqlParameter("@description", Name);
+				EalDbParameter[] paramList = new EalDbParameter[3];
+				paramList[0] = new EalDbParameter("@project_code", Code);
+				paramList[1] = new EalDbParameter("@project_name", Name);
+                paramList[2] = new EalDbParameter("@description", Name);
 
 				// Execute this query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "mySobek_Save_Template", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_Template", paramList);
 
 				// Succesful, so return true
 				return true;
@@ -4856,11 +4762,11 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// build the parameter list
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@aggregationid", AggregationID);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@aggregationid", AggregationID);
 
 				// Get the table
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Build_Log_Get", paramList);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Build_Log_Get", paramList);
 
 				// Return true, since no exception caught
 				return tempSet.Tables[0];
@@ -4882,43 +4788,43 @@ namespace SobekCM.Library.Database
 		/// <summary> Saves the serial hierarchy and link between an item and an item group </summary>
 		/// <param name="GroupID"> Group ID this item belongs to </param>
 		/// <param name="ItemID"> Primary key for the item itself </param>
-		/// <param name="Level1_Text"> Text for the FIRST level of serial hierarchy relating this item to the item group </param>
-		/// <param name="Level1_Index"> Sorting index for the FIRST level of serial hierarchy relating this item to the item group </param>
-		/// <param name="Level2_Text"> Text for the SECOND level of serial hierarchy relating this item to the item group </param>
-		/// <param name="Level2_Index"> Sorting index for the SECOND level of serial hierarchy relating this item to the item group</param>
-		/// <param name="Level3_Text"> Text for the THIRD level of serial hierarchy relating this item to the item group </param>
-		/// <param name="Level3_Index"> Sorting index for the THIRD level of serial hierarchy relating this item to the item group</param>
-		/// <param name="Level4_Text"> Text for the FOURTH level of serial hierarchy relating this item to the item group </param>
-		/// <param name="Level4_Index"> Sorting index for the FOURTH level of serial hierarchy relating this item to the item group</param>
-		/// <param name="Level5_Text"> Text for the FIFTH level of serial hierarchy relating this item to the item group </param>
-		/// <param name="Level5_Index"> Sorting index for the FIFTH level of serial hierarchy relating this item to the item group</param>
+		/// <param name="Level1Text"> Text for the FIRST level of serial hierarchy relating this item to the item group </param>
+		/// <param name="Level1Index"> Sorting index for the FIRST level of serial hierarchy relating this item to the item group </param>
+		/// <param name="Level2Text"> Text for the SECOND level of serial hierarchy relating this item to the item group </param>
+		/// <param name="Level2Index"> Sorting index for the SECOND level of serial hierarchy relating this item to the item group</param>
+		/// <param name="Level3Text"> Text for the THIRD level of serial hierarchy relating this item to the item group </param>
+		/// <param name="Level3Index"> Sorting index for the THIRD level of serial hierarchy relating this item to the item group</param>
+		/// <param name="Level4Text"> Text for the FOURTH level of serial hierarchy relating this item to the item group </param>
+		/// <param name="Level4Index"> Sorting index for the FOURTH level of serial hierarchy relating this item to the item group</param>
+		/// <param name="Level5Text"> Text for the FIFTH level of serial hierarchy relating this item to the item group </param>
+		/// <param name="Level5Index"> Sorting index for the FIFTH level of serial hierarchy relating this item to the item group</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'SobekCM_Save_Serial_Hierarchy' stored procedure </remarks> 
-		public static bool Save_Serial_Hierarchy(int GroupID, int ItemID, string Level1_Text, int Level1_Index,
-												 string Level2_Text, int Level2_Index, string Level3_Text, int Level3_Index, string Level4_Text, 
-												 int Level4_Index, string Level5_Text, int Level5_Index )
+		public static bool Save_Serial_Hierarchy(int GroupID, int ItemID, string Level1Text, int Level1Index,
+												 string Level2Text, int Level2Index, string Level3Text, int Level3Index, string Level4Text, 
+												 int Level4Index, string Level5Text, int Level5Index )
 		{
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[13];
-				paramList[0] = new SqlParameter("@GroupID", GroupID);
-				paramList[1] = new SqlParameter("@ItemID", ItemID);
-				paramList[2] = new SqlParameter("@Level1_Text", Level1_Text);
-				paramList[3] = new SqlParameter("@Level1_Index", Level1_Index);
-				paramList[4] = new SqlParameter("@Level2_Text", Level2_Text);
-				paramList[5] = new SqlParameter("@Level2_Index", Level2_Index);
-				paramList[6] = new SqlParameter("@Level3_Text", Level3_Text);
-				paramList[7] = new SqlParameter("@Level3_Index", Level3_Index);
-				paramList[8] = new SqlParameter("@Level4_Text", Level4_Text);
-				paramList[9] = new SqlParameter("@Level4_Index", Level4_Index);
-				paramList[10] = new SqlParameter("@Level5_Text", Level5_Text);
-				paramList[11] = new SqlParameter("@Level5_Index", Level5_Index);
-				paramList[12] = new SqlParameter("@SerialHierarchy", String.Empty);
+				EalDbParameter[] paramList = new EalDbParameter[13];
+				paramList[0] = new EalDbParameter("@GroupID", GroupID);
+				paramList[1] = new EalDbParameter("@ItemID", ItemID);
+				paramList[2] = new EalDbParameter("@Level1_Text", Level1Text);
+				paramList[3] = new EalDbParameter("@Level1_Index", Level1Index);
+				paramList[4] = new EalDbParameter("@Level2_Text", Level2Text);
+				paramList[5] = new EalDbParameter("@Level2_Index", Level2Index);
+				paramList[6] = new EalDbParameter("@Level3_Text", Level3Text);
+				paramList[7] = new EalDbParameter("@Level3_Index", Level3Index);
+				paramList[8] = new EalDbParameter("@Level4_Text", Level4Text);
+				paramList[9] = new EalDbParameter("@Level4_Index", Level4Index);
+				paramList[10] = new EalDbParameter("@Level5_Text", Level5Text);
+				paramList[11] = new EalDbParameter("@Level5_Index", Level5Index);
+				paramList[12] = new EalDbParameter("@SerialHierarchy", String.Empty);
 
 
 				// Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Serial_Hierarchy", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Serial_Hierarchy", paramList);
 
 				return true;
 			}
@@ -4941,21 +4847,8 @@ namespace SobekCM.Library.Database
 			{
 				try
 				{
-					// Create the connection
-					SqlConnection connect = new SqlConnection(connectionString);
-
-					// Create the command 
-					SqlCommand executeCommand = new SqlCommand("Tracking_Items_Pending_Online_Complete", connect)
-													{CommandType = CommandType.StoredProcedure};
-
-					// Create the adapter
-					SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-					// Create the dataset
-					DataSet list = new DataSet();
-
-					// Fill the dataset
-					adapter.Fill(list);
+                    // Define a temporary dataset
+                    DataSet list = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Items_Pending_Online_Complete");
 
 					// Return the first table
 					return list.Tables[0];
@@ -4977,21 +4870,7 @@ namespace SobekCM.Library.Database
 			{
 				try
 				{
-					// Create the connection
-					SqlConnection connect = new SqlConnection(connectionString);
-
-					// Create the command 
-					SqlCommand executeCommand = new SqlCommand("SobekCM_Manager_Newspapers_Without_Serial_Info", connect)
-													{CommandType = CommandType.StoredProcedure};
-
-					// Create the adapter
-					SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-					// Create the dataset
-					DataSet list = new DataSet();
-
-					// Fill the dataset
-					adapter.Fill(list);
+                    DataSet list = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Manager_Newspapers_Without_Serial_Info");
 
 					// Return the first table
 					return list.Tables[0];
@@ -5019,22 +4898,7 @@ namespace SobekCM.Library.Database
 				// Clear the last exception in this case
 				lastException = null;
 
-				// Create the connection
-				SqlConnection connect = new SqlConnection(connectionString);
-
-				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Manager_GroupID_From_BibID", connect)
-												{CommandType = CommandType.StoredProcedure};
-				executeCommand.Parameters.AddWithValue("@bibid", BibID);
-
-				// Create the adapter
-				SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-				// Create the dataset
-				DataSet list = new DataSet();
-
-				// Fill the dataset
-				adapter.Fill(list);
+                DataSet list = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Manager_Newspapers_Without_Serial_Info", new EalDbParameter[] { new EalDbParameter("@bibid", BibID) });
 
 				// If there is a match return it
 				return (list.Tables[0].Rows.Count > 0) ? Convert.ToInt32(list.Tables[0].Rows[0][0]) : -1;
@@ -5049,40 +4913,27 @@ namespace SobekCM.Library.Database
 		/// <summary> Gets the size of the online files and the size of the archived files, by aggregation </summary>
 		/// <param name="AggregationCode1"> Code for the primary aggregation  </param>
 		/// <param name="AggregationCode2"> Code for the secondary aggregation </param>
-		/// <param name="Online_Stats_Type"> Flag indicates if online content reporting should be included ( 0=skip, 1=summary, 2=details )</param>
-		/// <param name="Archival_Stats_Type"> Flag indicates if locally archived reporting should be included ( 0=skip, 1=summary, 2=details )</param>
+		/// <param name="OnlineStatsType"> Flag indicates if online content reporting should be included ( 0=skip, 1=summary, 2=details )</param>
+		/// <param name="ArchivalStatsType"> Flag indicates if locally archived reporting should be included ( 0=skip, 1=summary, 2=details )</param>
 		/// <returns> Dataset with two tables, first is the online space, and second is the archived space </returns>
 		/// <remarks> If two codes are passed in, then the values returned is the size of all items which exist
 		///  in both the provided aggregationPermissions.  Otherwise, it is just the size of all items in the primary 
 		///  aggregation. <br /><br /> This calls the 'SobekCM_Online_Archived_Space' stored procedure </remarks> 
-		public static DataSet Online_Archived_Space(string AggregationCode1, string AggregationCode2, short Online_Stats_Type, short Archival_Stats_Type)
+		public static DataSet Online_Archived_Space(string AggregationCode1, string AggregationCode2, short OnlineStatsType, short ArchivalStatsType)
 		{
 			try
 			{
-				// Create the connection
-				SqlConnection connect = new SqlConnection(connectionString);
+                // Build the parameters list
+			    List<EalDbParameter> parameters = new List<EalDbParameter>
+			    {
+			        new EalDbParameter("@code1", AggregationCode1), 
+                    new EalDbParameter("@code2", AggregationCode2), 
+                    new EalDbParameter("@include_online", OnlineStatsType), 
+                    new EalDbParameter("@include_archive", ArchivalStatsType)
+			    };
 
-				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Online_Archived_Space", connect)
-				{
-					CommandType = CommandType.StoredProcedure,
-					CommandTimeout = 120
-				};
-				executeCommand.Parameters.AddWithValue("@code1", AggregationCode1);
-				executeCommand.Parameters.AddWithValue("@code2", AggregationCode2);
-				executeCommand.Parameters.AddWithValue("@include_online", Online_Stats_Type);
-				executeCommand.Parameters.AddWithValue("@include_archive", Archival_Stats_Type);
-
-				// Create the adapter
-				SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-				// Create the dataset
-				DataSet list = new DataSet();
-
-				// Fill the dataset
-				adapter.Fill(list);
-
-				return list;
+			    // Run the SQL and get back a dataset
+                return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Online_Archived_Space", parameters); 
 			}
 			catch (Exception ee)
 			{
@@ -5097,20 +4948,20 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Get the list of all archived TIVOLI files by BibID and VID </summary>
 		/// <param name="BibID"> Bibliographic identifier </param>
-		/// <param name="VID"> Volume identifier </param>
+		/// <param name="Vid"> Volume identifier </param>
 		/// <returns> List of all the files archived for a particular digital resource </returns>
 		/// <remarks> This calls the 'Tivoli_Get_File_By_Bib_VID' stored procedure </remarks> 
-		public static DataTable Tivoli_Get_Archived_Files(string BibID, string VID)
+		public static DataTable Tivoli_Get_Archived_Files(string BibID, string Vid)
 		{
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[2];
-				paramList[0] = new SqlParameter("@BibID", BibID);
-				paramList[1] = new SqlParameter("@VID", VID);
+				EalDbParameter[] paramList = new EalDbParameter[2];
+				paramList[0] = new EalDbParameter("@BibID", BibID);
+				paramList[1] = new EalDbParameter("@VID", Vid);
 
 				// Define a temporary dataset
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Tivoli_Get_File_By_Bib_VID", paramList);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tivoli_Get_File_By_Bib_VID", paramList);
 				return ((tempSet == null) || (tempSet.Tables.Count == 0) || (tempSet.Tables[0].Rows.Count == 0)) ? null : tempSet.Tables[0];
 			}
 			catch 
@@ -5123,7 +4974,7 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Add information about a single file to the archived TIVOLI </summary>
 		/// <param name="BibID"> Bibliographic identifier </param>
-		/// <param name="VID"> Volume identifier </param>
+		/// <param name="Vid"> Volume identifier </param>
 		/// <param name="Folder"> Name of the folder </param>
 		/// <param name="FileName"> Name of the archived file </param>
 		/// <param name="FileSize"> Size of the archived file </param>
@@ -5131,22 +4982,22 @@ namespace SobekCM.Library.Database
 		/// <param name="ItemID"> Primary key for this item </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'Tivoli_Add_File_Archive_Log' stored procedure </remarks> 
-		public static bool Tivoli_Add_File_Archive_Log(string BibID, string VID, string Folder, string FileName, long FileSize, DateTime LastWriteDate, int ItemID )
+		public static bool Tivoli_Add_File_Archive_Log(string BibID, string Vid, string Folder, string FileName, long FileSize, DateTime LastWriteDate, int ItemID )
 		{
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[7];
-				paramList[0] = new SqlParameter("@BibID", BibID);
-				paramList[1] = new SqlParameter("@VID", VID);
-				paramList[2] = new SqlParameter("@Folder", Folder);
-				paramList[3] = new SqlParameter("@FileName", FileName);
-				paramList[4] = new SqlParameter("@Size", FileSize);
-				paramList[5] = new SqlParameter("@LastWriteDate", LastWriteDate);
-				paramList[6] = new SqlParameter("@ItemID", ItemID);
+				EalDbParameter[] paramList = new EalDbParameter[7];
+				paramList[0] = new EalDbParameter("@BibID", BibID);
+				paramList[1] = new EalDbParameter("@VID", Vid);
+				paramList[2] = new EalDbParameter("@Folder", Folder);
+				paramList[3] = new EalDbParameter("@FileName", FileName);
+				paramList[4] = new EalDbParameter("@Size", FileSize);
+				paramList[5] = new EalDbParameter("@LastWriteDate", LastWriteDate);
+				paramList[6] = new EalDbParameter("@ItemID", ItemID);
 
 				// Define a temporary dataset
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tivoli_Add_File_Archive_Log", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tivoli_Add_File_Archive_Log", paramList);
 
 				return true;
 			}
@@ -5159,24 +5010,24 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Adds a worklog that items were archived (tivoli)'d for a specific item </summary>
 		/// <param name="BibID"> Bibliographic identifier </param>
-		/// <param name="VID"> Volume identifier </param>
+		/// <param name="Vid"> Volume identifier </param>
 		/// <param name="User"> User linked to this progress ( usually blank since this is performed by the Tivoli Processor ) </param>
 		/// <param name="UserNotes"> Notes about this process worklog </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'Tracking_Archive_Complete' stored procedure </remarks> 
-		public static bool Tivoli_Archive_Complete(string BibID, string VID, string User, string UserNotes )
+		public static bool Tivoli_Archive_Complete(string BibID, string Vid, string User, string UserNotes )
 		{
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@BibID", BibID);
-				paramList[1] = new SqlParameter("@VID", VID);
-				paramList[2] = new SqlParameter("@User", User);
-				paramList[3] = new SqlParameter("@UserNotes", UserNotes);
+				EalDbParameter[] paramList = new EalDbParameter[4];
+				paramList[0] = new EalDbParameter("@BibID", BibID);
+				paramList[1] = new EalDbParameter("@VID", Vid);
+				paramList[2] = new EalDbParameter("@User", User);
+				paramList[3] = new EalDbParameter("@UserNotes", UserNotes);
 
 				// Define a temporary dataset
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Archive_Complete", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Archive_Complete", paramList);
 
 				return true;
 			}
@@ -5195,7 +5046,7 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Define a temporary dataset
-				DataSet returnSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Tivoli_Outstanding_File_Requests");
+				DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tivoli_Outstanding_File_Requests");
 				if (returnSet != null)
 					return returnSet.Tables[0];
 
@@ -5210,24 +5061,24 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Completes a given archive tivoli file request in the database </summary>
 		/// <param name="TivoliRequestID">Primary key for the tivolie request which either completed or failed </param>
-		/// <param name="Email_Body"> Body of the response email </param>
-		/// <param name="Email_Subject">Subject line to use for the response email </param>
+		/// <param name="EmailBody"> Body of the response email </param>
+		/// <param name="EmailSubject">Subject line to use for the response email </param>
 		/// <param name="IsFailure"> Flag indicates if this represents a failure to retrieve the material from TIVOLI</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'Tracking_Archive_Complete' stored procedure </remarks> 
-		public static bool Tivoli_Complete_File_Request(int TivoliRequestID, string Email_Body, string Email_Subject, bool IsFailure)
+		public static bool Tivoli_Complete_File_Request(int TivoliRequestID, string EmailBody, string EmailSubject, bool IsFailure)
 		{
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@tivolirequestid", TivoliRequestID);
-				paramList[1] = new SqlParameter("@email_body", Email_Body);
-				paramList[2] = new SqlParameter("@email_subject", Email_Subject);
-				paramList[3] = new SqlParameter("@isFailure", IsFailure);
+				EalDbParameter[] paramList = new EalDbParameter[4];
+				paramList[0] = new EalDbParameter("@tivolirequestid", TivoliRequestID);
+				paramList[1] = new EalDbParameter("@email_body", EmailBody);
+				paramList[2] = new EalDbParameter("@email_subject", EmailSubject);
+				paramList[3] = new EalDbParameter("@isFailure", IsFailure);
 
 				// Define a temporary dataset
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tivoli_Complete_File_Request", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tivoli_Complete_File_Request", paramList);
 
 				return true;
 			}
@@ -5240,31 +5091,31 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Requests a package or file from the archives/tivoli </summary>
 		/// <param name="BibID"> Bibliographic identifier (BibID) for the item to retrieve files for </param>
-		/// <param name="VID"> Volume identifier (VID) for the item to retrieve files for </param>
+		/// <param name="Vid"> Volume identifier (VID) for the item to retrieve files for </param>
 		/// <param name="Files"> Files to retrieve from archives/tivoli </param>
 		/// <param name="UserName"> Name of the user requesting the retrieval </param>
 		/// <param name="EmailAddress"> Email address for the user requesting the retrieval </param>
 		/// <param name="RequestNote"> Any custom request note, to be returned in the email once retrieval is complete </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'Tivoli_Request_File' stored procedure </remarks> 
-		public static bool Tivoli_Request_File( string BibID, string VID, string Files, string UserName, string EmailAddress, string RequestNote )
+		public static bool Tivoli_Request_File( string BibID, string Vid, string Files, string UserName, string EmailAddress, string RequestNote )
 		{
 			try
 			{
-				string folder = BibID + "\\" + VID;
+				string folder = BibID + "\\" + Vid;
 				if (Files.Length == 0)
 					Files = "*";
 
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[5];
-				paramList[0] = new SqlParameter("@folder", folder);
-				paramList[1] = new SqlParameter("@filename", Files);
-				paramList[2] = new SqlParameter("@username", UserName);
-				paramList[3] = new SqlParameter("@emailaddress", EmailAddress);
-				paramList[4] = new SqlParameter("@requestnote", RequestNote);
+				EalDbParameter[] paramList = new EalDbParameter[5];
+				paramList[0] = new EalDbParameter("@folder", folder);
+				paramList[1] = new EalDbParameter("@filename", Files);
+				paramList[2] = new EalDbParameter("@username", UserName);
+				paramList[3] = new EalDbParameter("@emailaddress", EmailAddress);
+				paramList[4] = new EalDbParameter("@requestnote", RequestNote);
 
 				// Define a temporary dataset
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tivoli_Request_File", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tivoli_Request_File", paramList);
 
 				return true;
 			}
@@ -5286,86 +5137,68 @@ namespace SobekCM.Library.Database
 		/// <remarks> This calls the 'Tracking_Get_Aggregation_Browse' stored procedure.</remarks>
 		public static DataSet Tracking_Get_Item_Aggregation_Browse(string AggregationCode )
 		{
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString + "Connection Timeout=45");
-
-			// Create the command 
-			SqlCommand executeCommand = new SqlCommand("Tracking_Get_Aggregation_Browse", connect)
-											{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
-
-			executeCommand.Parameters.AddWithValue("@code", AggregationCode);
-
-			// Create the adapter
-			SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-			// Pull the raw data
-			DataSet rawData = new DataSet();
-			adapter.Fill(rawData);
-
-			// Return the built results
-			return rawData;
+            // Run the SQL and get back a dataset
+            return EalDbAccess.ExecuteDataset(DatabaseType, connectionString + "Connection Timeout=45", CommandType.StoredProcedure, "Tracking_Get_Aggregation_Browse", new EalDbParameter[] { new EalDbParameter("@code", AggregationCode) }); 
 		}
 
-		/// <summary> Gets the list of all private and dark items linked to an item aggregation  </summary>
-		/// <param name="AggregationCode"> Code for the item aggregation of interest </param>
-		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
-		/// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
-		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
-		/// <param name="Tracer"> Tracer object keeps track of all executions that take place while meeting a user's request </param>
-		/// <returns> Table with all of the item and item group information </returns>
-		/// <remarks> This calls the 'Tracking_Get_Aggregation_Privates' stored procedure.</remarks>
-		public static Private_Items_List Tracking_Get_Aggregation_Private_Items(string AggregationCode, int ResultsPerPage, int ResultsPage, int Sort, Custom_Tracer Tracer )
-		{
-			if (Tracer != null)
-				Tracer.Add_Trace("SobekCM_Database.Tracking_Get_Aggregation_Private_Items", "Pulling list of private items for this aggregation");
+	    /// <summary> Gets the list of all private and dark items linked to an item aggregation  </summary>
+	    /// <param name="AggregationCode"> Code for the item aggregation of interest </param>
+	    /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
+	    /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
+	    /// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
+	    /// <param name="Tracer"> Tracer object keeps track of all executions that take place while meeting a user's request </param>
+	    /// <returns> Table with all of the item and item group information </returns>
+	    /// <remarks> This calls the 'Tracking_Get_Aggregation_Privates' stored procedure.</remarks>
+	    public static Private_Items_List Tracking_Get_Aggregation_Private_Items(string AggregationCode, int ResultsPerPage, int ResultsPage, int Sort, Custom_Tracer Tracer)
+	    {
+	        if (Tracer != null)
+	            Tracer.Add_Trace("SobekCM_Database.Tracking_Get_Aggregation_Private_Items", "Pulling list of private items for this aggregation");
 
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString + "Connection Timeout=45");
+	        // Build the parameters list
+	        List<EalDbParameter> parameters = new List<EalDbParameter>
+	        {
+	            new EalDbParameter("@code", AggregationCode), 
+                new EalDbParameter("@pagesize", ResultsPerPage), 
+                new EalDbParameter("@pagenumber", ResultsPage), 
+                new EalDbParameter("@sort", Sort), 
+                new EalDbParameter("@minpagelookahead", 1), 
+                new EalDbParameter("@maxpagelookahead", 1), 
+                new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR)
+	        };
 
-			// Create the command 
-			SqlCommand executeCommand = new SqlCommand("Tracking_Get_Aggregation_Privates", connect)
-											{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
+	        // Add parameters for total items and total titles
+	        EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
+	        parameters.Add(totalItemsParameter);
 
-			executeCommand.Parameters.AddWithValue("@code", AggregationCode);
-			executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
-			executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
-			executeCommand.Parameters.AddWithValue("@sort", Sort);
-			executeCommand.Parameters.AddWithValue("@minpagelookahead", 1);
-			executeCommand.Parameters.AddWithValue("@maxpagelookahead", 1);
-			executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
+	        EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
+	        parameters.Add(totalTitlesParameter);
 
-			// Add parameters for total items and total titles
-			SqlParameter totalItemsParameter = executeCommand.Parameters.AddWithValue("@total_items", 0);
-			totalItemsParameter.Direction = ParameterDirection.InputOutput;
+	        // Create the database agnostic reader
+	        EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "Tracking_Get_Aggregation_Privates", parameters);
 
-			SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
-			totalTitlesParameter.Direction = ParameterDirection.InputOutput;
+	        // Pull out the database reader
+	        DbDataReader reader = readerWrapper.Reader;
 
-			// Create the data reader
-			connect.Open();
-			Private_Items_List returnArgs;
-			using (SqlDataReader reader = executeCommand.ExecuteReader())
-			{
+	        // Create the return argument object
+	        Private_Items_List returnArgs = new Private_Items_List {TitleResults = DataReader_To_Private_Items_List(reader)};
 
-				// Create the return argument object
-				returnArgs = new Private_Items_List {TitleResults = DataReader_To_Private_Items_List(reader)};
+	        // Close the reader
+	        reader.Close();
 
-				// Close the reader
-				reader.Close();
+	        // Store the total items/titles
+	        returnArgs.TotalItems = Convert.ToInt32(totalItemsParameter.Value);
+	        returnArgs.TotalTitles = Convert.ToInt32(totalTitlesParameter.Value);
 
-				// Store the total items/titles
-				returnArgs.TotalItems = Convert.ToInt32(totalItemsParameter.Value);
-				returnArgs.TotalTitles = Convert.ToInt32(totalTitlesParameter.Value);
-			}
-			connect.Close();
+	        // Close the reader (which also closes the connection)
+	        readerWrapper.Close();
 
-			if (Tracer != null)
-				Tracer.Add_Trace("SobekCM_Database.Tracking_Get_Aggregation_Private_Items", "Done pulling list of private items");
+	        if (Tracer != null)
+	            Tracer.Add_Trace("SobekCM_Database.Tracking_Get_Aggregation_Private_Items", "Done pulling list of private items");
 
-			return returnArgs;
-		}
+	        return returnArgs;
+	    }
 
-		private static List<Private_Items_List_Title> DataReader_To_Private_Items_List(SqlDataReader Reader)
+	    private static List<Private_Items_List_Title> DataReader_To_Private_Items_List(DbDataReader Reader)
 		{
 			// Create return list
 			List<Private_Items_List_Title> returnValue = new List<Private_Items_List_Title>();
@@ -5497,127 +5330,93 @@ namespace SobekCM.Library.Database
 													   int Link8, string Term8, int Field8, int Link9, string Term9, int Field9, int Link10, string Term10, int Field10,
 													   string AggregationCode )
 		{
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString + "Connection Timeout=45");
 
-			// Create the command 
-			SqlCommand executeCommand = new SqlCommand("Tracking_Metadata_Search", connect)
-											{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
+            // Build the parameters list
+            List<EalDbParameter> parameters = new List<EalDbParameter>
+            {
+                new EalDbParameter("@term1", Term1), 
+                new EalDbParameter("@field1", Field1), 
+                new EalDbParameter("@link2", Link2), 
+                new EalDbParameter("@term2", Term2), 
+                new EalDbParameter("@field2", Field2), 
+                new EalDbParameter("@link3", Link3), 
+                new EalDbParameter("@term3", Term3), 
+                new EalDbParameter("@field3", Field3), 
+                new EalDbParameter("@link4", Link4), 
+                new EalDbParameter("@term4", Term4), 
+                new EalDbParameter("@field4", Field4), 
+                new EalDbParameter("@link5", Link5), 
+                new EalDbParameter("@term5", Term5), 
+                new EalDbParameter("@field5", Field5), 
+                new EalDbParameter("@link6", Link6), 
+                new EalDbParameter("@term6", Term6), 
+                new EalDbParameter("@field6", Field6), 
+                new EalDbParameter("@link7", Link7), 
+                new EalDbParameter("@term7", Term7), 
+                new EalDbParameter("@field7", Field7), 
+                new EalDbParameter("@link8", Link8), 
+                new EalDbParameter("@term8", Term8), 
+                new EalDbParameter("@field8", Field8),
+                new EalDbParameter("@link9", Link9), 
+                new EalDbParameter("@term9", Term9), 
+                new EalDbParameter("@field9", Field9), 
+                new EalDbParameter("@link10", Link10), 
+                new EalDbParameter("@term10", Term10), 
+                new EalDbParameter("@field10", Field10), 
+                new EalDbParameter("@aggregationcode", String.Compare(AggregationCode, "ALL", StringComparison.OrdinalIgnoreCase) == 0 ? String.Empty : AggregationCode)
+            };
 
-			executeCommand.Parameters.AddWithValue("@term1", Term1);
-			executeCommand.Parameters.AddWithValue("@field1", Field1);
-			executeCommand.Parameters.AddWithValue("@link2", Link2);
-			executeCommand.Parameters.AddWithValue("@term2", Term2);
-			executeCommand.Parameters.AddWithValue("@field2", Field2);
-			executeCommand.Parameters.AddWithValue("@link3", Link3);
-			executeCommand.Parameters.AddWithValue("@term3", Term3);
-			executeCommand.Parameters.AddWithValue("@field3", Field3);
-			executeCommand.Parameters.AddWithValue("@link4", Link4);
-			executeCommand.Parameters.AddWithValue("@term4", Term4);
-			executeCommand.Parameters.AddWithValue("@field4", Field4);
-			executeCommand.Parameters.AddWithValue("@link5", Link5);
-			executeCommand.Parameters.AddWithValue("@term5", Term5);
-			executeCommand.Parameters.AddWithValue("@field5", Field5);
-			executeCommand.Parameters.AddWithValue("@link6", Link6);
-			executeCommand.Parameters.AddWithValue("@term6", Term6);
-			executeCommand.Parameters.AddWithValue("@field6", Field6);
-			executeCommand.Parameters.AddWithValue("@link7", Link7);
-			executeCommand.Parameters.AddWithValue("@term7", Term7);
-			executeCommand.Parameters.AddWithValue("@field7", Field7);
-			executeCommand.Parameters.AddWithValue("@link8", Link8);
-			executeCommand.Parameters.AddWithValue("@term8", Term8);
-			executeCommand.Parameters.AddWithValue("@field8", Field8);
-			executeCommand.Parameters.AddWithValue("@link9", Link9);
-			executeCommand.Parameters.AddWithValue("@term9", Term9);
-			executeCommand.Parameters.AddWithValue("@field9", Field9);
-			executeCommand.Parameters.AddWithValue("@link10", Link10);
-			executeCommand.Parameters.AddWithValue("@term10", Term10);
-			executeCommand.Parameters.AddWithValue("@field10", Field10);
-			if (AggregationCode.ToUpper() == "ALL")
-				AggregationCode = String.Empty;
-			executeCommand.Parameters.AddWithValue("@aggregationcode", AggregationCode);
-
-			// Create the adapter
-			SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-			// Pull the raw data
-			DataSet rawData = new DataSet();
-			adapter.Fill(rawData);
-
-			// Return the built results
-			return rawData;
+		    // Run the SQL and get back a dataset
+            return EalDbAccess.ExecuteDataset(DatabaseType, connectionString + "Connection Timeout=45", CommandType.StoredProcedure, "Tracking_Metadata_Search", parameters); 
 		}
 
 		/// <summary> Performs a basic metadata search over the entire citation, given a search condition </summary>
-		/// <param name="Search_Condition"> Search condition string to be run against the databasse </param>
+		/// <param name="SearchCondition"> Search condition string to be run against the databasse </param>
 		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
 		/// <returns> Table with all of the item and item group information which matches the metadata search </returns>
 		/// <remarks> This calls the 'Tracking_Metadata_Basic_Search' stored procedure.</remarks>
-		public static DataSet Tracking_Metadata_Search(string Search_Condition, string AggregationCode )
+		public static DataSet Tracking_Metadata_Search(string SearchCondition, string AggregationCode )
 		{
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString + "Connection Timeout=45");
+            // Build the parameters list
+            List<EalDbParameter> parameters = new List<EalDbParameter>
+            {
+                new EalDbParameter("@searchcondition", SearchCondition), 
+                new EalDbParameter("@aggregationcode", AggregationCode)
+            };
 
-			// Create the command 
-			SqlCommand executeCommand = new SqlCommand("Tracking_Metadata_Basic_Search", connect)
-											{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
-
-			executeCommand.Parameters.AddWithValue("@searchcondition", Search_Condition);
-			executeCommand.Parameters.AddWithValue("@aggregationcode", AggregationCode);
-
-
-			// Create the adapter
-			SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-			// Pull the raw data
-			DataSet rawData = new DataSet();
-			adapter.Fill(rawData);
-
-			// Return the built results
-			return rawData;
+		    // Run the SQL and get back a dataset
+            return EalDbAccess.ExecuteDataset(DatabaseType, connectionString + "Connection Timeout=45", CommandType.StoredProcedure, "Tracking_Metadata_Basic_Search", parameters ); 
 		}
 
 		/// <summary> Performs a metadata search for a piece of metadata that EXACTLY matches the provided search term </summary>
-		/// <param name="Search_Term"> Search condition string to be run against the databasse </param>
+		/// <param name="SearchTerm"> Search condition string to be run against the databasse </param>
 		/// <param name="FieldID"> Primary key for the field to search in the database </param>
 		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
 		/// <returns> Table with all of the item and item group information which matches the metadata search </returns>
 		/// <remarks> This calls the 'Tracking_Metadata_Exact_Search' stored procedure.</remarks>
-		public static DataSet Tracking_Metadata_Exact_Search(string Search_Term, int FieldID, string AggregationCode )
+		public static DataSet Tracking_Metadata_Exact_Search(string SearchTerm, int FieldID, string AggregationCode )
 		{
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString + "Connection Timeout=45");
+            // Build the parameters list
+            List<EalDbParameter> parameters = new List<EalDbParameter>
+            {
+                new EalDbParameter("@term1", SearchTerm.Replace("''", "'")),
+                new EalDbParameter("@field1", FieldID), 
+                new EalDbParameter("@aggregationcode", String.Compare(AggregationCode, "ALL", StringComparison.OrdinalIgnoreCase) == 0 ? String.Empty : AggregationCode)
+            };
 
-			// Create the command 
-			SqlCommand executeCommand = new SqlCommand("Tracking_Metadata_Exact_Search", connect)
-											{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
-
-			executeCommand.Parameters.AddWithValue("@term1", Search_Term.Replace("''", "'"));
-			executeCommand.Parameters.AddWithValue("@field1", FieldID);
-			if (AggregationCode.ToUpper() == "ALL")
-				AggregationCode = String.Empty;
-			executeCommand.Parameters.AddWithValue("@aggregationcode", AggregationCode);
-
-			// Create the adapter
-			SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-			// Pull the raw data
-			DataSet rawData = new DataSet();
-			adapter.Fill(rawData);
-
-			// Return the built results
-			return rawData;
+		    // Run the SQL and get back a dataset
+            return EalDbAccess.ExecuteDataset(DatabaseType, connectionString + "Connection Timeout=45", CommandType.StoredProcedure, "Tracking_Metadata_Exact_Search", parameters); 
 		}
 
 		/// <summary> Returns the list of all items/titles which match a given OCLC number </summary>
-		/// <param name="OCLC_Number"> OCLC number to look for matching items </param>
+		/// <param name="OclcNumber"> OCLC number to look for matching items </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Table with all of the item and item group information which matches the OCLC number </returns>
 		/// <remarks> This calls the 'Tracking_Items_By_OCLC' stored procedure <br /><br />
-		/// This is very similar to the <see cref="SobekCM_Database.Items_By_OCLC_Number" /> method, except it returns more information, since
+		/// This is very similar to the SobekCM_Database.Items_By_OCLC_Number method, except it returns more information, since
 		/// the tracking application does not have basic information about each item/title in its cache, unlike the
 		/// web server application, which does cache this information. </remarks>
-		public static DataSet Tracking_Items_By_OCLC_Number(long OCLC_Number, Custom_Tracer Tracer)
+		public static DataSet Tracking_Items_By_OCLC_Number(long OclcNumber, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -5625,25 +5424,25 @@ namespace SobekCM.Library.Database
 			}
 
 			// Build the parameter list
-			SqlParameter[] paramList = new SqlParameter[1];
-			paramList[0] = new SqlParameter("@oclc_number", OCLC_Number);
+			EalDbParameter[] paramList = new EalDbParameter[1];
+			paramList[0] = new EalDbParameter("@oclc_number", OclcNumber);
 
 			// Get the matching set
-			DataSet rawData = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Tracking_Items_By_OCLC", paramList);
+			DataSet rawData = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Items_By_OCLC", paramList);
 
 			// Return the built results
 			return rawData;
 		}
 
 		/// <summary> Returns the list of all items/titles which match a given ALEPH number </summary>
-		/// <param name="ALEPH_Number"> ALEPH number to look for matching items </param>
+		/// <param name="AlephNumber"> ALEPH number to look for matching items </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Table with all of the item and item group information which matches the ALEPH number </returns>
 		/// <remarks> This calls the 'Tracking_Items_By_ALEPH' stored procedure. <br /><br />
-		/// This is very similar to the <see cref="SobekCM_Database.Items_By_ALEPH_Number" /> method, except it returns more information, since
+		/// This is very similar to the SobekCM_Database.Items_By_ALEPH_Number method, except it returns more information, since
 		/// the tracking application does not have basic information about each item/title in its cache, unlike the
 		/// web server application, which does cache this information. </remarks>
-		public static DataSet Tracking_Items_By_ALEPH_Number(int ALEPH_Number, Custom_Tracer Tracer)
+		public static DataSet Tracking_Items_By_ALEPH_Number(int AlephNumber, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -5651,11 +5450,11 @@ namespace SobekCM.Library.Database
 			}
 
 			// Build the parameter list
-			SqlParameter[] paramList = new SqlParameter[1];
-			paramList[0] = new SqlParameter("@aleph_number", ALEPH_Number);
+			EalDbParameter[] paramList = new EalDbParameter[1];
+			paramList[0] = new EalDbParameter("@aleph_number", AlephNumber);
 
 			// Get the matching set
-			DataSet rawData = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Tracking_Items_By_ALEPH", paramList);
+			DataSet rawData = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Items_By_ALEPH", paramList);
 
 			// Return the built results
 			return rawData;
@@ -5678,20 +5477,8 @@ namespace SobekCM.Library.Database
 
 			try
 			{
-				// Create the connection
-				SqlConnection connect = new SqlConnection(connectionString);
-
-				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("Tracking_Get_Multiple_Volumes", connect)
-												{CommandType = CommandType.StoredProcedure};
-				executeCommand.Parameters.AddWithValue("@bibid", BibID);
-
-				// Create the adapter
-				SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-				// Get the datatable
-				DataSet valueSet = new DataSet();
-				adapter.Fill(valueSet);
+                // Run the SQL and get back a dataset
+                DataSet valueSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Get_Multiple_Volumes", new EalDbParameter[] { new EalDbParameter("@bibid", BibID) }); 
 
 				// If there was either no match, or more than one, return null
 				if ((valueSet.Tables.Count == 0) || (valueSet.Tables[0] == null) || (valueSet.Tables[0].Rows.Count == 0))
@@ -5727,11 +5514,11 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@aggregation_code", AggregationCode);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@aggregation_code", AggregationCode);
 
 				// Define a temporary dataset
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Tracking_Item_Milestone_Report", paramList);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Item_Milestone_Report", paramList);
 
 				// Return the built argument set
 				return tempSet.Tables[0];
@@ -5760,10 +5547,10 @@ namespace SobekCM.Library.Database
 
 			try
 			{
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@itemid", ItemID);
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@itemid", ItemID);
 
-				return SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Tracking_Get_History_Archives", paramList);
+				return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Get_History_Archives", paramList);
 			}
 			catch (Exception ee)
 			{
@@ -5784,10 +5571,10 @@ namespace SobekCM.Library.Database
 			{
 				DateTime sinceDate = DateTime.Now.Subtract(new TimeSpan(7, 0, 0, 0));
 
-				SqlParameter[] paramList = new SqlParameter[1];
-				paramList[0] = new SqlParameter("@sinceDate", sinceDate.ToShortDateString());
+				EalDbParameter[] paramList = new EalDbParameter[1];
+				paramList[0] = new EalDbParameter("@sinceDate", sinceDate.ToShortDateString());
 
-				return SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Tracking_Update_List", paramList).Tables[0];
+				return EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Update_List", paramList).Tables[0];
 			}
 			catch ( Exception ee )
 			{
@@ -5809,13 +5596,13 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[3];
-				paramList[0] = new SqlParameter("@itemid", ItemID);
-				paramList[1] = new SqlParameter("@user", User);
-				paramList[2] = new SqlParameter("@usernotes", UserNotes);
+				EalDbParameter[] paramList = new EalDbParameter[3];
+				paramList[0] = new EalDbParameter("@itemid", ItemID);
+				paramList[1] = new EalDbParameter("@user", User);
+				paramList[2] = new EalDbParameter("@usernotes", UserNotes);
 
 				// Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Online_Submit_Complete", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Online_Submit_Complete", paramList);
 
 				return true;
 			}
@@ -5828,24 +5615,24 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Marks an item as having been loaded as a new item by the bulk loader </summary>
 		/// <param name="BibID"> Bibliographic identifier for the item to which to add the new history/worklog </param>
-		/// <param name="VID"> Volume identifier for the item to which to add the new history/worklog </param>
+		/// <param name="Vid"> Volume identifier for the item to which to add the new history/worklog </param>
 		/// <param name="User"> User who performed this work or initiated this work </param>
 		/// <param name="UserNotes"> Any notes generated during the work or by the work initiator </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'Tracking_Load_New_Complete' stored procedure. </remarks>
-		public static bool Tracking_Load_New_Complete(string BibID, string VID, string User, string UserNotes)
+		public static bool Tracking_Load_New_Complete(string BibID, string Vid, string User, string UserNotes)
 		{
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@bibid", BibID);
-				paramList[1] = new SqlParameter("@vid", VID);
-				paramList[2] = new SqlParameter("@user", User);
-				paramList[3] = new SqlParameter("@usernotes", UserNotes);
+				EalDbParameter[] paramList = new EalDbParameter[4];
+				paramList[0] = new EalDbParameter("@bibid", BibID);
+				paramList[1] = new EalDbParameter("@vid", Vid);
+				paramList[2] = new EalDbParameter("@user", User);
+				paramList[3] = new EalDbParameter("@usernotes", UserNotes);
 
 				// Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Load_New_Complete", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Load_New_Complete", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -5857,24 +5644,24 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Marks an item as having been loaded as a replacement item by the bulk loader </summary>
 		/// <param name="BibID"> Bibliographic identifier for the item to which to add the new history/worklog </param>
-		/// <param name="VID"> Volume identifier for the item to which to add the new history/worklog </param>
+		/// <param name="Vid"> Volume identifier for the item to which to add the new history/worklog </param>
 		/// <param name="User"> User who performed this work or initiated this work </param>
 		/// <param name="UserNotes"> Any notes generated during the work or by the work initiator </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'Tracking_Load_Replacement_Complete' stored procedure. </remarks>
-		public static bool Tracking_Load_Replacement_Complete(string BibID, string VID, string User, string UserNotes)
+		public static bool Tracking_Load_Replacement_Complete(string BibID, string Vid, string User, string UserNotes)
 		{
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@bibid", BibID);
-				paramList[1] = new SqlParameter("@vid", VID);
-				paramList[2] = new SqlParameter("@user", User);
-				paramList[3] = new SqlParameter("@usernotes", UserNotes);
+				EalDbParameter[] paramList = new EalDbParameter[4];
+				paramList[0] = new EalDbParameter("@bibid", BibID);
+				paramList[1] = new EalDbParameter("@vid", Vid);
+				paramList[2] = new EalDbParameter("@user", User);
+				paramList[3] = new EalDbParameter("@usernotes", UserNotes);
 
 				// Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Load_Replacement_Complete", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Load_Replacement_Complete", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -5886,24 +5673,24 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Marks an item as having a metadata update loaded by the bulk loader </summary>
 		/// <param name="BibID"> Bibliographic identifier for the item to which to add the new history/worklog </param>
-		/// <param name="VID"> Volume identifier for the item to which to add the new history/worklog </param>
+		/// <param name="Vid"> Volume identifier for the item to which to add the new history/worklog </param>
 		/// <param name="User"> User who performed this work or initiated this work </param>
 		/// <param name="UserNotes"> Any notes generated during the work or by the work initiator </param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'Tracking_Load_Metadata_Update_Complete' stored procedure. </remarks>
-		public static bool Tracking_Load_Metadata_Update_Complete(string BibID, string VID, string User, string UserNotes)
+		public static bool Tracking_Load_Metadata_Update_Complete(string BibID, string Vid, string User, string UserNotes)
 		{
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[4];
-				paramList[0] = new SqlParameter("@bibid", BibID);
-				paramList[1] = new SqlParameter("@vid", VID);
-				paramList[2] = new SqlParameter("@user", User);
-				paramList[3] = new SqlParameter("@usernotes", UserNotes);
+				EalDbParameter[] paramList = new EalDbParameter[4];
+				paramList[0] = new EalDbParameter("@bibid", BibID);
+				paramList[1] = new EalDbParameter("@vid", Vid);
+				paramList[2] = new EalDbParameter("@user", User);
+				paramList[3] = new EalDbParameter("@usernotes", UserNotes);
 
 				// Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Load_Metadata_Update_Complete", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Load_Metadata_Update_Complete", paramList);
 				return true;
 			}
 			catch (Exception ee)
@@ -5916,20 +5703,20 @@ namespace SobekCM.Library.Database
 		/// <summary> Marks an item as been digitally acquired </summary>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'Tracking_Digital_Acquisition_Complete' stored procedure. </remarks>
-		public static bool Tracking_Digital_Acquisition_Complete( string BibID, string VID, string User, string Location, DateTime Date ) 
+		public static bool Tracking_Digital_Acquisition_Complete( string BibID, string Vid, string User, string Location, DateTime Date ) 
 		{
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[5];
-				paramList[0] = new SqlParameter("@bibid", BibID);
-				paramList[1] = new SqlParameter("@vid", VID);
-				paramList[2] = new SqlParameter("@user", User);
-				paramList[3] = new SqlParameter("@storagelocation", Location);
-				paramList[4] = new SqlParameter("@date", Date);
+				EalDbParameter[] paramList = new EalDbParameter[5];
+				paramList[0] = new EalDbParameter("@bibid", BibID);
+				paramList[1] = new EalDbParameter("@vid", Vid);
+				paramList[2] = new EalDbParameter("@user", User);
+				paramList[3] = new EalDbParameter("@storagelocation", Location);
+				paramList[4] = new EalDbParameter("@date", Date);
 
 				// Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Digital_Acquisition_Complete", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Digital_Acquisition_Complete", paramList);
 
 				return true;
 			}
@@ -5943,20 +5730,20 @@ namespace SobekCM.Library.Database
 		/// <summary> Marks an item as been image processed </summary>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'Tracking_Image_Processing_Complete' stored procedure. </remarks>
-		public static bool Tracking_Image_Processing_Complete(string BibID, string VID, string User, string Location, DateTime Date)
+		public static bool Tracking_Image_Processing_Complete(string BibID, string Vid, string User, string Location, DateTime Date)
 		{
 			try
 			{
 				// Build the parameter list
-				SqlParameter[] paramList = new SqlParameter[5];
-				paramList[0] = new SqlParameter("@bibid", BibID);
-				paramList[1] = new SqlParameter("@vid", VID);
-				paramList[2] = new SqlParameter("@user", User);
-				paramList[3] = new SqlParameter("@storagelocation", Location);
-				paramList[4] = new SqlParameter("@date", Date);
+				EalDbParameter[] paramList = new EalDbParameter[5];
+				paramList[0] = new EalDbParameter("@bibid", BibID);
+				paramList[1] = new EalDbParameter("@vid", Vid);
+				paramList[2] = new EalDbParameter("@user", User);
+				paramList[3] = new EalDbParameter("@storagelocation", Location);
+				paramList[4] = new EalDbParameter("@date", Date);
 
 				// Execute this non-query stored procedure
-				SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Image_Processing_Complete", paramList);
+				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Image_Processing_Complete", paramList);
 
 				return true;
 			}
@@ -6000,18 +5787,18 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Save the information about a FDA report to the database </summary>
 		/// <param name="Package">ID of the submission package sent to FDA.  (End user's id)</param>
-		/// <param name="IEID">Intellectual Entity ID assigned by FDA</param>
+		/// <param name="Ieid">Intellectual Entity ID assigned by FDA</param>
 		/// <param name="FdaReportType">Type of FDA report received</param>
-		/// <param name="Report_Date">Date FDA was generated</param>
+		/// <param name="ReportDate">Date FDA was generated</param>
 		/// <param name="Account">Account information for the FDA submission package</param>
 		/// <param name="Project">Project information for the FDA submission package</param>
 		/// <param name="Warnings">Number of warnings in this package</param>
 		/// <param name="BibID">Bibliographic Identifier</param>
-		/// <param name="VID">Volume Identifier</param>
+		/// <param name="Vid">Volume Identifier</param>
 		/// <param name="Message"> Message included in the FDA report received </param>
 		/// <returns>Primary key for the report in the database, or -1 on failure</returns>
 		/// <remarks>This calls the FDA_Report_Save stored procedure in the database</remarks>
-		public static int FDA_Report_Save(string Package, string IEID, string FdaReportType, DateTime Report_Date, string Account, string Project, int Warnings, string Message, string BibID, string VID)
+		public static int FDA_Report_Save(string Package, string Ieid, string FdaReportType, DateTime ReportDate, string Account, string Project, int Warnings, string Message, string BibID, string Vid)
 		{
 			// If there is no connection string, return -1
 			if (connectionString.Length == 0)
@@ -6019,36 +5806,30 @@ namespace SobekCM.Library.Database
 
 			try
 			{
-				// Create the SQL Connection
-				SqlConnection sqlConn = new SqlConnection(connectionString);
+                // Build the parameters list
+                List<EalDbParameter> parameters = new List<EalDbParameter>
+                {
+                    new EalDbParameter("@Package", Package), 
+                    new EalDbParameter("@IEID", Ieid), 
+                    new EalDbParameter("@FdaReportType", FdaReportType), 
+                    new EalDbParameter("@Report_Date", ReportDate), 
+                    new EalDbParameter("@Account", Account), 
+                    new EalDbParameter("@Project", Project), 
+                    new EalDbParameter("@Warnings", Warnings), 
+                    new EalDbParameter("@Message", Message), 
+                    new EalDbParameter("@BibID", BibID), 
+                    new EalDbParameter("@VID", Vid)
+                };
 
-				// Create the SQL Command
-				SqlCommand addReport = new SqlCommand("FDA_Report_Save", sqlConn)
-										   {CommandType = CommandType.StoredProcedure};
+			    // Add a final parameter to receive the primary key back from the database
+                EalDbParameter fdaReportParameter = new EalDbParameter("@FdaReportID", -1) {Direction = ParameterDirection.InputOutput};
+			    parameters.Add(fdaReportParameter);
 
-				// Add all of the parameters
-				addReport.Parameters.AddWithValue("@Package", Package);
-				addReport.Parameters.AddWithValue("@IEID", IEID);
-				addReport.Parameters.AddWithValue("@FdaReportType", FdaReportType);
-				addReport.Parameters.AddWithValue("@Report_Date", Report_Date);
-				addReport.Parameters.AddWithValue("@Account", Account);
-				addReport.Parameters.AddWithValue("@Project", Project);
-				addReport.Parameters.AddWithValue("@Warnings", Warnings);
-				addReport.Parameters.AddWithValue("@Message", Message);
-				addReport.Parameters.AddWithValue("@BibID", BibID);
-				addReport.Parameters.AddWithValue("@VID", VID);
-
-				// Add a final parameter to receive the primary key back from the database
-				addReport.Parameters.AddWithValue("@FdaReportID", -1);
-				addReport.Parameters["@FdaReportID"].Direction = ParameterDirection.InputOutput;
-
-				// Open the SQL Connection and execute the stored procedure
-				sqlConn.Open();
-				addReport.ExecuteNonQuery();
-				sqlConn.Close();
+                // Run the query
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "FDA_Report_Save", parameters);
 
 				// Get and return the primary key
-				return Convert.ToInt32(addReport.Parameters["@FdaReportID"].Value);
+                return Convert.ToInt32(fdaReportParameter.Value);
 			}
 			catch
 			{
@@ -6068,7 +5849,7 @@ namespace SobekCM.Library.Database
 		public static DataTable Get_OAI_Sets()
 		{
 			// Define a temporary dataset
-			DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_OAI_Sets");
+			DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_OAI_Sets");
 
 			// If there was no data for this collection and entry point, return null (an ERROR occurred)
 			if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null))
@@ -6080,92 +5861,89 @@ namespace SobekCM.Library.Database
 			return tempSet.Tables[0];
 		}
 
-		/// <summary> Returns a list of either identifiers or records for either the entire system or a single
-		/// set, to be served through the OAI-PMH server  </summary>
-		/// <param name="Set_Code"> Code the OAI-PMH set (which is really an aggregation code)</param>
-		/// <param name="Data_Code"> Code for the metadata to be served ( usually oai_dc )</param>
-		/// <param name="From_Date"> Date from which to pull records which have changed </param>
-		/// <param name="Until_Date"> Date to pull up to by last modified date on the records </param>
-		/// <param name="Page_Size"> Number of records to include in a single 'page' of OAI-PMH results </param>
-		/// <param name="Page_Number"> Page number of the results to return </param>
-		/// <param name="Include_Record"> Flag indicates whether the full records should be included, or just the identifier </param>
-		/// <returns> DataTable of all the OAI-PMH record information </returns>
-		/// <remarks> This calls the 'SobekCM_Get_OAI_Data' stored procedure  <br /><br />
-		/// This is called by the <see cref="Oai_MainWriter"/> class. </remarks> 
-		public static List<OAI_Record> Get_OAI_Data( string Set_Code, string Data_Code, DateTime From_Date, DateTime Until_Date, int Page_Size, int Page_Number, bool Include_Record )
-		{
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString);
+	    /// <summary> Returns a list of either identifiers or records for either the entire system or a single
+	    /// set, to be served through the OAI-PMH server  </summary>
+	    /// <param name="SetCode"> Code the OAI-PMH set (which is really an aggregation code)</param>
+	    /// <param name="DataCode"> Code for the metadata to be served ( usually oai_dc )</param>
+	    /// <param name="FromDate"> Date from which to pull records which have changed </param>
+	    /// <param name="UntilDate"> Date to pull up to by last modified date on the records </param>
+	    /// <param name="PageSize"> Number of records to include in a single 'page' of OAI-PMH results </param>
+	    /// <param name="PageNumber"> Page number of the results to return </param>
+	    /// <param name="IncludeRecord"> Flag indicates whether the full records should be included, or just the identifier </param>
+	    /// <returns> DataTable of all the OAI-PMH record information </returns>
+	    /// <remarks> This calls the 'SobekCM_Get_OAI_Data' stored procedure  <br /><br />
+	    /// This is called by the <see cref="Oai_MainWriter"/> class. </remarks> 
+	    public static List<OAI_Record> Get_OAI_Data(string SetCode, string DataCode, DateTime FromDate, DateTime UntilDate, int PageSize, int PageNumber, bool IncludeRecord)
+	    {
 
-			// Create the command 
-			SqlCommand executeCommand = new SqlCommand("SobekCM_Get_OAI_Data", connect) { CommandType = CommandType.StoredProcedure };
+	        // Build the parameter list
+	        List<EalDbParameter> parameters = new List<EalDbParameter>
+	        {
+	            new EalDbParameter("@aggregationcode", SetCode), 
+                new EalDbParameter("@data_code", DataCode), 
+                new EalDbParameter("@from", FromDate), 
+                new EalDbParameter("@until", UntilDate), 
+                new EalDbParameter("@pagesize", PageSize), 
+                new EalDbParameter("@pagenumber", PageNumber), 
+                new EalDbParameter("@include_data", IncludeRecord)
+	        };
 
-			executeCommand.Parameters.AddWithValue("@aggregationcode", Set_Code);
-			executeCommand.Parameters.AddWithValue("@data_code", Data_Code);
-			executeCommand.Parameters.AddWithValue("@from", From_Date);
-			executeCommand.Parameters.AddWithValue("@until", Until_Date);
-			executeCommand.Parameters.AddWithValue("@pagesize", Page_Size);
-			executeCommand.Parameters.AddWithValue("@pagenumber", Page_Number);
-			executeCommand.Parameters.AddWithValue("@include_data", Include_Record);
+	        // Create the database agnostic reader
+	        EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_OAI_Data", parameters);
 
-			// Create the data reader
-			connect.Open();
-			List<OAI_Record> returnVal = new List<OAI_Record>();
-			using (SqlDataReader reader = executeCommand.ExecuteReader())
-			{
-				// Read in each row
-				while (reader.Read())
-				{
-                    returnVal.Add(Include_Record ? new OAI_Record(reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetDateTime(3)) : new OAI_Record(reader.GetString(0), reader.GetString(1), reader.GetDateTime(2)));
-				}
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
 
-				// Close the reader
-				reader.Close();
-			}
-			connect.Close();
+	        // Read in each row
+            List<OAI_Record> returnVal = new List<OAI_Record>();
+	        while (reader.Read())
+	        {
+	            returnVal.Add(IncludeRecord ? new OAI_Record(reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetDateTime(3)) : new OAI_Record(reader.GetString(0), reader.GetString(1), reader.GetDateTime(2)));
+	        }
 
-			return returnVal;
-		}
+	        // Close the reader (which also closes the connection)
+	        readerWrapper.Close();
 
-		/// <summary> Returns a single OAI-PMH record, by identifier ( BibID and VID ) </summary>
-		/// <param name="BibID"> BibID the OAI-PMH record )</param>
-        /// <param name="VID"> VID for the OAI-PMH record </param>
-		/// <param name="Data_Code"> Code for the metadata to be served ( usually oai_dc or marc21)</param>
-		/// <returns> Single OAI-PMH record </returns>
-		/// <remarks> This calls the 'SobekCM_Get_OAI_Data_Item' stored procedure  <br /><br />
-		/// This is called by the <see cref="Oai_MainWriter"/> class. </remarks> 
-		public static OAI_Record Get_OAI_Record( string BibID, string VID, string Data_Code )
-		{
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString);
+	        return returnVal;
+	    }
 
-			// Create the command 
-			SqlCommand executeCommand = new SqlCommand("SobekCM_Get_OAI_Data_Item", connect) { CommandType = CommandType.StoredProcedure };
+	    /// <summary> Returns a single OAI-PMH record, by identifier ( BibID and VID ) </summary>
+	    /// <param name="BibID"> BibID the OAI-PMH record )</param>
+	    /// <param name="Vid"> VID for the OAI-PMH record </param>
+	    /// <param name="DataCode"> Code for the metadata to be served ( usually oai_dc or marc21)</param>
+	    /// <returns> Single OAI-PMH record </returns>
+	    /// <remarks> This calls the 'SobekCM_Get_OAI_Data_Item' stored procedure  <br /><br />
+	    /// This is called by the <see cref="Oai_MainWriter"/> class. </remarks> 
+	    public static OAI_Record Get_OAI_Record(string BibID, string Vid, string DataCode)
+	    {
+	        // Build the parameter list
+	        List<EalDbParameter> parameters = new List<EalDbParameter>
+	        {
+	            new EalDbParameter("@bibid", BibID), 
+                new EalDbParameter("@vid", Vid), 
+                new EalDbParameter("@data_code", DataCode)
+	        };
 
-            executeCommand.Parameters.AddWithValue("@bibid", BibID);
-            executeCommand.Parameters.AddWithValue("@vid", VID);
-			executeCommand.Parameters.AddWithValue("@data_code", Data_Code);
+	        // Create the database agnostic reader
+	        EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_OAI_Data_Item", parameters);
 
-			// Create the data reader
-			connect.Open();
-			OAI_Record returnRecord = null;
-			using (SqlDataReader reader = executeCommand.ExecuteReader())
-			{
-				// Read in the first row
-				if (reader.Read())
-				{
-					returnRecord = new OAI_Record(reader.GetString(1), reader.GetString(2), reader.GetDateTime(3));
-				}
+	        // Pull out the database reader
+	        DbDataReader reader = readerWrapper.Reader;
 
-				// Close the reader
-				reader.Close();
-			}
-			connect.Close();
+	        // Read in the first row
+	        OAI_Record returnRecord = null;
+	        if (reader.Read())
+	        {
+	            returnRecord = new OAI_Record(reader.GetString(1), reader.GetString(2), reader.GetDateTime(3));
+	        }
 
-			return returnRecord;
-		}
+	        // Close the reader (which also closes the connection)
+	        readerWrapper.Close();
 
-		#endregion
+	        return returnRecord;
+	    }
+
+	    #endregion
 
 		#region Methods used by the Track_Item_MySobekViewer
 	 
@@ -6173,28 +5951,14 @@ namespace SobekCM.Library.Database
 		/// <returns>DataTable containing users who are Scanning or Processing Technicians</returns>
 		public static DataTable Tracking_Get_Users_Scanning_Processing()
 		{
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString);
 			
 			try
 			{
-				//Create the command
-				SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Users_Scanning_Processing", connect) {CommandType = CommandType.StoredProcedure};
+                // Define a temporary dataset
+                DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Get_Users_Scanning_Processing");
 
-				//Open the connection
-				connect.Open();
-
-				SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-
-				DataTable returnValue = new DataTable();
-				adapter.Fill(returnValue);
-				
-				//Close the connection
-				connect.Close();
-
-				//Return the data table
-				return (returnValue);
-
+                //Return the data table
+                return returnSet.Tables[0];
 			}
 			catch (Exception ee)
 			{
@@ -6207,27 +5971,13 @@ namespace SobekCM.Library.Database
 		/// <returns>DataTable containing users who are Scanning or Processing Technicians</returns>
 		public static DataTable Tracking_Get_Scanners_List()
 		{
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString);
-
 			try
 			{
-				//Create the command
-				SqlCommand cmd = new SqlCommand("dbo.Tracking_Get_Scanners_List", connect) {CommandType = CommandType.StoredProcedure};
+                // Define a temporary dataset
+                DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Get_Scanners_List" );
 
-				//Open the connection
-				connect.Open();
-
-				SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-
-				DataTable returnValue = new DataTable();
-				adapter.Fill(returnValue);
-
-				//Close the connection
-				connect.Close();
-
-				//Return the data table
-				return (returnValue);
+                //Return the data table
+                return returnSet.Tables[0];
 
 			}
 			catch (Exception ee)
@@ -6242,29 +5992,16 @@ namespace SobekCM.Library.Database
 		/// <returns> Datarow with the BibID/VID </returns>
 		public static DataRow Tracking_Get_Item_Info_from_ItemID(int ItemID)
 		{
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString);
-
 			try
 			{
-				//Create the command
-				SqlCommand cmd = new SqlCommand("Tracking_Get_Item_Info_from_ItemID", connect) {CommandType = CommandType.StoredProcedure};
-				cmd.Parameters.AddWithValue("@itemID", ItemID);
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@itemID", ItemID);
 
-				//Open the connection
-				connect.Open();
+                // Define a temporary dataset
+                DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Get_Item_Info_from_ItemID", parameters);
 
-				SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-
-				DataTable returnValue = new DataTable();
-				adapter.Fill(returnValue);
-
-				//Close the connection
-				connect.Close();
-
-				//Return the data table
-				return (returnValue.Rows[0]);
-
+                //Return the data table
+                return returnSet.Tables[0].Rows[0];
 			}
 			catch (Exception ee)
 			{
@@ -6279,30 +6016,17 @@ namespace SobekCM.Library.Database
 		/// <returns> DataTable of previously saved workflows for this item</returns>
 		public static DataTable Tracking_Get_Open_Workflows(int ItemID, int EventNum)
 		{
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString);
-
 			try
 			{
-				//Create the command
-				SqlCommand cmd = new SqlCommand("SobekCM_Get_Last_Open_Workflow_By_ItemID", connect) {CommandType = CommandType.StoredProcedure};
-				cmd.Parameters.AddWithValue("@itemID", ItemID);
-				cmd.Parameters.AddWithValue("@EventNumber", EventNum);
-			 
-				//Open the connection
-				connect.Open();
+                EalDbParameter[] parameters = new EalDbParameter[2];
+                parameters[0] = new EalDbParameter("@itemID", ItemID);
+                parameters[1] = new EalDbParameter("@EventNumber", EventNum);
 
-				SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                // Define a temporary dataset
+                DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Last_Open_Workflow_By_ItemID", parameters);
 
-				DataTable returnValue = new DataTable();
-				adapter.Fill(returnValue);
-
-				//Close the connection
-				connect.Close();
-
-				//Return the data table
-				return (returnValue);
-
+                //Return the data table
+                return returnSet.Tables[0];
 			}
 			catch (Exception ee)
 			{
@@ -6317,29 +6041,16 @@ namespace SobekCM.Library.Database
 		/// <returns>DataTable of all previous entries for this user</returns>
 		public static DataTable Tracking_Get_All_Entries_By_User(string username)
 		{
-			DataTable returnValue = new DataTable();
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString);
-
 			try
 			{
-				//Create the command
-				SqlCommand cmd = new SqlCommand("Tracking_Get_All_Entries_By_User", connect) { CommandType = CommandType.StoredProcedure };
-				cmd.Parameters.AddWithValue("@username", username);
-				
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@username", username);
 
-				//Open the connection
-				connect.Open();
-
-				SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-				
-				adapter.Fill(returnValue);
-
-				//Close the connection
-				connect.Close();
+                // Define a temporary dataset
+                DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Get_All_Entries_By_User", parameters);
 
 				//Return the data table
-				return (returnValue);
+                return returnSet.Tables[0];
 
 			}
 			catch (Exception ee)
@@ -6359,114 +6070,102 @@ namespace SobekCM.Library.Database
 		/// <param name="EventNum"></param>
 		/// <param name="StartEvent"></param>
 		/// <param name="EndEvent"></param>
-		/// <param name="Start_End_Event"></param>
+		/// <param name="StartEndEvent"></param>
 		/// <returns></returns>
-		public static int Tracking_Save_New_Workflow(int itemID, string workPerformedBy, string relatedEquipment, SqlDateTime dateStarted, SqlDateTime dateCompleted, int EventNum, int StartEvent, int EndEvent, int Start_End_Event)
+		public static int Tracking_Save_New_Workflow(int itemID, string workPerformedBy, string relatedEquipment, DateTime? dateStarted, DateTime? dateCompleted, int EventNum, int StartEvent, int EndEvent, int StartEndEvent)
 		{
-			int this_workflow_id=-1;  
-			// Create the connection
-			SqlConnection connect = new SqlConnection(connectionString);
+			int this_workflow_id;  
+
+            // Build the parameters
+		    List<EalDbParameter> parameters = new List<EalDbParameter>
+		    {
+		        new EalDbParameter("@itemid", itemID), 
+                new EalDbParameter("@user", workPerformedBy), 
+                dateStarted.HasValue ? new EalDbParameter("@dateStarted", dateStarted.Value) : new EalDbParameter("@dateStarted", DBNull.Value), 
+                dateCompleted.HasValue ? new EalDbParameter("@dateCompleted", dateCompleted.Value) : new EalDbParameter("@dateCompleted", DBNull.Value), 
+                new EalDbParameter("@relatedEquipment", relatedEquipment), 
+                new EalDbParameter("@EventNumber", EventNum), 
+                new EalDbParameter("@StartEventNumber", StartEvent),
+                new EalDbParameter("@EndEventNumber", EndEvent), 
+                new EalDbParameter("@Start_End_Event", StartEndEvent)
+		    };
+
+		    //Add the output parameter to get back the workflow id for this entry
+		    EalDbParameter outputParam = new EalDbParameter("@workflow_entry_id", DbType.Int32) {Direction = ParameterDirection.Output};
+		    parameters.Add(outputParam);
 
 			try
 			{
-				//Open the connection
-				connect.Open();
-
-				//Create the command
-				SqlCommand cmd = new SqlCommand("Tracking_Add_New_Workflow", connect) {CommandType = CommandType.StoredProcedure};
-				cmd.Parameters.AddWithValue("@itemid", itemID);
-				cmd.Parameters.AddWithValue("@user", workPerformedBy);
-				cmd.Parameters.AddWithValue("@dateStarted", dateStarted);
-				cmd.Parameters.AddWithValue("@dateCompleted", dateCompleted);
-				cmd.Parameters.AddWithValue("@relatedEquipment", relatedEquipment);
-				cmd.Parameters.AddWithValue("@EventNumber", EventNum);
-				cmd.Parameters.AddWithValue("@StartEventNumber", StartEvent);
-				cmd.Parameters.AddWithValue("@EndEventNumber", EndEvent);
-				cmd.Parameters.AddWithValue("@Start_End_Event", Start_End_Event);
-			   
-				//Add the output parameter to get back the workflow id for this entry
-				SqlParameter outputParam = cmd.Parameters.Add("@workflow_entry_id", SqlDbType.Int);
-				outputParam.Direction = ParameterDirection.Output;
-
-				cmd.ExecuteNonQuery();
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "Tracking_Add_New_Workflow", parameters);
 				this_workflow_id = Convert.ToInt32(outputParam.Value);
-
-			  
 			}
 			catch (Exception ee)
 			{
 				throw new ApplicationException("Error saving workflow entry to the database. "+ee.Message);
 			}
-				connect.Close();
+			
+
 			return this_workflow_id;
 		}
 
 
-/// <summary> Update an already saved tracking workflow entry </summary>
-/// <param name="workflowID"></param>
-/// <param name="itemID"></param>
-/// <param name="workPerformedBy"></param>
-/// <param name="dateStarted"></param>
-/// <param name="dateCompleted"></param>
-/// <param name="relatedEquipment"></param>
-/// <param name="eventNumber"></param>
-/// <param name="startEventNumber"></param>
-/// <param name="endEventNum"></param>
-		public static void Tracking_Update_Workflow(int workflowID, int itemID, string workPerformedBy, SqlDateTime dateStarted, SqlDateTime dateCompleted, string relatedEquipment, int eventNumber, int startEventNumber, int endEventNum)
+        /// <summary> Update an already saved tracking workflow entry </summary>
+        /// <param name="workflowID"></param>
+        /// <param name="itemID"></param>
+        /// <param name="workPerformedBy"></param>
+        /// <param name="dateStarted"></param>
+        /// <param name="dateCompleted"></param>
+        /// <param name="relatedEquipment"></param>
+        /// <param name="eventNumber"></param>
+        /// <param name="startEventNumber"></param>
+        /// <param name="endEventNum"></param>
+		public static void Tracking_Update_Workflow(int workflowID, int itemID, string workPerformedBy, DateTime? dateStarted, DateTime? dateCompleted, string relatedEquipment, int eventNumber, int startEventNumber, int endEventNum)
 		{
-			 // Create the connection
-			SqlConnection connect = new SqlConnection(connectionString);
-
 			try
 			{
-				//Open the connection
-				connect.Open();
+                // Build the parameters list
+			    List<EalDbParameter> parameters = new List<EalDbParameter>
+			    {
+			        new EalDbParameter("@workflow_entry_id", workflowID), 
+                    new EalDbParameter("@itemid", itemID), 
+                    new EalDbParameter("@user", workPerformedBy), 
+                    dateStarted.HasValue ? new EalDbParameter("@dateStarted", dateStarted.Value) : new EalDbParameter("@dateStarted", DBNull.Value), 
+                    dateCompleted.HasValue ? new EalDbParameter("@dateCompleted", dateCompleted.Value) : new EalDbParameter("@dateCompleted", DBNull.Value), 
+                    new EalDbParameter("@relatedEquipment", relatedEquipment), 
+                    new EalDbParameter("@EventNumber", eventNumber), 
+                    new EalDbParameter("@StartEventNumber", startEventNumber), 
+                    new EalDbParameter("@EndEventNumber", endEventNum)
+			    };
 
-				//Create the command
-				SqlCommand cmd = new SqlCommand("Tracking_Update_Workflow", connect) {CommandType = CommandType.StoredProcedure};
-				cmd.Parameters.AddWithValue("@workflow_entry_id", workflowID);
-				cmd.Parameters.AddWithValue("@itemid", itemID);
-				cmd.Parameters.AddWithValue("@user", workPerformedBy);
-				cmd.Parameters.AddWithValue("@dateStarted", dateStarted);
-				cmd.Parameters.AddWithValue("@dateCompleted", dateCompleted);
-				cmd.Parameters.AddWithValue("@relatedEquipment", relatedEquipment);
-				cmd.Parameters.AddWithValue("@EventNumber", eventNumber);
-				cmd.Parameters.AddWithValue("@StartEventNumber", startEventNumber);
-				cmd.Parameters.AddWithValue("@EndEventNumber", endEventNum);
-
-
-				cmd.ExecuteNonQuery();
+			    // Run the SQL 
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Update_Workflow", parameters); 
 			}
 			catch (Exception ee)
 			{
 				throw new ApplicationException("Error updating tracking workflow "+ee.Message);
 			}
-			connect.Close();
-			
 		}
 
 
-		public static void Tracking_Delete_Workflow(int workflow_id)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="WorkflowID"></param>
+		/// <exception cref="ApplicationException"></exception>
+		public static void Tracking_Delete_Workflow(int WorkflowID)
 		{
-			  // Create the connection
-			SqlConnection connect = new SqlConnection(connectionString);
-
 			try
 			{
-				//Open the connection
-				connect.Open();
+                // Build the parameters list
+                List<EalDbParameter> parameters = new List<EalDbParameter> {  new EalDbParameter("@workflow_entry_id", WorkflowID)  };
 
-				//Create the command
-				SqlCommand cmd = new SqlCommand("Tracking_Delete_Workflow", connect) {CommandType = CommandType.StoredProcedure};
-				cmd.Parameters.AddWithValue("@workflow_entry_id", workflow_id);
-
-				cmd.ExecuteNonQuery();
+                // Run the SQL 
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Delete_Workflow", parameters); 
 			}
 			catch (Exception ee)
 			{
 				throw new ApplicationException("Error deleting workflow" +ee.Message);
 			}
-			connect.Close();
 		}
 
 		#endregion
@@ -6480,11 +6179,11 @@ namespace SobekCM.Library.Database
 		{
 			try
 			{
-				SqlParameter[] parameters = new SqlParameter[1];
-				parameters[0] = new SqlParameter("@cid", cid);
+				EalDbParameter[] parameters = new EalDbParameter[1];
+				parameters[0] = new EalDbParameter("@cid", cid);
 
 				// Define a temporary dataset
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "USF_Get_AggregationCode_From_CID", parameters);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "USF_Get_AggregationCode_From_CID", parameters);
 
 				// If there was no data for this collection and entry point, return null (an ERROR occurred)
 				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -6509,11 +6208,11 @@ namespace SobekCM.Library.Database
 		{
 			try
 			{
-				SqlParameter[] parameters = new SqlParameter[1];
-				parameters[0] = new SqlParameter("@identifier", identifier);
+				EalDbParameter[] parameters = new EalDbParameter[1];
+				parameters[0] = new EalDbParameter("@identifier", identifier);
 		   
 				// Define a temporary dataset
-				DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_BibID_VID_From_Identifier", parameters);
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_BibID_VID_From_Identifier", parameters);
 
 				// If there was no data for this collection and entry point, return null (an ERROR occurred)
 				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -6535,75 +6234,74 @@ namespace SobekCM.Library.Database
 
         #region Methods used to support the SobekCM_Project Element (saving, deleting, retrieving,...)
 
-        /// <summary> Save a new, or edit an existing Project in the database </summary>
-        /// <param name="ProjectID"></param>
-        /// <param name="ProjectCode"></param>
-        /// <param name="ProjectName"></param>
-        /// <param name="ProjectManager"></param>
-        /// <param name="GrantID"></param>
-        /// <param name="StartDate"></param>
-        /// <param name="EndDate"></param>
-        /// <param name="isActive"></param>
-        /// <param name="Description"></param>
-        /// <param name="Specifications"></param>
-        /// <param name="Priority"></param>
-        /// <param name="QC_Profile"></param>
-        /// <param name="TargetItemCount"></param>
-        /// <param name="TargetPageCount"></param>
-        /// <param name="Comments"></param>
-        /// <param name="CopyrightPermissions"></param>
-        /// <returns>The ProjectID of the inserted/edited row</returns>
-        public static int Save_Project(Custom_Tracer Tracer, int ProjectID, string ProjectCode, string ProjectName, string ProjectManager, string GrantID, DateTime StartDate, DateTime EndDate, bool isActive, string Description, string Specifications, string Priority, string QC_Profile, int TargetItemCount, int TargetPageCount, string Comments, string CopyrightPermissions)
+	    /// <summary> Save a new, or edit an existing Project in the database </summary>
+	    /// <param name="Tracer"></param>
+	    /// <param name="ProjectID"></param>
+	    /// <param name="ProjectCode"></param>
+	    /// <param name="ProjectName"></param>
+	    /// <param name="ProjectManager"></param>
+	    /// <param name="GrantID"></param>
+	    /// <param name="StartDate"></param>
+	    /// <param name="EndDate"></param>
+	    /// <param name="isActive"></param>
+	    /// <param name="Description"></param>
+	    /// <param name="Specifications"></param>
+	    /// <param name="Priority"></param>
+	    /// <param name="QcProfile"></param>
+	    /// <param name="TargetItemCount"></param>
+	    /// <param name="TargetPageCount"></param>
+	    /// <param name="Comments"></param>
+	    /// <param name="CopyrightPermissions"></param>
+	    /// <returns>The ProjectID of the inserted/edited row</returns>
+	    public static int Save_Project(Custom_Tracer Tracer, int ProjectID, string ProjectCode, string ProjectName, string ProjectManager, string GrantID, DateTime StartDate, DateTime EndDate, bool isActive, string Description, string Specifications, string Priority, string QcProfile, int TargetItemCount, int TargetPageCount, string Comments, string CopyrightPermissions)
         {
             if (Tracer != null)
             {
                 Tracer.Add_Trace("SobekCM_Database.Save_Project", "Saving to the database");
             }
 
-            int New_ProjectID = ProjectID;
-           
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
+            int newProjectID;
 
+
+            // Build the parameters list
+            List<EalDbParameter> parameters = new List<EalDbParameter>
+            {
+                new EalDbParameter("@ProjectID", ProjectID), 
+                new EalDbParameter("@ProjectCode", ProjectCode), 
+                new EalDbParameter("@ProjectName", ProjectName), 
+                new EalDbParameter("@ProjectManager", ProjectManager), 
+                new EalDbParameter("@GrantID", GrantID), 
+                new EalDbParameter("@StartDate", StartDate), 
+                new EalDbParameter("@EndDate", EndDate), 
+                new EalDbParameter("@isActive", isActive), 
+                new EalDbParameter("@Description", Description), 
+                new EalDbParameter("@Specifications", Specifications), 
+                new EalDbParameter("@Priority", Priority), 
+                new EalDbParameter("@QC_Profile", QcProfile), 
+                new EalDbParameter("@TargetItemCount", TargetItemCount), 
+                new EalDbParameter("@TargetPageCount", TargetPageCount),
+                new EalDbParameter("@Comments", Comments), 
+                new EalDbParameter("@CopyrightPermissions", CopyrightPermissions)
+            };
+
+	        //Add the output parameter to get back the new ProjectID for this newly added project, or existing ProjectID if this has been updated
+            EalDbParameter outputParam = new EalDbParameter("@New_ProjectID", SqlDbType.Int) {Direction = ParameterDirection.Output};
+            parameters.Add(outputParam);
+           
             try
             {
-                //Open the connection
-                connect.Open();
-
-                //Create the command
-                SqlCommand cmd = new SqlCommand("SobekCM_Save_Project", connect) { CommandType = CommandType.StoredProcedure };
-                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
-                cmd.Parameters.AddWithValue("@ProjectCode", ProjectCode);
-                cmd.Parameters.AddWithValue("@ProjectName", ProjectName);
-                cmd.Parameters.AddWithValue("@ProjectManager", ProjectManager);
-                cmd.Parameters.AddWithValue("@GrantID", GrantID);
-                cmd.Parameters.AddWithValue("@StartDate", StartDate);
-                cmd.Parameters.AddWithValue("@EndDate", EndDate);
-                cmd.Parameters.AddWithValue("@isActive", isActive);
-                cmd.Parameters.AddWithValue("@Description", Description);
-                cmd.Parameters.AddWithValue("@Specifications", Specifications);
-                cmd.Parameters.AddWithValue("@Priority", Priority);
-                cmd.Parameters.AddWithValue("@QC_Profile", QC_Profile);
-                cmd.Parameters.AddWithValue("@TargetItemCount", TargetItemCount);
-                cmd.Parameters.AddWithValue("@TargetPageCount", TargetPageCount);
-                cmd.Parameters.AddWithValue("@Comments", Comments);
-                cmd.Parameters.AddWithValue("@CopyrightPermissions", CopyrightPermissions);
+                // Create the database agnostic reader
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Save_Project", parameters);
                 
-
-                //Add the output parameter to get back the new ProjectID for this newly added project, or existing ProjectID if this has been updated
-                SqlParameter outputParam = cmd.Parameters.Add("@New_ProjectID", SqlDbType.Int);
-                outputParam.Direction = ParameterDirection.Output;
-
-                cmd.ExecuteNonQuery();
-                New_ProjectID = Convert.ToInt32(outputParam.Value);
+                newProjectID = Convert.ToInt32(outputParam.Value);
 
             }
             catch (Exception ee)
             {
                 throw new ApplicationException("Error saving this Project to the database. " + ee.Message);
             }
-            connect.Close();
-            return New_ProjectID;
+
+            return newProjectID;
         }
 
         /// <summary> Save the new Project-Aggregation link to the database. </summary>
@@ -6612,30 +6310,27 @@ namespace SobekCM.Library.Database
         /// <param name="AggregationID"></param>
         public static void Add_Project_Aggregation_Link(Custom_Tracer Tracer,int ProjectID, int AggregationID)
         {
-               if (Tracer != null)
+            if (Tracer != null)
             {
                 Tracer.Add_Trace("SobekCM_Database.Add_Project_Aggregation_Link", "Saving link to the database");
             }
 
-          // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
-
             try
             {
-                //Open the connection
-                connect.Open();
+                // Build the parameters list
+                List<EalDbParameter> parameters = new List<EalDbParameter>
+                {
+                    new EalDbParameter("@ProjectID", ProjectID), 
+                    new EalDbParameter("@AggregationID", AggregationID)
+                };
 
-                //Create the command
-                SqlCommand cmd = new SqlCommand("SobekCM_Save_Project_Aggregation_Link", connect) {CommandType = CommandType.StoredProcedure};
-                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
-                cmd.Parameters.AddWithValue("@AggregationID", AggregationID);
-                cmd.ExecuteNonQuery();
+                // Run the SQL 
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Project_Aggregation_Link", parameters ); 
             }
             catch (Exception ee)
             {
                 throw new ApplicationException("Error adding Project-Aggregation link" + ee.Message);
             }
-            connect.Close();
         }
 
         /// <summary> Save the Project_Default Metadata link to the database </summary>
@@ -6649,25 +6344,22 @@ namespace SobekCM.Library.Database
                 Tracer.Add_Trace("SobekCM_Database.Add_Project_DefaultMetadata_Link", "Saving link to the database");
             }
 
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
-
             try
             {
-                //Open the connection
-                connect.Open();
+                // Build the parameters list
+                List<EalDbParameter> parameters = new List<EalDbParameter>
+                {
+                    new EalDbParameter("@ProjectID", ProjectID), 
+                    new EalDbParameter("@DefaultMetadataID", DefaultMetadataID)
+                };
 
-                //Create the command
-                SqlCommand cmd = new SqlCommand("SobekCM_Save_Project_DefaultMetadata_Link", connect) { CommandType = CommandType.StoredProcedure };
-                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
-                cmd.Parameters.AddWithValue("@DefaultMetadataID", DefaultMetadataID);
-                cmd.ExecuteNonQuery();
+                // Run the SQL 
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Project_DefaultMetadata_Link", parameters); 
             }
             catch (Exception ee)
             {
                 throw new ApplicationException("Error adding Project-DefaultMetadata link" + ee.Message);
             }
-            connect.Close();
         }
 
         /// <summary> Save Project, Input template link to the database </summary>
@@ -6681,25 +6373,22 @@ namespace SobekCM.Library.Database
                 Tracer.Add_Trace("SobekCM_Database.Add_Project_Template_Link", "Saving link to the database");
             }
 
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
-
             try
             {
-                //Open the connection
-                connect.Open();
+                // Build the parameters list
+                List<EalDbParameter> parameters = new List<EalDbParameter>
+                {
+                    new EalDbParameter("@ProjectID", ProjectID), 
+                    new EalDbParameter("@TemplateID", TemplateID)
+                };
 
-                //Create the command
-                SqlCommand cmd = new SqlCommand("SobekCM_Save_Project_Template_Link", connect) { CommandType = CommandType.StoredProcedure };
-                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
-                cmd.Parameters.AddWithValue("@TemplateID", TemplateID);
-                cmd.ExecuteNonQuery();
+                // Run the SQL 
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Project_Template_Link", parameters); 
             }
             catch (Exception ee)
             {
                 throw new ApplicationException("Error adding Project-TemplateID link" + ee.Message);
             }
-            connect.Close();
         }
 
         /// <summary> Save Project, Item link to the database </summary>
@@ -6713,25 +6402,22 @@ namespace SobekCM.Library.Database
                 Tracer.Add_Trace("SobekCM_Database.Add_Project_Item_Link", "Saving link to the database");
             }
 
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
-
             try
             {
-                //Open the connection
-                connect.Open();
+                // Build the parameters list
+                List<EalDbParameter> parameters = new List<EalDbParameter>
+                {
+                    new EalDbParameter("@ProjectID", ProjectID), 
+                    new EalDbParameter("@ItemID", ItemID)
+                };
 
-                //Create the command
-                SqlCommand cmd = new SqlCommand("SobekCM_Save_Project_Item_Link", connect) { CommandType = CommandType.StoredProcedure };
-                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
-                cmd.Parameters.AddWithValue("@ItemID", ItemID);
-                cmd.ExecuteNonQuery();
+                // Run the SQL 
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Project_Item_Link", parameters); 
             }
             catch (Exception ee)
             {
                 throw new ApplicationException("Error adding Project-ItemID link" + ee.Message);
             }
-            connect.Close();
         }
 
         /// <summary> Delete a Project, Item link from the database </summary>
@@ -6745,25 +6431,22 @@ namespace SobekCM.Library.Database
                 Tracer.Add_Trace("SobekCM_Database.Delete_Project_Item_Link", "Deleting link from the database");
             }
 
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
-
             try
             {
-                //Open the connection
-                connect.Open();
+                // Build the parameters list
+                List<EalDbParameter> parameters = new List<EalDbParameter>
+                {
+                    new EalDbParameter("@ProjectID", ProjectID), 
+                    new EalDbParameter("@ItemID", ItemID)
+                };
 
-                //Create the command
-                SqlCommand cmd = new SqlCommand("SobekCM_Delete_Project_Item_Link", connect) { CommandType = CommandType.StoredProcedure };
-                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
-                cmd.Parameters.AddWithValue("@ItemID", ItemID);
-                cmd.ExecuteNonQuery();
+                // Run the SQL 
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Project_Item_Link", parameters); 
             }
             catch (Exception ee)
             {
                 throw new ApplicationException("Error deleting Project-ItemID link" + ee.Message);
             }
-            connect.Close();
         }
 
         /// <summary> Delete a project, CompleteTemplate link from the database </summary>
@@ -6777,25 +6460,22 @@ namespace SobekCM.Library.Database
                 Tracer.Add_Trace("SobekCM_Database.Delete_Project_Template_Link", "Deleting link from the database");
             }
 
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
-
             try
             {
-                //Open the connection
-                connect.Open();
+                // Build the parameters list
+                List<EalDbParameter> parameters = new List<EalDbParameter>
+                {
+                    new EalDbParameter("@ProjectID", ProjectID), 
+                    new EalDbParameter("@TemplateID", TemplateID)
+                };
 
-                //Create the command
-                SqlCommand cmd = new SqlCommand("SobekCM_Delete_Project_Template_Link", connect) { CommandType = CommandType.StoredProcedure };
-                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
-                cmd.Parameters.AddWithValue("@TemplateID", TemplateID);
-                cmd.ExecuteNonQuery();
+                // Run the SQL 
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Project_Template_Link", parameters); 
             }
             catch (Exception ee)
             {
                 throw new ApplicationException("Error deleting Project-CompleteTemplate link" + ee.Message);
             }
-            connect.Close();
         }
 
         /// <summary> Delete the Project, default metadata link from the database </summary>
@@ -6809,25 +6489,22 @@ namespace SobekCM.Library.Database
                 Tracer.Add_Trace("SobekCM_Database.Delete_Project_DefaultMetadata_Link", "Deleting link from the database");
             }
 
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
-
             try
             {
-                //Open the connection
-                connect.Open();
+                // Build the parameters list
+                List<EalDbParameter> parameters = new List<EalDbParameter>
+                {
+                    new EalDbParameter("@ProjectID", ProjectID), 
+                    new EalDbParameter("@DefaultMetadataID", DefaultMetadataID)
+                };
 
-                //Create the command
-                SqlCommand cmd = new SqlCommand("SobekCM_Delete_Project_DefaultMetadata_Link", connect) { CommandType = CommandType.StoredProcedure };
-                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
-                cmd.Parameters.AddWithValue("@DefaultMetadataID", DefaultMetadataID);
-                cmd.ExecuteNonQuery();
+                // Run the SQL 
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Project_DefaultMetadata_Link", parameters); 
             }
             catch (Exception ee)
             {
                 throw new ApplicationException("Error deleting Project-DefaultMetadata link" + ee.Message);
             }
-            connect.Close();
         }
 
         /// <summary> Delete Project, Aggregation Link from the database </summary>
@@ -6841,25 +6518,22 @@ namespace SobekCM.Library.Database
                 Tracer.Add_Trace("SobekCM_Database.Delete_Project_Aggregation_Link", "Deleting link from the database");
             }
 
-            // Create the connection
-            SqlConnection connect = new SqlConnection(connectionString);
-
             try
             {
-                //Open the connection
-                connect.Open();
+                // Build the parameters list
+                List<EalDbParameter> parameters = new List<EalDbParameter>
+                {
+                    new EalDbParameter("@ProjectID", ProjectID), 
+                    new EalDbParameter("@AggregationID", AggregationID)
+                };
 
-                //Create the command
-                SqlCommand cmd = new SqlCommand("SobekCM_Delete_Project_Aggregation_Link", connect) { CommandType = CommandType.StoredProcedure };
-                cmd.Parameters.AddWithValue("@ProjectID", ProjectID);
-                cmd.Parameters.AddWithValue("@AggregationID", AggregationID);
-                cmd.ExecuteNonQuery();
+                // Run the SQL 
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Delete_Project_Aggregation_Link", parameters); 
             }
             catch (Exception ee)
             {
                 throw new ApplicationException("Error deleting Project-Aggregation link" + ee.Message);
             }
-            connect.Close();
         }
 
         /// <summary> Get the list of Aggregation IDs associated with a project </summary>
@@ -6878,7 +6552,7 @@ namespace SobekCM.Library.Database
 				List<int> returnValue = new List<int>();
 
 				// Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_Aggregations_By_ProjectID");
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Aggregations_By_ProjectID");
 
 				// If there was no data for this collection and entry point, return null (an ERROR occurred)
 				if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -6928,7 +6602,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report");
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report");
 
                 // Return the first table from the returned dataset
                 return tempSet.Tables[0];
@@ -6960,7 +6634,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report_Aggregation_Links");
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report_Aggregation_Links");
 
                 // Return the first table from the returned dataset
                 return tempSet.Tables[0];
@@ -6991,7 +6665,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report_Linked_Aggregations");
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report_Linked_Aggregations");
 
                 // Return the first table from the returned dataset
                 return tempSet.Tables[0];
@@ -7023,7 +6697,7 @@ namespace SobekCM.Library.Database
             try
             {
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report_Submission_Rights");
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report_Submission_Rights");
 
                 // Return the first table from the returned dataset
                 return tempSet.Tables[0];
@@ -7042,6 +6716,12 @@ namespace SobekCM.Library.Database
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="AggregationCode"></param>
+        /// <param name="Tracer"></param>
+        /// <returns></returns>
         public static DataTable Get_Aggregation_User_Permissions(string AggregationCode, Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -7051,11 +6731,11 @@ namespace SobekCM.Library.Database
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[1];
-                parameters[0] = new SqlParameter("@Code", AggregationCode);
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@Code", AggregationCode);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report_Aggregation", parameters);
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Permissions_Report_Aggregation", parameters);
 
                 if ((tempSet == null) || (tempSet.Tables.Count == 0))
                     return null;
@@ -7076,6 +6756,12 @@ namespace SobekCM.Library.Database
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="AggregationCode"></param>
+        /// <param name="Tracer"></param>
+        /// <returns></returns>
         public static DataTable Get_Aggregation_Change_Log(string AggregationCode, Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -7085,11 +6771,11 @@ namespace SobekCM.Library.Database
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[1];
-                parameters[0] = new SqlParameter("@Code", AggregationCode);
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@Code", AggregationCode);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Aggregation_Change_Log", parameters);
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Aggregation_Change_Log", parameters);
 
                 if ((tempSet == null) || (tempSet.Tables.Count == 0))
                     return null;

@@ -65,40 +65,40 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Build the value
-            Map_Streets_DataSet streets = SobekCM_Database.Get_All_Streets_By_Item(CurrentItem.Web.ItemID, Tracer);
+            //Map_Streets_DataSet streets = SobekCM_Database.Get_All_Streets_By_Item(CurrentItem.Web.ItemID, Tracer);
 
-            if (streets == null)
-            {
-                Output.WriteLine("<br />");
-                Output.WriteLine("<center><b>UNABLE TO LOAD STREETS FROM DATABASE</b></center>");
-                Output.WriteLine("<br />");
-                CurrentMode.Mode = Display_Mode_Enum.Contact;
-                Output.WriteLine("<center>Click <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">here</a> to report this issue.</center>");
-                Output.WriteLine("<br />");
-                CurrentMode.Mode = Display_Mode_Enum.Item_Display;
-            }
-            else
-            {
-                // Save the current viewer code
-                string current_view_code = CurrentMode.ViewerCode;
+            //if (streets == null)
+            //{
+            //    Output.WriteLine("<br />");
+            //    Output.WriteLine("<center><b>UNABLE TO LOAD STREETS FROM DATABASE</b></center>");
+            //    Output.WriteLine("<br />");
+            //    CurrentMode.Mode = Display_Mode_Enum.Contact;
+            //    Output.WriteLine("<center>Click <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">here</a> to report this issue.</center>");
+            //    Output.WriteLine("<br />");
+            //    CurrentMode.Mode = Display_Mode_Enum.Item_Display;
+            //}
+            //else
+            //{
+            //    // Save the current viewer code
+            //    string current_view_code = CurrentMode.ViewerCode;
 
-                // Start the citation table
-                Output.WriteLine("\t\t<!-- STREET VIEWER OUTPUT -->" );
-                Output.WriteLine("\t\t<td align=\"left\" height=\"40px\" ><span class=\"SobekViewerTitle\"><b>Index of Streets</b></span></td></tr>" );
-                Output.WriteLine("\t\t<tr><td class=\"SobekDocumentDisplay\">");
-                Output.WriteLine("\t\t\t<div class=\"SobekCitation\">" );
+            //    // Start the citation table
+            //    Output.WriteLine("\t\t<!-- STREET VIEWER OUTPUT -->" );
+            //    Output.WriteLine("\t\t<td align=\"left\" height=\"40px\" ><span class=\"SobekViewerTitle\"><b>Index of Streets</b></span></td></tr>" );
+            //    Output.WriteLine("\t\t<tr><td class=\"SobekDocumentDisplay\">");
+            //    Output.WriteLine("\t\t\t<div class=\"SobekCitation\">" );
 
-                // Get the list of streets from the database
-                Create_Street_Index(Output, streets);
+            //    // Get the list of streets from the database
+            //    Create_Street_Index(Output, streets);
 
-                // Finish the citation table
-                Output.WriteLine("\t\t\t</div>" );
-                Output.WriteLine("\t\t</td>" );
-                Output.WriteLine("\t\t<!-- END STREET VIEWER OUTPUT -->" );
+            //    // Finish the citation table
+            //    Output.WriteLine("\t\t\t</div>" );
+            //    Output.WriteLine("\t\t</td>" );
+            //    Output.WriteLine("\t\t<!-- END STREET VIEWER OUTPUT -->" );
 
-                // Restore the mode
-                CurrentMode.ViewerCode = current_view_code;
-            }
+            //    // Restore the mode
+            //    CurrentMode.ViewerCode = current_view_code;
+            //}
         }
 
         /// <summary> Build the HTML for the street index for this item </summary>

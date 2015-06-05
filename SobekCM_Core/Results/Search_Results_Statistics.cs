@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 #endregion
@@ -95,7 +96,7 @@ namespace SobekCM.Core.Results
         /// <param name="Facet_Data"> DataReader containg all the facet information to include within this class </param>
         /// <param name="Facet_Types"> Types of facets requested from the database for the related item aggreagtion </param>
 		/// <param name="Metadata_Labels"> List of the metadata terms for each metadata value in the results </param>
-		public Search_Results_Statistics(SqlDataReader Facet_Data, List<short> Facet_Types, List<string> Metadata_Labels)
+		public Search_Results_Statistics(DbDataReader Facet_Data, List<short> Facet_Types, List<string> Metadata_Labels)
         {
             // Set default facet types
             First_Facets_MetadataTypeID = -1;
@@ -310,7 +311,7 @@ namespace SobekCM.Core.Results
         /// <summary> Gets the metadata type id for the metadata represented by the eighth facet list in this results set </summary>
         public short Eighth_Facets_MetadataTypeID { get; private set; }
 
-        private void Convert_Facet_Tables_To_Facet_Lists(SqlDataReader reader, List<short> Facet_Types)
+        private void Convert_Facet_Tables_To_Facet_Lists(DbDataReader reader, List<short> Facet_Types)
         {
             // Go to the next table
             if (!reader.NextResult())

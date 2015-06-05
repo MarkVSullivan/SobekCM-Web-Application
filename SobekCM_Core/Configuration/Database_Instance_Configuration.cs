@@ -16,7 +16,7 @@ namespace SobekCM.Core.Configuration
 		/// <summary> Constructor for a new instance of the Database_Instance_Configuration class </summary>
 		public Database_Instance_Configuration()
 		{
-			Database_Type = SobekCM_Database_Type_Enum.MSSQL;
+			Database_Type = EalDbTypeEnum.MSSQL;
 			Is_Active = true;
 			Can_Abort = true;
 			Name = String.Empty;
@@ -28,7 +28,7 @@ namespace SobekCM.Core.Configuration
 
 		/// <summary> Database type </summary>
 		[DataMember]
-        public SobekCM_Database_Type_Enum Database_Type { get; set;  }
+        public EalDbTypeEnum Database_Type { get; set;  }
 
 		/// <summary> Flag indicates if this database instance is active for the builder </summary>
 		/// <remarks> The configuration file for the builder may have multiple database settings to allow a single
@@ -56,10 +56,10 @@ namespace SobekCM.Core.Configuration
             {
 				switch (Database_Type)
                 {
-                    case SobekCM_Database_Type_Enum.MSSQL:
+                    case EalDbTypeEnum.MSSQL:
                         return "Microsoft SQL Server";
                        
-                    case SobekCM_Database_Type_Enum.PostgreSQL:
+                    case EalDbTypeEnum.PostgreSQL:
                         return "PostgreSQL";
                 }
                 return "Unrecognized";

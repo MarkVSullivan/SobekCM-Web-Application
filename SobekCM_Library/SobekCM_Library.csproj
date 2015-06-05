@@ -75,27 +75,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxControlToolkit">
-      <HintPath>..\SobekCM\Bin\AjaxControlToolkit.dll</HintPath>
-    </Reference>
     <Reference Include="GemBox.Spreadsheet, Version=33.3.30.1049, Culture=neutral, PublicKeyToken=b1b72c69714d4847, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DLLs\GemBox.Spreadsheet.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.ApplicationBlocks.Data, Version=2.0.0.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
-    </Reference>
-    <Reference Include="SolrNet, Version=0.3.0.0, Culture=neutral, PublicKeyToken=bc21753e8aa334cb, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DLLs\SolrNet\SolrNet.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -103,8 +87,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Zen.Barcode.Core">
       <HintPath>..\DLLs\Zen.Barcode.Core.dll</HintPath>

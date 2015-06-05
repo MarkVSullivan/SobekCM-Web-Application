@@ -73,8 +73,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t\t\t<div class=\"SobekCitation\">");
 
 			// Get the list of streets from the database
-			Map_Features_DataSet features = SobekCM_Database.Get_All_Features_By_Item( CurrentItem.Web.ItemID, Tracer );
-			Create_Feature_Index( Output, features );
+            //Map_Features_DataSet features = SobekCM_Database.Get_All_Features_By_Item( CurrentItem.Web.ItemID, Tracer );
+            //Create_Feature_Index( Output, features );
 
 			// Finish the citation table
 			Output.WriteLine( "\t\t\t</div>"  );

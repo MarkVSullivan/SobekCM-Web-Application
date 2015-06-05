@@ -574,7 +574,7 @@ namespace SobekCM.Engine_Library.Settings
                             if (xmlReader.MoveToAttribute("type"))
                             {
                                 if (xmlReader.Value.ToLower() == "postgresql")
-                                    newDb.Database_Type = SobekCM_Database_Type_Enum.PostgreSQL;
+                                    newDb.Database_Type = EalDbTypeEnum.PostgreSQL;
                             }
                             if (xmlReader.MoveToAttribute("active"))
                             {

@@ -406,8 +406,10 @@ namespace SobekCM.Library.MySobekViewer
 
             //Create a new workflow object for this workflow
             Tracking_Workflow this_workflow = new Tracking_Workflow();
-            SqlDateTime start_time_to_save = DateTime.Parse(new_date.ToShortDateString() + " " + new_start_time);
-            SqlDateTime end_time_to_save = String.IsNullOrEmpty(new_end_time) ? SqlDateTime.Null : DateTime.Parse(new_date.ToShortDateString() + " " + new_end_time);
+            DateTime? start_time_to_save = DateTime.Parse(new_date.ToShortDateString() + " " + new_start_time);
+            DateTime? end_time_to_save = null;
+            if (  !String.IsNullOrEmpty(new_end_time))
+                end_time_to_save = DateTime.Parse(new_date.ToShortDateString() + " " + new_end_time);
             if (page == 2)
                 end_time_to_save = start_time_to_save;
 
@@ -643,10 +645,14 @@ namespace SobekCM.Library.MySobekViewer
             this_workflow.Title = title;
             this_workflow.Workflow_type = stage;
 
+            DateTime? start_date_time = null;
+            DateTime? end_date_time = null;
 
             //Combine the times and dates to single SqlDateTime variables to save to the database
-            SqlDateTime start_date_time = String.IsNullOrEmpty(start_Time) ? SqlDateTime.Null : DateTime.Parse(this_workflow.Date + " " + start_Time);
-            SqlDateTime end_date_time = String.IsNullOrEmpty(end_Time) ? SqlDateTime.Null : DateTime.Parse(this_workflow.Date + " " + end_Time);
+            if ( !String.IsNullOrEmpty(start_Time))
+                start_date_time = DateTime.Parse(this_workflow.Date + " " + start_Time);
+            if ( !String.IsNullOrEmpty(end_Time) )
+                end_date_time = DateTime.Parse(this_workflow.Date + " " + end_Time);
 
             //Determine the start, end & single point event numbers
             int start_event_num = -1;

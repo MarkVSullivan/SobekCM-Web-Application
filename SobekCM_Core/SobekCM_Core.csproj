@@ -37,16 +37,12 @@
     <Reference Include="protobuf-net">
       <HintPath>..\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="Sigil">
-      <HintPath>..\DLLs\JIL\Sigil.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -103,7 +99,10 @@
     <Compile Include="Configuration\Web_Language_Enum.cs" />
     <Compile Include="Configuration\Web_Language_Translation_Lookup.cs" />
     <Compile Include="Configuration\Web_Language_Translation_Value.cs" />
-    <Compile Include="Database\SobekCM_Database_Type_Enum.cs" />
+    <Compile Include="Database\EalDbAccess.cs" />
+    <Compile Include="Database\EalDbParameter.cs" />
+    <Compile Include="Database\EalDbReaderWrapper.cs" />
+    <Compile Include="Database\EalDbTypeEnum.cs" />
     <Compile Include="EmailInfo.cs" />
     <Compile Include="iPostSerialization.cs" />
     <Compile Include="Items\SobekCM_Items_In_Title.cs" />

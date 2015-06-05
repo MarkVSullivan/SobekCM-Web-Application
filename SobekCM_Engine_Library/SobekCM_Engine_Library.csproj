@@ -32,16 +32,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Jil">
-      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\JIL\Jil.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.ApplicationBlocks.Data">
-      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\Microsoft.ApplicationBlocks.Data.dll</HintPath>
+      <HintPath>..\DLLs\JIL\Jil.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\..\..\..\GitRepository\SobekCM-Web-Application\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
+      <HintPath>..\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="SolrNet">
       <HintPath>..\DLLs\SolrNet\SolrNet.dll</HintPath>
@@ -50,10 +47,8 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />

@@ -3,11 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.Common;
 using System.Linq;
-using Microsoft.ApplicationBlocks.Data;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Database;
 using SobekCM.Core.Results;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
@@ -25,7 +25,6 @@ namespace SobekCM.Engine_Library.Database
         private const int LOOKAHEAD_FACTOR = 5;
         private const int ALL_AGGREGATIONS_METADATA_COUNT_TO_USE_CACHED = 1000;
          
-        private static Exception lastException;
         private static readonly Object itemListPopulationLock = new Object();
 
         /// <summary> Gets the last exception caught by a database call through this gateway class  </summary>
@@ -35,42 +34,49 @@ namespace SobekCM.Engine_Library.Database
         /// <remarks> This database hold all the information about items, item aggregationPermissions, statistics, and tracking information</remarks>
         public static string Connection_String { get; set; }
 
-        /// <summary> Test connectivity to the database </summary>
-        /// <returns> TRUE if connection can be made, otherwise FALSE </returns>
-        public static bool Test_Connection()
+        /// <summary> Gets the type of database ( i.e. MSSQL v. PostgreSQL ) </summary>
+        public static EalDbTypeEnum DatabaseType { get; set; }
+
+        /// <summary> Static constructor for this class </summary>
+        static Engine_Database()
         {
+            DatabaseType = EalDbTypeEnum.MSSQL;
+        }
 
-            try
-            {
-                SqlConnection newConnection = new SqlConnection(Connection_String);
-                newConnection.Open();
 
-                newConnection.Close();
+        public static bool TEST()
+        {
+            // Build the parameter list
+            List<EalDbParameter> parameters = new List<EalDbParameter>();
+            parameters.Add(new EalDbParameter("@inputValue", 1000));
+
+            // Add parameters for total items and total titles
+            EalDbParameter totalItemsParameter = new EalDbParameter("@returnValue", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalItemsParameter);
+
+
+            // Do the non-query
+            EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "TEST_Return", parameters);
+
+            // Check to see what value4s are
+            if (Int32.Parse(totalItemsParameter.Value.ToString() )== 1000)
                 return true;
-            }
-            catch
-            {
+            else
                 return false;
-            }
         }
 
         /// <summary> Test connectivity to the database </summary>
         /// <returns> TRUE if connection can be made, otherwise FALSE </returns>
-        public static bool Test_Connection(string Test_Connection_String)
+        public static bool Test_Connection()
         {
+            return EalDbAccess.Test(DatabaseType, Connection_String);
+        }
 
-            try
-            {
-                SqlConnection newConnection = new SqlConnection(Test_Connection_String);
-                newConnection.Open();
-
-                newConnection.Close();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+        /// <summary> Test connectivity to the database </summary>
+        /// <returns> TRUE if connection can be made, otherwise FALSE </returns>
+        public static bool Test_Connection(string TestConnectionString)
+        {
+            return EalDbAccess.Test(DatabaseType, TestConnectionString);
         }
 
         #region Methods to get the information about an ITEM or ITEM GROUP
@@ -89,19 +95,19 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[2];
-                parameters[0] = new SqlParameter("@BibID", BibID);
-                parameters[1] = new SqlParameter("@VID", DBNull.Value);
+                EalDbParameter[] parameters = new EalDbParameter[2];
+                parameters[0] = new EalDbParameter("@BibID", BibID);
+                parameters[1] = new EalDbParameter("@VID", DBNull.Value);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Details2", parameters);
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Details2", parameters);
 
                 // Return the first table from the returned dataset
                 return tempSet;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Get_Item_Group_Details", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -114,11 +120,11 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Gets some basic information about an item before displaying it, such as the descriptive notes from the database, ability to add notes, etc.. </summary>
         /// <param name="BibID"> Bibliographic identifier for the volume to retrieve </param>
-        /// <param name="VID"> Volume identifier for the volume to retrieve </param>
+        /// <param name="Vid"> Volume identifier for the volume to retrieve </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> DataSet with detailed information about this item from the database </returns>
         /// <remarks> This calls the 'SobekCM_Get_Item_Details2' stored procedure </remarks> 
-        public static DataSet Get_Item_Details(string BibID, string VID, Custom_Tracer Tracer)
+        public static DataSet Get_Item_Details(string BibID, string Vid, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -127,20 +133,20 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[2];
-                parameters[0] = new SqlParameter("@BibID", BibID);
-                parameters[1] = new SqlParameter("@VID", VID);
+                EalDbParameter[] parameters = new EalDbParameter[2];
+                parameters[0] = new EalDbParameter("@BibID", BibID);
+                parameters[1] = new EalDbParameter("@VID", Vid);
 
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Details2", parameters);
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Details2", parameters);
 
                 // Return the first table from the returned dataset
                 return tempSet;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Get_Item_Details", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -164,56 +170,14 @@ namespace SobekCM.Engine_Library.Database
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Engine_Database.Get_IP_Restriction_Range", "Pulls all the IP restriction range information");
+                Tracer.Add_Trace("Engine_Database.Get_IP_Restriction_Ranges", "Pulls all the IP restriction range information");
             }
 
             try
             {
 
                 // Create the dataset to fill (could also do a data reader, but we'll do a datatable)
-                DataSet fillSet = new DataSet("IP_Restriction_Ranges");
-
-                // Open the SQL connection
-                using (SqlConnection sqlConnect = new SqlConnection(Connection_String))
-                {
-                    try
-                    {
-                        sqlConnect.Open();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Unable to open connection to the database." + Environment.NewLine + ex.Message, ex);
-                    }
-
-                    // Create the sql command / stored procedure
-                    SqlCommand cmd = new SqlCommand("SobekCM_Get_All_IP_Restrictions");
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Connection = sqlConnect;
-
-
-                    // Fill the dataset
-                    try
-                    {
-                        SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
-                        dataAdapter.Fill(fillSet);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Unable to pull data from the Get_SnailKite_Details procedure in the database." + Environment.NewLine + ex.Message, ex);
-                    }
-
-
-                    // Close the connection (not technical necessary since we put the connection in the
-                    // scope of the using brackets.. it would dispose itself anyway)
-                    try
-                    {
-                        sqlConnect.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Unable to close connection to the database." + Environment.NewLine + ex.Message, ex);
-                    }
-                }
+                DataSet fillSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_All_IP_Restrictions");
 
                 // Was there a match?
                 if (fillSet.Tables.Count == 0)
@@ -255,24 +219,17 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                // Create the connection
-                using (SqlConnection connect = new SqlConnection(Connection_String))
-                {
-                    SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Search_Stop_Words", connect) { CommandType = CommandType.StoredProcedure };
+                // Create the database agnostic reader
+                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Search_Stop_Words");
 
-                    // Create the data reader
-                    connect.Open();
-                    using (SqlDataReader reader = executeCommand.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            // Grab the values out
-                            returnValue.Add(reader.GetString(1));
-                        }
-                        reader.Close();
-                    }
-                    connect.Close();
+                while (readerWrapper.Reader.Read())
+                {
+                    // Grab the values out
+                    returnValue.Add(readerWrapper.Reader.GetString(1));
                 }
+
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
 
                 // Return the first table from the returned dataset
                 return returnValue;
@@ -292,10 +249,10 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Populates the collection of the thematic headings for the main home page </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <param name="Thematic_Heading_List"> List to populate with the thematic headings from the database</param>
+        /// <param name="ThematicHeadingList"> List to populate with the thematic headings from the database</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Manager_Get_Thematic_Headings' stored procedure </remarks> 
-        public static bool Populate_Thematic_Headings(List<Thematic_Heading> Thematic_Heading_List, Custom_Tracer Tracer)
+        public static bool Populate_Thematic_Headings(List<Thematic_Heading> ThematicHeadingList, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -306,16 +263,16 @@ namespace SobekCM.Engine_Library.Database
             {
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Manager_Get_Thematic_Headings");
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Manager_Get_Thematic_Headings");
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if (tempSet.Tables.Count > 0)
                 {
                     // Clear the current list
-                    Thematic_Heading_List.Clear();
+                    ThematicHeadingList.Clear();
 
                     // Add them back
-                    Thematic_Heading_List.AddRange(from DataRow thisRow in tempSet.Tables[0].Rows select new Thematic_Heading(Convert.ToInt16(thisRow["ThematicHeadingID"]), thisRow["ThemeName"].ToString()));
+                    ThematicHeadingList.AddRange(from DataRow thisRow in tempSet.Tables[0].Rows select new Thematic_Heading(Convert.ToInt16(thisRow["ThematicHeadingID"]), thisRow["ThemeName"].ToString()));
                 }
 
                 // Return the built collection as readonly
@@ -336,10 +293,10 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Populates the lookup tables for aliases which point to live aggregationPermissions </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <param name="Aggregation_Alias_List"> List of aggregation aliases to populate from the database</param>
+        /// <param name="AggregationAliasList"> List of aggregation aliases to populate from the database</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Get_Item_Aggregation_Aliases' stored procedure </remarks> 
-        public static bool Populate_Aggregation_Aliases(Dictionary<string, string> Aggregation_Alias_List, Custom_Tracer Tracer)
+        public static bool Populate_Aggregation_Aliases(Dictionary<string, string> AggregationAliasList, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -349,17 +306,17 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Aggregation_Aliases");
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Aggregation_Aliases");
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count > 0) || (tempSet.Tables[0].Rows.Count > 0))
                 {
                     // Clear the old list
-                    Aggregation_Alias_List.Clear();
+                    AggregationAliasList.Clear();
 
                     foreach (DataRow thisRow in tempSet.Tables[0].Rows)
                     {
-                        Aggregation_Alias_List[thisRow["AggregationAlias"].ToString()] = thisRow["Code"].ToString().ToLower();
+                        AggregationAliasList[thisRow["AggregationAlias"].ToString()] = thisRow["Code"].ToString().ToLower();
                     }
                 }
 
@@ -380,7 +337,7 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Gets the list of all user groups </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> List of partly built <see cref="Users.User_Group"/> object </returns>
+        /// <returns> List of partly built <see cref="SobekCM.Core.Users.User_Group"/> object </returns>
         /// <remarks> This calls the 'mySobek_Get_All_User_Groups' stored procedure </remarks> 
         public static List<User_Group> Get_All_User_Groups(Custom_Tracer Tracer)
         {
@@ -391,10 +348,7 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                // Execute this non-query stored procedure
-                SqlParameter[] paramList = new SqlParameter[1];
-
-                DataSet resultSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Get_All_User_Groups", paramList);
+                DataSet resultSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_All_User_Groups");
 
                 List<User_Group> returnValue = new List<User_Group>();
 
@@ -405,8 +359,7 @@ namespace SobekCM.Engine_Library.Database
                     int usergroupid = Convert.ToInt32(thisRow["UserGroupID"]);
                     bool specialGroup = Convert.ToBoolean(thisRow["IsSpecialGroup"]);
 
-                    User_Group userGroup = new User_Group(name, description, usergroupid);
-                    userGroup.IsSpecialGroup = specialGroup;
+                    User_Group userGroup = new User_Group(name, description, usergroupid) {IsSpecialGroup = specialGroup};
 
                     returnValue.Add(userGroup);
 
@@ -418,7 +371,7 @@ namespace SobekCM.Engine_Library.Database
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Get_All_User_Groups", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -431,8 +384,8 @@ namespace SobekCM.Engine_Library.Database
 
 
         /// <summary> Datatable with the information for every html skin from the database </summary>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Datatable with all the html skin information to be loaded into the <see cref="Skins.SobekCM_Skin_Collection"/> object. </returns>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Datatable with all the html skin information to be loaded into the Web_Skin_Collection object. </returns>
         /// <remarks> This calls the 'SobekCM_Get_Web_Skins' stored procedure </remarks> 
         public static DataTable Get_All_Web_Skins(Custom_Tracer Tracer)
         {
@@ -442,7 +395,7 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Define a temporary dataset
-            DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Web_Skins");
+            DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Web_Skins");
 
             // If there was no data for this collection and entry point, return null (an ERROR occurred)
             if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -455,6 +408,10 @@ namespace SobekCM.Engine_Library.Database
         }
 
 
+        /// <summary> Get the list of viewer priority set at the instance level </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering  </param>
+        /// <returns> List of all the viewers </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Viewer_Priority' stored procedure </remarks> 
         public static List<string> Get_Viewer_Priority(Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -467,7 +424,7 @@ namespace SobekCM.Engine_Library.Database
                 List<string> returnValue = new List<string>();
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Viewer_Priority");
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Viewer_Priority");
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -484,7 +441,7 @@ namespace SobekCM.Engine_Library.Database
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Get_Viewer_Priority", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -499,7 +456,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <param name="Codes"> Code object to populate with the all the code and aggregation information</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <remarks> This calls the 'SobekCM_Get_Codes' stored procedure </remarks> 
+        /// <remarks> This calls the 'SobekCM_Get_Item_Aggregation_AllCodes' stored procedure </remarks> 
         public static bool Populate_Code_Manager(Aggregation_Code_Manager Codes, Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -507,188 +464,174 @@ namespace SobekCM.Engine_Library.Database
                 Tracer.Add_Trace("Engine_Database.Populate_Code_Manager", String.Empty);
             }
 
-            // Create the connection
-            using (SqlConnection connect = new SqlConnection(Connection_String))
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Aggregation_AllCodes");
+
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
+
+            // Clear the codes list and then move in the new data
+            Codes.Clear();
+
+            // get the column indexes out
+            const int CODE_COL = 0;
+            const int TYPE_COL = 1;
+            const int NAME_COL = 2;
+            const int SHORT_NAME_COL = 3;
+            const int IS_ACTIVE_COL = 4;
+            const int HIDDEN_COL = 5;
+            const int ID_COL = 6;
+            const int DESC_COL = 7;
+            const int THEME_COL = 8;
+            const int LINK_COL = 9;
+            const int THEME_NAME_COL = 12;
+            const int PARENT_SHORT_NAME = 13;
+            const int PARENT_NAME = 14;
+            const int PARENT_CODE = 15;
+
+            Item_Aggregation_Related_Aggregations lastAggr = null;
+
+            while (reader.Read())
             {
-                SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Item_Aggregation_AllCodes", connect);
+                // Get the list key values out 
+                string code = reader.GetString(CODE_COL).ToUpper();
+                string type = reader.GetString(TYPE_COL);
 
-                // Create the data reader
-                connect.Open();
-                using (SqlDataReader reader = executeCommand.ExecuteReader())
+                if ((lastAggr != null) && (lastAggr.Code == code))
                 {
-                    // Clear the codes list and then move in the new data
-                    Codes.Clear();
-
-                    // get the column indexes out
-                    const int CODE_COL = 0;
-                    const int TYPE_COL = 1;
-                    const int NAME_COL = 2;
-                    const int SHORT_NAME_COL = 3;
-                    const int IS_ACTIVE_COL = 4;
-                    const int HIDDEN_COL = 5;
-                    const int ID_COL = 6;
-                    const int DESC_COL = 7;
-                    const int THEME_COL = 8;
-                    const int LINK_COL = 9;
-                    const int THEME_NAME_COL = 12;
-                    const int PARENT_SHORT_NAME = 13;
-                    const int PARENT_NAME = 14;
-                    const int PARENT_CODE = 15;
-
-                    Item_Aggregation_Related_Aggregations lastAggr = null;
-
-                    while (reader.Read())
+                    if (!reader.IsDBNull(PARENT_CODE))
                     {
-                        // Get the list key values out 
-                        string code = reader.GetString(CODE_COL).ToUpper();
-                        string type = reader.GetString(TYPE_COL);
-
-                        if ((lastAggr != null) && (lastAggr.Code == code))
-                        {
-                            if (!reader.IsDBNull(PARENT_CODE))
-                            {
-                                string second_parent_code = reader.GetString(PARENT_CODE).ToUpper();
-                                string second_parent_name = reader.GetString(PARENT_NAME).ToUpper();
-                                string second_parent_short = reader.GetString(PARENT_SHORT_NAME);
-                                lastAggr.Add_Parent_Aggregation(second_parent_code, second_parent_name, second_parent_short);
-                            }
-                        }
-                        else
-                        {
-                            // Only do anything else if this is not somehow a repeat
-                            if (!Codes.isValidCode(code))
-                            {
-                                // Create the object
-                                lastAggr =
-                                    new Item_Aggregation_Related_Aggregations(code, reader.GetString(NAME_COL),
-                                        reader.GetString(SHORT_NAME_COL), type,
-                                        reader.GetBoolean(IS_ACTIVE_COL),
-                                        reader.GetBoolean(HIDDEN_COL),
-                                        reader.GetString(DESC_COL),
-                                        (ushort) reader.GetInt32(ID_COL));
-
-                                if (!reader.IsDBNull(LINK_COL))
-                                    lastAggr.External_Link = reader.GetString(LINK_COL);
-
-                                if (!reader.IsDBNull(THEME_NAME_COL))
-                                {
-                                    string theme_name = reader.GetString(THEME_NAME_COL);
-                                    int theme = reader.GetInt32(THEME_COL);
-                                    if (theme > 0)
-                                    {
-                                        lastAggr.Thematic_Heading = new Thematic_Heading(theme, theme_name);
-                                    }
-                                }
-
-                                if (!reader.IsDBNull(PARENT_CODE))
-                                {
-                                    string parent_code = reader.GetString(PARENT_CODE).ToUpper();
-                                    string parent_name = reader.GetString(PARENT_NAME).ToUpper();
-                                    string parent_short = reader.GetString(PARENT_SHORT_NAME);
-                                    lastAggr.Add_Parent_Aggregation(parent_code, parent_name, parent_short);
-                                }
-
-                                // Add this to the codes manager
-                                Codes.Add_Collection(lastAggr);
-                            }
-                        }
+                        string second_parent_code = reader.GetString(PARENT_CODE).ToUpper();
+                        string second_parent_name = reader.GetString(PARENT_NAME).ToUpper();
+                        string second_parent_short = reader.GetString(PARENT_SHORT_NAME);
+                        lastAggr.Add_Parent_Aggregation(second_parent_code, second_parent_name, second_parent_short);
                     }
-                    reader.Close();
                 }
-                connect.Close();
+                else
+                {
+                    // Only do anything else if this is not somehow a repeat
+                    if (!Codes.isValidCode(code))
+                    {
+                        // Create the object
+                        lastAggr =
+                            new Item_Aggregation_Related_Aggregations(code, reader.GetString(NAME_COL),
+                                reader.GetString(SHORT_NAME_COL), type,
+                                reader.GetBoolean(IS_ACTIVE_COL),
+                                reader.GetBoolean(HIDDEN_COL),
+                                reader.GetString(DESC_COL),
+                                (ushort) reader.GetInt32(ID_COL));
+
+                        if (!reader.IsDBNull(LINK_COL))
+                            lastAggr.External_Link = reader.GetString(LINK_COL);
+
+                        if (!reader.IsDBNull(THEME_NAME_COL))
+                        {
+                            string theme_name = reader.GetString(THEME_NAME_COL);
+                            int theme = reader.GetInt32(THEME_COL);
+                            if (theme > 0)
+                            {
+                                lastAggr.Thematic_Heading = new Thematic_Heading(theme, theme_name);
+                            }
+                        }
+
+                        if (!reader.IsDBNull(PARENT_CODE))
+                        {
+                            string parent_code = reader.GetString(PARENT_CODE).ToUpper();
+                            string parent_name = reader.GetString(PARENT_NAME).ToUpper();
+                            string parent_short = reader.GetString(PARENT_SHORT_NAME);
+                            lastAggr.Add_Parent_Aggregation(parent_code, parent_name, parent_short);
+                        }
+
+                        // Add this to the codes manager
+                        Codes.Add_Collection(lastAggr);
+                    }
+                }
             }
+
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
 
             // Succesful
             return true;
         }
 
         /// <summary> Populates the dictionary of all icons from the database </summary>
-        /// <param name="Icon_List"> List of icons to be populated with a successful database pulll </param>
+        /// <param name="IconList"> List of icons to be populated with a successful database pulll </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Icon_List' stored procedure <br /><br />
         /// The lookup values in this dictionary are the icon code uppercased.</remarks> 
-        public static bool Populate_Icon_List(Dictionary<string, Wordmark_Icon> Icon_List, Custom_Tracer Tracer)
+        public static bool Populate_Icon_List(Dictionary<string, Wordmark_Icon> IconList, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
                 Tracer.Add_Trace("Engine_Database.Populate_Icon_List", String.Empty);
             }
 
-            // Create the connection
-            using (SqlConnection connect = new SqlConnection(Connection_String))
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Icon_List");
+
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
+
+            // Clear existing icons
+            IconList.Clear();
+
+            while (reader.Read())
             {
-                SqlCommand executeCommand = new SqlCommand("SobekCM_Icon_List", connect) { CommandType = CommandType.StoredProcedure };
-
-
-                // Create the data reader
-                connect.Open();
-                using (SqlDataReader reader = executeCommand.ExecuteReader())
-                {
-                    // Clear existing icons
-                    Icon_List.Clear();
-
-                    while (reader.Read())
-                    {
-                        string code = reader.GetString(0).ToUpper();
-                        Icon_List[code] = new Wordmark_Icon(code, reader.GetString(1), reader.GetString(2), reader.GetString(3));
-                    }
-                    reader.Close();
-                }
-                connect.Close();
+                string code = reader.GetString(0).ToUpper();
+                IconList[code] = new Wordmark_Icon(code, reader.GetString(1), reader.GetString(2), reader.GetString(3));
             }
+
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
 
             // Succesful
             return true;
         }
 
         /// <summary> Populates the dictionary of all files and MIME types from the database </summary>
-        /// <param name="MIME_List"> List of files and MIME types to be populated with a successful database pulll </param>
+        /// <param name="MimeList"> List of files and MIME types to be populated with a successful database pulll </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Get_Mime_Types' stored procedure <br /><br />
         /// The lookup values in this dictionary are the file extensions in lower case.</remarks> 
-        public static bool Populate_MIME_List(Dictionary<string, Mime_Type_Info> MIME_List, Custom_Tracer Tracer)
+        public static bool Populate_MIME_List(Dictionary<string, Mime_Type_Info> MimeList, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
                 Tracer.Add_Trace("Engine_Database.Populate_MIME_List", String.Empty);
             }
 
-            // Create the connection
-            using (SqlConnection connect = new SqlConnection(Connection_String))
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Mime_Types");
+
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
+
+            // Clear existing icons
+            MimeList.Clear();
+
+            while (reader.Read())
             {
-                SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Mime_Types", connect) { CommandType = CommandType.StoredProcedure };
-
-
-                // Create the data reader
-                connect.Open();
-                using (SqlDataReader reader = executeCommand.ExecuteReader())
-                {
-                    // Clear existing icons
-                    MIME_List.Clear();
-
-                    while (reader.Read())
-                    {
-                        string extension = reader.GetString(0).ToLower();
-                        MIME_List[extension] = new Mime_Type_Info(extension, reader.GetString(1), reader.GetBoolean(2), reader.GetBoolean(3));
-                    }
-                    reader.Close();
-                }
-                connect.Close();
+                string extension = reader.GetString(0).ToLower();
+                MimeList[extension] = new Mime_Type_Info(extension, reader.GetString(1), reader.GetBoolean(2), reader.GetBoolean(3));
             }
+
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
 
             // Succesful
             return true;
         }
 
         /// <summary> Populates the date range from the database for which statistical information exists </summary>
-        /// <param name="Stats_Date_Object"> Statistical range object to hold the beginning and ending of the statistical information </param>
+        /// <param name="StatsDateObject"> Statistical range object to hold the beginning and ending of the statistical information </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Statistics_By_Date_Range' stored procedure <br /><br />
-        /// This is used by the <see cref="Statistics_HtmlSubwriter"/> class</remarks>
-        public static bool Populate_Statistics_Dates(Statistics_Dates Stats_Date_Object, Custom_Tracer Tracer)
+        /// This is used by the Statistics_HtmlSubwriter class</remarks>
+        public static bool Populate_Statistics_Dates(Statistics_Dates StatsDateObject, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -698,18 +641,18 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Execute this query stored procedure
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Statistics_Dates");
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Statistics_Dates");
 
                 // Reset the values in the object and then set from the database result
-                Stats_Date_Object.Clear();
-                Stats_Date_Object.Set_Statistics_Dates(tempSet.Tables[0]);
+                StatsDateObject.Clear();
+                StatsDateObject.Set_Statistics_Dates(tempSet.Tables[0]);
 
                 // No error encountered
                 return true;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Populate_Statistics_Dates", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -735,34 +678,30 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                // Create the connection
-                using (SqlConnection connect = new SqlConnection(Connection_String))
+                // Create the database agnostic reader
+                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Translation");
+
+                // Pull out the database reader
+                DbDataReader reader = readerWrapper.Reader;
+
+                // Clear the translation information
+                Translations.Clear();
+
+                while (reader.Read())
                 {
-                    SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Translation", connect) { CommandType = CommandType.StoredProcedure };
-
-                    // Clear the translation information
-                    Translations.Clear();
-
-                    // Create the data reader
-                    connect.Open();
-                    using (SqlDataReader reader = executeCommand.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            Translations.Add_French(reader.GetString(1), reader.GetString(2));
-                            Translations.Add_Spanish(reader.GetString(1), reader.GetString(3));
-                        }
-                        reader.Close();
-                    }
-                    connect.Close();
+                    Translations.Add_French(reader.GetString(1), reader.GetString(2));
+                    Translations.Add_Spanish(reader.GetString(1), reader.GetString(3));
                 }
+
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
 
                 // Return the first table from the returned dataset
                 return true;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Populate_Translations", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -789,11 +728,11 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[1];
-                paramList[0] = new SqlParameter("@activeonly", true);
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@activeonly", true);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_All_Portals", paramList);
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_All_Portals", paramList);
 
                 lock (Portals)
                 {
@@ -888,19 +827,19 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Execute this non-query stored procedure
-                SqlParameter[] paramList = new SqlParameter[4];
-                paramList[0] = new SqlParameter("@thematicheadingid", ThematicHeadingID);
-                paramList[1] = new SqlParameter("@themeorder", ThemeOrder);
-                paramList[2] = new SqlParameter("@themename", ThemeName);
-                paramList[3] = new SqlParameter("@newid", -1) { Direction = ParameterDirection.Output };
+                EalDbParameter[] paramList = new EalDbParameter[4];
+                paramList[0] = new EalDbParameter("@thematicheadingid", ThematicHeadingID);
+                paramList[1] = new EalDbParameter("@themeorder", ThemeOrder);
+                paramList[2] = new EalDbParameter("@themename", ThemeName);
+                paramList[3] = new EalDbParameter("@newid", -1) { Direction = ParameterDirection.Output };
 
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Edit_Thematic_Heading", paramList);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Edit_Thematic_Heading", paramList);
 
                 return Convert.ToInt32(paramList[3].Value);
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 return -1;
             }
         }
@@ -920,15 +859,15 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Execute this non-query stored procedure
-                SqlParameter[] paramList = new SqlParameter[1];
-                paramList[0] = new SqlParameter("@thematicheadingid", ThematicHeadingID);
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@thematicheadingid", ThematicHeadingID);
 
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Delete_Thematic_Heading", paramList);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Delete_Thematic_Heading", paramList);
                 return true;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 return false;
             }
         }
@@ -948,32 +887,32 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Define a temporary dataset
-            DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "mySobek_Get_All_Template_DefaultMetadatas");
+            DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_All_Template_DefaultMetadatas");
             return tempSet;
         }
 
         /// <summary> Gets complete information for an item which may be missing from the complete list of items </summary>
         /// <param name="BibID"> Bibliographic identifiers for the item of interest </param>
-        /// <param name="VID"> Volume identifiers for the item of interest </param>
+        /// <param name="Vid"> Volume identifiers for the item of interest </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Datarow with additional information about an item, including spatial details, publisher, donor, etc.. </returns>
         /// <remarks> This calls the 'SobekCM_Get_Item_Brief_Info' stored procedure </remarks> 
-        public static DataRow Get_Item_Information(string BibID, string VID, Custom_Tracer Tracer)
+        public static DataRow Get_Item_Information(string BibID, string Vid, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Engine_Database.Get_Item_Information", "Trying to pull information for " + BibID + "_" + VID);
+                Tracer.Add_Trace("Engine_Database.Get_Item_Information", "Trying to pull information for " + BibID + "_" + Vid);
             }
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[3];
-                parameters[0] = new SqlParameter("@bibid", BibID);
-                parameters[1] = new SqlParameter("@vid", VID);
-                parameters[2] = new SqlParameter("@include_aggregations", false);
+                EalDbParameter[] parameters = new EalDbParameter[3];
+                parameters[0] = new EalDbParameter("@bibid", BibID);
+                parameters[1] = new EalDbParameter("@vid", Vid);
+                parameters[2] = new EalDbParameter("@include_aggregations", false);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Brief_Info", parameters);
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Brief_Info", parameters);
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -986,7 +925,7 @@ namespace SobekCM.Engine_Library.Database
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Get_Item_Information", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -999,27 +938,27 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Gets complete information for an item which may be missing from the complete list of items </summary>
         /// <param name="BibID"> Bibliographic identifiers for the item of interest </param>
-        /// <param name="VID"> Volume identifiers for the item of interest </param>
-        /// <param name="Include_Aggregations"> Flag indicates whether to include the aggregationPermissions </param>
+        /// <param name="Vid"> Volume identifiers for the item of interest </param>
+        /// <param name="IncludeAggregations"> Flag indicates whether to include the aggregationPermissions </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Datarow with additional information about an item, including spatial details, publisher, donor, etc.. </returns>
         /// <remarks> This calls the 'SobekCM_Get_Item_Brief_Info' stored procedure </remarks> 
-        public static DataSet Get_Item_Information(string BibID, string VID, bool Include_Aggregations, Custom_Tracer Tracer)
+        public static DataSet Get_Item_Information(string BibID, string Vid, bool IncludeAggregations, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Engine_Database.Get_Item_Information", "Trying to pull information for " + BibID + "_" + VID);
+                Tracer.Add_Trace("Engine_Database.Get_Item_Information", "Trying to pull information for " + BibID + "_" + Vid);
             }
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[3];
-                parameters[0] = new SqlParameter("@bibid", BibID);
-                parameters[1] = new SqlParameter("@vid", VID);
-                parameters[2] = new SqlParameter("@include_aggregations", Include_Aggregations);
+                EalDbParameter[] parameters = new EalDbParameter[3];
+                parameters[0] = new EalDbParameter("@bibid", BibID);
+                parameters[1] = new EalDbParameter("@vid", Vid);
+                parameters[2] = new EalDbParameter("@include_aggregations", IncludeAggregations);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Brief_Info", parameters);
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Brief_Info", parameters);
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -1032,7 +971,7 @@ namespace SobekCM.Engine_Library.Database
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Get_Item_Information", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -1044,12 +983,13 @@ namespace SobekCM.Engine_Library.Database
         }
 
         /// <summary> Verified the item lookup object is filled, or populates the item lookup object with all the valid bibids and vids in the system </summary>
-        /// <param name="Include_Private"> Flag indicates whether to include private items in this list </param>
+        /// <param name="AlwaysRefresh"> Flag indicates if this should be refreshed, whether or not the item lookup object is filled </param>
+        /// <param name="IncludePrivate"> Flag indicates whether to include private items in this list </param>
         /// <param name="ItemLookupObject"> Item lookup object to directly populate from the database </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful or if the object is already filled, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Item_List_Web' stored procedure </remarks> 
-        internal static bool Verify_Item_Lookup_Object(bool Always_Refresh, bool Include_Private, Item_Lookup_Object ItemLookupObject, Custom_Tracer Tracer)
+        internal static bool Verify_Item_Lookup_Object(bool AlwaysRefresh, bool IncludePrivate, Item_Lookup_Object ItemLookupObject, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -1063,7 +1003,7 @@ namespace SobekCM.Engine_Library.Database
             lock (itemListPopulationLock)
             {
                 bool updateList = true;
-                if (( !Always_Refresh ) && ( ItemLookupObject != null))
+                if (( !AlwaysRefresh ) && ( ItemLookupObject != null))
                 {
                     TimeSpan sinceLastUpdate = DateTime.Now.Subtract(ItemLookupObject.Last_Updated);
                     if (sinceLastUpdate.TotalMinutes <= 1)
@@ -1079,7 +1019,7 @@ namespace SobekCM.Engine_Library.Database
                     ItemLookupObject = new Item_Lookup_Object();
 
                 // Have the database popoulate the little bit of bibid/vid information we retain
-                bool returnValue = Populate_Item_Lookup_Object(Include_Private, ItemLookupObject, Tracer);
+                bool returnValue = Populate_Item_Lookup_Object(IncludePrivate, ItemLookupObject, Tracer);
                 if (returnValue)
                     ItemLookupObject.Last_Updated = DateTime.Now;
                 return returnValue;
@@ -1088,12 +1028,12 @@ namespace SobekCM.Engine_Library.Database
 
 
         /// <summary> Populates the item lookup object with all the valid bibids and vids in the system </summary>
-        /// <param name="Include_Private"> Flag indicates whether to include private items in this list </param>
+        /// <param name="IncludePrivate"> Flag indicates whether to include private items in this list </param>
         /// <param name="ItemLookupObject"> Item lookup object to directly populate from the database </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Item_List_Web' stored procedure </remarks> 
-        public static bool Populate_Item_Lookup_Object(bool Include_Private, Item_Lookup_Object ItemLookupObject, Custom_Tracer Tracer)
+        public static bool Populate_Item_Lookup_Object(bool IncludePrivate, Item_Lookup_Object ItemLookupObject, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -1102,55 +1042,52 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
+                // Create the parameter list
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@include_private", IncludePrivate);
 
-                // Create the connection
-                using (SqlConnection connect = new SqlConnection(Connection_String + "Connection Timeout=45"))
+                // Get the data reader (wrapper)
+                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "SobekCM_Item_List", parameters);
+
+                // Pull out the database reader
+                DbDataReader reader = readerWrapper.Reader;
+
+                // Clear existing volumes
+                ItemLookupObject.Clear();
+                ItemLookupObject.Last_Updated = DateTime.Now;
+
+                string currentBibid = String.Empty;
+                Multiple_Volume_Item currentVolume = null;
+                while (reader.Read())
                 {
+                    // Grab the values out
+                    string newBib = reader.GetString(0);
+                    string newVid = reader.GetString(1);
+                    short newMask = reader.GetInt16(2);
+                    string title = reader.GetString(3);
 
-                    SqlCommand executeCommand = new SqlCommand("SobekCM_Item_List", connect) { CommandTimeout = 45, CommandType = CommandType.StoredProcedure };
-                    executeCommand.Parameters.AddWithValue("@include_private", Include_Private);
-
-                    // Create the data reader
-                    connect.Open();
-                    using (SqlDataReader reader = executeCommand.ExecuteReader())
+                    // Create a new multiple volume object?
+                    if (newBib != currentBibid)
                     {
-                        // Clear existing volumes
-                        ItemLookupObject.Clear();
-                        ItemLookupObject.Last_Updated = DateTime.Now;
-
-                        string currentBibid = String.Empty;
-                        Multiple_Volume_Item currentVolume = null;
-                        while (reader.Read())
-                        {
-                            // Grab the values out
-                            string newBib = reader.GetString(0);
-                            string newVid = reader.GetString(1);
-                            short newMask = reader.GetInt16(2);
-                            string title = reader.GetString(3);
-
-                            // Create a new multiple volume object?
-                            if (newBib != currentBibid)
-                            {
-                                currentBibid = newBib;
-                                currentVolume = new Multiple_Volume_Item(newBib);
-                                ItemLookupObject.Add_Title(currentVolume);
-                            }
-
-                            // Add this volume
-                            Single_Item newItem = new Single_Item(newVid, newMask, title);
-                            if (currentVolume != null) currentVolume.Add_Item(newItem);
-                        }
-                        reader.Close();
+                        currentBibid = newBib;
+                        currentVolume = new Multiple_Volume_Item(newBib);
+                        ItemLookupObject.Add_Title(currentVolume);
                     }
-                    connect.Close();
+
+                    // Add this volume
+                    Single_Item newItem = new Single_Item(newVid, newMask, title);
+                    if (currentVolume != null) currentVolume.Add_Item(newItem);
                 }
+
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
 
                 // Return the first table from the returned dataset
                 return true;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Populate_Item_Lookup_Object", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -1163,536 +1100,437 @@ namespace SobekCM.Engine_Library.Database
 
         #region Methods to perform database searches
 
-        
-		/// <summary> Perform a metadata search against items in the database and return one page of results </summary>
+
+        /// <summary> Perform a metadata search against items in the database and return one page of results </summary>
         /// <param name="Link1"> Link for the first term, can only be used to NOT the first term ( 2=NOT )</param>
-		/// <param name="Term1"> First search term for this metadata search </param>
-		/// <param name="Field1"> Field number to search for (or -1 to search all fields)</param>
-		/// <param name="Link2"> Link between the first and second terms ( 0=AND, 1=OR, 2=AND NOT )</param>
-		/// <param name="Term2"> Second search term for this metadata search </param>
-		/// <param name="Field2"> Field number to search for (or -1 to search all fields)</param>
-		/// <param name="Link3">Link between the second and third search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
-		/// <param name="Term3"> Third search term for this metadata search </param>
-		/// <param name="Field3"> Field number to search for (or -1 to search all fields)</param>
-		/// <param name="Link4">Link between the third and fourth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
-		/// <param name="Term4"> Fourth search term for this metadata search </param>
-		/// <param name="Field4"> Field number to search for (or -1 to search all fields)</param>
-		/// <param name="Link5">Link between the fourth and fifth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
-		/// <param name="Term5"> Fifth search term for this metadata search </param>
-		/// <param name="Field5"> Field number to search for (or -1 to search all fields)</param>
-		/// <param name="Link6">Link between the fifth and sixth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
-		/// <param name="Term6"> Sixth search term for this metadata search </param>
-		/// <param name="Field6"> Field number to search for (or -1 to search all fields)</param>
-		/// <param name="Link7">Link between the sixth and seventh search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
-		/// <param name="Term7"> Seventh search term for this metadata search </param>
-		/// <param name="Field7"> Field number to search for (or -1 to search all fields)</param>
-		/// <param name="Link8">Link between the seventh and eighth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
-		/// <param name="Term8"> Eighth search term for this metadata search </param>
-		/// <param name="Field8"> Field number to search for (or -1 to search all fields)</param>
-		/// <param name="Link9">Link between the eighth and ninth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
-		/// <param name="Term9"> Ninth search term for this metadata search </param>
-		/// <param name="Field9"> FIeld number to search for (or -1 to search all fields)</param>
-		/// <param name="Link10">Link between the ninth and tenth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
-		/// <param name="Term10"> Tenth search term for this metadata search </param>
-		/// <param name="Field10"> Field number to search for (or -1 to search all fields)</param>
-		/// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
-		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
-		/// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
-		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
-		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
-		/// <param name="DateRange_Start"> If this search includes a date range search, start of the date range, or -1</param>
-		/// <param name="DateRange_End"> If this search includes a date range search, end of the date range, or -1</param>
-		/// <param name="Include_Facets"> Flag indicates whether to include facets </param>
-		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
-		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Small arguments object which contains the page of results and optionally statistics about results for the entire search, including complete counts and facet information </returns>
-		/// <remarks> This calls the 'SobekCM_Metadata_Search_Paged' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Perform_Metadata_Search_Paged(int Link1, string Term1, int Field1,
-																				int Link2, string Term2, int Field2, int Link3, string Term3, int Field3, int Link4, string Term4, int Field4,
-																				int Link5, string Term5, int Field5, int Link6, string Term6, int Field6, int Link7, string Term7, int Field7,
-																				int Link8, string Term8, int Field8, int Link9, string Term9, int Field9, int Link10, string Term10, int Field10,
-																				bool Include_Private_Items, string AggregationCode, long DateRange_Start, long DateRange_End, 
-																				int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, 
-																				List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Engine_Database.Perform_Metadata_Search_Paged", "Performing search in database");
-			}
+        /// <param name="Term1"> First search term for this metadata search </param>
+        /// <param name="Field1"> Field number to search for (or -1 to search all fields)</param>
+        /// <param name="Link2"> Link between the first and second terms ( 0=AND, 1=OR, 2=AND NOT )</param>
+        /// <param name="Term2"> Second search term for this metadata search </param>
+        /// <param name="Field2"> Field number to search for (or -1 to search all fields)</param>
+        /// <param name="Link3">Link between the second and third search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
+        /// <param name="Term3"> Third search term for this metadata search </param>
+        /// <param name="Field3"> Field number to search for (or -1 to search all fields)</param>
+        /// <param name="Link4">Link between the third and fourth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
+        /// <param name="Term4"> Fourth search term for this metadata search </param>
+        /// <param name="Field4"> Field number to search for (or -1 to search all fields)</param>
+        /// <param name="Link5">Link between the fourth and fifth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
+        /// <param name="Term5"> Fifth search term for this metadata search </param>
+        /// <param name="Field5"> Field number to search for (or -1 to search all fields)</param>
+        /// <param name="Link6">Link between the fifth and sixth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
+        /// <param name="Term6"> Sixth search term for this metadata search </param>
+        /// <param name="Field6"> Field number to search for (or -1 to search all fields)</param>
+        /// <param name="Link7">Link between the sixth and seventh search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
+        /// <param name="Term7"> Seventh search term for this metadata search </param>
+        /// <param name="Field7"> Field number to search for (or -1 to search all fields)</param>
+        /// <param name="Link8">Link between the seventh and eighth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
+        /// <param name="Term8"> Eighth search term for this metadata search </param>
+        /// <param name="Field8"> Field number to search for (or -1 to search all fields)</param>
+        /// <param name="Link9">Link between the eighth and ninth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
+        /// <param name="Term9"> Ninth search term for this metadata search </param>
+        /// <param name="Field9"> FIeld number to search for (or -1 to search all fields)</param>
+        /// <param name="Link10">Link between the ninth and tenth search terms ( 0=AND, 1=OR, 2=AND NOT )</param>
+        /// <param name="Term10"> Tenth search term for this metadata search </param>
+        /// <param name="Field10"> Field number to search for (or -1 to search all fields)</param>
+        /// <param name="IncludePrivateItems"> Flag indicates whether to include private items in the result set </param>
+        /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
+        /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
+        /// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
+        /// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
+        /// <param name="DateRangeStart"> If this search includes a date range search, start of the date range, or -1</param>
+        /// <param name="DateRangeEnd"> If this search includes a date range search, end of the date range, or -1</param>
+        /// <param name="IncludeFacets"> Flag indicates whether to include facets </param>
+        /// <param name="FacetTypes"> Primary key for the metadata types to include as facets (up to eight)</param>
+        /// <param name="ReturnSearchStatistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Small arguments object which contains the page of results and optionally statistics about results for the entire search, including complete counts and facet information </returns>
+        /// <remarks> This calls the 'SobekCM_Metadata_Search_Paged' stored procedure </remarks>
+        public static Multiple_Paged_Results_Args Perform_Metadata_Search_Paged(int Link1, string Term1, int Field1,
+            int Link2, string Term2, int Field2, int Link3, string Term3, int Field3, int Link4, string Term4, int Field4,
+            int Link5, string Term5, int Field5, int Link6, string Term6, int Field6, int Link7, string Term7, int Field7,
+            int Link8, string Term8, int Field8, int Link9, string Term9, int Field9, int Link10, string Term10, int Field10,
+            bool IncludePrivateItems, string AggregationCode, long DateRangeStart, long DateRangeEnd,
+            int ResultsPerPage, int ResultsPage, int Sort, bool IncludeFacets,
+            List<short> FacetTypes, bool ReturnSearchStatistics, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Perform_Metadata_Search_Paged", "Performing search in database");
+            }
 
-			Multiple_Paged_Results_Args returnArgs;
+            // Build the parameter list
+            List<EalDbParameter> parameters = new List<EalDbParameter>();
+            parameters.Add(new EalDbParameter("@link1", Link1));
+            parameters.Add(new EalDbParameter("@term1", Term1));
+            parameters.Add(new EalDbParameter("@field1", Field1));
+            parameters.Add(new EalDbParameter("@link2", Link2));
+            parameters.Add(new EalDbParameter("@term2", Term2));
+            parameters.Add(new EalDbParameter("@field2", Field2));
+            parameters.Add(new EalDbParameter("@link3", Link3));
+            parameters.Add(new EalDbParameter("@term3", Term3));
+            parameters.Add(new EalDbParameter("@field3", Field3));
+            parameters.Add(new EalDbParameter("@link4", Link4));
+            parameters.Add(new EalDbParameter("@term4", Term4));
+            parameters.Add(new EalDbParameter("@field4", Field4));
+            parameters.Add(new EalDbParameter("@link5", Link5));
+            parameters.Add(new EalDbParameter("@term5", Term5));
+            parameters.Add(new EalDbParameter("@field5", Field5));
+            parameters.Add(new EalDbParameter("@link6", Link6));
+            parameters.Add(new EalDbParameter("@term6", Term6));
+            parameters.Add(new EalDbParameter("@field6", Field6));
+            parameters.Add(new EalDbParameter("@link7", Link7));
+            parameters.Add(new EalDbParameter("@term7", Term7));
+            parameters.Add(new EalDbParameter("@field7", Field7));
+            parameters.Add(new EalDbParameter("@link8", Link8));
+            parameters.Add(new EalDbParameter("@term8", Term8));
+            parameters.Add(new EalDbParameter("@field8", Field8));
+            parameters.Add(new EalDbParameter("@link9", Link9));
+            parameters.Add(new EalDbParameter("@term9", Term9));
+            parameters.Add(new EalDbParameter("@field9", Field9));
+            parameters.Add(new EalDbParameter("@link10", Link10));
+            parameters.Add(new EalDbParameter("@term10", Term10));
+            parameters.Add(new EalDbParameter("@field10", Field10));
+            parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
+            if (AggregationCode.ToUpper() == "ALL")
+                AggregationCode = String.Empty;
+            parameters.Add(new EalDbParameter("@aggregationcode", AggregationCode));
+            parameters.Add(new EalDbParameter("@daterange_start", DateRangeStart));
+            parameters.Add(new EalDbParameter("@daterange_end", DateRangeEnd));
+            parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
+            parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
+            parameters.Add(new EalDbParameter("@sort", Sort));
 
-			// Create the connection
-			using (SqlConnection connect = new SqlConnection(Connection_String + "Connection Timeout=45"))
-			{
+            // If this is for more than 100 results, don't look ahead
+            if (ResultsPerPage > 100)
+            {
+                parameters.Add(new EalDbParameter("@minpagelookahead", 1));
+                parameters.Add(new EalDbParameter("@maxpagelookahead", 1));
+                parameters.Add(new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR));
+            }
+            else
+            {
+                parameters.Add(new EalDbParameter("@minpagelookahead", MIN_PAGE_LOOKAHEAD));
+                parameters.Add(new EalDbParameter("@maxpagelookahead", MAX_PAGE_LOOKAHEAD));
+                parameters.Add(new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR));
+            }
 
-				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Metadata_Search_Paged", connect)
-												{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
+            if ((IncludeFacets) && (FacetTypes != null) && (FacetTypes.Count > 0) && (ReturnSearchStatistics))
+            {
+                parameters.Add(new EalDbParameter("@include_facets", true));
+                parameters.Add(FacetTypes.Count > 0 ? new EalDbParameter("@facettype1", FacetTypes[0]) : new EalDbParameter("@facettype1", -1));
+                parameters.Add(FacetTypes.Count > 1 ? new EalDbParameter("@facettype2", FacetTypes[1]) : new EalDbParameter("@facettype2", -1));
+                parameters.Add(FacetTypes.Count > 2 ? new EalDbParameter("@facettype3", FacetTypes[2]) : new EalDbParameter("@facettype3", -1));
+                parameters.Add(FacetTypes.Count > 3 ? new EalDbParameter("@facettype4", FacetTypes[3]) : new EalDbParameter("@facettype4", -1));
+                parameters.Add(FacetTypes.Count > 4 ? new EalDbParameter("@facettype5", FacetTypes[4]) : new EalDbParameter("@facettype5", -1));
+                parameters.Add(FacetTypes.Count > 5 ? new EalDbParameter("@facettype6", FacetTypes[5]) : new EalDbParameter("@facettype6", -1));
+                parameters.Add(FacetTypes.Count > 6 ? new EalDbParameter("@facettype7", FacetTypes[6]) : new EalDbParameter("@facettype7", -1));
+                parameters.Add(FacetTypes.Count > 7 ? new EalDbParameter("@facettype8", FacetTypes[7]) : new EalDbParameter("@facettype8", -1));
+            }
+            else
+            {
+                parameters.Add(new EalDbParameter("@include_facets", false));
+                parameters.Add(new EalDbParameter("@facettype1", -1));
+                parameters.Add(new EalDbParameter("@facettype2", -1));
+                parameters.Add(new EalDbParameter("@facettype3", -1));
+                parameters.Add(new EalDbParameter("@facettype4", -1));
+                parameters.Add(new EalDbParameter("@facettype5", -1));
+                parameters.Add(new EalDbParameter("@facettype6", -1));
+                parameters.Add(new EalDbParameter("@facettype7", -1));
+                parameters.Add(new EalDbParameter("@facettype8", -1));
+            }
 
-                executeCommand.Parameters.AddWithValue("@link1", Link1);
-				executeCommand.Parameters.AddWithValue("@term1", Term1);
-				executeCommand.Parameters.AddWithValue("@field1", Field1);
-				executeCommand.Parameters.AddWithValue("@link2", Link2);
-				executeCommand.Parameters.AddWithValue("@term2", Term2);
-				executeCommand.Parameters.AddWithValue("@field2", Field2);
-				executeCommand.Parameters.AddWithValue("@link3", Link3);
-				executeCommand.Parameters.AddWithValue("@term3", Term3);
-				executeCommand.Parameters.AddWithValue("@field3", Field3);
-				executeCommand.Parameters.AddWithValue("@link4", Link4);
-				executeCommand.Parameters.AddWithValue("@term4", Term4);
-				executeCommand.Parameters.AddWithValue("@field4", Field4);
-				executeCommand.Parameters.AddWithValue("@link5", Link5);
-				executeCommand.Parameters.AddWithValue("@term5", Term5);
-				executeCommand.Parameters.AddWithValue("@field5", Field5);
-				executeCommand.Parameters.AddWithValue("@link6", Link6);
-				executeCommand.Parameters.AddWithValue("@term6", Term6);
-				executeCommand.Parameters.AddWithValue("@field6", Field6);
-				executeCommand.Parameters.AddWithValue("@link7", Link7);
-				executeCommand.Parameters.AddWithValue("@term7", Term7);
-				executeCommand.Parameters.AddWithValue("@field7", Field7);
-				executeCommand.Parameters.AddWithValue("@link8", Link8);
-				executeCommand.Parameters.AddWithValue("@term8", Term8);
-				executeCommand.Parameters.AddWithValue("@field8", Field8);
-				executeCommand.Parameters.AddWithValue("@link9", Link9);
-				executeCommand.Parameters.AddWithValue("@term9", Term9);
-				executeCommand.Parameters.AddWithValue("@field9", Field9);
-				executeCommand.Parameters.AddWithValue("@link10", Link10);
-				executeCommand.Parameters.AddWithValue("@term10", Term10);
-				executeCommand.Parameters.AddWithValue("@field10", Field10);
-				executeCommand.Parameters.AddWithValue("@include_private", Include_Private_Items);
-				if (AggregationCode.ToUpper() == "ALL")
-					AggregationCode = String.Empty;
-				executeCommand.Parameters.AddWithValue("@aggregationcode", AggregationCode);
-				executeCommand.Parameters.AddWithValue("@daterange_start", DateRange_Start);
-				executeCommand.Parameters.AddWithValue("@daterange_end", DateRange_End);
-				executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
-				executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
-				executeCommand.Parameters.AddWithValue("@sort", Sort);
+            // Add parameters for total items and total titles
+            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalItemsParameter);
 
-				// If this is for more than 100 results, don't look ahead
-				if (ResultsPerPage > 100)
-				{
-					executeCommand.Parameters.AddWithValue("@minpagelookahead", 1);
-					executeCommand.Parameters.AddWithValue("@maxpagelookahead", 1);
-					executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
-				}
-				else
-				{
-					executeCommand.Parameters.AddWithValue("@minpagelookahead", MIN_PAGE_LOOKAHEAD);
-					executeCommand.Parameters.AddWithValue("@maxpagelookahead", MAX_PAGE_LOOKAHEAD);
-					executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
-				}
+            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalItemsParameter);
 
-				if ((Include_Facets) && (Facet_Types != null) && ( Facet_Types.Count > 0 ) && (Return_Search_Statistics))
-				{
-					executeCommand.Parameters.AddWithValue("@include_facets", true);
-					if (Facet_Types.Count > 0)
-						executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype1", -1);
-					if (Facet_Types.Count > 1)
-						executeCommand.Parameters.AddWithValue("@facettype2", Facet_Types[1]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype2", -1);
-					if (Facet_Types.Count > 2)
-						executeCommand.Parameters.AddWithValue("@facettype3", Facet_Types[2]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype3", -1);
-					if (Facet_Types.Count > 3)
-						executeCommand.Parameters.AddWithValue("@facettype4", Facet_Types[3]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype4", -1);
-					if (Facet_Types.Count > 4)
-						executeCommand.Parameters.AddWithValue("@facettype5", Facet_Types[4]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype5", -1);
-					if (Facet_Types.Count > 5)
-						executeCommand.Parameters.AddWithValue("@facettype6", Facet_Types[5]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype6", -1);
-					if (Facet_Types.Count > 6)
-						executeCommand.Parameters.AddWithValue("@facettype7", Facet_Types[6]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype7", -1);
-					if (Facet_Types.Count > 7)
-						executeCommand.Parameters.AddWithValue("@facettype8", Facet_Types[7]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype8", -1);
-				}
-				else
-				{
-					executeCommand.Parameters.AddWithValue("@include_facets", false);
-					executeCommand.Parameters.AddWithValue("@facettype1", -1);
-					executeCommand.Parameters.AddWithValue("@facettype2", -1);
-					executeCommand.Parameters.AddWithValue("@facettype3", -1);
-					executeCommand.Parameters.AddWithValue("@facettype4", -1);
-					executeCommand.Parameters.AddWithValue("@facettype5", -1);
-					executeCommand.Parameters.AddWithValue("@facettype6", -1);
-					executeCommand.Parameters.AddWithValue("@facettype7", -1);
-					executeCommand.Parameters.AddWithValue("@facettype8", -1);
-				}
+            // Add parameters for items and titles if this search is expanded to include all aggregationPermissions
+            EalDbParameter expandedItemsParameter = new EalDbParameter("@all_collections_items", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(expandedItemsParameter);
 
-				// Add parameters for total items and total titles
-				SqlParameter totalItemsParameter = executeCommand.Parameters.AddWithValue("@total_items", 0);
-				totalItemsParameter.Direction = ParameterDirection.InputOutput;
+            EalDbParameter expandedTitlesParameter = new EalDbParameter("@all_collections_titles", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(expandedTitlesParameter);
 
-				SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
-				totalTitlesParameter.Direction = ParameterDirection.InputOutput;
+            // Get the data reader (wrapper)
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "SobekCM_Metadata_Search_Paged", parameters);
 
-				// Add parameters for items and titles if this search is expanded to include all aggregationPermissions
-				SqlParameter expandedItemsParameter = executeCommand.Parameters.AddWithValue("@all_collections_items", 0);
-				expandedItemsParameter.Direction = ParameterDirection.InputOutput;
+            // Create the return argument object
+            List<string> metadataLabels = new List<string>();
+            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args
+            {
+                Paged_Results = DataReader_To_Result_List_With_LookAhead2(readerWrapper.Reader, ResultsPerPage, metadataLabels)
+            };
 
-				SqlParameter expandedTitlesParameter = executeCommand.Parameters.AddWithValue("@all_collections_titles", 0);
-				expandedTitlesParameter.Direction = ParameterDirection.InputOutput;
+            // Create the overall search statistics?
+            if (ReturnSearchStatistics)
+            {
+                Search_Results_Statistics stats = new Search_Results_Statistics(readerWrapper.Reader, FacetTypes, metadataLabels);
+                returnArgs.Statistics = stats;
+                readerWrapper.Close();
+                stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
+                stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
+                stats.All_Collections_Items = Convert.ToInt32(expandedItemsParameter.Value);
+                stats.All_Collections_Titles = Convert.ToInt32(expandedTitlesParameter.Value);
+            }
 
-				// Create the data reader
-				connect.Open();
-				using (SqlDataReader reader = executeCommand.ExecuteReader())
-				{
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
 
-					// Create the return argument object
-					List<string> metadataLabels = new List<string>(); 
-					returnArgs = new Multiple_Paged_Results_Args
-									 {Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)};
+            // Return the built result arguments
+            return returnArgs;
+        }
 
-					// Create the overall search statistics?
-					if (Return_Search_Statistics)
-					{
-						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
-						returnArgs.Statistics = stats;
-						reader.Close();
-						stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
-						stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
-						stats.All_Collections_Items = Convert.ToInt32(expandedItemsParameter.Value);
-						stats.All_Collections_Titles = Convert.ToInt32(expandedTitlesParameter.Value);
-					}
-					else
-					{
-						reader.Close();
-					}
-				}
-				connect.Close();
-			}
+        /// <summary> Performs a basic metadata search over the entire citation, given a search condition, and returns one page of results </summary>
+        /// <param name="SearchCondition"> Search condition string to be run against the databasse </param>
+        /// <param name="IncludePrivateItems"> Flag indicates whether to include private items in the result set </param>
+        /// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
+        /// <param name="DateRangeStart"> If this search includes a date range search, start of the date range, or -1</param>
+        /// <param name="DateRangeEnd"> If this search includes a date range search, end of the date range, or -1</param>
+        /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
+        /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
+        /// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
+        /// <param name="IncludeFacets"> Flag indicates whether to include facets in the result set </param>
+        /// <param name="FacetTypes"> Primary key for the metadata types to include as facets (up to eight)</param>
+        /// <param name="ReturnSearchStatistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Small arguments object which contains the page of results and optionally statistics about results for the entire search, including complete counts and facet information </returns>
+        /// <remarks> This calls the 'SobekCM_Metadata_Basic_Search_Paged' stored procedure </remarks>
+        public static Multiple_Paged_Results_Args Perform_Metadata_Search_Paged(string SearchCondition, bool IncludePrivateItems, string AggregationCode, long DateRangeStart, long DateRangeEnd, int ResultsPerPage, int ResultsPage, int Sort, bool IncludeFacets, List<short> FacetTypes, bool ReturnSearchStatistics, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Perform_Basic_Search_Paged", "Performing basic search in database");
+            }
 
-			// Return the built result arguments
-			return returnArgs;
-		}
+            // Build the list of parameters
+            List<EalDbParameter> parameters = new List<EalDbParameter>();
+            parameters.Add(new EalDbParameter("@searchcondition", SearchCondition.Replace("''", "'")));
+            parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
+            if (AggregationCode.ToUpper() == "ALL")
+                AggregationCode = String.Empty;
+            parameters.Add(new EalDbParameter("@aggregationcode", AggregationCode));
+            parameters.Add(new EalDbParameter("@daterange_start", DateRangeStart));
+            parameters.Add(new EalDbParameter("@daterange_end", DateRangeEnd));
+            parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
+            parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
+            parameters.Add(new EalDbParameter("@sort", Sort));
 
-		/// <summary> Performs a basic metadata search over the entire citation, given a search condition, and returns one page of results </summary>
-		/// <param name="Search_Condition"> Search condition string to be run against the databasse </param>
-		/// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
-		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
-		/// <param name="DateRange_Start"> If this search includes a date range search, start of the date range, or -1</param>
-		/// <param name="DateRange_End"> If this search includes a date range search, end of the date range, or -1</param>
-		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
-		/// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
-		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
-		/// <param name="Include_Facets"> Flag indicates whether to include facets in the result set </param>
-		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
-		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Small arguments object which contains the page of results and optionally statistics about results for the entire search, including complete counts and facet information </returns>
-		/// <remarks> This calls the 'SobekCM_Metadata_Basic_Search_Paged' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Perform_Metadata_Search_Paged( string Search_Condition, bool Include_Private_Items, string AggregationCode, long DateRange_Start, long DateRange_End, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Engine_Database.Perform_Basic_Search_Paged", "Performing basic search in database");
-			}
+            // If this is for more than 100 results, don't look ahead
+            if (ResultsPerPage > 100)
+            {
+                parameters.Add(new EalDbParameter("@minpagelookahead", 1));
+                parameters.Add(new EalDbParameter("@maxpagelookahead", 1));
+                parameters.Add(new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR));
+            }
+            else
+            {
+                parameters.Add(new EalDbParameter("@minpagelookahead", MIN_PAGE_LOOKAHEAD));
+                parameters.Add(new EalDbParameter("@maxpagelookahead", MAX_PAGE_LOOKAHEAD));
+                parameters.Add(new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR));
+            }
 
-			Multiple_Paged_Results_Args returnArgs;
+            if ((IncludeFacets) && (FacetTypes != null) && (FacetTypes.Count > 0) && (ReturnSearchStatistics))
+            {
+                parameters.Add(new EalDbParameter("@include_facets", true));
+                parameters.Add(FacetTypes.Count > 0 ? new EalDbParameter("@facettype1", FacetTypes[0]) : new EalDbParameter("@facettype1", -1));
+                parameters.Add(FacetTypes.Count > 1 ? new EalDbParameter("@facettype2", FacetTypes[1]) : new EalDbParameter("@facettype2", -1));
+                parameters.Add(FacetTypes.Count > 2 ? new EalDbParameter("@facettype3", FacetTypes[2]) : new EalDbParameter("@facettype3", -1));
+                parameters.Add(FacetTypes.Count > 3 ? new EalDbParameter("@facettype4", FacetTypes[3]) : new EalDbParameter("@facettype4", -1));
+                parameters.Add(FacetTypes.Count > 4 ? new EalDbParameter("@facettype5", FacetTypes[4]) : new EalDbParameter("@facettype5", -1));
+                parameters.Add(FacetTypes.Count > 5 ? new EalDbParameter("@facettype6", FacetTypes[5]) : new EalDbParameter("@facettype6", -1));
+                parameters.Add(FacetTypes.Count > 6 ? new EalDbParameter("@facettype7", FacetTypes[6]) : new EalDbParameter("@facettype7", -1));
+                parameters.Add(FacetTypes.Count > 7 ? new EalDbParameter("@facettype8", FacetTypes[7]) : new EalDbParameter("@facettype8", -1));
+            }
+            else
+            {
+                parameters.Add(new EalDbParameter("@include_facets", false));
+                parameters.Add(new EalDbParameter("@facettype1", -1));
+                parameters.Add(new EalDbParameter("@facettype2", -1));
+                parameters.Add(new EalDbParameter("@facettype3", -1));
+                parameters.Add(new EalDbParameter("@facettype4", -1));
+                parameters.Add(new EalDbParameter("@facettype5", -1));
+                parameters.Add(new EalDbParameter("@facettype6", -1));
+                parameters.Add(new EalDbParameter("@facettype7", -1));
+                parameters.Add(new EalDbParameter("@facettype8", -1));
+            }
 
-			// Create the connection
-			using (SqlConnection connect = new SqlConnection(Connection_String + "Connection Timeout=45"))
-			{
+            // Add parameters for total items and total titles
+            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalItemsParameter);
 
-				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Metadata_Basic_Search_Paged2", connect)
-												{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
+            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalTitlesParameter);
 
-				executeCommand.Parameters.AddWithValue("@searchcondition", Search_Condition.Replace("''","'"));
-				executeCommand.Parameters.AddWithValue("@include_private", Include_Private_Items);
-				if (AggregationCode.ToUpper() == "ALL")
-					AggregationCode = String.Empty;
-				executeCommand.Parameters.AddWithValue("@aggregationcode", AggregationCode);
-				executeCommand.Parameters.AddWithValue("@daterange_start", DateRange_Start);
-				executeCommand.Parameters.AddWithValue("@daterange_end", DateRange_End);
-				executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
-				executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
-				executeCommand.Parameters.AddWithValue("@sort", Sort);
+            // Add parameters for items and titles if this search is expanded to include all aggregationPermissions
+            EalDbParameter expandedItemsParameter = new EalDbParameter("@all_collections_items", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(expandedItemsParameter);
 
-				// If this is for more than 100 results, don't look ahead
-				if (ResultsPerPage > 100)
-				{
-					executeCommand.Parameters.AddWithValue("@minpagelookahead", 1);
-					executeCommand.Parameters.AddWithValue("@maxpagelookahead", 1);
-					executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
-				}
-				else
-				{
-					executeCommand.Parameters.AddWithValue("@minpagelookahead", MIN_PAGE_LOOKAHEAD);
-					executeCommand.Parameters.AddWithValue("@maxpagelookahead", MAX_PAGE_LOOKAHEAD);
-					executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
-				}
+            EalDbParameter expandedTitlesParameter = new EalDbParameter("@all_collections_titles", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(expandedTitlesParameter);
 
-				if ((Include_Facets) && (Facet_Types != null) && ( Facet_Types.Count > 0 ) && (Return_Search_Statistics))
-				{
-					executeCommand.Parameters.AddWithValue("@include_facets", true);
-					if (Facet_Types.Count > 0)
-						executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype1", -1);
-					if (Facet_Types.Count > 1)
-						executeCommand.Parameters.AddWithValue("@facettype2", Facet_Types[1]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype2", -1);
-					if (Facet_Types.Count > 2)
-						executeCommand.Parameters.AddWithValue("@facettype3", Facet_Types[2]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype3", -1);
-					if (Facet_Types.Count > 3)
-						executeCommand.Parameters.AddWithValue("@facettype4", Facet_Types[3]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype4", -1);
-					if (Facet_Types.Count > 4)
-						executeCommand.Parameters.AddWithValue("@facettype5", Facet_Types[4]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype5", -1);
-					if (Facet_Types.Count > 5)
-						executeCommand.Parameters.AddWithValue("@facettype6", Facet_Types[5]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype6", -1);
-					if (Facet_Types.Count > 6)
-						executeCommand.Parameters.AddWithValue("@facettype7", Facet_Types[6]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype7", -1);
-					if (Facet_Types.Count > 7)
-						executeCommand.Parameters.AddWithValue("@facettype8", Facet_Types[7]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype8", -1);
-				}
-				else
-				{
-					executeCommand.Parameters.AddWithValue("@include_facets", false);
-					executeCommand.Parameters.AddWithValue("@facettype1", -1);
-					executeCommand.Parameters.AddWithValue("@facettype2", -1);
-					executeCommand.Parameters.AddWithValue("@facettype3", -1);
-					executeCommand.Parameters.AddWithValue("@facettype4", -1);
-					executeCommand.Parameters.AddWithValue("@facettype5", -1);
-					executeCommand.Parameters.AddWithValue("@facettype6", -1);
-					executeCommand.Parameters.AddWithValue("@facettype7", -1);
-					executeCommand.Parameters.AddWithValue("@facettype8", -1);
-				}
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "SobekCM_Metadata_Basic_Search_Paged2", parameters);
 
-				// Add parameters for total items and total titles
-				SqlParameter totalItemsParameter = executeCommand.Parameters.AddWithValue("@total_items", 0);
-				totalItemsParameter.Direction = ParameterDirection.InputOutput;
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
 
-				SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
-				totalTitlesParameter.Direction = ParameterDirection.InputOutput;
+            // Create the return argument object
+            List<string> metadataLabels = new List<string>();
+            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args
+            {
+                Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)
+            };
 
-				// Add parameters for items and titles if this search is expanded to include all aggregationPermissions
-				SqlParameter expandedItemsParameter = executeCommand.Parameters.AddWithValue("@all_collections_items", 0);
-				expandedItemsParameter.Direction = ParameterDirection.InputOutput;
+            // Create the overall search statistics?
+            if (ReturnSearchStatistics)
+            {
+                Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
+                returnArgs.Statistics = stats;
+                reader.Close();
+                stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
+                stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
+                stats.All_Collections_Items = Convert.ToInt32(expandedItemsParameter.Value);
+                stats.All_Collections_Titles = Convert.ToInt32(expandedTitlesParameter.Value);
+            }
 
-				SqlParameter expandedTitlesParameter = executeCommand.Parameters.AddWithValue("@all_collections_titles", 0);
-				expandedTitlesParameter.Direction = ParameterDirection.InputOutput;
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
 
-				// Create the data reader
-				connect.Open();
-				using (SqlDataReader reader = executeCommand.ExecuteReader())
-				{
-					// Create the return argument object
-					List<string> metadataLabels = new List<string>(); 
-					returnArgs = new Multiple_Paged_Results_Args
-									 {Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)};
+            // Return the built result arguments
+            return returnArgs;
+        }
 
-					// Create the overall search statistics?
-					if (Return_Search_Statistics)
-					{
-						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
-						returnArgs.Statistics = stats;
-						reader.Close();
-						stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
-						stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
-						stats.All_Collections_Items = Convert.ToInt32(expandedItemsParameter.Value);
-						stats.All_Collections_Titles = Convert.ToInt32(expandedTitlesParameter.Value);
-					}
-					else
-					{
-						reader.Close();
-					}
-				}
-				connect.Close();
-			}
+        /// <summary> Performs a metadata search for a piece of metadata that EXACTLY matches the provided search term and return one page of results </summary>
+        /// <param name="SearchTerm"> Search condition string to be run against the databasse </param>
+        /// <param name="FieldID"> Primary key for the field to search in the database </param>
+        /// <param name="IncludePrivateItems"> Flag indicates whether to include private items in the result set </param>
+        /// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
+        /// <param name="DateRangeStart"> If this search includes a date range search, start of the date range, or -1</param>
+        /// <param name="DateRangeEnd"> If this search includes a date range search, end of the date range, or -1</param>
+        /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
+        /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
+        /// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
+        /// <param name="IncludeFacets"> Flag indicates whether to include facets in the result set </param>
+        /// <param name="FacetTypes"> Primary key for the metadata types to include as facets (up to eight)</param>
+        /// <param name="ReturnSearchStatistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Small arguments object which contains the page of results and optionally statistics about results for the entire search, including complete counts and facet information </returns>
+        /// <remarks> This calls the 'SobekCM_Metadata_Exact_Search_Paged2' stored procedure </remarks>
+        public static Multiple_Paged_Results_Args Perform_Metadata_Exact_Search_Paged(string SearchTerm, int FieldID, bool IncludePrivateItems, string AggregationCode, long DateRangeStart, long DateRangeEnd, int ResultsPerPage, int ResultsPage, int Sort, bool IncludeFacets, List<short> FacetTypes, bool ReturnSearchStatistics, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Perform_Metadata_Exact_Search_Paged", "Performing exact search in database");
+            }
 
-			// Return the built result arguments
-			return returnArgs;
-		}
+            // Build the parameters
+            List<EalDbParameter> parameters = new List<EalDbParameter>();
+            parameters.Add(new EalDbParameter("@term1", SearchTerm));
+            parameters.Add(new EalDbParameter("@field1", FieldID));
+            parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
+            if (AggregationCode.ToUpper() == "ALL")
+                AggregationCode = String.Empty;
+            parameters.Add(new EalDbParameter("@aggregationcode", AggregationCode));
+            parameters.Add(new EalDbParameter("@daterange_start", DateRangeStart));
+            parameters.Add(new EalDbParameter("@daterange_end", DateRangeEnd));
+            parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
+            parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
+            parameters.Add(new EalDbParameter("@sort", Sort));
 
-		/// <summary> Performs a metadata search for a piece of metadata that EXACTLY matches the provided search term and return one page of results </summary>
-		/// <param name="Search_Term"> Search condition string to be run against the databasse </param>
-		/// <param name="FieldID"> Primary key for the field to search in the database </param>
-		/// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
-		/// <param name="AggregationCode"> Code for the aggregation of interest ( or empty string to search all aggregationPermissions )</param>
-		/// <param name="DateRange_Start"> If this search includes a date range search, start of the date range, or -1</param>
-		/// <param name="DateRange_End"> If this search includes a date range search, end of the date range, or -1</param>
-		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
-		/// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
-		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
-		/// <param name="Include_Facets"> Flag indicates whether to include facets in the result set </param>
-		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
-		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Small arguments object which contains the page of results and optionally statistics about results for the entire search, including complete counts and facet information </returns>
-		/// <remarks> This calls the 'SobekCM_Metadata_Exact_Search_Paged' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Perform_Metadata_Exact_Search_Paged(string Search_Term, int FieldID, bool Include_Private_Items, string AggregationCode, long DateRange_Start, long DateRange_End, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Engine_Database.Perform_Metadata_Exact_Search_Paged", "Performing exact search in database");
-			}
+            // If this is for more than 100 results, don't look ahead
+            if (ResultsPerPage > 100)
+            {
+                parameters.Add(new EalDbParameter("@minpagelookahead", 1));
+                parameters.Add(new EalDbParameter("@maxpagelookahead", 1));
+                parameters.Add(new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR));
+            }
+            else
+            {
+                parameters.Add(new EalDbParameter("@minpagelookahead", MIN_PAGE_LOOKAHEAD));
+                parameters.Add(new EalDbParameter("@maxpagelookahead", MAX_PAGE_LOOKAHEAD));
+                parameters.Add(new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR));
+            }
 
-			Multiple_Paged_Results_Args returnArgs;
+            if ((IncludeFacets) && (FacetTypes != null) && (FacetTypes.Count > 0) && (ReturnSearchStatistics))
+            {
+                parameters.Add(new EalDbParameter("@include_facets", true));
+                parameters.Add(FacetTypes.Count > 0 ? new EalDbParameter("@facettype1", FacetTypes[0]) : new EalDbParameter("@facettype1", -1));
+                parameters.Add(FacetTypes.Count > 1 ? new EalDbParameter("@facettype2", FacetTypes[1]) : new EalDbParameter("@facettype2", -1));
+                parameters.Add(FacetTypes.Count > 2 ? new EalDbParameter("@facettype3", FacetTypes[2]) : new EalDbParameter("@facettype3", -1));
+                parameters.Add(FacetTypes.Count > 3 ? new EalDbParameter("@facettype4", FacetTypes[3]) : new EalDbParameter("@facettype4", -1));
+                parameters.Add(FacetTypes.Count > 4 ? new EalDbParameter("@facettype5", FacetTypes[4]) : new EalDbParameter("@facettype5", -1));
+                parameters.Add(FacetTypes.Count > 5 ? new EalDbParameter("@facettype6", FacetTypes[5]) : new EalDbParameter("@facettype6", -1));
+                parameters.Add(FacetTypes.Count > 6 ? new EalDbParameter("@facettype7", FacetTypes[6]) : new EalDbParameter("@facettype7", -1));
+                parameters.Add(FacetTypes.Count > 7 ? new EalDbParameter("@facettype8", FacetTypes[7]) : new EalDbParameter("@facettype8", -1));
+            }
+            else
+            {
+                parameters.Add(new EalDbParameter("@include_facets", false));
+                parameters.Add(new EalDbParameter("@facettype1", -1));
+                parameters.Add(new EalDbParameter("@facettype2", -1));
+                parameters.Add(new EalDbParameter("@facettype3", -1));
+                parameters.Add(new EalDbParameter("@facettype4", -1));
+                parameters.Add(new EalDbParameter("@facettype5", -1));
+                parameters.Add(new EalDbParameter("@facettype6", -1));
+                parameters.Add(new EalDbParameter("@facettype7", -1));
+                parameters.Add(new EalDbParameter("@facettype8", -1));
+            }
 
-			// Create the connection
-			using (SqlConnection connect = new SqlConnection(Connection_String + "Connection Timeout=45"))
-			{
+            // Add parameters for total items and total titles
+            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalItemsParameter);
 
-				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Metadata_Exact_Search_Paged2", connect)
-												{CommandTimeout = 45, CommandType = CommandType.StoredProcedure};
+            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalTitlesParameter);
 
-				executeCommand.Parameters.AddWithValue("@term1", Search_Term);
-				executeCommand.Parameters.AddWithValue("@field1", FieldID);
-				executeCommand.Parameters.AddWithValue("@include_private", Include_Private_Items);
-				if (AggregationCode.ToUpper() == "ALL")
-					AggregationCode = String.Empty;
-				executeCommand.Parameters.AddWithValue("@aggregationcode", AggregationCode);
-				executeCommand.Parameters.AddWithValue("@daterange_start", DateRange_Start);
-				executeCommand.Parameters.AddWithValue("@daterange_end", DateRange_End);
-				executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
-				executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
-				executeCommand.Parameters.AddWithValue("@sort", Sort);
+            // Add parameters for items and titles if this search is expanded to include all aggregationPermissions
+            EalDbParameter expandedItemsParameter = new EalDbParameter("@all_collections_items", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(expandedItemsParameter);
 
-				// If this is for more than 100 results, don't look ahead
-				if (ResultsPerPage > 100)
-				{
-					executeCommand.Parameters.AddWithValue("@minpagelookahead", 1);
-					executeCommand.Parameters.AddWithValue("@maxpagelookahead", 1);
-					executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
-				}
-				else
-				{
-					executeCommand.Parameters.AddWithValue("@minpagelookahead", MIN_PAGE_LOOKAHEAD);
-					executeCommand.Parameters.AddWithValue("@maxpagelookahead", MAX_PAGE_LOOKAHEAD);
-					executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
-				}
+            EalDbParameter expandedTitlesParameter = new EalDbParameter("@all_collections_titles", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(expandedTitlesParameter);
 
-				if ((Include_Facets) && (Facet_Types != null) && ( Facet_Types.Count > 0 ) && (Return_Search_Statistics))
-				{
-					executeCommand.Parameters.AddWithValue("@include_facets", true);
-					if (Facet_Types.Count > 0)
-						executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype1", -1);
-					if (Facet_Types.Count > 1)
-						executeCommand.Parameters.AddWithValue("@facettype2", Facet_Types[1]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype2", -1);
-					if (Facet_Types.Count > 2)
-						executeCommand.Parameters.AddWithValue("@facettype3", Facet_Types[2]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype3", -1);
-					if (Facet_Types.Count > 3)
-						executeCommand.Parameters.AddWithValue("@facettype4", Facet_Types[3]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype4", -1);
-					if (Facet_Types.Count > 4)
-						executeCommand.Parameters.AddWithValue("@facettype5", Facet_Types[4]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype5", -1);
-					if (Facet_Types.Count > 5)
-						executeCommand.Parameters.AddWithValue("@facettype6", Facet_Types[5]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype6", -1);
-					if (Facet_Types.Count > 6)
-						executeCommand.Parameters.AddWithValue("@facettype7", Facet_Types[6]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype7", -1);
-					if (Facet_Types.Count > 7)
-						executeCommand.Parameters.AddWithValue("@facettype8", Facet_Types[7]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype8", -1);
-				}
-				else
-				{
-					executeCommand.Parameters.AddWithValue("@include_facets", false);
-					executeCommand.Parameters.AddWithValue("@facettype1", -1);
-					executeCommand.Parameters.AddWithValue("@facettype2", -1);
-					executeCommand.Parameters.AddWithValue("@facettype3", -1);
-					executeCommand.Parameters.AddWithValue("@facettype4", -1);
-					executeCommand.Parameters.AddWithValue("@facettype5", -1);
-					executeCommand.Parameters.AddWithValue("@facettype6", -1);
-					executeCommand.Parameters.AddWithValue("@facettype7", -1);
-					executeCommand.Parameters.AddWithValue("@facettype8", -1);
-				}
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "SobekCM_Metadata_Exact_Search_Paged2", parameters);
 
-				// Add parameters for total items and total titles
-				SqlParameter totalItemsParameter = executeCommand.Parameters.AddWithValue("@total_items", 0);
-				totalItemsParameter.Direction = ParameterDirection.InputOutput;
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
 
-				SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
-				totalTitlesParameter.Direction = ParameterDirection.InputOutput;
 
-				// Add parameters for items and titles if this search is expanded to include all aggregationPermissions
-				SqlParameter expandedItemsParameter = executeCommand.Parameters.AddWithValue("@all_collections_items", 0);
-				expandedItemsParameter.Direction = ParameterDirection.InputOutput;
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Perform_Metadata_Exact_Search_Paged", "Building result object from returned value");
+            }
 
-				SqlParameter expandedTitlesParameter = executeCommand.Parameters.AddWithValue("@all_collections_titles", 0);
-				expandedTitlesParameter.Direction = ParameterDirection.InputOutput;
+            // Create the return argument object
+            List<string> metadataLabels = new List<string>();
+            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args
+            {
+                Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)
+            };
 
-				// Create the data reader
-				connect.Open();
-				using (SqlDataReader reader = executeCommand.ExecuteReader())
-				{
-					if (Tracer != null)
-					{
-						Tracer.Add_Trace("Engine_Database.Perform_Metadata_Exact_Search_Paged", "Building result object from returned value");
-					}
+            // Create the overall search statistics?
+            if (ReturnSearchStatistics)
+            {
+                Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
+                returnArgs.Statistics = stats;
+                reader.Close();
+                stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
+                stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
+                stats.All_Collections_Items = Convert.ToInt32(expandedItemsParameter.Value);
+                stats.All_Collections_Titles = Convert.ToInt32(expandedTitlesParameter.Value);
+            }
 
-					// Create the return argument object
-					List<string> metadataLabels = new List<string>(); 
-					returnArgs = new Multiple_Paged_Results_Args
-									 {Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)};
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
 
-					// Create the overall search statistics?
-					if (Return_Search_Statistics)
-					{
-						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
-						returnArgs.Statistics = stats;
-						reader.Close();
-						stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
-						stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
-						stats.All_Collections_Items = Convert.ToInt32(expandedItemsParameter.Value);
-						stats.All_Collections_Titles = Convert.ToInt32(expandedTitlesParameter.Value);
-					}
-					else
-					{
-						reader.Close();
-					}
-				}
-				connect.Close();
-			}
+            // Return the built result arguments
+            return returnArgs;
+        }
 
-			// Return the built result arguments
-			return returnArgs;
-		}
-
-		private static List<List<iSearch_Title_Result>> DataReader_To_Result_List_With_LookAhead2(IDataReader Reader, int ResultsPerPage, List<string> Metadata_Field_Names )
+        private static List<List<iSearch_Title_Result>> DataReader_To_Result_List_With_LookAhead2(DbDataReader Reader, int ResultsPerPage, List<string> MetadataFieldNames )
 		{
 			// Create return list
 			List<List<iSearch_Title_Result>> returnValue = new List<List<iSearch_Title_Result>>();
@@ -1781,10 +1619,10 @@ namespace SobekCM.Engine_Library.Database
 				string pubDate = Reader.GetString(12);
 				int pageCount = Reader.GetInt32(13);
 				string link = Reader.GetString(14);
-				string spatialKML = Reader.GetString(15);
-				string cOinSOpenURL = Reader.GetString(16);
+				string spatialKml = Reader.GetString(15);
+				string cOinSOpenUrl = Reader.GetString(16);
 
-				titleResult.Spatial_Coordinates = spatialKML;
+				titleResult.Spatial_Coordinates = spatialKml;
 
 
 				// Create new database item object for this
@@ -1804,8 +1642,8 @@ namespace SobekCM.Engine_Library.Database
 					PubDate = pubDate,
 					PageCount = pageCount,
 					Link = link,
-					Spatial_KML = spatialKML,
-					COinS_OpenURL = cOinSOpenURL
+					Spatial_KML = spatialKml,
+					COinS_OpenURL = cOinSOpenUrl
 				};
 
 				//// Create new database item object for this
@@ -1866,7 +1704,7 @@ namespace SobekCM.Engine_Library.Database
 						checking_fields.Add(true);
 
 						// Save the metadata label
-						Metadata_Field_Names.Add(Reader.GetName(i+1));
+						MetadataFieldNames.Add(Reader.GetName(i+1));
 					}
 
 					// Done with the first row analysis, so ensure it does not repeat
@@ -1932,7 +1770,7 @@ namespace SobekCM.Engine_Library.Database
 			return returnValue;
 		}
 
-		private static List<iSearch_Title_Result> DataReader_To_Simple_Result_List2(SqlDataReader Reader, List<string> Metadata_Field_Names)
+		private static List<iSearch_Title_Result> DataReader_To_Simple_Result_List2(DbDataReader Reader, List<string> MetadataFieldNames)
 		{
 			// Create return list
 			List<iSearch_Title_Result> returnValue = new List<iSearch_Title_Result>();
@@ -2054,7 +1892,7 @@ namespace SobekCM.Engine_Library.Database
 						checking_fields.Add(true);
 
 						// Save the metadata label
-						Metadata_Field_Names.Add(Reader.GetName(i + 1));
+						MetadataFieldNames.Add(Reader.GetName(i + 1));
 					}
 
 					// Done with the first row analysis, so ensure it does not repeat
@@ -2117,245 +1955,214 @@ namespace SobekCM.Engine_Library.Database
 
 		#region Method to perform a coordinate/geographic search of items in the database
 
-		/// <summary> Performs geographic search for items within provided rectangular bounding box and linked to item aggregation of interest </summary>
-		/// <param name="AggregationCode"> Code for the item aggregation of interest </param>
-		/// <param name="Latitude_1"> Latitudinal portion of the first point making up the rectangular bounding box</param>
-		/// <param name="Longitude_1"> Longitudinal portion of the first point making up the rectangular bounding box</param>
-		/// <param name="Latitude_2"> Latitudinal portion of the second point making up the rectangular bounding box</param>
-		/// <param name="Longitude_2"> Longitudinal portion of the second point making up the rectangular bounding box</param>
-		/// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
-		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
-		/// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
-		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
-		/// <param name="Include_Facets"> Flag indicates if facets should be included in the result set </param>
-		/// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
-		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Table with all of the item and item group information within provided bounding box </returns>
-		/// <remarks> This calls the 'SobekCM_Get_Items_By_Coordinates' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Get_Items_By_Coordinates(string AggregationCode, double Latitude_1, double Longitude_1, double Latitude_2, double Longitude_2, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Engine_Database.Get_Items_By_Coordinates", "Pulling data from database");
-			}
+        /// <summary> Performs geographic search for items within provided rectangular bounding box and linked to item aggregation of interest </summary>
+        /// <param name="AggregationCode"> Code for the item aggregation of interest </param>
+        /// <param name="Latitude1"> Latitudinal portion of the first point making up the rectangular bounding box</param>
+        /// <param name="Longitude1"> Longitudinal portion of the first point making up the rectangular bounding box</param>
+        /// <param name="Latitude2"> Latitudinal portion of the second point making up the rectangular bounding box</param>
+        /// <param name="Longitude2"> Longitudinal portion of the second point making up the rectangular bounding box</param>
+        /// <param name="IncludePrivateItems"> Flag indicates whether to include private items in the result set </param>
+        /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
+        /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
+        /// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
+        /// <param name="IncludeFacets"> Flag indicates if facets should be included in the result set </param>
+        /// <param name="FacetTypes"> Primary key for the metadata types to include as facets (up to eight)</param>
+        /// <param name="ReturnSearchStatistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Table with all of the item and item group information within provided bounding box </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Items_By_Coordinates' stored procedure </remarks>
+        public static Multiple_Paged_Results_Args Get_Items_By_Coordinates(string AggregationCode, double Latitude1, double Longitude1, double Latitude2, double Longitude2, bool IncludePrivateItems, int ResultsPerPage, int ResultsPage, int Sort, bool IncludeFacets, List<short> FacetTypes, bool ReturnSearchStatistics, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_Items_By_Coordinates", "Pulling data from database");
+            }
 
-			Multiple_Paged_Results_Args returnArgs;
+            // Build the parameters
+            List<EalDbParameter> parameters = new List<EalDbParameter>();
+            parameters.Add(new EalDbParameter("@lat1", Latitude1));
+            parameters.Add(new EalDbParameter("@long1", Longitude1));
+            parameters.Add(new EalDbParameter("@lat2", Latitude2));
+            parameters.Add(new EalDbParameter("@long2", Longitude2));
+            parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
+            parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
+            parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
+            parameters.Add(new EalDbParameter("@sort", Sort));
+            parameters.Add(new EalDbParameter("@minpagelookahead", MIN_PAGE_LOOKAHEAD));
+            parameters.Add(new EalDbParameter("@maxpagelookahead", MAX_PAGE_LOOKAHEAD));
+            parameters.Add(new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR));
+            parameters.Add(new EalDbParameter("@aggregationcode", AggregationCode));
+            parameters.Add(new EalDbParameter("@include_facets", IncludeFacets));
 
-			// Create the connection
-			using (SqlConnection connect = new SqlConnection(Connection_String + "Connection Timeout=45"))
-			{
+            if ((IncludeFacets) && (FacetTypes != null) && (ReturnSearchStatistics))
+            {
+                parameters.Add(FacetTypes.Count > 0 ? new EalDbParameter("@facettype1", FacetTypes[0]) : new EalDbParameter("@facettype1", -1));
+                parameters.Add(FacetTypes.Count > 1 ? new EalDbParameter("@facettype2", FacetTypes[1]) : new EalDbParameter("@facettype2", -1));
+                parameters.Add(FacetTypes.Count > 2 ? new EalDbParameter("@facettype3", FacetTypes[2]) : new EalDbParameter("@facettype3", -1));
+                parameters.Add(FacetTypes.Count > 3 ? new EalDbParameter("@facettype4", FacetTypes[3]) : new EalDbParameter("@facettype4", -1));
+                parameters.Add(FacetTypes.Count > 4 ? new EalDbParameter("@facettype5", FacetTypes[4]) : new EalDbParameter("@facettype5", -1));
+                parameters.Add(FacetTypes.Count > 5 ? new EalDbParameter("@facettype6", FacetTypes[5]) : new EalDbParameter("@facettype6", -1));
+                parameters.Add(FacetTypes.Count > 6 ? new EalDbParameter("@facettype7", FacetTypes[6]) : new EalDbParameter("@facettype7", -1));
+                parameters.Add(FacetTypes.Count > 7 ? new EalDbParameter("@facettype8", FacetTypes[7]) : new EalDbParameter("@facettype8", -1));
+            }
+            else
+            {
+                parameters.Add(new EalDbParameter("@facettype1", -1));
+                parameters.Add(new EalDbParameter("@facettype2", -1));
+                parameters.Add(new EalDbParameter("@facettype3", -1));
+                parameters.Add(new EalDbParameter("@facettype4", -1));
+                parameters.Add(new EalDbParameter("@facettype5", -1));
+                parameters.Add(new EalDbParameter("@facettype6", -1));
+                parameters.Add(new EalDbParameter("@facettype7", -1));
+                parameters.Add(new EalDbParameter("@facettype8", -1));
+            }
 
-				// Create the command 
-				SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Items_By_Coordinates", connect)
-												{CommandType = CommandType.StoredProcedure};
-				executeCommand.Parameters.AddWithValue("@lat1", Latitude_1);
-				executeCommand.Parameters.AddWithValue("@long1", Longitude_1);
-				executeCommand.Parameters.AddWithValue("@lat2", Latitude_2);
-				executeCommand.Parameters.AddWithValue("@long2", Longitude_2);
-				executeCommand.Parameters.AddWithValue("@include_private", Include_Private_Items);
-				executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
-				executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
-				executeCommand.Parameters.AddWithValue("@sort", Sort);
-				executeCommand.Parameters.AddWithValue("@minpagelookahead", MIN_PAGE_LOOKAHEAD);
-				executeCommand.Parameters.AddWithValue("@maxpagelookahead", MAX_PAGE_LOOKAHEAD);
-				executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
-				executeCommand.Parameters.AddWithValue("@aggregationcode", AggregationCode);
-				executeCommand.Parameters.AddWithValue("@include_facets", Include_Facets);
+            // Add parameters for total items and total titles
+            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalItemsParameter);
 
-				if ((Include_Facets) && (Facet_Types != null) && (Return_Search_Statistics))
-				{
-					if (Facet_Types.Count > 0)
-						executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype1", -1);
-					if (Facet_Types.Count > 1)
-						executeCommand.Parameters.AddWithValue("@facettype2", Facet_Types[1]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype2", -1);
-					if (Facet_Types.Count > 2)
-						executeCommand.Parameters.AddWithValue("@facettype3", Facet_Types[2]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype3", -1);
-					if (Facet_Types.Count > 3)
-						executeCommand.Parameters.AddWithValue("@facettype4", Facet_Types[3]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype4", -1);
-					if (Facet_Types.Count > 4)
-						executeCommand.Parameters.AddWithValue("@facettype5", Facet_Types[4]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype5", -1);
-					if (Facet_Types.Count > 5)
-						executeCommand.Parameters.AddWithValue("@facettype6", Facet_Types[5]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype6", -1);
-					if (Facet_Types.Count > 6)
-						executeCommand.Parameters.AddWithValue("@facettype7", Facet_Types[6]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype7", -1);
-					if (Facet_Types.Count > 7)
-						executeCommand.Parameters.AddWithValue("@facettype8", Facet_Types[7]);
-					else
-						executeCommand.Parameters.AddWithValue("@facettype8", -1);
-				}
-				else
-				{
-					executeCommand.Parameters.AddWithValue("@facettype1", -1);
-					executeCommand.Parameters.AddWithValue("@facettype2", -1);
-					executeCommand.Parameters.AddWithValue("@facettype3", -1);
-					executeCommand.Parameters.AddWithValue("@facettype4", -1);
-					executeCommand.Parameters.AddWithValue("@facettype5", -1);
-					executeCommand.Parameters.AddWithValue("@facettype6", -1);
-					executeCommand.Parameters.AddWithValue("@facettype7", -1);
-					executeCommand.Parameters.AddWithValue("@facettype8", -1);
-				}
+            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalTitlesParameter);
 
-				// Add parameters for total items and total titles
-				SqlParameter totalItemsParameter = executeCommand.Parameters.AddWithValue("@total_items", 0);
-				totalItemsParameter.Direction = ParameterDirection.InputOutput;
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "SobekCM_Get_Items_By_Coordinates", parameters);
 
-				SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
-				totalTitlesParameter.Direction = ParameterDirection.InputOutput;
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
 
-				// Create the data reader
-				connect.Open();
-				using (SqlDataReader reader = executeCommand.ExecuteReader())
-				{
-					List<string> metadataFields = new List<string>();
-					// Create the return argument object
-					returnArgs = new Multiple_Paged_Results_Args { Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields) };
 
-					// Create the overall search statistics?
-					if (Return_Search_Statistics)
-					{
-						Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataFields);
-						returnArgs.Statistics = stats;
-						reader.Close();
-						stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
-						stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
-					}
-					else
-					{
-						reader.Close();
-					}
-				}
-				connect.Close();
-			}
+            List<string> metadataFields = new List<string>();
+            // Create the return argument object
+            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args {Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields)};
 
-			// Return the built result arguments
-			return returnArgs;
-		}
+            // Create the overall search statistics?
+            if (ReturnSearchStatistics)
+            {
+                Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataFields);
+                returnArgs.Statistics = stats;
+                reader.Close();
+                stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
+                stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
+            }
 
-		#endregion
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
+
+            // Return the built result arguments
+            return returnArgs;
+        }
+
+        #endregion
 
 		#region Methods to retrieve item list by OCLC or ALEPH number
 
-		/// <summary> Returns the list of all items/titles which match a given OCLC number </summary>
-		/// <param name="OCLC_Number"> OCLC number to look for matching items </param>
-		/// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
-		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
-		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
-		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Table with all of the item and item group information which matches the OCLC number </returns>
-		/// <remarks> This calls the 'SobekCM_Items_By_OCLC' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Items_By_OCLC_Number(long OCLC_Number, bool Include_Private_Items, int ResultsPerPage, int Sort, bool Return_Search_Statistics, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Engine_Database.Items_By_OCLC_Number", "Searching by OCLC in the database");
-			}
+        /// <summary> Returns the list of all items/titles which match a given OCLC number </summary>
+        /// <param name="OclcNumber"> OCLC number to look for matching items </param>
+        /// <param name="IncludePrivateItems"> Flag indicates whether to include private items in the result set </param>
+        /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
+        /// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
+        /// <param name="ReturnSearchStatistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Table with all of the item and item group information which matches the OCLC number </returns>
+        /// <remarks> This calls the 'SobekCM_Items_By_OCLC' stored procedure </remarks>
+        public static Multiple_Paged_Results_Args Items_By_OCLC_Number(long OclcNumber, bool IncludePrivateItems, int ResultsPerPage, int Sort, bool ReturnSearchStatistics, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Items_By_OCLC_Number", "Searching by OCLC in the database");
+            }
 
-			// Build the parameter list
-			SqlParameter[] paramList = new SqlParameter[5];
-			paramList[0] = new SqlParameter("@oclc_number", OCLC_Number);
-			paramList[1] = new SqlParameter("@include_private", Include_Private_Items);
-			paramList[2] = new SqlParameter("@sort", Sort);
-			paramList[3] = new SqlParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
-			paramList[4] = new SqlParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
+            // Build the parameter list
+            EalDbParameter[] paramList = new EalDbParameter[5];
+            paramList[0] = new EalDbParameter("@oclc_number", OclcNumber);
+            paramList[1] = new EalDbParameter("@include_private", IncludePrivateItems);
+            paramList[2] = new EalDbParameter("@sort", Sort);
+            paramList[3] = new EalDbParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
+            paramList[4] = new EalDbParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
 
-			// Get the matching reader            
-			Multiple_Paged_Results_Args returnArgs;
-			using (SqlDataReader reader = SqlHelper.ExecuteReader(Connection_String, CommandType.StoredProcedure, "SobekCM_Items_By_OCLC", paramList))
-			{
-				List<string>  metadataFields = new List<string>();
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Items_By_OCLC", paramList);
 
-				// Create the return argument object
-				returnArgs = new Multiple_Paged_Results_Args { Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields) };
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
 
-				// Create the overall search statistics?
-				if (Return_Search_Statistics)
-				{
-					Search_Results_Statistics stats = new Search_Results_Statistics(reader, null, metadataFields);
-					returnArgs.Statistics = stats;
-					reader.Close();
-					stats.Total_Items = Convert.ToInt32(paramList[3].Value);
-					stats.Total_Titles = Convert.ToInt32(paramList[4].Value);
-				}
-				else
-				{
-					reader.Close();
-				}
-			}
+            // Create the return argument object
+            List<string> metadataFields = new List<string>();
+            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args
+            {
+                Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields)
+            };
 
-			// Return the built results
-			return returnArgs;
-		}
+            // Create the overall search statistics?
+            if (ReturnSearchStatistics)
+            {
+                Search_Results_Statistics stats = new Search_Results_Statistics(reader, null, metadataFields);
+                returnArgs.Statistics = stats;
+                reader.Close();
+                stats.Total_Items = Convert.ToInt32(paramList[3].Value);
+                stats.Total_Titles = Convert.ToInt32(paramList[4].Value);
+            }
 
-		/// <summary> Returns the list of all items/titles which match a given ALEPH number </summary>
-		/// <param name="ALEPH_Number"> ALEPH number to look for matching items </param>
-		/// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
-		/// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
-		/// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
-		/// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Table with all of the item and item group information which matches the ALEPH number </returns>
-		/// <remarks> This calls the 'SobekCM_Items_By_ALEPH' stored procedure </remarks>
-		public static Multiple_Paged_Results_Args Items_By_ALEPH_Number(int ALEPH_Number, bool Include_Private_Items, int ResultsPerPage, int Sort, bool Return_Search_Statistics, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("Engine_Database.Items_By_ALEPH_Number", "Searching by ALEPH in the database");
-			}
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
 
-			// Build the parameter list
-			SqlParameter[] paramList = new SqlParameter[5];
-			paramList[0] = new SqlParameter("@aleph_number", ALEPH_Number);
-			paramList[1] = new SqlParameter("@include_private", Include_Private_Items);
-			paramList[2] = new SqlParameter("@sort", Sort);
-			paramList[3] = new SqlParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
-			paramList[4] = new SqlParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
+            // Return the built results
+            return returnArgs;
+        }
 
-			// Get the matching reader            
-			Multiple_Paged_Results_Args returnArgs;
-			using (SqlDataReader reader = SqlHelper.ExecuteReader(Connection_String, CommandType.StoredProcedure, "SobekCM_Items_By_ALEPH", paramList))
-			{
-				List<string> metadataFields = new List<string>();
-					
-				// Create the return argument object
-				returnArgs = new Multiple_Paged_Results_Args
-								 {Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields)};
+        /// <summary> Returns the list of all items/titles which match a given ALEPH number </summary>
+        /// <param name="AlephNumber"> ALEPH number to look for matching items </param>
+        /// <param name="IncludePrivateItems"> Flag indicates whether to include private items in the result set </param>
+        /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
+        /// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
+        /// <param name="ReturnSearchStatistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Table with all of the item and item group information which matches the ALEPH number </returns>
+        /// <remarks> This calls the 'SobekCM_Items_By_ALEPH' stored procedure </remarks>
+        public static Multiple_Paged_Results_Args Items_By_ALEPH_Number(int AlephNumber, bool IncludePrivateItems, int ResultsPerPage, int Sort, bool ReturnSearchStatistics, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Items_By_ALEPH_Number", "Searching by ALEPH in the database");
+            }
 
-				// Create the overall search statistics?
-				if (Return_Search_Statistics)
-				{
-					Search_Results_Statistics stats = new Search_Results_Statistics(reader, null, metadataFields);
-					returnArgs.Statistics = stats;
-					reader.Close();
-					stats.Total_Items = Convert.ToInt32(paramList[3].Value);
-					stats.Total_Titles = Convert.ToInt32(paramList[4].Value);
-				}
-				else
-				{
-					reader.Close();
-				}
-			}
+            // Build the parameter list
+            EalDbParameter[] paramList = new EalDbParameter[5];
+            paramList[0] = new EalDbParameter("@aleph_number", AlephNumber);
+            paramList[1] = new EalDbParameter("@include_private", IncludePrivateItems);
+            paramList[2] = new EalDbParameter("@sort", Sort);
+            paramList[3] = new EalDbParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
+            paramList[4] = new EalDbParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
 
-			// Return the built results
-			return returnArgs;
-		}
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Items_By_ALEPH", paramList);
 
-		#endregion
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;       
+
+            // Create the return argument object
+            List<string> metadataFields = new List<string>();
+            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args
+            {Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataFields)};
+
+            // Create the overall search statistics?
+            if (ReturnSearchStatistics)
+            {
+                Search_Results_Statistics stats = new Search_Results_Statistics(reader, null, metadataFields);
+                returnArgs.Statistics = stats;
+                reader.Close();
+                stats.Total_Items = Convert.ToInt32(paramList[3].Value);
+                stats.Total_Titles = Convert.ToInt32(paramList[4].Value);
+            }
+
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
+
+            // Return the built results
+            return returnArgs;
+        }
+
+        #endregion
 
         #region Methods to get the items within a user's folder or a public folder (works like searches)
 
@@ -2364,112 +2171,78 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="FolderName"> Name of this user's folder </param>
         /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
         /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
-        /// <param name="Include_Facets"> Flag indicates if facets should be included in the final result set</param>
-        /// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
-        /// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
+        /// <param name="IncludeFacets"> Flag indicates if facets should be included in the final result set</param>
+        /// <param name="FacetTypes"> Primary key for the metadata types to include as facets (up to eight)</param>
+        /// <param name="ReturnSearchStatistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> List of items matching search </returns>
         /// <remarks> This calls the 'mySobek_Get_User_Folder_Browse' stored procedure</remarks> 
-        public static Single_Paged_Results_Args Get_User_Folder_Browse(int UserID, string FolderName, int ResultsPerPage, int ResultsPage, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
+        public static Single_Paged_Results_Args Get_User_Folder_Browse(int UserID, string FolderName, int ResultsPerPage, int ResultsPage, bool IncludeFacets, List<short> FacetTypes, bool ReturnSearchStatistics, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
                 Tracer.Add_Trace("Engine_Database.Get_User_Folder_Browse", String.Empty);
             }
 
-            Single_Paged_Results_Args returnArgs;
-
-            // Create the connection
-            using (SqlConnection connect = new SqlConnection(Connection_String + "Connection Timeout=45"))
+            // Build the parameters
+            List<EalDbParameter> parameters = new List<EalDbParameter>();
+            parameters.Add(new EalDbParameter("@userid", UserID));
+            parameters.Add(new EalDbParameter("@foldername", FolderName));
+            parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
+            parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
+            parameters.Add(new EalDbParameter("@include_facets", IncludeFacets));
+            if ((IncludeFacets) && (FacetTypes != null))
             {
-
-                // Create the command 
-                SqlCommand executeCommand = new SqlCommand("mySobek_Get_User_Folder_Browse", connect) { CommandTimeout = 45, CommandType = CommandType.StoredProcedure };
-
-                executeCommand.Parameters.AddWithValue("@userid", UserID);
-                executeCommand.Parameters.AddWithValue("@foldername", FolderName);
-                executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
-                executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
-                executeCommand.Parameters.AddWithValue("@include_facets", Include_Facets);
-                if ((Include_Facets) && (Facet_Types != null))
-                {
-                    if (Facet_Types.Count > 0)
-                        executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype1", -1);
-                    if (Facet_Types.Count > 1)
-                        executeCommand.Parameters.AddWithValue("@facettype2", Facet_Types[1]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype2", -1);
-                    if (Facet_Types.Count > 2)
-                        executeCommand.Parameters.AddWithValue("@facettype3", Facet_Types[2]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype3", -1);
-                    if (Facet_Types.Count > 3)
-                        executeCommand.Parameters.AddWithValue("@facettype4", Facet_Types[3]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype4", -1);
-                    if (Facet_Types.Count > 4)
-                        executeCommand.Parameters.AddWithValue("@facettype5", Facet_Types[4]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype5", -1);
-                    if (Facet_Types.Count > 5)
-                        executeCommand.Parameters.AddWithValue("@facettype6", Facet_Types[5]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype6", -1);
-                    if (Facet_Types.Count > 6)
-                        executeCommand.Parameters.AddWithValue("@facettype7", Facet_Types[6]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype7", -1);
-                    if (Facet_Types.Count > 7)
-                        executeCommand.Parameters.AddWithValue("@facettype8", Facet_Types[7]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype8", -1);
-                }
-                else
-                {
-                    executeCommand.Parameters.AddWithValue("@facettype1", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype2", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype3", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype4", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype5", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype6", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype7", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype8", -1);
-                }
-
-                // Add parameters for total items and total titles
-                SqlParameter totalItemsParameter = executeCommand.Parameters.AddWithValue("@total_items", 0);
-                totalItemsParameter.Direction = ParameterDirection.InputOutput;
-
-                SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
-                totalTitlesParameter.Direction = ParameterDirection.InputOutput;
-
-
-                // Create the data reader
-                connect.Open();
-                using (SqlDataReader reader = executeCommand.ExecuteReader())
-                {
-                    // Create the return argument object
-                    List<string> metadataLabels = new List<string>();
-                    returnArgs = new Single_Paged_Results_Args { Paged_Results = DataReader_To_Simple_Result_List2(reader, metadataLabels) };
-
-                    // Create the overall search statistics?
-                    if (Return_Search_Statistics)
-                    {
-                        Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
-                        returnArgs.Statistics = stats;
-                        reader.Close();
-                        stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
-                        stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
-                    }
-                    else
-                    {
-                        reader.Close();
-                    }
-                }
-                connect.Close();
+                parameters.Add(FacetTypes.Count > 0 ? new EalDbParameter("@facettype1", FacetTypes[0]) : new EalDbParameter("@facettype1", -1));
+                parameters.Add(FacetTypes.Count > 1 ? new EalDbParameter("@facettype2", FacetTypes[1]) : new EalDbParameter("@facettype2", -1));
+                parameters.Add(FacetTypes.Count > 2 ? new EalDbParameter("@facettype3", FacetTypes[2]) : new EalDbParameter("@facettype3", -1));
+                parameters.Add(FacetTypes.Count > 3 ? new EalDbParameter("@facettype4", FacetTypes[3]) : new EalDbParameter("@facettype4", -1));
+                parameters.Add(FacetTypes.Count > 4 ? new EalDbParameter("@facettype5", FacetTypes[4]) : new EalDbParameter("@facettype5", -1));
+                parameters.Add(FacetTypes.Count > 5 ? new EalDbParameter("@facettype6", FacetTypes[5]) : new EalDbParameter("@facettype6", -1));
+                parameters.Add(FacetTypes.Count > 6 ? new EalDbParameter("@facettype7", FacetTypes[6]) : new EalDbParameter("@facettype7", -1));
+                parameters.Add(FacetTypes.Count > 7 ? new EalDbParameter("@facettype8", FacetTypes[7]) : new EalDbParameter("@facettype8", -1));
             }
+            else
+            {
+                parameters.Add(new EalDbParameter("@facettype1", -1));
+                parameters.Add(new EalDbParameter("@facettype2", -1));
+                parameters.Add(new EalDbParameter("@facettype3", -1));
+                parameters.Add(new EalDbParameter("@facettype4", -1));
+                parameters.Add(new EalDbParameter("@facettype5", -1));
+                parameters.Add(new EalDbParameter("@facettype6", -1));
+                parameters.Add(new EalDbParameter("@facettype7", -1));
+                parameters.Add(new EalDbParameter("@facettype8", -1));
+            }
+
+            // Add parameters for total items and total titles
+            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalItemsParameter);
+
+            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalTitlesParameter);
+
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "mySobek_Get_User_Folder_Browse", parameters);
+
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
+
+            // Create the return argument object
+            List<string> metadataLabels = new List<string>();
+            Single_Paged_Results_Args returnArgs = new Single_Paged_Results_Args {Paged_Results = DataReader_To_Simple_Result_List2(reader, metadataLabels)};
+
+            // Create the overall search statistics?
+            if (ReturnSearchStatistics)
+            {
+                Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
+                returnArgs.Statistics = stats;
+                reader.Close();
+                stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
+                stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
+            }
+
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
 
             // Return the built result arguments
             return returnArgs;
@@ -2480,111 +2253,77 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="UserFolderID"> Primary key for this user's folder which should be public in the database </param>
         /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
         /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
-        /// <param name="Include_Facets"> Flag indicates if facets should be included in the final result set</param>
-        /// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
-        /// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
+        /// <param name="IncludeFacets"> Flag indicates if facets should be included in the final result set</param>
+        /// <param name="FacetTypes"> Primary key for the metadata types to include as facets (up to eight)</param>
+        /// <param name="ReturnSearchStatistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> List of items matching search </returns>
-        /// <remarks> This calls the 'mySobek_Get_User_Folder_Browse' stored procedure</remarks> 
-        public static Single_Paged_Results_Args Get_Public_Folder_Browse(int UserFolderID, int ResultsPerPage, int ResultsPage, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
+        /// <remarks> This calls the 'mySobek_Get_Public_Folder_Browse' stored procedure</remarks> 
+        public static Single_Paged_Results_Args Get_Public_Folder_Browse(int UserFolderID, int ResultsPerPage, int ResultsPage, bool IncludeFacets, List<short> FacetTypes, bool ReturnSearchStatistics, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
                 Tracer.Add_Trace("Engine_Database.Get_Public_Folder_Browse", String.Empty);
             }
 
-            Single_Paged_Results_Args returnArgs;
-
-            // Create the connection
-            using (SqlConnection connect = new SqlConnection(Connection_String + "Connection Timeout=45"))
+            // Build the paremeters list
+            List<EalDbParameter> parameters = new List<EalDbParameter>();
+            parameters.Add(new EalDbParameter("@folderid", UserFolderID));
+            parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
+            parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
+            parameters.Add(new EalDbParameter("@include_facets", IncludeFacets));
+            if ((IncludeFacets) && (FacetTypes != null))
             {
-                // Create the command 
-                SqlCommand executeCommand = new SqlCommand("mySobek_Get_Public_Folder_Browse", connect) { CommandTimeout = 45, CommandType = CommandType.StoredProcedure };
-
-                executeCommand.Parameters.AddWithValue("@folderid", UserFolderID);
-                executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
-                executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
-                executeCommand.Parameters.AddWithValue("@include_facets", Include_Facets);
-                if ((Include_Facets) && (Facet_Types != null))
-                {
-                    if (Facet_Types.Count > 0)
-                        executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype1", -1);
-                    if (Facet_Types.Count > 1)
-                        executeCommand.Parameters.AddWithValue("@facettype2", Facet_Types[1]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype2", -1);
-                    if (Facet_Types.Count > 2)
-                        executeCommand.Parameters.AddWithValue("@facettype3", Facet_Types[2]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype3", -1);
-                    if (Facet_Types.Count > 3)
-                        executeCommand.Parameters.AddWithValue("@facettype4", Facet_Types[3]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype4", -1);
-                    if (Facet_Types.Count > 4)
-                        executeCommand.Parameters.AddWithValue("@facettype5", Facet_Types[4]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype5", -1);
-                    if (Facet_Types.Count > 5)
-                        executeCommand.Parameters.AddWithValue("@facettype6", Facet_Types[5]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype6", -1);
-                    if (Facet_Types.Count > 6)
-                        executeCommand.Parameters.AddWithValue("@facettype7", Facet_Types[6]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype7", -1);
-                    if (Facet_Types.Count > 7)
-                        executeCommand.Parameters.AddWithValue("@facettype8", Facet_Types[7]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype8", -1);
-                }
-                else
-                {
-                    executeCommand.Parameters.AddWithValue("@facettype1", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype2", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype3", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype4", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype5", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype6", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype7", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype8", -1);
-                }
-
-                // Add parameters for total items and total titles
-                SqlParameter totalItemsParameter = executeCommand.Parameters.AddWithValue("@total_items", 0);
-                totalItemsParameter.Direction = ParameterDirection.InputOutput;
-
-                SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
-                totalTitlesParameter.Direction = ParameterDirection.InputOutput;
-
-
-                // Create the data reader
-                connect.Open();
-                using (SqlDataReader reader = executeCommand.ExecuteReader())
-                {
-
-                    // Create the return argument object
-                    List<string> metadataLabels = new List<string>();
-                    returnArgs = new Single_Paged_Results_Args { Paged_Results = DataReader_To_Simple_Result_List2(reader, metadataLabels) };
-
-                    // Create the overall search statistics?
-                    if (Return_Search_Statistics)
-                    {
-                        Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
-                        returnArgs.Statistics = stats;
-                        reader.Close();
-                        stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
-                        stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
-                    }
-                    else
-                    {
-                        reader.Close();
-                    }
-                }
-                connect.Close();
+                parameters.Add(FacetTypes.Count > 0 ? new EalDbParameter("@facettype1", FacetTypes[0]) : new EalDbParameter("@facettype1", -1));
+                parameters.Add(FacetTypes.Count > 1 ? new EalDbParameter("@facettype2", FacetTypes[1]) : new EalDbParameter("@facettype2", -1));
+                parameters.Add(FacetTypes.Count > 2 ? new EalDbParameter("@facettype3", FacetTypes[2]) : new EalDbParameter("@facettype3", -1));
+                parameters.Add(FacetTypes.Count > 3 ? new EalDbParameter("@facettype4", FacetTypes[3]) : new EalDbParameter("@facettype4", -1));
+                parameters.Add(FacetTypes.Count > 4 ? new EalDbParameter("@facettype5", FacetTypes[4]) : new EalDbParameter("@facettype5", -1));
+                parameters.Add(FacetTypes.Count > 5 ? new EalDbParameter("@facettype6", FacetTypes[5]) : new EalDbParameter("@facettype6", -1));
+                parameters.Add(FacetTypes.Count > 6 ? new EalDbParameter("@facettype7", FacetTypes[6]) : new EalDbParameter("@facettype7", -1));
+                parameters.Add(FacetTypes.Count > 7 ? new EalDbParameter("@facettype8", FacetTypes[7]) : new EalDbParameter("@facettype8", -1));
             }
+            else
+            {
+                parameters.Add(new EalDbParameter("@facettype1", -1));
+                parameters.Add(new EalDbParameter("@facettype2", -1));
+                parameters.Add(new EalDbParameter("@facettype3", -1));
+                parameters.Add(new EalDbParameter("@facettype4", -1));
+                parameters.Add(new EalDbParameter("@facettype5", -1));
+                parameters.Add(new EalDbParameter("@facettype6", -1));
+                parameters.Add(new EalDbParameter("@facettype7", -1));
+                parameters.Add(new EalDbParameter("@facettype8", -1));
+            }
+
+            // Add parameters for total items and total titles
+            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalItemsParameter);
+
+            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalTitlesParameter);
+
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "mySobek_Get_Public_Folder_Browse", parameters);
+
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
+
+            // Create the return argument object
+            List<string> metadataLabels = new List<string>();
+            Single_Paged_Results_Args returnArgs = new Single_Paged_Results_Args {Paged_Results = DataReader_To_Simple_Result_List2(reader, metadataLabels)};
+
+            // Create the overall search statistics?
+            if (ReturnSearchStatistics)
+            {
+                Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
+                returnArgs.Statistics = stats;
+                reader.Close();
+                stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
+                stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
+            }
+
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
 
             // Return the built result arguments
             return returnArgs;
@@ -2595,161 +2334,126 @@ namespace SobekCM.Engine_Library.Database
         #region Methods to retrieve the BROWSE information for the entire library
 
         /// <summary> Gets the collection of all (public) items in the library </summary>
-        /// <param name="Only_New_Items"> Flag indicates to only pull items added in the last two weeks</param>
-        /// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
+        /// <param name="OnlyNewItems"> Flag indicates to only pull items added in the last two weeks</param>
+        /// <param name="IncludePrivateItems"> Flag indicates whether to include private items in the result set </param>
         /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
         /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
         /// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
-        /// <param name="Include_Facets"> Flag indicates if facets should be included in the final result set</param>
-        /// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
-        /// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
+        /// <param name="IncludeFacets"> Flag indicates if facets should be included in the final result set</param>
+        /// <param name="FacetTypes"> Primary key for the metadata types to include as facets (up to eight)</param>
+        /// <param name="ReturnSearchStatistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Table with all of the item and item group information </returns>
         /// <remarks> This calls either the 'SobekCM_Get_All_Browse_Paged' stored procedure </remarks>
-        public static Multiple_Paged_Results_Args Get_All_Browse_Paged(bool Only_New_Items, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
+        public static Multiple_Paged_Results_Args Get_All_Browse_Paged(bool OnlyNewItems, bool IncludePrivateItems, int ResultsPerPage, int ResultsPage, int Sort, bool IncludeFacets, List<short> FacetTypes, bool ReturnSearchStatistics, Custom_Tracer Tracer)
         {
-            if (Only_New_Items)
+            if (OnlyNewItems)
             {
                 // Get the date string to use
                 DateTime sinceDate = DateTime.Now.Subtract(new TimeSpan(14, 0, 0, 0));
                 string dateString = sinceDate.Year.ToString().PadLeft(4, '0') + "-" + sinceDate.Month.ToString().PadLeft(2, '0') + "-" + sinceDate.Day.ToString().PadLeft(2, '0');
-                return Get_All_Browse_Paged(dateString, Include_Private_Items, ResultsPerPage, ResultsPage, Sort, Include_Facets, Facet_Types, Return_Search_Statistics, Tracer);
+                return Get_All_Browse_Paged(dateString, IncludePrivateItems, ResultsPerPage, ResultsPage, Sort, IncludeFacets, FacetTypes, ReturnSearchStatistics, Tracer);
             }
 
             // 1/1/2000 is a special date in the database, which means NO DATE
-            return Get_All_Browse_Paged(String.Empty, Include_Private_Items, ResultsPerPage, ResultsPage, Sort, Include_Facets, Facet_Types, Return_Search_Statistics, Tracer);
+            return Get_All_Browse_Paged(String.Empty, IncludePrivateItems, ResultsPerPage, ResultsPage, Sort, IncludeFacets, FacetTypes, ReturnSearchStatistics, Tracer);
         }
 
         /// <summary> Gets the collection of all (public) items in the library </summary>
-        /// <param name="Since_Date"> Date from which to pull the data </param>
-        /// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
+        /// <param name="SinceDate"> Date from which to pull the data </param>
+        /// <param name="IncludePrivateItems"> Flag indicates whether to include private items in the result set </param>
         /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
         /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
         /// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
-        /// <param name="Include_Facets"> Flag indicates if facets should be included in the final result set</param>
-        /// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
-        /// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
+        /// <param name="IncludeFacets"> Flag indicates if facets should be included in the final result set</param>
+        /// <param name="FacetTypes"> Primary key for the metadata types to include as facets (up to eight)</param>
+        /// <param name="ReturnSearchStatistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Table with all of the item and item group information </returns>
-        /// <remarks> This calls the 'SobekCM_Get_All_Browse_Paged' stored procedure </remarks>
-        public static Multiple_Paged_Results_Args Get_All_Browse_Paged(string Since_Date, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
+        /// <remarks> This calls the 'SobekCM_Get_All_Browse_Paged2' stored procedure </remarks>
+        public static Multiple_Paged_Results_Args Get_All_Browse_Paged(string SinceDate, bool IncludePrivateItems, int ResultsPerPage, int ResultsPage, int Sort, bool IncludeFacets, List<short> FacetTypes, bool ReturnSearchStatistics, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Engine_Database.SobekCM_Get_All_Browse_Paged", "Pulling browse from database");
+                Tracer.Add_Trace("Engine_Database.Get_All_Browse_Paged", "Pulling browse from database");
             }
+            
+            // Create the parameter list
+            List<EalDbParameter> parameters = new List<EalDbParameter>();
+            parameters.Add(SinceDate.Length > 0 ? new EalDbParameter("@date", SinceDate) : new EalDbParameter("@date", DBNull.Value));
+            parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
+            parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
+            parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
+            parameters.Add(new EalDbParameter("@sort", Sort));
+            parameters.Add(new EalDbParameter("@minpagelookahead", MIN_PAGE_LOOKAHEAD));
+            parameters.Add(new EalDbParameter("@maxpagelookahead", MAX_PAGE_LOOKAHEAD));
+            parameters.Add(new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR));
+            parameters.Add(new EalDbParameter("@include_facets", IncludeFacets));
+            if ((IncludeFacets) && (FacetTypes != null))
+            {
+                parameters.Add(FacetTypes.Count > 0 ? new EalDbParameter("@facettype1", FacetTypes[0]) : new EalDbParameter("@facettype1", -1));
+                parameters.Add(FacetTypes.Count > 1 ? new EalDbParameter("@facettype2", FacetTypes[1]) : new EalDbParameter("@facettype2", -1));
+                parameters.Add(FacetTypes.Count > 2 ? new EalDbParameter("@facettype3", FacetTypes[2]) : new EalDbParameter("@facettype3", -1));
+                parameters.Add(FacetTypes.Count > 3 ? new EalDbParameter("@facettype4", FacetTypes[3]) : new EalDbParameter("@facettype4", -1));
+                parameters.Add(FacetTypes.Count > 4 ? new EalDbParameter("@facettype5", FacetTypes[4]) : new EalDbParameter("@facettype5", -1));
+                parameters.Add(FacetTypes.Count > 5 ? new EalDbParameter("@facettype6", FacetTypes[5]) : new EalDbParameter("@facettype6", -1));
+                parameters.Add(FacetTypes.Count > 6 ? new EalDbParameter("@facettype7", FacetTypes[6]) : new EalDbParameter("@facettype7", -1));
+                parameters.Add(FacetTypes.Count > 7 ? new EalDbParameter("@facettype8", FacetTypes[7]) : new EalDbParameter("@facettype8", -1));
+            }
+            else
+            {
+                parameters.Add(new EalDbParameter("@facettype1", -1));
+                parameters.Add(new EalDbParameter("@facettype2", -1));
+                parameters.Add(new EalDbParameter("@facettype3", -1));
+                parameters.Add(new EalDbParameter("@facettype4", -1));
+                parameters.Add(new EalDbParameter("@facettype5", -1));
+                parameters.Add(new EalDbParameter("@facettype6", -1));
+                parameters.Add(new EalDbParameter("@facettype7", -1));
+                parameters.Add(new EalDbParameter("@facettype8", -1));
+            }
+            parameters.Add(new EalDbParameter("@item_count_to_use_cached", 1000));
+
+            // Add parameters for total items and total titles
+            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalItemsParameter);
+
+            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalTitlesParameter);
 
 
             Multiple_Paged_Results_Args returnArgs;
-
             try
             {
 
+                // Create the database agnostic reader
+                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + ";Connection Timeout=45", CommandType.StoredProcedure, "SobekCM_Get_All_Browse_Paged2", parameters);
 
-                // Create the connection
-                using (SqlConnection connect = new SqlConnection(Connection_String + ";Connection Timeout=45"))
+                // Pull out the database reader
+                DbDataReader reader = readerWrapper.Reader;
+
+                // Create the return argument object
+                List<string> metadataLabels = new List<string>();
+                returnArgs = new Multiple_Paged_Results_Args
                 {
+                    Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)
+                };
 
-                    // Create the command 
-                    SqlCommand executeCommand = new SqlCommand("SobekCM_Get_All_Browse_Paged2", connect) { CommandTimeout = 45, CommandType = CommandType.StoredProcedure };
-
-                    if (Since_Date.Length > 0)
-                        executeCommand.Parameters.AddWithValue("@date", Since_Date);
-                    else
-                        executeCommand.Parameters.AddWithValue("@date", DBNull.Value);
-                    executeCommand.Parameters.AddWithValue("@include_private", Include_Private_Items);
-                    executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
-                    executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
-                    executeCommand.Parameters.AddWithValue("@sort", Sort);
-                    executeCommand.Parameters.AddWithValue("@minpagelookahead", MIN_PAGE_LOOKAHEAD);
-                    executeCommand.Parameters.AddWithValue("@maxpagelookahead", MAX_PAGE_LOOKAHEAD);
-                    executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
-                    executeCommand.Parameters.AddWithValue("@include_facets", Include_Facets);
-                    if ((Include_Facets) && (Facet_Types != null))
-                    {
-                        if (Facet_Types.Count > 0)
-                            executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
-                        else
-                            executeCommand.Parameters.AddWithValue("@facettype1", -1);
-                        if (Facet_Types.Count > 1)
-                            executeCommand.Parameters.AddWithValue("@facettype2", Facet_Types[1]);
-                        else
-                            executeCommand.Parameters.AddWithValue("@facettype2", -1);
-                        if (Facet_Types.Count > 2)
-                            executeCommand.Parameters.AddWithValue("@facettype3", Facet_Types[2]);
-                        else
-                            executeCommand.Parameters.AddWithValue("@facettype3", -1);
-                        if (Facet_Types.Count > 3)
-                            executeCommand.Parameters.AddWithValue("@facettype4", Facet_Types[3]);
-                        else
-                            executeCommand.Parameters.AddWithValue("@facettype4", -1);
-                        if (Facet_Types.Count > 4)
-                            executeCommand.Parameters.AddWithValue("@facettype5", Facet_Types[4]);
-                        else
-                            executeCommand.Parameters.AddWithValue("@facettype5", -1);
-                        if (Facet_Types.Count > 5)
-                            executeCommand.Parameters.AddWithValue("@facettype6", Facet_Types[5]);
-                        else
-                            executeCommand.Parameters.AddWithValue("@facettype6", -1);
-                        if (Facet_Types.Count > 6)
-                            executeCommand.Parameters.AddWithValue("@facettype7", Facet_Types[6]);
-                        else
-                            executeCommand.Parameters.AddWithValue("@facettype7", -1);
-                        if (Facet_Types.Count > 7)
-                            executeCommand.Parameters.AddWithValue("@facettype8", Facet_Types[7]);
-                        else
-                            executeCommand.Parameters.AddWithValue("@facettype8", -1);
-                    }
-                    else
-                    {
-                        executeCommand.Parameters.AddWithValue("@facettype1", -1);
-                        executeCommand.Parameters.AddWithValue("@facettype2", -1);
-                        executeCommand.Parameters.AddWithValue("@facettype3", -1);
-                        executeCommand.Parameters.AddWithValue("@facettype4", -1);
-                        executeCommand.Parameters.AddWithValue("@facettype5", -1);
-                        executeCommand.Parameters.AddWithValue("@facettype6", -1);
-                        executeCommand.Parameters.AddWithValue("@facettype7", -1);
-                        executeCommand.Parameters.AddWithValue("@facettype8", -1);
-                    }
-                    executeCommand.Parameters.AddWithValue("@item_count_to_use_cached", 1000);
-
-                    // Add parameters for total items and total titles
-                    SqlParameter totalItemsParameter = executeCommand.Parameters.AddWithValue("@total_items", 0);
-                    totalItemsParameter.Direction = ParameterDirection.InputOutput;
-
-                    SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
-                    totalTitlesParameter.Direction = ParameterDirection.InputOutput;
-
-
-                    // Create the data reader
-                    connect.Open();
-                    using (SqlDataReader reader = executeCommand.ExecuteReader())
-                    {
-
-                        // Create the return argument object
-                        List<string> metadataLabels = new List<string>();
-                        returnArgs = new Multiple_Paged_Results_Args { Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels) };
-
-                        // Create the overall search statistics?
-                        if (Return_Search_Statistics)
-                        {
-                            Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
-                            returnArgs.Statistics = stats;
-                            reader.Close();
-                            stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
-                            stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
-                        }
-                        else
-                        {
-                            reader.Close();
-                        }
-                    }
-                    connect.Close();
+                // Create the overall search statistics?
+                if (ReturnSearchStatistics)
+                {
+                    Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
+                    returnArgs.Statistics = stats;
+                    reader.Close();
+                    stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
+                    stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
                 }
+
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Get_All_Browse_Paged", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -2769,176 +2473,140 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Gets the collection of all (public) items linked to an item aggregation </summary>
         /// <param name="AggregationCode"> Code for the item aggregation of interest </param>
-        /// <param name="Only_New_Items"> Flag indicates to only pull items added in the last two weeks</param>
-        /// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
+        /// <param name="OnlyNewItems"> Flag indicates to only pull items added in the last two weeks</param>
+        /// <param name="IncludePrivateItems"> Flag indicates whether to include private items in the result set </param>
         /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
         /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
         /// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
-        /// <param name="Include_Facets"> Flag indicates if facets should be included in the final result set</param>
-        /// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
-        /// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
+        /// <param name="IncludeFacets"> Flag indicates if facets should be included in the final result set</param>
+        /// <param name="FacetTypes"> Primary key for the metadata types to include as facets (up to eight)</param>
+        /// <param name="ReturnSearchStatistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Table with all of the item and item group information </returns>
         /// <remarks> This calls either the 'SobekCM_Get_Aggregation_Browse_Paged' stored procedure </remarks>
-        public static Multiple_Paged_Results_Args Get_Item_Aggregation_Browse_Paged(string AggregationCode, bool Only_New_Items, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
+        public static Multiple_Paged_Results_Args Get_Item_Aggregation_Browse_Paged(string AggregationCode, bool OnlyNewItems, bool IncludePrivateItems, int ResultsPerPage, int ResultsPage, int Sort, bool IncludeFacets, List<short> FacetTypes, bool ReturnSearchStatistics, Custom_Tracer Tracer)
         {
-            if (Only_New_Items)
+            if (OnlyNewItems)
             {
                 // Get the date string to use
                 DateTime sinceDate = DateTime.Now.Subtract(new TimeSpan(14, 0, 0, 0));
                 string dateString = sinceDate.Year.ToString().PadLeft(4, '0') + "-" + sinceDate.Month.ToString().PadLeft(2, '0') + "-" + sinceDate.Day.ToString().PadLeft(2, '0');
-                return Get_Item_Aggregation_Browse_Paged(AggregationCode, dateString, Include_Private_Items, ResultsPerPage, ResultsPage, Sort, Include_Facets, Facet_Types, Return_Search_Statistics, Tracer);
+                return Get_Item_Aggregation_Browse_Paged(AggregationCode, dateString, IncludePrivateItems, ResultsPerPage, ResultsPage, Sort, IncludeFacets, FacetTypes, ReturnSearchStatistics, Tracer);
             }
 
             // 1/1/2000 is a special date in the database, which means NO DATE
-            return Get_Item_Aggregation_Browse_Paged(AggregationCode, "2000-01-01", Include_Private_Items, ResultsPerPage, ResultsPage, Sort, Include_Facets, Facet_Types, Return_Search_Statistics, Tracer);
+            return Get_Item_Aggregation_Browse_Paged(AggregationCode, "2000-01-01", IncludePrivateItems, ResultsPerPage, ResultsPage, Sort, IncludeFacets, FacetTypes, ReturnSearchStatistics, Tracer);
         }
 
         /// <summary> Gets the collection of all (public) items linked to an item aggregation </summary>
         /// <param name="AggregationCode"> Code for the item aggregation of interest </param>
-        /// <param name="Since_Date"> Date from which to pull the data </param>
-        /// <param name="Include_Private_Items"> Flag indicates whether to include private items in the result set </param>
+        /// <param name="SinceDate"> Date from which to pull the data </param>
+        /// <param name="IncludePrivateItems"> Flag indicates whether to include private items in the result set </param>
         /// <param name="ResultsPerPage"> Number of results to return per "page" of results </param>
         /// <param name="ResultsPage"> Which page of results to return ( one-based, so the first page is page number of one )</param>
         /// <param name="Sort"> Current sort to use ( 0 = default by search or browse, 1 = title, 10 = date asc, 11 = date desc )</param>
-        /// <param name="Include_Facets"> Flag indicates if facets should be included in the final result set</param>
-        /// <param name="Facet_Types"> Primary key for the metadata types to include as facets (up to eight)</param>
-        /// <param name="Return_Search_Statistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
+        /// <param name="IncludeFacets"> Flag indicates if facets should be included in the final result set</param>
+        /// <param name="FacetTypes"> Primary key for the metadata types to include as facets (up to eight)</param>
+        /// <param name="ReturnSearchStatistics"> Flag indicates whether to create and return statistics about the overall search results, generally set to TRUE for the first page requested and subsequently set to FALSE </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Table with all of the item and item group information </returns>
-        /// <remarks> This calls the 'SobekCM_Get_Aggregation_Browse_Paged' stored procedure </remarks>
-        public static Multiple_Paged_Results_Args Get_Item_Aggregation_Browse_Paged(string AggregationCode, string Since_Date, bool Include_Private_Items, int ResultsPerPage, int ResultsPage, int Sort, bool Include_Facets, List<short> Facet_Types, bool Return_Search_Statistics, Custom_Tracer Tracer)
+        /// <remarks> This calls the 'SobekCM_Get_Aggregation_Browse_Paged2' stored procedure </remarks>
+        public static Multiple_Paged_Results_Args Get_Item_Aggregation_Browse_Paged(string AggregationCode, string SinceDate, bool IncludePrivateItems, int ResultsPerPage, int ResultsPage, int Sort, bool IncludeFacets, List<short> FacetTypes, bool ReturnSearchStatistics, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
                 Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation_Browse_Paged", "Pulling browse from database");
             }
 
-            Multiple_Paged_Results_Args returnArgs;
+            // Build the parameters list
+            List<EalDbParameter> parameters = new List<EalDbParameter>();
+            parameters.Add(new EalDbParameter("@code", AggregationCode));
+            parameters.Add(new EalDbParameter("@date", SinceDate));
+            parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
+            parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
+            parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
+            parameters.Add(new EalDbParameter("@sort", Sort));
 
-            // Create the connection
-            using (SqlConnection connect = new SqlConnection(Connection_String + "Connection Timeout=45"))
+            if (ResultsPerPage > 100)
             {
-
-                // Create the command 
-                SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Aggregation_Browse_Paged2", connect) { CommandTimeout = 45, CommandType = CommandType.StoredProcedure };
-
-                executeCommand.Parameters.AddWithValue("@code", AggregationCode);
-                executeCommand.Parameters.AddWithValue("@date", Since_Date);
-                executeCommand.Parameters.AddWithValue("@include_private", Include_Private_Items);
-                executeCommand.Parameters.AddWithValue("@pagesize", ResultsPerPage);
-                executeCommand.Parameters.AddWithValue("@pagenumber", ResultsPage);
-                executeCommand.Parameters.AddWithValue("@sort", Sort);
-
-                if (ResultsPerPage > 100)
-                {
-                    executeCommand.Parameters.AddWithValue("@minpagelookahead", 1);
-                    executeCommand.Parameters.AddWithValue("@maxpagelookahead", 1);
-                    executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
-                }
-                else
-                {
-                    executeCommand.Parameters.AddWithValue("@minpagelookahead", MIN_PAGE_LOOKAHEAD);
-                    executeCommand.Parameters.AddWithValue("@maxpagelookahead", MAX_PAGE_LOOKAHEAD);
-                    executeCommand.Parameters.AddWithValue("@lookahead_factor", LOOKAHEAD_FACTOR);
-                }
-
-
-                if ((Include_Facets) && (Facet_Types != null))
-                {
-                    executeCommand.Parameters.AddWithValue("@include_facets", true);
-                    if (Facet_Types.Count > 0)
-                        executeCommand.Parameters.AddWithValue("@facettype1", Facet_Types[0]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype1", -1);
-                    if (Facet_Types.Count > 1)
-                        executeCommand.Parameters.AddWithValue("@facettype2", Facet_Types[1]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype2", -1);
-                    if (Facet_Types.Count > 2)
-                        executeCommand.Parameters.AddWithValue("@facettype3", Facet_Types[2]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype3", -1);
-                    if (Facet_Types.Count > 3)
-                        executeCommand.Parameters.AddWithValue("@facettype4", Facet_Types[3]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype4", -1);
-                    if (Facet_Types.Count > 4)
-                        executeCommand.Parameters.AddWithValue("@facettype5", Facet_Types[4]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype5", -1);
-                    if (Facet_Types.Count > 5)
-                        executeCommand.Parameters.AddWithValue("@facettype6", Facet_Types[5]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype6", -1);
-                    if (Facet_Types.Count > 6)
-                        executeCommand.Parameters.AddWithValue("@facettype7", Facet_Types[6]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype7", -1);
-                    if (Facet_Types.Count > 7)
-                        executeCommand.Parameters.AddWithValue("@facettype8", Facet_Types[7]);
-                    else
-                        executeCommand.Parameters.AddWithValue("@facettype8", -1);
-                }
-                else
-                {
-                    executeCommand.Parameters.AddWithValue("@include_facets", false);
-                    executeCommand.Parameters.AddWithValue("@facettype1", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype2", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype3", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype4", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype5", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype6", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype7", -1);
-                    executeCommand.Parameters.AddWithValue("@facettype8", -1);
-                }
-                executeCommand.Parameters.AddWithValue("@item_count_to_use_cached", 1000);
-
-                // Add parameters for total items and total titles
-                SqlParameter totalItemsParameter = executeCommand.Parameters.AddWithValue("@total_items", 0);
-                totalItemsParameter.Direction = ParameterDirection.InputOutput;
-
-                SqlParameter totalTitlesParameter = executeCommand.Parameters.AddWithValue("@total_titles", 0);
-                totalTitlesParameter.Direction = ParameterDirection.InputOutput;
-
-
-                // Create the data reader
-                connect.Open();
-                using (SqlDataReader reader = executeCommand.ExecuteReader())
-                {
-
-                    // Create the return argument object
-                    List<string> metadataLabels = new List<string>();
-                    returnArgs = new Multiple_Paged_Results_Args { Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels) };
-
-                    // Create the overall search statistics?
-                    if (Return_Search_Statistics)
-                    {
-                        Search_Results_Statistics stats = new Search_Results_Statistics(reader, Facet_Types, metadataLabels);
-                        returnArgs.Statistics = stats;
-                        reader.Close();
-                        stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
-                        stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
-                    }
-                    else
-                    {
-                        reader.Close();
-                    }
-                }
-                connect.Close();
+                parameters.Add(new EalDbParameter("@minpagelookahead", 1));
+                parameters.Add(new EalDbParameter("@maxpagelookahead", 1));
+                parameters.Add(new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR));
             }
+            else
+            {
+                parameters.Add(new EalDbParameter("@minpagelookahead", MIN_PAGE_LOOKAHEAD));
+                parameters.Add(new EalDbParameter("@maxpagelookahead", MAX_PAGE_LOOKAHEAD));
+                parameters.Add(new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR));
+            }
+
+
+            if ((IncludeFacets) && (FacetTypes != null))
+            {
+                parameters.Add(new EalDbParameter("@include_facets", true));
+                parameters.Add(FacetTypes.Count > 0 ? new EalDbParameter("@facettype1", FacetTypes[0]) : new EalDbParameter("@facettype1", -1));
+                parameters.Add(FacetTypes.Count > 1 ? new EalDbParameter("@facettype2", FacetTypes[1]) : new EalDbParameter("@facettype2", -1));
+                parameters.Add(FacetTypes.Count > 2 ? new EalDbParameter("@facettype3", FacetTypes[2]) : new EalDbParameter("@facettype3", -1));
+                parameters.Add(FacetTypes.Count > 3 ? new EalDbParameter("@facettype4", FacetTypes[3]) : new EalDbParameter("@facettype4", -1));
+                parameters.Add(FacetTypes.Count > 4 ? new EalDbParameter("@facettype5", FacetTypes[4]) : new EalDbParameter("@facettype5", -1));
+                parameters.Add(FacetTypes.Count > 5 ? new EalDbParameter("@facettype6", FacetTypes[5]) : new EalDbParameter("@facettype6", -1));
+                parameters.Add(FacetTypes.Count > 6 ? new EalDbParameter("@facettype7", FacetTypes[6]) : new EalDbParameter("@facettype7", -1));
+                parameters.Add(FacetTypes.Count > 7 ? new EalDbParameter("@facettype8", FacetTypes[7]) : new EalDbParameter("@facettype8", -1));
+            }
+            else
+            {
+                parameters.Add(new EalDbParameter("@include_facets", false));
+                parameters.Add(new EalDbParameter("@facettype1", -1));
+                parameters.Add(new EalDbParameter("@facettype2", -1));
+                parameters.Add(new EalDbParameter("@facettype3", -1));
+                parameters.Add(new EalDbParameter("@facettype4", -1));
+                parameters.Add(new EalDbParameter("@facettype5", -1));
+                parameters.Add(new EalDbParameter("@facettype6", -1));
+                parameters.Add(new EalDbParameter("@facettype7", -1));
+                parameters.Add(new EalDbParameter("@facettype8", -1));
+            }
+            parameters.Add(new EalDbParameter("@item_count_to_use_cached", 1000));
+
+            // Add parameters for total items and total titles
+            EalDbParameter totalItemsParameter = new EalDbParameter("@total_items", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalItemsParameter);
+
+            EalDbParameter totalTitlesParameter = new EalDbParameter("@total_titles", 0) {Direction = ParameterDirection.InputOutput};
+            parameters.Add(totalTitlesParameter);
+
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "SobekCM_Get_Aggregation_Browse_Paged2", parameters);
+
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
+
+            // Create the return argument object
+            List<string> metadataLabels = new List<string>();
+            Multiple_Paged_Results_Args returnArgs = new Multiple_Paged_Results_Args {Paged_Results = DataReader_To_Result_List_With_LookAhead2(reader, ResultsPerPage, metadataLabels)};
+
+            // Create the overall search statistics?
+            if (ReturnSearchStatistics)
+            {
+                Search_Results_Statistics stats = new Search_Results_Statistics(reader, FacetTypes, metadataLabels);
+                returnArgs.Statistics = stats;
+                stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
+                stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
+            }
+
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
 
             // Return the built result arguments
             return returnArgs;
         }
 
         /// <summary> Gets the list of all data for a particular metadata field in a particular aggregation </summary>
-        /// <param name="Aggregation_Code"> Code for the item aggregation </param>
-        /// <param name="Metadata_Code"> Metadata code for the field of interest </param>
+        /// <param name="AggregationCode"> Code for the item aggregation </param>
+        /// <param name="MetadataCode"> Metadata code for the field of interest </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> List with all the metadata fields in alphabetical order </returns>
         /// <remarks> This calls the 'SobekCM_Get_Metadata_Browse' stored procedure </remarks>
-        public static List<string> Get_Item_Aggregation_Metadata_Browse(string Aggregation_Code, string Metadata_Code, Custom_Tracer Tracer)
+        public static List<string> Get_Item_Aggregation_Metadata_Browse(string AggregationCode, string MetadataCode, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -2946,13 +2614,13 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Build the parameter list
-            SqlParameter[] paramList = new SqlParameter[3];
-            paramList[0] = new SqlParameter("@aggregation_code", Aggregation_Code);
-            paramList[1] = new SqlParameter("@metadata_name", Metadata_Code);
-            paramList[2] = new SqlParameter("@item_count_to_use_cached", 100);
+            EalDbParameter[] paramList = new EalDbParameter[3];
+            paramList[0] = new EalDbParameter("@aggregation_code", AggregationCode);
+            paramList[1] = new EalDbParameter("@metadata_name", MetadataCode);
+            paramList[2] = new EalDbParameter("@item_count_to_use_cached", 100);
 
             // Define a temporary dataset
-            DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Metadata_Browse", paramList);
+            DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Metadata_Browse", paramList);
 
             if (tempSet == null)
                 return null;
@@ -2964,11 +2632,11 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Gets the list of unique coordinate points and associated bibid and group title for a single 
         /// item aggregation </summary>
-        /// <param name="Aggregation_Code"> Code for the item aggregation </param>
+        /// <param name="AggregationCode"> Code for the item aggregation </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> DataTable with all the coordinate values </returns>
         /// <remarks> This calls the 'SobekCM_Coordinate_Points_By_Aggregation' stored procedure </remarks>
-        public static DataTable Get_All_Coordinate_Points_By_Aggregation(string Aggregation_Code, Custom_Tracer Tracer)
+        public static DataTable Get_All_Coordinate_Points_By_Aggregation(string AggregationCode, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -2976,11 +2644,11 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Build the parameter list
-            SqlParameter[] paramList = new SqlParameter[1];
-            paramList[0] = new SqlParameter("@aggregation_code", Aggregation_Code);
+            EalDbParameter[] paramList = new EalDbParameter[1];
+            paramList[0] = new EalDbParameter("@aggregation_code", AggregationCode);
 
             // Define a temporary dataset
-            DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Coordinate_Points_By_Aggregation", paramList);
+            DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Coordinate_Points_By_Aggregation", paramList);
             return tempSet == null ? null : tempSet.Tables[0];
         }
 
@@ -3003,13 +2671,13 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[3];
-                paramList[0] = new SqlParameter("@code", Aggregation.Code);
-                paramList[1] = new SqlParameter("@include_counts", true);
-                paramList[2] = new SqlParameter("@is_robot", false);
+                EalDbParameter[] paramList = new EalDbParameter[3];
+                paramList[0] = new EalDbParameter("@code", Aggregation.Code);
+                paramList[1] = new EalDbParameter("@include_counts", true);
+                paramList[2] = new EalDbParameter("@is_robot", false);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Aggregation2", paramList);
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Aggregation2", paramList);
 
                 // Add the counts for this item aggregation
                 if (tempSet.Tables.Count > 4)
@@ -3036,11 +2704,11 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Gets the database information about a single item aggregation </summary>
         /// <param name="Code"> Code specifying the item aggregation to retrieve </param>
-        /// <param name="Include_Counts"> Flag indicates whether to pull the title/item/page counts for this aggregation </param>
+        /// <param name="IncludeCounts"> Flag indicates whether to pull the title/item/page counts for this aggregation </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Arguments which include the <see cref="Item_Aggregation"/> object and a DataTable of the search field information</returns>
         /// <remarks> This method calls the stored procedure 'SobekCM_Get_Item_Aggregation2'. </remarks>
-        public static Complete_Item_Aggregation Get_Item_Aggregation(string Code, bool Include_Counts, Custom_Tracer Tracer)
+        public static Complete_Item_Aggregation Get_Item_Aggregation(string Code, bool IncludeCounts, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -3050,11 +2718,11 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[1];
-                paramList[0] = new SqlParameter("@code", Code);
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@code", Code);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Aggregation", paramList);
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Aggregation", paramList);
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -3085,8 +2753,8 @@ namespace SobekCM.Engine_Library.Database
                     Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation", ee.Message, Custom_Trace_Type_Enum.Error);
                     Tracer.Add_Trace("Engine_Database.Get_Item_Aggregation", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
-                
-                throw ee;
+
+                throw;
             }
         }
 
@@ -3104,11 +2772,11 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[1];
-                paramList[0] = new SqlParameter("@metadata_count_to_use_cache", ALL_AGGREGATIONS_METADATA_COUNT_TO_USE_CACHED);
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@metadata_count_to_use_cache", ALL_AGGREGATIONS_METADATA_COUNT_TO_USE_CACHED);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_All_Groups", paramList);
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_All_Groups", paramList);
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -3310,11 +2978,12 @@ namespace SobekCM.Engine_Library.Database
         {
             if (CountInfo.Rows.Count > 0)
             {
-                AggrInfo.Statistics = new Item_Aggregation_Statistics();
-
-                AggrInfo.Statistics.Page_Count = Convert.ToInt32(CountInfo.Rows[0]["Page_Count"]);
-                AggrInfo.Statistics.Item_Count = Convert.ToInt32(CountInfo.Rows[0]["Item_Count"]);
-                AggrInfo.Statistics.Title_Count = Convert.ToInt32(CountInfo.Rows[0]["Title_Count"]);
+                AggrInfo.Statistics = new Item_Aggregation_Statistics
+                {
+                    Page_Count = Convert.ToInt32(CountInfo.Rows[0]["Page_Count"]), 
+                    Item_Count = Convert.ToInt32(CountInfo.Rows[0]["Item_Count"]), 
+                    Title_Count = Convert.ToInt32(CountInfo.Rows[0]["Title_Count"])
+                };
             }
         }
 
@@ -3322,7 +2991,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> DataTable with relationships between all aggregationPermissions</returns>
         /// <remarks> This calls the 'SobekCM_Get_Collection_Hierarchies' stored procedure <br /><br />
-        /// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
+        /// This is used by the Internal_HtmlSubwriter class</remarks>
         public static DataSet Get_Aggregation_Hierarchies(Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -3333,7 +3002,7 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Collection_Hierarchies");
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Collection_Hierarchies");
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -3346,7 +3015,7 @@ namespace SobekCM.Engine_Library.Database
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Get_Aggregation_Hierarchies", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -3393,12 +3062,12 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="IsActive"> Flag indicates if this item aggregation is active</param>
         /// <param name="IsHidden"> Flag indicates if this item is hidden</param>
         /// <param name="DisplayOptions"> Display options for this item aggregation </param>
-        /// <param name="Map_Search"> Map Search value indicates if there is a map search, and the type of search </param>
-        /// /// <param name="Map_Search_Beta"> Map Search value indicates if there is a map search, and the type of search </param>
-        /// <param name="Map_Display"> Map Display value indicates if there is a map display option when looking at search results or browses </param>
-        /// <param name="Map_Display_Beta"> Map Display value indicates if there is a map display option when looking at search results or browses </param>
-        /// <param name="OAI_Flag"> Flag indicates if this item aggregation should be available via OAI-PMH </param>
-        /// <param name="OAI_Metadata"> Additional metadata about this collection, to be included in the set information in OAI-PMH</param>
+        /// <param name="MapSearch"> Map Search value indicates if there is a map search, and the type of search </param>
+        /// /// <param name="MapSearchBeta"> Map Search value indicates if there is a map search, and the type of search </param>
+        /// <param name="MapDisplay"> Map Display value indicates if there is a map display option when looking at search results or browses </param>
+        /// <param name="MapDisplayBeta"> Map Display value indicates if there is a map display option when looking at search results or browses </param>
+        /// <param name="OaiFlag"> Flag indicates if this item aggregation should be available via OAI-PMH </param>
+        /// <param name="OaiMetadata"> Additional metadata about this collection, to be included in the set information in OAI-PMH</param>
         /// <param name="ContactEmail"> Contact email for this item aggregation (can leave blank to use default)</param>
         /// <param name="DefaultInterface"> Default interface for this item aggregation (particularly useful for institutional aggregationPermissions)</param>
         /// <param name="ExternalLink">External link for this item aggregation (used primarily for institutional item aggregationPermissions to provide a link back to the institution's actual home page)</param>
@@ -3408,9 +3077,9 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Save_Item_Aggregation' stored procedure in the SobekCM database</remarks> 
-        public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, Thematic_Heading ThematicHeading, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int Map_Search, int Map_Search_Beta, int Map_Display, int Map_Display_Beta, bool OAI_Flag, string OAI_Metadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, string LanguageVariants, Custom_Tracer Tracer)
+        public static bool Save_Item_Aggregation(int AggregationID, string Code, string Name, string ShortName, string Description, Thematic_Heading ThematicHeading, string Type, bool IsActive, bool IsHidden, string DisplayOptions, int MapSearch, int MapSearchBeta, int MapDisplay, int MapDisplayBeta, bool OaiFlag, string OaiMetadata, string ContactEmail, string DefaultInterface, string ExternalLink, int ParentID, string Username, string LanguageVariants, Custom_Tracer Tracer)
         {
-            lastException = null;
+            Last_Exception = null;
 
             if (Tracer != null)
             {
@@ -3420,48 +3089,48 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[21];
-                paramList[0] = new SqlParameter("@aggregationid", AggregationID);
-                paramList[1] = new SqlParameter("@code", Code);
-                paramList[2] = new SqlParameter("@name", Name);
-                paramList[3] = new SqlParameter("@shortname", ShortName);
-                paramList[4] = new SqlParameter("@description", Description);
+                EalDbParameter[] paramList = new EalDbParameter[21];
+                paramList[0] = new EalDbParameter("@aggregationid", AggregationID);
+                paramList[1] = new EalDbParameter("@code", Code);
+                paramList[2] = new EalDbParameter("@name", Name);
+                paramList[3] = new EalDbParameter("@shortname", ShortName);
+                paramList[4] = new EalDbParameter("@description", Description);
                 if (ThematicHeading != null )
-                    paramList[5] = new SqlParameter("@thematicHeadingId", ThematicHeading.ID);
+                    paramList[5] = new EalDbParameter("@thematicHeadingId", ThematicHeading.ID);
                 else
-                    paramList[5] = new SqlParameter("@thematicHeadingId", -1);
-                paramList[6] = new SqlParameter("@type", Type);
-                paramList[7] = new SqlParameter("@isActive", IsActive);
-                paramList[8] = new SqlParameter("@hidden", IsHidden);
-                paramList[9] = new SqlParameter("@display_options", DisplayOptions);
-                paramList[10] = new SqlParameter("@map_search", Map_Search);
-                paramList[11] = new SqlParameter("@map_display", Map_Display);
-                paramList[12] = new SqlParameter("@oai_flag", OAI_Flag);
-                paramList[13] = new SqlParameter("@oai_metadata", OAI_Metadata);
+                    paramList[5] = new EalDbParameter("@thematicHeadingId", -1);
+                paramList[6] = new EalDbParameter("@type", Type);
+                paramList[7] = new EalDbParameter("@isActive", IsActive);
+                paramList[8] = new EalDbParameter("@hidden", IsHidden);
+                paramList[9] = new EalDbParameter("@display_options", DisplayOptions);
+                paramList[10] = new EalDbParameter("@map_search", MapSearch);
+                paramList[11] = new EalDbParameter("@map_display", MapDisplay);
+                paramList[12] = new EalDbParameter("@oai_flag", OaiFlag);
+                paramList[13] = new EalDbParameter("@oai_metadata", OaiMetadata);
                 if ( ContactEmail == null )
-                    paramList[14] = new SqlParameter("@contactemail", String.Empty);
+                    paramList[14] = new EalDbParameter("@contactemail", String.Empty);
                 else
-                    paramList[14] = new SqlParameter("@contactemail", ContactEmail);
-                paramList[15] = new SqlParameter("@defaultinterface", DefaultInterface);
-                paramList[16] = new SqlParameter("@externallink", ExternalLink);
-                paramList[17] = new SqlParameter("@parentid", ParentID);
-                paramList[18] = new SqlParameter("@username", Username);
-                paramList[19] = new SqlParameter("@languageVariants", LanguageVariants);
-                paramList[20] = new SqlParameter("@newaggregationid", 0) { Direction = ParameterDirection.InputOutput };
+                    paramList[14] = new EalDbParameter("@contactemail", ContactEmail);
+                paramList[15] = new EalDbParameter("@defaultinterface", DefaultInterface);
+                paramList[16] = new EalDbParameter("@externallink", ExternalLink);
+                paramList[17] = new EalDbParameter("@parentid", ParentID);
+                paramList[18] = new EalDbParameter("@username", Username);
+                paramList[19] = new EalDbParameter("@languageVariants", LanguageVariants);
+                paramList[20] = new EalDbParameter("@newaggregationid", 0) { Direction = ParameterDirection.InputOutput };
 
                 //BETA
-                //paramList[20] = new SqlParameter("@map_search_beta", Map_Search_Beta);
-                //paramList[21] = new SqlParameter("@map_display_beta", Map_Display_Beta);
+                //paramList[20] = new EalDbParameter("@map_search_beta", Map_Search_Beta);
+                //paramList[21] = new EalDbParameter("@map_display_beta", Map_Display_Beta);
 
                 // Execute this query stored procedure
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Save_Item_Aggregation", paramList);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Save_Item_Aggregation", paramList);
 
                 // Succesful, so return true
                 return true;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Save_Item_Aggregation", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -3476,102 +3145,102 @@ namespace SobekCM.Engine_Library.Database
 
         #region Methods relating to sending emails from and logging emails in the database
 
-        /// <summary> Send an email using databse mail through the SQL database </summary>
-        /// <param name="Recipient_List"> List of recepients, seperated by a semi-colon </param>
-        /// <param name="Subject_Line"> Subject line for the email to send </param>
-        /// <param name="Email_Body"> Body of the email to send</param>
-        /// <param name="From_Address"> Address this is FROM to override system </param>
-        /// <param name="Reply_To"> Address this should have as REPLY TO from system </param>
+        /// <summary> Send an email using database mail through the database </summary>
+        /// <param name="RecipientList"> List of recepients, seperated by a semi-colon </param>
+        /// <param name="SubjectLine"> Subject line for the email to send </param>
+        /// <param name="EmailBody"> Body of the email to send</param>
+        /// <param name="FromAddress"> Address this is FROM to override system </param>
+        /// <param name="ReplyTo"> Address this should have as REPLY TO from system </param>
         /// <param name="IsHtml"> Flag indicates if the email body is HTML-encoded, or plain text </param>
         /// <param name="IsContactUs"> Flag indicates if this was sent from the 'Contact Us' feature of the library, rather than from a mySobek feature such as email your bookshelf </param>
         /// <param name="ReplyToEmailID"> Primary key of the previous email, if this is a reply to a previously logged email </param>
         /// <param name="UserID"> UserID that sent this message.  This is used to restrict the number of messages sent by the same user in the same day </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Send_Email' stored procedure to send and log this email. </remarks>
-        public static bool Send_Database_Email(string Recipient_List, string Subject_Line, string Email_Body, string From_Address, string Reply_To, bool IsHtml, bool IsContactUs, int ReplyToEmailID, int UserID)
+        public static bool Send_Database_Email(string RecipientList, string SubjectLine, string EmailBody, string FromAddress, string ReplyTo, bool IsHtml, bool IsContactUs, int ReplyToEmailID, int UserID)
         {
             try
             {
                 // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[9];
-                paramList[0] = new SqlParameter("@recipients_list", Recipient_List.Replace(",",";"));
-                paramList[1] = new SqlParameter("@subject_line", Subject_Line);
-                paramList[2] = new SqlParameter("@email_body", Email_Body);
-                if ( String.IsNullOrEmpty(From_Address))
-                    paramList[3] = new SqlParameter("@from_address", DBNull.Value);
+                EalDbParameter[] paramList = new EalDbParameter[9];
+                paramList[0] = new EalDbParameter("@recipients_list", RecipientList.Replace(",",";"));
+                paramList[1] = new EalDbParameter("@subject_line", SubjectLine);
+                paramList[2] = new EalDbParameter("@email_body", EmailBody);
+                if ( String.IsNullOrEmpty(FromAddress))
+                    paramList[3] = new EalDbParameter("@from_address", DBNull.Value);
                 else
-                    paramList[3] = new SqlParameter("@from_address", From_Address);
+                    paramList[3] = new EalDbParameter("@from_address", FromAddress);
 
-                if (String.IsNullOrEmpty(Reply_To))
-                    paramList[4] = new SqlParameter("@reply_to", DBNull.Value);
+                if (String.IsNullOrEmpty(ReplyTo))
+                    paramList[4] = new EalDbParameter("@reply_to", DBNull.Value);
                 else
-                    paramList[4] = new SqlParameter("@reply_to", Reply_To);
+                    paramList[4] = new EalDbParameter("@reply_to", ReplyTo);
 
-                paramList[5] = new SqlParameter("@html_format", IsHtml);
-                paramList[6] = new SqlParameter("@contact_us", IsContactUs);
+                paramList[5] = new EalDbParameter("@html_format", IsHtml);
+                paramList[6] = new EalDbParameter("@contact_us", IsContactUs);
                 if (ReplyToEmailID > 0)
                 {
-                    paramList[7] = new SqlParameter("@replytoemailid", ReplyToEmailID);
+                    paramList[7] = new EalDbParameter("@replytoemailid", ReplyToEmailID);
                 }
                 else
                 {
-                    paramList[7] = new SqlParameter("@replytoemailid", DBNull.Value);
+                    paramList[7] = new EalDbParameter("@replytoemailid", DBNull.Value);
                 }
-                paramList[8] = new SqlParameter("@userid", UserID);
+                paramList[8] = new EalDbParameter("@userid", UserID);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Send_Email", paramList);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Send_Email", paramList);
 
                 return true;
             }
             catch (Exception ee)
             {
                 // Pass this exception onto the method to handle it
-                lastException = ee;
+                Last_Exception = ee;
                 return false;
             }
         }
 
         /// <summary> Log the fact an email was sent via a different system than the databse mail </summary>
         /// <param name="Sender"> Name of the sender indicated in the sent email </param>
-        /// <param name="Recipient_List"> List of recepients, seperated by a semi-colon </param>
-        /// <param name="Subject_Line"> Subject line for the email to log </param>
-        /// <param name="Email_Body"> Body of the email to log</param>
+        /// <param name="RecipientList"> List of recepients, seperated by a semi-colon </param>
+        /// <param name="SubjectLine"> Subject line for the email to log </param>
+        /// <param name="EmailBody"> Body of the email to log</param>
         /// <param name="IsHtml"> Flag indicates if the email body is HTML-encoded, or plain text </param>
         /// <param name="IsContactUs"> Flag indicates if this was sent from the 'Contact Us' feature of the library, rather than from a mySobek feature such as email your bookshelf </param>
         /// <param name="ReplyToEmailID"> Primary key of the previous email, if this is a reply to a previously logged email </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_Log_Email' stored procedure. </remarks>
-        public static bool Log_Sent_Email(string Sender, string Recipient_List, string Subject_Line, string Email_Body, bool IsHtml, bool IsContactUs, int ReplyToEmailID)
+        public static bool Log_Sent_Email(string Sender, string RecipientList, string SubjectLine, string EmailBody, bool IsHtml, bool IsContactUs, int ReplyToEmailID)
         {
             try
             {
                 // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[7];
-                paramList[0] = new SqlParameter("@sender", Sender);
-                paramList[1] = new SqlParameter("@recipients_list", Recipient_List);
-                paramList[2] = new SqlParameter("@subject_line", Subject_Line);
-                paramList[3] = new SqlParameter("@email_body", Email_Body);
-                paramList[4] = new SqlParameter("@html_format", IsHtml);
-                paramList[5] = new SqlParameter("@contact_us", IsContactUs);
+                EalDbParameter[] paramList = new EalDbParameter[7];
+                paramList[0] = new EalDbParameter("@sender", Sender);
+                paramList[1] = new EalDbParameter("@recipients_list", RecipientList);
+                paramList[2] = new EalDbParameter("@subject_line", SubjectLine);
+                paramList[3] = new EalDbParameter("@email_body", EmailBody);
+                paramList[4] = new EalDbParameter("@html_format", IsHtml);
+                paramList[5] = new EalDbParameter("@contact_us", IsContactUs);
                 if (ReplyToEmailID > 0)
                 {
-                    paramList[6] = new SqlParameter("@replytoemailid", ReplyToEmailID);
+                    paramList[6] = new EalDbParameter("@replytoemailid", ReplyToEmailID);
                 }
                 else
                 {
-                    paramList[6] = new SqlParameter("@replytoemailid", DBNull.Value);
+                    paramList[6] = new EalDbParameter("@replytoemailid", DBNull.Value);
                 }
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Log_Email", paramList);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Log_Email", paramList);
 
                 return true;
             }
             catch (Exception ee)
             {
                 // Pass this exception onto the method to handle it
-                lastException = ee;
+                Last_Exception = ee;
                 return false;
             }
         }
@@ -3588,12 +3257,12 @@ namespace SobekCM.Engine_Library.Database
         {
             try
             {
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings");
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings");
                 return tempSet;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 return null;
             }
         }
@@ -3608,37 +3277,37 @@ namespace SobekCM.Engine_Library.Database
         {
             try
             {
-                SqlParameter[] parameters = new SqlParameter[1];
-                parameters[0] = new SqlParameter("@include_disabled", IncludeDisabled);
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Builder_Get_Settings", parameters);
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@include_disabled", IncludeDisabled);
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Builder_Get_Settings", parameters);
                 return tempSet;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 return null;
             }
         }
 
         /// <summary> Gets the simple list of items for a single item aggregation, or the list of all items in the library </summary>
-        /// <param name="Aggregation_Code"> Code for the item aggregation of interest, or an empty string</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="AggregationCode"> Code for the item aggregation of interest, or an empty string</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Dataset with the simple list of items, including BibID, VID, Title, CreateDate, and Resource Link </returns>
         /// <remarks> This calls the 'SobekCM_Simple_Item_List' stored procedure </remarks> 
-        public static DataSet Simple_Item_List(string Aggregation_Code, Custom_Tracer Tracer)
+        public static DataSet Simple_Item_List(string AggregationCode, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                if (Aggregation_Code.Length == 0)
+                if (AggregationCode.Length == 0)
                     Tracer.Add_Trace("Engine_Database.Simple_Item_List", "Pulling simple item list for all items");
                 else
-                    Tracer.Add_Trace("Engine_Database.Simple_Item_List", "Pulling simple item list for '" + Aggregation_Code + "'");
+                    Tracer.Add_Trace("Engine_Database.Simple_Item_List", "Pulling simple item list for '" + AggregationCode + "'");
             }
 
             // Define a temporary dataset
-            SqlParameter[] parameters = new SqlParameter[1];
-            parameters[0] = new SqlParameter("@collection_code", Aggregation_Code);
-            DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Simple_Item_List", parameters);
+            EalDbParameter[] parameters = new EalDbParameter[1];
+            parameters[0] = new EalDbParameter("@collection_code", AggregationCode);
+            DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Simple_Item_List", parameters);
             return tempSet;
         }
 
@@ -3653,28 +3322,27 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[3];
-                paramList[0] = new SqlParameter("@itemid", ItemID);
-                paramList[1] = new SqlParameter("@user", User);
-                paramList[2] = new SqlParameter("@usernotes", UserNotes);
+                EalDbParameter[] paramList = new EalDbParameter[3];
+                paramList[0] = new EalDbParameter("@itemid", ItemID);
+                paramList[1] = new EalDbParameter("@user", User);
+                paramList[2] = new EalDbParameter("@usernotes", UserNotes);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "Tracking_Online_Edit_Complete", paramList);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "Tracking_Online_Edit_Complete", paramList);
 
                 return true;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 return false;
             }
         }
 
-        /// <summary> Gets the simple list of items for a single item aggregation, or the list of all items in the library </summary>
-        /// <param name="Aggregation_Code"> Code for the item aggregation of interest, or an empty string</param>
+        /// <summary> Gets a random item from the database </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Dataset with the simple list of items, including BibID, VID, Title, CreateDate, and Resource Link </returns>
-        /// <remarks> This calls the 'SobekCM_Simple_Item_List' stored procedure </remarks> 
+        /// <returns> A tuple with a random BibID/VID as the return </returns>
+        /// <remarks> This calls the 'SobekCM_Random_Item' stored procedure </remarks> 
         public static Tuple<string,string> Get_Random_Item(Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -3683,7 +3351,7 @@ namespace SobekCM.Engine_Library.Database
             }
 
             // Define a temporary dataset
-            DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Random_Item");
+            DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Random_Item");
 
             if ((tempSet != null) && (tempSet.Tables.Count > 0) && (tempSet.Tables[0].Rows.Count > 0))
             {
@@ -3700,30 +3368,26 @@ namespace SobekCM.Engine_Library.Database
         #region Methods to support the collection of usage statitics from the IIS logs
 
         /// <summary> Gets all the tables ued during the process of reading the statistics 
-        /// from the web iis logs and creating the associated SQL commands  </summary>
+        /// from the web iis logs and creating the associated commands  </summary>
         /// <returns> Large dataset with several tables ( all items, all titles, aggregationPermissions, etc.. )</returns>
         public static DataSet Get_Statistics_Lookup_Tables()
         {
-            // Create the connection
-            SqlConnection connect = new SqlConnection(Connection_String);
-
-            // Create the command 
-            SqlCommand executeCommand = new SqlCommand("SobekCM_Statistics_Lookup_Tables", connect) { CommandType = CommandType.StoredProcedure };
-
-            // Create the adapter
-            SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-            // Create the dataset
-            DataSet returnValue = new DataSet();
-
-            // Fill the dataset
-            adapter.Fill(returnValue);
-
-            // Return the results
-            return returnValue;
+            return EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Lookup_Tables");
         }
 
-        public static bool Save_TopLevel_Statistics(int Year, int Month, int Hits, int Sessions, int Robot_Hits, int Xml_Hits, int Oai_Hits, int Json_Hits, Custom_Tracer Tracer)
+        /// <summary> Save the top-level usage statistics for this instance for a single month </summary>
+        /// <param name="Year"> Year of this usage </param>
+        /// <param name="Month"> Month of this usage </param>
+        /// <param name="Hits"> Number of hits at the instance level </param>
+        /// <param name="Sessions"> Number of sessions at the instance level </param>
+        /// <param name="RobotHits"> Number of robot hits at the instance level </param>
+        /// <param name="XmlHits"> Number of XML hits at the instance level </param>
+        /// <param name="OaiHits"> Number of OAI-PMH hits at the instance level </param>
+        /// <param name="JsonHits"> Number of JSON hits at the instance level </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successfully logged, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Statistics_Save_TopLevel' stored procedure </remarks> 
+        public static bool Save_TopLevel_Statistics(int Year, int Month, int Hits, int Sessions, int RobotHits, int XmlHits, int OaiHits, int JsonHits, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -3732,24 +3396,24 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[8];
-                parameters[0] = new SqlParameter("@year", Year);
-                parameters[1] = new SqlParameter("@month", Month);
-                parameters[2] = new SqlParameter("@hits", Hits);
-                parameters[3] = new SqlParameter("@sessions", Sessions);
-                parameters[4] = new SqlParameter("@robot_hits", Robot_Hits);
-                parameters[5] = new SqlParameter("@xml_hits", Xml_Hits);
-                parameters[6] = new SqlParameter("@oai_hits", Oai_Hits);
-                parameters[7] = new SqlParameter("@json_hits", Json_Hits);
+                EalDbParameter[] parameters = new EalDbParameter[8];
+                parameters[0] = new EalDbParameter("@year", Year);
+                parameters[1] = new EalDbParameter("@month", Month);
+                parameters[2] = new EalDbParameter("@hits", Hits);
+                parameters[3] = new EalDbParameter("@sessions", Sessions);
+                parameters[4] = new EalDbParameter("@robot_hits", RobotHits);
+                parameters[5] = new EalDbParameter("@xml_hits", XmlHits);
+                parameters[6] = new EalDbParameter("@oai_hits", OaiHits);
+                parameters[7] = new EalDbParameter("@json_hits", JsonHits);
       
                 // Define a temporary dataset
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_TopLevel", parameters);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_TopLevel", parameters);
 
                 return true;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Save_TopLevel_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -3760,7 +3424,23 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
-        public static bool Save_WebContent_Statistics(int Year, int Month, int Hits, int Hits_Complete, string Level1, string Level2, string Level3, string Level4, string Level5, string Level6, string Level7, string Level8, Custom_Tracer Tracer)
+        /// <summary> Save usage statistics for top-level web content pages </summary>
+        /// <param name="Year"> Year of this usage </param>
+        /// <param name="Month"> Month of this usage </param>
+        /// <param name="Hits"> Number of hits on this page </param>
+        /// <param name="HitsComplete"> Number of hits on this page (including robots?) </param>
+        /// <param name="Level1"> Level 1 of the URL for this web content page </param>
+        /// <param name="Level2"> Level 2 of the URL for this web content page </param>
+        /// <param name="Level3"> Level 3 of the URL for this web content page </param>
+        /// <param name="Level4"> Level 4 of the URL for this web content page </param>
+        /// <param name="Level5"> Level 5 of the URL for this web content page </param>
+        /// <param name="Level6"> Level 6 of the URL for this web content page </param>
+        /// <param name="Level7"> Level 7 of the URL for this web content page </param>
+        /// <param name="Level8"> Level 8 of the URL for this web content page </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successfully logged, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Statistics_Save_WebContent' stored procedure </remarks> 
+        public static bool Save_WebContent_Statistics(int Year, int Month, int Hits, int HitsComplete, string Level1, string Level2, string Level3, string Level4, string Level5, string Level6, string Level7, string Level8, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -3769,28 +3449,28 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[12];
-                parameters[0] = new SqlParameter("@year", Year);
-                parameters[1] = new SqlParameter("@month", Month);
-                parameters[2] = new SqlParameter("@hits", Hits);
-                parameters[3] = new SqlParameter("@hits_complete", Hits_Complete);
-                parameters[4] = new SqlParameter("@level1", Level1);
-                parameters[5] = new SqlParameter("@level2", Level2);
-                parameters[6] = new SqlParameter("@level3", Level3);
-                parameters[7] = new SqlParameter("@level4", Level4);
-                parameters[8] = new SqlParameter("@level5", Level5);
-                parameters[9] = new SqlParameter("@level6", Level6);
-                parameters[10] = new SqlParameter("@level7", Level7);
-                parameters[11] = new SqlParameter("@level8", Level8);
+                EalDbParameter[] parameters = new EalDbParameter[12];
+                parameters[0] = new EalDbParameter("@year", Year);
+                parameters[1] = new EalDbParameter("@month", Month);
+                parameters[2] = new EalDbParameter("@hits", Hits);
+                parameters[3] = new EalDbParameter("@hits_complete", HitsComplete);
+                parameters[4] = new EalDbParameter("@level1", Level1);
+                parameters[5] = new EalDbParameter("@level2", Level2);
+                parameters[6] = new EalDbParameter("@level3", Level3);
+                parameters[7] = new EalDbParameter("@level4", Level4);
+                parameters[8] = new EalDbParameter("@level5", Level5);
+                parameters[9] = new EalDbParameter("@level6", Level6);
+                parameters[10] = new EalDbParameter("@level7", Level7);
+                parameters[11] = new EalDbParameter("@level8", Level8);
       
                 // Define a temporary dataset
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_WebContent", parameters);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_WebContent", parameters);
 
                 return true;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Save_WebContent_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -3802,6 +3482,14 @@ namespace SobekCM.Engine_Library.Database
         }
 
 
+        /// <summary> Save the usage statistics for a single URL portal </summary>
+        /// <param name="PortalID"> Primary key for this URL portal </param>
+        /// <param name="Year"> Year of this usage </param>
+        /// <param name="Month"> Month of this usage </param>
+        /// <param name="Hits"> Total number of hits for this month </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successfully logged, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Statistics_Save_Portal' stored procedure </remarks> 
         public static bool Save_Portal_Statistics(int PortalID, int Year, int Month, int Hits, Custom_Tracer Tracer )
         {
             if (Tracer != null)
@@ -3811,20 +3499,20 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[4];
-                parameters[0] = new SqlParameter("@year", Year);
-                parameters[1] = new SqlParameter("@month", Month);
-                parameters[2] = new SqlParameter("@hits", Hits);
-                parameters[3] = new SqlParameter("@portalid", PortalID);
+                EalDbParameter[] parameters = new EalDbParameter[4];
+                parameters[0] = new EalDbParameter("@year", Year);
+                parameters[1] = new EalDbParameter("@month", Month);
+                parameters[2] = new EalDbParameter("@hits", Hits);
+                parameters[3] = new EalDbParameter("@portalid", PortalID);
                 
                 // Define a temporary dataset
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_Portal", parameters);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_Portal", parameters);
 
                 return true;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Save_Portal_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -3835,6 +3523,19 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
+        /// <summary> Save usage statistics for the aggregation-level web pages </summary>
+        /// <param name="AggregationID"> Primary key for this aggregation </param>
+        /// <param name="Year"> Year of this usage </param>
+        /// <param name="Month"> Month of this usage </param>
+        /// <param name="Hits"> Number of hits against this aggregation </param>
+        /// <param name="Sessions"> Number of sessions which used this aggregation </param>
+        /// <param name="HomePageViews"> Number of home page views </param>
+        /// <param name="BrowseViews"> Number of times users looked at browses under this aggregation </param>
+        /// <param name="AdvancedSearchViews"> Number of times users used the advanced search option </param>
+        /// <param name="SearchResultViews"> Number of times users viewed search results under this aggregation </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successfully logged, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Statistics_Save_Aggregation' stored procedure </remarks> 
         public static bool Save_Aggregation_Statistics(int AggregationID, int Year, int Month, int Hits, 
             int Sessions, int HomePageViews, int BrowseViews, int AdvancedSearchViews, int SearchResultViews, Custom_Tracer Tracer)
         {
@@ -3845,25 +3546,25 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[9];
-                parameters[0] = new SqlParameter("@aggregationid", AggregationID);
-                parameters[1] = new SqlParameter("@year", Year);
-                parameters[2] = new SqlParameter("@month", Month);
-                parameters[3] = new SqlParameter("@hits", Hits);
-                parameters[4] = new SqlParameter("@sessions", Sessions);
-                parameters[5] = new SqlParameter("@home_page_views", HomePageViews);
-                parameters[6] = new SqlParameter("@browse_views", BrowseViews);
-                parameters[7] = new SqlParameter("@advanced_search_views", AdvancedSearchViews);
-                parameters[8] = new SqlParameter("@search_results_views", SearchResultViews);
+                EalDbParameter[] parameters = new EalDbParameter[9];
+                parameters[0] = new EalDbParameter("@aggregationid", AggregationID);
+                parameters[1] = new EalDbParameter("@year", Year);
+                parameters[2] = new EalDbParameter("@month", Month);
+                parameters[3] = new EalDbParameter("@hits", Hits);
+                parameters[4] = new EalDbParameter("@sessions", Sessions);
+                parameters[5] = new EalDbParameter("@home_page_views", HomePageViews);
+                parameters[6] = new EalDbParameter("@browse_views", BrowseViews);
+                parameters[7] = new EalDbParameter("@advanced_search_views", AdvancedSearchViews);
+                parameters[8] = new EalDbParameter("@search_results_views", SearchResultViews);
 
                 // Define a temporary dataset
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_Aggregation", parameters);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_Aggregation", parameters);
 
                 return true;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Save_Aggregation_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -3874,6 +3575,15 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
+        /// <summary> Save usage statistics at the item level (BibID) level </summary>
+        /// <param name="GroupID"> Primary key for item group from the database </param>
+        /// <param name="Year"> Year of this usage </param>
+        /// <param name="Month"> Month of this usage </param>
+        /// <param name="Hits"> Number of hits against the item group (and not a child item/vid) </param>
+        /// <param name="Sessions"> Number of sessions that looked at this item group at the item group level </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successfully logged, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Statistics_Save_Item_Group' stored procedure </remarks> 
         public static bool Save_Item_Group_Statistics(int GroupID, int Year, int Month, int Hits, int Sessions, Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -3883,21 +3593,21 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[5];
-                parameters[0] = new SqlParameter("@year", Year);
-                parameters[1] = new SqlParameter("@month", Month);
-                parameters[2] = new SqlParameter("@hits", Hits);
-                parameters[3] = new SqlParameter("@sessions", Sessions);
-                parameters[4] = new SqlParameter("@groupid", GroupID);
+                EalDbParameter[] parameters = new EalDbParameter[5];
+                parameters[0] = new EalDbParameter("@year", Year);
+                parameters[1] = new EalDbParameter("@month", Month);
+                parameters[2] = new EalDbParameter("@hits", Hits);
+                parameters[3] = new EalDbParameter("@sessions", Sessions);
+                parameters[4] = new EalDbParameter("@groupid", GroupID);
 
                 // Define a temporary dataset
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_Item_Group", parameters);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_Item_Group", parameters);
 
                 return true;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Save_Item_Group_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -3908,6 +3618,24 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
+        /// <summary> Save the item-level usage statistics </summary>
+        /// <param name="ItemID"> Primary key for the digital resource from the database </param>
+        /// <param name="Year"> Year of this usage </param>
+        /// <param name="Month"> Month of this usage </param>
+        /// <param name="Hits"> Number of hits against this digital resource </param>
+        /// <param name="Sessions"> Number of sessions that used this digital resource </param>
+        /// <param name="JpegViews"> Number of JPEG views </param>
+        /// <param name="ZoomableViews"> Number of zoomable JPEG2000 views </param>
+        /// <param name="CitationViews"> Number of citation views </param>
+        /// <param name="ThumbnailViews"> Number of thumbnail views </param>
+        /// <param name="TextSearchViews"> Number of text search views </param>
+        /// <param name="FlashViews"> Number of flash views </param>
+        /// <param name="GoogleMapViews"> Number of google map views </param>
+        /// <param name="DownloadViews"> Number of download views </param>
+        /// <param name="StaticViews"> Number of static views </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successfully logged, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Statistics_Save_Item' stored procedure </remarks> 
         public static bool Save_Item_Statistics(int ItemID, int Year, int Month, int Hits, int Sessions, int JpegViews, int ZoomableViews,
             int CitationViews, int ThumbnailViews, int TextSearchViews, int FlashViews, int GoogleMapViews, int DownloadViews, 
             int StaticViews, Custom_Tracer Tracer)
@@ -3919,30 +3647,30 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[14];
-                parameters[0] = new SqlParameter("@year", Year);
-                parameters[1] = new SqlParameter("@month", Month);
-                parameters[2] = new SqlParameter("@hits", Hits);
-                parameters[3] = new SqlParameter("@sessions", Sessions);
-                parameters[4] = new SqlParameter("@itemid", ItemID);
-                parameters[5] = new SqlParameter("@jpeg_views", JpegViews);
-                parameters[6] = new SqlParameter("@zoomable_views", ZoomableViews);
-                parameters[7] = new SqlParameter("@citation_views", CitationViews);
-                parameters[8] = new SqlParameter("@thumbnail_views", ThumbnailViews);
-                parameters[9] = new SqlParameter("@text_search_views", TextSearchViews);
-                parameters[10] = new SqlParameter("@flash_views", FlashViews);
-                parameters[11] = new SqlParameter("@google_map_views", GoogleMapViews);
-                parameters[12] = new SqlParameter("@download_views", DownloadViews);
-                parameters[13] = new SqlParameter("@static_views", StaticViews);
+                EalDbParameter[] parameters = new EalDbParameter[14];
+                parameters[0] = new EalDbParameter("@year", Year);
+                parameters[1] = new EalDbParameter("@month", Month);
+                parameters[2] = new EalDbParameter("@hits", Hits);
+                parameters[3] = new EalDbParameter("@sessions", Sessions);
+                parameters[4] = new EalDbParameter("@itemid", ItemID);
+                parameters[5] = new EalDbParameter("@jpeg_views", JpegViews);
+                parameters[6] = new EalDbParameter("@zoomable_views", ZoomableViews);
+                parameters[7] = new EalDbParameter("@citation_views", CitationViews);
+                parameters[8] = new EalDbParameter("@thumbnail_views", ThumbnailViews);
+                parameters[9] = new EalDbParameter("@text_search_views", TextSearchViews);
+                parameters[10] = new EalDbParameter("@flash_views", FlashViews);
+                parameters[11] = new EalDbParameter("@google_map_views", GoogleMapViews);
+                parameters[12] = new EalDbParameter("@download_views", DownloadViews);
+                parameters[13] = new EalDbParameter("@static_views", StaticViews);
 
                 // Define a temporary dataset
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_Item", parameters);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Save_Item", parameters);
 
                 return true;
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Save_Item_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -3953,6 +3681,12 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
+        /// <summary> Aggregate all the item-level and item group-level hits up the hierarchy to the aggregations </summary>
+        /// <param name="Year"> Year of this usage </param>
+        /// <param name="Month"> Month of this usage </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successfully aggregated, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Statistics_Aggregate' stored procedure </remarks> 
         public static string Aggregate_Statistics(int Year, int Month, Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -3962,20 +3696,20 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[3];
-                parameters[0] = new SqlParameter("@statyear", Year);
-                parameters[1] = new SqlParameter("@statmonth", Month);
-                SqlParameter returnMsg = parameters[2] = new SqlParameter("@message", Month);
+                EalDbParameter[] parameters = new EalDbParameter[3];
+                parameters[0] = new EalDbParameter("@statyear", Year);
+                parameters[1] = new EalDbParameter("@statmonth", Month);
+                EalDbParameter returnMsg = parameters[2] = new EalDbParameter("@message", Month);
                 returnMsg.Direction = ParameterDirection.InputOutput;
 
                 // Define a temporary dataset
-                SqlHelper.ExecuteNonQuery(Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Aggregate", parameters);
+                EalDbAccess.ExecuteNonQuery( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Statistics_Aggregate", parameters);
 
                 return returnMsg.Value.ToString();
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Aggregate_Statistics", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -4000,7 +3734,7 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Stats_Get_Users_Linked_To_Items");
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Stats_Get_Users_Linked_To_Items");
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -4013,7 +3747,7 @@ namespace SobekCM.Engine_Library.Database
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Get_Users_Linked_To_Items", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -4042,13 +3776,13 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] paramList = new SqlParameter[3];
-                paramList[0] = new SqlParameter("@userid", UserID);
-                paramList[1] = new SqlParameter("@month", Month);
-                paramList[2] = new SqlParameter("@year", Year);
+                EalDbParameter[] paramList = new EalDbParameter[3];
+                paramList[0] = new EalDbParameter("@userid", UserID);
+                paramList[1] = new EalDbParameter("@month", Month);
+                paramList[2] = new EalDbParameter("@year", Year);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(Connection_String, CommandType.StoredProcedure, "SobekCM_Stats_Get_User_Linked_Items_Stats", paramList);
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Stats_Get_User_Linked_Items_Stats", paramList);
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -4061,7 +3795,7 @@ namespace SobekCM.Engine_Library.Database
             }
             catch (Exception ee)
             {
-                lastException = ee;
+                Last_Exception = ee;
                 if (Tracer != null)
                 {
                     Tracer.Add_Trace("Engine_Database.Get_User_Linked_Items_Stats", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
@@ -4073,5 +3807,8 @@ namespace SobekCM.Engine_Library.Database
         }
 
         #endregion
+
+
+
     }
 }
