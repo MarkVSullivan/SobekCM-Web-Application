@@ -8,6 +8,7 @@ namespace SobekCM.Core.WebContent
     /// <summary> Object contains the basic usage information for a single web content
     /// page for a single year/month </summary>
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("webContentUsage")]
     public class Single_WebContent_Month_Year_Usage
     {
         /// <summary> Year for which this is reporting usage </summary>

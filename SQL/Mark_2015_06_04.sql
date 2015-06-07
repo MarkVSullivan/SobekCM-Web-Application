@@ -321,14 +321,12 @@ GO
 
 -- Get the list of recent changes to all web content pages
 ALTER PROCEDURE SobekCM_WebContent_Get_Recent_Changes
-	@WebContentID int
 AS
 BEGIN
 
 	-- Get all milestones
-	select W.WebContentID, W.Level1, W.Level2, W.Level3, W.Level4, W.Level5, W.Level6, W.Level7, W.Level8, MilestoneDate, MilestoneUser, Milestone
+	select W.WebContentID, W.Level1, W.Level2, W.Level3, W.Level4, W.Level5, W.Level6, W.Level7, W.Level8, MilestoneDate, MilestoneUser, Milestone, W.Title
 	from SobekCM_WebContent_Milestones M, SobekCM_WebContent W
-	where M.WebContentID = W.WebContentID
 	order by MilestoneDate DESC;
 
 END;
