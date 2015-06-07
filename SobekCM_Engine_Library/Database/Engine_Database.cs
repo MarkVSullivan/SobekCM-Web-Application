@@ -12,6 +12,7 @@ using SobekCM.Core.Results;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.WebContent;
 using SobekCM.Tools;
 
 #endregion
@@ -3451,7 +3452,7 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="Year"> Year of this usage </param>
         /// <param name="Month"> Month of this usage </param>
         /// <param name="Hits"> Number of hits on this page </param>
-        /// <param name="HitsComplete"> Number of hits on this page (including robots?) </param>
+        /// <param name="HitsComplete"> Number of hits on this page and all child pages </param>
         /// <param name="Level1"> Level 1 of the URL for this web content page </param>
         /// <param name="Level2"> Level 2 of the URL for this web content page </param>
         /// <param name="Level3"> Level 3 of the URL for this web content page </param>
@@ -3831,7 +3832,267 @@ namespace SobekCM.Engine_Library.Database
 
         #endregion
 
+        #region Methods to support the web content pages
 
+        /// <summary> Add a new web content page </summary>
+        /// <param name="Level1"> Level 1 of the URL for this web content page </param>
+        /// <param name="Level2"> Level 2 of the URL for this web content page </param>
+        /// <param name="Level3"> Level 3 of the URL for this web content page </param>
+        /// <param name="Level4"> Level 4 of the URL for this web content page </param>
+        /// <param name="Level5"> Level 5 of the URL for this web content page </param>
+        /// <param name="Level6"> Level 6 of the URL for this web content page </param>
+        /// <param name="Level7"> Level 7 of the URL for this web content page </param>
+        /// <param name="Level8"> Level 8 of the URL for this web content page </param>
+        /// <param name="Username"> Name of the user that performed this ADD (or restored of a previously deleted page)</param>
+        /// <param name="Title"> Title for this new web page </param>
+        /// <param name="Summary"> Summary for this new web page </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Primary key for this new web content page ( or -1 if ERROR ) </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_Add' stored procedure </remarks> 
+        public static int WebContent_Add_Page(string Level1, string Level2, string Level3, string Level4, string Level5, string Level6, string Level7, string Level8, string Username, string Title, string Summary, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.WebContent_Add_Page", "");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[12];
+                parameters[0] = new EalDbParameter("@level1", Level1);
+                parameters[1] = new EalDbParameter("@level2", Level2);
+                parameters[2] = new EalDbParameter("@level3", Level3);
+                parameters[3] = new EalDbParameter("@level4", Level4);
+                parameters[4] = new EalDbParameter("@level5", Level5);
+                parameters[5] = new EalDbParameter("@level6", Level6);
+                parameters[6] = new EalDbParameter("@level7", Level7);
+                parameters[7] = new EalDbParameter("@level8", Level8);
+                parameters[8] = new EalDbParameter("@username", Username);
+                parameters[9] = new EalDbParameter("@title", Title);
+                parameters[10] = new EalDbParameter("@summary", Summary);
+                parameters[11] = new EalDbParameter("@WebContentID", -1);
+                parameters[11].Direction = ParameterDirection.InputOutput;
+
+                // Define a temporary dataset
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Add", parameters);
+
+                // Get the new primary key and return it
+                return Int32.Parse(parameters[11].Value.ToString());
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.WebContent_Add_Page", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Add_Page", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Add_Page", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return -1;
+            }
+        }
+
+        /// <summary> Edit an existing web content page </summary>
+        /// <param name="WebContentID"> Primary key to the existing web content page </param>
+        /// <param name="Title"> New title for this web page </param>
+        /// <param name="Summary"> New summary for this new web page </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_Edit' stored procedure </remarks> 
+        public static bool WebContent_Edit_Page(int WebContentID, string Title, string Summary, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.WebContent_Edit_Page", "");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[3];
+                parameters[0] = new EalDbParameter("@WebContentID", WebContentID);
+                parameters[1] = new EalDbParameter("@title", Title);
+                parameters[2] = new EalDbParameter("@summary", Summary);
+
+                // Define a temporary dataset
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Edit", parameters);
+
+                // Get the new primary key and return it
+                return true;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.WebContent_Edit_Page", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Edit_Page", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Edit_Page", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        /// <summary> Gets the basic information about a web content page, from the database </summary>
+        /// <param name="Level1"> Level 1 of the URL for this web content page </param>
+        /// <param name="Level2"> Level 2 of the URL for this web content page </param>
+        /// <param name="Level3"> Level 3 of the URL for this web content page </param>
+        /// <param name="Level4"> Level 4 of the URL for this web content page </param>
+        /// <param name="Level5"> Level 5 of the URL for this web content page </param>
+        /// <param name="Level6"> Level 6 of the URL for this web content page </param>
+        /// <param name="Level7"> Level 7 of the URL for this web content page </param>
+        /// <param name="Level8"> Level 8 of the URL for this web content page </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Built web content basic info object, or NULL if not found at all </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_Get_Page' stored procedure </remarks> 
+        public static Web_Content_Basic_Info WebContent_Get_Page(string Level1, string Level2, string Level3, string Level4, string Level5, string Level6, string Level7, string Level8, string Username, string Title, string Summary, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.WebContent_Get_Page", "");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[8];
+                parameters[0] = new EalDbParameter("@level1", Level1);
+                parameters[1] = new EalDbParameter("@level2", Level2);
+                parameters[2] = new EalDbParameter("@level3", Level3);
+                parameters[3] = new EalDbParameter("@level4", Level4);
+                parameters[4] = new EalDbParameter("@level5", Level5);
+                parameters[5] = new EalDbParameter("@level6", Level6);
+                parameters[6] = new EalDbParameter("@level7", Level7);
+                parameters[7] = new EalDbParameter("@level8", Level8);
+
+                // Define a temporary dataset
+                DataSet value = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Get_Page", parameters);
+
+                // If nothing was returned, return NULL
+                if ((value.Tables.Count == 0) || (value.Tables[0].Rows.Count == 0))
+                    return null;
+
+                // Get the values from the returned object
+                DataRow pageRow = value.Tables[0].Rows[0];
+                int webid = Int32.Parse(pageRow["WebContentID"].ToString());
+                string title = pageRow["Title"].ToString();
+                string summary = pageRow["Summary"].ToString();
+                bool deleted = bool.Parse(pageRow["Deleted"].ToString());
+
+                // Build and return the basic info object
+                return new Web_Content_Basic_Info(webid, title, summary, deleted);
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_Page", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_Page", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_Page", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+
+        /// <summary> Add a new milestone to an existing web content page </summary>
+        /// <param name="WebContentID"> Primary key to the existing web content page </param>
+        /// <param name="Milestone"> Text of the milestone to be added </param>
+        /// <param name="MilestoneUser"> User name for the milestone being added </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_Add_Milestone' stored procedure </remarks> 
+        public static bool WebContent_Add_Milestone(int WebContentID, string Milestone, string MilestoneUser, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.WebContent_Add_Milestone", "");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[3];
+                parameters[0] = new EalDbParameter("@WebContentID", WebContentID);
+                parameters[1] = new EalDbParameter("@Milestone", Milestone);
+                parameters[2] = new EalDbParameter("@MilestoneUser", MilestoneUser);
+
+                // Define a temporary dataset
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Add_Milestone", parameters);
+
+                // Get the new primary key and return it
+                return true;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.WebContent_Add_Milestone", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Add_Milestone", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Add_Milestone", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        /// <summary> Delete an existing web content page (and mark in the milestones) </summary>
+        /// <param name="WebContentID"> Primary key to the existing web content page </param>
+        /// <param name="Reason"> Optional reason for the deletion </param>
+        /// <param name="MilestoneUser"> User name for the milestone to be being added </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_Delete' stored procedure </remarks> 
+        public static bool WebContent_Delete_Page(int WebContentID, string Reason, string MilestoneUser, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.WebContent_Delete_Page", "");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[3];
+                parameters[0] = new EalDbParameter("@WebContentID", WebContentID);
+                parameters[1] = new EalDbParameter("@Reason", Reason);
+                parameters[2] = new EalDbParameter("@MilestoneUser", MilestoneUser);
+
+                // Define a temporary dataset
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Delete", parameters);
+
+                // Get the new primary key and return it
+                return true;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.WebContent_Delete_Page", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Delete_Page", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Delete_Page", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+
+
+//-- Get the usage stats for a webcontent page (by ID)
+//ALTER PROCEDURE SobekCM_WebContent_Get_Usage
+//    @WebContentID int
+
+
+//-- Get the milestones for a webcontent page (by ID)
+//ALTER PROCEDURE SobekCM_WebContent_Get_Milestones
+//    @WebContentID int
+
+
+//-- Get the list of recent changes to all web content pages
+//ALTER PROCEDURE SobekCM_WebContent_Get_Recent_Changes
+//    @WebContentID int
+
+
+
+        #endregion
 
     }
 }

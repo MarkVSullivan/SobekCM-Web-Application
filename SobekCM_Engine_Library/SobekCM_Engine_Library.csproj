@@ -153,6 +153,7 @@
     <Compile Include="Solr\Solr_Operations_Cache.cs" />
     <Compile Include="Solr\Solr_Page_Result.cs" />
     <Compile Include="Solr\Solr_Page_Results.cs" />
+    <Compile Include="WebContent\Web_Content_Basic_Info.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj">

@@ -121,6 +121,7 @@
     <Compile Include="MicroservicesClient\MicroservicesClient_Config_Reader.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Endpoint.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClientBase.cs" />
+    <Compile Include="Milestone_Entry.cs" />
     <Compile Include="Navigation\NavigationStateEnums.cs" />
     <Compile Include="Navigation\Navigation_Object.cs" />
     <Compile Include="Navigation\UrlWriterHelper.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="Users\User_Object.cs" />
     <Compile Include="WebContent\HTML_Based_Content.cs" />
     <Compile Include="WebContent\HTML_Based_Content_Reader.cs" />
+    <Compile Include="WebContent\Single_WebContent_Month_Year_Usage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">

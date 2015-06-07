@@ -12,12 +12,28 @@ BEGIN
 		[Level6] [varchar](100) NULL,
 		[Level7] [varchar](100) NULL,
 		[Level8] [varchar](100) NULL,
-		[Deleted] bit NOT NULL default('false')
+		[Deleted] bit NOT NULL default('false'),
+		[Title] nvarchar(255) NULL,
+		[Summary] nvarchar(1000) NULL
 	 CONSTRAINT [PK_SobekCM_WebContent] PRIMARY KEY CLUSTERED 
 	(
 		[WebContentID] ASC
 	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 	) ON [PRIMARY];
+END;
+GO
+
+-- Just double check these columns were added
+if ( NOT EXISTS (select * from sys.columns where Name = N'Title' and Object_ID = Object_ID(N'SobekCM_WebContent')))
+BEGIN
+	ALTER TABLE [dbo].SobekCM_WebContent add Title nvarchar(255) null;
+END;
+GO
+
+-- Just double check these columns were added
+if ( NOT EXISTS (select * from sys.columns where Name = N'Summary' and Object_ID = Object_ID(N'SobekCM_WebContent')))
+BEGIN
+	ALTER TABLE [dbo].SobekCM_WebContent add Summary nvarchar(1000) null;
 END;
 GO
 
@@ -67,8 +83,8 @@ CREATE NONCLUSTERED INDEX [IX_SobekCM_WebContent_Levels] ON [dbo].[SobekCM_WebCo
 	[Level7] ASC,
 	[Level8] ASC
 )
-INCLUDE ( 	[WebContentID],
-	[Deleted]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+INCLUDE ( 	[WebContentID], [Deleted], [Title], [Summary])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
 
 -- Drop index, if it exists (it shouldn't though)
@@ -118,7 +134,9 @@ ALTER PROCEDURE SobekCM_WebContent_Add
 	@Level6 varchar(100),
 	@Level7 varchar(100),
 	@Level8 varchar(100),
-	@UserName varchar(100),
+	@UserName nvarchar(100),
+	@Title nvarchar(255),
+	@Summary nvarchar(1000),
 	@WebContentID int output
 AS
 BEGIN	
@@ -127,6 +145,9 @@ BEGIN
 	begin
 		-- Get the web content id
 		set @WebContentID = ( select WebContentID from SobekCM_WebContent where Level1=@Level1 and Level2=@Level2 and Level3=@Level3 and Level4=@Level4 and Level5=@Level5 and Level6=@Level6 and Level7=@Level7 and Level8=@Level8 );
+
+		-- Ensure the title and summary are correct
+		update SobekCM_WebContent set Title=@Title, Summary=@Summary where WebContentID=@WebContentID;
 		
 		-- Was this previously deleted?
 		if ( EXISTS ( select 1 from SobekCM_WebContent where Deleted='true' and WebContentID=@WebContentID ))
@@ -144,8 +165,8 @@ BEGIN
 	else
 	begin
 		-- Add the new web content then
-		insert into SobekCM_WebContent ( Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8, Deleted )
-		values ( @Level1, @Level2, @Level3, @Level4, @Level5, @Level6, @Level7, @Level8, 'false' );
+		insert into SobekCM_WebContent ( Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8, Title, Summary, Deleted )
+		values ( @Level1, @Level2, @Level3, @Level4, @Level5, @Level6, @Level7, @Level8, @Title, @Summary, 'false' );
 
 		-- Get the new ID for this
 		set @WebContentID = SCOPE_IDENTITY();
@@ -154,6 +175,26 @@ BEGIN
 		insert into SobekCM_WebContent_Milestones ( WebContentID, Milestone, MilestoneDate, MilestoneUser )
 		values ( @WebContentID, 'Add new page', getdate(), @UserName );
 	end;
+END;
+GO
+
+
+-- Esure the SobekCM_WebContent_Edit stored procedure exists
+IF object_id('SobekCM_WebContent_Edit') IS NULL EXEC ('create procedure dbo.SobekCM_WebContent_Edit as select 1;');
+GO
+
+-- Edit basic information on an existing web content page
+ALTER PROCEDURE SobekCM_WebContent_Edit
+	@WebContentID int,
+	@UserName nvarchar(100),
+	@Title nvarchar(255),
+	@Summary nvarchar(1000)
+AS
+BEGIN	
+	-- Make the change
+	update SobekCM_WebContent
+	set Title=@Title, Summary=@Summary
+	where WebContentID=@WebContentID;
 END;
 GO
 
@@ -174,10 +215,8 @@ ALTER PROCEDURE SobekCM_WebContent_Get_Page
 	@Level8 varchar(100)
 AS
 BEGIN	
-
-
 	-- Return the couple of requested pieces of information
-	select top 1 W.WebContentID, W.Deleted, M.MilestoneDate, M.MilestoneUser
+	select top 1 W.WebContentID, W.Title, W.Summary, W.Deleted, M.MilestoneDate, M.MilestoneUser
 	from SobekCM_WebContent W left outer join
 	     SobekCM_WebContent_Milestones M on W.WebContentID=M.WebContentID
 	where ( Level1=@Level1 and Level2=@Level2 and Level3=@Level3 and Level4=@Level4 and Level5=@Level5 and Level6=@Level6 and Level7=@Level7 and Level8=@Level8 )
