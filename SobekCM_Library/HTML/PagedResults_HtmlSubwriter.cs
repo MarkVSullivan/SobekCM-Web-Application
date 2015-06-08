@@ -1989,7 +1989,7 @@ namespace SobekCM.Library.HTML
 
                 #region add the filters
 
-                List<string> FIDS = new List<string>();
+                List<string> fids = new List<string>();
 
                 // Add the facet information 
                 if ((RequestSpecificValues.Results_Statistics.Facet_Collections != null) && (RequestSpecificValues.Results_Statistics.Facet_Collections.Count > 0))
@@ -2003,7 +2003,7 @@ namespace SobekCM.Library.HTML
                             if (field != null)
                             {
                                 Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, facetIndex, sort_by_frequency, sort_alphabetically, theseFacets.Facets);
-                                FIDS.Add(field.Display_Term);
+                                fids.Add(field.Display_Term);
                             }
                         }
 
@@ -2016,7 +2016,7 @@ namespace SobekCM.Library.HTML
 
                 //create fid key hash and id and session state
                 int FIDKeyHashSpecial = 0;
-                foreach (string FID in FIDS)
+                foreach (string FID in fids)
                 {
                     byte[] tempFIDChars = Encoding.ASCII.GetBytes(FID);
                     foreach (byte tempFIDChar in tempFIDChars)
@@ -2025,10 +2025,10 @@ namespace SobekCM.Library.HTML
                     }
                 }
                 //finish processing FIDkeyhash and store
-                FIDKeyHashSpecial = Convert.ToInt32(FIDKeyHashSpecial * FIDS.Count);
+                FIDKeyHashSpecial = Convert.ToInt32(FIDKeyHashSpecial * fids.Count);
                 HttpContext.Current.Session["FIDKey"] = "FIDKey_" + FIDKeyHashSpecial.ToString();
 
-                HttpContext.Current.Cache[HttpContext.Current.Session["FIDKey"].ToString()] = FIDS;
+                HttpContext.Current.Cache[HttpContext.Current.Session["FIDKey"].ToString()] = fids;
 
                 #endregion
                 

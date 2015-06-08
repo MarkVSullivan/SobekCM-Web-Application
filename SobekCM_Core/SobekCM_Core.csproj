@@ -133,6 +133,7 @@
     <Compile Include="Results\Private_Items_List.cs" />
     <Compile Include="Results\Private_Items_List_Item.cs" />
     <Compile Include="Results\Private_Items_List_Title.cs" />
+    <Compile Include="Results\Results_Arguments.cs" />
     <Compile Include="Results\Search_Facet.cs" />
     <Compile Include="Results\Search_Facet_Aggregation.cs" />
     <Compile Include="Results\Search_Facet_Collection.cs" />

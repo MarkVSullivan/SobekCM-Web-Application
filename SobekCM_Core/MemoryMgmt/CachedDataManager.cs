@@ -1234,6 +1234,112 @@ namespace SobekCM.Core.MemoryMgmt
 			return null;
 		}
 
+        /// <summary> Retrieves the table of search results from the cache or caching server </summary>
+        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        /// <param name="Terms"> List of all search terms for the search result statistics to retrieve </param>
+        /// <param name="Fields"> List of all search fields for the search result statistics to retrieve </param>
+        /// <param name="DateRange_Start"> Beginning of a date range search, or -1 </param>
+        /// <param name="DateRange_End"> End of a date range search, or -1 </param>
+        /// <param name="Count"> Number of fields or terms to include in the key for this result </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the search results item/title list </returns>
+        public static Search_Results_Statistics Retrieve_Search_Result_Statistics(Results_Arguments Current_Mode, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (Settings.Disabled)
+                return null;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager.Retrieve_Search_Result_Statistics", "");
+            }
+
+            // Determine the key
+            // If there is no aggregation listed, use 'all'
+            string aggregation_code = Current_Mode.Aggregation.ToLower();
+            if (aggregation_code.Length == 0)
+                aggregation_code = "all";
+
+            // Determine the search precision
+            string precision = "results";
+            switch (Current_Mode.Search_Precision)
+            {
+                case Search_Precision_Type_Enum.Contains:
+                    precision = "contains";
+                    break;
+
+                case Search_Precision_Type_Enum.Exact_Match:
+                    precision = "exact";
+                    break;
+
+                case Search_Precision_Type_Enum.Synonmic_Form:
+                    precision = "like";
+                    break;
+            }
+
+            // Start to build the key
+            StringBuilder keyBuilder = new StringBuilder("TOTALRESULTS_" + precision + "_" + aggregation_code + "_T_");
+            for (int i = 0; i < Count; i++)
+            {
+                keyBuilder.Append(Terms[i].ToLower() + "_");
+            }
+            keyBuilder.Append("F_");
+            for (int i = 0; i < Count; i++)
+            {
+                keyBuilder.Append(Fields[i] + "_");
+            }
+
+            // Add possivle date range search restrction to the key
+            if (DateRange_Start >= 0)
+            {
+                keyBuilder.Append("_DATE" + DateRange_Start);
+                if (DateRange_End >= 0)
+                {
+                    keyBuilder.Append("-" + DateRange_End);
+                }
+            }
+
+            string key = keyBuilder.ToString();
+
+            //if (Current_Mode.SubAggregation.Length > 0)
+            //{
+            //    key = "a_" + precision + "_" + aggregation_code + "s_" + Current_Mode.SubAggregation + "t_" + Current_Mode.Search_String + "f_" + search_fields;
+            //}
+            if ((String.IsNullOrEmpty(Current_Mode.Search_String)) && (!String.IsNullOrEmpty(Current_Mode.Coordinates)))
+            {
+                key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
+            }
+
+            // Try to get this from the local cache first
+            object returnValue = HttpContext.Current.Cache.Get(key);
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager.Retrieve_Search_Result_Statistics", "Results pulled from local cache");
+                }
+
+                return (Search_Results_Statistics)returnValue;
+            }
+
+            // Try to get this from the caching server if enabled
+            if (Settings.CachingServerEnabled)
+            {
+                object from_appfabric = AppFabric_Manager.Get(key, Tracer);
+                if (from_appfabric != null)
+                {
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("CachedDataManager.Retrieve_Search_Result_Statistics", "Results pulled from caching server");
+                    }
+
+                    return (Search_Results_Statistics)from_appfabric;
+                }
+            }
+
+            return null;
+        }
+
 		/// <summary> Stores the table of search results to the cache or caching server </summary>
 		/// <param name="Current_Mode"> Mode / navigation information for the current request</param>
 		/// <param name="Terms"> List of all search terms for the search result statistics to store </param>
@@ -1327,6 +1433,100 @@ namespace SobekCM.Core.MemoryMgmt
 				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
 			}
 		}
+
+        /// <summary> Stores the table of search results to the cache or caching server </summary>
+        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        /// <param name="Terms"> List of all search terms for the search result statistics to store </param>
+        /// <param name="Fields"> List of all search fields for the search result statistics to store </param>
+        /// <param name="Count"> Number of fields or terms to include in the key for this result </param>
+        /// <param name="DateRange_Start"> Beginning of a date range search, or -1 </param>
+        /// <param name="DateRange_End"> End of a date range search, or -1 </param>
+        /// <param name="StoreObject"> Search results item/title list </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public static void Store_Search_Result_Statistics(Results_Arguments Current_Mode, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, Search_Results_Statistics StoreObject, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (Settings.Disabled)
+                return;
+            // Determine the key
+            // If there is no aggregation listed, use 'all'
+            string aggregation_code = Current_Mode.Aggregation.ToLower();
+            if (aggregation_code.Length == 0)
+                aggregation_code = "all";
+
+            // Determine the search precision
+            string precision = "results";
+            switch (Current_Mode.Search_Precision)
+            {
+                case Search_Precision_Type_Enum.Contains:
+                    precision = "contains";
+                    break;
+
+                case Search_Precision_Type_Enum.Exact_Match:
+                    precision = "exact";
+                    break;
+
+                case Search_Precision_Type_Enum.Synonmic_Form:
+                    precision = "like";
+                    break;
+            }
+
+            // Start to build the key
+            StringBuilder keyBuilder = new StringBuilder("TOTALRESULTS_" + precision + "_" + aggregation_code + "_T_");
+            for (int i = 0; i < Count; i++)
+            {
+                keyBuilder.Append(Terms[i].ToLower() + "_");
+            }
+            keyBuilder.Append("F_");
+            for (int i = 0; i < Count; i++)
+            {
+                keyBuilder.Append(Fields[i] + "_");
+            }
+
+            // Add possivle date range search restrction to the key
+            if (DateRange_Start >= 0)
+            {
+                keyBuilder.Append("_DATE" + DateRange_Start);
+                if (DateRange_End >= 0)
+                {
+                    keyBuilder.Append("-" + DateRange_End);
+                }
+            }
+
+            string key = keyBuilder.ToString();
+
+            //if (Current_Mode.SubAggregation.Length > 0)
+            //{
+            //    key = "a_" + precision + "_" + aggregation_code + "s_" + Current_Mode.SubAggregation + "t_" + Current_Mode.Search_String + "f_" + search_fields;
+            //}
+            if ((String.IsNullOrEmpty(Current_Mode.Search_String)) && (!String.IsNullOrEmpty(Current_Mode.Coordinates)))
+            {
+                key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
+            }
+
+            // try to store in the caching server, if enabled
+            if (Settings.CachingServerEnabled)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the caching server");
+                }
+
+                if (AppFabric_Manager.Add(key, StoreObject, Tracer))
+                    return;
+            }
+
+            // Store this on the local cache, if not there and storing on the cache server failed
+            if (HttpContext.Current.Cache[key] == null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager.Store_Search_Result_Statistics", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
+                }
+
+                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
+            }
+        }
 
 		#endregion
 
@@ -1440,6 +1640,114 @@ namespace SobekCM.Core.MemoryMgmt
 			return null;
 		}
 
+        /// <summary> Retrieves the table of search results from the cache or caching server </summary>
+        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        /// <param name="Terms"> List of all search terms for the search result to retrieve </param>
+        /// <param name="Fields"> List of all search fields for the search result to retrieve </param>
+        /// <param name="Sort"> Sort for the current search results to retrieve </param>
+        /// <param name="Count"> Number of fields or terms to include in the key for this result </param>
+        /// <param name="DateRange_Start"> Beginning of a date range search, or -1 </param>
+        /// <param name="DateRange_End"> End of a date range search, or -1 </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the search results item/title list </returns>
+        public static List<iSearch_Title_Result> Retrieve_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (Settings.Disabled)
+                return null;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager.Retrieve_Search_Results", "");
+            }
+
+            // Determine the key
+            // If there is no aggregation listed, use 'all'
+            string aggregation_code = Current_Mode.Aggregation;
+            if (aggregation_code.Length == 0)
+                aggregation_code = "all";
+
+            // Determine the search precision
+            string precision = "results";
+            switch (Current_Mode.Search_Precision)
+            {
+                case Search_Precision_Type_Enum.Contains:
+                    precision = "contains";
+                    break;
+
+                case Search_Precision_Type_Enum.Exact_Match:
+                    precision = "exact";
+                    break;
+
+                case Search_Precision_Type_Enum.Synonmic_Form:
+                    precision = "like";
+                    break;
+            }
+
+            // Start to build the key
+            StringBuilder keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + Current_Mode.Page + "_T_");
+            for (int i = 0; i < Count; i++)
+            {
+                keyBuilder.Append(Terms[i].ToLower() + "_");
+            }
+            keyBuilder.Append("F_");
+            for (int i = 0; i < Count; i++)
+            {
+                keyBuilder.Append(Fields[i] + "_");
+            }
+            keyBuilder.Append(Sort);
+
+            // Add possivle date range search restrction to the key
+            if (DateRange_Start >= 0)
+            {
+                keyBuilder.Append("_DATE" + DateRange_Start);
+                if (DateRange_End >= 0)
+                {
+                    keyBuilder.Append("-" + DateRange_End);
+                }
+            }
+
+            string key = keyBuilder.ToString();
+
+            //if (Current_Mode.SubAggregation.Length > 0)
+            //{
+            //    key = "a_" + precision + "_" + aggregation_code + "s_" + Current_Mode.SubAggregation + "t_" + Current_Mode.Search_String + "f_" + search_fields;
+            //}
+            if ((String.IsNullOrEmpty(Current_Mode.Search_String)) && (!String.IsNullOrEmpty(Current_Mode.Coordinates)))
+            {
+                key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
+            }
+
+            // Try to get this from the caching server if enabled
+            if (Settings.CachingServerEnabled)
+            {
+                object object_from_cache = AppFabric_Manager.Get(key, Tracer);
+                if (object_from_cache != null)
+                {
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("CachedDataManager.Retrieve_Search_Results", "Results pulled from caching server");
+                    }
+
+                    return (List<iSearch_Title_Result>)object_from_cache;
+                }
+            }
+
+            // Try to get this from the local cache next
+            object returnValue = HttpContext.Current.Cache.Get(key);
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager.Retrieve_Search_Results", "Results pulled from local cache");
+                }
+
+                return (List<iSearch_Title_Result>)returnValue;
+            }
+
+            return null;
+        }
+
 		/// <summary> Stores a single page of search results to the cache or caching server </summary>
 		/// <param name="Current_Mode"> Mode / navigation information for the current request</param>
 		/// <param name="Terms"> List of all search terms for the search result to store </param>
@@ -1536,6 +1844,103 @@ namespace SobekCM.Core.MemoryMgmt
 				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
 			}
 		}
+
+        /// <summary> Stores a single page of search results to the cache or caching server </summary>
+        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        /// <param name="Terms"> List of all search terms for the search result to store </param>
+        /// <param name="Fields"> List of all search fields for the search result to store </param>
+        /// <param name="Sort"> Sort for the current search results to store </param>
+        /// <param name="Count"> Number of fields or terms to include in the key for this result </param>
+        /// <param name="DateRange_Start"> Beginning of a date range search, or -1 </param>
+        /// <param name="DateRange_End"> End of a date range search, or -1 </param>
+        /// <param name="StoreObject"> Search results item/title list </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public static void Store_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, List<iSearch_Title_Result> StoreObject, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (Settings.Disabled)
+                return;
+
+            // Determine the key
+            // If there is no aggregation listed, use 'all'
+            string aggregation_code = Current_Mode.Aggregation;
+            if (aggregation_code.Length == 0)
+                aggregation_code = "all";
+
+            // Determine the search precision
+            string precision = "results";
+            switch (Current_Mode.Search_Precision)
+            {
+                case Search_Precision_Type_Enum.Contains:
+                    precision = "contains";
+                    break;
+
+                case Search_Precision_Type_Enum.Exact_Match:
+                    precision = "exact";
+                    break;
+
+                case Search_Precision_Type_Enum.Synonmic_Form:
+                    precision = "like";
+                    break;
+            }
+
+            // Start to build the key
+            StringBuilder keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + Current_Mode.Page + "_T_");
+            for (int i = 0; i < Count; i++)
+            {
+                keyBuilder.Append(Terms[i].ToLower() + "_");
+            }
+            keyBuilder.Append("F_");
+            for (int i = 0; i < Count; i++)
+            {
+                keyBuilder.Append(Fields[i] + "_");
+            }
+            keyBuilder.Append(Sort);
+
+            // Add possivle date range search restrction to the key
+            if (DateRange_Start >= 0)
+            {
+                keyBuilder.Append("_DATE" + DateRange_Start);
+                if (DateRange_End >= 0)
+                {
+                    keyBuilder.Append("-" + DateRange_End);
+                }
+            }
+
+            string key = keyBuilder.ToString();
+
+            //if (Current_Mode.SubAggregation.Length > 0)
+            //{
+            //    key = "a_" + precision + "_" + aggregation_code + "s_" + Current_Mode.SubAggregation + "t_" + Current_Mode.Search_String + "f_" + search_fields;
+            //}
+            if ((String.IsNullOrEmpty(Current_Mode.Search_String)) && (!String.IsNullOrEmpty(Current_Mode.Coordinates)))
+            {
+                key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
+            }
+
+            // try to store in the caching server, if enabled
+            if (Settings.CachingServerEnabled)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the caching server");
+                }
+
+                if (AppFabric_Manager.Add(key, StoreObject, Tracer))
+                    return;
+            }
+
+            // Store this on the local cache, if not there and storing on the cache server failed
+            if (HttpContext.Current.Cache[key] == null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 3 minutes");
+                }
+
+                HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(3));
+            }
+        }
 
 		/// <summary> Store several pages of search results to the cache or caching server </summary>
 		/// <param name="Current_Mode"> Mode / navigation information for the current request</param>
@@ -1642,6 +2047,112 @@ namespace SobekCM.Core.MemoryMgmt
 				currentpage++;
 			}
 		}
+
+        /// <summary> Store several pages of search results to the cache or caching server </summary>
+        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        /// <param name="Terms"> List of all search terms for the search result to store </param>
+        /// <param name="Fields"> List of all search fields for the search result to store </param>
+        /// <param name="Sort"> Sort for the current search results to store </param>
+        /// <param name="Count"> Number of fields or terms to include in the key for this result </param>
+        /// <param name="DateRange_Start"> Beginning of a date range search, or -1 </param>
+        /// <param name="DateRange_End"> End of a date range search, or -1 </param>
+        /// <param name="StoreObject"> Search results item/title list </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public static void Store_Search_Results(Results_Arguments Current_Mode, int Sort, int Count, List<string> Fields, List<string> Terms, long DateRange_Start, long DateRange_End, List<List<iSearch_Title_Result>> StoreObject, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (Settings.Disabled)
+                return;
+
+            // Determine the key
+            // If there is no aggregation listed, use 'all'
+            string aggregation_code = Current_Mode.Aggregation;
+            if (aggregation_code.Length == 0)
+                aggregation_code = "all";
+
+            // Determine the search precision
+            string precision = "results";
+            switch (Current_Mode.Search_Precision)
+            {
+                case Search_Precision_Type_Enum.Contains:
+                    precision = "contains";
+                    break;
+
+                case Search_Precision_Type_Enum.Exact_Match:
+                    precision = "exact";
+                    break;
+
+                case Search_Precision_Type_Enum.Synonmic_Form:
+                    precision = "like";
+                    break;
+            }
+
+            // Save the requested page of results and any additionally returned pages
+            int currentpage = Current_Mode.Page;
+            foreach (List<iSearch_Title_Result> pageOfResults in StoreObject)
+            {
+                // Start to build the key
+                StringBuilder keyBuilder = new StringBuilder("PAGEDRESULTS_" + precision + "_" + aggregation_code + "_" + currentpage + "_T_");
+                for (int i = 0; i < Count; i++)
+                {
+                    keyBuilder.Append(Terms[i].ToLower() + "_");
+                }
+                keyBuilder.Append("F_");
+                for (int i = 0; i < Count; i++)
+                {
+                    keyBuilder.Append(Fields[i] + "_");
+                }
+                keyBuilder.Append(Sort);
+
+
+                //if (Current_Mode.SubAggregation.Length > 0)
+                //{
+                //    key = "a_" + precision + "_" + aggregation_code + "s_" + Current_Mode.SubAggregation + "t_" + Current_Mode.Search_String + "f_" + search_fields;
+                //}
+
+                // Add possivle date range search restrction to the key
+                if (DateRange_Start >= 0)
+                {
+                    keyBuilder.Append("_DATE" + DateRange_Start);
+                    if (DateRange_End >= 0)
+                    {
+                        keyBuilder.Append("-" + DateRange_End);
+                    }
+                }
+
+                string key = keyBuilder.ToString();
+                if ((String.IsNullOrEmpty(Current_Mode.Search_String)) && (!String.IsNullOrEmpty(Current_Mode.Coordinates)))
+                {
+                    key = "TOTALRESULTS_" + precision + "_" + aggregation_code + "coord_" + Current_Mode.Coordinates;
+                }
+
+                // try to store in the caching server, if enabled
+                bool remotely_cached = false;
+                if (Settings.CachingServerEnabled)
+                {
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the caching server");
+                    }
+
+                    if (AppFabric_Manager.Add(key, pageOfResults, Tracer))
+                        remotely_cached = true;
+                }
+
+                // Store this on the local cache, if not there and storing on the cache server failed
+                if ((HttpContext.Current.Cache[key] == null) && ((!remotely_cached)))
+                {
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("CachedDataManager.Store_Search_Results", "Adding object '" + key + "' to the local cache with expiration of 1 minutes");
+                    }
+
+                    HttpContext.Current.Cache.Insert(key, pageOfResults, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
+                }
+
+                currentpage++;
+            }
+        }
 
 		#endregion
 
