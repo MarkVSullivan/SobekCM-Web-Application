@@ -20,6 +20,20 @@ namespace SobekCM.Core.Results
     public class Search_Results_Statistics
     {
 	    private List<string> metadataLabels;
+
+        /// <summary> Constructor for a new instance of the Search_Results_Statistics class </summary>
+        public Search_Results_Statistics()
+        {
+            // Create the facet lists
+            Aggregation_Facets = new List<Search_Facet_Aggregation>();
+            Facet_Collections = new List<Search_Facet_Collection>();
+
+            Total_Items = -1;
+            Total_Titles = -1;
+            All_Collections_Items = -1;
+            All_Collections_Titles = -1;
+            QueryTime = 0;
+        }
  
         /// <summary> Constructor for a new instance of the Search_Results_Statistics class </summary>
         /// <param name="Metadata_Labels"> List of the metadata terms for each metadata value in the results </param>
@@ -197,14 +211,14 @@ namespace SobekCM.Core.Results
         /// <summary> Gets the collection of aggregation facets associated with this results set </summary>
         [DataMember(Name = "agggregationFacets")]
         [XmlArray("agggregationFacets")]
-        [XmlArrayItem("facet", typeof(Search_Facet_Aggregation))]
+        [XmlArrayItem("aggregationFacet", typeof(Search_Facet_Aggregation))]
         [ProtoMember(7)]
         public List<Search_Facet_Aggregation> Aggregation_Facets { get; private set; }
 
         /// <summary> Collection of all the facets associated with this results set </summary>
         [DataMember(Name = "facetCollections")]
         [XmlArray("facetCollections")]
-        [XmlArrayItem("facetCollection", typeof(Search_Facet_Aggregation))]
+        [XmlArrayItem("facetCollection", typeof(Search_Facet_Collection))]
         [ProtoMember(8)]
         public List<Search_Facet_Collection> Facet_Collections { get; set; }
 
@@ -232,7 +246,7 @@ namespace SobekCM.Core.Results
                 if ((Reader.FieldCount == 2) && (Facet_Types.Count > current_facet_index))
                 {
                     // Create the collection and and assifn the metadata type id
-                    Search_Facet_Collection thisCollection = new Search_Facet_Collection(Facet_Types[0]);
+                    Search_Facet_Collection thisCollection = new Search_Facet_Collection(Facet_Types[current_facet_index]);
 
                     // Read all the individual facet values
                     while (Reader.Read())
@@ -272,7 +286,7 @@ namespace SobekCM.Core.Results
                 if ((Facet_Data.Tables[table_counter].Columns.Count == 2) && (Facet_Types.Count > facet_index))
                 {
                     // Create the collection and and assifn the metadata type id
-                    Search_Facet_Collection thisCollection = new Search_Facet_Collection(Facet_Types[0]);
+                    Search_Facet_Collection thisCollection = new Search_Facet_Collection(Facet_Types[facet_index]);
 
                     // Read all the individual facet values
                     foreach (DataRow thisRow in Facet_Data.Tables[table_counter].Rows)

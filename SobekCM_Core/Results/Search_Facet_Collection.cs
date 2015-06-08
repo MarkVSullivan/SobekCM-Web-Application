@@ -16,7 +16,7 @@ namespace SobekCM.Core.Results
         [DataMember(Name = "metadataTypeId")]
         [XmlAttribute("metadataTypeId")]
         [ProtoMember(1)]
-        public short MetadataTypeID { get; private set; }
+        public short MetadataTypeID { get; set; }
 
         /// <summary> Number of facets associated with the second facet list in this results set </summary>
         [IgnoreDataMember]
@@ -31,7 +31,7 @@ namespace SobekCM.Core.Results
         [XmlArray("facets")]
         [XmlArrayItem("facet", typeof(Search_Facet))]
         [ProtoMember(2)]
-        public List<Search_Facet> Facets { get; private set; }
+        public List<Search_Facet> Facets { get; set; }
 
         /// <summary> Constructor for a new instance of the Search_Facet_Collection class </summary>
         public Search_Facet_Collection()
