@@ -12,6 +12,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.ResultTitle;
 using SobekCM.Core.Search;
+using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Microservices;
@@ -145,7 +146,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void Get_Search_Results(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void Get_Search_Results_Page(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Parse request to determine search requested");
@@ -214,12 +215,12 @@ namespace SobekCM.Engine_Library.Endpoints
                             foreach (string thisSplit in splitter)
                             {
                                 if ( !String.IsNullOrWhiteSpace(thisSplit))
-                                    termObj.Values.Add(new BriefItem_DescTermValue(thisSplit));
+                                    termObj.Add_Value(thisSplit.Trim());
                             }
                         }
                         else
                         {
-                            termObj.Values.Add(new BriefItem_DescTermValue(termString));
+                            termObj.Add_Value(termString.Trim());
                         }
                         restTitle.Description.Add(termObj);
                     }
@@ -227,7 +228,24 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
 
                 // Add each item
-                
+                for (int i = 0; i < thisResult.Item_Count; i++)
+                {
+                    iSearch_Item_Result itemResults = thisResult.Get_Item(i);
+
+                    ResultItemInfo newItem = new ResultItemInfo
+                    {
+                        VID = itemResults.VID, 
+                        Title = itemResults.Title, 
+                        Link = itemResults.Link, 
+                        MainThumbnail = itemResults.MainThumbnail
+                    };
+
+                    restTitle.Items.Add(newItem);
+                }
+
+                // Add to the array
+                results.Add(restTitle);
+
             }
 
             // Was this in debug mode?
@@ -276,8 +294,13 @@ namespace SobekCM.Engine_Library.Endpoints
                 json_callback = QueryString["callback"];
             }
 
+            // Create the return object
+            ResultSetPage wrappedObject = new ResultSetPage();
+            wrappedObject.Results = results;
+            wrappedObject.Page = args.Page;
+
             // Use the base class to serialize the object according to request protocol
-            Serialize(resultsStats, Response, Protocol, json_callback);
+            Serialize(wrappedObject, Response, Protocol, json_callback);
         }
 
      
@@ -306,6 +329,76 @@ namespace SobekCM.Engine_Library.Endpoints
             int sort = Current_Mode.Sort.HasValue ? Math.Max(Current_Mode.Sort.Value, ((ushort)1)) : 0;
             if ((sort != 0) && (sort != 1) && (sort != 2) && (sort != 10) && (sort != 11))
                 sort = 0;
+
+            // If there was no search, it is a browse
+            if (String.IsNullOrEmpty(Current_Mode.Search_String))
+            {
+                // Get the page count in the results
+                int current_page_index = Current_Mode.Page;
+
+                // Set the flags for how much data is needed.  (i.e., do we need to pull ANYTHING?  or
+                // perhaps just the next page of results ( as opposed to pulling facets again).
+                bool need_browse_statistics = true;
+                bool need_paged_results = true;
+                if (Current_Mode.Use_Cache)
+                {
+                    // Look to see if the browse statistics are available on any cache for this browse
+                    Complete_Result_Set_Info = CachedDataManager.Retrieve_Browse_Result_Statistics(Aggregation_Object.Code, "all", Tracer);
+                    if (Complete_Result_Set_Info != null)
+                        need_browse_statistics = false;
+
+                    // Look to see if the paged results are available on any cache..
+                    Paged_Results = CachedDataManager.Retrieve_Browse_Results(Aggregation_Object.Code, "all", current_page_index, sort, Tracer);
+                    if (Paged_Results != null)
+                        need_paged_results = false;
+                }
+
+                // Was a copy found in the cache?
+                if ((!need_browse_statistics) && (!need_paged_results))
+                {
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Browse statistics and paged results retrieved from cache");
+                    }
+                }
+                else
+                {
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Building results information");
+                    }
+
+                    // Try to pull more than one page, so we can cache the next page or so
+                    List<List<iSearch_Title_Result>> pagesOfResults;
+
+                    // Get from the hierarchy object
+                        Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Gat_All_Browse(Aggregation_Object, current_page_index, sort, (int) Current_Mode.ResultsPerPage, Current_Mode.Use_Cache, need_browse_statistics, Tracer);
+                        if (need_browse_statistics)
+                        {
+                            Complete_Result_Set_Info = returnArgs.Statistics;
+                        }
+                        pagesOfResults = returnArgs.Paged_Results;
+                        if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
+                            Paged_Results = pagesOfResults[0];
+
+                    // Save the overall result set statistics to the cache if something was pulled
+                    if (Current_Mode.Use_Cache)
+                    {
+                        if ((need_browse_statistics) && (Complete_Result_Set_Info != null))
+                        {
+                            CachedDataManager.Store_Browse_Result_Statistics(Aggregation_Object.Code, "all", Complete_Result_Set_Info, Tracer);
+                        }
+
+                        // Save the overall result set statistics to the cache if something was pulled
+                        if ((need_paged_results) && (Paged_Results != null))
+                        {
+                            CachedDataManager.Store_Browse_Results(Aggregation_Object.Code, "all", current_page_index, sort, pagesOfResults, Tracer);
+                        }
+                    }
+                }
+
+                return ResultsEndpointErrorEnum.NONE;
+            }
 
 
             // Depending on type of search, either go to database or Greenstone

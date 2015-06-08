@@ -281,7 +281,43 @@ namespace SobekCM.Engine_Library.Aggregations
             return null;
         }
 
-        #region Method to save the complete item aggregation to the database
+	    /// <summary> Method returns the table of results for the browse indicated </summary>
+	    /// <param name = "ChildPageObject">Object with all the information about the browse</param>
+	    /// <param name = "Page"> Page of results requested for the indicated browse </param>
+	    /// <param name = "Sort"> Sort applied to the results before being returned </param>
+	    /// <param name="Potentially_Include_Facets"> Flag indicates if facets could be included in this browse results </param>
+	    /// <param name = "Need_Browse_Statistics"> Flag indicates if the browse statistics (facets and total counts) are required for this browse as well </param>
+	    /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <param name="Results_Per_Page"> Number of results to retrieve per page</param>
+	    /// <returns> Resutls for the browse or info in table form </returns>
+	    public static Multiple_Paged_Results_Args Gat_All_Browse(Complete_Item_Aggregation ItemAggr,
+	        int Page, int Sort, int Results_Per_Page,
+	        bool Potentially_Include_Facets, bool Need_Browse_Statistics,
+	        Custom_Tracer Tracer)
+	    {
+	        if (Tracer != null)
+	        {
+	            Tracer.Add_Trace("Item_Aggregation_Utilities.Get_Browse_Results", String.Empty);
+	        }
+
+	        // Get the list of facets first
+	        List<short> facetsList = ItemAggr.Facets;
+	        if (!Potentially_Include_Facets)
+	            facetsList = null;
+
+	        // Pull data from the database if necessary
+
+	        // Get this browse from the database
+	        if ((ItemAggr.ID < 0) || (ItemAggr.Code.ToUpper() == "ALL"))
+	        {
+	            return Engine_Database.Get_All_Browse_Paged(false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
+	        }
+
+	        return Engine_Database.Get_Item_Aggregation_Browse_Paged(ItemAggr.Code, false, false, Results_Per_Page, Page, Sort, Need_Browse_Statistics, facetsList, Need_Browse_Statistics, Tracer);
+	    }
+
+
+	    #region Method to save the complete item aggregation to the database
 
         /// <summary> Saves the information about this item aggregation to the database </summary>
         /// <param name="Username"> Name of the user performing this save, for the item aggregation milestones</param>

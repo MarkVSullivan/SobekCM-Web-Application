@@ -41,6 +41,12 @@ namespace SobekCM.Core.ResultTitle
         [XmlArray("items")]
         [XmlArrayItem("item", typeof(ResultItemInfo))]
         [ProtoMember(4)]
-        public List<ResultItemInfo> Items { get; set; } 
+        public List<ResultItemInfo> Items { get; set; }
+
+        public ResultTitleInfo()
+        {
+            Items = new List<ResultItemInfo>();
+            Description = new List<ResultTitle_DescriptiveTerm>();
+        }
     }
 }

@@ -128,6 +128,7 @@
     <Compile Include="OAI\OAI_Record.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResultTitle\ResultItemInfo.cs" />
+    <Compile Include="ResultTitle\ResultSetPage.cs" />
     <Compile Include="ResultTitle\ResultTitleInfo.cs" />
     <Compile Include="Results\iSearch_Item_Result.cs" />
     <Compile Include="Results\iSearch_Title_Result.cs" />
