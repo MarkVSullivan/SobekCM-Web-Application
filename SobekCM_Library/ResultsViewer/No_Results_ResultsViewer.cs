@@ -8,7 +8,6 @@ using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -90,7 +89,7 @@ namespace SobekCM.Library.ResultsViewer
                 {
                     string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
                     RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
-                    if (RequestSpecificValues.Results_Statistics.All_Collections_Items > 1)
+                    if ((RequestSpecificValues.Results_Statistics.All_Collections_Items.HasValue) && ( RequestSpecificValues.Results_Statistics.All_Collections_Items > 0 ))
                         noResultsTextBuilder.AppendLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + number_to_string(RequestSpecificValues.Results_Statistics.All_Collections_Items) + " found in the " + RequestSpecificValues.Current_Mode.Instance_Name + "</a><br /><br />");
                     else
                         noResultsTextBuilder.AppendLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + RequestSpecificValues.Results_Statistics.All_Collections_Items + " found in the " + RequestSpecificValues.Current_Mode.Instance_Name + "</a><br /><br />");
@@ -134,6 +133,31 @@ namespace SobekCM.Library.ResultsViewer
         private static string number_to_string(int Number)
         {
             switch (Number)
+            {
+                case 1: return "One";
+                case 2: return "Two";
+                case 3: return "Three";
+                case 4: return "Four";
+                case 5: return "Five";
+                case 6: return "Six";
+                case 7: return "Seven";
+                case 8: return "Eight";
+                case 9: return "Nine";
+                case 10: return "Ten";
+                case 11: return "Eleven";
+                case 12: return "Twelve";
+                default: return Number.ToString();
+
+            }
+        }
+
+        private static string number_to_string(int? Number)
+        {
+            if (!Number.HasValue)
+                return "No";
+
+            int value = Number.Value;
+            switch (value)
             {
                 case 1: return "One";
                 case 2: return "Two";

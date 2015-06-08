@@ -1755,86 +1755,25 @@ namespace SobekCM.Library.HTML
                     builder.AppendLine("</div>");
                 }
 
-                // Add the first facet information 
-                if (RequestSpecificValues.Results_Statistics.First_Facets_Count > 0)
+                // Add the facet information 
+                if ((RequestSpecificValues.Results_Statistics.Facet_Collections != null) && (RequestSpecificValues.Results_Statistics.Facet_Collections.Count > 0))
                 {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.First_Facets_MetadataTypeID);
-                    if (field != null)
+                    int facetIndex = 1;
+                    foreach (Search_Facet_Collection theseFacets in RequestSpecificValues.Results_Statistics.Facet_Collections)
                     {
-                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 1, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.First_Facets);
+                        if ((theseFacets.MetadataTypeID > 0) && (theseFacets.Count > 0))
+                        {
+                            Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(theseFacets.MetadataTypeID);
+                            if (field != null)
+                            {
+                                Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, facetIndex, sort_by_frequency, sort_alphabetically, theseFacets.Facets);
+                            }
+                        }
+
+                        facetIndex++;
                     }
                 }
-
-                // Add the second facet information 
-                if (RequestSpecificValues.Results_Statistics.Second_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Second_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 2, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Second_Facets);
-                    }
-                }
-
-                // Add the third facet information 
-                if (RequestSpecificValues.Results_Statistics.Third_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Third_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 3, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Third_Facets);
-                    }
-                }
-
-                // Add the fourth facet information 
-                if (RequestSpecificValues.Results_Statistics.Fourth_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Fourth_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 4, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Fourth_Facets);
-                    }
-                }
-
-                // Add the fifth facet information 
-                if (RequestSpecificValues.Results_Statistics.Fifth_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Fifth_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 5, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Fifth_Facets);
-                    }
-                }
-
-                // Add the sixth facet information 
-                if (RequestSpecificValues.Results_Statistics.Sixth_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Sixth_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 6, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Sixth_Facets);
-                    }
-                }
-
-                // Add the seventh facet information 
-                if (RequestSpecificValues.Results_Statistics.Seventh_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Seventh_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 7, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Seventh_Facets);
-                    }
-                }
-
-                // Add the eighth facet information 
-                if (RequestSpecificValues.Results_Statistics.Eighth_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Eighth_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 8, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Eighth_Facets);
-                    }
-                }
-
+ 
                 builder.AppendLine("</nav>");
 
                 #endregion
@@ -2052,94 +1991,27 @@ namespace SobekCM.Library.HTML
 
                 List<string> FIDS = new List<string>();
 
-                // Add the first facet information 
-                if (RequestSpecificValues.Results_Statistics.First_Facets_Count > 0)
+                // Add the facet information 
+                if ((RequestSpecificValues.Results_Statistics.Facet_Collections != null) && (RequestSpecificValues.Results_Statistics.Facet_Collections.Count > 0))
                 {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.First_Facets_MetadataTypeID);
-                    if (field != null)
+                    int facetIndex = 1;
+                    foreach (Search_Facet_Collection theseFacets in RequestSpecificValues.Results_Statistics.Facet_Collections)
                     {
-                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 1, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.First_Facets);
-                        FIDS.Add(field.Display_Term);
+                        if ((theseFacets.MetadataTypeID > 0) && (theseFacets.Count > 0))
+                        {
+                            Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(theseFacets.MetadataTypeID);
+                            if (field != null)
+                            {
+                                Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, facetIndex, sort_by_frequency, sort_alphabetically, theseFacets.Facets);
+                                FIDS.Add(field.Display_Term);
+                            }
+                        }
+
+                        facetIndex++;
                     }
                 }
 
-                // Add the second facet information 
-                if (RequestSpecificValues.Results_Statistics.Second_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Second_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 2, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Second_Facets);
-                        FIDS.Add(field.Display_Term);
-                    }
-                }
-
-                // Add the third facet information 
-                if (RequestSpecificValues.Results_Statistics.Third_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Third_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 3, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Third_Facets);
-                        FIDS.Add(field.Display_Term);
-                    }
-                }
-
-                // Add the fourth facet information 
-                if (RequestSpecificValues.Results_Statistics.Fourth_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Fourth_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 4, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Fourth_Facets);
-                        FIDS.Add(field.Display_Term);
-                    }
-                }
-
-                // Add the fifth facet information 
-                if (RequestSpecificValues.Results_Statistics.Fifth_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Fifth_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 5, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Fifth_Facets);
-                        FIDS.Add(field.Display_Term);
-                    }
-                }
-
-                // Add the sixth facet information 
-                if (RequestSpecificValues.Results_Statistics.Sixth_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Sixth_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 6, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Sixth_Facets);
-                        FIDS.Add(field.Display_Term);
-                    }
-                }
-
-                // Add the seventh facet information 
-                if (RequestSpecificValues.Results_Statistics.Seventh_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Seventh_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 7, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Seventh_Facets);
-                        FIDS.Add(field.Display_Term);
-                    }
-                }
-
-                // Add the eighth facet information 
-                if (RequestSpecificValues.Results_Statistics.Eighth_Facets_Count > 0)
-                {
-                    Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(RequestSpecificValues.Results_Statistics.Eighth_Facets_MetadataTypeID);
-                    if (field != null)
-                    {
-                        Add_Single_Facet_Callback(builder, UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Facet_Term, RequestSpecificValues.Current_Mode.Language), field.Web_Code, show_less, show_more, 8, sort_by_frequency, sort_alphabetically, RequestSpecificValues.Results_Statistics.Eighth_Facets);
-                        FIDS.Add(field.Display_Term);
-                    }
-                }
-
+            
                 #region FIDKey Support
 
                 //create fid key hash and id and session state

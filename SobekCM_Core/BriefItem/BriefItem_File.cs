@@ -30,13 +30,7 @@ namespace SobekCM.Core.BriefItem
         [XmlAttribute("width")]
         public string Width_AsString
         {
-            get
-            {
-                if (Width.HasValue)
-                    return Width.ToString();
-                else
-                    return null;
-            }
+            get { return Width.HasValue ? Width.ToString() : null; }
             set
             {
                 int temp;
@@ -59,13 +53,7 @@ namespace SobekCM.Core.BriefItem
         [XmlAttribute("height")]
         public string Height_AsString
         {
-            get
-            {
-                if (Height.HasValue)
-                    return Height.ToString();
-                else
-                    return null;
-            }
+            get { return Height.HasValue ? Height.ToString() : null; }
             set
             {
                 int temp;
