@@ -25,13 +25,13 @@ namespace SobekCM.Engine_Library.Endpoints
         public void ResolveUrl(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             Custom_Tracer tracer = new Custom_Tracer();
-            tracer.Add_Trace("NagigationServices.ResolveUrl", "Parse request and return navigation object");
+            tracer.Add_Trace("NavigationServices.ResolveUrl", "Parse request and return navigation object");
 
             try
             {
 
                 // Pull out the http request
-                tracer.Add_Trace("NagigationServices.ResolveUrl", "Get the current request HttpRequest object");
+                tracer.Add_Trace("NavigationServices.ResolveUrl", "Get the current request HttpRequest object");
                 HttpRequest request = HttpContext.Current.Request;
 
                 // Get the base url
@@ -40,14 +40,14 @@ namespace SobekCM.Engine_Library.Endpoints
                     base_url = base_url.Substring(0, base_url.IndexOf("?"));
 
 
-                tracer.Add_Trace("NagigationServices.ResolveUrl", "Get the navigation object");
+                tracer.Add_Trace("NavigationServices.ResolveUrl", "Get the navigation object");
                 Navigation_Object returnValue = get_navigation_object(QueryString, base_url, request.UserLanguages, tracer);
 
-                tracer.Add_Trace("NagigationServices.ResolveUrl", "Set base url and browser type (may not be useful)");
+                tracer.Add_Trace("NavigationServices.ResolveUrl", "Set base url and browser type (may not be useful)");
                 returnValue.Base_URL = base_url;
                 returnValue.Browser_Type = request.Browser.Type.ToUpper();
 
-                tracer.Add_Trace("NagigationServices.ResolveUrl", "Determine if the user host address was a robot request");
+                tracer.Add_Trace("NavigationServices.ResolveUrl", "Determine if the user host address was a robot request");
                 returnValue.Set_Robot_Flag(request.UserAgent, request.UserHostAddress);
 
                 // If this was debug mode, then just write the tracer

@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
 
-
 namespace SobekCM.Core
 {
     /// <summary> A single milestone entry in the history of an entity </summary>

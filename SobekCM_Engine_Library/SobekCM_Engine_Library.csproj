@@ -72,9 +72,11 @@
     <Compile Include="Configuration\Shibboleth_Configuration_Reader.cs" />
     <Compile Include="Email\Email_Helper.cs" />
     <Compile Include="Endpoints\AggregationServices.cs" />
+    <Compile Include="Endpoints\DataServices.cs" />
     <Compile Include="Endpoints\EndpointBase.cs" />
     <Compile Include="Endpoints\ItemServices.cs" />
     <Compile Include="Endpoints\NavigationServices.cs" />
+    <Compile Include="Endpoints\ResultsServices.cs" />
     <Compile Include="Endpoints\WebContentServices.cs" />
     <Compile Include="Endpoints\WebSkinServices.cs" />
     <Compile Include="ExtensionMethods.cs" />
@@ -143,6 +145,7 @@
     <Compile Include="Microservices\Microservice_RestrictionRange.cs" />
     <Compile Include="Navigation\QueryString_Analyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Results\Results_Arguments.cs" />
     <Compile Include="Settings\Builder_Settings_Builder.cs" />
     <Compile Include="Settings\InstanceWide_Settings_Builder.cs" />
     <Compile Include="SiteMap\SobekCM_SiteMap_Reader.cs" />

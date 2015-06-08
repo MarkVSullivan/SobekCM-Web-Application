@@ -210,7 +210,6 @@ namespace SobekCM.Core.Navigation
 
         /// <summary> Beginning of a date range, if the search includes
         /// a date range between two arbitrary dates </summary>
-        /// <value>-1 if no year range</value>
         [DataMember(EmitDefaultValue = false, Name = "dateRangeDate1")]
         [XmlElement("dateRangeDate1")]
         [ProtoMember(11)]
@@ -218,7 +217,6 @@ namespace SobekCM.Core.Navigation
 
         /// <summary> End of a date range, if the search includes
         /// a date range between two arbitrary dates </summary>
-        /// <value>-1 if no year range</value>
         [DataMember(EmitDefaultValue = false, Name = "dateRangeDate2")]
         [XmlElement("dateRangeDate2")]
         [ProtoMember(12)]
@@ -226,7 +224,6 @@ namespace SobekCM.Core.Navigation
 
         /// <summary> Beginning of the year range, if the search includes
         /// a date range between two years </summary>
-        /// <value>-1 if no year range</value>
         [DataMember(EmitDefaultValue = false, Name = "dateRangeYear1")]
         [XmlElement("dateRangeYear1")]
         [ProtoMember(13)]
@@ -234,7 +231,6 @@ namespace SobekCM.Core.Navigation
 
         /// <summary> End of the year range, if the search includes
         /// a date range between two years </summary>
-        /// <value>-1 if no year range</value>
         [DataMember(EmitDefaultValue = false, Name = "dateRangeYear2")]
         [XmlElement("dateRangeYear2")]
         [ProtoMember(14)]

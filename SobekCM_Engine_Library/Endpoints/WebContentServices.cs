@@ -30,6 +30,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Get top-level web content, static HTML </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         public void Get_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
