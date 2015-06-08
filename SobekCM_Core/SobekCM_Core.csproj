@@ -127,6 +127,8 @@
     <Compile Include="Navigation\UrlWriterHelper.cs" />
     <Compile Include="OAI\OAI_Record.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResultTitle\ResultItemInfo.cs" />
+    <Compile Include="ResultTitle\ResultTitleInfo.cs" />
     <Compile Include="Results\iSearch_Item_Result.cs" />
     <Compile Include="Results\iSearch_Title_Result.cs" />
     <Compile Include="Results\Multiple_Paged_Results_Args.cs" />
@@ -141,6 +143,7 @@
     <Compile Include="Results\Search_Result_Item_Tree.cs" />
     <Compile Include="Results\Search_Result_Item_TreeNode.cs" />
     <Compile Include="Results\Single_Paged_Results_Args.cs" />
+    <Compile Include="ResultTitle\ResultTitle_DescriptiveTerm.cs" />
     <Compile Include="Search\Metadata_Search_Field.cs" />
     <Compile Include="Serialization\iSerializationEvents.cs" />
     <Compile Include="Settings\Builder_Module_Setting.cs" />

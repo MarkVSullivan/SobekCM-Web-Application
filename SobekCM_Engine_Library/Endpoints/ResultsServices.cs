@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Web;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
+using SobekCM.Core.ResultTitle;
 using SobekCM.Core.Search;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
@@ -128,6 +131,146 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Get the JSON-P callback function
             string json_callback = "parseResultsStats";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(resultsStats, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Get just the search statistics information for a search or browse </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        public void Get_Search_Results(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Parse request to determine search requested");
+
+            // Get all the searh field necessary from the query string
+            Results_Arguments args = new Results_Arguments(QueryString);
+
+            // Was a collection indicated?
+            if (UrlSegments.Count > 0)
+                args.Aggregation = UrlSegments[0];
+
+            // Get the aggregation object (we need to know which facets to use, etc.. )
+            tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Get the '" + args.Aggregation + "' item aggregation (for facets, etc..)");
+            Complete_Item_Aggregation aggr = AggregationServices.get_complete_aggregation(args.Aggregation, true, tracer);
+
+            // If no aggregation was returned, that is an error
+            if (aggr == null)
+            {
+                tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Returned aggregation was NULL... aggregation code may not be valid");
+
+                if (QueryString["debug"] == "debug")
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    return;
+                }
+
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error occurred or aggregation '" + args.Aggregation + "' not valid");
+                Response.StatusCode = 500;
+                return;
+            }
+
+            // Perform the search
+            tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Perform the search");
+            Search_Results_Statistics resultsStats;
+            List<iSearch_Title_Result> resultsPage;
+            ResultsEndpointErrorEnum error = Get_Search_Results(args, aggr, tracer, out resultsStats, out resultsPage);
+
+            // Map to the results object title / item
+            tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Map to the results object title / item");
+            List<ResultTitleInfo> results = new List<ResultTitleInfo>();
+            foreach (iSearch_Title_Result thisResult in resultsPage)
+            {
+                // Create the new rest title object
+                ResultTitleInfo restTitle = new ResultTitleInfo
+                {
+                    BibID = thisResult.BibID, 
+                    MainThumbnail = thisResult.GroupThumbnail, 
+                    Title = thisResult.GroupTitle
+                };
+
+                // add each descriptive field over
+                int field_index = 0;
+                foreach (string metadataTerm in resultsStats.Metadata_Labels)
+                {
+                    if ( !String.IsNullOrWhiteSpace(thisResult.Metadata_Display_Values[field_index]))
+                    {
+                        string termString = thisResult.Metadata_Display_Values[field_index];
+                        ResultTitle_DescriptiveTerm termObj = new ResultTitle_DescriptiveTerm(metadataTerm);
+                        if (termString.IndexOf("|") > 0)
+                        {
+                            string[] splitter = termString.Split("|".ToCharArray());
+                            foreach (string thisSplit in splitter)
+                            {
+                                if ( !String.IsNullOrWhiteSpace(thisSplit))
+                                    termObj.Values.Add(new BriefItem_DescTermValue(thisSplit));
+                            }
+                        }
+                        else
+                        {
+                            termObj.Values.Add(new BriefItem_DescTermValue(termString));
+                        }
+                        restTitle.Description.Add(termObj);
+                    }
+                    field_index++;
+                }
+
+                // Add each item
+                
+            }
+
+            // Was this in debug mode?
+            // If this was debug mode, then just write the tracer
+            if (QueryString["debug"] == "debug")
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+                return;
+            }
+
+            // If an error occurred, return the error
+            switch (error)
+            {
+                case ResultsEndpointErrorEnum.Database_Exception:
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Database exception");
+                    Response.StatusCode = 500;
+                    return;
+
+                case ResultsEndpointErrorEnum.Database_Timeout_Exception:
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Database timeout");
+                    Response.StatusCode = 500;
+                    return;
+
+                case ResultsEndpointErrorEnum.Solr_Exception:
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Solr exception");
+                    Response.StatusCode = 500;
+                    return;
+
+                case ResultsEndpointErrorEnum.Unknown:
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Unknown error");
+                    Response.StatusCode = 500;
+                    return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseResultsSet";
             if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
             {
                 json_callback = QueryString["callback"];
