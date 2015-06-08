@@ -247,7 +247,7 @@ namespace SobekCM.Core.Results
             }
 
             // Was a search string and fields included?
-            if ((Search_String.Length > 0) && (Search_Fields.Length > 0))
+            if ((!String.IsNullOrEmpty(Search_String)) && (!String.IsNullOrEmpty(Search_Fields)))
             {
                 Search_Type = Search_Type_Enum.Advanced;
             }
@@ -257,7 +257,7 @@ namespace SobekCM.Core.Results
             }
 
             // If no search term, look foor the TEXT-specific term
-            if (Search_String.Length == 0)
+            if (String.IsNullOrEmpty(Search_String))
             {
                 if ( !String.IsNullOrEmpty(QueryString["text"]))
                 {
