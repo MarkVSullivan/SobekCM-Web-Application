@@ -9,9 +9,9 @@
 	<!-- Define the information about this input template -->
 	<name>dLOC Self-Submittal Tool</name>
 	<notes>Template is used for self-submittal into dLOC</notes>
-	<permissions>I, as copyright holder or licensee with the authority to grant copyright permissions for the title, hereby authorize the Digital Library of the Caribbean and the University of Florida, acting on behalf of the State of Florida, to digitize and distribute the title for nonprofit, educational purposes via the Internet or successive technologies. This is a non-exclusive grant of permissions for on-line and off-line use for an indefinite term. Off-line uses shall be consistent either, for educational uses, with the terms of U.S. copyright legislation's &quot;fair use&quot; provisions or, by the Digital Library of the Caribbean or University of Florida, with the maintenance and preservation of an archival copy. Digitization allows the Digital Library of the Caribbean and University of Florida to generate image- and text-based versions as appropriate and to provide and enhance access using search software. This grant of permissions prohibits use of the digitized versions for commercial use or profit unless I specifically grant rights for those uses in the rights field for this item.</permissions>
+	<permissions>I, as copyright holder or licensee with the authority to grant copyright permissions for the title, hereby authorize the [%SYSTEMNAME%] to digitize and distribute the title for nonprofit, educational purposes via the Internet or successive technologies. This is a non-exclusive grant of permissions for on-line and off-line use for an indefinite term. Off-line uses shall be consistent either, for educational uses, with the terms of U.S. copyright legislation's &quot;fair use&quot; provisions or, by the [%SYSTEMNAME%], with the maintenance and preservation of an archival copy. Digitization allows the [%SYSTEMNAME%] to generate image- and text-based versions as appropriate and to provide and enhance access using search software. This grant of permissions prohibits use of the digitized versions for commercial use or profit unless I specifically grant rights for those uses in the rights field for this item.</permissions>
 	<dateCreated>August 20, 2009</dateCreated>
-	<lastModified>January 22, 2011</lastModified>
+	<lastModified>June 9, 2015</lastModified>
 	<creator>Mark V Sullivan</creator>
 	<includeUserAsAuthor>false</includeUserAsAuthor>
 	<uploads>FILE</uploads>
@@ -34,12 +34,16 @@
 				<element type="Type" subtype="simple" mandatory="true" acronym="Select the type which best categorizes this material.">
 					<element_data>
 						<value>Book</value>
-						<options>Aerial, Archival, Artifact, Audio, Book, Map, Newspaper, Photograph, Serial, Video</options>
+						<options>Aerial, Archival, Artifact, Audio, Book, Dataset, Map, Newspaper, Photograph, Serial, Video</options>
 					</element_data>
 				</element>
 				<element type="Format" acronym="Enter any additional data (such as extent or subtype) which describes the material."/>
 				<element type="Language" repeatable="true" acronym="Enter the language(s) of the material."/>
 				<element type="Identifier" subtype="complex" repeatable="true"/>
+			</panel>
+			<panel>
+				<name language="eng">Membership</name>
+				<element type="Aggregations" />
 				<element type="Holding" subtype="complex" />
 				<element type="Source" subtype="complex" />
 			</panel>

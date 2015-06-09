@@ -1104,7 +1104,7 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("<h2>Step 1 of " + totalTemplatePages + ": Grant of Permission</h2>");
 
                     Output.WriteLine("<blockquote>You must read and accept the below permissions to continue.<br /><br />");
-                    Output.WriteLine(completeTemplate.Permissions_Agreement.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL));
+                    Output.WriteLine(completeTemplate.Permissions_Agreement.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("[%BASEURL%]", RequestSpecificValues.Current_Mode.Base_URL).Replace("[%SYSTEMNAME%]", RequestSpecificValues.Current_Mode.Instance_Name));
                //     Output.WriteLine("<p>Please review the <a href=\"?g=ufirg&amp;m=hitauthor_faq#policies&amp;n=gs\">Policies</A> if you have any questions or please contact us with any questions prior to submitting files. </p>\n");
                     Output.WriteLine("<table style=\"width:700px\">");
                     Output.WriteLine("  <tr style=\"text-align:right\">");

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -566,6 +567,24 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 // Either use the cache version, or build the complete item aggregation
                 Complete_Item_Aggregation itemAggr = Item_Aggregation_Utilities.Get_Complete_Item_Aggregation(AggregationCode, Tracer);
+
+                // If this is the ALL collection, add subcollections by thematic heading
+                if (String.Compare(AggregationCode, "all", StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    foreach (Thematic_Heading thisTheme in Engine_ApplicationCache_Gateway.Thematic_Headings)
+                    {
+                        // Build the list of html to display
+                        SortedList<string, string> html_list = new SortedList<string, string>();
+                        ReadOnlyCollection<Item_Aggregation_Related_Aggregations> thisThemesAggrs = Engine_ApplicationCache_Gateway.Codes.Aggregations_By_ThemeID(thisTheme.ID);
+                        foreach (Item_Aggregation_Related_Aggregations thisAggr in thisThemesAggrs)
+                        {
+                            if ((!thisAggr.Hidden) && (thisAggr.Active))
+                            {
+                                itemAggr.Add_Child_Aggregation(new Item_Aggregation_Related_Aggregations(thisAggr.Code, thisAggr.Name, thisAggr.Type, thisAggr.Active, thisAggr.Hidden));
+                            }
+                        }
+                    }
+                }
 
                 // Now, save this to the cache
                 if (itemAggr != null)
