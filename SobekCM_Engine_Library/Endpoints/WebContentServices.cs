@@ -18,12 +18,16 @@ namespace SobekCM.Engine_Library.Endpoints
     /// <summary> Endpoint supports services related to the static web content, CMS functionality </summary>
     public class WebContentServices
     {
+        /// <summary> Enumeration of possible web content endpoint errors </summary>
         public enum WebContentEndpointErrorEnum : byte
         {
+            /// <summary> No error occurred.  Normal operation. </summary>
             NONE,
 
+            /// <summary> Expected source file was not found </summary>
             No_File_Found,
      
+            /// <summary> Unexpected error reading a source file </summary>
             Error_Reading_File
         }
 
