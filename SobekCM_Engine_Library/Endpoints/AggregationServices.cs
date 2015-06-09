@@ -840,7 +840,8 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
 
                     // Now, try to create the item aggregation and write the configuration file
-                    Complete_Item_Aggregation itemAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(NewAggregation.Code, true, null);
+                    Custom_Tracer tracer = new Custom_Tracer();
+                    Complete_Item_Aggregation itemAggregation = SobekEngineClient.Aggregations.Get_Complete_Aggregation(NewAggregation.Code, true, tracer);
                     if (banner_file.Length > 0)
                     {
                         itemAggregation.Banner_Dictionary.Clear();
@@ -860,7 +861,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
                 }
             }
-            catch
+            catch ( Exception ee )
             {
                 // Reload the list of all codes, to include this new one and the new hierarchy
                 lock (Engine_ApplicationCache_Gateway.Codes)

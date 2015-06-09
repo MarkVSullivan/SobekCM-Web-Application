@@ -675,6 +675,10 @@ namespace SobekCM.Core.Database
                         Value = thisParam.Value
                     };
 
+                    // If this was null, use DBNull.Value
+                    if (sqlParam.Value == null)
+                        sqlParam.Value = DBNull.Value;
+
                     // Add this to the select command
                     SqlCommand.Parameters.Add(sqlParam);
                 }
