@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Endpoints;
+using SobekCM.Tools;
 
 namespace SobekCM.Core.Client
 {
@@ -20,7 +21,7 @@ namespace SobekCM.Core.Client
         }
 
 
-        public HTML_Based_Content Get_HTML_Based_Content( string InfoBrowseMode )
+        public HTML_Based_Content Get_HTML_Based_Content( string InfoBrowseMode, Custom_Tracer Tracer )
         {
             // Get the array of portions of the URL to pass into the web content services helper method for now
             string[] splitter = InfoBrowseMode.Split("\\/".ToCharArray());
@@ -28,7 +29,7 @@ namespace SobekCM.Core.Client
 
             // Call the web content services endpoint
             WebContentServices.WebContentEndpointErrorEnum error;
-            HTML_Based_Content returnValue = WebContentServices.get_html_content(urlSegments, out error);
+            HTML_Based_Content returnValue = WebContentServices.get_html_content(urlSegments, Tracer, out error);
 
             // Was this null?
             if (returnValue == null)

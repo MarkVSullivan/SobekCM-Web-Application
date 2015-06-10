@@ -63,7 +63,7 @@ namespace SobekCM.Library
             Site_Map = null;
 
             // Get the web content object
-            Simple_Web_Content = SobekEngineClient.WebContent.Get_HTML_Based_Content(Current_Mode.Info_Browse_Mode);
+            Simple_Web_Content = SobekEngineClient.WebContent.Get_HTML_Based_Content(Current_Mode.Info_Browse_Mode, Tracer);
 
             if (Simple_Web_Content == null)
             {

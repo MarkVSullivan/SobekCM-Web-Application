@@ -38,10 +38,20 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         public void Get_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
+            Custom_Tracer tracer = new Custom_Tracer();
             WebContentEndpointErrorEnum errorType;
-            HTML_Based_Content returnValue = get_html_content(UrlSegments, out errorType);
+            HTML_Based_Content returnValue = get_html_content(UrlSegments, tracer, out errorType);
             if (returnValue == null)
             {
+                // If this was debug mode, then just write the tracer
+                if (QueryString["debug"] == "debug")
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+
                 switch (errorType)
                 {
                     case WebContentEndpointErrorEnum.Error_Reading_File:
@@ -62,6 +72,17 @@ namespace SobekCM.Engine_Library.Endpoints
                         Response.StatusCode = 500;
                         return;
                 }
+            }
+
+            // If this was debug mode, then just write the tracer
+            if (QueryString["debug"] == "debug")
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
             }
 
             // Get the JSON-P callback function
@@ -187,7 +208,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"> URL segments </param>
         /// <param name="ErrorType"> Any error enocuntered during the process </param>
         /// <returns> Built HTML content object, or NULL </returns>
-        public static HTML_Based_Content get_html_content(List<string> UrlSegments, out WebContentEndpointErrorEnum ErrorType)
+        public static HTML_Based_Content get_html_content(List<string> UrlSegments, Custom_Tracer Tracer, out WebContentEndpointErrorEnum ErrorType)
         {
             // Set a default error message first
             ErrorType = WebContentEndpointErrorEnum.NONE;
@@ -223,7 +244,8 @@ namespace SobekCM.Engine_Library.Endpoints
                 // This may point to the default html in the parent directory
                 if ((Directory.Exists(source + "\\" + filename)) && (File.Exists(source + "\\" + filename + "\\default.html")))
                 {
-                    found_source = source + "\\" + filename + "\\default.html";
+                    found_source = Path.Combine(source, filename, "default.html");
+                    Tracer.Add_Trace("WebContentServices.get_html_content", "Found source file: " + found_source);
                 }
 
                 if (String.IsNullOrEmpty(found_source))
@@ -232,17 +254,19 @@ namespace SobekCM.Engine_Library.Endpoints
                     if (matching_file.Length > 0)
                     {
                         found_source = matching_file[0];
+                        Tracer.Add_Trace("WebContentServices.get_html_content", "Found source file: " + found_source);
                     }
                 }
 
                 // If this was found, build it and return it
                 if (!String.IsNullOrEmpty(found_source))
                 {
-                    HTML_Based_Content simpleWebContent = HTML_Based_Content_Reader.Read_HTML_File(found_source, true, null);
+                    HTML_Based_Content simpleWebContent = HTML_Based_Content_Reader.Read_HTML_File(found_source, true, Tracer);
 
                     if ((simpleWebContent == null) || (simpleWebContent.Content.Length == 0))
                     {
                         ErrorType = WebContentEndpointErrorEnum.Error_Reading_File;
+                        Tracer.Add_Trace("WebContentServices.get_html_content", "Error reading source file");
                         return null;
                     }
 
@@ -350,6 +374,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Was never found
+            Tracer.Add_Trace("WebContentServices.get_html_content", "No source file found");
             ErrorType = WebContentEndpointErrorEnum.No_File_Found;
             return null;
         }
