@@ -70,5 +70,10 @@ namespace SobekCM.Core.Skins
         [ProtoMember(8)]
         public Dictionary<Web_Language_Enum, Complete_Web_Skin_Source_Files> SourceFiles { get; set; }
 
+        /// <summary> Exception message, if an exception occurred whie this was built </summary>
+        [DataMember(EmitDefaultValue = false, Name = "exception")]
+        [ProtoMember(9)]
+        public string Exception { get; set; }
+
     }
 }

@@ -159,6 +159,12 @@ namespace SobekCM.Core.Skins
         [ProtoMember(13)]
 		public bool? Footer_Has_Container_Directive { get; set; }
 
+        /// <summary> Exception message, if an exception occurred whie this was built </summary>
+        [DataMember(EmitDefaultValue = false, Name = "exception")]
+        [XmlElement("exception")]
+        [ProtoMember(14)]
+        public string Exception { get; set; }
+
         #region Methods for XML serialization
 
         /// <summary> Method suppresses XML Serialization of the Suppress_Top_Navigation property if it is NULL </summary>

@@ -92,6 +92,8 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
+        #region Helper methods (ultimately destined to be private)
+
         /// <summary> Helper method retrieves HTML web content </summary>
         /// <param name="UrlSegments"> URL segments </param>
         /// <param name="ErrorType"> Any error enocuntered during the process </param>
@@ -262,6 +264,8 @@ namespace SobekCM.Engine_Library.Endpoints
             ErrorType = WebContentEndpointErrorEnum.No_File_Found;
             return null;
         }
+
+        #endregion
 
 
     }

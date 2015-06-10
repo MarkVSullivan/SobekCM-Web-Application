@@ -1,4 +1,6 @@
-﻿using SobekCM.Core.Configuration;
+﻿using System;
+using SobekCM.Core.Configuration;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Skins;
 using SobekCM.Engine_Library.Endpoints;
@@ -21,9 +23,38 @@ namespace SobekCM.Core.Client
             return WebSkinServices.get_complete_web_skin(SkinCode, Tracer);
         }
 
-        public Web_Skin_Object Get_Aggregation(string SkinCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, Custom_Tracer Tracer)
+        public Web_Skin_Object Get_LanguageSpecific_Web_Skin(string SkinCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, bool Cache_On_Build, Custom_Tracer Tracer)
         {
-            return WebSkinServices.get_web_skin(SkinCode, RequestedLanguage, DefaultLanguage, Tracer);
+            Web_Skin_Object htmlSkin = null;
+
+            // If no interface yet, look in the cache
+            if ((SkinCode != "new") && (Cache_On_Build))
+            {
+                htmlSkin = CachedDataManager.WebSkins.Retrieve_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), Tracer);
+                if (htmlSkin != null)
+                {
+                    if (Tracer != null)
+                    {
+                        Tracer.Add_Trace("SobekEngineClient_WebSkinEndpoints.Get_LanguageSpecific_Web_Skin", "Web skin '" + SkinCode + "' found in cache");
+                    }
+                    return htmlSkin;
+                }
+            }
+
+            // If still not interface, build one
+            Web_Skin_Object new_skin = WebSkinServices.get_web_skin(SkinCode, RequestedLanguage, DefaultLanguage, Tracer);
+
+            // Look in the web skin row and see if it should be kept around, rather than momentarily cached
+            if ((new_skin != null) && ( String.IsNullOrEmpty(new_skin.Exception)))
+            {
+                if (Cache_On_Build)
+                {
+                    // Momentarily cache this web skin object
+                    CachedDataManager.WebSkins.Store_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), new_skin, Tracer);
+                }
+            }
+
+            return new_skin;
         }
 
 

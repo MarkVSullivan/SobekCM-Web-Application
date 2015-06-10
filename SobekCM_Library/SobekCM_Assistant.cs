@@ -1819,44 +1819,17 @@ namespace SobekCM.Library
         public Web_Skin_Object Get_HTML_Skin(string Web_Skin_Code, Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer)
         {
             // Get the interface object
-            Web_Skin_Object htmlSkin = null;
-
-            // If no interface yet, look in the cache
-            if ((Web_Skin_Code != "new") && (Cache_On_Build))
-            {
-                htmlSkin = CachedDataManager.WebSkins.Retrieve_Skin(Web_Skin_Code, Current_Mode.Language_Code, Tracer);
-                if (htmlSkin != null)
-                {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("SobekCM_Assistant.Get_HTML_Skin", "Web skin '" + Web_Skin_Code + "' found in cache");
-                    }
-                    if ((!String.IsNullOrEmpty(htmlSkin.Base_Skin_Code)) && (htmlSkin.Base_Skin_Code != htmlSkin.Skin_Code))
-                        Current_Mode.Base_Skin = htmlSkin.Base_Skin_Code;
-                    return htmlSkin;
-                }
-            }
-
-            // If still not interface, build one
-            Web_Skin_Object new_skin = WebSkinServices.get_web_skin(Web_Skin_Code, Current_Mode.Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, Tracer);
-
-            // Look in the web skin row and see if it should be kept around, rather than momentarily cached
-            if (new_skin != null)
-            {
-                if (Cache_On_Build)
-                {
-                    // Momentarily cache this web skin object
-                    CachedDataManager.WebSkins.Store_Skin(Web_Skin_Code, Current_Mode.Language_Code, new_skin, Tracer);
-                }
-
-                htmlSkin = new_skin;
-            }
+            Web_Skin_Object htmlSkin = SobekEngineClient.WebSkins.Get_LanguageSpecific_Web_Skin(Web_Skin_Code, Current_Mode.Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, Cache_On_Build, Tracer);
 
             // If there is still no interface, this is an ERROR
             if (htmlSkin != null)
             {
                 if ((!String.IsNullOrEmpty(htmlSkin.Base_Skin_Code)) && (htmlSkin.Base_Skin_Code != htmlSkin.Skin_Code))
                     Current_Mode.Base_Skin = htmlSkin.Base_Skin_Code;
+            }
+            else
+            {
+                Tracer.Add_Trace("SobekCM_Assistant.Get_HTML_Skin", "SobekEngineClient returned NULL for the requeted web skin");
             }
 
             // Return the value

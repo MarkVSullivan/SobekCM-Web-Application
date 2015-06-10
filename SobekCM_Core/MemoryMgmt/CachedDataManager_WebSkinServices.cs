@@ -60,24 +60,14 @@ namespace SobekCM.Core.MemoryMgmt
                 }
             }
 
-            //// Do the same thing for the remote cache
-            //foreach (Cached_Object_Info cachedObject in AppFabric_Manager.Cached_Items)
-            //{
-            //    if ((cachedObject.Object_Key == "SKIN_" + Skin_Code.ToLower()) || (cachedObject.Object_Key.IndexOf("SKIN_" + Skin_Code.ToLower() + "_") == 0))
-            //    {
-            //        AppFabric_Manager.Expire_Item(cachedObject.Object_Key);
-            //        values_cleared++;
-            //    }
-            //}
-
             return values_cleared;
         }
 
-        /// <summary> Retrieves the html skin object from the cache or caching server </summary>
+        /// <summary> Retrieves the language-specific html skin object from the cache or caching server </summary>
         /// <param name="Skin_Code"> Code for this html display skin </param>
         /// <param name="Language_Code"> Current language code for the user interface ( skins are language-specific)</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Either NULL or the html skin object </returns>
+        /// <returns> Either NULL or the language-specific html skin object </returns>
         public Web_Skin_Object Retrieve_Skin(string Skin_Code, string Language_Code, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
@@ -85,9 +75,9 @@ namespace SobekCM.Core.MemoryMgmt
                 return null;
 
             // Determine the key
-            string key = "SKIN|" + Skin_Code.ToLower();
+            string key = "SKIN|" + Skin_Code.ToLower() + "|";
             if (Language_Code.Length > 0)
-                key = key + "|" + Language_Code;
+                key = key + Language_Code;
 
             // See if this is in the local cache first
             object returnValue = HttpContext.Current.Cache.Get(key);
@@ -95,57 +85,25 @@ namespace SobekCM.Core.MemoryMgmt
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("CachedDataManager.Retrieve_Skin", "Found html skin on local cache");
+                    Tracer.Add_Trace("CachedDataManager.Retrieve_Skin", "Found language-specific html skin on local cache");
                 }
 
                 return (Web_Skin_Object)returnValue;
             }
 
-            // Try to get this from the caching server, if enabled
-            if ((settings.CachingServerEnabled) && (AppFabric_Manager.Contains(key)))
-            {
-                object from_app_fabric = AppFabric_Manager.Get(key, Tracer);
-                if (from_app_fabric != null)
-                {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("CachedDataManager.Retrieve_Skin", "Found html skin on caching server");
-                    }
-
-                    // Check the number of item aggregationPermissions currently locally cached
-                    if (settings.LOCALLY_CACHED_SKINS_LIMIT > 0)
-                    {
-                        int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("SKIN_") == 0);
-
-                        // Locally cache if this doesn't exceed the limit
-                        if (items_cached < settings.LOCALLY_CACHED_SKINS_LIMIT)
-                        {
-                            if (Tracer != null)
-                            {
-                                Tracer.Add_Trace("CachedDataManager.Retrieve_Skin", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
-                            }
-
-                            HttpContext.Current.Cache.Insert(key, from_app_fabric, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
-                        }
-                    }
-
-                    return (Web_Skin_Object)from_app_fabric;
-                }
-            }
-
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Skin", "Skin not found in either the local cache or caching server");
+                Tracer.Add_Trace("CachedDataManager.Retrieve_Skin", "Language specific skin not found in either the local cache");
             }
 
             // Since everything failed, just return null
             return null;
         }
 
-        /// <summary> Stores the html skin object to the cache or caching server </summary>
+        /// <summary> Stores the language-specific html skin object to the cache or caching server </summary>
         /// <param name="Skin_Code"> Code for this html display skin </param>
         /// <param name="Language_Code"> Current language code for the user interface ( skins are language-specific)</param>
-        /// <param name="StoreObject"> HTML Skin object </param>
+        /// <param name="StoreObject"> Language-specific HTML Skin object </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Store_Skin(string Skin_Code, string Language_Code, Web_Skin_Object StoreObject, Custom_Tracer Tracer)
         {
@@ -154,38 +112,75 @@ namespace SobekCM.Core.MemoryMgmt
                 return;
 
             // Determine the key
-            string key = "SKIN|" + Skin_Code.ToLower();
+            string key = "SKIN|" + Skin_Code.ToLower() + "|";
             if (Language_Code.Length > 0)
-                key = key + "|" + Language_Code;
+                key = key + Language_Code;
 
-
-            // Check the number of item aggregationPermissions currently locally cached
-            if ((settings.LOCALLY_CACHED_SKINS_LIMIT > 0) || (!settings.CachingServerEnabled))
+            // Log
+            if (Tracer != null)
             {
-                int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("SKIN_") == 0);
-
-                // Locally cache if this doesn't exceed the limit
-                if ((items_cached < settings.LOCALLY_CACHED_SKINS_LIMIT) || (!settings.CachingServerEnabled))
-                {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("CachedDataManager.Store_Skin", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
-                    }
-
-                    HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
-                }
+                Tracer.Add_Trace("CachedDataManager.Store_Skin", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
             }
 
-            // try to store in the caching server, if enabled
-            if (settings.CachingServerEnabled)
+            // Add to the cache with five minute expiration
+            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
+        }
+
+        /// <summary> Retrieves the complete html skin object from the cache or caching server </summary>
+        /// <param name="Skin_Code"> Code for this html display skin </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the complete html skin object </returns>
+        public Complete_Web_Skin_Object Retrieve_Complete_Skin(string Skin_Code, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+                return null;
+
+            // Determine the key
+            string key = "SKIN|" + Skin_Code.ToLower() + "|COMPLETE";
+
+            // See if this is in the local cache first
+            object returnValue = HttpContext.Current.Cache.Get(key);
+            if (returnValue != null)
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("CachedDataManager.Store_Skin", "Adding object '" + key + "' to the caching server");
+                    Tracer.Add_Trace("CachedDataManager.Retrieve_Complete_Skin", "Found complete html skin on local cache");
                 }
 
-                AppFabric_Manager.Add(key, StoreObject, Tracer);
+                return (Complete_Web_Skin_Object)returnValue;
             }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager.Retrieve_Complete_Skin", "Complete skin not found in either the local cache");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Stores the complete html skin object to the cache or caching server </summary>
+        /// <param name="Skin_Code"> Code for this html display skin </param>
+        /// <param name="StoreObject"> Complete HTML Skin object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_Complete_Skin(string Skin_Code, Complete_Web_Skin_Object StoreObject, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if ((settings.Disabled) || (StoreObject == null))
+                return;
+
+            // Determine the key
+            string key = "SKIN|" + Skin_Code.ToLower() + "|COMPLETE";
+
+            // Log
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager.Store_Complete_Skin", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
+            }
+
+            // Stote the value with five minute expiration
+            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
         }
 
         #endregion

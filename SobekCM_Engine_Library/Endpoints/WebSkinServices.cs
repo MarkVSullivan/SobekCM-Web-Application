@@ -8,6 +8,7 @@ using System.IO;
 using System.Web;
 using Jil;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Skins;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.JSON_Client_Helpers;
@@ -218,8 +219,17 @@ namespace SobekCM.Engine_Library.Endpoints
         /// the release of SobekCM 5.0 </remarks>
         public static Complete_Web_Skin_Object get_complete_web_skin(string SkinCode, Custom_Tracer Tracer)
         {
-            if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Try to get the web skin code row from the web skin collection object");
+            // Look in the cache for this version
+            if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Look in the cache for a previously built complete skin object for '" + SkinCode + "'");
+            Complete_Web_Skin_Object cacheObj = CachedDataManager.WebSkins.Retrieve_Complete_Skin(SkinCode, Tracer);
+            if (cacheObj != null)
+            {
+                if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Found complete web skin object on the cache");
+                return cacheObj;
+            }
 
+            // Get the web skin code row from the web skin collection object
+            if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Try to get the web skin code row from the web skin collection object");
             DataRow thisRow = Engine_ApplicationCache_Gateway.Web_Skin_Collection.Skin_Row(SkinCode);
             if (thisRow == null)
             {
@@ -227,10 +237,22 @@ namespace SobekCM.Engine_Library.Endpoints
                 return null;
             }
 
-            if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Found the web skin row for code '" + SkinCode + "'");
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Found the web skin row for code '" + SkinCode + "'");
+                Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Building the copmlete web skin object");
+            }
 
-
+            // Build the complete web skin object
             Complete_Web_Skin_Object returnObject = Web_Skin_Utilities.Build_Skin_Complete(thisRow, Tracer);
+
+            // If returned, cache it
+            if (returnObject != null)
+            {
+                if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_complete_web_skin", "Passing the built complete web skin to the cache manager");
+                CachedDataManager.WebSkins.Store_Complete_Skin(SkinCode, returnObject, Tracer);
+            }
+
             return returnObject;
         }
 
@@ -252,7 +274,27 @@ namespace SobekCM.Engine_Library.Endpoints
                 return null;
             }
 
-            return Web_Skin_Utilities.Build_Skin(completeSkin, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), Tracer);
+            // Look in the cache for this first
+            Web_Skin_Object cacheObject = CachedDataManager.WebSkins.Retrieve_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), Tracer);
+            if (cacheObject != null)
+            {
+                if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_web_skin", "Web skin found in the memory cache");
+                return cacheObject;
+            }
+
+            // Try to get this language-specifi web skin
+            Web_Skin_Object returnValue = Web_Skin_Utilities.Build_Skin(completeSkin, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), Tracer);
+
+            // If this web skin has a value (an no exception) store in the cache
+            if ((returnValue != null) && (String.IsNullOrEmpty(returnValue.Exception)))
+            {
+                if (Tracer != null) Tracer.Add_Trace("WebSkinServices.get_web_skin", "Store the web skin in the memory cache");
+                CachedDataManager.WebSkins.Store_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), returnValue, Tracer );
+            }
+
+            // Return the object
+            return returnValue;
+
         }
 
         #endregion
