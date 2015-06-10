@@ -147,7 +147,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 // If this was found, build it and return it
                 if (!String.IsNullOrEmpty(found_source))
                 {
-                    HTML_Based_Content simpleWebContent = HTML_Based_Content_Reader.Read_HTML_File(source, true, null);
+                    HTML_Based_Content simpleWebContent = HTML_Based_Content_Reader.Read_HTML_File(found_source, true, null);
 
                     if ((simpleWebContent == null) || (simpleWebContent.Content.Length == 0))
                     {

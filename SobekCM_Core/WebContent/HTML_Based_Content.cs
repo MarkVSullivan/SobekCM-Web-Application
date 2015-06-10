@@ -17,6 +17,7 @@ namespace SobekCM.Core.WebContent
     /// simple CMS-style web content objects.  These are objects which are (possibly) read from
     /// a static HTML file and much of the head information must be maintained </summary>
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("webContentPage")]
     public class HTML_Based_Content
     {
         private string code;
