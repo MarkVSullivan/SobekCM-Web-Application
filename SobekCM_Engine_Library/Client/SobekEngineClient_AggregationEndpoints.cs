@@ -20,7 +20,7 @@ namespace SobekCM.Core.Client
 
         /// <summary> Gets the complete (language agnostic) item aggregation, by aggregation code </summary>
         /// <param name="AggregationCode"> Code for the requested aggregation </param>
-        /// <param name="Tracer"></param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully built language-agnostic aggregation, with all related configurations </returns>
         public Complete_Item_Aggregation Get_Complete_Aggregation(string AggregationCode, bool UseCache, Custom_Tracer Tracer)
         {
@@ -31,7 +31,7 @@ namespace SobekCM.Core.Client
         /// <param name="AggregationCode"> Code for the aggregation </param>
         /// <param name="RequestedLanguage"> Requested language to retrieve </param>
         /// <param name="DefaultLanguage"> Default interface language, in case the requested language does not exist </param>
-        /// <param name="Tracer"></param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Built language-specific item aggregation object  </returns>
         public Item_Aggregation Get_Aggregation(string AggregationCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, Custom_Tracer Tracer)
         {
@@ -43,7 +43,7 @@ namespace SobekCM.Core.Client
         /// <param name="RequestedLanguage"> Requested language to retrieve </param>
         /// <param name="DefaultLanguage"> Default interface language, in case the requested language does not exist </param>
         /// <param name="ChildPageCode"> Code the requested child page </param>
-        /// <param name="Tracer"></param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully built object, based on the aggregation configuration and reading the source HTML file </returns>
         public HTML_Based_Content Get_Aggregation_HTML_Child_Page(string AggregationCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, string ChildPageCode, Custom_Tracer Tracer )
         {
@@ -51,7 +51,7 @@ namespace SobekCM.Core.Client
         }
 
         /// <summary> Gets the entire collection hierarchy (used for hierarchical tree displays) </summary>
-        /// <param name="Tracer"></param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully built aggregation hierarchy </returns>
         public Aggregation_Hierarchy Get_Aggregation_Hierarchy(Custom_Tracer Tracer)
         {

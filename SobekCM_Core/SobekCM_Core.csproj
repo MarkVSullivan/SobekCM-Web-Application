@@ -172,6 +172,7 @@
     <Compile Include="WebContent\HTML_Based_Content_Reader.cs" />
     <Compile Include="WebContent\Single_WebContent_Month_Year_Usage.cs" />
     <Compile Include="WebContent\WebContent_Recent_Changed_Page.cs" />
+    <Compile Include="WebContent\Web_Content_Basic_Info.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">

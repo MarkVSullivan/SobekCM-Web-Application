@@ -62,8 +62,8 @@ namespace SobekCM.Library
 
             Site_Map = null;
 
-            string source = Current_Mode.Page_By_FileName;
-            Simple_Web_Content = HTML_Based_Content_Reader.Read_HTML_File(source, true, Tracer);
+            // Get the web content object
+            Simple_Web_Content = SobekEngineClient.WebContent.Get_HTML_Based_Content(Current_Mode.Info_Browse_Mode);
 
             if (Simple_Web_Content == null)
             {
@@ -75,104 +75,6 @@ namespace SobekCM.Library
             {
                 Current_Mode.Error_Message = "Unable to read the file for display";
                 return false;
-            }
-
-            // Now, check for any "server-side include" directorives in the source text
-            int include_index = Simple_Web_Content.Content.IndexOf("<%INCLUDE");
-            while ((include_index > 0) && (Simple_Web_Content.Content.IndexOf("%>", include_index, StringComparison.Ordinal) > 0))
-            {
-                int include_finish_index = Simple_Web_Content.Content.IndexOf("%>", include_index, StringComparison.Ordinal) + 2;
-                string include_statement = Simple_Web_Content.Content.Substring(include_index, include_finish_index - include_index);
-                string include_statement_upper = include_statement.ToUpper();
-                int file_index = include_statement_upper.IndexOf("FILE");
-                string filename_to_include = String.Empty;
-                if (file_index > 0)
-                {
-                    // Pull out the possible file name
-                    string possible_file_name = include_statement.Substring(file_index + 4);
-                    int file_start = -1;
-                    int file_end = -1;
-                    int char_index = 0;
-
-                    // Find the start of the file information
-                    while ((file_start < 0) && (char_index < possible_file_name.Length))
-                    {
-                        if ((possible_file_name[char_index] != '"') && (possible_file_name[char_index] != '=') && (possible_file_name[char_index] != ' '))
-                        {
-                            file_start = char_index;
-                        }
-                        else
-                        {
-                            char_index++;
-                        }
-                    }
-
-                    // Find the end of the file information
-                    if (file_start >= 0)
-                    {
-                        char_index++;
-                        while ((file_end < 0) && (char_index < possible_file_name.Length))
-                        {
-                            if ((possible_file_name[char_index] == '"') || (possible_file_name[char_index] == ' ') || (possible_file_name[char_index] == '%'))
-                            {
-                                file_end = char_index;
-                            }
-                            else
-                            {
-                                char_index++;
-                            }
-                        }
-                    }
-
-                    // Get the filename
-                    if ((file_start > 0) && (file_end > 0))
-                    {
-                        filename_to_include = possible_file_name.Substring(file_start, file_end - file_start);
-                    }
-                }
-
-                // Remove the include and either place in the text from the indicated file, 
-                // or just remove
-                if ((filename_to_include.Length > 0) && (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + filename_to_include)))
-                {
-                    // Define the value for the include text
-                    string include_text;
-
-                    // Look in the cache for this
-                    object returnValue = HttpContext.Current.Cache.Get("INCLUDE_" + filename_to_include);
-                    if (returnValue != null)
-                    {
-                        include_text = returnValue.ToString();
-                    }
-                    else
-                    {
-                        try
-                        {
-                            // Pull from the file
-                            StreamReader reader = new StreamReader(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + filename_to_include);
-                            include_text = reader.ReadToEnd();
-                            reader.Close();
-
-                            // Store on the cache for two minutes, if no indication not to
-                            if (include_statement_upper.IndexOf("NOCACHE") < 0)
-                                HttpContext.Current.Cache.Insert("INCLUDE_" + filename_to_include, include_text, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
-                        }
-                        catch (Exception)
-                        {
-                            include_text = "Unable to read the soruce file ( " + filename_to_include + " )";
-                        }
-                    }
-
-                    // Replace the text with the include file
-                    Simple_Web_Content.Content = Simple_Web_Content.Content.Replace(include_statement, include_text);
-                    include_index = Simple_Web_Content.Content.IndexOf("<%INCLUDE", include_index + include_text.Length - 1, StringComparison.Ordinal);
-                }
-                else
-                {
-                    // No suitable name was found, or it doesn't exist so just remove the INCLUDE completely
-                    Simple_Web_Content.Content = Simple_Web_Content.Content.Replace(include_statement, "");
-                    include_index = Simple_Web_Content.Content.IndexOf("<%INCLUDE", include_index, StringComparison.Ordinal);
-                }
             }
 
             // Look for a site map

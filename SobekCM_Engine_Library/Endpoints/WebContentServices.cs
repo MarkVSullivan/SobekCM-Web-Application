@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
@@ -11,12 +9,14 @@ using Jil;
 using ProtoBuf;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Microservices;
+using SobekCM.Tools;
 
 namespace SobekCM.Engine_Library.Endpoints
 {
     /// <summary> Endpoint supports services related to the static web content, CMS functionality </summary>
-    public class WebContentServices
+    public class WebContentServices : EndpointBase
     {
         /// <summary> Enumeration of possible web content endpoint errors </summary>
         public enum WebContentEndpointErrorEnum : byte
@@ -64,33 +64,122 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
             }
 
-            switch (Protocol)
+            // Get the JSON-P callback function
+            string json_callback = "parseCollectionStaticPage";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
             {
-                case Microservice_Endpoint_Protocol_Enum.JSON:
-                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNulls);
-                    break;
-
-                case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                    Serializer.Serialize(Response.OutputStream, returnValue);
-                    break;
-
-                case Microservice_Endpoint_Protocol_Enum.JSON_P:
-                    Response.Output.Write("parseCollectionStaticPage(");
-                    JSON.Serialize(returnValue, Response.Output, Options.ISO8601ExcludeNullsJSONP);
-                    Response.Output.Write(");");
-                    break;
-
-                case Microservice_Endpoint_Protocol_Enum.XML:
-                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(returnValue.GetType());
-                    x.Serialize(Response.Output, returnValue);
-                    break;
-
-                case Microservice_Endpoint_Protocol_Enum.BINARY:
-                    IFormatter binary = new BinaryFormatter();
-                    binary.Serialize(Response.OutputStream, returnValue);
-                    break;
+                json_callback = QueryString["callback"];
             }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
         }
+
+
+        /// <summary> Add a new HTML web content page </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="RequestForm"></param>
+        public void Add_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm)
+        {
+            // Create the custom tracer
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Validate the username is present
+            if (String.IsNullOrEmpty(RequestForm["User"]))
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 500;
+                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'User' (name of user) is missing.\"");
+                Response.End();
+                return;
+            }
+
+            // Get the username
+            string user = RequestForm["User"];
+
+            // Validate the new page information
+            if (String.IsNullOrEmpty(RequestForm["PageInfo"]))
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 500;
+                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'PageInfo' is missing.\"");
+                Response.End();
+                return;
+            }
+
+            // Get the page information and deserialize, according to the indicated protocol
+            string pageInfoString = RequestForm["PageInfo"];
+            Web_Content_Basic_Info basicInfo = null;
+            try
+            {
+                switch (Protocol)
+                {
+                    case Microservice_Endpoint_Protocol_Enum.JSON:
+                        basicInfo = JSON.Deserialize<Web_Content_Basic_Info>(pageInfoString);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.XML:
+                        System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(typeof(Web_Content_Basic_Info));
+                        using (TextReader reader = new StringReader(pageInfoString))
+                        {
+                            basicInfo = (Web_Content_Basic_Info) x.Deserialize(reader);
+                        }
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                        using (MemoryStream m = new MemoryStream(Encoding.Unicode.GetBytes(pageInfoString ?? "")))
+                        {
+                            basicInfo = Serializer.Deserialize<Web_Content_Basic_Info>(m);
+                        }
+                        break;
+                }
+            }
+            catch (Exception)
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 500;
+                Response.Output.WriteLine("\"INVALID REQUEST: Error deserializing 'PageInfo' into the Web_Content_Basic_Info object.\"");
+                Response.End();
+                return;
+            }
+
+            // Should not ever get here
+            if (basicInfo == null)
+                return;
+
+            // Get the levels from the URL request
+            string level1 = UrlSegments.Count > 0 ? UrlSegments[0] : null;
+            string level2 = UrlSegments.Count > 1 ? UrlSegments[1] : null;
+            string level3 = UrlSegments.Count > 2 ? UrlSegments[2] : null;
+            string level4 = UrlSegments.Count > 3 ? UrlSegments[3] : null;
+            string level5 = UrlSegments.Count > 4 ? UrlSegments[4] : null;
+            string level6 = UrlSegments.Count > 5 ? UrlSegments[5] : null;
+            string level7 = UrlSegments.Count > 6 ? UrlSegments[6] : null;
+            string level8 = UrlSegments.Count > 7 ? UrlSegments[7] : null;
+
+            // Ensure the web page does not already exist
+            int newContentId = Engine_Database.WebContent_Add_Page(level1, level2, level3, level4, level5, level6, level7, level8, user, basicInfo.Title, basicInfo.Summary, tracer);
+
+            // If this is -1, then an error occurred
+            if (newContentId < 0)
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 500;
+                Response.Output.WriteLine("\"INVALID REQUEST: Error adding the new web page.\"");
+                Response.End();
+                return;
+            }
+
+            // Assign the ID to the page
+            basicInfo.WebContentID = newContentId;
+
+            // Send back the result
+            Serialize(basicInfo, Response, Protocol, "addHtmlBasedContent");
+        }
+
+
 
         #region Helper methods (ultimately destined to be private)
 
@@ -98,7 +187,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"> URL segments </param>
         /// <param name="ErrorType"> Any error enocuntered during the process </param>
         /// <returns> Built HTML content object, or NULL </returns>
-        public HTML_Based_Content get_html_content(List<string> UrlSegments, out WebContentEndpointErrorEnum ErrorType)
+        public static HTML_Based_Content get_html_content(List<string> UrlSegments, out WebContentEndpointErrorEnum ErrorType)
         {
             // Set a default error message first
             ErrorType = WebContentEndpointErrorEnum.NONE;

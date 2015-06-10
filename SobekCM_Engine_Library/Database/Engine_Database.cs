@@ -14,7 +14,6 @@ using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Engine_Library.WebContent;
 using SobekCM.Tools;
 
 #endregion
@@ -57,15 +56,11 @@ namespace SobekCM.Engine_Library.Database
 			EalDbParameter totalItemsParameter = new EalDbParameter("@returnValue", 0) {Direction = ParameterDirection.InputOutput};
 			parameters.Add(totalItemsParameter);
 
-
 			// Do the non-query
 			EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "TEST_Return", parameters);
 
 			// Check to see what value4s are
-			if (Int32.Parse(totalItemsParameter.Value.ToString() )== 1000)
-				return true;
-			else
-				return false;
+		    return (Int32.Parse(totalItemsParameter.Value.ToString()) == 1000);
 		}
 
 		/// <summary> Test connectivity to the database </summary>
@@ -4292,13 +4287,6 @@ namespace SobekCM.Engine_Library.Database
                 return null;
             }
         }
-
-
-//-- Get the list of recent changes to all web content pages
-//ALTER PROCEDURE SobekCM_WebContent_Get_Recent_Changes
-//    @WebContentID int
-
-
 
 		#endregion
 

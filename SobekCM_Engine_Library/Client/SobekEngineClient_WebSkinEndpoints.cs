@@ -18,19 +18,28 @@ namespace SobekCM.Core.Client
             // All work done in the base constructor
         }
 
+        /// <summary> Get the complete web skin, by skin code </summary>
+        /// <param name="SkinCode"> Code for the web skin </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Complete web skin object </returns>
         public Complete_Web_Skin_Object Get_Complete_Web_Skin(string SkinCode, Custom_Tracer Tracer)
         {
             return WebSkinServices.get_complete_web_skin(SkinCode, Tracer);
         }
 
+        /// <summary> Get the language-specific web skin, by skin code and language </summary>
+        /// <param name="SkinCode"> Code for the web skin </param>
+        /// <param name="RequestedLanguage"> Requested language for the web skin code </param>
+        /// <param name="DefaultLanguage"> Default UI language for the instance </param>
+        /// <param name="Cache_On_Build"> Flag indicates whether to use the cache </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Language-specific web skin object </returns>
         public Web_Skin_Object Get_LanguageSpecific_Web_Skin(string SkinCode, Web_Language_Enum RequestedLanguage, Web_Language_Enum DefaultLanguage, bool Cache_On_Build, Custom_Tracer Tracer)
         {
-            Web_Skin_Object htmlSkin = null;
-
             // If no interface yet, look in the cache
             if ((SkinCode != "new") && (Cache_On_Build))
             {
-                htmlSkin = CachedDataManager.WebSkins.Retrieve_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), Tracer);
+                Web_Skin_Object htmlSkin = CachedDataManager.WebSkins.Retrieve_Skin(SkinCode, Web_Language_Enum_Converter.Enum_To_Code(RequestedLanguage), Tracer);
                 if (htmlSkin != null)
                 {
                     if (Tracer != null)
