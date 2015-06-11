@@ -47,7 +47,7 @@ SobekCM.Map.prototype = {
             pointSelectMarker: null,
             polygonLabelOverlay: null,
             mapKey: null,
-            pointer_image: 'http://ufdc.uflib.ufl.edu/default/images/red-pushpin.png'
+            pointer_image: 'http://cdn.sobekrepository.org/images/mapsearch/red-pushpin.png'
         };
 
         // Create the inner google map
