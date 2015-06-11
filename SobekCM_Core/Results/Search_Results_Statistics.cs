@@ -30,8 +30,6 @@ namespace SobekCM.Core.Results
 
             Total_Items = -1;
             Total_Titles = -1;
-            All_Collections_Items = -1;
-            All_Collections_Titles = -1;
             QueryTime = 0;
         }
  
@@ -45,8 +43,6 @@ namespace SobekCM.Core.Results
 
             Total_Items = -1;
             Total_Titles = -1;
-            All_Collections_Items = -1;
-            All_Collections_Titles = -1;
             QueryTime = 0;
 
 	        metadataLabels = Metadata_Labels;
@@ -67,8 +63,6 @@ namespace SobekCM.Core.Results
             // Save the titles
             this.Total_Titles = Total_Titles;
             this.Total_Items = Total_Items;
-            All_Collections_Items = -1;
-            All_Collections_Titles = -1;
 
 			metadataLabels = Metadata_Labels;
 
@@ -89,8 +83,6 @@ namespace SobekCM.Core.Results
             // Save the titles
             Total_Titles = Total_Titles;
             Total_Items = Total_Items;
-            All_Collections_Items = -1;
-            All_Collections_Titles = -1;
 
 			metadataLabels = Metadata_Labels;
 
@@ -168,10 +160,12 @@ namespace SobekCM.Core.Results
 		/// <remarks> This allows each aggregation to customize which values are returned
 		/// in searches and browses.  This is used to add the labels for each metadata value
 		/// in the table and brief views. </remarks>
-        [DataMember(Name = "metadataLabels")]
-        [XmlArray("metadataLabels")]
-        [XmlArrayItem("label", typeof(string))]
-        [ProtoMember(6)]
+        //[DataMember(Name = "metadataLabels")]
+        //[XmlArray("metadataLabels")]
+        //[XmlArrayItem("label", typeof(string))]
+        //[ProtoMember(6)]
+        [IgnoreDataMember]
+        [XmlIgnore]
 	    public List<string> Metadata_Labels
 	    {
 		    get
@@ -236,11 +230,14 @@ namespace SobekCM.Core.Results
                 {
                     Aggregation_Facets.Add(new Search_Facet_Aggregation(Reader.GetString(1), Reader.GetInt32(2), Reader.GetString(0)));
                 }
+
+                if (!Reader.NextResult())
+                    return;
             }
 
             // Add all the other facets, reading each subsequent table in the results
             int current_facet_index = 0;
-            while (Reader.NextResult())
+            do
             {
                 // Build this facet list
                 if ((Reader.FieldCount == 2) && (Facet_Types.Count > current_facet_index))
@@ -262,7 +259,7 @@ namespace SobekCM.Core.Results
                 }
 
                 current_facet_index++;
-            }
+            } while (Reader.NextResult());
         }
 
         private void Convert_Facet_Tables_To_Facet_Lists( DataSet Facet_Data, List<short> Facet_Types )

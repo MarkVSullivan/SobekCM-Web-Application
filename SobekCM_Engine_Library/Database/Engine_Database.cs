@@ -10,6 +10,7 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Database;
 using SobekCM.Core.Results;
+using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
@@ -1269,8 +1270,16 @@ namespace SobekCM.Engine_Library.Database
 				readerWrapper.Close();
 				stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
 				stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
-				stats.All_Collections_Items = Convert.ToInt32(expandedItemsParameter.Value);
-				stats.All_Collections_Titles = Convert.ToInt32(expandedTitlesParameter.Value);
+                int allItems = Convert.ToInt32(expandedItemsParameter.Value);
+			    int allTitles = Convert.ToInt32(expandedTitlesParameter.Value);
+                if ( allItems > 0 ) stats.All_Collections_Items = allItems;
+                if ( allTitles > 0 ) stats.All_Collections_Titles = allTitles;
+
+                foreach (Search_Facet_Collection thisFacet in stats.Facet_Collections)
+                {
+                    Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(thisFacet.MetadataTypeID);
+                    thisFacet.MetadataTerm = field.Facet_Term;
+                }
 			}
 			else
 			{
@@ -1391,9 +1400,17 @@ namespace SobekCM.Engine_Library.Database
 				readerWrapper.Close();
 				stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
 				stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
-				stats.All_Collections_Items = Convert.ToInt32(expandedItemsParameter.Value);
-				stats.All_Collections_Titles = Convert.ToInt32(expandedTitlesParameter.Value);
-			}
+                int allItems = Convert.ToInt32(expandedItemsParameter.Value);
+                int allTitles = Convert.ToInt32(expandedTitlesParameter.Value);
+                if (allItems > 0) stats.All_Collections_Items = allItems;
+                if (allTitles > 0) stats.All_Collections_Titles = allTitles;
+
+                foreach (Search_Facet_Collection thisFacet in stats.Facet_Collections)
+                {
+                    Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(thisFacet.MetadataTypeID);
+                    thisFacet.MetadataTerm = field.Facet_Term;
+                }
+            }
 			else
 			{
 				// Close the reader (which also closes the connection)
@@ -1521,9 +1538,17 @@ namespace SobekCM.Engine_Library.Database
 				readerWrapper.Close();
 				stats.Total_Items = Convert.ToInt32(totalItemsParameter.Value);
 				stats.Total_Titles = Convert.ToInt32(totalTitlesParameter.Value);
-				stats.All_Collections_Items = Convert.ToInt32(expandedItemsParameter.Value);
-				stats.All_Collections_Titles = Convert.ToInt32(expandedTitlesParameter.Value);
-			}
+                int allItems = Convert.ToInt32(expandedItemsParameter.Value);
+                int allTitles = Convert.ToInt32(expandedTitlesParameter.Value);
+                if (allItems > 0) stats.All_Collections_Items = allItems;
+                if (allTitles > 0) stats.All_Collections_Titles = allTitles;
+
+                foreach (Search_Facet_Collection thisFacet in stats.Facet_Collections)
+                {
+                    Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(thisFacet.MetadataTypeID);
+                    thisFacet.MetadataTerm = field.Facet_Term;
+                }
+            }
 			else
 			{
 				// Close the reader (which also closes the connection)

@@ -13,8 +13,8 @@ namespace SobekCM.Core.Results
     public class Search_Facet_Collection
     {
         /// <summary> Metadata type id for the metadata represented by this facet collection in the results set </summary>
-        [DataMember(Name = "metadataTypeId")]
-        [XmlAttribute("metadataTypeId")]
+        [DataMember(Name = "id")]
+        [XmlAttribute("id")]
         [ProtoMember(1)]
         public short MetadataTypeID { get; set; }
 
@@ -26,11 +26,17 @@ namespace SobekCM.Core.Results
             get { return Facets == null ? 0 : Facets.Count; }
         }
 
+        /// <summary> Metadata term for the metadata represented by this facet collection in the results set </summary>
+        [DataMember(Name = "term")]
+        [XmlAttribute("term")]
+        [ProtoMember(2)]
+        public string MetadataTerm { get; set; }
+
         /// <summary> Collection of facets associated with the second facet list in this results set </summary>
         [DataMember(Name = "facets")]
         [XmlArray("facets")]
         [XmlArrayItem("facet", typeof(Search_Facet))]
-        [ProtoMember(2)]
+        [ProtoMember(3)]
         public List<Search_Facet> Facets { get; set; }
 
         /// <summary> Constructor for a new instance of the Search_Facet_Collection class </summary>

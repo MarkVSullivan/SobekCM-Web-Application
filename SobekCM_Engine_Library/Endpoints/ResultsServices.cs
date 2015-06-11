@@ -376,6 +376,11 @@ namespace SobekCM.Engine_Library.Endpoints
                         if (need_browse_statistics)
                         {
                             Complete_Result_Set_Info = returnArgs.Statistics;
+                            foreach (Search_Facet_Collection thisFacet in Complete_Result_Set_Info.Facet_Collections)
+                            {
+                                Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(thisFacet.MetadataTypeID);
+                                thisFacet.MetadataTerm = field.Facet_Term;
+                            }
                         }
                         pagesOfResults = returnArgs.Paged_Results;
                         if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
@@ -573,7 +578,15 @@ namespace SobekCM.Engine_Library.Endpoints
                             Search_Results_Statistics recomputed_search_statistics;
                             Perform_Solr_Search(Tracer, terms, web_fields, actualCount, Current_Mode.Aggregation, current_page_index, sort, results_per_page, out recomputed_search_statistics, out Paged_Results);
                             if (need_search_statistics)
+                            {
                                 Complete_Result_Set_Info = recomputed_search_statistics;
+
+                                foreach (Search_Facet_Collection thisFacet in Complete_Result_Set_Info.Facet_Collections)
+                                {
+                                    Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(thisFacet.MetadataTypeID);
+                                    thisFacet.MetadataTerm = field.Facet_Term;
+                                }
+                            }
                         }
                         catch (Exception ee)
                         {
@@ -611,7 +624,15 @@ namespace SobekCM.Engine_Library.Endpoints
                             Search_Results_Statistics recomputed_search_statistics;
                             Perform_Database_Search(Tracer, terms, web_fields, date1, date2, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, Current_Mode.Use_Cache, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
                             if (need_search_statistics)
+                            {
                                 Complete_Result_Set_Info = recomputed_search_statistics;
+
+                                foreach (Search_Facet_Collection thisFacet in Complete_Result_Set_Info.Facet_Collections)
+                                {
+                                    Metadata_Search_Field field = Engine_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_ID(thisFacet.MetadataTypeID);
+                                    thisFacet.MetadataTerm = field.Facet_Term;
+                                }
+                            }
 
                             if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
                                 Paged_Results = pagesOfResults[0];
