@@ -260,7 +260,7 @@ namespace SobekCM.Library.Settings
             Rect_Large_Ico = "http://cdn.sobekrepository.org/images/qc/rect_large.ico";
             Rect_Medium_Ico = "http://cdn.sobekrepository.org/images/qc/rect_medium.ico";
             Rect_Small_Ico = "http://cdn.sobekrepository.org/images/qc/rect_small.ico";
-            Red_Pushpin_Png = "http://cdn.sobekrepository.org/images/misc/red-pushpin.png";
+            Red_Pushpin_Png = "http://cdn.sobekrepository.org/images/mapsearch/red-pushpin.png";
             Refresh_Img = "http://cdn.sobekrepository.org/images/misc/refresh.png";
             Refresh_Img_Small = "http://cdn.sobekrepository.org/images/misc/refresh_small.png";
             Refresh_Img_Large = "http://cdn.sobekrepository.org/images/misc/refresh_large.png";
@@ -302,7 +302,7 @@ namespace SobekCM.Library.Settings
             Sobekcm_Item_Css = "http://cdn.sobekrepository.org/css/sobekcm-item/4.8.10/sobekCM_item.min.css";
             Sobekcm_Map_Editor_Js = "http://cdn.sobekrepository.org/js/sobekcm-map-editor/4.8.4/sobekcm_map_editor.js";
             Sobekcm_Map_Search_Js = "http://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_search.js";
-            Sobekcm_Map_Tool_Js = "http://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_tool.js";
+            Sobekcm_Map_Tool_Js = "http://cdn.sobekrepository.org/js/sobekcm-map/4.8.11/sobekcm_map_tool.js";
             Sobekcm_Mapeditor_Css = "http://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapEditor.css";
             Sobekcm_Mapsearch_Css = "http://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapSearch.css";
             Sobekcm_Metadata_Css = "http://cdn.sobekrepository.org/css/sobekcm-metadata/4.8.4/SobekCM_Metadata.min.css";

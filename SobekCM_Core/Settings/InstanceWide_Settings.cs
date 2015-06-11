@@ -221,7 +221,9 @@ namespace SobekCM.Core.Settings
 
         /// <summary> Network directory for the SobekCM web application server </summary>
         [DataMember]
-        public string Application_Server_Network { get; set; }
+        public string Application_Server_Network 
+        { get; 
+            set; }
 
         /// <summary> Primary URL for this instance of the SobekCM web application server </summary>
         [DataMember]

@@ -91,6 +91,8 @@ namespace SobekCM
 			    if ( String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Base_Directory))
 			    {
                     string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
+			        if ((baseDir.Length > 0) && (baseDir[baseDir.Length - 1] != '\\'))
+			            baseDir = baseDir + "\\";
                     UI_ApplicationCache_Gateway.Settings.Base_Directory = baseDir;
 
                     SobekCM_Database.Set_Setting("Application Server Network", baseDir);

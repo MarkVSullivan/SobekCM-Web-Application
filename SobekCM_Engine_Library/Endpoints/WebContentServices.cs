@@ -197,7 +197,160 @@ namespace SobekCM.Engine_Library.Endpoints
             basicInfo.WebContentID = newContentId;
 
             // Send back the result
+            Response.StatusCode = 201;
             Serialize(basicInfo, Response, Protocol, "addHtmlBasedContent");
+        }
+
+        /// <summary> Add a milestone to an existing web content page </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="RequestForm"></param>
+        public void Add_WebContent_Milestone(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm)
+        {
+            // Create the custom tracer
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Validate the username is present
+            if (String.IsNullOrEmpty(RequestForm["User"]))
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 500;
+                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'User' (name of user) is missing.\"");
+                Response.End();
+                return;
+            }
+
+            // Get the username
+            string user = RequestForm["User"];
+
+            // Validate the new page information
+            if (String.IsNullOrEmpty(RequestForm["WebContentID"]))
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 500;
+                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'WebContentID' is missing.\"");
+                Response.End();
+                return;
+            }
+
+            // Get the webcontent id
+            string id_as_string = RequestForm["WebContentID"];
+            int id;
+            if (!Int32.TryParse(id_as_string, out id))
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 500;
+                Response.Output.WriteLine("\"INVALID REQUEST: Invalid data type for  'WebContentID'.  Expected integer.\"");
+                Response.End();
+                return;
+            }
+
+            // Validate the milestone is present
+            if (String.IsNullOrEmpty(RequestForm["Milestone"]))
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 500;
+                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'Milestone' is missing.\"");
+                Response.End();
+                return;
+            }
+
+            // Get the username
+            string milestone = RequestForm["Milestone"];
+
+
+            // Ensure the web page does not already exist
+            if (Engine_Database.WebContent_Add_Milestone(id, milestone, user, tracer))
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 200;
+                Response.Output.WriteLine("\"OK\"");
+                Response.End();
+                return;
+            }
+
+            // AN error occurred
+            Response.ContentType = "text/plain";
+            Response.StatusCode = 500;
+            Response.Output.WriteLine("\"Unknown error adding the milestone\"");
+            Response.End();
+        }
+
+        /// <summary> Delete a web content page </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="RequestForm"></param>
+        public void Delete_WebContent_Page(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm)
+        {
+            // Create the custom tracer
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Validate the username is present
+            if (String.IsNullOrEmpty(RequestForm["User"]))
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 500;
+                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'User' (name of user) is missing.\"");
+                Response.End();
+                return;
+            }
+
+            // Get the username
+            string user = RequestForm["User"];
+
+            // Validate the new page information
+            if (String.IsNullOrEmpty(RequestForm["WebContentID"]))
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 500;
+                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'WebContentID' is missing.\"");
+                Response.End();
+                return;
+            }
+
+            // Get the webcontent id
+            string id_as_string = RequestForm["WebContentID"];
+            int id;
+            if (!Int32.TryParse(id_as_string, out id))
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 500;
+                Response.Output.WriteLine("\"INVALID REQUEST: Invalid data type for  'WebContentID'.  Expected integer.\"");
+                Response.End();
+                return;
+            }
+
+            // Validate the milestone is present
+            if (String.IsNullOrEmpty(RequestForm["Reason"]))
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 500;
+                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'Reason' is missing.\"");
+                Response.End();
+                return;
+            }
+
+            // Get the username
+            string milestone = RequestForm["Reason"];
+
+
+            // Ensure the web page does not already exist
+            if (Engine_Database.WebContent_Delete_Page(id, milestone, user, tracer))
+            {
+                Response.ContentType = "text/plain";
+                Response.StatusCode = 200;
+                Response.Output.WriteLine("\"OK\"");
+                Response.End();
+                return;
+            }
+
+            // AN error occurred
+            Response.ContentType = "text/plain";
+            Response.StatusCode = 500;
+            Response.Output.WriteLine("\"Unknown error deleting the web content page\"");
+            Response.End();
         }
 
 

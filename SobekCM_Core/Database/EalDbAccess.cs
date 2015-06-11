@@ -429,7 +429,7 @@ namespace SobekCM.Core.Database
                 {
                     reader = sqlCommand.ExecuteReader();
                 }
-                catch (Exception)
+                catch (Exception ee)
                 {
                     sqlConnect.Close();
                     throw;

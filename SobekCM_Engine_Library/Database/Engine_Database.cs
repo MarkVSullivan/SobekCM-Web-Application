@@ -2011,8 +2011,17 @@ namespace SobekCM.Engine_Library.Database
 			List<EalDbParameter> parameters = new List<EalDbParameter>();
 			parameters.Add(new EalDbParameter("@lat1", Latitude1));
 			parameters.Add(new EalDbParameter("@long1", Longitude1));
-			parameters.Add(new EalDbParameter("@lat2", Latitude2));
-			parameters.Add(new EalDbParameter("@long2", Longitude2));
+		    if ((Latitude1 == Latitude2) && (Longitude1 == Longitude2))
+		    {
+                parameters.Add(new EalDbParameter("@lat2", DBNull.Value));
+                parameters.Add(new EalDbParameter("@long2", DBNull.Value));
+		    }
+		    else
+		    {
+                parameters.Add(new EalDbParameter("@lat2", Latitude2));
+                parameters.Add(new EalDbParameter("@long2", Longitude2));
+		    }
+
 			parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
 			parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
 			parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
