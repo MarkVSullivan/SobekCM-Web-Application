@@ -75,7 +75,7 @@ namespace SobekCM.Library.MySobekViewer
             // If a RequestSpecificValues.Current_User can submit, add a link to start a new item
             if (RequestSpecificValues.Current_User.Can_Submit)
             {
-                if (UI_ApplicationCache_Gateway.Settings.Online_Edit_Submit_Enabled)
+                if (UI_ApplicationCache_Gateway.Settings.Online_Item_Submit_Enabled)
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";

@@ -5932,7 +5932,7 @@ namespace SobekCM.Library.Database
 	        OAI_Record returnRecord = null;
 	        if (reader.Read())
 	        {
-	            returnRecord = new OAI_Record(reader.GetString(1), reader.GetString(2), reader.GetDateTime(3));
+	            returnRecord = new OAI_Record(BibID, Vid, reader.GetString(2), reader.GetDateTime(3));
 	        }
 
 	        // Close the reader (which also closes the connection)

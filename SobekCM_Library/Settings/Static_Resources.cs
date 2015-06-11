@@ -307,7 +307,7 @@ namespace SobekCM.Library.Settings
             Sobekcm_Mapsearch_Css = "http://cdn.sobekrepository.org/css/sobekcm-map/4.8.4/SobekCM_MapSearch.css";
             Sobekcm_Metadata_Css = "http://cdn.sobekrepository.org/css/sobekcm-metadata/4.8.4/SobekCM_Metadata.min.css";
             Sobekcm_Metadata_Js = "http://cdn.sobekrepository.org/js/sobekcm-metadata/4.8.4/sobekcm_metadata.js";
-            Sobekcm_Mysobek_Css = "http://cdn.sobekrepository.org/css/sobekcm-mysobek/4.8.10/sobekCM_mysobek.min.css";
+            Sobekcm_Mysobek_Css = "http://cdn.sobekrepository.org/css/sobekcm-mysobek/4.8.11/sobekCM_mysobek.min.css";
             Sobekcm_Print_Css = "http://cdn.sobekrepository.org/css/sobekcm-print/4.8.4/SobekCM_Print.css";
             Sobekcm_Qc_Css = "http://cdn.sobekrepository.org/css/sobekcm-qc/4.8.4/SobekCM_QC.css";
             Sobekcm_Qc_Js = "http://cdn.sobekrepository.org/js/sobekcm-qc/4.8.4/sobekcm_qc.js";

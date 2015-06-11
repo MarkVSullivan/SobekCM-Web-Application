@@ -55,7 +55,7 @@ namespace SobekCM.Core.Settings
                 Base_URL = String.Empty;
                 Image_URL = String.Empty;
                 SobekCM_ImageServer = String.Empty;
-                Online_Edit_Submit_Enabled = false;
+                Online_Item_Submit_Enabled = false;
                 Caching_Server = String.Empty;
                 Privacy_Email_Address = String.Empty;
                 Metadata_Help_URL_Base = String.Empty;
@@ -326,6 +326,14 @@ namespace SobekCM.Core.Settings
         [DataMember]
         public bool Detailed_User_Aggregation_Permissions { get; set; }
 
+        /// <summary> Flag indicates if logon has been restricted to system admins </summary>
+        [DataMember]
+        public bool Disable_Standard_User_Logon_Flag { get; set; }
+
+        /// <summary> Message to go with the logon restriction </summary>
+        [DataMember]
+        public string Disable_Standard_User_Logon_Message { get; set; }
+
         /// <summary> URL for the Solr/Lucene index for the document metadata and text </summary>
         [DataMember]
         public string Document_Solr_Index_URL { get; set; }
@@ -419,7 +427,7 @@ namespace SobekCM.Core.Settings
 
         /// <summary> Flag indicates if online submissions and edits can occur at the moment </summary>
         [DataMember]
-        public bool Online_Edit_Submit_Enabled { get; set; }
+        public bool Online_Item_Submit_Enabled { get; set; }
 
         /// <summary> Folder where files bound for archiving are placed </summary>
         [DataMember]

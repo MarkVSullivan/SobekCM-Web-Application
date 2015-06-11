@@ -829,8 +829,8 @@ namespace SobekCM.Library.MainWriters
             Output.WriteLine("<request identifier=\"" + Identifier + "\" metadataPrefix=\"" + MetadataPrefix + "\" verb=\"GetRecord\">" + url + "</request>");
             Output.WriteLine("<GetRecord>");
 
-            Output.Write("<record><header><identifier>" + oai_resource_identifier_base + thisTitle.BibID + "</identifier><datestamp>" + thisTitle.Last_Modified_Date.Year + "-" + thisTitle.Last_Modified_Date.Month.ToString().PadLeft(2, '0') + "-" + thisTitle.Last_Modified_Date.Day.ToString().PadLeft(2, '0') + "</datestamp></header>");
-            Output.WriteLine("<metadata><oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">" + thisTitle.Record + "</oai_dc:dc></metadata></record>");
+            Output.Write("<record><header><identifier>" + oai_resource_identifier_base + thisTitle.BibID + "_" + thisTitle.VID + "</identifier><datestamp>" + thisTitle.Last_Modified_Date.Year + "-" + thisTitle.Last_Modified_Date.Month.ToString().PadLeft(2, '0') + "-" + thisTitle.Last_Modified_Date.Day.ToString().PadLeft(2, '0') + "</datestamp></header>");
+            Output.WriteLine("<metadata>" + thisTitle.Record + "</metadata></record>");
 
             Output.WriteLine("</GetRecord>");
             Output.WriteLine("</OAI-PMH>");

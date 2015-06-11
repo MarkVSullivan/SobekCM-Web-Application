@@ -34,11 +34,26 @@ namespace SobekCM.Library.MySobekViewer
     public class Logon_MySobekViewer : abstract_MySobekViewer
     {
         private readonly string errorMessage;
+        private readonly bool generalLogonDisabled;
+        private readonly string generalLogonDisabledMsg;
 
         /// <summary> Constructor for a new instance of the Home_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Logon_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
+            // Check to see if (non-admin) logon is currently disabled
+            if (UI_ApplicationCache_Gateway.Settings.Disable_Standard_User_Logon_Flag)
+            {
+                generalLogonDisabled = true;
+                generalLogonDisabledMsg = String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Disable_Standard_User_Logon_Message) ?
+                    "General logon to this system is temporarily disabled." : UI_ApplicationCache_Gateway.Settings.Disable_Standard_User_Logon_Message;
+            }
+            else
+            {
+                generalLogonDisabled = false;
+                generalLogonDisabledMsg = String.Empty;
+            }
+
             RequestSpecificValues.Tracer.Add_Trace("Logon_MySobekViewer.Constructor", String.Empty);
 
             errorMessage = String.Empty;
@@ -75,6 +90,13 @@ namespace SobekCM.Library.MySobekViewer
                     User_Object user = SobekCM_Database.Get_User(possible_username, possible_password, RequestSpecificValues.Tracer);
                     if (user != null)
                     {
+                        // If disabled for general logon,cancel
+                        if ((generalLogonDisabled) &&  (!user.Is_Host_Admin ) && ( !user.Is_System_Admin ))
+                        {
+                            errorMessage = generalLogonDisabledMsg;
+                            return;
+                        }
+
                         // The user was valid here, so save this user information
                         HttpContext.Current.Session["user"] = user;
 
@@ -146,6 +168,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
 	    {
+
 			// Get ready to draw the tabs
 			string my_sobek = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
 
@@ -162,6 +185,10 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 			Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
 			Output.WriteLine("  <br />");
+		    if (generalLogonDisabled)
+		    {
+		        Output.WriteLine("  <span id=\"sbkLomv_LogonDisabledMsg\">" + generalLogonDisabledMsg + "</span>");
+		    }
 			Output.WriteLine("  <p>The feature you are trying to access requires a valid logon.<p>");
 			Output.WriteLine("  <p>Please choose the appropriate logon directly below.</p>");
 			Output.WriteLine("  <ul id=\"sbkLomv_OptionsList\">");
@@ -171,14 +198,14 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid myDLOC logon</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with myDLOC authentication</a>.</li>");
 
 
-				if (( UI_ApplicationCache_Gateway.Settings.Shibboleth != null ) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth.Enabled ) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth.Label.Length > 0 )&& ( UI_ApplicationCache_Gateway.Settings.Shibboleth.ShibbolethURL.Length > 0 ))
+				if (( !generalLogonDisabled ) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth != null ) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth.Enabled ) && ( UI_ApplicationCache_Gateway.Settings.Shibboleth.Label.Length > 0 )&& ( UI_ApplicationCache_Gateway.Settings.Shibboleth.ShibbolethURL.Length > 0 ))
 				{
                     Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + UI_ApplicationCache_Gateway.Settings.Shibboleth.Label + " ID</span>, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Shibboleth.ShibbolethURL + "\">Sign on with your " + UI_ApplicationCache_Gateway.Settings.Shibboleth.Label + " here</a>.</li>");
 				}
 			}
 			else
 			{
-                if ((UI_ApplicationCache_Gateway.Settings.Shibboleth != null) && (UI_ApplicationCache_Gateway.Settings.Shibboleth.Enabled) && (UI_ApplicationCache_Gateway.Settings.Shibboleth.Label.Length > 0) && (UI_ApplicationCache_Gateway.Settings.Shibboleth.ShibbolethURL.Length > 0))
+                if ((!generalLogonDisabled) && (UI_ApplicationCache_Gateway.Settings.Shibboleth != null) && (UI_ApplicationCache_Gateway.Settings.Shibboleth.Enabled) && (UI_ApplicationCache_Gateway.Settings.Shibboleth.Label.Length > 0) && (UI_ApplicationCache_Gateway.Settings.Shibboleth.ShibbolethURL.Length > 0))
                 {
                     Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid " + UI_ApplicationCache_Gateway.Settings.Shibboleth.Label + " ID</span>, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Shibboleth.ShibbolethURL + "\">Sign on with your " + UI_ApplicationCache_Gateway.Settings.Shibboleth.Label + " here</a>.</li>");
 				}
@@ -186,12 +213,16 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine("    <li><span style=\"font-weight:bold\">If you have a valid my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " logon</span>, <a id=\"form_logon_term\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return popup_mysobek_form('form_logon', 'logon_username');\">Sign on with my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " authentication here</a>.</li>");
 			}
 
-			RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
-			Output.Write("    <li><span style=\"font-weight:bold\">Not registered yet?</span> <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "register\">Register now</a> or ");
+		    if (!generalLogonDisabled)
+		    {
+		        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Preferences;
+		        Output.Write("    <li><span style=\"font-weight:bold\">Not registered yet?</span> <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "register\">Register now</a> or ");
 
-			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
-			Output.WriteLine(" <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Contact Us</a></li>");
-			RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
+		        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Contact;
+		        Output.WriteLine(" <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Contact Us</a></li>");
+		    }
+
+		    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
 			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
 
 			Output.WriteLine("  </ul>");

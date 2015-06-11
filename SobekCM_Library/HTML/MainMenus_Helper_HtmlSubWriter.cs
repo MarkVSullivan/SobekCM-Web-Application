@@ -1139,7 +1139,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + my_sobek_home_text + "</a><ul id=\"sbkUsm_MySubMenu\">");
 
                 // If a user can submit, add a link to start a new item
-                if ((RequestSpecificValues.Current_User.Can_Submit) && (UI_ApplicationCache_Gateway.Settings.Online_Edit_Submit_Enabled))
+                if ((RequestSpecificValues.Current_User.Can_Submit) && (UI_ApplicationCache_Gateway.Settings.Online_Item_Submit_Enabled))
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";

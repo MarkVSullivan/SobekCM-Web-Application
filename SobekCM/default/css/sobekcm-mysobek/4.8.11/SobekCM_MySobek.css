@@ -132,6 +132,7 @@ textarea.sbkFmsv_EmailTextArea  { width: 318px; margin-top: 6px; }
 .sbkLomv_PopupDiv { position:fixed; background-color:#eeeeee; width:400px; height:280px; z-index: 9999; FONT-FAMILY: Arial, sans-serif; font-size: small; -moz-border-radius: 10px; border-radius: 10px; } 
 input.sbkLomv_username_input  { width: 180px; margin-top: 6px; }
 input.sbkLomv_password_input  { width: 180px; margin-top: 6px; }
+#sbkLomv_LogonDisabledMsg { padding-left: 40px;font-weight: bold; color: Red;}
 
 
 /** New_Group_And_Item_MySobekViewer **/
