@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -303,7 +304,273 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(wrappedObject, Response, Protocol, json_callback);
         }
 
-     
+        #region Code to support the legacy XML and JSON reports supported prior to v5.0
+        
+
+        /// <summary> Gets the search results and returns them in the legacy format supported prior to v5.0 </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        public void Get_Search_Results_Legacy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("ResultsServices.Get_Search_Results_Legacy", "Parse request to determine search requested");
+
+            // Get all the searh field necessary from the query string
+            Results_Arguments args = new Results_Arguments(QueryString);
+
+            // Was a collection indicated?
+            if (UrlSegments.Count > 0)
+                args.Aggregation = UrlSegments[0];
+
+            // Get the aggregation object (we need to know which facets to use, etc.. )
+            tracer.Add_Trace("ResultsServices.Get_Search_Results_Legacy", "Get the '" + args.Aggregation + "' item aggregation (for facets, etc..)");
+            Complete_Item_Aggregation aggr = AggregationServices.get_complete_aggregation(args.Aggregation, true, tracer);
+
+            // If no aggregation was returned, that is an error
+            if (aggr == null)
+            {
+                tracer.Add_Trace("ResultsServices.Get_Search_Results_Legacy", "Returned aggregation was NULL... aggregation code may not be valid");
+
+                if (QueryString["debug"] == "debug")
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    return;
+                }
+
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error occurred or aggregation '" + args.Aggregation + "' not valid");
+                Response.StatusCode = 500;
+                return;
+            }
+
+            // Perform the search
+            tracer.Add_Trace("ResultsServices.Get_Search_Results_Legacy", "Perform the search");
+            Search_Results_Statistics resultsStats;
+            List<iSearch_Title_Result> resultsPage;
+            ResultsEndpointErrorEnum error = Get_Search_Results(args, aggr, tracer, out resultsStats, out resultsPage);
+
+            // Was this in debug mode?
+            // If this was debug mode, then just write the tracer
+            if (QueryString["debug"] == "debug")
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+                return;
+            }
+
+            // If an error occurred, return the error
+            switch (error)
+            {
+                case ResultsEndpointErrorEnum.Database_Exception:
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Database exception");
+                    Response.StatusCode = 500;
+                    return;
+
+                case ResultsEndpointErrorEnum.Database_Timeout_Exception:
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Database timeout");
+                    Response.StatusCode = 500;
+                    return;
+
+                case ResultsEndpointErrorEnum.Solr_Exception:
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Solr exception");
+                    Response.StatusCode = 500;
+                    return;
+
+                case ResultsEndpointErrorEnum.Unknown:
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Unknown error");
+                    Response.StatusCode = 500;
+                    return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseResultsStats";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            switch (Protocol)
+            {
+                case Microservice_Endpoint_Protocol_Enum.XML:
+                    legacy_xml_display_search_results(Response.Output, args, resultsStats, resultsPage );
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.JSON:
+                    legacy_json_display_search_results(Response.Output, args, resultsStats, resultsPage);
+                    break;
+            }
+        }
+
+        /// <summary> Writes the search or browse information in JSON format directly to the output stream  </summary>
+        /// <param name="Output"> Stream to which to write the JSON search or browse information </param>
+        /// <param name="Args"></param>
+        /// <param name="ResultsStats"></param>
+        /// <param name="ResultsPage"></param>
+        protected internal void legacy_json_display_search_results(TextWriter Output, Results_Arguments Args, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> ResultsPage)
+        {
+            // If results are null, or no results, return empty string
+            if ((ResultsPage == null) || (ResultsStats == null) || (ResultsStats.Total_Items <= 0))
+                return;
+
+            // Get the URL and network roots
+            string image_url = Engine_ApplicationCache_Gateway.Settings.Image_URL;
+            string base_url = Engine_ApplicationCache_Gateway.Settings.Base_URL;
+            if (HttpContext.Current != null)
+            {
+                base_url = HttpContext.Current.Request.Url.AbsoluteUri;
+                if (base_url.IndexOf("?") > 0)
+                    base_url = base_url.Substring(0, base_url.IndexOf("?")).Replace("sobekcm.svc", "");
+            }
+            if ((base_url.Length > 0) && (base_url[base_url.Length - 1] != '/'))
+                base_url = base_url + "/";
+            if ((image_url.Length > 0) && (image_url[image_url.Length - 1] != '/'))
+                image_url = image_url + "/";
+
+            Output.Write("[");
+
+            // Step through all the results
+            int i = 1;
+            foreach (iSearch_Title_Result titleResult in ResultsPage)
+            {
+                // Always get the first item for things like the main link and thumbnail
+                iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
+
+                // Determine a thumbnail
+                string thumb = image_url + titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" + titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + firstItemResult.MainThumbnail;
+                if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
+                {
+                    thumb = String.Empty;
+                }
+                thumb = thumb.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+
+                // Was a previous item/title included here?
+                if (i > 1)
+                    Output.Write(",");
+                Output.Write("{\"collection_item\":{\"name\":\"" + firstItemResult.Title.Trim().Replace("\"", "'") + "\",\"url\":\"" + base_url + titleResult.BibID + "/" + firstItemResult.VID + "\",\"collection_code\":\"\",\"id\":\"" + titleResult.BibID + "_" + firstItemResult.VID + "\",\"thumb_url\":\"" + thumb + "\"}}");
+
+                i++;
+            }
+
+            Output.Write("]");
+        }
+
+        /// <summary> Display search results in simple XML format </summary>
+        /// <param name="Output"> Stream to which to write the text for this main writer </param>
+        /// <param name="Args"></param>
+        /// <param name="ResultsStats"></param>
+        /// <param name="ResultsPage"></param>
+        protected internal void legacy_xml_display_search_results(TextWriter Output, Results_Arguments Args, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> ResultsPage)
+        {
+            // Get the URL and network roots
+            string image_url = Engine_ApplicationCache_Gateway.Settings.Image_URL;
+            string network = Engine_ApplicationCache_Gateway.Settings.Image_Server_Network;
+            string base_url = Engine_ApplicationCache_Gateway.Settings.Base_URL;
+            if (HttpContext.Current != null)
+            {
+                base_url = HttpContext.Current.Request.Url.AbsoluteUri;
+                if (base_url.IndexOf("?") > 0)
+                    base_url = base_url.Substring(0, base_url.IndexOf("?")).Replace("sobekcm.svc", "");
+            }
+            if ((base_url.Length > 0) && (base_url[base_url.Length - 1] != '/'))
+                base_url = base_url + "/";
+            if ((image_url.Length > 0) && (image_url[image_url.Length - 1] != '/'))
+                image_url = image_url + "/";
+
+            // Write the header first
+            Output.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" ?> ");
+            Output.WriteLine("<ResultSet Page=\"" + Args.Page + "\" Total=\"" + ResultsStats.Total_Titles + "\">");
+
+            // Now, add XML for each title
+            string lastBibID = string.Empty;
+            foreach (iSearch_Title_Result thisResult in ResultsPage)
+            {
+                if (thisResult.BibID != lastBibID)
+                {
+                    if (lastBibID.Length > 0)
+                        Output.WriteLine("</TitleResult>");
+                    Output.WriteLine("<TitleResult ID=\"" + thisResult.BibID + "\">");
+                    lastBibID = thisResult.BibID;
+                }
+
+                // Determine folder from BibID
+                string folder = thisResult.BibID.Substring(0, 2) + "/" + thisResult.BibID.Substring(2, 2) + "/" + thisResult.BibID.Substring(4, 2) + "/" + thisResult.BibID.Substring(6, 2) + "/" + thisResult.BibID.Substring(8);
+
+                // Now, add XML for each item
+                for (int i = 0; i < thisResult.Item_Count; i++)
+                {
+                    iSearch_Item_Result itemResult = thisResult.Get_Item(i);
+                    Output.WriteLine("\t<ItemResult ID=\"" + thisResult.BibID + "_" + itemResult.VID + "\">");
+                    Output.Write("\t\t<Title>");
+                    Write_XML(Output, itemResult.Title);
+                    Output.WriteLine("</Title>");
+                    if ( !String.IsNullOrEmpty(itemResult.PubDate))
+                    {
+                        Output.Write("\t\t<Date>");
+                        Write_XML(Output, itemResult.PubDate);
+                        Output.WriteLine("</Date>");
+                    }
+                    Output.WriteLine("\t\t<Location>");
+                    Output.WriteLine("\t\t\t<URL>" + base_url + thisResult.BibID + "/" + itemResult.VID + "</URL>");
+
+                    if (!String.IsNullOrEmpty(itemResult.MainThumbnail))
+                    {
+                        Output.WriteLine("\t\t\t<MainThumb>" + image_url + folder + "/" + itemResult.VID + "/" + itemResult.MainThumbnail + "</MainThumb>");
+                    }
+
+                    Output.WriteLine("\t\t\t<Folder type=\"web\">" + image_url + folder + "/" + itemResult.VID + "</Folder>");
+                    Output.WriteLine("\t\t\t<Folder type=\"network\">" + network + folder.Replace("/", "\\") + "\\" + itemResult.VID + "</Folder>");
+                    Output.WriteLine("\t\t</Location>");
+                    Output.WriteLine("\t</ItemResult>");
+                }
+            }
+
+            if (ResultsPage.Count > 0)
+                Output.WriteLine("</TitleResult>");
+            Output.WriteLine("</ResultSet>");
+        }
+
+        private static void Write_XML(TextWriter Output, string Value)
+        {
+            foreach (char thisChar in Value)
+            {
+                switch (thisChar)
+                {
+                    case '>':
+                        Output.Write("&gt;");
+                        break;
+
+                    case '<':
+                        Output.Write("&lt;");
+                        break;
+
+                    case '"':
+                        Output.Write("&quot;");
+                        break;
+
+                    case '&':
+                        Output.Write("&amp;");
+                        break;
+
+                    default:
+                        Output.Write(thisChar);
+                        break;
+                }
+            }
+        }
+
+        #endregion
 
         #region Helper methods that perform the actual searching
 

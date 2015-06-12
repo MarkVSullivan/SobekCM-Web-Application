@@ -120,12 +120,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("</tr></table><br />");
             //Output.WriteLine("</td></tr>");
             //Output.WriteLine("\t\t<tr><td>");
-
-			if ( !String.IsNullOrWhiteSpace(CurrentMode.Text_Search))
-			{
-				displayFileName = displayFileName + "#search=\"" + CurrentMode.Text_Search.Replace("\"", "").Replace("+", " ").Replace("-", " ") + "\"";
-			}
-
+            
 
             // Write as an iFrame, or as embed
             if (writeAsIframe)
@@ -134,8 +129,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             else
             {
-                //Output.WriteLine("                  <object id=\"sbkPdf_Container\" data='" + displayFileName + "' type=\"application/pdf\" width=\"800px\"></object>");
-
+                if (!String.IsNullOrWhiteSpace(CurrentMode.Text_Search))
+                {
+                    displayFileName = displayFileName + "#search=\"" + CurrentMode.Text_Search.Replace("\"", "").Replace("+", " ").Replace("-", " ") + "\"";
+                }
+               
                 Output.WriteLine("                  <embed id=\"sbkPdf_Container\" src='" + displayFileName + "' href='" + FileName + "' style=\"width:100%;\"></embed>");
             }
 
