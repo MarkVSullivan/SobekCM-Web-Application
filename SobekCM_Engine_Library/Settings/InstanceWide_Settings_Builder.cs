@@ -260,7 +260,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Boolean_Value(settingsDictionary, "Builder Verbose Flag", SettingsObject, X => X.Builder_Verbose_Flag, ref error, false);
                 Get_String_Value(settingsDictionary, "Caching Server", SettingsObject, X => X.Caching_Server, ref error);
                 Get_Boolean_Value(settingsDictionary, "Can Remove Single Search Term", SettingsObject, X => X.Can_Remove_Single_Term, ref error, true);
-                Get_Boolean_Value(settingsDictionary, "Can Submit Items Online", SettingsObject, X => X.Online_Item_Submit_Enabled, ref error, false);
+                Get_Boolean_Value(settingsDictionary, "Can Submit Items Online", SettingsObject, X => X.Online_Item_Submit_Enabled, ref error, true);
                 Get_Boolean_Value(settingsDictionary, "Convert Office Files to PDF", SettingsObject, X => X.Convert_Office_Files_To_PDF, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Detailed User Permissions", SettingsObject, X => X.Detailed_User_Aggregation_Permissions, ref error, false);
                 Get_Boolean_Value(settingsDictionary, "Disable Standard User Logon Flag", SettingsObject, X => X.Disable_Standard_User_Logon_Flag, ref error, false);
