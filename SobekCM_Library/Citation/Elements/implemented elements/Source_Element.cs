@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -33,19 +34,19 @@ namespace SobekCM.Library.Citation.Elements
         }
 
         /// <summary> Sets the list of all valid codes for this element from the main aggregation table </summary>
-        /// <param name="codeManager"> Code manager with list of all aggregationPermissions </param>
-        internal void Add_Codes(Aggregation_Code_Manager codeManager)
+        /// <param name="CodeManager"> Code manager with list of all aggregationPermissions </param>
+        internal void Add_Codes(Aggregation_Code_Manager CodeManager)
         {
-            codeToNameDictionary = new Dictionary<string, string>();
+            codeToNameDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             if (possible_select_items.Count <= 2)
             {
                 SortedList<string, string> tempItemList = new SortedList<string, string>();
-                foreach (string thisType in codeManager.All_Types)
+                foreach (string thisType in CodeManager.All_Types)
                 {
                     if (thisType.IndexOf("Institution") >= 0)
                     {
-                        ReadOnlyCollection<Item_Aggregation_Related_Aggregations> matchingAggr = codeManager.Aggregations_By_Type(thisType);
+                        ReadOnlyCollection<Item_Aggregation_Related_Aggregations> matchingAggr = CodeManager.Aggregations_By_Type(thisType);
                         foreach (Item_Aggregation_Related_Aggregations thisAggr in matchingAggr)
                         {
                             if (thisAggr.Code.Length > 1)
@@ -75,7 +76,13 @@ namespace SobekCM.Library.Citation.Elements
                 foreach (string thisKey in keys)
                 {
                     possible_select_items.Add(tempItemList[thisKey].ToUpper());
+                    if (codeToNameDictionary.ContainsKey(thisKey))
+                    {
+                        Add_Code_Statement_Link(thisKey, codeToNameDictionary[thisKey]);
+                    }
                 }
+
+
             }
         }
 
@@ -95,23 +102,23 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Enter information about the institution which created the digital manifestation or entered this bibliographic data.";
+                const string DEFAULT_ACRONYM = "Enter information about the institution which created the digital manifestation or entered this bibliographic data.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }
@@ -124,7 +131,7 @@ namespace SobekCM.Library.Citation.Elements
                 // Are there aggregationPermissions set aside for the user?
                 List<User_Permissioned_Aggregation> allAggrs = Current_User.PermissionedAggregations;
 
-                foreach (User_Permissioned_Aggregation thisAggr in allAggrs.Where(thisAggr => thisAggr.CanSelect))
+                foreach (User_Permissioned_Aggregation thisAggr in allAggrs.Where(ThisAggr => ThisAggr.CanSelect))
                 {
                     some_set_as_selectable = true;
                     string code = thisAggr.Code.ToUpper();
@@ -135,7 +142,10 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
+            // Determine the current value to show
             string source_code = Bib.Bib_Info.Source.Code.ToUpper();
+
+            // Render this
             if (some_set_as_selectable)
             {
                 render_helper(Output, source_code, possibles, Bib.Bib_Info.Source.Statement, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, false);
@@ -164,7 +174,13 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_select") == 0)
                 {
-                    Bib.Bib_Info.Source.Code = HttpContext.Current.Request.Form[thisKey].ToUpper();
+                    string thisValue = HttpContext.Current.Request.Form[thisKey].ToUpper();
+
+                    // Get rid of the institution name at the end of the value
+                    if (thisValue.IndexOf("|") > 0)
+                        thisValue = thisValue.Substring(0, thisValue.IndexOf("|"));
+
+                    Bib.Bib_Info.Source.Code = thisValue;
                 }
 
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_text") == 0)

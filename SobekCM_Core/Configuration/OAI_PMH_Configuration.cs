@@ -48,8 +48,17 @@ namespace SobekCM.Core.Configuration
         {
             if (Admin_Emails == null)
                 Admin_Emails = new List<string>();
-            if (!(Admin_Emails.Exists(s => s.IndexOf(AdminEmail, StringComparison.OrdinalIgnoreCase) >= 0)))
-                Admin_Emails.Add(AdminEmail);
+
+            string[] split = AdminEmail.Split("|,;".ToCharArray());
+            foreach (string thisSplit in split)
+            {
+                string thisSplitTrim = thisSplit.Trim();
+                if (!String.IsNullOrWhiteSpace(thisSplitTrim))
+                {
+                    if (!(Admin_Emails.Exists(s => s.IndexOf(thisSplitTrim, StringComparison.OrdinalIgnoreCase) >= 0)))
+                        Admin_Emails.Add(thisSplitTrim);
+                }
+            }
         }
 
         /// <summary> Add a new description to be included within the Identify response of the OAI-PMH protocol </summary>

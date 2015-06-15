@@ -198,6 +198,25 @@ function clear_textbox(textboxid) {
     return false;
 }
 
+function combo_text_element_onchange(comboboxid, textboxid, clearFlag) {
+    var thisSelectBox = document.getElementById(comboboxid);
+    var thisTextBox = document.getElementById(textboxid);
+    if ((thisSelectBox != null) && (thisTextBox != null)) {
+        var thisValue = thisSelectBox.value;
+        if (thisValue.indexOf("|") > 0) {
+            thisTextBox.value = thisValue.substring(thisValue.indexOf("|"));
+            return false;
+        }
+
+        if (clearFlag) {
+            thisBox.value = '';
+        }
+    } else {
+        alert('something was null');
+    }
+    return false;
+}
+
 // NEW ELEMENT
 function add_new_element_adv( elementName, className )
 {

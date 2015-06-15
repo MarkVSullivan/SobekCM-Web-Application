@@ -122,11 +122,11 @@ namespace SobekCM.Engine_Library.Settings
             // Try to read the OAI-PMH configuration file
             if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config"))
             {
-                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config");
+                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config", returnValue.System_Name, returnValue.System_Abbreviation, returnValue.System_Email);
             }
             else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config"))
             {
-                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config");
+                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config", returnValue.System_Name, returnValue.System_Abbreviation, returnValue.System_Email);
             }
 
             // Load the OAI-PMH configuration file info into the OAI writer class ( in the resource object library )
@@ -186,11 +186,11 @@ namespace SobekCM.Engine_Library.Settings
             // Try to read the OAI-PMH configuration file
             if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config"))
             {
-                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config");
+                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config", returnValue.System_Name, returnValue.System_Abbreviation, returnValue.System_Email);
             }
             else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config"))
             {
-                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config");
+                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config", returnValue.System_Name, returnValue.System_Abbreviation, returnValue.System_Email);
             }
 
             // Load the OAI-PMH configuration file info into the OAI writer class ( in the resource object library )

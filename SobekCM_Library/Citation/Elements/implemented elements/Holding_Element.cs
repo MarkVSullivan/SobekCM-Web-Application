@@ -33,19 +33,19 @@ namespace SobekCM.Library.Citation.Elements
         }
 
         /// <summary> Sets the list of all valid codes for this element from the main aggregation table </summary>
-        /// <param name="codeManager"> Code manager with list of all aggregationPermissions </param>
-        internal void Add_Codes(Aggregation_Code_Manager codeManager)
+        /// <param name="CodeManager"> Code manager with list of all aggregationPermissions </param>
+        internal void Add_Codes(Aggregation_Code_Manager CodeManager)
         {
             codeToNameDictionary = new Dictionary<string, string>();
 
             if (possible_select_items.Count <= 2)
             {
-                SortedList<string, string> tempItemList = new SortedList<string, string>();
-                foreach (string thisType in codeManager.All_Types)
+                SortedList<string, string> tempItemList = new SortedList<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (string thisType in CodeManager.All_Types)
                 {
                     if (thisType.IndexOf("Institution") >= 0)
                     {
-                        ReadOnlyCollection<Item_Aggregation_Related_Aggregations> matchingAggr = codeManager.Aggregations_By_Type(thisType);
+                        ReadOnlyCollection<Item_Aggregation_Related_Aggregations> matchingAggr = CodeManager.Aggregations_By_Type(thisType);
                         foreach (Item_Aggregation_Related_Aggregations thisAggr in matchingAggr)
                         {
                             if (thisAggr.Code.Length > 1)
@@ -75,6 +75,10 @@ namespace SobekCM.Library.Citation.Elements
                 foreach (string thisKey in keys)
                 {
                     possible_select_items.Add(tempItemList[thisKey].ToUpper());
+                    if (codeToNameDictionary.ContainsKey(thisKey))
+                    {
+                        Add_Code_Statement_Link(thisKey, codeToNameDictionary[thisKey]);
+                    }
                 }
             }
         }
@@ -96,23 +100,23 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Holding location for the physical material, if this is a digital manifestation of a physical item.  Otherwise, the institution holding the digital version.";
+                const string DEFAULT_ACRONYM = "Holding location for the physical material, if this is a digital manifestation of a physical item.  Otherwise, the institution holding the digital version.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }
@@ -172,7 +176,13 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_select") == 0)
                 {
-                    Bib.Bib_Info.Location.Holding_Code = HttpContext.Current.Request.Form[thisKey].ToUpper();
+                    string thisValue = HttpContext.Current.Request.Form[thisKey].ToUpper();
+
+                    // Get rid of the institution name at the end of the value
+                    if (thisValue.IndexOf("|") > 0)
+                        thisValue = thisValue.Substring(0, thisValue.IndexOf("|"));
+
+                    Bib.Bib_Info.Location.Holding_Code = thisValue;
                 }
 
                 if (thisKey.IndexOf(html_element_name.Replace("_", "") + "_text") == 0)

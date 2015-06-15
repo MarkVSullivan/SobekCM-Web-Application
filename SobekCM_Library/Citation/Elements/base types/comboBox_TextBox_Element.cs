@@ -33,6 +33,10 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Protected field holds any label to place before the text box, after the combo box </summary>
         protected string second_label;
 
+        /// <summary> Protected field holds the dictionary that maps from a code to a statement </summary>
+        /// <remarks> This is only used if selecting a code should set a default statement </remarks>
+        protected Dictionary<string, string> code_to_statement_dictionary;
+
         /// <summary> Constructor for a new instance of the comboBox_TextBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
         /// <param name="Html_Element_Name"> Name for the html components and styles for this element </param>
@@ -56,6 +60,18 @@ namespace SobekCM.Library.Citation.Elements
         public void Add_Item(string newitem )
         {
             possible_select_items.Add(newitem);
+        }
+
+        /// <summary> Adds a link between a code and default statement, so that selecting the
+        /// code will set the corresponding default statement </summary>
+        /// <param name="code"> Code </param>
+        /// <param name="statement"> Default statement for that code </param>
+        protected void Add_Code_Statement_Link(string code, string statement)
+        {
+            if (code_to_statement_dictionary == null)
+                code_to_statement_dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            code_to_statement_dictionary[code] = statement;
         }
 
         /// <summary> Method helps to render the html for all elements based on the comboBox_TextBox_Element class </summary>
@@ -123,35 +139,64 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td>");
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
+
+            // Determine if the code --> statement linking should be present
+            bool codeStatementMappingPresent = !((code_to_statement_dictionary == null) || (code_to_statement_dictionary.Count == 0));
+
+            // Add each line with a combo box
             for (int i = 1; i <= text_values.Count; i++)
             {
-                // Write the combo box
+                // Determine the javascript to append
+                string javascript = String.Empty;
                 if (clear_textbox_on_combobox_change)
                 {
-                    Output.Write("            <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "_select" + i + "\" id=\"" + id_name + "_select" + i + "\" onblur=\"javascript:selectbox_leave('" + id_name + "_select" + i + "','" + html_element_name + "_select', '" + html_element_name + "_select_init')\" onchange=\"clear_textbox('" + id_name + "_text" + i + "')\" >");
+                    if (codeStatementMappingPresent)
+                    {
+                        javascript = "onchange=\"combo_text_element_onchange('" + id_name + "_select" + i + "', '" + id_name + "_text" + i + "',true)\"";
+                    }
+                    else
+                    {
+                        javascript = "onchange=\"clear_textbox('" + id_name + "_text" + i + "')\"";
+                    }
                 }
-                else
+                else if (codeStatementMappingPresent)
                 {
-                    Output.Write("            <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "_select" + i + "\" id=\"" + id_name + "_select" + i + "\" onblur=\"javascript:selectbox_leave('" + id_name + "_select" + i + "','" + html_element_name + "_select', '" + html_element_name + "_select_init')\" >");
+                    javascript = "onchange=\"combo_text_element_onchange('" + id_name + "_select" + i + "', '" + id_name + "_text" + i + "',false)\"";
                 }
+
+                // Write the combo box
+                Output.Write("            <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "_select" + i + "\" id=\"" + id_name + "_select" + i + "\" onblur=\"javascript:selectbox_leave('" + id_name + "_select" + i + "','" + html_element_name + "_select', '" + html_element_name + "_select_init')\" " + javascript + " >" );
 
                 bool found_option = false;
                 foreach (string thisOption in possible_select_items)
                 {
+                    // Determine the value
+                    string value = thisOption;
+                    if ((codeStatementMappingPresent) && (code_to_statement_dictionary.ContainsKey(thisOption)))
+                        value = thisOption + "|" + code_to_statement_dictionary[thisOption];
+
                     if ((i < possible_select_items.Count) && (thisOption == select_values[i - 1]))
                     {
-                        Output.Write("<option value=\"" + thisOption + "\" selected=\"selected=\">" + thisOption + "</option>");
+                        Output.Write("<option value=\"" + HttpUtility.HtmlEncode(value) + "\" selected=\"selected=\">" + thisOption + "</option>");
                         found_option = true;
                     }
                     else
                     {
-                        Output.Write("<option value=\"" + thisOption + "\" >" + thisOption + "</option>");
+                        Output.Write("<option value=\"" + HttpUtility.HtmlEncode(value) + "\" >" + thisOption + "</option>");
                     }
                 }
 
                 if ((i <= select_values.Count) && (select_values[i - 1].Length > 0) && (!Restrict_Values) && (!found_option))
                 {
-                    Output.Write("<option value=\"" + select_values[i - 1] + "\" selected=\"selected=\">" + select_values[i - 1] + "</option>");
+                    // Get this option
+                    string option = select_values[i - 1];
+
+                    // Determine the value
+                    string value = option;
+                    if ((codeStatementMappingPresent) && (code_to_statement_dictionary.ContainsKey(option)))
+                        value = option + "|" + code_to_statement_dictionary[option];
+
+                    Output.Write("<option value=\"" + HttpUtility.HtmlEncode(value) + "\" selected=\"selected=\">" + option + "</option>");
                 }
                 Output.Write("</select>");
 
@@ -219,36 +264,66 @@ namespace SobekCM.Library.Citation.Elements
             Output.WriteLine("            <div id=\"" + html_element_name + "_div\">");
 
             const int i = 1;
-            
+
+            // Determine if the code --> statement linking should be present
+            bool codeStatementMappingPresent = !((code_to_statement_dictionary == null) || (code_to_statement_dictionary.Count == 0));
+          
                 // Write the combo box
             // Write the combo box
+
+            // Determine the javascript to append
+            string javascript = String.Empty;
             if (clear_textbox_on_combobox_change)
             {
-                Output.Write("            <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "_select" + i + "\" id=\"" + id_name + "_select" + i + "\" onblur=\"javascript:selectbox_leave('" + id_name + "_select" + i + "','" + html_element_name + "_select', '" + html_element_name + "_select_init')\" onchange=\"clear_textbox('" + id_name + "_text" + i + "')\" >");
+                if (codeStatementMappingPresent)
+                {
+                    javascript = "onchange=\"combo_text_element_onchange('" + id_name + "_select" + i + "', '" + id_name + "_text" + i + "',true)\"";
+                }
+                else
+                {
+                    javascript = "onchange=\"clear_textbox('" + id_name + "_text" + i + "')\"";
+                }
             }
-            else
+            else if (codeStatementMappingPresent)
             {
-                Output.Write("            <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "_select" + i + "\" id=\"" + id_name + "_select" + i + "\" onblur=\"javascript:selectbox_leave('" + id_name + "_select" + i + "','" + html_element_name + "_select', '" + html_element_name + "_select_init')\" >");
+                javascript = "onchange=\"combo_text_element_onchange('" + id_name + "_select" + i + "', '" + id_name + "_text" + i + "',false)\"";
             }
+
+            // Start the select box
+            Output.Write("            <select class=\"" + html_element_name + "_select\" name=\"" + id_name + "_select" + i + "\" id=\"" + id_name + "_select" + i + "\" onblur=\"javascript:selectbox_leave('" + id_name + "_select" + i + "','" + html_element_name + "_select', '" + html_element_name + "_select_init')\"" + javascript + " >");
+
 
 
                 bool found_option = false;
                 foreach (string thisOption in possible_select_items)
                 {
+                    // Determine the value
+                    string value = thisOption;
+                    if ((codeStatementMappingPresent) && (code_to_statement_dictionary.ContainsKey(thisOption)))
+                        value = thisOption + "|" + code_to_statement_dictionary[thisOption];
+
                     if ((i < possible_select_items.Count) && (thisOption == select_value))
                     {
-                        Output.Write("<option value=\"" + thisOption + "\" selected=\"selected=\">" + thisOption + "</option>");
+                        Output.Write("<option value=\"" + HttpUtility.HtmlEncode(value) + "\" selected=\"selected=\">" + thisOption + "</option>");
                         found_option = true;
                     }
                     else
                     {
-                        Output.Write("<option value=\"" + thisOption + "\" >" + thisOption + "</option>");
+                        Output.Write("<option value=\"" + HttpUtility.HtmlEncode(value) + "\" >" + thisOption + "</option>");
                     }
                 }
 
                 if ((select_value.Length > 0) && (!Restrict_Values) && (!found_option))
                 {
-                    Output.Write("<option value=\"" + select_value + "\" selected=\"selected=\">" + select_value + "</option>");
+                    // Get this option
+                    string option = select_value;
+
+                    // Determine the value
+                    string value = option;
+                    if ((codeStatementMappingPresent) && (code_to_statement_dictionary.ContainsKey(option)))
+                        value = option + "|" + code_to_statement_dictionary[option];
+
+                    Output.Write("<option value=\"" + HttpUtility.HtmlEncode(value) + "\" selected=\"selected=\">" + option + "</option>");
                 }
                 Output.Write("</select>");
 

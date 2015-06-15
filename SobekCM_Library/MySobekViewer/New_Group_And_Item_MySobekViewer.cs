@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -11,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -1799,18 +1801,69 @@ namespace SobekCM.Library.MySobekViewer
                 orgcode = "i" + orgcode;
             }
 
-            // If there is no source code, use the RequestSpecificValues.Current_User's code
-            if (item.Bib_Info.Source.Code.Length == 0)
+            // Determine if there are multiple source and holdings for this institution
+            bool multipleInstitutionsSelectable = false;
+            string institutionCode = String.Empty;
+            string institutionName = String.Empty;
+
+            foreach (string thisType in UI_ApplicationCache_Gateway.Aggregations.All_Types)
             {
-                item.Bib_Info.Source.Code = orgcode;
-                item.Bib_Info.Source.Statement = RequestSpecificValues.Current_User.Organization;
+                if (thisType.IndexOf("Institution", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    ReadOnlyCollection<Item_Aggregation_Related_Aggregations> matchingAggr = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_Type(thisType);
+                    foreach (Item_Aggregation_Related_Aggregations thisAggr in matchingAggr)
+                    {
+                        if (thisAggr.Code.Length > 1)
+                        {
+                            if (institutionCode.Length > 0)
+                            {
+                                multipleInstitutionsSelectable = true;
+                                break;
+                            }
+                            if ((thisAggr.Code[0] == 'i') || (thisAggr.Code[0] == 'I'))
+                            {
+                                institutionCode = thisAggr.Code.Substring(1).ToUpper();
+                                institutionName = thisAggr.Name;
+                            }
+                            else
+                            {
+                                institutionCode = thisAggr.Code.ToUpper();
+                                institutionName = thisAggr.Name;
+                            }
+                        }
+                    }
+                }
             }
 
-            // If there is no holding code, use the RequestSpecificValues.Current_User's code
+            // If there is no source code, use the users's code or the only option available
+            if (item.Bib_Info.Source.Code.Length == 0)
+            {
+                // If only one option for the user, assign that
+                if ((!multipleInstitutionsSelectable) && (institutionCode.Length > 0))
+                {
+                    item.Bib_Info.Source.Code = institutionCode;
+                    item.Bib_Info.Source.Statement = institutionName;
+                }
+                else
+                {
+                    item.Bib_Info.Source.Code = orgcode;
+                    item.Bib_Info.Source.Statement = RequestSpecificValues.Current_User.Organization;
+                }
+            }
+
+            // If there is no holding code, use the user's code or the only option avaiable
             if (item.Bib_Info.Location.Holding_Code.Length == 0)
             {
-                item.Bib_Info.Location.Holding_Code = orgcode;
-                item.Bib_Info.Location.Holding_Name = RequestSpecificValues.Current_User.Organization;
+                if ((!multipleInstitutionsSelectable) && (institutionCode.Length > 0))
+                {
+                    item.Bib_Info.Location.Holding_Code = institutionCode;
+                    item.Bib_Info.Location.Holding_Name = institutionName;
+                }
+                else
+                {
+                    item.Bib_Info.Location.Holding_Code = orgcode;
+                    item.Bib_Info.Location.Holding_Name = RequestSpecificValues.Current_User.Organization;
+                }
             }
 
             // Set some values from the CompleteTemplate

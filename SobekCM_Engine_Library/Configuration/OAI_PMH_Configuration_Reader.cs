@@ -2,6 +2,7 @@
 using System.IO;
 using System.Xml;
 using SobekCM.Core.Configuration;
+using SobekCM.Engine_Library.ApplicationState;
 
 namespace SobekCM.Engine_Library.Configuration
 {
@@ -10,10 +11,20 @@ namespace SobekCM.Engine_Library.Configuration
     {
         /// <summary> Static class is used to read the configuration file defining oai-pmh elements and metadata prefixes </summary>
         /// <param name="ConfigFile"> Path and name of the configuration XML file to read </param>
+        /// <param name="SystemName"> System name from the system-wide settings, used as a default name for OAI-PMH </param>
+        /// <param name="SystemAbbreviation"> System identifyer from the system-wide settings, used as a default identifier for OAI-PMH </param>
+        /// <param name="SystemEmail"> System email(s) from the system-wide settings, used as default admin email(s) for OAI-PMH </param>
         /// <returns> Fully configured OAI-PMH configuration object </returns>
-        public static OAI_PMH_Configuration Read_Config(string ConfigFile)
+        public static OAI_PMH_Configuration Read_Config(string ConfigFile, string SystemName, string SystemAbbreviation, string SystemEmail )
         {
-            OAI_PMH_Configuration returnValue = new OAI_PMH_Configuration();
+            // Create config value and set some default values
+            OAI_PMH_Configuration returnValue = new OAI_PMH_Configuration
+            {
+                Identifier = SystemAbbreviation,
+                Name = SystemName,
+                Identifier_Base = "oai:" + SystemAbbreviation.ToLower() + ":"
+            };
+            returnValue.Add_Admin_Email(SystemEmail);
 
             // Streams used for reading
             Stream readerStream = null;
@@ -61,6 +72,8 @@ namespace SobekCM.Engine_Library.Configuration
 
         private static void read_oai_details(XmlReader readerXml, OAI_PMH_Configuration config)
         {
+            bool baseSpecified = false;
+
             // Just step through the subtree of this
             while (readerXml.Read())
             {
@@ -75,11 +88,14 @@ namespace SobekCM.Engine_Library.Configuration
 
                         case "repository":
                             if (readerXml.MoveToAttribute("IdentifierBase"))
+                            {
+                                baseSpecified = true;
                                 config.Identifier_Base = readerXml.Value.Trim();
+                            }
                             break;
 
                         case "identify":
-                            read_oai_details_identify(readerXml.ReadSubtree(), config);
+                            read_oai_details_identify(readerXml.ReadSubtree(), config, baseSpecified );
                             break;
 
                         case "metadataprefixes":
@@ -90,8 +106,10 @@ namespace SobekCM.Engine_Library.Configuration
             }
         }
 
-        private static void read_oai_details_identify(XmlReader readerXml, OAI_PMH_Configuration config)
+        private static void read_oai_details_identify(XmlReader readerXml, OAI_PMH_Configuration config, bool baseSpecified )
         {
+            bool emailFound = false;
+
             while (readerXml.Read())
             {
                 if (readerXml.NodeType == XmlNodeType.Element)
@@ -106,9 +124,16 @@ namespace SobekCM.Engine_Library.Configuration
                         case "identifier":
                             readerXml.Read();
                             config.Identifier = readerXml.Value.Trim();
+                            if (!baseSpecified)
+                                config.Identifier_Base = "oai:" + config.Identifier.ToLower() + ":";
                             break;
 
                         case "adminemail":
+                            if (!emailFound)
+                            {
+                                config.Admin_Emails.Clear();
+                                emailFound = true;
+                            }
                             readerXml.Read();
                             config.Add_Admin_Email(readerXml.Value.Trim());
                             break;
