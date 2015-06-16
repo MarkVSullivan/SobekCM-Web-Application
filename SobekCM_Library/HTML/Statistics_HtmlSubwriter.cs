@@ -2938,7 +2938,7 @@ namespace SobekCM.Library.HTML
 		    DataTable itemCount = null;
 		    DateTime? date1 = null;
 		    DateTime? date2 = null;
-		    if (currentInfoBrowseMode.Length > 0)
+		    if ( !String.IsNullOrEmpty(currentInfoBrowseMode))
 		    {
 			    try
 			    {

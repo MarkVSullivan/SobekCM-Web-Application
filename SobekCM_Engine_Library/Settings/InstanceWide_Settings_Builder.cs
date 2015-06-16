@@ -348,6 +348,8 @@ namespace SobekCM.Engine_Library.Settings
                 }
 
 
+
+
                 // Save the metadata types
                 Set_Metadata_Types(SettingsObject, SobekCM_Settings.Tables[1]);
 
@@ -357,6 +359,9 @@ namespace SobekCM.Engine_Library.Settings
                 // This fills some dictionaries and such used for easy lookups
                 SettingsObject.PostUnSerialization();
 
+                // Ensure the base directory ends correctly
+                if ((!String.IsNullOrEmpty(SettingsObject.Application_Server_Network)) && (SettingsObject.Application_Server_Network[SettingsObject.Application_Server_Network.Length - 1] != '\\'))
+                    SettingsObject.Application_Server_Network = SettingsObject.Application_Server_Network + "\\";
 
                 return true;
             }
