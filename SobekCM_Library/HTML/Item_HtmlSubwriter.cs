@@ -436,8 +436,13 @@ namespace SobekCM.Library.HTML
             }
 
             // ALways suppress the banner and skip to main content
-            behaviors.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Banner);
-            behaviors.Add(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link);
+            if (behaviors == null)
+                behaviors = new List<HtmlSubwriter_Behaviors_Enum>();
+
+            if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
+                behaviors.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Banner);
+            if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link))
+                behaviors.Add(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link);
 
             //if ((searchMatchOnThisPage) && ((PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG) || (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)))
             //{

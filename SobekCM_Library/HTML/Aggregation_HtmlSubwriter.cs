@@ -1177,7 +1177,7 @@ namespace SobekCM.Library.HTML
 			            }
 		            }
 
-	                if (html_list.Count > 0)
+	                if ((html_list.Count > 0) && ( String.Compare(RequestSpecificValues.Hierarchy_Object.Code, "all", true) != 0 ))
 	                {
 	                    string childTypes = RequestSpecificValues.Hierarchy_Object.Child_Types.Trim();
 	                    if (childTypes.IndexOf(" ") > 0)
